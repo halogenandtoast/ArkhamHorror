@@ -42,6 +42,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.SkillTest.Base (SkillTest)
 import Arkham.Source
+import Arkham.Story.Types (Field (..))
 import Arkham.Target
 import Arkham.Treachery.Types (Field (..))
 
@@ -95,6 +96,20 @@ agendaRefFor aid = do
     Just card -> agendaRef aid (toName card) (toCardCode card)
     Nothing -> byCardCodeRef RefAgenda (toCardCode aid)
 
+{- | A story chip, drawing the face that is up -- the same reason
+'locationRefFor' needs game state.
+
+A 'StoryId' IS the card code, so the printed definition answers even once the
+entity is gone, exactly as for an act or agenda.
+-}
+storyRefFor :: HasGame m => StoryId -> m LogRef
+storyRefFor sid = do
+  mCard <- fieldMay StoryCard sid
+  flipped <- fromMaybe False <$> fieldMay StoryFlipped sid
+  pure $ case mCard of
+    Just card -> storyRef sid (toName card) flipped
+    Nothing -> byCardCodeRef RefStory (unStoryId sid)
+
 {- | A ref for an act or agenda that is no longer in play.
 
 Their ids ARE card codes, and an act is replaced on the spot when it advances,
@@ -144,6 +159,7 @@ targetRefFor = \case
   EventTarget eid -> Just <$> eventRefFor eid
   ActTarget aid -> Just <$> actRefFor aid
   AgendaTarget aid -> Just <$> agendaRefFor aid
+  StoryTarget sid -> Just <$> storyRefFor sid
   InvestigatorTarget iid -> Just <$> investigatorRefFor iid
   -- The test's own target is a wrapper around the real one.
   SkillTestInitiatorTarget t -> targetRefFor t
@@ -161,6 +177,11 @@ sourceRefFor = \case
   EventSource eid -> Just <$> eventRefFor eid
   ActSource aid -> Just <$> actRefFor aid
   AgendaSource aid -> Just <$> agendaRefFor aid
+  {- Without this every narrator line about a story card was dropped on the
+  floor: 'AbilityPrevented' builds its sentence in the Maybe monad, so a
+  'Nothing' source takes the whole entry with it. Sacrificial Shepherd blocking
+  Cautious Jailers emitted the message and printed nothing. #5827 -}
+  StorySource sid -> Just <$> storyRefFor sid
   InvestigatorSource iid -> Just <$> investigatorRefFor iid
   -- A card with no entity behind it: the thing that surged, most often.
   CardIdSource cid -> fmap toLogRef <$> getCardMaybe cid

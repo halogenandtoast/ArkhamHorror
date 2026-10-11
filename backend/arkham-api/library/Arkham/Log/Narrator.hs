@@ -835,11 +835,14 @@ abilityPhrasing = \case
   Cosmos -> Nothing
   ConstantAbility -> Nothing
 
-{- | 'abilityPhrasing' for the reaction that did NOT fire.
+{- | 'abilityPhrasing' for the ability that did NOT fire.
 
-Reactions only, matching what 'getPreventedActions' collects: a window opens and
-closes on its own, so a suppressed reaction is invisible, while an action or fast
-ability just has no button and would cost a line every player window.
+Every kind 'CannotTriggerAbilityMatching' can suppress, mirroring
+'abilityPhrasing' so the symbol a player saw on the triggering line is the
+symbol they see on the blocked one. The two collectors differ in /when/ they
+report, not in what they can report: a reaction is announced at its own window,
+a fast or action ability once at turn start. See 'getPreventedPlayerAbilities'.
+
 'Nothing' for everything else, so a widened collector cannot start narrating
 things this wording does not fit.
 
@@ -852,14 +855,15 @@ preventedPhrasing = \case
   ReactionAbility {} -> Just ("log.cannotTriggerAbility", ["symbol" ~> LogIcon "reaction"])
   ConstantReaction {} -> Just ("log.cannotTriggerAbility", ["symbol" ~> LogIcon "reaction"])
   CustomizationReaction {} -> Just ("log.cannotTriggerAbility", ["symbol" ~> LogIcon "reaction"])
+  FastAbility' {} -> Just ("log.cannotTriggerAbility", ["symbol" ~> LogIcon "fast"])
+  -- No symbol, the same as 'abilityPhrasing': an activated ability prints none.
+  ActionAbility {} -> Just ("log.cannotActivateAbility", [])
+  AbilityEffect {} -> Just ("log.cannotActivateAbility", [])
+  ServitorAbility {} -> Just ("log.cannotActivateAbility", [])
   -- Wrappers; the kind that matters is inside.
   DelayedAbility inner -> preventedPhrasing inner
   Objective inner -> preventedPhrasing inner
   ForcedWhen _ inner -> preventedPhrasing inner
-  ActionAbility {} -> Nothing
-  AbilityEffect {} -> Nothing
-  ServitorAbility {} -> Nothing
-  FastAbility' {} -> Nothing
   Haunted -> Nothing
   ForcedAbility {} -> Nothing
   ForcedAbilityWithCost {} -> Nothing

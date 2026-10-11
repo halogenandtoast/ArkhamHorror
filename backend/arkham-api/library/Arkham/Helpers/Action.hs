@@ -248,7 +248,32 @@ of 'getActionsWith', enumerating every ability in the game, is not repeated.
 -}
 getPreventedActions
   :: (HasCallStack, HasGame m) => InvestigatorId -> [Window] -> m [(Ability, Source)]
-getPreventedActions iid ws = do
+getPreventedActions iid ws = getPreventedAbilitiesBy isReactionAbility iid ws
+
+{- | The non-reaction half of 'getPreventedActions': the fast and action
+abilities @iid@ is forbidden to trigger right now, tested against the windows
+'getActions' builds the player window from.
+
+A reaction is announced where its own window opens; a fast or action ability has
+no such moment, so this is called once per turn ('BeginTurn' in
+"Arkham.Game.Runner"). That call site is what keeps the line out of the log on
+every one of the several player windows a turn opens -- the reason the collector
+was reactions-only to begin with. Sacrificial Shepherd forbidding every ability
+on a Bystander card left a player staring at a Kidnapped Citizen with no button
+and nothing said (#5827).
+-}
+getPreventedPlayerAbilities
+  :: (HasCallStack, HasGame m) => InvestigatorId -> m [(Ability, Source)]
+getPreventedPlayerAbilities iid =
+  getPreventedAbilitiesBy (not . isReactionAbility) iid (defaultWindows iid)
+
+getPreventedAbilitiesBy
+  :: (HasCallStack, HasGame m)
+  => (Ability -> Bool)
+  -> InvestigatorId
+  -> [Window]
+  -> m [(Ability, Source)]
+getPreventedAbilitiesBy isWanted iid ws = do
   modifiers <- getModifiers' iid
   let
     -- The same matcher 'getActionsWith' builds, so the two cannot drift. Note a
@@ -280,14 +305,14 @@ getPreventedActions iid ws = do
             , passesCriteria iid Nothing (toSource ability) ability.requestor ws criteria
             ]
       blocked <- concatForM filters \(matcher, blocker) -> do
-        -- Reactions only, and the noise argument is the whole reason this
-        -- function exists. A window opens and closes on its own, so a
-        -- suppressed reaction is invisible -- that is #5821. An action or fast
-        -- ability is the opposite: the player is staring at the card with no
-        -- button on it, and the fast player window reopens several times a turn,
-        -- so announcing those would mean a line every window for as long as the
-        -- modifier is in play.
-        candidates <- filter isReactionAbility <$> select (AbilityOneOf [matcher])
+        -- 'isWanted' splits the two kinds because they are announced at
+        -- different moments, not because one of them does not matter. A window
+        -- opens and closes on its own, so a suppressed reaction is invisible --
+        -- that is #5821, and 'getPreventedActions' reports it wherever the
+        -- window is checked. A fast or action ability has no window of its own
+        -- to hang off and its player window reopens several times a turn, so
+        -- 'getPreventedPlayerAbilities' is called once per turn instead.
+        candidates <- filter isWanted <$> select (AbilityOneOf [matcher])
         map (,blocker) <$> filterM wouldHaveFired candidates
       -- One line per ability: two modifiers forbidding the same thing is still
       -- one thing the player could not do, and either reason explains it.

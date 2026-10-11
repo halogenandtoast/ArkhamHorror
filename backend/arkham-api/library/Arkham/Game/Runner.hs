@@ -62,7 +62,7 @@ import Arkham.Game.Utils
 import Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Ability (abilityRidesAlong, isForcedAbility)
-import Arkham.Helpers.Action (getPreventedActions)
+import Arkham.Helpers.Action (getPreventedActions, getPreventedPlayerAbilities)
 import Arkham.Helpers.ChaosBag (getBagChaosTokens)
 import Arkham.Helpers.Criteria
 import Arkham.Helpers.Customization
@@ -2915,7 +2915,17 @@ runGameMessage msg g = case msg of
     -- otherwise resolve the Forced first and offer the reaction only afterwards. #5784
     whenWindow <- checkWindows [mkWhen (Window.TurnBegins x)]
     afterWindow <- checkWindows [mkAfter (Window.TurnBegins x)]
-    pushAll [whenWindow, afterWindow]
+    {- Say what this seat may not trigger this turn. A fast or action ability has
+    no window of its own to be announced at, and the player window it belongs to
+    reopens several times a turn, so turn start is the one moment that happens
+    exactly once. 'withActiveInvestigator' because the criteria pass reads the
+    active investigator and this handler runs before 'activeInvestigatorIdL' is
+    x. 'AbilityPrevented' is narration only. #5827 -}
+    prevented <-
+      withActiveInvestigator x
+        $ map (uncurry $ AbilityPrevented x)
+        <$> getPreventedPlayerAbilities x
+    pushAll $ prevented <> [whenWindow, afterWindow]
     pure
       $ g
       & (activeInvestigatorIdL .~ x)

@@ -262,9 +262,19 @@ is the fallback a homebrew scenario needs, since it is in nobody's card index.
 scenarioRef :: Named name => ScenarioId -> name -> LogRef
 scenarioRef sid name = entityRef RefScenario (display $ toName name) sid (unScenarioId sid)
 
-storyRef :: Named name => StoryId -> name -> LogRef
-storyRef sid name =
-  (logRef RefStory (display $ toName name)) {logRefEntityId = Just (idText sid)}
+{- | A story card. Carries the card code like every other entity ref, because
+that is what the client resolves the localized name and the hover art from --
+without it a story chip drew a name and nothing else.
+
+'logRefFaceDown' is set from @flipped@ for the same reason 'locationRef' sets it
+from @revealed@: a two-sided story in play (a Kidnapped Citizen showing its
+Bystander face) must draw the side the table can see.
+-}
+storyRef :: Named name => StoryId -> name -> Bool -> LogRef
+storyRef sid name flipped =
+  (entityRef RefStory (display $ toName name) sid (unStoryId sid))
+    { logRefFaceDown = flipped
+    }
 
 -- * Entries
 

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Query (getInvestigators, getPlayerCount)
+import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Strategy
 
 newtype FirstWatchMetadata = FirstWatchMetadata {firstWatchPairings :: [(InvestigatorId, EncounterCard)]}
@@ -22,8 +22,8 @@ instance RunMessage FirstWatch where
   runMessage msg e@(FirstWatch (attrs `With` meta)) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       don't AllDrawEncounterCard
-      playerCount <- getPlayerCount
-      lookAt iid attrs EncounterDeckTarget [(FromTopOfDeck playerCount, PutBack)] #any (defer attrs IsNotDraw)
+      n <- length <$> getInvestigators
+      lookAt iid attrs EncounterDeckTarget [(FromTopOfDeck n, PutBack)] #any (defer attrs IsNotDraw)
       pure e
     UseCardAbilityChoice iid (isSource attrs -> True) 1 (EncounterCardMetadata card) [] _ -> do
       investigators <- getInvestigators

@@ -19,7 +19,7 @@ instance HasAbilities EchoingInDarkness where
         $ ForcedAbilityWithCost
           (ResolvesTreachery #after You (not_ (be a) <> TreacheryDrawnFromDeck Deck.EncounterDeck))
           (discardCost a)
-    , skillTestAbility $ restricted a 2 (InThreatAreaOf You) actionAbility
+    , skillTestAbility $ restricted a 2 OnSameLocation actionAbility
     ]
 
 instance RunMessage EchoingInDarkness where

@@ -22,7 +22,7 @@ instance HasAbilities Infected where
           ( You
               <> at_ (oneOf [LocationWithInvestigator (not_ You), LocationWithEnemy (EnemyWithTrait Stowaway)])
           )
-    , skillTestAbility $ restricted a 2 (InThreatAreaOf You) actionAbility
+    , skillTestAbility $ restricted a 2 OnSameLocation actionAbility
     ]
 
 instance RunMessage Infected where

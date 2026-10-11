@@ -24,6 +24,7 @@ bestialCreature =
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     , cdVictoryPoints = Just 1
     , cdUnique = True
+    , cdDoubleSided = True
     , cdOtherSide = Just ":against-the-wendigo:003"
     }
 
@@ -120,6 +121,7 @@ bernardEpstein =
     , cdHealthDamage = healthDamage 1
     , cdSanityDamage = sanityDamage 2
     , cdUnique = True
+    , cdDoubleSided = True
     , cdOtherSide = Just ":against-the-wendigo:024"
     }
 
@@ -138,5 +140,6 @@ sylviaDavidson =
     , cdSanityDamage = sanityDamage 2
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Aloof]
     , cdUnique = True
+    , cdDoubleSided = True
     , cdOtherSide = Just ":against-the-wendigo:029"
     }

@@ -28,6 +28,6 @@ instance RunMessage Hypnotize2 where
         parley sid iid attrs enemy #intellect $ EnemyMaybeFieldCalculation enemy EnemyRemainingHealth
       pure e
     PassedThisSkillTest _ (isSource attrs -> True) -> do
-      withSkillTestTargetedEnemy shuffleBackIntoEncounterDeck
+      withSkillTestTargetedEnemy (shuffleBackIntoEncounterDeck attrs)
       pure e
     _ -> Hypnotize2 <$> liftRunMessage msg attrs

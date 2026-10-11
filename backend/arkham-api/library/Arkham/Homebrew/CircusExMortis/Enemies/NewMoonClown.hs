@@ -31,6 +31,6 @@ instance RunMessage NewMoonClown where
   runMessage msg e@(NewMoonClown attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       healHorror iid (attrs.ability 1) 1
-      shuffleBackIntoEncounterDeck attrs
+      shuffleBackIntoEncounterDeck (attrs.ability 1) attrs
       pure e
     _ -> NewMoonClown <$> liftRunMessage msg attrs

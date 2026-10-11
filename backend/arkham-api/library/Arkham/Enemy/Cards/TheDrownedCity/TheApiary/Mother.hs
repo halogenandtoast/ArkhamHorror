@@ -34,6 +34,6 @@ instance RunMessage Mother where
         -- leaving a copy in both piles. Cancel it and let the shuffle stand; the
         -- defeat windows are kept so other reactions to it still resolve.
         cancelEnemyDefeatWithWindows eid
-        shuffleBackIntoEncounterDeck eid
+        shuffleBackIntoEncounterDeck (attrs.ability 1) eid
       pure e
     _ -> Mother <$> liftRunMessage msg attrs

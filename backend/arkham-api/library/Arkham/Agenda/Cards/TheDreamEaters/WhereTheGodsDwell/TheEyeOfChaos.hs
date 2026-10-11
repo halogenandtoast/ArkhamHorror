@@ -57,7 +57,7 @@ instance RunMessage TheEyeOfChaos where
                   labeled "nyarlathotepAttackOnce" do
                     unfocusCards
                     initiateEnemyAttack nyarlathotep attrs iid
-                    shuffleBackIntoEncounterDeck nyarlathotep
+                    shuffleBackIntoEncounterDeck attrs nyarlathotep
                   labeled "nyarlathotepAttackThrice" do
                     unfocusCards
                     initiateEnemyAttack nyarlathotep attrs iid

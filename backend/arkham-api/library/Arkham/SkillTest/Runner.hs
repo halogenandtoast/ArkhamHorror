@@ -315,23 +315,21 @@ instance RunMessage SkillTest where
                   t <- getRandom
                   pushAll
                     $ resolve (RevealChaosToken (toSource s) iid (ChaosToken t chaosTokenFace (Just iid) False False))
+        -- Scrying Mirror performed ST.3 back in the test's "after it begins" window, so
+        -- the tokens are already in hand. Resolve those instead of drawing again.
+        | RevealChaosTokensBeforeCommittingCards `elem` modifiers''
+        , notNull skillTestSetAsideChaosTokens -> do
+            hasRun <- fromQueue (elem (RunSkillTest iid))
+            pushAll $ RevealSkillTestChaosTokens iid : [RunSkillTest iid | not hasRun]
         | otherwise -> do
             revealStrategy <- getSkillTestRevealStrategy s
             hasRun <- fromQueue (elem (RunSkillTest iid))
-            lockCommits <-
-              if RevealChaosTokensBeforeCommittingCards `notElem` modifiers''
-                then for (concat $ Map.elems skillTestCommittedCards) \card ->
-                  skillTestModifier s.id (SkillTestSource s.id) card MustBeCommitted
-                else pure []
+            lockCommits <- for (concat $ Map.elems skillTestCommittedCards) \card ->
+              skillTestModifier s.id (SkillTestSource s.id) card MustBeCommitted
             pushAll
-              $ [ RequestChaosTokens (toSource s) (Just iid) revealStrategy SetAside
-                ]
-              <> ( guard (RevealChaosTokensBeforeCommittingCards `notElem` modifiers'')
-                     *> ( lockCommits
-                            <> [ DoStep 3 (CommitToSkillTest s.id (Label "$label.doneCommitting" [CheckAllAdditionalCommitCosts]))
-                               ]
-                        )
-                 )
+              $ [RequestChaosTokens (toSource s) (Just iid) revealStrategy SetAside]
+              <> lockCommits
+              <> [DoStep 3 (CommitToSkillTest s.id (Label "$label.doneCommitting" [CheckAllAdditionalCommitCosts]))]
               <> [RunSkillTest iid | not hasRun]
       pure s
     DrawAnotherChaosToken iid -> do
@@ -365,20 +363,17 @@ instance RunMessage SkillTest where
       pure s
     RequestedChaosTokens (SkillTestSource sid) (Just iid) chaosTokens -> do
       skillTestModifiers' <- getModifiers (SkillTestTarget sid)
-      windowMsg <- checkWindows [mkWhen Window.FastPlayerWindow]
+      -- Scrying Mirror's early ST.3: the tokens are revealed now, but they are not
+      -- resolved until cards have been committed, so leave that to TriggerSkillTest. The
+      -- step guard keeps a later DrawAnotherChaosToken on the normal path.
+      let
+        earlyReveal =
+          (RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers')
+            && (skillTestStep < CommitCardsFromHandToSkillTestStep)
       popMessageMatching_ $ \case
         RevealSkillTestChaosTokens _ -> True
         _ -> False
-      push
-        $ if RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers'
-          then
-            CommitToSkillTest
-              s.id
-              ( Label
-                  "$label.doneCommitting"
-                  [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestChaosTokens iid]
-              )
-          else RevealSkillTestChaosTokens iid
+      unless earlyReveal $ push (RevealSkillTestChaosTokens iid)
       for_ chaosTokens $ \chaosToken -> do
         let revealMsg = RevealChaosToken (SkillTestSource sid) iid chaosToken
         if chaosToken.cancelled

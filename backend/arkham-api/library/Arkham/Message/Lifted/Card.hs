@@ -290,8 +290,11 @@ drawCard iid card = do
 discard :: (IsCard card, ReverseQueue m) => card -> m ()
 discard card = push $ DiscardedCard (toCardId card)
 
-shuffleBackIntoEncounterDeck :: (ReverseQueue m, Targetable target) => target -> m ()
-shuffleBackIntoEncounterDeck target = push $ ShuffleBackIntoEncounterDeck GameSource (toTarget target)
+shuffleBackIntoEncounterDeck :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
+shuffleBackIntoEncounterDeck source target = push $ ShuffleBackIntoEncounterDeck (toSource source) (toTarget target)
+
+shuffleBackIntoEncounterDeck_ :: (ReverseQueue m, Targetable target) => target -> m ()
+shuffleBackIntoEncounterDeck_ = shuffleBackIntoEncounterDeck GameSource
 
 commitCard :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 commitCard iid card = push $ SkillTestCommitCard iid (toCard card)

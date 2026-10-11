@@ -32,6 +32,8 @@ instance RunMessage UnstableVortex where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid do
         withI18n $ labeled "drawTopCardOfEncounterDeck" $ drawEncounterCard iid (attrs.ability 1)
-        scenarioI18n $ labeled "unstableVortex.shuffle" $ shuffleBackIntoEncounterDeck attrs
+        scenarioI18n
+          $ labeled "unstableVortex.shuffle"
+          $ shuffleBackIntoEncounterDeck (attrs.ability 1) attrs
       pure l
     _ -> UnstableVortex <$> liftRunMessage msg attrs

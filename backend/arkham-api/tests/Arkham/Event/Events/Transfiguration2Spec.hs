@@ -5,6 +5,7 @@ import Arkham.Classes.HasGame (getGame)
 import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Projection
+import Arkham.Scenario.Types (inResolutionL)
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.KeyMap qualified as KeyMap
 import TestImport.New
@@ -78,6 +79,21 @@ spec = describe "Transfiguration (2)" do
     self.combat `shouldReturn` 3
     self.agility `shouldReturn` 3
 
+  -- #5829: the form reverts at EndOfGame, which lowers a maximum. The
+  -- handleDefeatedByModifiers sweep turned that into a defeat after the scenario
+  -- was already over -- and with Charon's Obol in play, into a death.
+  it "is not defeated when the form reverts at the end of the game" . gameTest $ \self -> do
+    -- Jenny Barnes has 7 sanity, Norman Withers 8
+    self `playEvent` Events.transfiguration2
+    chooseNormanWithers
+    addHorror self 7
+    self.defeated `shouldReturn` False
+    enterResolution
+    run $ EndOfGame Nothing
+    -- the form really did revert, so the assertion below is not vacuous
+    field InvestigatorSanity self.id `shouldReturn` 7
+    self.defeated `shouldReturn` False
+
   -- #5316: a Body of a Yithian stores a snapshot of the investigator it was made from.
   -- Transfiguration (2) used to overwrite that snapshot with the Yithian's own attrs on
   -- the very next message, so The City of Archives could never give the mind back and
@@ -111,6 +127,24 @@ chooseHankSamson = chooseInvestigatorCard "Hank Samson" "10015"
 
 chooseMarionTavares :: TestAppT ()
 chooseMarionTavares = chooseInvestigatorCard "Marion Tavares" "11001"
+
+chooseNormanWithers :: TestAppT ()
+chooseNormanWithers = chooseInvestigatorCard "Norman Withers" "08004"
+
+{- | The real sequence is @ScenarioResolution@ (which sets the flag) and then, at
+the end of the resolution, @EndOfGame@. Driving The Gathering's whole resolution
+here stalls on its story and add-Lita prompts, so set the flag it sets and run
+the teardown message it ends with.
+-}
+enterResolution :: TestAppT ()
+enterResolution = overTest \g ->
+  g
+    { gameMode =
+        That
+          . overAttrs (inResolutionL .~ True)
+          . fromJustNote "test harness always has a scenario"
+          $ modeScenario (gameMode g)
+    }
 
 chooseInvestigatorCard :: String -> CardCode -> TestAppT ()
 chooseInvestigatorCard name cCode = chooseOptionMatching ("choose " <> name) \case

@@ -7335,13 +7335,20 @@ handleBlanked g = do
 
 handleDefeatedByModifiers :: Map InvestigatorId (Int, Int) -> Game -> GameT Game
 handleDefeatedByModifiers beforeMap g = flip runReaderT g $ do
-  for_ (mapToList beforeMap) \(iid, (beforeHealth, beforeSanity)) -> do
-    whenJustM (getInvestigatorMaybe iid) \_ -> do
-      afterHealth <- field InvestigatorHealth iid
-      afterSanity <- field InvestigatorSanity iid
-      when (afterHealth < beforeHealth || afterSanity < beforeSanity)
-        $ push
-        $ CheckDefeated GameSource (InvestigatorTarget iid)
+  -- Once the resolution starts the scenario is over, and teardown is exactly what
+  -- lowers a maximum: EndOfGame reverting Transfiguration's form, a resolution
+  -- removing a story asset that granted health. Neither may defeat anyone -- with
+  -- Charon's Obol in play it killed the investigator outright (#5829). A
+  -- resolution that means to defeat someone pushes InvestigatorDefeated itself.
+  inResolution <- getInResolution
+  unless inResolution do
+    for_ (mapToList beforeMap) \(iid, (beforeHealth, beforeSanity)) -> do
+      whenJustM (getInvestigatorMaybe iid) \_ -> do
+        afterHealth <- field InvestigatorHealth iid
+        afterSanity <- field InvestigatorSanity iid
+        when (afterHealth < beforeHealth || afterSanity < beforeSanity)
+          $ push
+          $ CheckDefeated GameSource (InvestigatorTarget iid)
   getGame
 
 applyBlank :: Monad m => Source -> StateT (Map Target [Modifier]) m ()

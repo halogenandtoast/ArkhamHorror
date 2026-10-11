@@ -88,6 +88,7 @@ import Api.Handler.ApiKeys
 import Api.Handler.Arkham.Achievements
 import Api.Handler.Arkham.Admin.GameStats
 import Api.Handler.Arkham.Admin.Metrics
+import Api.Handler.Arkham.BuildConnection
 import Api.Handler.Arkham.Cards
 import Api.Handler.Arkham.CustomCards
 import Api.Handler.Arkham.CardSetSubmissions

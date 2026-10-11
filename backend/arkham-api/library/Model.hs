@@ -12,13 +12,15 @@ import Database.Persist.Postgresql.JSON ()
 import Entity.Arkham.Achievement as X
 import Entity.Arkham.ApiKey as X
 import Entity.Arkham.ArkhamDBDecklist as X
+import Entity.Arkham.BuildAuthRequest as X
+import Entity.Arkham.BuildConnection as X
 import Entity.Arkham.CustomCard as X
 import Entity.Arkham.CustomCardSet as X
-import Entity.Arkham.PublishedCardSet as X
 import Entity.Arkham.Deck as X
 import Entity.Arkham.Epic as X
 import Entity.Arkham.Game as X
 import Entity.Arkham.Player as X
+import Entity.Arkham.PublishedCardSet as X
 import Entity.Arkham.StatsRefresh as X
 import Entity.PasswordReset as X
 import Entity.User as X

@@ -13,3 +13,14 @@ asset-host: "_env:ASSET_HOST:"
 # permessage-deflate on the game/event websockets. Kill switch, so a suspected
 # compression regression can be bisected in production with a restart.
 websocket-compression: "_env:ARKHAM_WS_COMPRESSION:true"
+
+# arkham.build OAuth. An arkham.build administrator issues the client id and a
+# one-time secret, and registers the redirect URIs; the server compares a URI as
+# an exact string, so it must match what was registered character for character.
+# Registered: http://localhost:8080/api/auth/arkham-build/callback and
+# https://arkhamhorror.app/api/auth/arkham-build/callback. In development it
+# defaults to the first, which the Vite dev server proxies through to this one.
+arkham-build-api-base: "_env:ARKHAM_BUILD_API_BASE:https://api.arkham.build"
+arkham-build-client-id: "_env:ARKHAM_BUILD_CLIENT_ID:"
+arkham-build-client-secret: "_env:ARKHAM_BUILD_CLIENT_SECRET:"
+arkham-build-redirect-uri: "_env:ARKHAM_BUILD_REDIRECT_URI:"

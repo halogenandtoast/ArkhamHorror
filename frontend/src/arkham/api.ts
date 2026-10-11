@@ -645,6 +645,46 @@ export const validateDeck = async (deckList: ArkhamDbDecklist): Promise<void> =>
   }
 }
 
+export interface ArkhamBuildConnection {
+  accountId: string
+  username: string
+  scopes: string[]
+  missingScopes: string[]
+  connectedAt: string
+  refreshedAt: string
+  expiresAt: string
+}
+
+export interface ArkhamBuildStatus {
+  configured: boolean
+  scopes: string[]
+  connection: ArkhamBuildConnection | null
+}
+
+export const fetchArkhamBuildConnection = async (): Promise<ArkhamBuildStatus> => {
+  const { data } = await api.get('arkham-build/connection')
+  return data
+}
+
+export interface ArkhamBuildDeck {
+  source: 'account' | 'arkhamdb'
+  id: string | number
+  updatedAt: string
+  decklist: ArkhamDbDecklist
+}
+
+export interface ArkhamBuildDecks {
+  decks: ArkhamBuildDeck[]
+  providers: { account: boolean; arkhamdb: boolean }
+}
+
+/* The decks on the player's connected arkham.build account. Reading them is two
+ * round trips upstream, so this is slower than the rest of the deck API. */
+export const fetchArkhamBuildDecks = async (): Promise<ArkhamBuildDecks> => {
+  const { data } = await api.get('arkham-build/decks', { timeout: 30000 })
+  return data
+}
+
 export const fetchDeckList = async (url: string): Promise<ArkhamDbDecklist> => {
   const { data } = await api.post('arkham/decks/fetch', { url })
   return data

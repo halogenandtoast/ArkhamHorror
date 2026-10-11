@@ -1,6 +1,7 @@
 /health HealthR GET
 /error ErrorR GET
 /api ApiP:
+  /auth/arkham-build/callback ApiAuthArkhamBuildCallbackR GET
   /v1 ApiV1P:
     /authenticate ApiV1AuthenticationR POST
     /register ApiV1RegistrationR POST
@@ -14,6 +15,11 @@
       / ApiV1ApiKeysR GET POST
       !/self ApiV1ApiKeySelfR GET
       /#ArkhamApiKeyId ApiV1ApiKeyR DELETE
+    /arkham-build ApiV1ArkhamBuildP:
+      /connection ApiV1ArkhamBuildConnectionR GET DELETE
+      /authorize ApiV1ArkhamBuildAuthorizeR POST
+      /verify ApiV1ArkhamBuildVerifyR POST
+      /decks ApiV1ArkhamBuildDecksR GET
     /site-settings ApiV1SiteSettingsR GET
     /notifications ApiV1NotificationsR GET
     /3ed ApiV1ThirdEditionP:

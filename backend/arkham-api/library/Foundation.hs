@@ -281,6 +281,9 @@ instance Yesod App where
   isAuthorized HealthR _ = pure Authorized
   isAuthorized ErrorR _ = pure Authorized
   isAuthorized (ApiP api) _ = case api of
+    -- The OAuth callback arrives as a browser redirect with no credentials of
+    -- its own; what it may do comes from the state it carries.
+    ApiAuthArkhamBuildCallbackR -> pure Authorized
     ApiV1P v1 -> case v1 of
       AdminP _ -> do
         _ <- getAdminUser

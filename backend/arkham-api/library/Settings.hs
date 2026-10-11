@@ -94,6 +94,16 @@ data AppSettings = AppSettings
     -- ^ Where to put custom card art. In development it goes in the frontend's
     -- public directory so it is served locally and never reaches the shared
     -- assets bucket; unset (the default outside development) means S3.
+    , appArkhamBuildApiBase :: Text
+    -- ^ arkham.build's API origin, @https://api.arkham.build@.
+    , appArkhamBuildClientId :: Maybe Text
+    , appArkhamBuildClientSecret :: Maybe Text
+    -- ^ Unset means the integration is off: no authorization can be started and
+    -- the settings page says so rather than offering a button that cannot work.
+    , appArkhamBuildRedirectUri :: Text
+    -- ^ Compared by arkham.build as an exact string against what an
+    -- administrator registered, and sent again at the token exchange, so it is
+    -- configured rather than derived from the request.
     , appWebsocketCompression :: Bool
     -- ^ permessage-deflate on the game/event websockets. Defaults on; it takes
     -- a 206 KB 'PublicGame' update to ~33 KB. It is also the one thing on that
@@ -135,8 +145,20 @@ instance FromJSON AppSettings where
                 Just dir -> Just dir
                 -- Relative to the api package, which is where it is run from.
                 Nothing -> if dev then Just "../../frontend/public/img/custom" else Nothing
+        appArkhamBuildApiBase <- o .:? "arkham-build-api-base" .!= "https://api.arkham.build"
+        appArkhamBuildClientId <- nonEmpty' <$> o .:? "arkham-build-client-id"
+        appArkhamBuildClientSecret <- nonEmpty' <$> o .:? "arkham-build-client-secret"
+        mRedirectUri <- nonEmpty' <$> o .:? "arkham-build-redirect-uri"
+        let appArkhamBuildRedirectUri = fromMaybe
+                (if dev
+                    then "http://localhost:8080/api/auth/arkham-build/callback"
+                    else "https://arkhamhorror.app/api/auth/arkham-build/callback")
+                mRedirectUri
         appWebsocketCompression <- o .:? "websocket-compression" .!= True
         pure AppSettings {..}
+
+nonEmpty' :: Maybe Text -> Maybe Text
+nonEmpty' = (>>= \t -> if T.null (T.strip t) then Nothing else Just (T.strip t))
 
 -- | Raw bytes at compile time of @config/settings.yml@
 configSettingsYmlBS :: ByteString

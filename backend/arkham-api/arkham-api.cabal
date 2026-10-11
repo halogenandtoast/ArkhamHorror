@@ -30,6 +30,7 @@ library
       Api.Handler.Arkham.Achievements
       Api.Handler.Arkham.Admin.GameStats
       Api.Handler.Arkham.Admin.Metrics
+      Api.Handler.Arkham.BuildConnection
       Api.Handler.Arkham.Cards
       Api.Handler.Arkham.CardSetSubmissions
       Api.Handler.Arkham.CustomCards
@@ -8959,6 +8960,7 @@ library
       Arkham.Window
       Arkham.Xp
       Arkham.Zone
+      ArkhamBuild.OAuth
       Auth.ApiKey
       Auth.JWT
       Base.Api.Handler.Account
@@ -8976,6 +8978,8 @@ library
       Entity.Arkham.Achievement
       Entity.Arkham.ApiKey
       Entity.Arkham.ArkhamDBDecklist
+      Entity.Arkham.BuildAuthRequest
+      Entity.Arkham.BuildConnection
       Entity.Arkham.CustomCard
       Entity.Arkham.CustomCardSet
       Entity.Arkham.Deck

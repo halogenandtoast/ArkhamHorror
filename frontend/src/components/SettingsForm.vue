@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
 import type { User } from '@/types'
@@ -9,6 +10,7 @@ import { checkImageExists } from '@/arkham/helpers'
 import { isDevBuild } from '@/arkham/displayRules'
 import { loadLocaleMessages, normalizeLocale } from '@/locales/messages'
 import ApiKeys from '@/components/ApiKeys.vue'
+import ArkhamBuildConnection from '@/components/ArkhamBuildConnection.vue'
 
 const props = defineProps<{
   user: User
@@ -25,16 +27,23 @@ const language = ref(localStorage.getItem('language') || locale.value)
 const beta = ref(props.user.beta ? 'On' : 'Off')
 const phaseTransitionNotifications = ref(props.user.phaseTransitionNotifications === true)
 const showDeleteConfirm = ref(false)
-const ALL_TABS = ['account', 'features', 'apiKeys'] as const
+const ALL_TABS = ['account', 'connections', 'features', 'apiKeys'] as const
 type Tab = (typeof ALL_TABS)[number]
 
 /* API keys are admin-only while they settle. The endpoints are gated in
  * Foundation's isAuthorized too, so this is the UI agreeing with the server
  * rather than being the gate itself. */
 const tabs = computed<readonly Tab[]>(() =>
-  ALL_TABS.filter((tab) => tab !== 'apiKeys' || props.user.admin),
+  ALL_TABS.filter(
+    (tab) => (tab !== 'apiKeys' || props.user.admin) && (tab !== 'connections' || dev),
+  ),
 )
-const activeTab = ref<Tab>('account')
+/* The arkham.build callback comes back to ?arkhamBuild=<outcome>, which the
+ * connections panel reports — so open on the tab that reports it. Read off the
+ * route, not window.location: the router uses hash history, so the query is in
+ * the fragment. */
+const openedFromCallback = dev && 'arkhamBuild' in useRoute().query
+const activeTab = ref<Tab>(openedFromCallback ? 'connections' : 'account')
 
 function navigateTabs(event: KeyboardEvent) {
   const index = tabs.value.indexOf(activeTab.value)
@@ -262,6 +271,17 @@ const updateLanguage = async (a: Event) => {
       </div>
 
       <div
+        v-if="dev && activeTab === 'connections'"
+        id="settings-panel-connections"
+        class="column settings-panel"
+        role="tabpanel"
+        aria-labelledby="settings-tab-connections"
+        tabindex="0"
+      >
+        <ArkhamBuildConnection />
+      </div>
+
+      <div
         v-if="user.admin && activeTab === 'apiKeys'"
         id="settings-panel-apiKeys"
         class="column settings-panel"
@@ -354,6 +374,9 @@ input[type='radio'] {
 
 .settings-tabs {
   display: flex;
+  /* A fourth tab overflows a phone, and an overflowing tab strip hides the tabs
+     at the end of it rather than looking cramped. */
+  flex-wrap: wrap;
   gap: 0.5rem;
   border-bottom: 1px solid var(--box-border);
 }

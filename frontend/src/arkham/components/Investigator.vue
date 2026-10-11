@@ -532,15 +532,18 @@ const spadeInjury = computed(() => {
           <div class="combat combat-icon">{{combat}}</div>
           <div class="agility agility-icon">{{agility}}</div>
         </div>
-        <div class="investigator-image" :data-id="investigator.id">
+        <div
+          class="investigator-image"
+          :data-id="investigator.id"
+          @drop="onDrop($event)"
+          @dragover.prevent="dragover($event)"
+          @dragenter.prevent
+        >
           <img
             :class="{ 'investigator--can-interact': investigatorAction !== -1, 'ability-target': isHighlighted || isAttackTarget }"
             class="card card--sideways"
             :src="image"
             @click="clicked"
-            @drop="onDrop($event)"
-            @dragover.prevent="dragover($event)"
-            @dragenter.prevent
           />
           <span v-if="isBlanked" class="blanked-badge" :data-image-id="blankedCardCode"><font-awesome-icon icon="ban" /></span>
           <PendingDamageTokens

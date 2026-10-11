@@ -17,24 +17,20 @@ onTheStudentsTrack = act (2, A) OnTheStudentsTrack Cards.onTheStudentsTrack Noth
 
 instance HasAbilities OnTheStudentsTrack where
   getAbilities = actAbilities \x ->
-    [
-    {- | "Investigators in the same location can spend 2[per_investigator] clues
-    at any time, then the lead investigator randomly takes a card from the
-    Student's Fate deck and reads the first part." -}
-      restricted x 1 (exists $ InvestigatorAt Anywhere)
+    [ restricted x 1 (exists $ InvestigatorAt Anywhere)
         $ FastAbility
         $ GroupClueCost (PerPlayer 2) Anywhere
-    , -- "Objective - When you've discovered Norman's fate, Bernard's fate and
-      -- Sylvia's fate, advance."
-      restricted
-        x
-        2
-        ( hasRecordCriteria YouHaveDiscoveredBernardsFate
-            <> hasRecordCriteria YouHaveDiscoveredNormansFate
-            <> hasRecordCriteria YouHaveDiscoveredSylviasFate
-        )
-        $ Objective freeTrigger_
+    , onlyOnce
+        $ restricted x 2 (foldMap hasRecordCriteria allFates)
+        $ Objective
+        $ forced AnyWindow
     ]
+   where
+    allFates =
+      [ YouHaveDiscoveredBernardsFate
+      , YouHaveDiscoveredNormansFate
+      , YouHaveDiscoveredSylviasFate
+      ]
 
 instance RunMessage OnTheStudentsTrack where
   runMessage msg a@(OnTheStudentsTrack attrs) = runQueueT $ case msg of
@@ -44,8 +40,6 @@ instance RunMessage OnTheStudentsTrack where
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advancedWithOther attrs
       pure a
-    -- "Objective - When you've discovered Norman's fate, Bernard's fate and
-    -- Sylvia's fate, advance."
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       record YouHaveDiscoveredTheFateOfDrNadelmannsStudents
       advanceActDeck attrs

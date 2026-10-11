@@ -4583,7 +4583,9 @@ enemyMatcherFilter es matcher' = do
                       , getCanPerformAbility iid [window] . overrideFunc
                       ]
                 )
-                (getAbilities enemy)
+                -- Mirrors the fight side: an enemy whose evade is restricted to
+                -- certain sources (OnlySources) reads them off the requestor.
+                (map (setRequestor source) $ getAbilities enemy)
     EnemyCanBeDefeatedBy source -> flip filterM es \enemy -> do
       modifiers <- getModifiers enemy
       let
@@ -6613,7 +6615,13 @@ instance Projection Treachery where
       TreacheryResources -> pure $ treacheryResources attrs
       TreacheryDoom -> pure $ treacheryDoom attrs
       TreacheryAttachedTarget -> pure $ treacheryAttachedTarget attrs
-      TreacheryTraits -> pure $ cdCardTraits cdef
+      TreacheryTraits -> do
+        -- Locations, assets, enemies and investigators all fold granted traits
+        -- in; a treachery that gains one (Ambush on the river) needs it too.
+        modifiers' <- foldMapM getModifiers [toTarget t, CardIdTarget $ toCardId t]
+        let addedTraits = setFromList [tr | AddTrait tr <- modifiers']
+        let removedTraits = setFromList [tr | RemoveTrait tr <- modifiers']
+        pure $ (cdCardTraits cdef <> addedTraits) `difference` removedTraits
       TreacheryKeywords -> do
         modifiers' <- foldMapM getModifiers [toTarget t, CardIdTarget $ toCardId t]
         let

@@ -174,7 +174,7 @@ instance RunMessage AgainstTheWendigo where
         ]
 
       -- "If you don't have a [tablet] token in your chaos bag, add one for this game."
-      addChaosToken Tablet
+      addChaosTokenForGame Tablet
 
       setAgendaDeck
         [ Agendas.aDarkAndDisturbingValley
@@ -247,37 +247,50 @@ resignedOrDefeatedTrauma attrs = do
 {- | The epilogue's four passages, then Dr. Nadelmann's fate. Each passage is
 read only if the record it hangs off was made, and each one that hands a card
 over does so here.
+
+Resolutions 2-4 call this from inside their own @resolutions@ scope, so the
+scope is reset rather than nested -- the keys live beside them under @scenario@,
+not under @scenario.resolutions@.
 -}
-epilogue :: (HasI18n, ReverseQueue m) => m ()
-epilogue = scope "epilogue" do
-  charlieSurvived <- selectAny $ assetIs Assets.charlieFoxtail
-  when charlieSurvived do
-    flavor $ h "charlie" >> p "charlieBody"
-    investigators <- select UneliminatedInvestigator
-    addCampaignCardToDeckChoice investigators ShuffleIn Assets.tomahawk
+epilogue :: ReverseQueue m => m ()
+epilogue = scenarioI18n $ scope "epilogue" do
+  -- "Do not read the following if all investigators have been driven insane or killed."
+  anyLeft <- selectAny $ IncludeEliminated (not_ KilledInvestigator <> not_ InsaneInvestigator)
+  when anyLeft do
+    -- "Read the following passages each time they match your playing situation."
+    flavor $ h "intro" >> p "introBody"
 
-  whenHasRecord YouHaveFoundHanninahsGold do
-    flavor $ h "gold" >> p "goldBody"
-    investigators <- select UneliminatedInvestigator
-    addCampaignCardToDeckChoice investigators ShuffleIn Assets.goldMiningRevenues
+    charlieSurvived <- selectAny $ assetIs Assets.charlieFoxtail
+    when charlieSurvived do
+      flavor $ h "charlie" >> p "charlieBody"
+      investigators <- select UneliminatedInvestigator
+      addCampaignCardToDeckChoice investigators ShuffleIn Assets.tomahawk
 
-  whenHasRecord YouAreTheCustodianOfIthaquasKnowledge do
-    flavor $ h "ithaqua" >> p "ithaquaBody"
-    investigators <- select UneliminatedInvestigator
-    addCampaignCardToDeckChoice investigators ShuffleIn Assets.ithaquasKnowledge
+    whenHasRecord YouHaveFoundHanninahsGold do
+      flavor $ h "gold" >> p "goldBody"
+      investigators <- select UneliminatedInvestigator
+      addCampaignCardToDeckChoice investigators ShuffleIn Assets.goldMiningRevenues
 
-  -- Norman only counts as alive if he made it to the end still in play.
-  normanSurvived <- selectAny $ assetIs Assets.normanFalkner
-  if normanSurvived
-    then do
-      record NormanIsAlive
-      flavor $ h "normanAlive" >> p "normanAliveBody"
-    else whenHasRecord YouLetNormanDie do
-      flavor $ h "normanDead" >> p "normanDeadBody"
-      -- "Add a [tablet] token to the Chaos bag for the rest of your campaign."
-      addChaosToken Tablet
+    whenHasRecord YouAreTheCustodianOfIthaquasKnowledge do
+      flavor $ h "ithaqua" >> p "ithaquaBody"
+      investigators <- select UneliminatedInvestigator
+      addCampaignCardToDeckChoice investigators ShuffleIn Assets.ithaquasKnowledge
 
-  nadelmannsFate
+    -- Norman only counts as alive if he made it to the end still in play.
+    normanSurvived <- selectAny $ assetIs Assets.normanFalkner
+    if normanSurvived
+      then do
+        record NormanIsAlive
+        flavor $ h "normanAlive" >> p "normanAliveBody"
+      else whenHasRecord YouLetNormanDie do
+        flavor $ h "normanDead" >> p "normanDeadBody"
+        {- "If you added a [tablet] token to the Chaos bag for this game, keep it
+        for the rest of your campaign. Otherwise, add a [tablet] token to the
+        Chaos bag for the rest of your campaign." Setup's token is only for this
+        game, so either branch is one campaign token. -}
+        addChaosToken Tablet
+
+    nadelmannsFate
 
 {- | "Check your campaign log. If you defeated the Wendigo: read fate 1.
 Otherwise, if you have enough evidence to clear Dr. Nadelmann: fate 2.
@@ -293,6 +306,8 @@ nadelmannsFate = do
         | cleared = "nadelmann2"
         | stillRoams = "nadelmann3"
         | otherwise = "nadelmann4"
+  -- The guide prints the check itself above the passage, so it is read out too.
+  flavor $ p "nadelmannCheck"
   flavor $ h which >> p (which <> "Body")
 
 -- | Resolutions 2-4 are chosen by how many students' fates were discovered.

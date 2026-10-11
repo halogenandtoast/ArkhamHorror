@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Stories qualified as Stories
-import Arkham.Helpers.Story (readStory)
+import Arkham.Homebrew.AgainstTheWendigo.Helpers (readStoryAndChoose)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
@@ -37,6 +37,6 @@ instance HasAbilities MadProspector where
 instance RunMessage MadProspector where
   runMessage msg l@(MadProspector attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      readStory iid attrs Stories.hanninahsGold
+      readStoryAndChoose iid Stories.hanninahsGold
       pure l
     _ -> MadProspector <$> liftRunMessage msg attrs

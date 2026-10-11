@@ -23,7 +23,9 @@ import Arkham.Ability
 import Arkham.Actions (Actions (SingleAction))
 import Arkham.Calculation (GameCalculation (Fixed))
 import Arkham.Card (toCardDef)
-import Arkham.Card.CardCode (HasCardCode)
+import Arkham.Card.CardCode (HasCardCode, toCardCode)
+import Arkham.Card.CardDef (CardDef)
+import Arkham.Card.CardType (CardType (TreacheryType))
 import Arkham.ChaosToken
 import Arkham.Classes.HasModifiersFor (HasModifiersM)
 import Arkham.Classes.HasQueue (push)
@@ -42,12 +44,21 @@ import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Types (LocationAttrs)
 import Arkham.Matcher
-import Arkham.Message (Message (CheckAttackOfOpportunity, RemoveCardFromScenarioDeck))
+import Arkham.Message (
+  Message (CheckAttackOfOpportunity, MoveWithSkillTest, RemoveCardFromScenarioDeck, StoryMessage),
+ )
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move (forcedMoveTo)
+import Arkham.Message.Story (
+  StoryMessage (PlaceStory, ResolveStory, ResolvedStory),
+  StoryMode (ResolveIt),
+ )
+import Arkham.Placement (Placement (Global, Unplaced))
 import Arkham.Prelude
+import Arkham.Projection (field)
 import Arkham.Source
+import Arkham.Story.Types qualified as Story
 import Arkham.Trait (Trait (River))
 
 -- * Text
@@ -140,9 +151,8 @@ resolveNavigate (toSource -> source) iid = do
     let steps = maybe 1 (min 3 . max 1 . unDistance) mdistance
     forcedMoveTo source iid lid
     sid <- getRandom
-    chooseOneM iid $ scenarioI18n $ scope "navigate" do
-      labeled "testCombat" $ beginSkillTest sid iid source iid #combat (Fixed $ 1 + steps)
-      labeled "testAgility" $ beginSkillTest sid iid source iid #agility (Fixed $ 1 + steps)
+    chooseOneM iid $ skillsLabeled [#combat, #agility] \sk ->
+      beginSkillTest sid iid source iid sk (Fixed $ 1 + steps)
 
 {- | The damage step 4 deals on a failure: "take 1 damage, or 2 damage if you
 fail by 3 or more". The amount failed by rides on the 'FailedSkillTest' message.
@@ -200,10 +210,83 @@ drawStudentsFate = do
       push $ RemoveCardFromScenarioDeck StudentsFateDeck card
       readStory lead card (toCardDef card)
 
+-- * The students' fates
+
+{- | "{reaction} If there are no more clues on this location, read the second part
+of the <student>'s Fate story card."
+
+Printed on Site of Ancient Stones, Swamp and Impenetrable Forest, one per
+student. Each student has two versions and setup keeps only one, so the location
+watches for either. The fate card is put aside by its own first part and stays on
+the table, so the trigger is a condition and not a moment: it can be read at any
+time once the clues are gone, including at a location that was already empty.
+-}
+fateReaction :: (Sourceable a, HasCardCode a, Be a LocationMatcher) => a -> [CardDef] -> Ability
+fateReaction a fates =
+  onlyOnce
+    $ restricted a 1 (Here <> (thisExists a LocationWithoutClues <> mapOneOf (exists . asideFate) fates))
+    $ freeReaction AnyWindow
+
+{- | Resolving the aside card a second time is what reads its second part, with
+the card itself back on screen the way reading one off the deck shows it.
+-}
+readSecondPartOfFate :: ReverseQueue m => InvestigatorId -> [CardDef] -> m ()
+readSecondPartOfFate iid fates = for_ fates \fate -> selectEach (asideFate fate) (spotlightStory iid)
+
+{- | Put a story card that is already on the table back on screen, and resolve it
+once it is dismissed.
+
+It cannot go back through @ReadStory@: that builds a fresh story from the card,
+which for a fate card would hand it its first part all over again. This asks the
+question @ReadStory@ would have -- the card in focus, one target label on it that
+resolves the story -- which is what the client shows full screen.
+-}
+spotlightStory :: ReverseQueue m => InvestigatorId -> StoryId -> m ()
+spotlightStory iid sid = do
+  card <- field Story.StoryCard sid
+  focusCards [card]
+    $ lift
+    $ chooseOneM iid
+    $ targeting card.id
+    $ push
+    $ StoryMessage
+    $ ResolveStory iid ResolveIt sid
+
+{- | Read a story card that prints a choice: the card goes on screen and the
+story asks its own question there, rather than behind @ReadStory@'s one-option
+prompt. Those are the two messages that prompt would have run.
+-}
+readStoryAndChoose :: ReverseQueue m => InvestigatorId -> CardDef -> m ()
+readStoryAndChoose iid def = do
+  card <- fetchCard def
+  let sid = StoryId (toCardCode card)
+  push $ StoryMessage $ PlaceStory card Unplaced
+  push $ StoryMessage $ ResolveStory iid ResolveIt sid
+  push $ MoveWithSkillTest $ StoryMessage $ ResolvedStory ResolveIt sid
+
+-- | A fate card that has been put aside by its first part.
+asideFate :: HasCardCode a => a -> StoryMatcher
+asideFate fate = storyIs fate <> StoryWithPlacement Global
+
 -- * Guides
 
 guideAsset :: AssetMatcher
 guideAsset = AssetWithTrait Guide
+
+{- | The test the Guides' second reaction answers: "at stage 4 of a Navigate
+action, or triggered by a River treachery card."
+
+Stage 4 is the test the location's Navigate ability starts, so the action on that
+ability is what names it; the other half is a River treachery's own test. Ambush
+gains the River trait while you are on a River location, which is what that
+clause is there for.
+-}
+navigateOrRiverTest :: SkillTestMatcher
+navigateOrRiverTest =
+  SkillTestOneOf
+    [ SkillTestSourceMatches $ SourceIsAbility $ AbilityIsAction Navigate
+    , SkillTestSourceMatches $ SourceIsType TreacheryType <> SourceWithTrait River
+    ]
 
 {- | "At the beginning of the turn of an investigator in the same location, you
 can give this card to this investigator, who takes control of it."

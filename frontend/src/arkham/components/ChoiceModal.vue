@@ -14,7 +14,7 @@ import Question from '@/arkham/components/Question.vue';
 import DrawSpotlight from '@/arkham/components/DrawSpotlight.vue';
 import { abilityNeedsGhostModal } from '@/arkham/ghostAbility';
 import { putBackInAnyOrderPicks } from '@/arkham/putBackInAnyOrder';
-import { storyCardRead as findStoryCardRead } from '@/arkham/storyCardRead';
+import { storyCardRead as findStoryCardRead, storyCardChoiceRead as findStoryCardChoiceRead } from '@/arkham/storyCardRead';
 
 export interface Props {
   game: Game
@@ -49,6 +49,25 @@ const cthulhuDeckCardCodes = new Set([
 ])
 const investigator = computed(() => Object.values(props.game.investigators).find(i => i.playerId === props.playerId))
 const storyCardRead = computed(() => findStoryCardRead(props.game, props.playerId))
+const storyCardChoiceRead = computed(() => findStoryCardChoiceRead(props.game, props.playerId))
+
+/* The card on screen, and the buttons under it: either the one-option dismissal
+ * that reading a story card is, or the story's own question. */
+const storySpotlight = computed(() => {
+  const read = storyCardRead.value
+  if (read) return { card: read.card, index: read.index, choices: [] as { label: string; index: number }[] }
+
+  const asking = storyCardChoiceRead.value
+  if (asking) {
+    return {
+      card: asking.card,
+      index: asking.choices[0].index,
+      choices: asking.choices.map((choice) => ({ label: label(choice.label), index: choice.index })),
+    }
+  }
+
+  return null
+})
 const searchedCards = computed(() => {
   const playerCards = Object.entries(investigator.value?.foundCards ?? [])
 
@@ -306,11 +325,12 @@ const title = computed(() => {
        `.scenario-body`, which is `position: relative; z-index: 1` -- a stacking
        context that caps the spotlight at 1 against the root, under the skill
        test panel's `#modal` draggable at 100. -->
-  <Teleport v-if="storyCardRead" to="body">
+  <Teleport v-if="storySpotlight" to="body">
   <DrawSpotlight
     :game="game"
     :playerId="playerId"
-    :cards="[storyCardRead.card]"
+    :cards="[storySpotlight.card]"
+    :choices="storySpotlight.choices"
     :aria-label="t('Story')"
     :style="{
       '--spotlight-card-width': 'min(420px, 88vw, 55vh)',
@@ -322,7 +342,8 @@ const title = computed(() => {
       '--story-button-color': '#4C5037',
       '--story-button-hover-color': '#393C29',
     }"
-    @dismiss="choose(storyCardRead.index)"
+    @dismiss="choose(storySpotlight.index)"
+    @choose="choose"
   />
   </Teleport>
   <div

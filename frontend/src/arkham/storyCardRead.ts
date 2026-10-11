@@ -48,3 +48,33 @@ export function storyCardRead(game: Game, playerId: string): StoryCardRead | nul
   const card = game.focusedCards.find((c) => toCardContents(c).id === cardId)
   return card ? { card, index: 0 } : null
 }
+
+export type StoryCardChoice = { label: string; index: number }
+export type StoryCardChoiceRead = { card: ArkhamCard; choices: StoryCardChoice[] }
+
+/* A story card that is asking something.
+ *
+ * A story whose card has been put on screen keeps it there for its own question
+ * by wrapping the `chooseOne` in `focusCards`, so the choice is recognised by
+ * that pairing: exactly one focused card, that card is a story in play, and
+ * every choice is a plain label. A search popup focuses cards too, but it offers
+ * card or target labels rather than text ones, so it never matches.
+ */
+export function storyCardChoiceRead(game: Game, playerId: string): StoryCardChoiceRead | null {
+  const choices = ArkhamGame.choices(game, playerId)
+  if (choices.length === 0) return null
+  if (game.focusedCards.length !== 1) return null
+
+  const card = game.focusedCards[0]
+  // Story ids are card codes, so a focused card that is a story in play is one
+  // lookup away.
+  if (!(toCardContents(card).cardCode in game.stories)) return null
+
+  const labels: StoryCardChoice[] = []
+  for (const [index, choice] of choices.entries()) {
+    if (choice.tag !== MessageType.LABEL) return null
+    labels.push({ label: choice.label, index })
+  }
+
+  return { card, choices: labels }
+}

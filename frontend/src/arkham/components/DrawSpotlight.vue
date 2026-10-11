@@ -26,14 +26,21 @@ import CardView from '@/arkham/components/Card.vue'
 /* `title` is optional: a story card you are being told to read already prints
  * its own name, so repeating it above the art is the duplication the card-only
  * presentation exists to remove. */
+/* `choices` turns the dismissal into a decision: a story card that asks
+ * something ("heal him" / "turn your back on him") prints its options on the
+ * card, so they belong under it rather than behind an OK and a second modal.
+ * Labels arrive already formatted, since only the caller knows the i18n scope. */
 const props = defineProps<{
   game: Game
   playerId: string
   title?: string
   cards: Card[]
+  choices?: { label: string; index: number }[]
 }>()
 
-const emit = defineEmits<{ dismiss: [] }>()
+const emit = defineEmits<{ dismiss: []; choose: [number] }>()
+
+const hasChoices = computed(() => (props.choices?.length ?? 0) > 0)
 
 /* Above this a draw stops being a reveal and becomes a list: the cards overlap
  * into a fan and the title carries the count. Deliberately not a setting -- the
@@ -62,7 +69,7 @@ const backFor = (card: Card) =>
     :class="{ 'spotlight--fan': isFan }"
     role="dialog"
     aria-modal="true"
-    @click="emit('dismiss')"
+    @click="hasChoices || emit('dismiss')"
   >
     <div class="spotlight__inner">
       <h2 v-if="title" class="spotlight__title">{{ title }}</h2>
@@ -88,7 +95,17 @@ const backFor = (card: Card) =>
         </div>
       </div>
 
-      <button type="button" class="spotlight__ok" @click.stop="emit('dismiss')">
+      <div v-if="hasChoices" class="spotlight__choices">
+        <button
+          v-for="choice in choices"
+          :key="choice.index"
+          type="button"
+          class="spotlight__ok"
+          @click.stop="emit('choose', choice.index)"
+          v-html="choice.label"
+        ></button>
+      </div>
+      <button v-else type="button" class="spotlight__ok" @click.stop="emit('dismiss')">
         {{ $t('ok') }}
       </button>
     </div>
@@ -247,6 +264,13 @@ const backFor = (card: Card) =>
 /* Deep enough to read as lamplit wood rather than a warning, and tinted from
    the same ramp so the overlay stays one object instead of an amber glow around
    a purple modal button. */
+.spotlight__choices {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
 .spotlight__ok {
   width: 100%;
   border: 0;

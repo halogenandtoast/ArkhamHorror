@@ -22,16 +22,9 @@ instance HasModifiersFor BernardEpstein where
 
 instance HasAbilities BernardEpstein where
   getAbilities (BernardEpstein a) =
-    extend
-      a
-      [ skillTestAbility $ restricted a 1 OnSameLocation parleyAction_
-      , {- The card is the back of Bernard's Fate, so there is no encounter back to
-        discard it to: a defeat takes it out of the game, the way the parley below
-        does. @#when@, so it is gone before the defeat would discard it, and
-        'silent' because the card prints no Forced for it -- it is a consequence
-        of the card, not an effect. -}
-        mkAbility a 2 $ silent $ EnemyDefeated #when Anyone ByAny (be a)
-      ]
+    extend1 a
+      $ skillTestAbility
+      $ restricted a 1 OnSameLocation parleyAction_
 
 instance RunMessage BernardEpstein where
   runMessage msg e@(BernardEpstein attrs) = runQueueT $ case msg of
@@ -40,9 +33,6 @@ instance RunMessage BernardEpstein where
       parley sid iid (attrs.ability 1) attrs #intellect (Fixed 5)
       pure e
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
-      removeFromGame attrs
-      pure e
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
       removeFromGame attrs
       pure e
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

@@ -35,11 +35,6 @@ instance HasAbilities SylviaDavidson where
       <> [ restricted a 1 canFightCriteria $ ActionAbility #fight #willpower (ActionCost 1)
          , restricted a 2 EvadeCriteria $ ActionAbility #evade #willpower (ActionCost 1)
          , restricted a 3 (exists $ InvestigatorAt $ locationWithEnemy a) $ forced $ PhaseBegins #when #enemy
-         , {- The card is the back of Sylvia's Fate, so there is no encounter back to
-           discard it to: a defeat takes it out of the game. @#when@, so it is gone
-           before the defeat would discard it, and 'silent' because the card prints
-           no Forced for it -- it is a consequence of the card, not an effect. -}
-           mkAbility a 4 $ silent $ EnemyDefeated #when Anyone ByAny (be a)
          ]
    where
     onlySpells ab
@@ -60,8 +55,5 @@ instance RunMessage SylviaDavidson where
     UseThisAbility _ (isSource attrs -> True) 3 -> do
       investigators <- select $ InvestigatorAt (locationWithEnemy attrs) <> LowestRemainingSanity
       leadChooseOrRunOneM $ targets investigators (initiateEnemyAttack (toId attrs) attrs)
-      pure e
-    UseThisAbility _ (isSource attrs -> True) 4 -> do
-      removeFromGame attrs
       pure e
     _ -> SylviaDavidson <$> liftRunMessage msg attrs

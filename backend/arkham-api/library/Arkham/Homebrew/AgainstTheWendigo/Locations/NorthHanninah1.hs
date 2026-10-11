@@ -26,6 +26,7 @@ instance HasAbilities NorthHanninah1 where
     extendRevealed a
       $ riverActions a
       <> [ campaignI18n
+             $ withI18nTooltip "northHanninah.investigate"
              $ withI18nResultLabel "northHanninah.investigate"
              $ skillTestAbility
              $ restricted a 3 Here investigateAction_
@@ -55,12 +56,5 @@ instance RunMessage NorthHanninah1 where
       pure l
     Successful (Action.Investigate, _) iid (isAbilitySource attrs 3 -> True) _ _ -> do
       selectForMaybeM (assetIs Assets.expeditionNotebook) (takeControlOfAsset iid)
-      -- "Forced - When you take control of Expedition Notebook: Test [willpower] (3).
-      -- If you fail, take 1 direct horror."
-      sid <- getRandom
-      beginSkillTest sid iid (attrs.ability 3) iid #willpower (Fixed 3)
-      pure l
-    FailedThisSkillTest iid (isAbilitySource attrs 3 -> True) -> do
-      directHorror iid (attrs.ability 3) 1
       pure l
     _ -> NorthHanninah1 <$> liftRunMessage msg attrs

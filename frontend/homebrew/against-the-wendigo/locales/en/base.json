@@ -20,9 +20,21 @@
     "Navigate": "Navigate",
     "WalkAlongTheRiver": "Walk Along the River"
   },
+  "sarceeTerritory": {
+    "spendResources": "Spend up to 5 resources to reduce the difficulty by as many points"
+  },
   "label": {
     "northHanninah": {
       "investigate": "Take control of the Expedition Notebook"
+    }
+  },
+  "tooltips": {
+    "northHanninah": {
+      "investigate": "{action}: _Investigate_. If you succeed, take control of the Expedition Notebook."
+    },
+    "sarceeTerritory": {
+      "persuade": "{action}: _Parley_. Test {intellect} (6). You can spend up to 5 resources to reduce the difficulty of this test by as many points. You try to convince Imala that you only want her and her husband to be safe.",
+      "intimidate": "{action}: _Parley_. Test {combat} (3). You're trying to intimidate Imala in order to make her confess where her husband is hiding. Record that the Sarcee are hunting you down."
     }
   }
 }

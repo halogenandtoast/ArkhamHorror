@@ -31,7 +31,22 @@ function isResolveStory(message: unknown): boolean {
   return (contents as { tag?: unknown }).tag === RESOLVE_STORY
 }
 
-export type StoryCardRead = { card: ArkhamCard; index: number }
+export type StoryCardRead = { card: ArkhamCard; index: number; flip: boolean }
+
+/* Whether this spotlight is a card turning over rather than a card being read.
+ *
+ * A two-part story is put aside at `Global` by its first part and resolved again
+ * for its second, which is the moment it flips into whatever it becomes (a fate
+ * card into an enemy or a location). Placement is the only thing that tells the
+ * two apart: both are a focused card plus a one-option prompt, and the server
+ * sends the same card either way. */
+function flipsOver(game: Game, card: ArkhamCard): boolean {
+  const placement = game.stories[toCardContents(card).cardCode]?.placement
+  // `Global` has no tag of its own in the decoder: it arrives as the catch-all
+  // with its constructor name as the contents, which is how Scenario.vue,
+  // Player.vue and Enemy.vue all recognise it.
+  return placement?.tag === 'OtherPlacement' && placement.contents === 'Global'
+}
 
 /** The story card being read, or null when the active question is not one. */
 export function storyCardRead(game: Game, playerId: string): StoryCardRead | null {
@@ -46,11 +61,11 @@ export function storyCardRead(game: Game, playerId: string): StoryCardRead | nul
 
   const cardId = choice.target.contents
   const card = game.focusedCards.find((c) => toCardContents(c).id === cardId)
-  return card ? { card, index: 0 } : null
+  return card ? { card, index: 0, flip: flipsOver(game, card) } : null
 }
 
 export type StoryCardChoice = { label: string; index: number }
-export type StoryCardChoiceRead = { card: ArkhamCard; choices: StoryCardChoice[] }
+export type StoryCardChoiceRead = { card: ArkhamCard; choices: StoryCardChoice[]; flip: boolean }
 
 /* A story card that is asking something.
  *
@@ -76,5 +91,5 @@ export function storyCardChoiceRead(game: Game, playerId: string): StoryCardChoi
     labels.push({ label: choice.label, index })
   }
 
-  return { card, choices: labels }
+  return { card, choices: labels, flip: flipsOver(game, card) }
 }

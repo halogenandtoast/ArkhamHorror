@@ -14,27 +14,20 @@ tomahawk = asset Tomahawk Cards.tomahawk
 
 instance HasAbilities Tomahawk where
   getAbilities (Tomahawk a) =
-    [ restricted a 1 ControlsThis $ fightAction_
-    , restricted a 2 ControlsThis $ fightAction (DiscardCost FromPlay $ toTarget a)
+    [ controlled_ a 1 fightAction_
+    , controlled_ a 2 $ fightActionWith #agility (DiscardCost FromPlay $ toTarget a)
     ]
 
 instance RunMessage Tomahawk where
   runMessage msg a@(Tomahawk attrs) = runQueueT $ case msg of
-    -- "Fight. You get +1 [combat] for this attack. This attack deals +1 damage."
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #combat 1, DamageDealt 1]
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
-    -- "Discard Tomahawk: Fight. Use [agility] instead of [combat] for this
-    -- attack. This attack deals +2 damage."
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
-      skillTestModifiers
-        sid
-        (attrs.ability 2)
-        iid
-        [BaseSkillOf #combat 0, UseSkillInsteadOf #combat #agility, DamageDealt 2]
-      chooseFightEnemy sid iid (attrs.ability 2)
+      skillTestModifiers sid (attrs.ability 2) iid [DamageDealt 2]
+      chooseFightEnemyWith #agility sid iid (attrs.ability 2)
       pure a
     _ -> Tomahawk <$> liftRunMessage msg attrs

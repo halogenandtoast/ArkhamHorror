@@ -5,7 +5,11 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Assets qualified as Cards
-import Arkham.Homebrew.AgainstTheWendigo.Helpers (handOverGuideAbility, navigateOrRiverTest)
+import Arkham.Homebrew.AgainstTheWendigo.Helpers (
+  duringUnresolvedTest,
+  handOverGuideAbility,
+  navigateOrRiverTest,
+ )
 import Arkham.Homebrew.AgainstTheWendigo.Traits (pattern Wendigo, pattern Wild)
 import Arkham.I18n
 import Arkham.Matcher
@@ -25,11 +29,11 @@ instance HasModifiersFor CharlieFoxtail where
 instance HasAbilities CharlieFoxtail where
   getAbilities (CharlieFoxtail a) =
     [ -- "{reaction} When you resolve a skill test in a Wild location: You get +2 [intellect]."
-      controlled a 1 (exists $ YourLocation <> LocationWithTrait Wild)
+      controlled a 1 (exists (YourLocation <> LocationWithTrait Wild) <> duringUnresolvedTest)
         $ triggered (InitiatedSkillTest #when You AnySkillType AnySkillTestValue AnySkillTest) mempty
     , -- "{reaction} When you resolve a skill test at stage 4 of a Navigate action, or
       -- triggered by a River treachery card: You get +2 [combat] or +2 [agility]."
-      controlled_ a 2
+      controlled a 2 duringUnresolvedTest
         $ triggered (InitiatedSkillTest #when You AnySkillType AnySkillTestValue navigateOrRiverTest) mempty
     , {- "Forced - If an investigator in your location reveals or puts into play a
       Wendigo card: Test [willpower] (3) (before resolving the Revelation effect)."

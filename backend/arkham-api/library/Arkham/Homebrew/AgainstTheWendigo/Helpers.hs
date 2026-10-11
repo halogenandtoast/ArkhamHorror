@@ -33,6 +33,7 @@ import Arkham.Classes.HasQueue (push, pushAll)
 import Arkham.Classes.Query
 import Arkham.Distance (unDistance)
 import Arkham.GameEnv (getDistance)
+import Arkham.GameValue (GameValue (ByPlayerCount))
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getLead)
@@ -308,6 +309,20 @@ civilizedResign a =
   restricted a 99 (Here <> notExists (AgendaWithStep 1))
     $ ActionAbility #resign Nothing (ActionCost 1)
 
+{- | "Forced - If there are 2 clues on the Mountain Range (3 clues instead for a
+3 or 4 player game): reveal it."
+
+Both Uncharted locations whose unrevealed side is a Mountain Range print this,
+and a location using it answers 'UseThisAbility' 98 by revealing itself.
+
+@AnyWindow@ because the clue can land at any point -- the scenario reference's
+[tablet] effect is the only thing that ever puts one there -- and 'onlyOnce'
+because there is nothing left to do once it has flipped.
+-}
+mountainRangeReveal :: (Sourceable a, HasCardCode a) => a -> Ability
+mountainRangeReveal a =
+  onlyOnce $ restricted a 98 (CluesOnThis $ AtLeast $ ByPlayerCount 2 2 3 3) $ forced AnyWindow
+
 -- * The Students' Fate deck
 
 {- | "The lead investigator randomly takes a card from the Student's Fate deck
@@ -374,6 +389,12 @@ readStoryAndChoose :: ReverseQueue m => InvestigatorId -> CardDef -> m ()
 readStoryAndChoose iid def = do
   card <- fetchCard def
   let sid = StoryId (toCardCode card)
+  {- The card the read uses IS the set-aside copy ('fetchCard' prefers one), and
+  placing a story does not take it out of the pile -- nothing in the scenario
+  runner removes a set-aside card for a story the way it does for a location. So
+  it would sit there for the rest of the scenario, still offered to anything that
+  looks in the pile. -}
+  obtainCard card
   push $ StoryMessage $ PlaceStory card Unplaced
   push $ StoryMessage $ ResolveStory iid ResolveIt sid
   push $ MoveWithSkillTest $ StoryMessage $ ResolvedStory ResolveIt sid
@@ -395,6 +416,26 @@ ability is what names it; the other half is a River treachery's own test. Ambush
 gains the River trait while you are on a River location, which is what that
 clause is there for.
 -}
+
+{- | The skill test being resolved right now has not resolved yet.
+
+The Guides' bonuses are offered at the @InitiatedSkillTest@ window, and that
+window comes round again after the test has resolved -- at which point a bonus to
+the skill value does nothing.
+
+It has to be a criterion rather than part of the window matcher: the window
+carries the skill test as it was when the window opened, so its result is always
+@Unrun@ there, while 'DuringSkillTest' reads the live one. @ResultOneOf
+[success, failure]@ is what distinguishes a resolved test, since a bare
+@AnyResult@ matches @Unrun@ too.
+-}
+duringUnresolvedTest :: Criterion
+duringUnresolvedTest =
+  DuringSkillTest
+    $ NotSkillTest
+    $ SkillTestWithResult
+    $ ResultOneOf [SuccessResult AnyValue, FailureResult AnyValue]
+
 navigateOrRiverTest :: SkillTestMatcher
 navigateOrRiverTest =
   SkillTestOneOf

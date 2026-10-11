@@ -13,7 +13,6 @@ import Arkham.Difficulty
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (addDirectConnection, connectBothWays)
 import Arkham.Helpers.Modifiers (ModifierType (ConnectedToWhen))
-import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Helpers.Xp (XpBonus (NoBonus), toBonus)
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Agendas qualified as Agendas
@@ -26,10 +25,8 @@ import Arkham.Homebrew.AgainstTheWendigo.Key
 import Arkham.Homebrew.AgainstTheWendigo.ScenarioDeckKeys (pattern StudentsFateDeck)
 import Arkham.Homebrew.AgainstTheWendigo.Sets qualified as Set
 import Arkham.Id (LocationId)
-import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
-import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Trait (Trait (Madness))
@@ -191,16 +188,12 @@ instance RunMessage AgainstTheWendigo where
         , Acts.northHanninahsMysteries
         ]
     {- The scenario reference card: "[tablet]: If you succeed, place 1 clue from
-    the reserve on the Mountain Range." Only this ever puts clues there, so the
-    Mountain Range's own "Forced - if there are 2 clues (3 for a 3 or 4 player
-    game): reveal it" is checked here too. -}
+    the reserve on the Mountain Range." Only this ever puts clues there. The
+    reveal at 2 clues (3 for a 3 or 4 player game) is the Mountain Range's own
+    Forced ability; see 'mountainRangeReveal'. -}
     PassedSkillTestWithToken _ Tablet -> do
       ranges <- select $ LocationWithTitle "Mountain Range" <> UnrevealedLocation
-      for_ (take 1 ranges) \lid -> do
-        placeClues ScenarioSource lid 1
-        n <- getPlayerCount
-        clues <- field LocationClues lid
-        when (clues >= if n >= 3 then 3 else 2) $ reveal lid
+      for_ (take 1 ranges) \lid -> placeClues ScenarioSource lid 1
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of

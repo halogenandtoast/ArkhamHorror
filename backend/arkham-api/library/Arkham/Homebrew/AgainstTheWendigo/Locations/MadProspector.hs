@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Stories qualified as Stories
-import Arkham.Homebrew.AgainstTheWendigo.Helpers (readStoryAndChoose)
+import Arkham.Homebrew.AgainstTheWendigo.Helpers (mountainRangeReveal, readStoryAndChoose)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
@@ -22,20 +22,27 @@ instance HasModifiersFor MadProspector where
 
 instance HasAbilities MadProspector where
   getAbilities (MadProspector a) =
-    extendRevealed1 a
+    [mountainRangeReveal a | not a.revealed]
       -- "{reaction} If there are no more clues on the Mad Prospector: Read the
       -- first part of the Hanninah's Gold story card."
-      $ restricted
+      <> extendRevealed1
         a
-        1
-        ( Here
-            <> notExists (be a <> LocationWithAnyClues)
-            <> not_ (exists $ StoryIs $ Stories.hanninahsGold.cardCode)
+        ( onlyOnce
+            $ restricted
+              a
+              1
+              ( Here
+                  <> thisExists a LocationWithoutClues
+                  <> not_ (exists $ StoryIs Stories.hanninahsGold.cardCode)
+              )
+            $ freeReaction AnyWindow
         )
-      $ triggered (DiscoverClues #after Anyone (be a) AnyValue) mempty
 
 instance RunMessage MadProspector where
   runMessage msg l@(MadProspector attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 98 -> do
+      reveal attrs
+      pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       readStoryAndChoose iid Stories.hanninahsGold
       pure l

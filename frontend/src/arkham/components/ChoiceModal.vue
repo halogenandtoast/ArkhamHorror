@@ -55,13 +55,20 @@ const storyCardChoiceRead = computed(() => findStoryCardChoiceRead(props.game, p
  * that reading a story card is, or the story's own question. */
 const storySpotlight = computed(() => {
   const read = storyCardRead.value
-  if (read) return { card: read.card, index: read.index, choices: [] as { label: string; index: number }[] }
+  if (read)
+    return {
+      card: read.card,
+      index: read.index,
+      flip: read.flip,
+      choices: [] as { label: string; index: number }[],
+    }
 
   const asking = storyCardChoiceRead.value
   if (asking) {
     return {
       card: asking.card,
       index: asking.choices[0].index,
+      flip: asking.flip,
       choices: asking.choices.map((choice) => ({ label: label(choice.label), index: choice.index })),
     }
   }
@@ -331,6 +338,7 @@ const title = computed(() => {
     :playerId="playerId"
     :cards="[storySpotlight.card]"
     :choices="storySpotlight.choices"
+    :flip="storySpotlight.flip"
     :aria-label="t('Story')"
     :style="{
       '--spotlight-card-width': 'min(420px, 88vw, 55vh)',

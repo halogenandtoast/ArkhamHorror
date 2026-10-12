@@ -17,6 +17,7 @@ import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Messa
 import { MessageType } from '@/arkham/types/Message'
 import { cardId, toCardContents } from '@/arkham/types/Card'
 import SealedChaosTokens from '@/arkham/components/SealedChaosTokens.vue';
+import CardDebugWindow from '@/arkham/components/debug/CardDebugWindow.vue';
 import { investigatorTarget, cardDropHandlers } from '@/arkham/debugCardDrop';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import { useMenu } from '@/composable/menu';
@@ -45,6 +46,7 @@ const highlighter = useHighlighter()
 const isHighlighted = computed(() => highlighter.highlighted.value === props.investigator.id)
 const isAttackTarget = computed(() => props.game.enemyAttackTargets.some((e) => e.target.contents === props.investigator.id))
 const debug = useDebug()
+const debugging = ref(false)
 
 /* One handler reading shiftKey rather than a @click.exact / @click.shift pair: two
  * competing listeners only agree while the event's modifier state is exactly what
@@ -588,6 +590,16 @@ const spadeInjury = computed(() => {
             </span>
             <template v-if="debug.active">
               <button v-tooltip="$t('debug.enemy.shiftFive')" @click="debugGainActions">+</button>
+              <button @click="debugging = true">{{ $t('enemy.debug') }}</button>
+              <CardDebugWindow
+                v-if="debugging"
+                :game="game"
+                :title="$t('debug.card.investigatorTitle')"
+                :image="image"
+                :sealedTokens="investigator.sealedChaosTokens"
+                :target="{ tag: 'InvestigatorTarget', contents: id }"
+                @close="debugging = false"
+              />
             </template>
             <AbilityButton
               v-for="ability in abilities"

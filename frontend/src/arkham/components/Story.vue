@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { useDebug } from '@/arkham/debug'
+import CardDebugWindow from '@/arkham/components/debug/CardDebugWindow.vue'
 import { Game } from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
@@ -32,6 +34,8 @@ const image = computed(() => {
 const { displayedImage, flipping } = useCardFlip(image)
 
 const id = computed(() => props.story.id)
+const debug = useDebug()
+const debugging = ref(false)
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const choose = (idx: number) => emit('choose', idx)
@@ -143,6 +147,18 @@ const sealedChaosTokens = computed(() => props.story.sealedChaosTokens ?? [])
     <div v-if="setAsideTokens.length > 0" class="infestation-tokens">
       <Token v-for="token in setAsideTokens" :key="token.id" :token="token" :playerId="playerId" :game="game" @choose="choose" />
     </div>
+    <template v-if="debug.active">
+      <button class="debug-open" @click="debugging = true">{{ $t('enemy.debug') }}</button>
+    </template>
+    <CardDebugWindow
+      v-if="debugging"
+      :game="game"
+      :title="$t('debug.story.title')"
+      :image="image"
+      :sealedTokens="sealedChaosTokens"
+      :target="{ tag: 'StoryTarget', contents: id }"
+      @close="debugging = false"
+    />
   </div>
 </template>
 

@@ -9382,6 +9382,7 @@ test-suite spec
       Arkham.Card.CardCodeSpec
       Arkham.ChaosTokenFaceSpec
       Arkham.Debug.SandboxSpec
+      Arkham.Debug.SealSpec
       Arkham.DecklistSpec
       Arkham.EncounterSetSpec
       Arkham.Enemy.Cards.BrethrenOfAsh.FlyingTerrors.BatHorrorSpec

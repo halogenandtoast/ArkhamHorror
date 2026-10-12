@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import { computed, ComputedRef } from 'vue';
+import { computed, ComputedRef, ref } from 'vue';
+import { useDebug } from '@/arkham/debug';
+import CardDebugWindow from '@/arkham/components/debug/CardDebugWindow.vue';
 import MissingCardBadge from '@/arkham/components/MissingCardBadge.vue';
 import { Game } from '@/arkham/types/Game';
 import { Card } from '@/arkham/types/Card';
@@ -26,6 +28,8 @@ const emits = defineEmits<{
 }>()
 
 const id = computed(() => props.event.id)
+const debug = useDebug()
+const debugging = ref(false)
 const hasPool = computed(() => {
   const { sealedChaosTokens, tokens } = props.event
   return sealedChaosTokens.length > 0 || Object.values(tokens).some((amount) => (amount ?? 0) > 0)
@@ -123,6 +127,18 @@ const choose = (index: number) => emits('choose', index)
       />
 
     <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
+    <template v-if="debug.active">
+      <button class="debug-open" @click="debugging = true">{{ $t('enemy.debug') }}</button>
+    </template>
+    <CardDebugWindow
+      v-if="debugging"
+      :game="game"
+      :title="$t('debug.card.eventTitle')"
+      :image="image"
+      :sealedTokens="event.sealedChaosTokens"
+      :target="{ tag: 'EventTarget', contents: id }"
+      @close="debugging = false"
+    />
   </div>
 </template>
 

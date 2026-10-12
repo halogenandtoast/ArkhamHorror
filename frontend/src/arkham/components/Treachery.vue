@@ -12,6 +12,7 @@ import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import { IsMobile } from '@/arkham/isMobile'
 import Token from '@/arkham/components/Token.vue';
+import CardDebugWindow from '@/arkham/components/debug/CardDebugWindow.vue';
 import * as Arkham from '@/arkham/types/Treachery';
 
 export interface Props {
@@ -54,6 +55,7 @@ watch(() => props.mobileHandOpen, (open) => {
 })
 const image = computed(() => cardImage(props.treachery.cardCode))
 const id = computed(() => props.treachery.id)
+const debugging = ref(false)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const isExhausted = computed(() => props.treachery.exhausted)
 
@@ -165,7 +167,17 @@ function handleCardClick() {
 
     <template v-if="debug.active">
       <button @click="debug.send(game.id, {tag: 'Discard', contents: [null, { tag: 'GameSource' }, { tag: 'TreacheryTarget', contents: id}]})">{{ $t('treachery.discard') }}</button>
+      <button class="debug-open" @click="debugging = true">{{ $t('enemy.debug') }}</button>
     </template>
+    <CardDebugWindow
+      v-if="debugging"
+      :game="game"
+      :title="$t('debug.card.treacheryTitle')"
+      :image="image"
+      :sealedTokens="treachery.sealedChaosTokens"
+      :target="{ tag: 'TreacheryTarget', contents: id }"
+      @close="debugging = false"
+    />
   </div>
 </template>
 

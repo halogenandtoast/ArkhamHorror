@@ -3,6 +3,7 @@
 import { useEscape } from '@/composable/escape';
 import Draggable from '@/components/Draggable.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
+import SealedTokensSection from '@/arkham/components/debug/SealedTokensSection.vue';
 import { computed, ref } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import type { Game } from '@/arkham/types/Game';
@@ -124,6 +125,11 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'ClearTokens_', contents: { tag: 'LocationTarget', contents: id}}})">{{ $t('debug.common.removeAllTokens') }}</button>
       </div>
       </div>
+      <SealedTokensSection
+        :game="game"
+        :tokens="location.sealedChaosTokens"
+        :target="{ tag: 'LocationTarget', contents: id }"
+      />
       <button class="debug-close" @click="emit('close')">{{ $t('debug.common.close') }}</button>
     </div>
   </Draggable>

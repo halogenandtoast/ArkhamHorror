@@ -17,6 +17,11 @@ import DebugLocation from '@/arkham/components/debug/Location.vue'
 import DebugEnemy from '@/arkham/components/debug/Enemy.vue'
 import DebugAsset from '@/arkham/components/debug/Asset.vue'
 import DebugConcealedCard from '@/arkham/components/debug/ConcealedCard.vue'
+import CardDebugWindow from '@/arkham/components/debug/CardDebugWindow.vue'
+import { cardImage } from '@/arkham/cardImages'
+import type { SealableTarget } from '@/arkham/debugSeals'
+import type { ChaosToken } from '@/arkham/types/ChaosToken'
+import { useI18n } from 'vue-i18n'
 import { useDebug } from '@/arkham/debug'
 import { useDbCardStore } from '@/stores/dbCards'
 import { useEscape } from '@/composable/escape'
@@ -24,10 +29,11 @@ import { useEscape } from '@/composable/escape'
 const props = defineProps<{ game: Game, playerId: string }>()
 const emit = defineEmits<{ close: [] }>()
 
-/* The four entity kinds with a debug window of their own. A row opens its own
+/* The entity kinds with a debug window of their own. A row opens its own
  * window straight from the list, so finding a thing and acting on it are not
- * two separate hunts. */
-type PanelKind = 'location' | 'enemy' | 'asset' | 'concealed'
+ * two separate hunts. Treacheries, events, skills and stories share the
+ * generic card window. */
+type PanelKind = 'location' | 'enemy' | 'asset' | 'concealed' | 'treachery' | 'event' | 'skill' | 'story'
 
 const openPanel = ref<{ kind: PanelKind, id: string } | null>(null)
 
@@ -42,6 +48,10 @@ const panelEntity = computed(() => {
     enemy: props.game.enemies,
     asset: props.game.assets,
     concealed: props.game.concealed,
+    treachery: props.game.treacheries,
+    event: props.game.events,
+    skill: props.game.skills,
+    story: props.game.stories,
   }[open.kind]
   return from?.[open.id] ?? null
 })
@@ -60,6 +70,38 @@ const panelAsset = computed(() =>
   openPanel.value?.kind === 'asset' ? props.game.assets[openPanel.value.id] ?? null : null)
 const panelConcealed = computed(() =>
   openPanel.value?.kind === 'concealed' ? props.game.concealed[openPanel.value.id] ?? null : null)
+
+const { t } = useI18n()
+
+/* What the generic card window needs for the kinds that use it. */
+const panelCard = computed(() => {
+  const open = openPanel.value
+  if (!open) return null
+  switch (open.kind) {
+    case 'treachery': {
+      const e = props.game.treacheries[open.id]
+      return e && cardWindow('debug.card.treacheryTitle', cardImage(e.cardCode), e.sealedChaosTokens, { tag: 'TreacheryTarget', contents: e.id })
+    }
+    case 'event': {
+      const e = props.game.events[open.id]
+      return e && cardWindow('debug.card.eventTitle', cardImage(e.cardCode), e.sealedChaosTokens, { tag: 'EventTarget', contents: e.id })
+    }
+    case 'skill': {
+      const e = props.game.skills[open.id]
+      return e && cardWindow('debug.card.skillTitle', cardImage(e.cardCode), e.sealedChaosTokens, { tag: 'SkillTarget', contents: e.id })
+    }
+    case 'story': {
+      const e = props.game.stories[open.id]
+      return e && cardWindow('debug.story.title', cardImage(e.flipped ? e.flippedArt : e.art), e.sealedChaosTokens ?? [], { tag: 'StoryTarget', contents: e.id })
+    }
+    default:
+      return null
+  }
+})
+
+function cardWindow(titleKey: string, image: string, sealedTokens: ChaosToken[], target: SealableTarget) {
+  return { title: t(titleKey), image, sealedTokens, target }
+}
 
 // Escape belongs to the window while one is open; the stack in `useEscape`
 // already prefers it, and this keeps the list out of the running entirely.
@@ -199,10 +241,10 @@ const groups = computed(() => {
     { label: 'Locations', rows: rowsFor(g.locations, 'location', (e) => (e.label as string) ?? '') },
     { label: 'Enemies', rows: rowsFor(g.enemies, 'enemy') },
     { label: 'Assets', rows: rowsFor(g.assets, 'asset', (e) => (e.controller as string) ?? (e.owner as string) ?? '') },
-    { label: 'Treacheries', rows: rowsFor(g.treacheries, null, owner, 'TreacheryTarget') },
-    { label: 'Events', rows: rowsFor(g.events, null, owner) },
-    { label: 'Skills', rows: rowsFor(g.skills, null, owner) },
-    { label: 'Stories', rows: rowsFor(g.stories) },
+    { label: 'Treacheries', rows: rowsFor(g.treacheries, 'treachery', owner, 'TreacheryTarget') },
+    { label: 'Events', rows: rowsFor(g.events, 'event', owner) },
+    { label: 'Skills', rows: rowsFor(g.skills, 'skill', owner) },
+    { label: 'Stories', rows: rowsFor(g.stories, 'story') },
     { label: 'Acts', rows: rowsFor(g.acts, null, seq) },
     { label: 'Agendas', rows: rowsFor(g.agendas, null, seq) },
     { label: 'Concealed', rows: rowsFor(g.concealed, 'concealed') },
@@ -301,7 +343,7 @@ async function copyJson() {
                     @click="openPanel = { kind: row.panel, id: row.id }"
                   >Debug</button>
                   <button
-                    v-else-if="row.discardTag"
+                    v-if="row.discardTag"
                     type="button"
                     class="row-debug row-discard"
                     @click="discardRow(row)"
@@ -341,6 +383,15 @@ async function copyJson() {
     :game="game"
     :card="panelConcealed"
     :playerId="playerId"
+    @close="openPanel = null"
+  />
+  <CardDebugWindow
+    v-else-if="panelCard"
+    :game="game"
+    :title="panelCard.title"
+    :image="panelCard.image"
+    :sealedTokens="panelCard.sealedTokens"
+    :target="panelCard.target"
     @close="openPanel = null"
   />
 </template>

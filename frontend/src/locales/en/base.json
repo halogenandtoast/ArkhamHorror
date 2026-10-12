@@ -694,6 +694,24 @@
     "story": {
       "title": "Debug Story"
     },
+    "card": {
+      "title": "Debug Card",
+      "investigatorTitle": "Debug Investigator",
+      "eventTitle": "Debug Event",
+      "skillTitle": "Debug Skill",
+      "treacheryTitle": "Debug Treachery"
+    },
+    "seals": {
+      "sealedTokens": "Sealed Tokens",
+      "none": "Nothing sealed here.",
+      "release": "Release this token to the chaos bag",
+      "toPool": "Pool",
+      "releaseToPool": "Release this token out of play, back to the token pool",
+      "seal": "Seal a token…",
+      "pickerTitle": "Seal a Token",
+      "pickerHint": "Click a token to seal one from the chaos bag here. The window stays open so you can seal more.",
+      "emptyBag": "The chaos bag is empty."
+    },
     "common": {
       "place": "Place",
       "back": "Back",

@@ -4202,6 +4202,7 @@ library
       Arkham.Homebrew.AgainstTheWendigo.ScenarioDeckKeys
       Arkham.Homebrew.AgainstTheWendigo.Scenarios.AgainstTheWendigo
       Arkham.Homebrew.AgainstTheWendigo.Sets
+      Arkham.Homebrew.AgainstTheWendigo.SideStoryDefs
       Arkham.Homebrew.AgainstTheWendigo.Stories.BernardsFateV1
       Arkham.Homebrew.AgainstTheWendigo.Stories.BernardsFateV2
       Arkham.Homebrew.AgainstTheWendigo.Stories.CharlieFoxtailsDestiny

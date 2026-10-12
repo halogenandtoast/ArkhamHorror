@@ -11,6 +11,7 @@ knows how to apply.
 module Arkham.Debug.SkillTest where
 
 import Arkham.Action (Action)
+import Arkham.Card.Id (CardId)
 import Arkham.Id
 import Arkham.Json
 import Arkham.Prelude

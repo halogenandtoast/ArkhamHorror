@@ -2,6 +2,7 @@ module Arkham.Debug.SandboxSpec (spec) where
 
 import Arkham.ChaosBag.Base
 import Arkham.Debug.SkillTest
+import Arkham.GameEnv (getSkillTest)
 import Arkham.Helpers.Scenario
 import Arkham.Scenario.Types (Field (..))
 import Data.Aeson.KeyMap qualified as KeyMap

@@ -4,6 +4,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.ChaosBag.Base
 import Arkham.Helpers.Scenario
+import Arkham.Projection (field, getAttrs)
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Treachery.CardDefs.EdgeOfTheEarth qualified as Treacheries
 import Arkham.Treachery.Types (Treachery, TreacheryAttrs (..))

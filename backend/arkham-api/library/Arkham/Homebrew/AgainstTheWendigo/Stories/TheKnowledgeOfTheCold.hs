@@ -63,7 +63,10 @@ instance RunMessage TheKnowledgeOfTheCold where
         enemies <- select $ enemyAt temple <> UnengagedEnemy
         -- Ithaqua's abilities are all on its revealed side, so it arrives face up.
         ithaqua <- placeLocationCard Locations.ithaqua
-        reveal ithaqua
+        -- See SylviasFateV1: `reveal` cannot see a location that is only queued
+        -- to be placed, so it would drop this. Ithaqua only looked revealed
+        -- because the investigators placed below reveal what they are put into.
+        unsafeReveal ithaqua
         setLocationLabel ithaqua slot
         for_ rivers (connectBothWays ithaqua)
         for_ investigators (`place` AtLocation ithaqua)

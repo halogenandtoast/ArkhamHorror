@@ -29,7 +29,10 @@ instance RunMessage SylviasFateV1 where
     -- The second part, asked for by the Impenetrable Forest once its clues run out.
     ResolveThisStory _ (is attrs -> True) -> do
       record YouHaveDiscoveredSylviasFate
-      reveal =<< placeLocationCard Locations.theHeartOfTheForest
+      {- `unsafeReveal`, not `reveal`: that one asks whether its location is an
+      UnrevealedLocation before pushing anything, and a location only queued to
+      be placed is not in play to be asked about, so the reveal was dropped. -}
+      unsafeReveal =<< placeLocationCard Locations.theHeartOfTheForest
       removeStory attrs
       pure s
     _ -> SylviasFateV1 <$> liftRunMessage msg attrs

@@ -9381,6 +9381,7 @@ test-suite spec
       Arkham.CampaignLogKeySpec
       Arkham.Card.CardCodeSpec
       Arkham.ChaosTokenFaceSpec
+      Arkham.Debug.ActionsSpec
       Arkham.Debug.SandboxSpec
       Arkham.Debug.SealSpec
       Arkham.DecklistSpec

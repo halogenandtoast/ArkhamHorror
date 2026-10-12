@@ -58,6 +58,17 @@ function debugGainActions(event: MouseEvent) {
     contents: [id.value, { tag: 'TestSource', contents: [] }, event.shiftKey ? 5 : 1],
   })
 }
+
+// The inverse of "+": a negative gain, so no "lose actions" windows fire and
+// additional actions are left alone. The engine clamps at zero as well.
+function debugLoseActions(event: MouseEvent) {
+  const amount = Math.min(event.shiftKey ? 5 : 1, props.investigator.remainingActions)
+  if (amount <= 0) return
+  debug.send(props.game.id, {
+    tag: 'GainActions',
+    contents: [id.value, { tag: 'TestSource', contents: [] }, -amount],
+  })
+}
 // Debug: a chaos token dragged from the bag seals here; a token from the debug
 // token panel is placed here.
 const cardDrop = cardDropHandlers(props.game.id, () => investigatorTarget(props.investigator.id))
@@ -589,6 +600,11 @@ const spadeInjury = computed(() => {
               </span>
             </span>
             <template v-if="debug.active">
+              <button
+                v-tooltip="$t('debug.enemy.shiftFive')"
+                :disabled="investigator.remainingActions === 0"
+                @click="debugLoseActions"
+              >−</button>
               <button v-tooltip="$t('debug.enemy.shiftFive')" @click="debugGainActions">+</button>
               <button @click="debugging = true">{{ $t('enemy.debug') }}</button>
               <CardDebugWindow

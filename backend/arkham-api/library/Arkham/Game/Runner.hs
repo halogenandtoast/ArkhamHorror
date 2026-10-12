@@ -43,6 +43,7 @@ import Arkham.Enemy
 import Arkham.Enemy.Creation (EnemyCreation (..), EnemyCreationMethod (..))
 import Arkham.Enemy.Runner (getPreyMatcher)
 import Arkham.Enemy.Types (Enemy, EnemyAttrs (..), Field (..), delayEngagementL)
+import Arkham.Enemy.Types qualified as Field
 import Arkham.EnemyLocation hiding (EnemyLocation)
 import Arkham.EnemyLocation.Types (EnemyLocationAttrs (..))
 import Arkham.Entities
@@ -3044,9 +3045,9 @@ runGameMessage msg g = case msg of
     mSourceCard <- traverse getCardMaybe (debugTestSourceCard spec)
     mTarget <- case (debugTestAction spec, debugTestTarget spec) of
       (Nothing, mtarget) -> pure $ Just (fromMaybe (toTarget iid) mtarget, Nothing)
-      (Just Action.Fight, Just (EnemyTarget eid)) -> enemyWithValue eid EnemyFight
-      (Just Action.Evade, Just (EnemyTarget eid)) -> enemyWithValue eid EnemyEvade
-      (Just Action.Parley, Just (EnemyTarget eid)) -> fmap (\(t, _) -> (t, Nothing)) <$> enemyWithValue eid EnemyFight
+      (Just Action.Fight, Just (EnemyTarget eid)) -> enemyWithValue eid Field.EnemyFight
+      (Just Action.Evade, Just (EnemyTarget eid)) -> enemyWithValue eid Field.EnemyEvade
+      (Just Action.Parley, Just (EnemyTarget eid)) -> fmap (\(t, _) -> (t, Nothing)) <$> enemyWithValue eid Field.EnemyFight
       (Just Action.Parley, Nothing) -> pure $ Just (toTarget iid, Nothing)
       (Just Action.Investigate, Just (LocationTarget lid)) -> do
         exists <- selectAny $ LocationWithId lid

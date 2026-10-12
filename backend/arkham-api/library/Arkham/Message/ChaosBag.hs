@@ -49,6 +49,12 @@ data ChaosBagMessage
   | -- Debug: queue the exact faces the next draws take, in order. An empty
     -- list clears the queue; a face no longer in the bag falls back to random.
     DebugSetForcedChaosTokenDraws_ [ChaosTokenFace]
+  | -- Debug sandbox: draw tokens out of the bag for the given investigator
+    -- without revealing them to the game -- no windows, no token effects, no
+    -- skill test. The player applies whatever the draw means by hand.
+    DebugRevealChaosTokens_ InvestigatorId Int
+  | -- Debug sandbox: put every sandbox token back into the bag.
+    DebugReturnChaosTokens_
   | SetChaosTokens_ [ChaosTokenFace]
   | SetChaosTokensForScenario_
   | SetCampaignChaosBag_ [ChaosTokenFace]

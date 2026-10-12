@@ -41,6 +41,7 @@ import Act from '@/arkham/components/Act.vue';
 import CardView from '@/arkham/components/Card.vue';
 import Draggable from '@/components/Draggable.vue';
 import ChaosBag from '@/arkham/components/ChaosBag.vue'
+import SandboxReveal from '@/arkham/components/debug/SandboxReveal.vue'
 import DebugCardDropHint from '@/arkham/components/DebugCardDropHint.vue';
 import DebugTokenPanel from '@/arkham/components/DebugTokenPanel.vue';
 import { cardDropHandlers, scenarioTarget } from '@/arkham/debugCardDrop';
@@ -2485,6 +2486,12 @@ async function addChaosToken(face: any){
             <button class="button" @click="addChaosToken(token.face)">+</button>
           </div>
         </div>
+        <SandboxReveal
+          v-if="debug.active || scenario.chaosBag.debugRevealedChaosTokens.length > 0"
+          :game="game"
+          :chaosBag="scenario.chaosBag"
+          :playerId="playerId"
+        />
       </ChaosBagWindow>
       <CardRow
         v-if="showCards.ref.length > 0"

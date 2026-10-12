@@ -10,6 +10,22 @@ import Arkham.Source
 import Data.Aeson.TH
 import GHC.Records
 
+{- | A token drawn by the debug sandbox reveal: out of the bag, but never
+revealed to the game. The value is a snapshot of the scenario reference card
+(and elder sign) at draw time, for the debug calculator only. 'Nothing' with
+neither auto flag set means the engine could not work it out outside a skill
+test, and the player fills it in.
+-}
+data DebugRevealedChaosToken = DebugRevealedChaosToken
+  { debugRevealedToken :: ChaosToken
+  , debugRevealedValue :: Maybe Int
+  , debugRevealedAutoFail :: Bool
+  , debugRevealedAutoSuccess :: Bool
+  }
+  deriving stock (Show, Eq, Generic)
+
+$(deriveJSON (aesonOptions $ Just "debugRevealed") ''DebugRevealedChaosToken)
+
 data ChaosBag = ChaosBag
   { chaosBagChaosTokens :: [ChaosToken]
   , chaosBagSetAsideChaosTokens :: [ChaosToken]
@@ -19,11 +35,19 @@ data ChaosBag = ChaosBag
   , chaosBagTokenPool :: [ChaosToken]
   , chaosBagTotalRevealedChaosTokens :: [ChaosToken]
   , chaosBagPendingRequests :: Map Source [ChaosToken]
+  , chaosBagDebugRevealedChaosTokens :: [DebugRevealedChaosToken]
   }
   deriving stock (Show, Eq, Generic)
 
+-- Sandbox tokens are out of the bag only for the debug reveal; they still
+-- belong to it, so they count here.
 allChaosBagChaosTokens :: ChaosBag -> [ChaosToken]
-allChaosBagChaosTokens ChaosBag {..} = nub $ chaosBagChaosTokens <> chaosBagSetAsideChaosTokens <> chaosBagRevealedChaosTokens
+allChaosBagChaosTokens ChaosBag {..} =
+  nub
+    $ chaosBagChaosTokens
+    <> chaosBagSetAsideChaosTokens
+    <> chaosBagRevealedChaosTokens
+    <> map debugRevealedToken chaosBagDebugRevealedChaosTokens
 
 $(deriveToJSON (aesonOptions $ Just "chaosBag") ''ChaosBag)
 
@@ -38,6 +62,7 @@ instance FromJSON ChaosBag where
     chaosBagTokenPool <- o .: "tokenPool"
     chaosBagTotalRevealedChaosTokens <- o .:? "totalRevealedChaosTokens" .!= []
     chaosBagPendingRequests <- o .:? "pendingRequests" .!= mempty
+    chaosBagDebugRevealedChaosTokens <- o .:? "debugRevealedChaosTokens" .!= []
     pure ChaosBag {..}
 
 emptyChaosBag :: ChaosBag
@@ -51,6 +76,7 @@ emptyChaosBag =
     , chaosBagTokenPool = []
     , chaosBagTotalRevealedChaosTokens = []
     , chaosBagPendingRequests = mempty
+    , chaosBagDebugRevealedChaosTokens = []
     }
 
 instance HasField "revealed" ChaosBag [ChaosToken] where
@@ -82,6 +108,10 @@ revealedChaosTokensL =
 totalRevealedChaosTokensL :: Lens' ChaosBag [ChaosToken]
 totalRevealedChaosTokensL =
   lens chaosBagTotalRevealedChaosTokens $ \m x -> m {chaosBagTotalRevealedChaosTokens = x}
+
+debugRevealedChaosTokensL :: Lens' ChaosBag [DebugRevealedChaosToken]
+debugRevealedChaosTokensL =
+  lens chaosBagDebugRevealedChaosTokens $ \m x -> m {chaosBagDebugRevealedChaosTokens = x}
 
 choiceL :: Lens' ChaosBag (Maybe ChaosBagStepState)
 choiceL = lens chaosBagChoice $ \m x -> m {chaosBagChoice = x}

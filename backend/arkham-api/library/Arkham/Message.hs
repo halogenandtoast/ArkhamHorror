@@ -61,6 +61,7 @@ import Arkham.Custom.Overlay (DeckOverlay)
 import Arkham.Customization
 import Arkham.DamageEffect
 import Arkham.Debug.CardDestination
+import Arkham.Debug.SkillTest
 import Arkham.Deck
 import Arkham.DeckBuilding.Adjustment
 import Arkham.Decklist.Type
@@ -1380,6 +1381,9 @@ data Message
     that is no longer in the bag is a no-op instead of a fabricated seal.
     -}
     DebugSealChaosToken ChaosTokenId Target
+  | -- Debug: start a real skill test with no card behind it. See
+    -- "Arkham.Debug.SkillTest".
+    DebugBeginSkillTest DebugSkillTestSpec
   | DebugCustomize InvestigatorId CardId
   | DebugIncreaseCustomization InvestigatorId CardCode Customization [CustomizationChoice]
   | SetScenarioDifficulty Difficulty
@@ -1716,6 +1720,12 @@ pattern ForceChaosTokenDrawToken t = ChaosBagMessage (ForceChaosTokenDrawToken_ 
 
 pattern DebugSetForcedChaosTokenDraws :: [ChaosTokenFace] -> Message
 pattern DebugSetForcedChaosTokenDraws fs = ChaosBagMessage (DebugSetForcedChaosTokenDraws_ fs)
+
+pattern DebugRevealChaosTokens :: InvestigatorId -> Int -> Message
+pattern DebugRevealChaosTokens iid n = ChaosBagMessage (DebugRevealChaosTokens_ iid n)
+
+pattern DebugReturnChaosTokens :: Message
+pattern DebugReturnChaosTokens = ChaosBagMessage DebugReturnChaosTokens_
 
 pattern SetChaosTokens :: [ChaosTokenFace] -> Message
 pattern SetChaosTokens fs = ChaosBagMessage (SetChaosTokens_ fs)

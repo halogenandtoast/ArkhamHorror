@@ -25,6 +25,16 @@
   "commits": "{investigator} commits {card}",
   "committed": "Commits {card}",
   "crossedOut": "Cross out “{entry}”",
+  "debug": {
+    "invalidRequest": "[Debug] That request can't be carried out",
+    "noTargetValue": "[Debug] That target has no value to test against; enter a difficulty instead",
+    "returnsChaosTokens": "[Debug] {tokens} returned to the chaos bag | [Debug] {tokens} returned to the chaos bag",
+    "revealDuringDraw": "[Debug] Can't reveal from the chaos bag while a draw is in progress",
+    "revealEmptyBag": "[Debug] The chaos bag is empty",
+    "revealsChaosTokens": "[Debug] {investigator} reveals {tokens} (no effects) | [Debug] {investigator} reveals {tokens} (no effects)",
+    "skillTestActive": "[Debug] A skill test is already in progress",
+    "startsSkillTest": "[Debug] Starting a skill test for {investigator}"
+  },
   "defeated": "{target} is defeated",
   "defeatedBy": "{target} is defeated by {source}",
   "discarded": "{card} is discarded",

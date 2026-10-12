@@ -13,6 +13,7 @@ import Arkham.Asset
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Asset, AssetAttrs (..), Field (..), assetIsStory)
 import Arkham.Attack
+import Arkham.Calculation qualified as Calc
 import Arkham.Campaign.Option
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
 import Arkham.CampaignLog
@@ -27,6 +28,7 @@ import Arkham.Cost qualified as Cost
 import Arkham.DamageEffect
 import Arkham.Debug
 import Arkham.Debug.CardDestination
+import Arkham.Debug.SkillTest
 import Arkham.Deck qualified as Deck
 import Arkham.Decklist
 import Arkham.Decklist.RandomBasicWeakness (
@@ -102,6 +104,7 @@ import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location
 import Arkham.Location.Types (Field (..), LocationAttrs (..), updateLocation)
+import Arkham.Log qualified as Log
 import Arkham.Matcher hiding (
   AssetCard,
   AssetDefeated,
@@ -3024,6 +3027,68 @@ runGameMessage msg g = case msg of
     for_ (find ((== tokenId) . (.id)) tokens) \token ->
       pushAll [SealChaosToken token, SealedChaosToken token Nothing target]
     pure g
+  DebugBeginSkillTest spec -> do
+    let
+      iid = debugTestInvestigator spec
+      refuse key = g <$ Log.sendLog (Log.notice [Log.ikeyPart key []])
+      -- an enemy target, and its value for "use the target's value" if it has one
+      enemyWithValue eid fld = do
+        exists <- selectAny $ EnemyWithId eid
+        value <- fieldMayJoin fld eid
+        pure
+          $ if exists
+            then Just (EnemyTarget eid, Calc.EnemyMaybeFieldCalculation eid fld <$ value)
+            else Nothing
+    iids <- getInvestigators
+    inTest <- isJust <$> getSkillTestId
+    mSourceCard <- traverse getCardMaybe (debugTestSourceCard spec)
+    mTarget <- case (debugTestAction spec, debugTestTarget spec) of
+      (Nothing, mtarget) -> pure $ Just (fromMaybe (toTarget iid) mtarget, Nothing)
+      (Just Action.Fight, Just (EnemyTarget eid)) -> enemyWithValue eid EnemyFight
+      (Just Action.Evade, Just (EnemyTarget eid)) -> enemyWithValue eid EnemyEvade
+      (Just Action.Parley, Just (EnemyTarget eid)) -> fmap (\(t, _) -> (t, Nothing)) <$> enemyWithValue eid EnemyFight
+      (Just Action.Parley, Nothing) -> pure $ Just (toTarget iid, Nothing)
+      (Just Action.Investigate, Just (LocationTarget lid)) -> do
+        exists <- selectAny $ LocationWithId lid
+        shroud <- fieldMayJoin LocationShroud lid
+        pure
+          $ if exists
+            then Just (LocationTarget lid, Calc.LocationMaybeFieldCalculation lid LocationShroud <$ shroud)
+            else Nothing
+      _ -> pure Nothing
+    let
+      mTestType = case debugTestSkill spec of
+        DebugTestOneSkill skillType -> Just (SkillSkillTest skillType, SkillBaseValue skillType)
+        DebugTestCombined [] -> Nothing
+        DebugTestCombined [skillType] -> Just (SkillSkillTest skillType, SkillBaseValue skillType)
+        DebugTestCombined skillTypes -> Just (AndSkillTest skillTypes, AndSkillBaseValue skillTypes)
+        DebugTestFixed n -> Just (BaseValueSkillTest n [(#wild, 1), (#wildMinus, -1)], FixedBaseValue n)
+    if
+      | inTest -> refuse "log.debug.skillTestActive"
+      | iid `notElem` iids -> refuse "log.debug.invalidRequest"
+      | Just Nothing <- mSourceCard -> refuse "log.debug.invalidRequest"
+      | otherwise -> case (mTarget, mTestType) of
+          (Just (target, mTargetValue), Just (testType, baseValue)) -> do
+            let
+              mDifficulty = case debugTestDifficulty spec of
+                DebugDifficultyFixed n -> Just (Calc.Fixed n)
+                DebugDifficultyOfTarget -> mTargetValue
+            case mDifficulty of
+              Nothing -> refuse "log.debug.noTargetValue"
+              Just difficulty -> do
+                sid <- getRandom
+                let source = maybe GameSource CardIdSource (debugTestSourceCard spec)
+                Log.sendLog
+                  $ Log.mechanic
+                    [Log.ikeyPart "log.debug.startsSkillTest" ["investigator" Log.~> Log.investigatorRefById iid]]
+                push
+                  $ BeginSkillTest
+                  $ (buildSkillTest sid iid source target testType baseValue (SkillTestDifficulty difficulty))
+                    { skillTestAction = debugTestAction spec
+                    , skillTestSourceCard = debugTestSourceCard spec
+                    }
+                pure g
+          _ -> refuse "log.debug.invalidRequest"
   DebugMoveCard cardId destination -> do
     card <- getCard cardId
     case destination of

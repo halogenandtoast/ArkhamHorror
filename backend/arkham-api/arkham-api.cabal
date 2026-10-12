@@ -2480,6 +2480,7 @@ library
       Arkham.DamageEffect
       Arkham.Debug
       Arkham.Debug.CardDestination
+      Arkham.Debug.SkillTest
       Arkham.Deck
       Arkham.DeckBuilding.Adjustment
       Arkham.Decklist
@@ -9380,6 +9381,7 @@ test-suite spec
       Arkham.CampaignLogKeySpec
       Arkham.Card.CardCodeSpec
       Arkham.ChaosTokenFaceSpec
+      Arkham.Debug.SandboxSpec
       Arkham.DecklistSpec
       Arkham.EncounterSetSpec
       Arkham.Enemy.Cards.BrethrenOfAsh.FlyingTerrors.BatHorrorSpec

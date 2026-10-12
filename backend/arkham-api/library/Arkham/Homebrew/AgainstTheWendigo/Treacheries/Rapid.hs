@@ -63,6 +63,7 @@ instance RunMessage Rapid where
               $ LocationWithTrait River
               <> LocationWithTrait Wild
               <> inDirectionsOf [Above, Below] attrs
+          when (length neighbours < 2) (continue_ iid)
           chooseOrRunOneM iid $ targets neighbours $ attachTreachery attrs
         else do
           continue_ iid

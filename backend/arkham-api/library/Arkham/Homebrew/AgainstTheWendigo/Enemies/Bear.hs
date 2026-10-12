@@ -37,11 +37,10 @@ instance RunMessage Bear where
       requestChaosTokens lead (attrs.ability 1) 1
       pure e
     RequestedChaosTokens (isAbilitySource attrs 1 -> True) miid tokens -> do
+      for_ miid continue_
       if any isSymbolFace tokens
         then withLocationOf attrs \lid ->
           enemyMoveToMatch attrs attrs (NearestLocationToLocation lid $ LocationWithInvestigator Anyone)
-        else do
-          for_ miid continue_
-          toDiscard (attrs.ability 1) attrs
+        else toDiscard (attrs.ability 1) attrs
       pure e
     _ -> Bear <$> liftRunMessage msg attrs

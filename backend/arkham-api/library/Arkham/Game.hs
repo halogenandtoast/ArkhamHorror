@@ -1175,6 +1175,12 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
     MostDamage -> do
       most <- highestAmongst UneliminatedInvestigator (field InvestigatorDamage)
       flip runMatchesM as $ \i -> pure $ toId i `elem` most
+    MostDamageIncludingAssets assetMatcher -> do
+      most <- highestAmongst UneliminatedInvestigator \iid -> do
+        own <- field InvestigatorDamage iid
+        onAssets <- selectSum AssetDamage (assetMatcher <> assetControlledBy iid)
+        pure $ own + onAssets
+      flip runMatchesM as $ \i -> pure $ toId i `elem` most
     MostCardsInHand -> do
       most <- highestAmongst UneliminatedInvestigator (fieldMap InvestigatorHand length)
       flip runMatchesM as $ \i -> pure $ toId i `elem` most

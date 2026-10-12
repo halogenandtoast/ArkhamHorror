@@ -48,6 +48,7 @@ instance RunMessage MistInTheValley where
       if any isSymbolFace tokens
         then do
           neighbours <- select $ inDirectionsOf [LeftOf, RightOf] attrs
+          when (length neighbours < 2) (continue_ iid)
           chooseOrRunOneM iid $ targets neighbours $ attachTreachery attrs
         else do
           continue_ iid

@@ -13,14 +13,16 @@ newtype TheWendigo = TheWendigo EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 {- | "Prey - The investigator with the most damage on them and their Ally cards."
-The Ally half is not expressible as a prey matcher; the printed tie-break the
-engine can see is most damage.
+The spawn is relative to that same investigator, so both read one matcher --
+plain @MostDamage@ would leave the Allies out of the spawn.
 -}
 theWendigo :: EnemyCard TheWendigo
 theWendigo =
   enemy TheWendigo Cards.theWendigo
-    & setPrey MostDamage
-    & setSpawnAt (connectedFrom $ LocationWithInvestigator MostDamage)
+    & setPrey prey
+    & setSpawnAt (connectedFrom $ LocationWithInvestigator prey)
+ where
+  prey = MostDamageIncludingAssets #ally
 
 instance HasModifiersFor TheWendigo where
   -- "The Wendigo gets +4 [per_investigator] health."
@@ -39,11 +41,16 @@ instance HasAbilities TheWendigo where
         restricted a 2 (exists $ be a <> EnemyWithAnyDamage)
           $ forced
           $ PlacedDoomCounter #after AnySource AnyTarget
-      , -- "If an investigator is defeated at The Wendigo's location, he or she
-        -- suffers 1 additional physical trauma."
-        restricted a 3 Here
+      , {- "If an investigator is defeated at The Wendigo's location, he or she
+        suffers 1 additional physical trauma."
+
+        Both halves of the condition are in the window: `Here` answers False for
+        anything but a location source, and `You` is what offers the Forced to
+        the investigator it is about -- who can still take it, because the defeat
+        flag is only set after this window (`Runner/Damage.hs:1339`). -}
+        mkAbility a 3
           $ forced
-          $ Matcher.InvestigatorDefeated #when ByAny (InvestigatorAt $ locationWithEnemy a)
+          $ Matcher.InvestigatorDefeated #when ByAny (You <> InvestigatorAt (locationWithEnemy a))
       ]
 
 instance RunMessage TheWendigo where

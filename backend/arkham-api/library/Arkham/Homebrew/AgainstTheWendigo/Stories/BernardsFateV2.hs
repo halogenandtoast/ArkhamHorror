@@ -33,7 +33,8 @@ instance RunMessage BernardsFateV2 where
     ResolveThisStory _ (is attrs -> True) -> do
       record YouHaveDiscoveredBernardsFate
       lead <- getLead
-      drawCard lead =<< genCard Treacheries.theClearingOfTheSacrifices
+      -- The story is the back's own card, so it leaves before the back arrives.
       removeStory attrs
+      drawCard lead =<< genCard Treacheries.theClearingOfTheSacrifices
       pure s
     _ -> BernardsFateV2 <$> liftRunMessage msg attrs

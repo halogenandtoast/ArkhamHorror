@@ -11,8 +11,6 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Location (addDirectConnection, connectBothWays)
-import Arkham.Helpers.Modifiers (ModifierType (ConnectedToWhen))
 import Arkham.Helpers.Xp (XpBonus (NoBonus), toBonus)
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Agendas qualified as Agendas
@@ -24,7 +22,7 @@ import Arkham.Homebrew.AgainstTheWendigo.Helpers
 import Arkham.Homebrew.AgainstTheWendigo.Key
 import Arkham.Homebrew.AgainstTheWendigo.ScenarioDeckKeys (pattern StudentsFateDeck)
 import Arkham.Homebrew.AgainstTheWendigo.Sets qualified as Set
-import Arkham.Id (LocationId)
+import Arkham.Location.Grid (Pos (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
@@ -42,11 +40,9 @@ againstTheWendigo difficulty =
     ":against-the-wendigo:001"
     "Against the Wendigo"
     difficulty
-    [ "uncharted1 northHanninah3 uncharted2"
-    , "uncharted3 northHanninah2 uncharted4"
-    , "uncharted5 northHanninah1 uncharted6"
-    , "sarceeTerritory jetty fortMcDonald"
-    ]
+    -- Every location is placed in the grid, which regenerates the layout as it
+    -- goes (@PlaceGrid@), so there is nothing to declare here.
+    []
 
 instance HasChaosTokenValue AgainstTheWendigo where
   getChaosTokenValue iid chaosTokenFace (AgainstTheWendigo attrs) = case chaosTokenFace of
@@ -105,23 +101,21 @@ instance RunMessage AgainstTheWendigo where
       gather Set.HanninahValley
       gatherAndSetAside Set.WendigosMyth
 
-      -- The bottom row: where the investigators start and where they can resign.
-      jetty <- placeLabeled "jetty" Locations.jetty
-      fort <- placeLabeled "fortMcDonald" Locations.fortMcDonald
-      sarcee <- placeLabeled "sarceeTerritory" Locations.sarceeTerritory
+      {- The valley is laid out in the grid: x runs West to East with the river at
+      0, y runs South to North with the bottom row at 0. Placing a location
+      there is what tells the engine which locations are printed next to which
+      -- the compass directions every card in this scenario talks about. -}
+      jetty <- placeInGrid (Pos 0 0) Locations.jetty
+      placeInGrid_ (Pos 1 0) Locations.fortMcDonald
+      placeInGrid_ (Pos (-1) 0) Locations.sarceeTerritory
       startAt jetty
-      connectBothWays jetty fort
-      connectBothWays jetty sarcee
 
       -- The middle column: the river running north out of the Jetty. The slots
       -- are numbered up from the Jetty, so northHanninah1 is the southernmost
       -- and the map reads these three in reverse.
       shuffledRiver <-
         shuffleM [Locations.northHanninah1, Locations.northHanninah2, Locations.northHanninah3]
-      riverSouthToNorth <-
-        for (zip ["northHanninah1", "northHanninah2", "northHanninah3"] shuffledRiver)
-          $ uncurry placeLabeled
-      for_ (zip (jetty : riverSouthToNorth) riverSouthToNorth) (uncurry connectBothWays)
+      for_ (zip [1 .. 3] shuffledRiver) \(y, def) -> placeInGrid_ (Pos 0 y) def
 
       -- The outer columns. One Mountain Range is removed at random; the rest are
       -- dealt one to the East and one to the West of each North Hanninah.
@@ -129,31 +123,11 @@ instance RunMessage AgainstTheWendigo where
         splitAt 1 <$> shuffleM [Locations.templeOfIthaqua, Locations.madProspector]
       removeEvery removedRange
       uncharted <- shuffleM (keptRange <> drop 2 unchartedLocations)
-      let slots = ["uncharted" <> tshow (n :: Int) | n <- [1 .. 6]]
-      outer <- for (zip slots uncharted) \(slot, def) -> (def,) <$> placeLabeled slot def
-
-      -- The rows, read down the map the way the slots are declared above:
-      -- uncharted1 and uncharted2 flank the *northernmost* river location.
-      let rows = zip (reverse riverSouthToNorth) (rowPairs outer)
-
-      {- Each North Hanninah reaches the Uncharted pair flanking it, and each of
-      them reaches back -- except Sinister Taiga, which prints nothing on its
-      unrevealed side. Until it is revealed it is a one-way trip in off the
-      river. -}
-      for_ rows \(mid, neighbours) ->
-        for_ neighbours \(def, lid) -> do
-          addDirectConnection mid lid
-          if def == Locations.sinisterTaiga
-            then revealedConnection lid mid
-            else addDirectConnection lid mid
-
-      {- Revealed, the Taiga also reaches "the Wild locations directly to the
-      North and South". Those print only their own river connection, so the link
-      stays one way out of the Taiga. -}
-      for_ (zip rows (drop 1 rows)) \((_, northRow), (_, southRow)) ->
-        for_ (zip northRow southRow) \((northDef, north), (southDef, south)) -> do
-          when (northDef == Locations.sinisterTaiga) $ revealedConnection north south
-          when (southDef == Locations.sinisterTaiga) $ revealedConnection south north
+      {- West then East of each river location, from the northernmost row down.
+      Nothing is wired by hand: every card prints which compass neighbours it
+      reaches, and the grid is what answers that. -}
+      let cells = [Pos x y | y <- [3, 2, 1], x <- [-1, 1]]
+      for_ (zip cells uncharted) (uncurry placeInGrid_)
 
       -- One of each pair of student fates survives; the three survivors are the deck.
       kept <- for studentFatePairs \(a, b) -> do
@@ -272,19 +246,16 @@ epilogue = scenarioI18n $ scope "epilogue" do
       investigators <- select UneliminatedInvestigator
       addCampaignCardToDeckChoice investigators ShuffleIn Assets.ithaquasKnowledge
 
-    -- Norman only counts as alive if he made it to the end still in play.
-    normanSurvived <- selectAny $ assetIs Assets.normanFalkner
-    if normanSurvived
-      then do
-        record NormanIsAlive
-        flavor $ h "normanAlive" >> p "normanAliveBody"
-      else whenHasRecord YouLetNormanDie do
-        flavor $ h "normanDead" >> p "normanDeadBody"
-        {- "If you added a [tablet] token to the Chaos bag for this game, keep it
-        for the rest of your campaign. Otherwise, add a [tablet] token to the
-        Chaos bag for the rest of your campaign." Setup's token is only for this
-        game, so either branch is one campaign token. -}
-        addChaosToken Tablet
+    whenHasRecord NormanIsAlive do
+      flavor $ h "normanAlive" >> p "normanAliveBody"
+
+    whenHasRecord YouLetNormanDie do
+      flavor $ h "normanDead" >> p "normanDeadBody"
+      {- "If you added a [tablet] token to the Chaos bag for this game, keep it
+      for the rest of your campaign. Otherwise, add a [tablet] token to the
+      Chaos bag for the rest of your campaign." Setup's token is only for this
+      game, so either branch is one campaign token. -}
+      addChaosToken Tablet
 
     nadelmannsFate
 
@@ -343,19 +314,6 @@ awardScenarioXp attrs extra = do
     $ [toBonus "savedCharlie" 1 | savedCharlie]
     <> [toBonus "savedTheGoldProspector" 1 | savedProspector]
     <> [extra]
-
-{- | A connection that exists only on a location's revealed side.
-'addDirectConnection' writes the unrevealed and revealed sides at once, so a
-one-sided connection has to come from a modifier instead.
--}
-revealedConnection :: ReverseQueue m => LocationId -> LocationId -> m ()
-revealedConnection from dest =
-  gameModifier ScenarioSource from $ ConnectedToWhen RevealedLocation (LocationWithId dest)
-
--- | The six Uncharted locations, paired off one row at a time.
-rowPairs :: [a] -> [[a]]
-rowPairs (a : b : rest) = [a, b] : rowPairs rest
-rowPairs xs = [xs | notNull xs]
 
 chaosBagContents :: Difficulty -> [ChaosTokenFace]
 chaosBagContents = \case

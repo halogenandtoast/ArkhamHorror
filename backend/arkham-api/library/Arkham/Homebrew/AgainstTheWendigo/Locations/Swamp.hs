@@ -3,7 +3,11 @@ module Arkham.Homebrew.AgainstTheWendigo.Locations.Swamp (swamp) where
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Stories qualified as Stories
-import Arkham.Homebrew.AgainstTheWendigo.Helpers (fateReaction, readSecondPartOfFate)
+import Arkham.Homebrew.AgainstTheWendigo.Helpers (
+  connectsEastOrWest,
+  fateReaction,
+  readSecondPartOfFate,
+ )
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
@@ -12,7 +16,7 @@ newtype Swamp = Swamp LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 swamp :: LocationCard Swamp
-swamp = location Swamp Cards.swamp 3 (PerPlayer 2)
+swamp = locationWith Swamp Cards.swamp 3 (PerPlayer 2) connectsEastOrWest
 
 instance HasModifiersFor Swamp where
   -- The unrevealed side prints "You cannot move into this location."

@@ -5227,7 +5227,9 @@ getEnemyField f e = do
     EnemyKeywords -> do
       modifiers' <- foldMapM getModifiers [toTarget e, CardIdTarget $ toCardId $ toAttrs e]
       let
-        printedKeywords = toList $ cdKeywords (toCardDef attrs)
+        {- Keywords are printed in the text box, so a blanked one takes them with it
+        (FAQ: an enemy "loses the swarming keyword or its text box is blanked"). -}
+        printedKeywords = if Blank `elem` modifiers' then [] else toList $ cdKeywords (toCardDef attrs)
         keywords' =
           foldl'
             (\k m -> k & (`applyModifier` m) & (`applyRemoves` m) & (`applyForced` m))

@@ -109,20 +109,20 @@ terrifyingVisions =
 -- | The back of Bernard's Fate (v. II).
 theClearingOfTheSacrifices :: CardDef
 theClearingOfTheSacrifices =
-  ( treachery
-      ":against-the-wendigo:025b"
-      "The Clearing of the Sacrifices"
-      Set.HanninahValley
-      1
-  )
-    { cdCardTraits = setFromList [Terror]
-    , cdOtherSide = Just ":against-the-wendigo:025"
-    }
+  otherSideIs ":against-the-wendigo:025"
+    $ ( treachery
+          ":against-the-wendigo:025b"
+          "The Clearing of the Sacrifices"
+          Set.HanninahValley
+          1
+      )
+      { cdCardTraits = setFromList [Terror]
+      }
 
 -- | The back of Norman's Fate (v. I).
 manEaters :: CardDef
 manEaters =
-  (treachery ":against-the-wendigo:026b" "Man-eaters" Set.HanninahValley 1)
-    { cdCardTraits = setFromList [Obstacle, Terror, Wendigo]
-    , cdOtherSide = Just ":against-the-wendigo:026"
-    }
+  otherSideIs ":against-the-wendigo:026"
+    $ (treachery ":against-the-wendigo:026b" "Man-eaters" Set.HanninahValley 1)
+      { cdCardTraits = setFromList [Obstacle, Terror, Wendigo]
+      }

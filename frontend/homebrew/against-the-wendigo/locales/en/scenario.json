@@ -73,7 +73,9 @@
       }
     },
     "campfire": {
-      "done": "Done healing"
+      "label": {
+        "done": "Done healing"
+      }
     },
     "epilogue": {
       "intro": "Epilogue",

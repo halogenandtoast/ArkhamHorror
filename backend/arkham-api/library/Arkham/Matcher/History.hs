@@ -12,6 +12,7 @@ data HistoryMatcher
   = DefeatedEnemiesWithTotalHealth ValueMatcher
   | DefeatedEnemyWithTraitAt Trait LocationId
   | AttackedByAnyEnemies
+  | AttackedByEnemy EnemyId
   | CluesDiscoveredAt ValueMatcher LocationId
   deriving stock (Show, Eq, Ord, Data)
 

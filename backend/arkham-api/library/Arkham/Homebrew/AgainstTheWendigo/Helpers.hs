@@ -31,6 +31,7 @@ import Arkham.Classes.GameLogger (HasGameLogger)
 import Arkham.Classes.HasModifiersFor (HasModifiersM)
 import Arkham.Classes.HasQueue (push, pushAll)
 import Arkham.Classes.Query
+import Arkham.Direction (Direction (LeftOf, RightOf))
 import Arkham.Distance (unDistance)
 import Arkham.GameEnv (getDistance)
 import Arkham.GameValue (GameValue (ByPlayerCount))
@@ -44,7 +45,7 @@ import Arkham.Homebrew.AgainstTheWendigo.ScenarioDeckKeys (pattern StudentsFateD
 import Arkham.Homebrew.AgainstTheWendigo.Traits (pattern Guide)
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Location.Types (LocationAttrs)
+import Arkham.Location.Types (LocationAttrs, connectsToL)
 import Arkham.Log (ikeyScoped, inGroupOf, notice, opensGroup, sendLog, sendLogs, structure, (~>))
 import Arkham.Log qualified as Log
 import Arkham.Log.Refs (investigatorRefFor)
@@ -82,6 +83,13 @@ campaignI18n a = withI18n $ scope "againstTheWendigo" a
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "scenario" a
+
+{- | "This location is connected to the River location directly to the East or
+West." Every Uncharted location prints it, and the river is the only thing in
+the column beside them.
+-}
+connectsEastOrWest :: LocationAttrs -> LocationAttrs
+connectsEastOrWest = connectsToL .~ setFromList [LeftOf, RightOf]
 
 -- * The river
 

@@ -98,5 +98,7 @@ normanFalkner =
   )
     { cdCardTraits = setFromList [Ally, Guide]
     , cdUnique = True
+    , cdDoubleSided = True
     , cdOtherSide = Just ":against-the-wendigo:027"
+    , cdRevelation = IsRevelation
     }

@@ -32,7 +32,8 @@ instance RunMessage NormansFateV1 where
     ResolveThisStory _ (is attrs -> True) -> do
       record YouHaveDiscoveredNormansFate
       lead <- getLead
-      drawCard lead =<< genCard Treacheries.manEaters
+      -- The story is the back's own card, so it leaves before the back arrives.
       removeStory attrs
+      drawCard lead =<< genCard Treacheries.manEaters
       pure s
     _ -> NormansFateV1 <$> liftRunMessage msg attrs

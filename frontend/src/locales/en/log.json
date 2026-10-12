@@ -16,6 +16,7 @@
   "actionSurcharge": "+{count} action from {source} | +{count} actions from {source}",
   "activatesAbility": "{investigator} activates an ability on {source}",
   "agendaAdvances": "{agenda} advances",
+  "attachesTo": "{card} attaches to {target}",
   "attackOfOpportunityIgnored": "{name}'s attack of opportunity is ignored",
   "attackOfOpportunityIgnoredBy": "{name}'s attack of opportunity is ignored by {source}",
   "baseValue": "base value",

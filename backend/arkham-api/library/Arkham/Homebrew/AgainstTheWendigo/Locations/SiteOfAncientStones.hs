@@ -3,7 +3,11 @@ module Arkham.Homebrew.AgainstTheWendigo.Locations.SiteOfAncientStones (siteOfAn
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Stories qualified as Stories
-import Arkham.Homebrew.AgainstTheWendigo.Helpers (fateReaction, readSecondPartOfFate)
+import Arkham.Homebrew.AgainstTheWendigo.Helpers (
+  connectsEastOrWest,
+  fateReaction,
+  readSecondPartOfFate,
+ )
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
@@ -12,7 +16,7 @@ newtype SiteOfAncientStones = SiteOfAncientStones LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 siteOfAncientStones :: LocationCard SiteOfAncientStones
-siteOfAncientStones = location SiteOfAncientStones Cards.siteOfAncientStones 4 (PerPlayer 2)
+siteOfAncientStones = locationWith SiteOfAncientStones Cards.siteOfAncientStones 4 (PerPlayer 2) connectsEastOrWest
 
 instance HasModifiersFor SiteOfAncientStones where
   -- The unrevealed side prints "You cannot move into this location."

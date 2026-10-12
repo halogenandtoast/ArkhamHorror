@@ -4,7 +4,11 @@ import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Stories qualified as Stories
-import Arkham.Homebrew.AgainstTheWendigo.Helpers (mountainRangeReveal, readStoryAndChoose)
+import Arkham.Homebrew.AgainstTheWendigo.Helpers (
+  connectsEastOrWest,
+  mountainRangeReveal,
+  readStoryAndChoose,
+ )
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
@@ -13,7 +17,7 @@ newtype MadProspector = MadProspector LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 madProspector :: LocationCard MadProspector
-madProspector = location MadProspector Cards.madProspector 3 (Static 0)
+madProspector = locationWith MadProspector Cards.madProspector 3 (Static 0) connectsEastOrWest
 
 instance HasModifiersFor MadProspector where
   -- The unrevealed Mountain Range prints "You cannot move into the Mountain Range."

@@ -76,9 +76,10 @@ instance RunMessage CharlieFoxtailsDestiny where
         removeTokens (attrs.ability 2) attrs Damage 1
         pure s
       UseThisAbility iid (isSource attrs -> True) 3 -> do
+        -- The story is the back's own card, so it leaves before the back arrives.
+        removeStory attrs
         charlie <- createAssetAt Assets.charlieFoxtail (InPlayArea iid)
         placeTokens (attrs.ability 3) charlie Damage (attrs.token Damage)
         record YouSavedCharlie
-        removeStory attrs
         pure s
       _ -> CharlieFoxtailsDestiny <$> liftRunMessage msg attrs

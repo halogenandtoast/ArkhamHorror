@@ -101,6 +101,7 @@ import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Movement (moveForced)
 import Arkham.Phase
+import Arkham.Placement (Placement)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
@@ -484,6 +485,8 @@ oneShot = \case
                 "log.disengages"
                 ["enemy" ~> enemy, "investigator" ~> LogList (map toLogPart whos)]
             ]
+  Msg.PlaceTreachery tid placement -> renderAttaches (treacheryRefFor tid) placement
+  Msg.PlaceAsset aid placement -> renderAttaches (assetRefFor aid) placement
   HuntMessage (EnemyMove_ eid lid) -> Just do
     enemy <- enemyRefFor eid
     loc <- locationRefFor lid
@@ -1034,6 +1037,19 @@ renderSpawned details = do
   pure $ Just $ mechanic $ pure $ case locRef of
     Just loc -> ikeyPart "log.enemySpawnedAt" ["enemy" ~> enemy, "location" ~> loc]
     Nothing -> ikeyPart "log.enemySpawned" ["enemy" ~> enemy]
+
+{- | "Skinwalker attaches to Deer". Only an attachment to another card: a threat
+area, a play area and a location the card merely sits at all answer Nothing from
+'placementToAttached', so they say nothing.
+-}
+renderAttaches :: HasGame m => m LogRef -> Placement -> Maybe (m (Maybe LogEntry))
+renderAttaches getRef placement = do
+  host <- placement.attachedTo
+  pure do
+    card <- getRef
+    mHost <- targetRefFor host
+    pure $ flip fmap mHost \h ->
+      mechanic [ikeyPart "log.attachesTo" ["card" ~> card, "target" ~> h]]
 
 -- | "Ghoul Priest is defeated by Daisy Walker".
 renderDefeated :: HasGame m => Target -> Source -> m (Maybe LogEntry)

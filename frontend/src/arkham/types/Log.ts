@@ -43,6 +43,7 @@ export type CampaignOptionTag = { tag: string }
 
 export type LogContents = {
   recorded: LogKey[];
+  crossedOut: LogKey[];
   recordedSets: Record<string, unknown[]>;
   recordedCounts: [LogKey, number][];
   partners: Record<string, Partner>;
@@ -88,6 +89,8 @@ const campaignOptionTagDecoder = JsonDecoder.object<CampaignOptionTag>({
 
 export const logContentsDecoder = JsonDecoder.object<LogContents>({
   recorded: JsonDecoder.array<LogKey>(logKeyDecoder, 'LogKey[]'),
+  // failover: a server that predates the field sends no key at all.
+  crossedOut: JsonDecoder.failover<LogKey[]>([], JsonDecoder.array<LogKey>(logKeyDecoder, 'LogKey[]')),
   recordedSets: JsonDecoder.array<[LogKey, unknown[]]>(JsonDecoder.tuple([logKeyDecoder, JsonDecoder.array(someRecordableDecoder.map(flattenRecordable), 'SomeRecorded[]')], '[string, somerecorded]'), '[string, unknown][]').map<Record<string, unknown[]>>(res => {
     return res.reduce<Record<string, unknown[]>>((acc, [k, v]) => {
       return {[formatKey(k)]: v, ...acc}

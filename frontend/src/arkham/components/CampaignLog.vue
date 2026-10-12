@@ -87,7 +87,7 @@ const sectionComponentById: Record<string, Component> = {
 }
 
 // --- Utilities -----------------------------------------------------------------
-const EMPTY_LOG: LogContents = { recorded: [], recordedSets: {}, recordedCounts: [], partners: {}, options: [] }
+const EMPTY_LOG: LogContents = { recorded: [], crossedOut: [], recordedSets: {}, recordedCounts: [], partners: {}, options: [] }
 
 const fullName = (name: Name): string => (name.subtitle ? `${name.title}: ${name.subtitle}` : name.title)
 
@@ -406,6 +406,14 @@ const recorded = computed(() => {
     .filter((c) => !(c.tag === 'TheDrownedCityKey' && TDC_TASK_KEYS.has(String((c as any).contents))))
     .map((k: LogKey) => formatKey(k, homebrewScope.value))
 })
+
+/* An erased record is taken out of `recorded`, but the log still shows the line
+ * struck through, so it is listed after the standing ones. */
+const crossedOut = computed(() =>
+  selectedLog.value.crossedOut
+    .filter((c) => !isSection(c))
+    .map((k: LogKey) => formatKey(k, homebrewScope.value))
+)
 
 type SectionModel = {
   key: string
@@ -1024,9 +1032,10 @@ onUnmounted(() => {
           />
 
           <CampaignLogSection
-            v-if="recorded.length > 0"
+            v-if="recorded.length > 0 || crossedOut.length > 0"
             :title="t('campaignLog.campaignNotes')"
-            :items="recorded.map(logTitle)"
+            :items="[...recorded, ...crossedOut].map(logTitle)"
+            :crossed="crossedOut.map(logTitle)"
           />
 
           <!-- Campaign sections -->

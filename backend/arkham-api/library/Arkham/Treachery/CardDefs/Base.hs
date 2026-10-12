@@ -56,6 +56,13 @@ basicWeakness :: CardCode -> Name -> CardDef
 basicWeakness cardCode name =
   baseTreachery cardCode name Nothing (Just BasicWeakness)
 
+otherSideIs :: CardCode -> CardDef -> CardDef
+otherSideIs cCode def =
+  def
+    { cdDoubleSided = True
+    , cdOtherSide = Just cCode
+    }
+
 treachery :: CardCode -> Name -> EncounterSet -> Int -> CardDef
 treachery cardCode name encounterSet encounterSetQuantity =
   baseTreachery

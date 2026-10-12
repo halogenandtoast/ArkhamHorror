@@ -4,15 +4,14 @@ import Arkham.Ability
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Assets qualified as Cards
-import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Locations qualified as Locations
+import Arkham.Homebrew.AgainstTheWendigo.Helpers (handOverGuideAbility)
 import Arkham.Homebrew.AgainstTheWendigo.Key
 import Arkham.Matcher hiding (AssetDefeated)
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message.Lifted.Log (record)
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log (crossOut, record)
 
 newtype NormanFalkner = NormanFalkner AssetAttrs
-  -- "You cannot place horror on Norman Falkner" -- he is printed with no
-  -- sanity at all, so there is nowhere for horror to go.
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
@@ -21,23 +20,27 @@ normanFalkner = allyWith NormanFalkner Cards.normanFalkner (2, 0) noSlots
 
 instance HasAbilities NormanFalkner where
   getAbilities (NormanFalkner a) =
-    [ -- "At the beginning of the enemy phase: Place 1 doom on Norman Falkner."
-      mkAbility a 1 $ forced $ PhaseBegins #when #enemy
-    , -- "{action}: Parley. Test [intellect] (4). If you succeed, put Norman
-      -- Falkner and the doom tokens on him out of play."
-      restricted a 2 OnSameLocation parleyAction_
-    , mkAbility a 3 $ forced $ oneOf [Matcher.AssetDefeated #when ByAny (be a), AssetLeavesPlay #when (be a)]
+    [ mkAbility a 1 $ forced $ PhaseBegins #when #enemy
+    , restricted a 2 OnSameLocation parleyAction_
+    , handOverGuideAbility a 3
     ]
+      -- Gone once the parley has sent him out of play: that removal raises the
+      -- same leave-play window a discard does.
+      <> [ onlyOnce
+             $ mkAbility a 4
+             $ forced
+             $ oneOf [Matcher.AssetDefeated #when ByAny (be a), AssetDiscarded #when (be a)]
+         | not (sentOutOfPlay a)
+         ]
+
+sentOutOfPlay :: AssetAttrs -> Bool
+sentOutOfPlay a = toResultDefault False a.meta
 
 instance RunMessage NormanFalkner where
   runMessage msg a@(NormanFalkner attrs) = runQueueT $ case msg of
-    -- "Revelation - An investigator in the Swamp takes control of Norman Falkner."
-    Revelation _ (isSource attrs -> True) -> do
-      selectForMaybeM (InvestigatorAt $ locationIs Locations.swamp) \iid ->
-        takeControlOfAsset iid attrs.id
-      pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       placeDoom (attrs.ability 1) attrs 1
+      push AdvanceAgendaIfThresholdSatisfied
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
@@ -45,13 +48,16 @@ instance RunMessage NormanFalkner where
       pure a
     PassedThisSkillTest _ (isAbilitySource attrs 2 -> True) -> do
       removeFromGame attrs
+      pure $ NormanFalkner $ setMeta True attrs
+    UseThisAbility iid (isSource attrs -> True) 3 -> do
+      others <-
+        select $ InvestigatorAt (locationWithInvestigator iid) <> NotInvestigator (InvestigatorWithId iid)
+      chooseOrRunOneM iid $ targets others \other -> takeControlOfAsset other attrs.id
       pure a
-    -- "If Norman Falkner is defeated or discarded: Put him out of play, erase
-    -- that Norman is alive and record that you let Norman die instead."
-    UseThisAbility _ (isSource attrs -> True) 3 -> do
-      -- The scenario records "Norman is alive" only at the end, so there is
-      -- nothing to erase here.
+    -- He is out of play already: his other face is a story card, so the discard
+    -- this window stands in front of is a removal from the game.
+    UseThisAbility _ (isSource attrs -> True) 4 -> do
+      crossOut NormanIsAlive
       record YouLetNormanDie
-      removeFromGame attrs
       pure a
     _ -> NormanFalkner <$> liftRunMessage msg attrs

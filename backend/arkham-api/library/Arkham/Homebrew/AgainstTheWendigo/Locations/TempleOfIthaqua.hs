@@ -8,7 +8,11 @@ import Arkham.Helpers.SkillTest (getSkillTestAction)
 import Arkham.Helpers.Story (readStory)
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Stories qualified as Stories
-import Arkham.Homebrew.AgainstTheWendigo.Helpers (mountainRangeReveal, spotlightStory)
+import Arkham.Homebrew.AgainstTheWendigo.Helpers (
+  connectsEastOrWest,
+  mountainRangeReveal,
+  spotlightStory,
+ )
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Token (Token (Horror))
@@ -18,7 +22,7 @@ newtype TempleOfIthaqua = TempleOfIthaqua LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 templeOfIthaqua :: LocationCard TempleOfIthaqua
-templeOfIthaqua = location TempleOfIthaqua Cards.templeOfIthaqua 3 (Static 0)
+templeOfIthaqua = locationWith TempleOfIthaqua Cards.templeOfIthaqua 3 (Static 0) connectsEastOrWest
 
 {- | The Knowledge of the Cold attaches to the Temple and only then grants it the
 horror abilities below, so everything the story adds is gated on the story being

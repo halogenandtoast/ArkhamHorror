@@ -5,17 +5,12 @@ module Arkham.Homebrew.AgainstTheWendigo.Locations.TheHeartOfTheForest (
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
-import Arkham.Helpers.Scenario (getLayout)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Locations qualified as Locations
-import Arkham.Layout (GridTemplateRow (..))
 import Arkham.Location.Import.Lifted
-import Arkham.Location.Types (Field (LocationLabel))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Move (forcedMoveTo)
-import Arkham.Projection (field)
-import Data.Text qualified as T
 
 newtype TheHeartOfTheForest = TheHeartOfTheForest LocationAttrs
   deriving anyclass IsLocation
@@ -37,42 +32,6 @@ instance HasModifiersFor TheHeartOfTheForest where
 wayOutIsOpen :: LocationAttrs -> Bool
 wayOutIsOpen a = toResultDefault False a.meta
 
--- | The grid slot this location is laid out in; see 'hangBesideTheForest'.
-heartLabel :: Text
-heartLabel = "theHeartOfTheForest"
-
-{- | The Heart of the Forest is put into play beside the Impenetrable Forest,
-which the scenario deals at random into one of the valley's two outer columns.
-So the grid gains a column on that side of the map, holding this location in
-the Forest's own row and nothing in the others.
--}
-hangBesideTheForest :: ReverseQueue m => LocationId -> m ()
-hangBesideTheForest heart = do
-  setLocationLabel heart heartLabel
-  selectOne (locationIs Locations.impenetrableForest) >>= traverse_ \forest -> do
-    forestLabel <- field LocationLabel forest
-    rows <- map (T.words . unGridTemplateRow) <$> getLayout
-    for_ (hangOffTheForestsSide forestLabel rows)
-      $ push
-      . Msg.SetLayout
-      . map (GridTemplateRow . T.unwords)
-
--- | Pure half of 'hangBesideTheForest'. Nothing when the Forest has left the grid.
-hangOffTheForestsSide :: Text -> [[Text]] -> Maybe [[Text]]
-hangOffTheForestsSide forestLabel rows = do
-  (forestRow, column, width) <-
-    listToMaybe
-      [ (i, c, length row)
-      | (i, row) <- zip [0 :: Int ..] rows
-      , (c, cell) <- zip [0 :: Int ..] row
-      , cell == forestLabel
-      ]
-  let
-    onLeft = 2 * column < width
-    cell i = if i == forestRow then heartLabel else "."
-    hang i row = if onLeft then cell i : row else row <> [cell i]
-  pure $ zipWith hang [0 :: Int ..] rows
-
 instance HasAbilities TheHeartOfTheForest where
   getAbilities (TheHeartOfTheForest a) =
     extendRevealed
@@ -84,7 +43,7 @@ instance HasAbilities TheHeartOfTheForest where
           $ triggered
             (InitiatedSkillTest #when You AnySkillType AnySkillTestValue (WhileInvestigating (be a)))
             mempty
-      , mkAbility a 2 $ forced $ RoundEnds #when
+      , mkAbility a 2 $ silent $ RoundEnds #when
       ]
 
 instance RunMessage TheHeartOfTheForest where
@@ -96,7 +55,6 @@ instance RunMessage TheHeartOfTheForest where
     Revealing a location resolves no Revelation -- it was never drawn -- so the
     move hangs off the reveal itself, the way North Hanninah's attachment does. -}
     Msg.RevealLocation _ lid | lid == toId attrs -> do
-      hangBesideTheForest attrs.id
       selectEach (InvestigatorAt $ locationIs Locations.impenetrableForest) \iid ->
         forcedMoveTo attrs iid attrs.id
       TheHeartOfTheForest <$> liftRunMessage msg attrs

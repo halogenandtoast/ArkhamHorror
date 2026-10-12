@@ -9,7 +9,7 @@ import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Locations qualified as Locatio
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Stories qualified as Cards
 import Arkham.Homebrew.AgainstTheWendigo.Helpers (riverLocation)
 import Arkham.Homebrew.AgainstTheWendigo.Key
-import Arkham.Location.Types (Field (LocationLabel))
+import Arkham.Location.Types (Field (LocationPosition))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log (record)
 import Arkham.Message.Lifted.Placement (place)
@@ -46,6 +46,8 @@ instance RunMessage TheKnowledgeOfTheCold where
     aside card again is what reads it, the way the fates work. -}
     ResolveThisStory _ (is attrs -> True) -> do
       lead <- getLead
+      -- The story is Ithaqua's own card, so it leaves before Ithaqua arrives.
+      removeStory attrs
       selectForMaybeM (locationIs Locations.templeOfIthaqua) \temple -> do
         {- Ithaqua is "put into play in place of" the Temple, so it takes over the
         Temple's slot on the map and the Temple's connection to the River location
@@ -57,17 +59,17 @@ instance RunMessage TheKnowledgeOfTheCold where
         which is what used to happen here. Engaged enemies travel with the
         investigator they are engaged with, so only the disengaged ones are
         placed. -}
-        slot <- field LocationLabel temple
+        slot <- field LocationPosition temple
         rivers <- select $ riverLocation <> connectedFrom (LocationWithId temple)
         investigators <- select $ InvestigatorAt (LocationWithId temple)
         enemies <- select $ enemyAt temple <> UnengagedEnemy
-        -- Ithaqua's abilities are all on its revealed side, so it arrives face up.
-        ithaqua <- placeLocationCard Locations.ithaqua
-        -- See SylviasFateV1: `reveal` cannot see a location that is only queued
-        -- to be placed, so it would drop this. Ithaqua only looked revealed
-        -- because the investigators placed below reveal what they are put into.
+        {- "...put it into play in place of Temple of Ithaqua": into the Temple's own
+        cell, so it inherits the Temple's place on the map. Its abilities are all
+        on its revealed side, so it arrives face up -- and by `unsafeReveal`,
+        since `reveal` cannot see a location that is only queued to be placed
+        (see SylviasFateV1). -}
+        ithaqua <- maybe placeLocationCard placeLocationCardInGrid slot Locations.ithaqua
         unsafeReveal ithaqua
-        setLocationLabel ithaqua slot
         for_ rivers (connectBothWays ithaqua)
         for_ investigators (`place` AtLocation ithaqua)
         for_ enemies (`place` AtLocation ithaqua)
@@ -76,6 +78,5 @@ instance RunMessage TheKnowledgeOfTheCold where
         addToVictory lead temple
         push $ RemoveLocation temple
       record YouAreTheCustodianOfIthaquasKnowledge
-      removeStory attrs
       pure s
     _ -> TheKnowledgeOfTheCold <$> liftRunMessage msg attrs

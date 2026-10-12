@@ -1,14 +1,14 @@
 module Arkham.Helpers.History (module Arkham.Helpers.History, module X) where
 
+import Arkham.Card (toCardDef)
+import Arkham.Card.CardDef (cdCardTraits)
 import Arkham.Classes.HasGame
+import Arkham.Enemy.Types (enemyLastKnownLocation, enemyPlacement)
 import Arkham.GameEnv
 import Arkham.GameEnv as X (getHistoryField)
 import Arkham.Helpers.GameValue (gameValueMatches)
-import Arkham.Card (toCardDef)
-import Arkham.Card.CardDef (cdCardTraits)
 import Arkham.Helpers.Query
 import Arkham.History as X
-import Arkham.Enemy.Types (enemyLastKnownLocation, enemyPlacement)
 import Arkham.Id
 import Arkham.Matcher qualified as Matcher
 import Arkham.Placement
@@ -30,6 +30,7 @@ historyMatches = \case
         )
       . historyEnemiesDefeated
   Matcher.AttackedByAnyEnemies -> pure . notNull . historyEnemiesAttackedBy
+  Matcher.AttackedByEnemy eid -> pure . elem eid . historyEnemiesAttackedBy
   Matcher.CluesDiscoveredAt vMatcher lid ->
     (`gameValueMatches` vMatcher) . findWithDefault 0 lid . historyCluesDiscovered
 

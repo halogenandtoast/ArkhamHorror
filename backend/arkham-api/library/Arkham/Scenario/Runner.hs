@@ -965,9 +965,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   Discarded (TreacheryTarget _) _ card -> do
     case card of
       PlayerCard _ -> pure a
-      EncounterCard ec -> do
-        handler <- getEncounterDeckHandler $ toCardId card
-        pure $ a & discardLens handler %~ (ec :) . filter (/= ec)
+      -- only single sided encounter cards should end up in discard
+      EncounterCard ec
+        | card.singleSided -> do
+            handler <- getEncounterDeckHandler $ toCardId card
+            pure $ a & discardLens handler %~ (ec :) . filter (/= ec)
+        | otherwise -> pure a
       VengeanceCard _ -> error "vengeance card"
   DrewCards iid drew | isNothing drew.target -> do
     for_ (toList drew.rules) \case
@@ -1804,6 +1807,29 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure
       $ if isStandalone
         then a & standaloneCampaignLogL . recordedL %~ insertSet key
+        else a
+  CrossOutRecord key -> do
+    isStandalone <- getIsStandalone
+    pure
+      $ if isStandalone
+        then
+          let wasRecorded = key `member` (a ^. standaloneCampaignLogL . recordedL)
+           in a
+                & standaloneCampaignLogL
+                . recordedL
+                %~ deleteSet key
+                & standaloneCampaignLogL
+                . crossedOutL
+                %~ (if wasRecorded then insertSet key else id)
+                & standaloneCampaignLogL
+                . recordedSetsL
+                %~ deleteMap key
+                & standaloneCampaignLogL
+                . recordedCountsL
+                %~ deleteMap key
+                & standaloneCampaignLogL
+                . orderedKeysL
+                %~ (if wasRecorded then filter (/= key) else id)
         else a
   RecordCount key n -> do
     isStandalone <- getIsStandalone

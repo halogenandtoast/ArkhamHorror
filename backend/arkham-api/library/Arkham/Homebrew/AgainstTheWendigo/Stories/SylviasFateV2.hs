@@ -29,9 +29,10 @@ instance RunMessage SylviasFateV2 where
     -- The second part, asked for by the Impenetrable Forest once its clues run out.
     ResolveThisStory _ (is attrs -> True) -> do
       record YouHaveDiscoveredSylviasFate
+      -- The story is the back's own card, so it leaves before the back arrives.
+      removeStory attrs
       createEnemyAtLocationMatching_
         Enemies.sylviaDavidson
         (locationIs Locations.impenetrableForest)
-      removeStory attrs
       pure s
     _ -> SylviasFateV2 <$> liftRunMessage msg attrs

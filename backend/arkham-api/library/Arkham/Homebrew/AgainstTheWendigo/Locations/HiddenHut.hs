@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Helpers.Modifiers (cannotEnterUnrevealed)
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Stories qualified as Stories
-import Arkham.Homebrew.AgainstTheWendigo.Helpers (readStoryAndChoose)
+import Arkham.Homebrew.AgainstTheWendigo.Helpers (connectsEastOrWest, readStoryAndChoose)
 import Arkham.Location.Import.Lifted
 
 newtype HiddenHut = HiddenHut LocationAttrs
@@ -12,7 +12,7 @@ newtype HiddenHut = HiddenHut LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hiddenHut :: LocationCard HiddenHut
-hiddenHut = location HiddenHut Cards.hiddenHut 3 (PerPlayer 1)
+hiddenHut = locationWith HiddenHut Cards.hiddenHut 3 (PerPlayer 1) connectsEastOrWest
 
 instance HasModifiersFor HiddenHut where
   getModifiersFor (HiddenHut a) = cannotEnterUnrevealed a

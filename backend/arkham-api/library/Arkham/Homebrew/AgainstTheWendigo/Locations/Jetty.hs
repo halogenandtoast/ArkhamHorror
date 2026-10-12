@@ -1,6 +1,7 @@
 module Arkham.Homebrew.AgainstTheWendigo.Locations.Jetty (jetty) where
 
 import Arkham.Ability
+import Arkham.Direction (Direction (Above))
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.AgainstTheWendigo.Helpers
@@ -14,7 +15,9 @@ newtype Jetty = Jetty LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jetty :: LocationCard Jetty
-jetty = location Jetty Cards.jetty 2 (PerPlayer 1)
+-- "This location is connected to the River location directly to the North."
+-- Fort McDonald and Sarcee Territory are reached by its printed icons.
+jetty = locationWith Jetty Cards.jetty 2 (PerPlayer 1) (connectsToL .~ singleton Above)
 
 instance HasModifiersFor Jetty where
   -- The scenario's river rule; see 'riverMovementBan'.

@@ -34,9 +34,10 @@ instance RunMessage BernardsFateV1 where
     -- The second part, asked for by the Site of Ancient Stones once its clues run out.
     ResolveThisStory _ (is attrs -> True) -> do
       record YouHaveDiscoveredBernardsFate
+      -- The story is the back's own card, so it leaves before the back arrives.
+      removeStory attrs
       createEnemyAtLocationMatching_
         Enemies.bernardEpstein
         (locationIs Locations.siteOfAncientStones)
-      removeStory attrs
       pure s
     _ -> BernardsFateV1 <$> liftRunMessage msg attrs

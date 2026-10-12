@@ -21,10 +21,6 @@ bear :: EnemyCard Bear
 bear = enemy Bear Cards.bear & setSpawnAt (NearestLocationToYou $ LocationWithTrait Wild)
 
 instance HasModifiersFor Bear where
-  {- | "If you fight the Bear with a Spell, Firearm or Ranged asset, Bear loses
-  -1 [combat]" -- read as -1 fight for that attack, so it only applies while
-  such a source is the one being tested with.
-  -}
   getModifiersFor (Bear a) = do
     armed <-
       getSkillTestSource >>= \case
@@ -34,17 +30,16 @@ instance HasModifiersFor Bear where
     modifySelfWhen a armed [EnemyFight (-1)]
 
 instance HasAbilities Bear where
-  getAbilities (Bear a) = [mkAbility a 1 $ forced $ PhaseEnds #when #enemy]
+  getAbilities (Bear a) = extend1 a $ mkAbility a 1 $ forced $ PhaseEnds #when #enemy
 
 instance RunMessage Bear where
   runMessage msg e@(Bear attrs) = runQueueT $ case msg of
-    -- "At the end of each enemy phase, reveal a chaos token: on a symbol, the
-    -- Bear moves toward the nearest investigator. Otherwise discard this card."
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       lead <- getLead
-      requestChaosTokens lead (attrs.ability 1)  1
+      requestChaosTokens lead (attrs.ability 1) 1
       pure e
-    RequestedChaosTokens (isAbilitySource attrs 1 -> True) _ tokens -> do
+    RequestedChaosTokens (isAbilitySource attrs 1 -> True) miid tokens -> do
+      for_ miid continue_
       if any isSymbolFace tokens
         then enemyMoveToMatch attrs attrs (NearestLocationToYou Anywhere)
         else push $ ShuffleBackIntoEncounterDeck (toSource attrs) (toTarget attrs)

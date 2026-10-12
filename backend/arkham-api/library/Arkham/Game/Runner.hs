@@ -3071,7 +3071,7 @@ runGameMessage msg g = case msg of
       CampaignPhase {} -> error "should not be called in this situation"
     pure
       $ g
-      & (roundHistoryL %~ (<> view phaseHistoryL g))
+      & (roundHistoryL %~ foldPhaseHistory g)
       & (phaseHistoryL %~ mempty)
   EndInvestigation -> do
     whenWindow <- checkWindows [mkWhen (Window.PhaseEnds InvestigationPhase)]
@@ -3081,7 +3081,7 @@ runGameMessage msg g = case msg of
     pure
       $ g
       & (phaseHistoryL .~ mempty)
-      & (roundHistoryL %~ (<> view phaseHistoryL g))
+      & (roundHistoryL %~ foldPhaseHistory g)
       & (turnPlayerInvestigatorIdL .~ Nothing)
   Begin EnemyPhase -> do
     runQueueT $ runEnemyPhase EndEnemy
@@ -3105,7 +3105,7 @@ runGameMessage msg g = case msg of
         [mkWhen (Window.PhaseEnds EnemyPhase)]
     pure
       $ g
-      & (roundHistoryL %~ (<> view phaseHistoryL g))
+      & (roundHistoryL %~ foldPhaseHistory g)
       & (phaseHistoryL .~ mempty)
   Begin UpkeepPhase -> do
     let phaseStep step msgs = Msg.PhaseStep (UpkeepPhaseStep step) msgs
@@ -3134,7 +3134,7 @@ runGameMessage msg g = case msg of
         [mkWhen (Window.PhaseEnds UpkeepPhase)]
     pure
       $ g
-      & (roundHistoryL %~ (<> view phaseHistoryL g))
+      & (roundHistoryL %~ foldPhaseHistory g)
       & (phaseHistoryL .~ mempty)
   EndRoundWindow -> do
     windows' <-
@@ -3232,7 +3232,7 @@ runGameMessage msg g = case msg of
       =<< checkWindows [mkWhen (Window.PhaseEnds MythosPhase)]
     pure
       $ g
-      & (roundHistoryL %~ (<> view phaseHistoryL g))
+      & (roundHistoryL %~ foldPhaseHistory g)
       & (phaseHistoryL .~ mempty)
   BeginSkillTestWithPreMessages _ pre skillTest -> runMessage (BeginSkillTestWithPreMessages' pre skillTest) g
   BeginSkillTestWithPreMessages' pre skillTest -> do
@@ -4573,6 +4573,17 @@ runPreGameMessage msg g = case msg of
     card <- field EnemyCard details.enemy
     pure $ g & entryTicksL %~ insertMap card.id (gameWindowTick g)
   _ -> pure g
+
+{- | Fold a phase's history into the round's.
+
+@Map@'s own @<>@ is a left-biased union, so folding with it kept the round's
+existing entry for an investigator and dropped everything the phase recorded for
+them -- a 'RoundHistory' read saw only the first phase that recorded anything.
+'History' knows how to merge two of itself; this is the only thing that asks it
+to.
+-}
+foldPhaseHistory :: Game -> Map InvestigatorId History -> Map InvestigatorId History
+foldPhaseHistory g roundH = Map.unionWith (<>) roundH (view phaseHistoryL g)
 
 {- | Maintain the revert information for the in-flight action.
 

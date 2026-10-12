@@ -37,6 +37,10 @@ export type LogKey = {
   contents?: string | { tag: string; contents?: string }
   actualTag?: string
   name?: string
+  /* The key exactly as the server sent it. The fields above are normalised for
+   * display (apostrophes stripped, nesting cut at two levels), so anything that
+   * sends a key back -- the debug campaign log editor -- must send this. */
+  raw?: unknown
 }
 
 export type CampaignOptionTag = { tag: string }
@@ -70,7 +74,7 @@ const isRecord = (v: unknown): v is Record<string, unknown> =>
 
 export const logKeyDecoder: JsonDecoder.Decoder<LogKey> = JsonDecoder.succeed().flatMap((value: unknown) => {
   if (!isRecord(value) || typeof value.tag !== 'string') return JsonDecoder.fail('Expected LogKey')
-  const key: LogKey = { tag: value.tag }
+  const key: LogKey = { tag: value.tag, raw: value }
   if (typeof value.contents === 'string') {
     key.contents = value.contents.replace(/'/g, '')
   } else if (isRecord(value.contents) && typeof value.contents.tag === 'string') {

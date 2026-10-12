@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue';
 import MissingCardBadge from '@/arkham/components/MissingCardBadge.vue';
 import { CARD_FLIGHT_ATTR, useCardFlight } from '@/arkham/cardFlight'
 import { useDebug } from '@/arkham/debug';
+import { cardDropHandlers, treacheryTarget } from '@/arkham/debugCardDrop';
 import { cardImage } from '@/arkham/cardImages';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -56,6 +57,8 @@ watch(() => props.mobileHandOpen, (open) => {
 const image = computed(() => cardImage(props.treachery.cardCode))
 const id = computed(() => props.treachery.id)
 const debugging = ref(false)
+// Debug: tokens from the debug token panel, and seal drags from the bag, land here.
+const cardDrop = cardDropHandlers(props.game.id, () => treacheryTarget(props.treachery.id))
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const isExhausted = computed(() => props.treachery.exhausted)
 
@@ -117,6 +120,7 @@ function handleCardClick() {
     :class="{ attached, exhausted: isExhausted }"
     :[CARD_FLIGHT_ATTR]="treachery.cardId"
     :style="cardFlightStyle"
+    v-bind="cardDrop"
   >
     <MissingCardBadge :card-code="treachery.cardCode" />
     <AbilityButton

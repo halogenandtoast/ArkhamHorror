@@ -185,6 +185,12 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
             <button v-if="!enemy.exhausted" @click="debug.send(game.id, {tag: 'Exhaust', contents: {tag: 'EnemyTarget', contents: id}})">{{ $t('debug.enemy.exhaust') }}</button>
             <button v-else @click="debug.send(game.id, {tag: 'Ready', contents: {tag: 'EnemyTarget', contents: id}})">{{ $t('debug.enemy.ready') }}</button>
             <button @click="debug.send(game.id, {tag: 'EnemyEvaded', contents: [investigatorId, id]})">{{ $t('debug.enemy.evade') }}</button>
+            <!-- Only an enemy in a threat area can be disengaged; a massive enemy never is. -->
+            <button
+              v-if="enemy.placement.tag === 'InThreatArea'"
+              v-tooltip="$t('debug.enemy.disengageHint')"
+              @click="debug.send(game.id, {tag: 'EngageMessage', contents: {tag: 'DisengageEnemyFromAll_', contents: id}})"
+            >{{ $t('debug.enemy.disengage') }}</button>
             <button class="debug-button--danger" @click="defeat">{{ $t('debug.enemy.defeat') }}</button>
           </div>
         </section>

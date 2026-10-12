@@ -21,6 +21,10 @@ import { type ChaosBagChange, type RecordCountChange, chaosBagChangeDecoder, rec
 import * as JsonDecoder from 'ts.data.json'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import CampaignLogSection from '@/arkham/components/CampaignLogSection.vue'
+import CampaignLogDebug from '@/arkham/components/debug/CampaignLogDebug.vue'
+import CampaignInvestigatorDebug from '@/arkham/components/debug/CampaignInvestigatorDebug.vue'
+import { useDebug } from '@/arkham/debug'
+import { customLogText } from '@/arkham/debugPlayer'
 import CampaignLogSpecialRules from '@/arkham/components/CampaignLogSpecialRules.vue'
 import CampaignLogRecordedSets from '@/arkham/components/CampaignLogRecordedSets.vue'
 import CampaignLogInvestigatorSection from '@/arkham/components/CampaignLogInvestigatorSection.vue'
@@ -113,6 +117,7 @@ const campaignDefinition = computed<CampaignDefinition | null>(() => {
 
 // Scope for homebrew keys recorded before their campaign added a scope prefix.
 const homebrewScope = computed(() => homebrewScopeFromCampaignId(props.game.campaign?.id))
+const debug = useDebug()
 
 const additionalLogSections = computed(() => campaignDefinition.value?.additional ?? [])
 const additionalTabId = (index: number): `additional:${number}` => `additional:${index}`
@@ -398,14 +403,21 @@ const TDC_TASK_KEYS = new Set([
   'PlumbTheDepths',
 ])
 
-const recorded = computed(() => {
+const recordedKeys = computed(() => {
   return selectedLog.value.recorded
     .filter(r => !['Teachings1', 'Teachings2', 'Teachings3'].includes(r.tag))
     .filter((c) => !isSection(c))
     .filter((c) => !(c.tag === 'TheDrownedCityKey' && TDC_ARTIFACT_KEYS.has(String((c as any).contents))))
     .filter((c) => !(c.tag === 'TheDrownedCityKey' && TDC_TASK_KEYS.has(String((c as any).contents))))
-    .map((k: LogKey) => formatKey(k, homebrewScope.value))
 })
+
+const recorded = computed(() => recordedKeys.value.map((k: LogKey) => formatKey(k, homebrewScope.value)))
+
+// A player-typed entry (see `customLogText`) reads exactly as it was typed; its
+// locale path would lose capitals and apostrophes.
+const recordedTitles = computed(() =>
+  recordedKeys.value.map((k: LogKey) => customLogText(k.raw) ?? logTitle(formatKey(k, homebrewScope.value)))
+)
 
 type SectionModel = {
   key: string
@@ -910,13 +922,14 @@ onUnmounted(() => {
         </nav>
 
         <div v-show="activeTab === 'investigators'" class="investigators-log">
-          <InvestigatorRow
-            v-for="investigator in investigators"
-            :key="investigator.id"
-            :investigator="investigator"
-            :game="game"
-            :bonus-xp="bonusXp && bonusXp[investigator.id]"
-          />
+          <template v-for="investigator in investigators" :key="investigator.id">
+            <InvestigatorRow
+              :investigator="investigator"
+              :game="game"
+              :bonus-xp="bonusXp && bonusXp[investigator.id]"
+            />
+            <CampaignInvestigatorDebug v-if="debug.active" :game="game" :investigator="investigator" />
+          </template>
         </div>
 
         <template v-if="activeTab === 'rules'">
@@ -1026,7 +1039,7 @@ onUnmounted(() => {
           <CampaignLogSection
             v-if="recorded.length > 0"
             :title="t('campaignLog.campaignNotes')"
-            :items="recorded.map(logTitle)"
+            :items="recordedTitles"
           />
 
           <!-- Campaign sections -->
@@ -1084,6 +1097,13 @@ onUnmounted(() => {
             v-if="Object.values(partners).length > 0"
             :partners="partners"
             :cardCodeToTitle="cardCodeToTitle"
+          />
+
+          <CampaignLogDebug
+            v-if="debug.active && showingMain"
+            :game="game"
+            :log="selectedLog"
+            :homebrewScope="homebrewScope"
           />
         </div>
         </template>

@@ -675,7 +675,9 @@
       "state": "State",
       "sealedTokens": "Sealed Tokens",
       "release": "Release this token",
-      "shiftFive": "Shift-click for 5"
+      "shiftFive": "Shift-click for 5",
+      "disengage": "Disengage",
+      "disengageHint": "Moves the enemy off the investigator to their location. A ready enemy engages again at the next engagement check, so exhaust it too to keep it off."
     },
     "location": {
       "title": "Debug Location",
@@ -700,6 +702,43 @@
       "eventTitle": "Debug Event",
       "skillTitle": "Debug Skill",
       "treacheryTitle": "Debug Treachery"
+    },
+    "deck": {
+      "title": "Debug Deck",
+      "size": "{count} card in the deck | {count} cards in the deck",
+      "draw": "Draw",
+      "drawButton": "Draw {count} | Draw {count}",
+      "selectDrawHint": "Pick any card in the deck and draw it",
+      "search": "Search the top of the deck",
+      "topX": "Top",
+      "look": "Look",
+      "done": "Done",
+      "positionHint": "Position in the deck, from the top",
+      "allMoved": "Every card you looked at has left the top of the deck.",
+      "toHand": "Hand",
+      "toDiscard": "Discard",
+      "toTop": "Top",
+      "toBottom": "Bottom",
+      "remove": "Remove"
+    },
+    "hand": {
+      "discardRandom": "Discard at random"
+    },
+    "campaign": {
+      "xpHint": "Debug: adds experience (reported in the XP breakdown) or spends it",
+      "traumaHint": "Debug: + suffers trauma by the rules (reaching the limit kills or drives the investigator insane); − heals it",
+      "customEntries": "Custom entries (debug)",
+      "customEntriesHint": "Notes and counts written by players or custom cards. They are part of the real campaign log and carry into later scenarios.",
+      "edit": "Edit",
+      "rename": "Rename",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "countHint": "Set this count",
+      "notePlaceholder": "A note to record in the campaign log",
+      "countPlaceholder": "Name of a count",
+      "addNote": "Record note",
+      "addCount": "Record count"
     },
     "seals": {
       "sealedTokens": "Sealed Tokens",

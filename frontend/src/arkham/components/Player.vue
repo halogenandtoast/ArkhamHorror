@@ -7,6 +7,7 @@ import { storeToRefs } from 'pinia';
 import { useSettings } from '@/stores/settings';
 import { useDebug } from '@/arkham/debug'
 import * as DebugMove from '@/arkham/debugCardMove';
+import { discardRandomMessage } from '@/arkham/debugPlayer';
 import { cardDropInFlight } from '@/arkham/debugCardDrop';
 import { Game } from '@/arkham/types/Game';
 import { toCardContents } from '@/arkham/types/Card';
@@ -753,6 +754,9 @@ async function debugAddCardToHand(card: CardDef) {
 }
 
 const debug = useDebug()
+
+// Debug: one card from hand to the discard pile, picked by the engine at random.
+const discardRandom = () => debug.send(props.game.id, discardRandomMessage(props.investigator.id))
 const events = computed(() => props.investigator.events.map((e) => props.game.events[e]).filter(e => e))
 const skills = computed(() => props.investigator.skills.map((e) => props.game.skills[e]).filter(e => e))
 const emptySlots = computed(() => {
@@ -1362,20 +1366,29 @@ function closeHand() {
         <div class="hand-debug-actions" v-if="debug.active">
           <button type="button" @click="openDebugAddCard">+ Card to hand</button>
           <button v-if="customCardsEnabled" type="button" @click="showCustomCardPicker = true">+ Custom card</button>
+          <button type="button" :disabled="investigator.hand.length === 0" @click="discardRandom">{{ $t('debug.hand.discardRandom') }}</button>
         </div>
         <div v-if="investigator.handSize" class="hand-size" :class="handSizeClasses" :current-length="totalHandSize">{{ t('handSize') }}: {{totalHandSize}}/{{investigator.handSize}}</div>
       </div>
     </div>
     <div v-if="isMobile" class="hand hand-area-IsMobile" :style="{ bottom: `${handAreaMarginBottom}px` }" @click="toggleHandAreaMarginBottom">
-      <button
+      <div
         v-if="debug.active"
         v-show="handAreaPointerEvents === 'auto'"
-        class="hand-debug-add-button"
-        type="button"
-        @click.stop="openDebugAddCard"
+        class="hand-debug-mobile"
       >
-        + Card
-      </button>
+        <button class="hand-debug-add-button" type="button" @click.stop="openDebugAddCard">
+          + Card
+        </button>
+        <button
+          class="hand-debug-add-button"
+          type="button"
+          :disabled="investigator.hand.length === 0"
+          @click.stop="discardRandom"
+        >
+          {{ $t('debug.hand.discardRandom') }}
+        </button>
+      </div>
       <button
         v-show="handAreaPointerEvents === 'auto'"
         class="hand-close-button"
@@ -1985,11 +1998,20 @@ function closeHand() {
   }
 }
 
-.hand-debug-add-button {
+/* The mobile hand's debug buttons, top-left over the hand. */
+.hand-debug-mobile {
   position: absolute;
   top: 6px;
   left: 6px;
   z-index: var(--z-index-101);
+  display: flex;
+  gap: 6px;
+}
+
+.hand-debug-actions button:disabled,
+.hand-debug-add-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .hand-close-button {

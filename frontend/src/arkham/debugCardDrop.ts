@@ -26,6 +26,7 @@ export type SealTarget =
   | { tag: 'EnemyTarget'; contents: string }
   | { tag: 'LocationTarget'; contents: string }
   | { tag: 'InvestigatorTarget'; contents: string }
+  | { tag: 'TreacheryTarget'; contents: string }
 
 /* Takes placed tokens (Piper's skull counts resources on it) but has no sealed
  * pool, so it refuses a seal drag. */
@@ -43,6 +44,11 @@ export const enemyTarget = (id: string): SealTarget => ({ tag: 'EnemyTarget', co
 export const locationTarget = (id: string): SealTarget => ({ tag: 'LocationTarget', contents: id })
 export const investigatorTarget = (id: string): SealTarget =>
   ({ tag: 'InvestigatorTarget', contents: id })
+/* Treacheries keep plain tokens -- no uses -- so a Resource stays a resource. A
+ * treachery attached to another card takes the drop itself; anything it refuses
+ * still bubbles to the card underneath. */
+export const treacheryTarget = (id: string): SealTarget =>
+  ({ tag: 'TreacheryTarget', contents: id })
 export const scenarioTarget: TokensOnlyTarget = { tag: 'ScenarioTarget' }
 
 const sameTarget = (a: RemoveTarget, b: RemoveTarget) =>

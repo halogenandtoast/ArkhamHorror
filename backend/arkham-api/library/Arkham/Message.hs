@@ -1384,6 +1384,9 @@ data Message
   | -- Debug: start a real skill test with no card behind it. See
     -- "Arkham.Debug.SkillTest".
     DebugBeginSkillTest DebugSkillTestSpec
+  | -- Debug: forget a campaign log key entirely (recorded, crossed out, counted),
+    -- so a player-typed entry can be edited or deleted.
+    DebugRemoveCampaignLogKey CampaignLogKey
   | DebugCustomize InvestigatorId CardId
   | DebugIncreaseCustomization InvestigatorId CardCode Customization [CustomizationChoice]
   | SetScenarioDifficulty Difficulty

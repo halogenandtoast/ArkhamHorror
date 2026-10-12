@@ -189,7 +189,7 @@ const lastSweep = computed(() => {
       <div v-if="stats.enabled" class="pick box">
         <label for="archive-game-id">Archive one game</label>
         <p class="pick-hint">
-          A game id — from the lists below, or a game's admin page. This ignores the
+          A game id — from the dashboard's game lists, or a game's admin page. This ignores the
           retention cutoff, so it is how you archive a game you have chosen, press Undo
           in it, and watch the history come back. Nothing is deleted until the uploaded
           copy has been downloaded again and checked.
@@ -294,8 +294,8 @@ const lastSweep = computed(() => {
 </template>
 
 <style scoped>
-/* Admin.vue's styles are scoped, so the panel chrome it shares with the rest of
- * that page is restated here rather than inherited. */
+/* Every admin page styles its own chrome: the shell's styles are scoped, so the
+ * block and header shared with the other sections are restated here. */
 .admin-block {
   background: color-mix(in srgb, var(--background-dark) 42%, transparent);
   border: 1px solid color-mix(in srgb, var(--box-border) 75%, transparent);

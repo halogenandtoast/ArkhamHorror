@@ -41,6 +41,14 @@ export default [
         meta: { requiresAuth: true, requiresAdmin: true, title: "Arkham Horror: Rooms" },
       },
       {
+        // What the nightly archive sweep has reclaimed, and the controls for
+        // archiving or restoring a single game by hand.
+        path: 'archives',
+        name: 'AdminArchives',
+        component: () => import('@/views/AdminArchives.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true, title: "Arkham Horror: Archives" },
+      },
+      {
         // Play statistics, read off a server-side materialized view.
         path: 'stats',
         name: 'AdminGameStats',

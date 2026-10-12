@@ -144,6 +144,24 @@ variable "app_db_pool" {
   default     = 20
 }
 
+variable "app_archive_sweep" {
+  description = <<-EOT
+    Whether the daily archive sweep runs (ARCHIVE_SWEEP), separately from
+    `ARCHIVE_BUCKET` being set: a bucket makes archiving possible, this is what
+    lets a job choose the games. One run drains the whole backlog in batches, so
+    turning this on is the decision to offload every eligible game's undo
+    history, not just the next few.
+
+    A typed variable rather than an `app_secrets` key so the switch is legible in
+    `terraform plan` -- `app_secrets` is sensitive and renders as
+    "(sensitive value)", which is the wrong thing for a flag that deletes rows.
+    Off is the kill switch, and it takes a rollout restart to apply like any
+    other env change.
+  EOT
+  type        = bool
+  default     = false
+}
+
 variable "app_memory_target_utilization" {
   description = "HPA memory target percent. Crossing this triggers scale-out."
   type        = number

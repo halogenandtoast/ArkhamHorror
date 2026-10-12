@@ -2,7 +2,8 @@ module Arkham.Homebrew.AgainstTheWendigo.Enemies.Bear (bear) where
 
 import Arkham.Ability
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
+import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModifySelf)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.SkillTest (getSkillTestSource)
 import Arkham.Helpers.Source (sourceMatches)
@@ -21,13 +22,10 @@ bear :: EnemyCard Bear
 bear = enemy Bear Cards.bear & setSpawnAt (NearestLocationToYou $ LocationWithTrait Wild)
 
 instance HasModifiersFor Bear where
-  getModifiersFor (Bear a) = do
-    armed <-
-      getSkillTestSource >>= \case
-        Nothing -> pure False
-        Just source ->
-          sourceMatches source $ SourceMatchesAny [SourceWithTrait t | t <- [Spell, Firearm, Ranged]]
-    modifySelfWhen a armed [EnemyFight (-1)]
+  getModifiersFor (Bear a) = maybeModifySelf a do
+    source <- MaybeT getSkillTestSource
+    ensure $ sourceMatches source $ SourceMatchesAny [SourceWithTrait t | t <- [Spell, Firearm, Ranged]]
+    pure [EnemyFight (-1)]
 
 instance HasAbilities Bear where
   getAbilities (Bear a) = extend1 a $ mkAbility a 1 $ forced $ PhaseEnds #when #enemy
@@ -39,9 +37,11 @@ instance RunMessage Bear where
       requestChaosTokens lead (attrs.ability 1) 1
       pure e
     RequestedChaosTokens (isAbilitySource attrs 1 -> True) miid tokens -> do
-      for_ miid continue_
       if any isSymbolFace tokens
-        then enemyMoveToMatch attrs attrs (NearestLocationToYou Anywhere)
-        else push $ ShuffleBackIntoEncounterDeck (toSource attrs) (toTarget attrs)
+        then withLocationOf attrs \lid ->
+          enemyMoveToMatch attrs attrs (NearestLocationToLocation lid $ LocationWithInvestigator Anyone)
+        else do
+          for_ miid continue_
+          toDiscard (attrs.ability 1) attrs
       pure e
     _ -> Bear <$> liftRunMessage msg attrs

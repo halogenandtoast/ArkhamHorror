@@ -7,8 +7,8 @@ import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Enemies qualified as Cards
 import Arkham.Matcher
 
 newtype BestialCreature = BestialCreature EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 {- | "Prey - The investigator with the least damage on her or him, and her or his
 Ally assets." The Ally half is not expressible as a prey matcher, so the printed

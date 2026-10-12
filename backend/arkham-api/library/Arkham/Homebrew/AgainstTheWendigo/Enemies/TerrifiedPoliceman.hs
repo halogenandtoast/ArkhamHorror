@@ -19,16 +19,18 @@ terrifiedPoliceman =
 
 instance HasAbilities TerrifiedPoliceman where
   getAbilities (TerrifiedPoliceman a) =
-    [ {- "At the end of each investigator turn, if Terrified Policeman is not
-      engaged: Terrified Policeman attacks the investigator in the same location,
-      or in a location directly to the North, South, East or West." The valley's
-      compass connections are the grid's, so the printed reach is the connected
-      locations. -}
-      restricted a 1 (notExists (be a <> EnemyIsEngagedWith Anyone) <> exists (inReachOf a))
-        $ forced
-        $ TurnEnds #when Anyone
-    , skillTestAbility $ restricted a 2 OnSameLocation parleyAction_
-    ]
+    extend
+      a
+      [ {- "At the end of each investigator turn, if Terrified Policeman is not
+        engaged: Terrified Policeman attacks the investigator in the same location,
+        or in a location directly to the North, South, East or West." The valley's
+        compass connections are the grid's, so the printed reach is the connected
+        locations. -}
+        restricted a 1 (notExists (be a <> EnemyIsEngagedWith Anyone) <> exists (inReachOf a))
+          $ forced
+          $ TurnEnds #when Anyone
+      , skillTestAbility $ restricted a 2 OnSameLocation parleyAction_
+      ]
 
 {- | "...the investigator in the same location, or in a location directly to the
 North, South, East or West." The valley is laid out in the grid, so those four

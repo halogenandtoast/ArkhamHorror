@@ -30,15 +30,21 @@ instance HasModifiersFor TheWendigo where
 
 instance HasAbilities TheWendigo where
   getAbilities (TheWendigo a) =
-    [ -- "At the end of each investigator turn, ready The Wendigo."
-      restricted a 1 (exists $ be a <> ExhaustedEnemy) $ forced $ TurnEnds #when Anyone
-    , -- "If a doom token is put into play, heal 1 damage on The Wendigo (for a 3
-      -- or 4 player game, heal 2 damage instead)."
-      restricted a 2 (exists $ be a <> EnemyWithAnyDamage) $ forced $ PlacedDoomCounter #after AnySource AnyTarget
-    , -- "If an investigator is defeated at The Wendigo's location, he or she
-      -- suffers 1 additional physical trauma."
-      restricted a 3 Here $ forced $ Matcher.InvestigatorDefeated #when ByAny (InvestigatorAt $ locationWithEnemy a)
-    ]
+    extend
+      a
+      [ -- "At the end of each investigator turn, ready The Wendigo."
+        restricted a 1 (exists $ be a <> ExhaustedEnemy) $ forced $ TurnEnds #when Anyone
+      , -- "If a doom token is put into play, heal 1 damage on The Wendigo (for a 3
+        -- or 4 player game, heal 2 damage instead)."
+        restricted a 2 (exists $ be a <> EnemyWithAnyDamage)
+          $ forced
+          $ PlacedDoomCounter #after AnySource AnyTarget
+      , -- "If an investigator is defeated at The Wendigo's location, he or she
+        -- suffers 1 additional physical trauma."
+        restricted a 3 Here
+          $ forced
+          $ Matcher.InvestigatorDefeated #when ByAny (InvestigatorAt $ locationWithEnemy a)
+      ]
 
 instance RunMessage TheWendigo where
   runMessage msg e@(TheWendigo attrs) = runQueueT $ case msg of

@@ -16,7 +16,10 @@ wildIndigenous = enemy WildIndigenous Cards.wildIndigenous & setPrey LowestRemai
 
 instance HasAbilities WildIndigenous where
   getAbilities (WildIndigenous a) =
-    [restricted a 1 (exists $ be a <> EnemyIsEngagedWith Anyone) $ forced $ PhaseEnds #when #enemy]
+    extend1 a
+      $ restricted a 1 (exists $ be a <> EnemyIsEngagedWith Anyone)
+      $ forced
+      $ PhaseEnds #when #enemy
 
 instance RunMessage WildIndigenous where
   runMessage msg e@(WildIndigenous attrs) = runQueueT $ case msg of

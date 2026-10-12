@@ -31,7 +31,7 @@ import Arkham.Classes.GameLogger (HasGameLogger)
 import Arkham.Classes.HasModifiersFor (HasModifiersM)
 import Arkham.Classes.HasQueue (push, pushAll)
 import Arkham.Classes.Query
-import Arkham.Direction (Direction (LeftOf, RightOf))
+import Arkham.Direction (Direction (..))
 import Arkham.Distance (unDistance)
 import Arkham.GameEnv (getDistance)
 import Arkham.GameValue (GameValue (ByPlayerCount))
@@ -75,6 +75,7 @@ import Arkham.SkillType (SkillType (SkillAgility, SkillCombat))
 import Arkham.Source
 import Arkham.Story.Types qualified as Story
 import Arkham.Trait (Trait (River))
+import Arkham.Treachery.Types (TreacheryAttrs)
 
 -- * Text
 
@@ -90,6 +91,17 @@ the column beside them.
 -}
 connectsEastOrWest :: LocationAttrs -> LocationAttrs
 connectsEastOrWest = connectsToL .~ setFromList [LeftOf, RightOf]
+
+-- | The location an attached treachery sits on, or nothing while it is unattached.
+attachedLocation :: TreacheryAttrs -> LocationMatcher
+attachedLocation a = maybe Nowhere LocationWithId a.attached.location
+
+{- | "...directly to the East or West", and its North/South counterpart. The
+valley is laid out in the grid, so the compass is the grid's, not the
+connections' -- the river locations connect North and South as well.
+-}
+inDirectionsOf :: [Direction] -> TreacheryAttrs -> LocationMatcher
+inDirectionsOf ds a = oneOf [LocationInDirection d (attachedLocation a) | d <- ds]
 
 -- * The river
 

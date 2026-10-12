@@ -188,9 +188,14 @@ runDBIO app action = runSqlPool action (appConnPool app)
 triggers for its duration. See the @arkham_game_archives@ migration: the
 alternative is @DISABLE TRIGGER@, which is DDL on the hottest table in the
 application and lifts the guard for every other session too.
+
+@SET LOCAL@ rather than @SELECT set_config(..., true)@, which is the same thing
+but as an expression: 'rawExecute' is postgresql-simple's @execute@, and that
+refuses any statement returning columns, so the @SELECT@ form fails before it
+sets anything.
 -}
 announceArchiving :: ReaderT SqlBackend IO ()
-announceArchiving = rawExecute "SELECT set_config('arkham.archiving', 'on', true)" []
+announceArchiving = rawExecute "SET LOCAL arkham.archiving = 'on'" []
 
 {- | Log a line and flush it.
 

@@ -135,9 +135,20 @@ export const fetchDeck = async (deckId: string): Promise<Deck> => {
 
 export type CardPoolMode = 'player' | 'campaign' | 'both'
 
-export const fetchCards = async (cardPool: CardPoolMode | boolean = 'player'): Promise<CardDef[]> => {
+/* `allSides` keeps the back of a double-sided card, which the listing otherwise
+ * drops in favour of its front. Only the debug card picker wants them: it names a
+ * card by its def, and a back such as Gold Mining Revenues has no front that could
+ * stand in for it. */
+export const fetchCards = async (
+  cardPool: CardPoolMode | boolean = 'player',
+  allSides = false,
+): Promise<CardDef[]> => {
   const mode: CardPoolMode = cardPool === true ? 'both' : cardPool === false ? 'player' : cardPool
-  const query = mode === 'player' ? "" : `?includeEncounter&cardPool=${mode}`
+  const params = [
+    ...(mode === 'player' ? [] : ['includeEncounter', `cardPool=${mode}`]),
+    ...(allSides ? ['allSides'] : []),
+  ]
+  const query = params.length === 0 ? '' : `?${params.join('&')}`
   const { data } = await api.get(`arkham/cards${query}`)
   const cards = await JsonDecoder.array(cardDefDecoder, 'ArkhamCardDef[]').decodePromise(data)
   registerArtVariants(cards)

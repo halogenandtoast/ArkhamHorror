@@ -22,9 +22,9 @@ import * as JsonDecoder from 'ts.data.json'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import CampaignLogSection from '@/arkham/components/CampaignLogSection.vue'
 import CampaignLogDebug from '@/arkham/components/debug/CampaignLogDebug.vue'
-import CampaignInvestigatorDebug from '@/arkham/components/debug/CampaignInvestigatorDebug.vue'
-import { useDebug } from '@/arkham/debug'
+import DebugToggle from '@/arkham/components/debug/DebugToggle.vue'
 import { customLogText } from '@/arkham/debugPlayer'
+import { useShiftHoverDebug } from '@/composable/shiftHoverDebug'
 import CampaignLogSpecialRules from '@/arkham/components/CampaignLogSpecialRules.vue'
 import CampaignLogRecordedSets from '@/arkham/components/CampaignLogRecordedSets.vue'
 import CampaignLogInvestigatorSection from '@/arkham/components/CampaignLogInvestigatorSection.vue'
@@ -119,7 +119,15 @@ const campaignDefinition = computed<CampaignDefinition | null>(() => {
 
 // Scope for homebrew keys recorded before their campaign added a scope prefix.
 const homebrewScope = computed(() => homebrewScopeFromCampaignId(props.game.campaign?.id))
-const debug = useDebug()
+
+// Shift over the log for a Debug button that opens the custom entries editor.
+const {
+  active: logDebugging,
+  showToggle: showLogDebugToggle,
+  onEnter: onLogEnter,
+  onLeave: onLogLeave,
+  toggle: toggleLogDebug,
+} = useShiftHoverDebug()
 
 const additionalLogSections = computed(() => campaignDefinition.value?.additional ?? [])
 const additionalTabId = (index: number): `additional:${number}` => `additional:${index}`
@@ -1028,14 +1036,14 @@ onUnmounted(() => {
         </nav>
 
         <div v-show="activeTab === 'investigators'" class="investigators-log">
-          <template v-for="investigator in investigators" :key="investigator.id">
-            <InvestigatorRow
-              :investigator="investigator"
-              :game="game"
-              :bonus-xp="bonusXp && bonusXp[investigator.id]"
-            />
-            <CampaignInvestigatorDebug v-if="debug.active" :game="game" :investigator="investigator" />
-          </template>
+          <InvestigatorRow
+            v-for="investigator in investigators"
+            :key="investigator.id"
+            :investigator="investigator"
+            :game="game"
+            :bonus-xp="bonusXp && bonusXp[investigator.id]"
+            :debuggable="showingMain"
+          />
         </div>
 
         <template v-if="activeTab === 'rules'">
@@ -1102,7 +1110,7 @@ onUnmounted(() => {
           :items="remembered"
         />
 
-        <div class="log-categories">
+        <div class="log-categories" @mouseenter="onLogEnter" @mouseleave="onLogLeave">
           <div v-if="hasSupplies" class="supplies-container">
             <h2>{{ t('theForgottenAge.supplies.title') }}</h2>
             <div class="supplies-content">
@@ -1216,10 +1224,17 @@ onUnmounted(() => {
           />
 
           <CampaignLogDebug
-            v-if="debug.active && showingMain"
+            v-if="logDebugging && showingMain"
             :game="game"
             :log="selectedLog"
             :homebrewScope="homebrewScope"
+          />
+
+          <DebugToggle
+            v-if="showLogDebugToggle && showingMain"
+            :active="logDebugging"
+            class="log-debug-toggle"
+            @click="toggleLogDebug"
           />
         </div>
         </template>
@@ -1423,6 +1438,10 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.log-debug-toggle {
+  align-self: flex-end;
 }
 
 .hemlock-overview {

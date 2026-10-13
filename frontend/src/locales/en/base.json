@@ -748,6 +748,7 @@
       "discardRandom": "Discard at random"
     },
     "campaign": {
+      "debugToggle": "Debug",
       "xpHint": "Debug: adds experience (reported in the XP breakdown) or spends it",
       "traumaHint": "Debug: + suffers trauma by the rules (reaching the limit kills or drives the investigator insane); − heals it",
       "customEntries": "Custom entries (debug)",

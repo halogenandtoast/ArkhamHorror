@@ -8,6 +8,10 @@ import { investigatorPortrait } from '@/arkham/cardImages'
 import { useDbCardStore } from '@/stores/dbCards'
 import { asCardCode } from '@/arkham/types/Card';
 import type { CardContents } from '@/arkham/types/Card';
+import DebugToggle from '@/arkham/components/debug/DebugToggle.vue'
+import { useDebug } from '@/arkham/debug'
+import { gainXpMessage, healTraumaMessage, spendXpMessage, sufferTraumaMessage, type TraumaKind } from '@/arkham/debugPlayer'
+import { useShiftHoverDebug } from '@/composable/shiftHoverDebug'
 
 export interface Props {
   investigator: Investigator
@@ -16,6 +20,8 @@ export interface Props {
   showExpand?: boolean;
   /** Fade the portrait and stats: an investigator who is not in the campaign right now. */
   dimmed?: boolean;
+  /** Hold Shift over the row for a Debug button that puts −/+ around its XP and trauma. */
+  debuggable?: boolean;
 }
 
 const store = useDbCardStore()
@@ -23,9 +29,23 @@ const props = withDefaults(defineProps<Props>(), {
   bonusXp: null,
   showExpand: true,
   dimmed: false,
+  debuggable: false,
 })
 
 const expanded = ref(false)
+
+// Trauma follows the rules: suffering it can kill or drive the investigator
+// insane at the limit. XP is reported to the breakdown like any other gain.
+const { active: debugActive, showToggle, onEnter, onLeave, toggle: toggleDebug } = useShiftHoverDebug()
+const showDebugToggle = computed(() => props.debuggable && showToggle.value)
+const debugging = computed(() => props.debuggable && debugActive.value)
+
+const debug = useDebug()
+const sendDebug = (message: unknown) => debug.send(props.game.id, message)
+const stepXp = (by: 1 | -1) =>
+  sendDebug(by > 0 ? gainXpMessage(props.investigator.id) : spendXpMessage(props.investigator.id))
+const stepTrauma = (kind: TraumaKind, by: 1 | -1) =>
+  sendDebug(by > 0 ? sufferTraumaMessage(props.investigator.id, kind) : healTraumaMessage(props.investigator.id, kind))
 
 // An investigator you built carries its own portrait; there is nothing for it
 // under the portrait directory.
@@ -98,7 +118,7 @@ const deck = computed(() => {
 </script>
 
 <template>
-  <div class="investigator" :class="[investigator.class.toLowerCase(), { dimmed }]">
+  <div class="investigator" :class="[investigator.class.toLowerCase(), { dimmed }]" @mouseenter="onEnter" @mouseleave="onLeave">
     <div class="basic">
       <div class="basic-top">
         <div class="portrait-wrap" :class="investigator.class.toLowerCase()">
@@ -115,18 +135,25 @@ const deck = computed(() => {
       <div class="basic-bottom">
         <div class="stat-chip stat-xp">
           <span class="stat-label">XP</span>
+          <button v-if="debugging" type="button" class="stat-step" :disabled="investigator.xp <= 0" v-tooltip="$t('debug.campaign.xpHint')" @click="stepXp(-1)">−</button>
           <span class="stat-value">{{ investigator.xp }}<span v-if="bonusXp" class="bonus-xp"> +{{ bonusXp }}</span></span>
+          <button v-if="debugging" type="button" class="stat-step" v-tooltip="$t('debug.campaign.xpHint')" @click="stepXp(1)">+</button>
         </div>
         <div class="stat-chip stat-health">
           <svg class="icon icon-health"><use xlink:href="#icon-health"></use></svg>
           <span class="stat-label">{{ $t('investigatorRow.physical') }}</span>
+          <button v-if="debugging" type="button" class="stat-step" :disabled="investigator.physicalTrauma <= 0" v-tooltip="$t('debug.campaign.traumaHint')" @click="stepTrauma('physical', -1)">−</button>
           <span class="stat-value">{{ investigator.physicalTrauma }}</span>
+          <button v-if="debugging" type="button" class="stat-step" v-tooltip="$t('debug.campaign.traumaHint')" @click="stepTrauma('physical', 1)">+</button>
         </div>
         <div class="stat-chip stat-sanity">
           <svg class="icon icon-sanity"><use xlink:href="#icon-sanity"></use></svg>
           <span class="stat-label">{{ $t('investigatorRow.mental') }}</span>
+          <button v-if="debugging" type="button" class="stat-step" :disabled="investigator.mentalTrauma <= 0" v-tooltip="$t('debug.campaign.traumaHint')" @click="stepTrauma('mental', -1)">−</button>
           <span class="stat-value">{{ investigator.mentalTrauma }}</span>
+          <button v-if="debugging" type="button" class="stat-step" v-tooltip="$t('debug.campaign.traumaHint')" @click="stepTrauma('mental', 1)">+</button>
         </div>
+        <DebugToggle v-if="showDebugToggle" :active="debugging" class="row-debug-toggle" @click="toggleDebug" />
       </div>
     </div>
 
@@ -330,6 +357,28 @@ const deck = computed(() => {
 .bonus-xp {
   font-size: 0.8em;
   color: rgba(168, 208, 128, 0.6);
+}
+
+/* ── Debug (Shift-hover) ─────────────────────────────────── */
+
+.stat-step {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 4px;
+  background: rgba(0,0,0,0.35);
+  color: #f0f0f0;
+  font-size: 0.8em;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover:not(:disabled) { background: #6d1f1f; border-color: #9d3030; }
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
+}
+
+.row-debug-toggle {
+  margin-left: auto;
 }
 
 /* ── Earned cards ────────────────────────────────────────── */

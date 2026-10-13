@@ -481,10 +481,22 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
     getSkillTest >>= \case
       Nothing -> pure False
       Just skillTest -> skillTestMatches iid source skillTest skillTestMatcher
-  Criteria.TokensOnThis tokenKind valueMatcher -> case source of
-    TreacherySource tid ->
-      (`gameValueMatches` valueMatcher) . Token.countTokens tokenKind =<< field TreacheryTokens tid
-    _ -> error "missing TokensOnThis check"
+  {- Every entity that holds tokens answers this, not just a treachery. A custom
+  card asking whether its own marker is on it yet -- which is how a keyword like
+  Tension knows it has already activated -- is an asset far more often than a
+  treachery, and used to hit the error below. -}
+  Criteria.TokensOnThis tokenKind valueMatcher ->
+    let counted = (`gameValueMatches` valueMatcher) . Token.countTokens tokenKind
+     in case source of
+          TreacherySource tid -> counted =<< field TreacheryTokens tid
+          AssetSource aid -> counted =<< field AssetTokens aid
+          EventSource eid -> counted =<< field EventTokens eid
+          LocationSource lid -> counted =<< field LocationTokens lid
+          EnemySource eid -> counted =<< field EnemyTokens eid
+          InvestigatorSource iid' -> counted =<< field InvestigatorTokens iid'
+          StorySource sid -> counted =<< field StoryTokens sid
+          ActSource aid -> counted =<< field ActTokens aid
+          _ -> error $ "missing TokensOnThis check: " <> show source
   Criteria.ChargesOnThis valueMatcher -> passesCriteria iid mcard source' requestor windows' $ Criteria.TokensOnThis #charge valueMatcher
   Criteria.ResourcesOnThis valueMatcher -> case source of
     TreacherySource tid -> (`gameValueMatches` valueMatcher) =<< field TreacheryResources tid

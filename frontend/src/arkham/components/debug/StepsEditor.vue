@@ -53,6 +53,7 @@ type StepKind =
   | 'forEach'
   | 'repeat'
   | 'distribute'
+  | 'search'
   | 'request'
   | 'modify'
   | 'withSkillTest'
@@ -91,6 +92,7 @@ const KIND_LABELS: Record<StepKind, string> = {
   forEach: 'For each',
   repeat: 'Repeat',
   distribute: 'Distribute',
+  search: 'Search',
   request: 'Ask the game',
   modify: 'Modify',
   withSkillTest: 'With skill test',
@@ -128,6 +130,7 @@ function kindOf(step: any): StepKind {
     'forEach',
     'repeat',
     'distribute',
+    'search',
     'request',
     'modify',
     'withSkillTest',
@@ -173,6 +176,15 @@ const blankStep = (kind: StepKind) =>
     modify: { modify: { target: null, modifiers: [] } },
     repeat: { repeat: { times: 1, bind: 'i', steps: [] } },
     distribute: { distribute: { total: 1, among: { kind: 'investigator', matcher: null }, label: '', bind: 'who', amount: 'amount', steps: [] } },
+    search: {
+      search: {
+        how: 'search',
+        zones: [{ zone: 'topOfDeck', amount: 1, return: 'ShuffleBackIn' }],
+        matcher: null,
+        found: 'draw',
+        amount: 1,
+      },
+    },
     request: { request: { push: null, on: '', steps: [] } },
     withSkillTest: { withSkillTest: { bind: 'skillTestId', steps: [] } },
     withLocationOf: { withLocationOf: { kind: 'investigator', of: '$iid', bind: 'location', steps: [] } },
@@ -212,6 +224,7 @@ const KIND_HELP: Record<StepKind, string> = {
   forEach: 'Runs its steps once per thing found, from a matcher or a list, bound inside.',
   repeat: 'Runs its steps a number of times, with the pass number bound inside.',
   distribute: 'Splits a total between investigators, then runs its steps on each share.',
+  search: 'Searches a zone for cards, and says what happens to what it finds — and to finding nothing.',
   request: 'Pushes a message that is answered later, with the answer handled here.',
   modify: 'Gives something modifiers for as long as a window lasts.',
   withSkillTest: 'Runs its steps during a skill test, with that test bound inside.',
@@ -460,6 +473,92 @@ const ANSWERS = [
 ]
 
 const matcherType = (kind: string | undefined) => props.queryKinds[kind ?? 'enemy'] ?? 'EnemyMatcher'
+
+/* How a search treats the deck it reads. The same machinery with three manners:
+ * a search is a search as far as everything that reacts to one is concerned,
+ * looking leaves the deck alone, revealing shows the card to the table. */
+const SEARCH_HOWS: [string, string][] = [
+  ['search', 'search it'],
+  ['look', 'look at it'],
+  ['reveal', 'reveal it'],
+]
+
+/* The zones a card names, and how deep. Only the two deck zones take a depth --
+ * a hand or a discard pile is read whole. */
+const SEARCH_ZONES: [string, string][] = [
+  ['topOfDeck', 'the top of your deck'],
+  ['bottomOfDeck', 'the bottom of your deck'],
+  ['deck', 'your whole deck'],
+  ['hand', 'your hand'],
+  ['discard', 'your discard pile'],
+]
+
+const ZONE_TAKES_DEPTH = ['topOfDeck', 'bottomOfDeck']
+
+/* What becomes of the cards it did NOT take. */
+const SEARCH_RETURNS: [string, string][] = [
+  ['ShuffleBackIn', 'shuffle the rest back in'],
+  ['PutBack', 'put the rest back as they were'],
+  ['PutBackInAnyOrder', 'put the rest back in any order'],
+  ['PutBackInAnyOrderBothTopAndBottom', 'put the rest back, top or bottom'],
+  ['DiscardRest', 'discard the rest'],
+  ['RemoveRestFromGame', 'remove the rest from the game'],
+  ['DoNothing', 'leave the rest alone'],
+]
+
+/* What becomes of what it DID find. Everything but the last is one of the
+ * engine's own strategies, which handle the prompt themselves; the last hands
+ * the result back to this card so its own steps can say. */
+const SEARCH_FOUND: [string, string][] = [
+  ['draw', 'draw it'],
+  ['drawUpTo', 'draw up to that many'],
+  ['drawAll', 'draw all of them'],
+  ['hand', 'add it to your hand'],
+  ['play', 'play it, paying its cost'],
+  ['playFree', 'play it without paying its cost'],
+  ['handOrPlay', 'add it to your hand or play it'],
+  ['drawOrCommit', 'draw it or commit it'],
+  ['removeFromGame', 'remove it from the game'],
+  ['return', 'nothing — just look'],
+  ['steps', 'whatever the steps below say'],
+]
+
+/* Whether this search hands its result back to the card. Writing either branch
+ * is what asks for that, so the strategy follows from the steps rather than
+ * having to be kept in step with them by hand. */
+const searchDefers = (step: any) =>
+  step.search?.found === 'steps' ||
+  step.search?.onFound !== undefined ||
+  step.search?.onNoneFound !== undefined
+
+const SEARCH_COUNTED = ['draw', 'drawUpTo', 'hand', 'play', 'playFree', 'handOrPlay', 'drawOrCommit', 'removeFromGame']
+
+function setSearch(index: number, step: any, changes: Record<string, any>) {
+  set(index, { ...step, search: { ...step.search, ...changes } })
+}
+
+const searchZones = (step: any): any[] => step.search?.zones ?? []
+
+function setSearchZone(index: number, step: any, zi: number, changes: Record<string, any>) {
+  const zones = searchZones(step).map((z, i) => (i === zi ? { ...z, ...changes } : z))
+  setSearch(index, step, { zones })
+}
+
+const addSearchZone = (index: number, step: any) =>
+  setSearch(index, step, {
+    zones: [...searchZones(step), { zone: 'deck', return: 'ShuffleBackIn' }],
+  })
+
+const removeSearchZone = (index: number, step: any, zi: number) =>
+  setSearch(index, step, { zones: searchZones(step).filter((_, i) => i !== zi) })
+
+/* Turning the branches on and off, rather than leaving an author to guess that
+ * an absent key and an empty list mean different things to the engine. */
+function toggleSearchBranch(index: number, step: any, which: 'onFound' | 'onNoneFound') {
+  const on = step.search?.[which] !== undefined
+  setSearch(index, step, { [which]: on ? undefined : [], found: on ? step.search?.found : 'steps' })
+}
+
 
 /* The names a step introduces, shown on the step that introduces them.
  *
@@ -995,6 +1094,160 @@ const removeOption = (step: any, index: number, at: number) =>
             :modelValue="step.request?.steps ?? []"
             @update:modelValue="set(index, { ...step, request: { ...step.request, steps: $event } })"
           />
+        </div>
+      </template>
+
+      <template v-else-if="kindOf(step) === 'search'">
+        <p class="hint">
+          Searches a zone and says what happens to what it finds. Everything but the last
+          option under <em>What happens to what you find</em> is one of the engine's own
+          ways of resolving a search, prompt and all. Choosing <em>whatever the steps below
+          say</em> — or writing either branch — hands the result back to this card instead,
+          which is the only way to say anything else, and brings the
+          <em>found nothing</em> branch with it.
+        </p>
+
+        <label>
+          How
+          <select
+            :value="step.search?.how ?? 'search'"
+            @change="setSearch(index, step, { how: ($event.target as HTMLSelectElement).value })"
+          >
+            <option v-for="[value, label] in SEARCH_HOWS" :key="value" :value="value">{{ label }}</option>
+          </select>
+        </label>
+
+        <label>
+          Whose zones <span class="muted">(defaults to whoever used this)</span>
+          <input
+            type="text"
+            placeholder="$iid"
+            :value="step.search?.of ?? ''"
+            @input="setSearch(index, step, { of: ($event.target as HTMLInputElement).value || undefined })"
+            @keydown.stop
+          />
+        </label>
+
+        <h6>Where to look</h6>
+        <div v-for="(zone, zi) in searchZones(step)" :key="zi" class="zone">
+          <select
+            :value="zone.zone"
+            @change="setSearchZone(index, step, zi, { zone: ($event.target as HTMLSelectElement).value })"
+          >
+            <option v-for="[value, label] in SEARCH_ZONES" :key="value" :value="value">{{ label }}</option>
+          </select>
+          <!-- A depth is an expression: "the top X cards, where X is your
+               location's shroud" has no number to write down. -->
+          <ExpressionEditor
+            v-if="ZONE_TAKES_DEPTH.includes(zone.zone)"
+            label="How many"
+            :bindings="scopeFor(index)"
+            :modelValue="zone.amount ?? 1"
+            @update:modelValue="setSearchZone(index, step, zi, { amount: $event })"
+          />
+          <select
+            :value="zone.return ?? 'ShuffleBackIn'"
+            @change="setSearchZone(index, step, zi, { return: ($event.target as HTMLSelectElement).value })"
+          >
+            <option v-for="[value, label] in SEARCH_RETURNS" :key="value" :value="value">{{ label }}</option>
+          </select>
+          <button type="button" class="drop" @click="removeSearchZone(index, step, zi)">
+            <font-awesome-icon icon="trash" />
+          </button>
+        </div>
+        <button type="button" class="add-zone" @click="addSearchZone(index, step)">
+          <font-awesome-icon icon="plus" /> another zone
+        </button>
+
+        <ValueEditor
+          optional
+          label="Only cards matching"
+          type="ExtendedCardMatcher"
+          :bindings="scopeFor(index)"
+          :modelValue="step.search?.matcher"
+          @update:modelValue="setSearch(index, step, { matcher: $event })"
+        />
+
+        <label>
+          What happens to what you find
+          <select
+            :value="step.search?.found ?? 'return'"
+            @change="setSearch(index, step, { found: ($event.target as HTMLSelectElement).value })"
+          >
+            <option v-for="[value, label] in SEARCH_FOUND" :key="value" :value="value">{{ label }}</option>
+          </select>
+        </label>
+
+        <ExpressionEditor
+          v-if="SEARCH_COUNTED.includes(step.search?.found)"
+          label="How many"
+          :bindings="scopeFor(index)"
+          :modelValue="step.search?.amount ?? 1"
+          @update:modelValue="setSearch(index, step, { amount: $event })"
+        />
+
+        <label class="inline">
+          <input
+            type="checkbox"
+            :checked="step.search?.asDraw === true"
+            @change="setSearch(index, step, { asDraw: ($event.target as HTMLInputElement).checked || undefined })"
+          />
+          Finding a card counts as drawing it
+        </label>
+
+        <template v-if="searchDefers(step)">
+          <label>
+            Bind the card to
+            <input
+              type="text"
+              placeholder="card"
+              :value="step.search?.bind ?? ''"
+              @input="setSearch(index, step, { bind: ($event.target as HTMLInputElement).value || undefined })"
+              @keydown.stop
+            />
+          </label>
+          <p class="declares">
+            binds <code>${{ step.search?.bind || 'card' }}</code> :: Card and
+            <code>${{ step.search?.bind || 'card' }}s</code> :: [Card] for the
+            <em>found</em> steps
+          </p>
+        </template>
+
+        <div v-if="step.search?.onFound !== undefined" class="branch">
+          <span class="branch-label">When it finds something</span>
+          <StepsEditor
+            :slotSteps="slotSteps"
+            :bindings="innerScope(index)"
+            :path="innerPath(index, 'onFound')"
+            :announce="addedInside(index)"
+            :queryKinds="queryKinds"
+            :modelValue="step.search?.onFound ?? []"
+            @update:modelValue="setSearch(index, step, { onFound: $event })"
+          />
+        </div>
+
+        <!-- The other branch, which the engine only ever takes for a deferred
+             search: "If you cannot discard an event, shuffle this back in". -->
+        <div v-if="step.search?.onNoneFound !== undefined" class="branch">
+          <span class="branch-label">When it finds nothing</span>
+          <StepsEditor
+            :slotSteps="slotSteps"
+            :bindings="scopeFor(index)"
+            :path="innerPath(index, 'onNoneFound')"
+            :announce="[]"
+            :queryKinds="queryKinds"
+            :modelValue="step.search?.onNoneFound ?? []"
+            @update:modelValue="setSearch(index, step, { onNoneFound: $event })"
+          />
+        </div>
+
+        <div class="branch-toggles">
+          <button type="button" @click="toggleSearchBranch(index, step, 'onFound')">
+            {{ step.search?.onFound === undefined ? '+ found something' : '− found something' }}
+          </button>
+          <button type="button" @click="toggleSearchBranch(index, step, 'onNoneFound')">
+            {{ step.search?.onNoneFound === undefined ? '+ found nothing' : '− found nothing' }}
+          </button>
         </div>
       </template>
 
@@ -2099,6 +2352,69 @@ const removeOption = (step: any, index: number, at: number) =>
   flex-direction: column;
   gap: 0.3rem;
   padding-left: 0.5rem;
+}
+
+/* What a step binds for the steps under it, said on the step that binds it --
+   so a $name in scope can be traced back to where it came from. */
+.declares {
+  color: #9ca3af;
+  font-size: 0.72rem;
+  margin: 0;
+
+  code {
+    color: #5eead4;
+  }
+}
+
+h6 {
+  color: #9ca3af;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  margin: 0.2rem 0 0;
+  text-transform: uppercase;
+}
+
+.muted {
+  opacity: 0.6;
+}
+
+/* One zone of a Search, on a line: where, how deep, and what happens to the
+   rest. Read left to right as the sentence a card prints. */
+.zone {
+  align-items: flex-end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.add-zone,
+.branch-toggles > button {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid #4b5563;
+  border-radius: 4px;
+  color: #9ca3af;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.72rem;
+  padding: 0.2rem 0.5rem;
+
+  &:hover {
+    border-color: #6b7280;
+    color: #5eead4;
+  }
+}
+
+.branch-toggles {
+  display: flex;
+  gap: 0.4rem;
+}
+
+/* A checkbox reads as one line, not as a stacked label over a field. */
+label.inline {
+  align-items: center;
+  flex-direction: row;
+  gap: 0.35rem;
 }
 
 /* A branch of an If: its own edge and indent, so what belongs to which is read

@@ -84,6 +84,7 @@ import Arkham.Name (toTitle)
 import Arkham.PlayerCard (allPlayerCards)
 import Arkham.Prelude
 import Arkham.SkillType (SkillType (SkillWillpower))
+import Arkham.Search (SearchType (..), mkSearch)
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait (Trait, displayTrait)
@@ -798,6 +799,9 @@ runSteps env0 = void . foldM step env0
       | Just spec <- KeyMap.lookup "distribute" o -> do
           runDistribute env spec
           pure env
+      | Just spec <- KeyMap.lookup "search" o -> do
+          runSearch env spec
+          pure env
       | Just spec <- KeyMap.lookup "repeat" o -> do
           runRepeat env spec
           pure env
@@ -1063,7 +1067,15 @@ asked. 'LabeledTarget' is not a real target -- it wraps one -- so the message
 still reaches the card, and the label says which of its blocks to resume.
 -}
 distributeTarget :: Env -> Value -> Target
-distributeTarget env spec =
+distributeTarget = deferredTarget
+
+{- | Where a deferred answer comes back to: this entity, labelled with the block
+that asked. 'LabeledTarget' is not a real target -- it wraps one -- so the
+message still reaches the card, and the label says which of its blocks to
+resume.
+-}
+deferredTarget :: Env -> Value -> Target
+deferredTarget env spec =
   LabeledTarget
     (distributeKey spec)
     (fromMaybe GameTarget (KeyMap.lookup "target" env >>= parseMaybe parseJSON))
@@ -1076,14 +1088,22 @@ carries. Walked from the def rather than remembered, because the answer arrives
 long after the step that asked has finished.
 -}
 distributeBlocks :: Value -> [(Text, Value)]
-distributeBlocks = go
+distributeBlocks = deferredBlocks "distribute"
+
+-- | As 'distributeBlocks', for any step that defers its answer to the card.
+deferredBlocks :: Key -> Value -> [(Text, Value)]
+deferredBlocks name = go
  where
   go = \case
     Object o ->
-      [(distributeKey spec, spec) | Just spec <- [KeyMap.lookup "distribute" o]]
+      [(distributeKey spec, spec) | Just spec <- [KeyMap.lookup name o]]
         <> concatMap go (KeyMap.elems o)
     Array xs -> concatMap go (toList xs)
     _ -> []
+
+-- | Every @search@ block written anywhere in a card. See 'deferredBlocks'.
+searchBlocks :: Value -> [(Text, Value)]
+searchBlocks = deferredBlocks "search"
 
 {- | The steps inside, run a number of times worked out from the game.
 
@@ -1429,3 +1449,98 @@ chosenTarget kind value = case kind of
   decoded = parseMaybe parseJSON value
 
 -- * Modifiers
+
+{- | Search a zone, and say here what happens to what it finds.
+
+The engine's search is already general -- which zones, what comes back out of
+each of them, and what becomes of what was found -- but all three are spelled
+out in types a card author should not have to meet. @zones@ names them the way a
+card does ("the top 2 cards of your deck", "your discard pile"), with @return@
+saying what happens to the rest.
+
+@found@ hands the result straight to one of the engine's own strategies, which
+is what nearly every printed search wants: drawing it, putting it in hand,
+playing it. Writing @onFound@ steps instead defers the whole result to the card,
+which is the only way to say anything else -- and it brings @onNoneFound@ with
+it, because a search that finds nothing is a branch a card takes, exactly as a
+test that fails is. Those steps are not reached from here: the found cards
+arrive in a later message, so they are picked up by key the way a @distribute@
+block is.
+-}
+runSearch :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runSearch env spec = case spec of
+  Object o -> do
+    iid <- stepInvestigator env
+    let whose = fromMaybe iid (decodeWith env =<< KeyMap.lookup "of" o)
+    zones <- traverse (searchZone env) (valueList (fromMaybe Null (KeyMap.lookup "zones" o)))
+    amount <- maybe (pure 1) (exprInt env) (KeyMap.lookup "amount" o)
+    let matcher = fromMaybe (BasicCardMatch AnyCard) (decodeWith env =<< KeyMap.lookup "matcher" o)
+    case (sequence zones, foundStrategy o iid amount, searchType o) of
+      (Just zs, Just strategy, Just sType)
+        | notNull zs ->
+            push
+              $ asSearch sType
+              $ mkSearch sType iid (stepSource env) (InvestigatorTarget whose) zs matcher strategy
+      _ -> reportBadPayload env "search" spec
+  _ -> reportBadPayload env "search" spec
+ where
+  {- Searching, looking and revealing are the same machinery with different
+  manners: a search shuffles and is a search as far as everything that reacts to
+  one is concerned, looking leaves the deck alone, revealing shows the card to
+  the table. The @Do@ wrapper belongs to searching only, which is where the
+  engine opens its would-search window. -}
+  searchType o = case KeyMap.lookup "how" o of
+    Nothing -> Just Searching
+    Just (String "search") -> Just Searching
+    Just (String "look") -> Just Looking
+    Just (String "reveal") -> Just Revealing
+    _ -> Nothing
+  asSearch sType = if sType == Searching then Do . Search else Search
+  {- Whether finding a card counts as drawing it, which decides what the draw
+  windows see. Asked only where the engine does not already know: every other
+  strategy answers it for itself. -}
+  isDraw o = if KeyMap.lookup "asDraw" o == Just (Bool True) then IsDraw else IsNotDraw
+  foundStrategy o who n
+    | KeyMap.member "onFound" o || KeyMap.member "onNoneFound" o = Just (deferred o)
+    | otherwise = case KeyMap.lookup "found" o of
+        Nothing -> Just ReturnCards
+        Just (String name) -> case name of
+          "draw" -> Just $ DrawFound who n
+          "drawUpTo" -> Just $ DrawFoundUpTo who n
+          "drawAll" -> Just $ DrawAllFound who
+          "hand" -> Just $ AddFoundToHand who n
+          "play" -> Just $ PlayFound who n
+          "playFree" -> Just $ PlayFoundNoCost who n
+          "handOrPlay" -> Just $ AddToHandOrPlayFound who n
+          "drawOrCommit" -> Just $ DrawOrCommitFound who n
+          "removeFromGame" -> Just $ RemoveFoundFromGame who n
+          "return" -> Just ReturnCards
+          "steps" -> Just (deferred o)
+          _ -> Nothing
+        _ -> Nothing
+  deferred o = DeferSearchedToTarget (deferredTarget env spec) (isDraw o)
+
+{- | One zone to search, and what happens to the cards left in it.
+
+The depth of a @topOfDeck@ is an expression, because a card that looks at "the
+top X cards, where X is your location's shroud" has no number to write down.
+A 'Zone' written out in full is taken as it stands, for the zones that have no
+shorthand.
+-}
+searchZone :: HasGame m => Env -> Value -> m (Maybe (Zone, ZoneReturnStrategy))
+searchZone env v = case v of
+  Object o -> do
+    depth <- maybe (pure 1) (exprInt env) (KeyMap.lookup "amount" o)
+    pure do
+      zone <- case KeyMap.lookup "zone" o of
+        Just (String name) -> case name of
+          "deck" -> Just FromDeck
+          "topOfDeck" -> Just (FromTopOfDeck depth)
+          "bottomOfDeck" -> Just (FromBottomOfDeck depth)
+          "hand" -> Just FromHand
+          "discard" -> Just FromDiscard
+          _ -> Nothing
+        other -> decodeWith env =<< other
+      let back = fromMaybe ShuffleBackIn (decodeWith env =<< KeyMap.lookup "return" o)
+      pure (zone, back)
+  _ -> pure Nothing

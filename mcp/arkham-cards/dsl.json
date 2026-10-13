@@ -197,6 +197,37 @@
       "doc": "Split a total between investigators, and say here what each one's share\ndoes.\n\nThe ask and the answer are two messages with the game's turn in between, so the\nsteps below cannot simply follow: they run when the answer arrives. Written as\none block all the same, because \"investigators at your location draw a combined\ntotal of 3 cards\" is one thing a card does, and splitting it across a step and a\nhandler would leave the author holding the join.\n\nThe block is found again by its own JSON, carried on the question's target -- so\nwhat runs on the answer is exactly what was written next to the ask, and a card\nmay hold as many of these as it likes.\n\nThe steps see the card's own bindings plus the two this block makes. They do\n/not/ see what earlier steps in the same run bound: those belong to a message\nthat has already finished.",
       "via": [
         "distributeTarget",
+        "deferredTarget"
+      ]
+    },
+    {
+      "step": "search",
+      "handler": "runSearch",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "of",
+        "zones",
+        "amount",
+        "matcher",
+        "how",
+        "asDraw",
+        "onFound",
+        "onNoneFound",
+        "found",
+        "zone",
+        "return",
+        "bind"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "target"
+      ],
+      "valueShape": null,
+      "doc": "Search a zone, and say here what happens to what it finds.\n\nThe engine's search is already general -- which zones, what comes back out of\neach of them, and what becomes of what was found -- but all three are spelled\nout in types a card author should not have to meet. @zones@ names them the way a\ncard does (\"the top 2 cards of your deck\", \"your discard pile\"), with @return@\nsaying what happens to the rest.\n\n@found@ hands the result straight to one of the engine's own strategies, which\nis what nearly every printed search wants: drawing it, putting it in hand,\nplaying it. Writing @onFound@ steps instead defers the whole result to the card,\nwhich is the only way to say anything else -- and it brings @onNoneFound@ with\nit, because a search that finds nothing is a branch a card takes, exactly as a\ntest that fails is. Those steps are not reached from here: the found cards\narrive in a later message, so they are picked up by key the way a @distribute@\nblock is.",
+      "via": [
+        "searchZone",
+        "deferredTarget",
         "distributeKey"
       ]
     },

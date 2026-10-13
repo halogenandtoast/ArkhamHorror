@@ -499,6 +499,10 @@ def main() -> int:
         # `runRequest`, which only sends the message.
         if key == "request":
             payload_keys = dedup(payload_keys + ["on", "steps"])
+        # As `request`: a deferred search's branches are read by `resumeSearch`
+        # when the found cards come back, not by `runSearch` which asks.
+        if key == "search":
+            payload_keys = dedup(payload_keys + ["bind"])
 
         read = lookups("\n".join([step_block, payload_block]))
         steps.append(

@@ -187,6 +187,7 @@ const stepKinds = [
   'forEach',
   'repeat',
   'distribute',
+  'search',
   'request',
   'modify',
   'withSkillTest',
@@ -333,6 +334,20 @@ export function stepBindings(
           at('1', 'the second thing it carries', 'an Ask the game step'),
         ],
       }
+    /* What the search found, in scope only for the steps that act on it. As
+     * with a Distribute, nothing from earlier in this run is: the found cards
+     * arrive in their own message. Only `onFound` sees these -- `onNoneFound`
+     * by definition has no card -- which the editor passes separately. */
+    case 'search': {
+      const name = named(step.search?.bind, 'card')
+      return {
+        after: [],
+        inside: [
+          at(name, 'the first card found', 'a Search step', 'Card'),
+          at(`${name}s`, 'every card found', 'a Search step', '[Card]'),
+        ],
+      }
+    }
     /* Who got a share and how much, in scope only for the steps that spend it.
      * Nothing from earlier in this run is: the answer is its own message. */
     case 'distribute':

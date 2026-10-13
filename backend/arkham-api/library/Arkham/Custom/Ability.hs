@@ -508,6 +508,32 @@ entity -- by its target, its source, or its id. Without that check a handler
 would fire for every copy of the card and for messages aimed at other entities
 entirely.
 -}
+{- | Pick up a @search@ block where its ask left off.
+
+The two answers a search can give -- these cards, or none -- are the two
+branches written beside the ask, so this is the same trip 'resumeDistribute'
+makes. @$cards@ holds everything found and @$card@ the first of them, which is
+what a search for one card wants and what a step that acts on a card can take.
+-}
+resumeSearch :: (CustomEntity a, HasGameLogger m, ReverseQueue m) => a -> Message -> m ()
+resumeSearch a = \case
+  SearchFound _ (LabeledTarget key target) _ cards | target == toTarget a ->
+    for_ (block key) \spec -> do
+      let o = specObject spec
+          name = textField mempty o "bind" "card"
+      runSteps
+        ( KeyMap.insert (Key.fromText (name <> "s")) (toJSON cards)
+            $ KeyMap.insert (Key.fromText name) (maybe Null toJSON (listToMaybe cards))
+            $ bindings a
+        )
+        (maybe [] subSteps (KeyMap.lookup "onFound" o))
+  SearchNoneFound _ (LabeledTarget key target) | target == toTarget a ->
+    for_ (block key) \spec ->
+      runSteps (bindings a) (maybe [] subSteps (KeyMap.lookup "onNoneFound" (specObject spec)))
+  _ -> pure ()
+ where
+  block key = lookup key (searchBlocks (toJSON (cdMeta (toCardDef a))))
+
 {- | Pick up steps that were deferred to the queue.
 
 A @choose@ that re-asks has to read the board again after each choice, so it
@@ -523,6 +549,7 @@ resumeCustomSteps a = \case
 runCustomHandlers :: (CustomEntity a, HasGameLogger m, ReverseQueue m) => a -> Message -> m ()
 runCustomHandlers a msg = do
   resumeDistribute a msg
+  resumeSearch a msg
   resumeCustomSteps a msg
   case toJSON msg of
     Object o -> handlers o

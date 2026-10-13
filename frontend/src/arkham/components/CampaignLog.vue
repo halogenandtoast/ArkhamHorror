@@ -29,8 +29,10 @@ import { achievementCatalog, activeAchievementPart, type AchievementPart } from 
 import CampaignLogChaosBag from '@/arkham/components/CampaignLogChaosBag.vue'
 import CampaignLogUltimatumsAndBoons from '@/arkham/components/CampaignLogUltimatumsAndBoons.vue'
 import CampaignLogAchievements from '@/arkham/components/CampaignLogAchievements.vue'
+import CampaignLogAbout from '@/arkham/components/CampaignLogAbout.vue'
 import CampaignLogAdditionalSection from '@/arkham/components/CampaignLogAdditionalSection.vue'
 import campaignJSON from '@/arkham/data/campaigns.json'
+import { homebrewCampaigns, homebrewCampaignScope, homebrewStandaloneScenarios } from '@/arkham/homebrewData'
 import { useI18n } from 'vue-i18n'
 import { useDbCardStore } from '@/stores/dbCards'
 
@@ -52,7 +54,7 @@ const emit = defineEmits<{ refresh: [] }>()
 const store = useDbCardStore()
 const { t, tm } = useI18n()
 
-type LogTab = 'log' | 'investigators' | 'rules' | 'achievements' | `additional:${number}`
+type LogTab = 'log' | 'investigators' | 'rules' | 'achievements' | 'about' | `additional:${number}`
 const activeTab = ref<LogTab>('log')
 
 const achievements = ref<Achievement[]>([])
@@ -326,6 +328,61 @@ const hasRules = computed(() =>
 
 watch(hasRules, (has) => {
   if (!has && activeTab.value === 'rules') activeTab.value = 'log'
+})
+
+// --- About (homebrew boxes only) ------------------------------------------------
+/* Who made the fan box being played, and the credits printed on it. The block
+lives in the box's own locale scope as `<scope>.about = { blurb?, credits: [{ role,
+names }] }`, so a box opts in by shipping it -- nothing is registered here. The
+scope only resolves for a `:`-prefixed (homebrew) id, which is what keeps the tab
+off official content. */
+type Credit = { role: string; names: string }
+
+const homebrewBoxScope = computed<string | null>(() => {
+  const scenario = props.game.scenario
+  if (scenario?.id.startsWith('c:')) return scenarioToKeyI18n(scenario)
+  return homebrewScopeFromCampaignId(props.game.campaign?.id) ?? null
+})
+
+/* The box's entry in the chooser data, for its name and designer: a homebrew
+campaign declares them in campaign.json, a scenario-only box in its
+scenarios.json. */
+const homebrewBoxEntry = computed(() => {
+  const scope = homebrewBoxScope.value
+  if (!scope) return null
+  return (
+    homebrewCampaigns.find((c) => homebrewCampaignScope(c.id) === scope) ??
+    homebrewStandaloneScenarios.find((entry) => homebrewCampaignScope(entry.campaign ?? '') === scope) ??
+    null
+  )
+})
+
+const about = computed(() => {
+  const scope = homebrewBoxScope.value
+  if (!scope) return null
+  const raw = tm(`${scope}.about`) as unknown
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
+  const entries = (raw as { credits?: unknown }).credits
+  const credits: Credit[] = Array.isArray(entries)
+    ? entries.map((_, i) => ({
+        role: t(`${scope}.about.credits[${i}].role`),
+        names: t(`${scope}.about.credits[${i}].names`),
+      }))
+    : []
+  // Truthiness, not a string check: vue-i18n hands back a compiled message
+  // function for a leaf once messages are precompiled, as rulesAtScope assumes.
+  const hasBlurb = !!(raw as { blurb?: unknown }).blurb
+  if (!hasBlurb && credits.length === 0) return null
+  return {
+    title: homebrewBoxEntry.value?.name ?? t(`${scope}.name`),
+    designer: homebrewBoxEntry.value?.designer,
+    blurb: hasBlurb ? t(`${scope}.about.blurb`) : undefined,
+    credits,
+  }
+})
+
+watch(about, (panel) => {
+  if (!panel && activeTab.value === 'about') activeTab.value = 'log'
 })
 
 watch(additionalLogSections, (sections) => {
@@ -909,6 +966,12 @@ onUnmounted(() => {
             @click="activeTab = 'achievements'"
           >{{ t('achievements.tabTitle') }}</button>
           <button
+            v-if="about"
+            type="button"
+            :class="{ active: activeTab === 'about' }"
+            @click="activeTab = 'about'"
+          >{{ t('campaignLog.tabs.about') }}</button>
+          <button
             v-for="(section, index) in additionalLogSections"
             :key="section.title"
             type="button"
@@ -953,6 +1016,14 @@ onUnmounted(() => {
           :user-achievements="userAchievements"
           :campaign-id="game.campaign?.id"
           :part="activeCampaignPart"
+        />
+
+        <CampaignLogAbout
+          v-if="about && activeTab === 'about'"
+          :title="about.title"
+          :blurb="about.blurb"
+          :designer="about.designer"
+          :credits="about.credits"
         />
 
         <template v-for="(section, index) in additionalLogSections" :key="section.title">

@@ -424,7 +424,13 @@
     "tabs": {
       "log": "Campaign Log",
       "investigators": "Investigators",
-      "rules": "Rules"
+      "rules": "Rules",
+      "about": "About"
+    },
+    "about": {
+      "title": "About",
+      "credits": "Credits",
+      "unofficial": "Fan-made content for Arkham Horror: The Card Game. Unofficial, and not affiliated with or endorsed by Fantasy Flight Games."
     },
     "campaignNotes": "Campaign Notes"
   },

@@ -4903,6 +4903,7 @@ library
       Arkham.Homebrew.ConsternationOnTheConstellation.Locations.SunDeck
       Arkham.Homebrew.ConsternationOnTheConstellation.Scenarios.ConsternationOnTheConstellation
       Arkham.Homebrew.ConsternationOnTheConstellation.Sets
+      Arkham.Homebrew.ConsternationOnTheConstellation.SideStoryDefs
       Arkham.Homebrew.ConsternationOnTheConstellation.Traits
       Arkham.Homebrew.ConsternationOnTheConstellation.Treacheries.CallOfRlyeh
       Arkham.Homebrew.ConsternationOnTheConstellation.Treacheries.ClapOfThunder

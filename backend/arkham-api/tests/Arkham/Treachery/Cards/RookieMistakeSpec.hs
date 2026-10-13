@@ -1,8 +1,10 @@
 module Arkham.Treachery.Cards.RookieMistakeSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types (Field (AssetDamage))
 import Arkham.Investigator.Cards (tommyMuldoon)
 import Arkham.Matcher
+import Arkham.Projection
 import Arkham.Treachery.CardDefs.TheDreamEaters qualified as Treacheries
 import TestImport.New
 
@@ -26,3 +28,15 @@ spec = describe "Rookie Mistake" $ do
     self.discard `shouldReturn` []
     asDefs self.deck `shouldContainM` [Treacheries.rookieMistake]
     assertAny $ assetIs Assets.guardDog
+
+  -- A permanent card cannot leave play, so it is neither discarded nor counted
+  -- toward "if no assets are discarded by this effect" (#5841).
+  it "cannot discard a damaged permanent asset" . gameTestWith tommyMuldoon $ \self -> do
+    loadDeck self [Assets.machete]
+    toeTheLine <- self `putAssetIntoPlay` Assets.toeTheLine
+    run $ PlaceTokens GameSource (toTarget toeTheLine) #damage 4
+    self `drawsCard` Treacheries.rookieMistake
+    self.discard `shouldReturn` []
+    asDefs self.deck `shouldContainM` [Treacheries.rookieMistake]
+    assertAny $ assetIs Assets.toeTheLine
+    field AssetDamage toeTheLine `shouldReturn` 4

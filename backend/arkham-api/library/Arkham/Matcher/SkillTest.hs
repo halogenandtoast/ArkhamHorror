@@ -66,6 +66,12 @@ data SkillTestMatcher
   | IfSkillTestMatcher SkillTestMatcher SkillTestMatcher SkillTestMatcher
   | SkillTestBeforeRevealingChaosTokens
   | SkillTestWithCommittedCards CardListMatcher
+  | {- | How many icons of the listed kinds are committed to the test: "a test
+    with 6 or more {combat} and/or {wild} icons committed". Counted off the
+    cards as they stand, icon modifiers and all, which is what a card asking
+    the question means -- not off what they were printed with.
+    -}
+    SkillTestWithCommittedIcons [SkillIcon] ValueMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
 
 instance IsLabel "willpower" SkillTestMatcher where

@@ -25,6 +25,7 @@ import Arkham.Asset.Types (Field (AssetUses))
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.ChaosToken
+import Data.Aeson.KeyMap qualified as KeyMap
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types (Field (..))
@@ -56,6 +57,8 @@ instance RunMessage EventAttrs where
 
 runEventMessage :: Runner EventAttrs
 runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
+  -- As an asset: what the card remembers, bound back for its own abilities.
+  SetGlobal (is a -> True) key value -> pure $ a & metaMapL %~ KeyMap.insert key value
   IncreaseCustomization iid cardCode customization choices | toCardCode a == cardCode && a.owner == iid -> do
     case customizationIndex a customization of
       Nothing -> pure a

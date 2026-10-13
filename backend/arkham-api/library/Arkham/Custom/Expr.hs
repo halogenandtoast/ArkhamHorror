@@ -55,7 +55,9 @@ import Arkham.Helpers.SkillTest (
   getSkillTestDifficulty,
   getSkillTestInvestigator,
   getSkillTestMatchingSkillIcons,
+  getSkillTestSkillTypes,
  )
+import Arkham.Helpers.SkillTest.Target (getSkillTestTarget)
 import Arkham.Id
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Location.Types (Location)
@@ -354,6 +356,15 @@ skillTestProp prop = case prop of
   "action" -> toJSON <$> getSkillTestAction
   "investigator" -> toJSON <$> getSkillTestInvestigator
   "committedCards" -> maybe Null (toJSON . concat . toList . skillTestCommittedCards) <$> getSkillTest
+  {- What the test is ABOUT -- the enemy being fought, the location being
+  investigated -- as the target it is. A card that reads something off the thing
+  it is testing against ("draw 1 card for each keyword on the target card") has
+  no other way to name it. -}
+  "target" -> maybe Null toJSON <$> getSkillTestTarget
+  {- Which skills the test uses. A card that says "the same skill" -- the next
+  test another investigator takes using it -- has to read one off the test it
+  is talking about; a test may use more than one, so this is a list. -}
+  "skills" -> toJSON <$> getSkillTestSkillTypes
   "id" -> maybe Null (toJSON . skillTestId) <$> getSkillTest
   _ -> pure Null
 

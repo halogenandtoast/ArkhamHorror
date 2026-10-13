@@ -72,6 +72,7 @@ module Arkham.Custom.SetDefs (
 ) where
 
 import Arkham.Card.CardDef
+import Arkham.Keyword (Keyword (CustomKeyword))
 import Arkham.Prelude
 import Arkham.Token (Token (Custom))
 import Data.Aeson.Key qualified as Key
@@ -299,8 +300,19 @@ after this as before it.
 withKeywordEffects :: CardDef -> CardDef
 withKeywordEffects def
   | null entries = def
-  | otherwise = def {cdMeta = meta'}
+  | otherwise = def {cdMeta = meta', cdKeywords = cdKeywords def <> stamped}
  where
+  {- The keyword's NAME, as a keyword the engine carries but acts on no further.
+  Everything the keyword does is expanded below into ordinary abilities and
+  modifiers; this is so another card can ask whether this one has the keyword
+  at all -- "an asset you control with a Tension effect" -- which is otherwise
+  a question about printed text that no matcher reaches. -}
+  stamped =
+    setFromList
+      [CustomKeyword (keywordEffectKeyword entry) | entry <- entries, declares entry]
+  declares entry =
+    any ((== keywordEffectKeyword entry) . customSetKeywordName) keywords
+
   entries :: [KeywordEffect]
   entries = fromMaybe [] (metaList keywordEffectsMetaKey)
 

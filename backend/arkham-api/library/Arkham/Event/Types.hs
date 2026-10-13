@@ -94,6 +94,11 @@ data EventAttrs = EventAttrs
   , eventWindows :: [Window]
   , eventTarget :: Maybe Target
   , eventMeta :: Value
+  , {- | What the card has remembered, the way an asset does: a @SetGlobal@
+    writes a key here and "Arkham.Custom.Ability" binds every key back, so a
+    custom event that stays in play can act on a choice made when it was played.
+    -}
+    eventMetaMap :: KeyMap.KeyMap Value
   , eventTokens :: Map UseType Int
   , eventCustomizations :: Customizations
   , eventPrintedUses :: Uses GameCalculation
@@ -230,6 +235,7 @@ event f cardDef =
             , eventWindows = []
             , eventTarget = Nothing
             , eventMeta = Null
+            , eventMetaMap = mempty
             , eventTokens = mempty
             , eventCustomizations = mempty
             , eventPrintedUses = cdUses cardDef
@@ -411,6 +417,8 @@ instance FromJSON EventAttrs where
     eventWindows <- o .: "windows"
     eventTarget <- o .: "target"
     eventMeta <- o .: "meta"
+    -- Absent on every event saved before this field existed.
+    eventMetaMap <- o .:? "metaMap" .!= mempty
     eventTokens <- addTokens Doom eventDoom <$> o .: "tokens"
     eventCustomizations <- o .: "customizations"
     eventPrintedUses <- o .: "printedUses"

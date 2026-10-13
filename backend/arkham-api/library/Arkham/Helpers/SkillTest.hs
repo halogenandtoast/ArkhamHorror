@@ -854,6 +854,9 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
     pure $ null $ skillTestRevealedChaosTokens st
   Matcher.SkillTestWithCommittedCards cardListMatcher ->
     cardListMatches (concat $ Map.elems $ skillTestCommittedCards st) cardListMatcher
+  Matcher.SkillTestWithCommittedIcons icons valueMatcher -> do
+    committed <- concatMapM iconsForCard (concat $ Map.elems $ skillTestCommittedCards st)
+    gameValueMatches (count (`elem` icons) committed) valueMatcher
   Matcher.SkillTestWithRevealedChaosToken matcher ->
     anyM (`Query.matches` Matcher.IncludeSealed matcher)
       $ skillTestRevealedChaosTokens st

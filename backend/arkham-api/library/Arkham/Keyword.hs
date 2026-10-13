@@ -53,6 +53,17 @@ data Keyword
   | ScenarioKeyword Text
   | ScenarioModifierKeyword Text Value Keyword
   | ScenarioKeywordX Text Int
+  | {- | A keyword a custom card SET declares, named by that keyword. It carries
+    none of the keyword's mechanics -- those are expanded into ordinary
+    abilities and modifiers by "Arkham.Custom.SetDefs" -- it is only the name,
+    so that a card can ask whether another card has the keyword at all:
+    "an asset you control with a Tension effect" is otherwise a question about
+    printed text, which no matcher can ask.
+
+    Behaves as 'ScenarioKeyword' does in every other respect: nothing in the
+    engine acts on it, and everything that reads keywords sees it.
+    -}
+    CustomKeyword Text
   | Predator
   deriving stock (Show, Eq, Ord, Data)
 

@@ -70,6 +70,13 @@ data History = History
   , historyDealtDamageTo :: [Target]
   , historyEnemiesDefeated :: [DefeatedEnemyAttrs]
   , historyMoved :: Int
+  , {- | Where those moves ended up. 'historyMoved' counts them; a card that
+    asks what KIND of place you went to -- "if you moved to a location with an
+    enemy this round" -- needs the locations themselves.
+    -}
+    historyMovedTo :: [LocationId]
+  , -- | Locations this investigator revealed, or put into play, this round.
+    historyLocationsRevealed :: [LocationId]
   , historyLocationsSuccessfullyInvestigated :: Set LocationId
   , historySuccessfulExplore :: Bool
   , historyActionsCompleted :: Int
@@ -94,6 +101,8 @@ data HistoryField k where
   HistoryEnemiesDefeated :: HistoryField [DefeatedEnemyAttrs]
   HistoryEnemiesAttackedBy :: HistoryField [EnemyId]
   HistoryMoved :: HistoryField Int
+  HistoryMovedTo :: HistoryField [LocationId]
+  HistoryLocationsRevealed :: HistoryField [LocationId]
   HistoryLocationsSuccessfullyInvestigated :: HistoryField (Set LocationId)
   HistorySuccessfulExplore :: HistoryField Bool
   HistoryActionsCompleted :: HistoryField Int
@@ -120,6 +129,8 @@ viewHistoryField = \case
   HistoryEnemiesDefeated -> historyEnemiesDefeated
   HistoryEnemiesAttackedBy -> historyEnemiesAttackedBy
   HistoryMoved -> historyMoved
+  HistoryMovedTo -> historyMovedTo
+  HistoryLocationsRevealed -> historyLocationsRevealed
   HistoryLocationsSuccessfullyInvestigated -> historyLocationsSuccessfullyInvestigated
   HistorySuccessfulExplore -> historySuccessfulExplore
   HistoryActionsCompleted -> historyActionsCompleted
@@ -207,6 +218,8 @@ insertHistoryItem (HistoryItem fld k) h =
     HistoryEnemiesDefeated -> h {historyEnemiesDefeated = nub $ historyEnemiesDefeated h <> k}
     HistoryEnemiesAttackedBy -> h {historyEnemiesAttackedBy = nub $ historyEnemiesAttackedBy h <> k}
     HistoryMoved -> h {historyMoved = historyMoved h + k}
+    HistoryMovedTo -> h {historyMovedTo = historyMovedTo h <> k}
+    HistoryLocationsRevealed -> h {historyLocationsRevealed = historyLocationsRevealed h <> k}
     HistoryLocationsSuccessfullyInvestigated ->
       h
         { historyLocationsSuccessfullyInvestigated =
@@ -234,6 +247,8 @@ instance Semigroup History where
       , historyDealtDamageTo = historyDealtDamageTo h <> historyDealtDamageTo g
       , historyEnemiesDefeated = historyEnemiesDefeated h <> historyEnemiesDefeated g
       , historyMoved = historyMoved h + historyMoved g
+      , historyMovedTo = historyMovedTo h <> historyMovedTo g
+      , historyLocationsRevealed = historyLocationsRevealed h <> historyLocationsRevealed g
       , historyLocationsSuccessfullyInvestigated =
           historyLocationsSuccessfullyInvestigated h
             <> historyLocationsSuccessfullyInvestigated g
@@ -252,7 +267,7 @@ instance Semigroup History where
       }
 
 instance Monoid History where
-  mempty = History [] [] [] [] 0 mempty False 0 [] [] mempty 0 0 0 0 [] 0 0 0
+  mempty = History [] [] [] [] 0 [] [] mempty False 0 [] [] mempty 0 0 0 0 [] 0 0 0
 
 insertHistory
   :: InvestigatorId
@@ -272,6 +287,9 @@ instance FromJSON History where
     historyMoved <- o .: "historyMoved" <|> do
       moved <- o .: "historyMoved"
       pure $ if moved then 1 else 0
+    -- Absent from every history written before these fields existed.
+    historyMovedTo <- o .:? "historyMovedTo" .!= []
+    historyLocationsRevealed <- o .:? "historyLocationsRevealed" .!= []
     historyLocationsSuccessfullyInvestigated <- o .: "historyLocationsSuccessfullyInvestigated"
     historySuccessfulExplore <- o .: "historySuccessfulExplore"
     historyActionsCompleted <- o .: "historyActionsCompleted"

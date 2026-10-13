@@ -1212,12 +1212,17 @@ runGameMessage msg g = case msg of
     pushAll [BeginTurn iid, After (BeginTurn iid)]
     pure $ g & activeInvestigatorIdL .~ iid & turnPlayerInvestigatorIdL ?~ iid
   After (MoveTo (moveTarget -> InvestigatorTarget iid)) -> do
+    -- Where it ended up, as well as that it happened: "moved to a location with
+    -- an enemy" is a question about the destination, and read afterwards, which
+    -- is when the investigator is already standing there.
+    arrived <- field Investigator.InvestigatorLocation iid
     let
-      historyItem = HistoryItem HistoryMoved 1
+      historyItems =
+        HistoryItem HistoryMoved 1
+          : [HistoryItem HistoryMovedTo [lid] | lid <- maybeToList arrived]
       turn = isJust $ view turnPlayerInvestigatorIdL g
-      setTurnHistory =
-        if turn then turnHistoryL %~ insertHistory iid historyItem else id
-    pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
+      record item = (phaseHistoryL %~ insertHistory iid item) . (if turn then turnHistoryL %~ insertHistory iid item else id)
+    pure $ foldr record g historyItems
   Arkham.Helpers.Message.Defeated (EnemyTarget eid) _ source _ -> do
     attrs <- toAttrs <$> getEnemy eid
     mlid <- field EnemyLocation eid
@@ -4463,9 +4468,21 @@ runPreGameMessage msg g = case msg of
         push (After msg)
         pure $ g & cardPlayStackL %~ (<> [toCardId card])
       _ -> pure g
-  After (Do (RevealLocation _ lid)) -> do
+  After (Do (RevealLocation miid lid)) -> do
     mCard <- fieldMay LocationCard lid
-    pure $ maybe g (\card -> g & cardPlayStackL %~ filter (/= toCardId card)) mCard
+    {- Whose reveal it was. A location revealed by moving into it, or by an
+    investigation, names the investigator; one the scenario turned over by
+    itself names nobody, and is credited to whoever's turn it is -- "if you
+    revealed or put a location into play this round" is said by a card in that
+    investigator's hand. -}
+    lead <- getLead
+    let
+      iid = fromMaybe (fromMaybe lead (view turnPlayerInvestigatorIdL g)) miid
+      historyItem = HistoryItem HistoryLocationsRevealed [lid]
+      turn = isJust $ view turnPlayerInvestigatorIdL g
+      setTurnHistory = if turn then turnHistoryL %~ insertHistory iid historyItem else id
+      recorded = g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
+    pure $ maybe recorded (\card -> recorded & cardPlayStackL %~ filter (/= toCardId card)) mCard
   ForInvestigator iid _ -> do
     player <- getPlayer iid
     pure $ g & activeInvestigatorIdL .~ iid & activePlayerIdL .~ player

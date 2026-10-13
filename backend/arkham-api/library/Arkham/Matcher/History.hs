@@ -39,6 +39,10 @@ data HistoryMatcher
   | ActionsCompleted ValueMatcher
   | ActionsSpent ValueMatcher
   | TimesMoved ValueMatcher
+  | -- | "If you moved to a location with an enemy this round."
+    MovedToLocation LocationMatcher
+  | -- | "If you revealed or put a location into play this round."
+    RevealedLocations ValueMatcher
   | ResourcesGained ValueMatcher
   | CardsDrawn ValueMatcher
   | SuccessfulAttacks ValueMatcher

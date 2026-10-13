@@ -294,9 +294,20 @@ type CustomEntity a = (HasCardDef a, Sourceable a, Targetable a, HasCardCode a, 
 source and target it is addressed by (which are not fields of the attrs) and, for
 a signature card, the investigator it belongs to as @$investigator@.
 -}
+{- | What a card's own abilities, modifiers and steps can name.
+
+The entity's serialized fields, plus the handful the engine supplies, plus
+whatever the card has remembered: a @SetGlobal@ writes into @metaMap@, and its
+keys are bound here so a card can read back something it chose on an earlier
+turn -- "name a [[Trait]]" and then, rounds later, match on it. Real fields win
+a name clash, so remembering under the name of one shadows nothing.
+-}
 bindings :: CustomEntity a => a -> Env
-bindings a = KeyMap.fromList (own <> signatureOf) <> fields
+bindings a = KeyMap.fromList (own <> signatureOf) <> fields <> remembered
  where
+  remembered = case KeyMap.lookup "metaMap" fields of
+    Just (Object m) -> m
+    _ -> mempty
   own =
     [ ("source", toJSON (toSource a))
     , ("target", toJSON (toTarget a))

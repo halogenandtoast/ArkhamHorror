@@ -50,6 +50,10 @@ historyMatches = \case
   Matcher.ActionsCompleted vMatcher -> countIs vMatcher historyActionsCompleted
   Matcher.ActionsSpent vMatcher -> countIs vMatcher historyActionsSpent
   Matcher.TimesMoved vMatcher -> countIs vMatcher historyMoved
+  Matcher.MovedToLocation matcher -> \h -> do
+    wanted <- select matcher
+    pure $ any (`elem` wanted) (historyMovedTo h)
+  Matcher.RevealedLocations vMatcher -> countIs vMatcher (length . historyLocationsRevealed)
   Matcher.ResourcesGained vMatcher -> countIs vMatcher historyResourcesGained
   Matcher.CardsDrawn vMatcher -> countIs vMatcher historyCardsDrawn
   Matcher.SuccessfulAttacks vMatcher -> countIs vMatcher historySuccessfulAttacks

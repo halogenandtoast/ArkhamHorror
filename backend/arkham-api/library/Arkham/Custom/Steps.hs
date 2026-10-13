@@ -965,10 +965,20 @@ runReadCondition env condition = case condition of
   Object o
     | Just pair <- KeyMap.lookup "eq" o -> same pair
     | Just pair <- KeyMap.lookup "ne" o -> not <$> same pair
+    {- And the orderings, for the readings that are a number rather than a
+    thing: "a card with 2 or fewer icons" is not a question any matcher asks,
+    and spelling it as three @eq@ branches says the same thing three times. -}
+    | Just pair <- KeyMap.lookup "lt" o -> compares (<) pair
+    | Just pair <- KeyMap.lookup "lte" o -> compares (<=) pair
+    | Just pair <- KeyMap.lookup "gt" o -> compares (>) pair
+    | Just pair <- KeyMap.lookup "gte" o -> compares (>=) pair
   _ -> notNull . fromMaybe [] <$> runQuery env condition
  where
   same pair = case valueList pair of
     [a, b] -> sameValue <$> evalExpr env a <*> evalExpr env b
+    _ -> pure False
+  compares f pair = case valueList pair of
+    [a, b] -> f <$> exprInt env a <*> exprInt env b
     _ -> pure False
 
 {- | Who to prompt. An ability knows (@$iid@ is bound when it resolves); a
@@ -1498,7 +1508,7 @@ runSearch :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
 runSearch env spec = case spec of
   Object o -> do
     iid <- stepInvestigator env
-    let whose = fromMaybe iid (decodeWith env =<< KeyMap.lookup "of" o)
+    let searched = whoseZones env o iid
     zones <- traverse (searchZone env) (valueList (fromMaybe Null (KeyMap.lookup "zones" o)))
     amount <- maybe (pure 1) (exprInt env) (KeyMap.lookup "amount" o)
     let matcher = fromMaybe (BasicCardMatch AnyCard) (decodeWith env =<< KeyMap.lookup "matcher" o)
@@ -1507,10 +1517,17 @@ runSearch env spec = case spec of
         | notNull zs ->
             push
               $ asSearch sType
-              $ mkSearch sType iid (stepSource env) (InvestigatorTarget whose) zs matcher strategy
+              $ mkSearch sType iid (stepSource env) searched zs matcher strategy
       _ -> reportBadPayload env "search" spec
   _ -> reportBadPayload env "search" spec
  where
+  {- Whose zones are searched. An investigator by default -- yours unless the
+  card names someone else -- and the encounter deck when it says so, which is
+  the same machinery pointed at a different pile: "look at the top 4 cards of
+  the encounter deck" is a look like any other. -}
+  whoseZones e o iid = case KeyMap.lookup "of" o of
+    Just (String "encounterDeck") -> EncounterDeckTarget
+    other -> InvestigatorTarget (fromMaybe iid (decodeWith e =<< other))
   {- Searching, looking and revealing are the same machinery with different
   manners: a search shuffles and is a search as far as everything that reacts to
   one is concerned, looking leaves the deck alone, revealing shows the card to

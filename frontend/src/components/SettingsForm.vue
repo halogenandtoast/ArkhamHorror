@@ -285,7 +285,7 @@ const updateLanguage = async (a: Event) => {
       </div>
 
       <div
-        v-if="user.admin && activeTab === 'apiKeys'"
+        v-if="canUseApiKeys && activeTab === 'apiKeys'"
         id="settings-panel-apiKeys"
         class="column settings-panel"
         role="tabpanel"

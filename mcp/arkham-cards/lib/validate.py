@@ -763,6 +763,10 @@ def _nested_blocks(step: dict, which: str) -> list[tuple[str, Any]]:
         block = fields.get(key)
         if isinstance(block, dict):
             blocks.append((f"{key}.steps", block.get("steps") or []))
+        elif isinstance(block, list):
+            # Wrong shape, reported in `_check_step`. Still walked, so the author
+            # gets the problems inside it in the same pass as the shape.
+            blocks.append((key, block))
     # A search's two answers are plain step lists, not blocks with a `steps` key.
     for key in ("onFound", "onNoneFound"):
         if key in fields:
@@ -893,6 +897,9 @@ def _check_step(which: str, step: dict, path: str, scope: set[str], problems: li
             if isinstance(branch, dict) and isinstance(branch.get("if"), dict):
                 _check_condition(branch["if"], f"{path}.case[{index}].if", problems)
 
+    for key in ("onSuccess", "onFailure", "onReveal"):
+        _check_outcome_block(fields.get(key), key, at(key), problems)
+
     if isinstance(fields.get("query"), dict):
         _check_query(fields["query"], at("query"), problems)
 
@@ -930,6 +937,53 @@ def _check_step(which: str, step: dict, path: str, scope: set[str], problems: li
             _walk_expression(value, at(key), scope, problems)
     if which not in ("push", "request") and not isinstance(payload, dict) and payload is not None:
         _walk_expression(payload, f"{path}.{which}", scope, problems)
+
+
+def _mentions(value: Any, tag_name: str) -> bool:
+    """Is that constructor named anywhere inside this value?"""
+    if isinstance(value, dict):
+        return value.get("tag") == tag_name or any(_mentions(v, tag_name) for v in value.values())
+    if isinstance(value, list):
+        return any(_mentions(v, tag_name) for v in value)
+    return value == tag_name
+
+
+def _check_outcome_block(block: Any, key: str, path: str, problems: list[Problem]) -> None:
+    """"If you succeed, ..." as the step that starts the test writes it.
+
+    Two ways to write one that run as nothing at all:
+
+    A bare step list. `runOutcome` reads the block's `steps` key, so a list has
+    none and the whole branch is dropped -- and the editor reads `.steps` too, so
+    the builder would show the block empty and write that emptiness back.
+
+    A result criterion inside it. The steps are worked out when the test BEGINS
+    and held as messages, so a `SkillTestResultIs` there is asked of a test that
+    has not run: it answers `Unrun` and everything under it is skipped. `by` is
+    where the margin belongs.
+    """
+    if block is None:
+        return
+    if isinstance(block, list):
+        problems.append(
+            Problem(
+                "error",
+                path,
+                f'"{key}" is a block, not a step list, so none of its steps ever run',
+                fix='write {"steps": [...]}, with "by" for "if you succeed by 2 or more"',
+            )
+        )
+        return
+    if isinstance(block, dict) and _mentions(block.get("steps"), "SkillTestResultIs"):
+        problems.append(
+            Problem(
+                "error",
+                f"{path}.steps",
+                f'a result criterion inside "{key}" is asked before the test runs, '
+                "so it answers Unrun and these steps are skipped",
+                fix=f'say the margin as "{key}": {{"by": ...}} instead',
+            )
+        )
 
 
 def _check_message(value: Any, path: str) -> list[Problem]:

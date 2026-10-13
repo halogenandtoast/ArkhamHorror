@@ -237,6 +237,12 @@ def _check_sum(value: Any, sum_schema: dict, written_as: str, path: str, depth: 
                 )
             ]
         if value not in constructors:
+            # A set's own token is a Token too. It has no constructor, because
+            # the engine never heard of it: `Custom slug` reads back off the
+            # "custom:" prefix, and a keyword's behaviour writes it as the
+            # string the prefix makes.
+            if name == "Token" and value.startswith("custom:") and len(value) > len("custom:"):
+                return []
             near = [c for c in constructors if value.lower() in c.lower() or c.lower() in value.lower()]
             hint = f" Did you mean {', '.join(near[:5])}?" if near else ""
             return [Problem("error", path, f'"{value}" is not a constructor of {name}.{hint}')]
@@ -1054,6 +1060,38 @@ def _check_condition(condition: dict, path: str, problems: list[Problem]) -> Non
 # * The whole card
 
 
+#: Modifiers that change a card's printed icons. `iconsForCard` reads them off
+#: `CardIdTarget` and asks nothing else, so one hung on an entity is never seen.
+ICON_MODIFIERS = {
+    "AddSkillIcons",
+    "RemoveSkillIcons",
+    "DoubleSkillIcons",
+    "DoubleSkillIconsOf",
+    "ReplaceAllSkillIconsWithWild",
+}
+
+
+def _check_icon_modifier(modifier: Any, kind: Any, path: str, problems: list[Problem]) -> None:
+    """Icons belong to the card, not to the entity that card became.
+
+    Every hand-written skill in the engine hangs them on `a.cardId` for this
+    reason. A modifier spec of kind "skill" (or "asset", or "event") reaches
+    the entity's own target, where nothing ever reads an icon -- so the card
+    keeps exactly the icons it was printed with and nothing says otherwise.
+    """
+    name = modifier.get("tag") if isinstance(modifier, dict) else modifier
+    if name in ICON_MODIFIERS and kind != "card":
+        problems.append(
+            Problem(
+                "error",
+                path,
+                f'{name} on a "{kind}" is never read; icons are read off the card',
+                fix='use kind "card" with a matcher of {"tag": "BasicCardMatch", '
+                '"contents": {"tag": "CardWithId", "contents": "$cardId"}}',
+            )
+        )
+
+
 def _check_modifier_spec(spec: Any, path: str, card_bindings: set, problems: list) -> None:
     """One `_modifiers` entry: who gets the modifiers, and which they are.
 
@@ -1079,6 +1117,7 @@ def _check_modifier_spec(spec: Any, path: str, card_bindings: set, problems: lis
     scope = set(card_bindings) | lets | {spec.get("eachBind") or "each"}
     for i, modifier in enumerate(spec.get("modifiers") or []):
         problems += check_value(modifier, "ModifierType", f"{path}.modifiers[{i}]")
+        _check_icon_modifier(modifier, kind, f"{path}.modifiers[{i}]", problems)
     if "if" in spec and isinstance(spec["if"], dict):
         condition = spec["if"]
         if "criteria" in condition:

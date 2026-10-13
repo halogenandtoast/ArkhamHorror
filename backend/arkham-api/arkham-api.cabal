@@ -28,6 +28,7 @@ library
       Api.Arkham.Helpers
       Api.Arkham.Maintenance
       Api.Arkham.Types.MultiplayerVariant
+      Api.BugUpload
       Api.Handler.ApiKeys
       Api.Handler.Arkham.Achievements
       Api.Handler.Arkham.Admin.Archives
@@ -4303,6 +4304,7 @@ library
       Arkham.Homebrew.AgesUnwound.ChaosBag
       Arkham.Homebrew.AgesUnwound.Content
       Arkham.Homebrew.AgesUnwound.Defs
+      Arkham.Homebrew.AgesUnwound.DummyDeck
       Arkham.Homebrew.AgesUnwound.Enemies.AgelessWatchers
       Arkham.Homebrew.AgesUnwound.Enemies.AncientSphinx
       Arkham.Homebrew.AgesUnwound.Enemies.Arsonists

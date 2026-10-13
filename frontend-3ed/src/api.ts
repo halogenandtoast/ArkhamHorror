@@ -66,6 +66,10 @@ export const answer = (id: string, player: number, choice: number, version: numb
 export const debug = (id: string, action: { tag: string; contents?: unknown }) =>
   request<TableView>('POST', `/3ed/tables/${id}/debug`, action)
 export const undo = (id: string) => request<TableView>('POST', `/3ed/tables/${id}/undo`, {})
+// the whole table, engine state included: what a debug file holds and a filed bug uploads
+export const exportTable = (id: string) => request<unknown>('GET', `/3ed/tables/${id}/export`)
+export const fileBug = (id: string) => request<{ url: string }>('POST', `/3ed/tables/${id}/file-bug`, {})
+export const importTable = (table: unknown) => request<TableView>('POST', '/3ed/tables/import', table)
 
 // same origin as the page, http(s) -> ws(s), and `?token=` auth (the GET upgrades)
 export const websocketUrl = (path: string, token: string | null): string => {

@@ -26,6 +26,7 @@
     /3ed ApiV1ThirdEditionP:
       /catalog ApiV1ThirdEditionCatalogR GET
       /tables ApiV1ThirdEditionTablesR GET POST
+      !/tables/import ApiV1ThirdEditionImportR POST
       /tables/#UUID ApiV1ThirdEditionTableP:
         / ApiV1ThirdEditionTableR GET DELETE
         /join ApiV1ThirdEditionJoinR POST
@@ -34,6 +35,8 @@
         /answer ApiV1ThirdEditionAnswerR POST
         /debug ApiV1ThirdEditionDebugR POST
         /undo ApiV1ThirdEditionUndoR POST
+        /export ApiV1ThirdEditionExportR GET
+        /file-bug ApiV1ThirdEditionBugR POST
     /arkham ApiV1ArkhamP:
       /cards ApiV1ArkhamCardsR GET
       /traits ApiV1ArkhamTraitsR GET

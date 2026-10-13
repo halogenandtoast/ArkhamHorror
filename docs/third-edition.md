@@ -38,6 +38,13 @@ so they survive refreshes, pod restarts and deploys. Writes are optimistic
 clobber each other. Without Redis (default local dev) they live in process
 memory and vanish when the API restarts.
 
+A table can be exported whole (`GET /api/v1/3ed/tables/<id>/export`: the stored
+table, engine state and all, not the game *view*) and loaded back as a new one
+(`POST /api/v1/3ed/tables/import`), where the loader hosts it and holds every
+seat. Filing a bug (`POST .../file-bug`) puts that same export in the Arkham bug
+bucket and hands back its URL for the GitHub issue; the upload itself is shared
+with the Arkham endpoint in `Api/BugUpload.hs`.
+
 Every change is published to the table's room (Redis channel
 `ah3e-<table id>`), whose websocket is a read-only feed; moves go over REST.
 Clients keep whichever copy of the table has the higher `version`. None of

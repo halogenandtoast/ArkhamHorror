@@ -2,6 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import ActiveSide from '@/game/ActiveSide.vue'
 import BoardMap from '@/game/BoardMap.vue'
+import BugTools from '@/game/BugTools.vue'
 import CodexPanel from '@/game/CodexPanel.vue'
 import MythosPanel from '@/game/MythosPanel.vue'
 import { useGame } from '@/game/context'
@@ -184,6 +185,7 @@ const close = () => {
     >
       Log<span v-if="ctx.logUnread.value" id="logUnread">&nbsp;{{ ctx.logUnread.value > 99 ? '99+' : ctx.logUnread.value }}</span>
     </button>
+    <BugTools />
     <button v-if="ctx.isHost.value" id="abandon" @click="close">Close game</button>
   </header>
   <LogPanel />

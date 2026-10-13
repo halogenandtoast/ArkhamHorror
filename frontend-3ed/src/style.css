@@ -926,6 +926,8 @@ details pre { max-height:400px; overflow:auto; font-size:11px; }
 .lobby-hero { display:flex; align-items:center; gap:16px; margin:0 0 20px; flex-wrap:wrap; }
 .lobby-hero h2 { margin:0; font-size:28px; letter-spacing:-.01em; }
 .lobby-start { margin:0 0 0 auto; padding:12px 22px; font-size:15px; }
+.lobby-hero-buttons { margin-left:auto; display:flex; align-items:center; gap:8px; }
+.lobby-hero-buttons button { margin:0; padding:12px 22px; font-size:15px; }
 .lobby-section { margin-bottom:16px; padding:14px 16px; }
 .lobby-new { margin-bottom:16px; }
 .table-list { list-style:none; margin:0; padding:0; display:grid; gap:10px; }
@@ -950,3 +952,12 @@ details pre { max-height:400px; overflow:auto; font-size:11px; }
 .button-like { display:inline-block; font:inherit; border:1px solid var(--line); padding:10px 18px; border-radius:6px; }
 .button-like.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
 .lobby-section h2 { font-size:15px; text-transform:none; letter-spacing:0; color:var(--ink); margin-bottom:10px; }
+
+/* filing a bug: a modal form over the table, backed by the browser's own dialog */
+.bug-dialog { border:1px solid var(--line); border-radius:12px; background:var(--panel); color:var(--ink); padding:18px 20px; max-width:min(520px, 92vw); }
+.bug-dialog::backdrop { background:rgba(0,0,0,.6); }
+.bug-dialog h2 { margin:0 0 8px; font-size:20px; }
+.bug-dialog p { margin:0 0 8px; color:var(--muted); font-size:13px; }
+.bug-dialog input, .bug-dialog textarea { font:inherit; width:100%; box-sizing:border-box; margin-bottom:8px; padding:6px 8px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--ink); }
+.bug-buttons { display:flex; justify-content:flex-end; }
+.bug-buttons button { margin:0 0 0 6px; }

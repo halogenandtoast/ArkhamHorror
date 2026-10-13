@@ -22,6 +22,9 @@ module Api.Handler.ThirdEdition (
   postApiV1ThirdEditionAnswerR,
   postApiV1ThirdEditionDebugR,
   postApiV1ThirdEditionUndoR,
+  getApiV1ThirdEditionExportR,
+  postApiV1ThirdEditionBugR,
+  postApiV1ThirdEditionImportR,
 ) where
 
 import AH3e.Engine (GameOptions (..), answer, applyDebug, newGame, runEngine, withSeedFrom)
@@ -31,6 +34,7 @@ import AH3e.Types.Ids (PlayerId (..), ScenarioCode)
 import AH3e.Types.State (DebugAction, GameMode)
 import AH3e.View (catalogView, gameView)
 import Api.Arkham.Helpers (joinRoomIn, releaseRoomIfEmpty)
+import Api.BugUpload (uploadBugExport)
 import Api.Handler.Arkham.Games.Shared (publishOrWarn, streamRoom, websocketConnectionOptions)
 import Control.Monad.Random (getRandomR)
 import Data.Aeson qualified as Aeson
@@ -162,7 +166,12 @@ postApiV1ThirdEditionStartR tid = do
     unless (t.host == userId) $ Left "Only the host can start the game"
     when (started t) $ Left "The game has already started"
     unless (null (freeSeats t)) $ Left "Every seat needs a player first"
-    let opts = GameOptions {expansions = t.options.expansions, mode = t.options.mode, scenario = t.options.scenario}
+    let opts =
+          GameOptions
+            { expansions = t.options.expansions
+            , mode = t.options.mode
+            , scenario = t.options.scenario
+            }
     g <- newGame [PlayerId s.player | s <- t.seats] seed opts
     g' <- first tshow (runEngine g)
     pure (withGame g' t, KeepHistory)
@@ -204,6 +213,52 @@ postApiV1ThirdEditionUndoR tid = do
     -- and answering again rolls different dice rather than the same ones.
     let resumed = maybe earlier (withSeedFrom earlier) t.game
     pure (withGame resumed t, PopHistory)
+
+{- | The whole table, game state and all: what an import takes back and what a
+filed bug carries. Not the game /view/ the table endpoint serves, which is what
+a player may see rather than what the engine is holding.
+-}
+getApiV1ThirdEditionExportR :: UUID -> Handler Value
+getApiV1ThirdEditionExportR tid = Aeson.toJSON <$> exportTable tid
+
+-- | File a bug: the export goes to the bug bucket and its URL into the issue.
+postApiV1ThirdEditionBugR :: UUID -> Handler Value
+postApiV1ThirdEditionBugR tid = do
+  table <- exportTable tid
+  url <- uploadBugExport "ah3e-" (Aeson.encode table)
+  pure (object ["url" .= url])
+
+exportTable :: UUID -> Handler Table
+exportTable tid = do
+  _ <- getRequestUserId
+  store <- getStore
+  liftIO (store.getTable tid) >>= \case
+    Nothing -> failWith status404 "No such table"
+    Just (t, _) -> pure t
+
+{- | Load an exported table as a new one. The importer hosts it and holds every
+seat, so they can answer for each player on their own, as an imported Arkham
+game does.
+-}
+postApiV1ThirdEditionImportR :: Handler Value
+postApiV1ThirdEditionImportR = do
+  Entity userId user <- getRequestUser
+  imported <- (requireCheckJsonBody :: Handler Table)
+  tid <- liftIO nextRandom
+  now <- liftIO getCurrentTime
+  let
+    table =
+      imported
+        { id = tid
+        , host = userId
+        , hostName = userUsername user
+        , seats = [s {user = Just userId, username = Just (userUsername user)} | s <- imported.seats]
+        , version = 0
+        , createdAt = now
+        }
+  store <- getStore
+  liftIO (store.insertTable table)
+  pure (tableView Nothing table 0)
 
 -- | Run the engine on the table's game, keeping the state it replaces for undo.
 step :: Show e => Table -> (Game -> Either e Game) -> Either Text (Table, HistoryChange)

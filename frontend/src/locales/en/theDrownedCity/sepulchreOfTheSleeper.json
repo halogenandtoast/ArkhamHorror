@@ -35,7 +35,7 @@
   "label": {
     "chooseExpeditionItem": "Choose an _Item_ asset to begin in play under your control.",
     "noExpeditionItem": "Do not take an _Item_ asset.",
-    "chooseArtifactInvestigator": "Choose an investigator to control this _Artifact_.",
+    "chooseArtifactInvestigator": "Choose an investigator to control {name}.",
     "placeAdditionalDoomOnObsidianClaw": "Spend 1 {perPlayer} clues, as a group, to place 1 additional doom on the Obsidian Claw",
     "placeAdditionalDoomOnBarrierNode": "Spend 1 {perPlayer} clues, as a group, to place 1 additional doom on the Barrier Node",
     "placeAdditionalDoomOnTidalTablet": "Spend 1 {perPlayer} clues, as a group, to place 1 additional doom on the Tidal Tablet",

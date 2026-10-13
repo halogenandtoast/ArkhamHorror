@@ -147,7 +147,8 @@ instance RunMessage SepulchreOfTheSleeper where
           card <- expeditionAssetCard def
           lead <- getLead
           chooseOrRunOneM lead do
-            questionLabeled "chooseArtifactInvestigator"
+            nameVar def $ questionLabeled "chooseArtifactInvestigator"
+            questionLabeledCard def
             targets [iid | (iid, n) <- counts, n == fewest] (createAssetAt_ card . InPlayArea)
       pure s
     ScenarioSpecific "increaseDisturbance" _ -> do

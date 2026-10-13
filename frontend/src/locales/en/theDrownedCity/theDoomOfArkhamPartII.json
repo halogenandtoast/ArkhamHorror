@@ -59,8 +59,8 @@
     }
   },
   "label": {
-    "chooseAllyInvestigator": "Choose an investigator to take control of this ally.",
-    "chooseArtifactInvestigator": "Choose an investigator to control this _Artifact_.",
+    "chooseAllyInvestigator": "Choose an investigator to take control of {name}.",
+    "chooseArtifactInvestigator": "Choose an investigator to control {name}.",
     "chooseAlly": "Choose a set-aside _Ally_ story asset to take control of.",
     "noAlly": "Do not take control of an _Ally_ story asset.",
     "chooseInvestigatorToTest": "Choose an investigator to test",

@@ -217,7 +217,8 @@ instance RunMessage TheDoomOfArkhamPartII where
         if stoodTogether
           then do
             leadChooseOrRunOneM do
-              questionLabeled "chooseAllyInvestigator"
+              nameVar ally $ questionLabeled "chooseAllyInvestigator"
+              questionLabeledCard ally
               targets investigators $ createAssetAt_ (toCard card) . InPlayArea
           else push $ SetAsideCards [toCard card]
       -- "Gather all earned artifacts that are not crossed out ... Put each of them
@@ -236,7 +237,8 @@ instance RunMessage TheDoomOfArkhamPartII where
           card <- fetchCard def
           lead <- getLead
           chooseOrRunOneM lead do
-            questionLabeled "chooseArtifactInvestigator"
+            nameVar def $ questionLabeled "chooseArtifactInvestigator"
+            questionLabeledCard def
             targets [iid | (iid, n) <- counts, n == fewest] (createAssetAt_ card . InPlayArea)
       pure s
     {- "When drawing cards from the Cthulhu deck, resolve each effect, one at a time,

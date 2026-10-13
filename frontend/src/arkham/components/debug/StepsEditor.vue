@@ -20,6 +20,7 @@ import {
   stepBindings,
   type Binding,
 } from '@/arkham/customCardBindings'
+import { QUERY_TYPES } from '@/arkham/customCardExpressions'
 
 const props = defineProps<{
   modelValue: any[]
@@ -287,6 +288,29 @@ const scopeFor = (index: number) => scopeAt(base.value, steps.value, index, path
 const innerScope = (index: number) => scopeInside(base.value, steps.value, index, path.value)
 const innerPath = (index: number, branch = '') =>
   `${path.value}-${index}${branch ? `-${branch}` : ''}`
+
+/* What ONE option of a Choose sees.
+ *
+ * An option carrying a query stands for one option per thing found, bound for
+ * that option's steps alone -- so it cannot come from the step's own `inside`,
+ * which every option shares. Without this the steps under such an option
+ * reported their own binding as unbound, which is the editor telling an author
+ * their card is broken when it is not. Mirrors `runChoose`. */
+function optionBinding(index: number, option: any, oi: number): Binding | null {
+  if (!option?.query) return null
+  return {
+    name: typeof option.bind === 'string' && option.bind ? option.bind : 'chosen',
+    detail: 'what was chosen',
+    type: QUERY_TYPES[option.query?.kind],
+    origin: `the query on option ${oi + 1} of this Choose`,
+    anchor: anchorFor(index),
+  }
+}
+
+function optionScope(index: number, option: any, oi: number): Binding[] {
+  const bound = optionBinding(index, option, oi)
+  return bound ? [...innerScope(index), bound] : innerScope(index)
+}
 
 const announced = computed(() => props.announce ?? base.value)
 
@@ -1102,11 +1126,26 @@ const removeOption = (step: any, index: number, at: number) =>
             </label>
             <button type="button" @click="removeOption(step, oi, index)">×</button>
           </div>
+          <!-- Said where it is created, the way every other binding in the
+               builder is: an option with a query stands for one option per thing
+               found, and that thing is what its steps are written against. -->
+          <div v-if="optionBinding(index, option, oi)" class="step-foot">
+            <span class="binds">
+              <span class="binds-label">binds</span>
+              <code class="binds-name"
+                >${{ optionBinding(index, option, oi)!.name
+                }}<span v-if="optionBinding(index, option, oi)!.type" class="binds-type">
+                  :: {{ optionBinding(index, option, oi)!.type }}</span
+                ></code
+              >
+              <span class="binds-scope">for this option's steps</span>
+            </span>
+          </div>
           <StepsEditor
           :slotSteps="slotSteps"
-          :bindings="innerScope(index)"
+          :bindings="optionScope(index, option, oi)"
           :path="innerPath(index, `option${oi}`)"
-          :announce="[]"
+          :announce="optionBinding(index, option, oi) ? [optionBinding(index, option, oi)!] : []"
             :queryKinds="queryKinds"
             :modelValue="option.steps ?? []"
             @update:modelValue="setOption(step, oi, { ...option, steps: $event }, index)"

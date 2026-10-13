@@ -15,6 +15,7 @@ module Arkham.Card.CustomCard where
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
+import Arkham.Custom.SetDefs (withKeywordEffects)
 import Arkham.Id (InvestigatorId (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Name (Name)
@@ -191,7 +192,15 @@ it is next saved.
 -}
 lookupCustomCardDef :: HasCardCode a => a -> Maybe CardDef
 lookupCustomCardDef =
-  fmap (withHiddenRevelation . withAbilityZones . withSignatureRestriction . customCardDef)
+  fmap
+    ( withHiddenRevelation
+        . withAbilityZones
+        . withSignatureRestriction
+        -- Before the zones are derived, because a keyword's result may grant an
+        -- ability with a zone of its own.
+        . withKeywordEffects
+        . customCardDef
+    )
     . lookupCustomCard
 
 {- | Whether the def prints the hidden keyword.

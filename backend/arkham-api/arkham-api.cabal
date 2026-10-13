@@ -2478,6 +2478,7 @@ library
       Arkham.Custom.Schema.Windows
       Arkham.Custom.Schema.Windows.Check
       Arkham.Custom.Schema.Windows.Table
+      Arkham.Custom.SetDefs
       Arkham.Custom.Skill
       Arkham.Custom.Steps
       Arkham.Custom.Story

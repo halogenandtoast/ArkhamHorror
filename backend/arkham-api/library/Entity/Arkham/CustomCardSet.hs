@@ -37,6 +37,24 @@ rather than running something.
 @sourceCode@ is the id of the pack an imported set came from (arkham.build gives
 one), so importing that pack again replaces this set rather than making a second
 copy of it. A set built here has none.
+
+@investigatorExpansion@ says the set is a box rather than a handful of cards,
+and is what unlocks the three fields below it. They are asked about nowhere
+else, so a set of two events is never made to answer for an icon it does not
+have.
+
+@icon@ is the expansion symbol, which the marketplace files the set under. It
+is only ever shown; nothing in a game reads it.
+
+@tokens@ is the set's own tokens -- @[{slug, name, image}]@ -- the markers its
+cards place on themselves. A token here is a counter on a card, not a chaos
+token: those are a scenario's, and come from "Arkham.Homebrew.Tokens".
+
+@keywords@ is the set's own keywords -- @[{name, description, token, shape}]@.
+@description@ is the rules text as the box prints it, which is the whole of what
+a @plain@ keyword is. A @conditional@ one is the Tension shape: a condition and
+a result, where satisfying the condition once activates the result for as long
+as the card stays in play, and @token@ names the token that marks it.
 -}
 mkEntity
   $(discoverEntities)
@@ -48,6 +66,10 @@ ArkhamCustomCardSet sql=arkham_custom_card_sets
   description Text Maybe
   url Text Maybe
   sourceCode Text Maybe
+  investigatorExpansion Bool default=False
+  icon Text Maybe
+  tokens Value
+  keywords Value
   createdAt UTCTime
   updatedAt UTCTime
   UniqueUserCustomCardSetName userId name

@@ -104,7 +104,7 @@ import Arkham.Classes.Query
 -- modules into the cycle and onto their boot interfaces).
 
 import Arkham.Custom.Env
-import Arkham.Custom.Expr (evalExpr, runQuery)
+import Arkham.Custom.Expr (evalExpr, runQuery, valueList)
 import Arkham.Custom.Steps
 import Arkham.Helpers.Modifiers (ModifierType, modifySelect)
 import Arkham.Helpers.Window (windowMatches)
@@ -182,10 +182,15 @@ data ModifierSpec = ModifierSpec
   { modKind :: Text
   , modMatcher :: Value
   , modTypes :: [Value]
-  , modCondition :: Maybe Value
-  {- ^ Gate on the situation. Modifiers are gathered while reading the game, not
-  while changing it, so a condition here can ask questions but cannot do
-  anything.
+  , modConditions :: [Value]
+  {- ^ Gate on the situation: every condition here has to hold. Modifiers are
+  gathered while reading the game, not while changing it, so a condition can ask
+  questions but cannot do anything.
+
+  Written as one condition or as a list of them. A list is "all of these", which
+  is what lets a gate be added to a modifier somebody else wrote -- a keyword's
+  "while this is active" over a card's own condition (see
+  "Arkham.Custom.SetDefs") -- rather than one of the two being lost.
   -}
   , modEach :: Maybe Value
   {- ^ A query whose results the modifier list is repeated over, each bound under
@@ -224,8 +229,7 @@ instance FromJSON ModifierSpec where
       <*> o
       .:? "modifiers"
       .!= []
-      <*> o
-      .:? "if"
+      <*> (maybe [] valueList <$> o .:? "if")
       <*> (o .:? "each")
       <*> (o .:? "eachBind" .!= "each")
       <*> (map toLet <$> o .:? "let" .!= [])
@@ -557,7 +561,7 @@ customModifiers a = for_ (metaSpecs @ModifierSpec modifiersMetaKey (toCardDef a)
   -- @requires@ first, because it is the one gate that asks the game nothing.
   when (all holds (modRequires spec)) do
     env <- bindLets spec
-    applies <- maybe (pure True) (runReadCondition env) (modCondition spec)
+    applies <- allM (runReadCondition env) (modConditions spec)
     when applies $ case modKind spec of
       "enemy" -> apply @EnemyMatcher env spec
       "location" -> apply @LocationMatcher env spec

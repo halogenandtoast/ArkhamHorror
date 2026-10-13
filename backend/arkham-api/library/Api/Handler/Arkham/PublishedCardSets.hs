@@ -30,7 +30,13 @@ module Api.Handler.Arkham.PublishedCardSets (
   versionCards,
 ) where
 
-import Api.Handler.Arkham.CustomCards (normalizeUrl, ownedCardSet, persistCard, prepareCardForSet)
+import Api.Handler.Arkham.CustomCards (
+  normalizeUrl,
+  ownedCardSet,
+  persistCard,
+  prepareCardForSet,
+  setDeclarationsFromCards,
+ )
 import Arkham.Card.CustomCard (CustomCard (..))
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (parseEither)
@@ -58,6 +64,12 @@ data PublishedCardSetResponse = PublishedCardSetResponse
   it is discussed in -- for the one thing a listing cannot say for itself.
   The listing's own, like the description, and rewritable the same way.
   -}
+  , publishedCardSetResponseIcon :: Maybe Text
+  {- ^ The expansion symbol, for drawing the listing. A copy taken when the set
+  was published, so a card is never loaded to put a symbol beside a name.
+  -}
+  , publishedCardSetResponseInvestigatorExpansion :: Bool
+  -- ^ Whether this is an investigator expansion rather than a handful of cards.
   , publishedCardSetResponseAuthor :: Text
   , publishedCardSetResponseMine :: Bool
   , publishedCardSetResponseOfficial :: Bool
@@ -346,6 +358,9 @@ listingFor userId (Entity publishedId row) = do
       , publishedCardSetResponseName = arkhamPublishedCardSetName row
       , publishedCardSetResponseDescription = arkhamPublishedCardSetDescription row
       , publishedCardSetResponseUrl = arkhamPublishedCardSetUrl row
+      , publishedCardSetResponseIcon = arkhamPublishedCardSetIcon row
+      , publishedCardSetResponseInvestigatorExpansion =
+          arkhamPublishedCardSetInvestigatorExpansion row
       , publishedCardSetResponseAuthor = maybe "someone" userUsername author
       , publishedCardSetResponseMine = isAuthor
       , publishedCardSetResponseOfficial = maybe False userAdmin author
@@ -578,6 +593,13 @@ postApiV1ArkhamCustomCardSetPublishR setId = do
   let description = arkhamCustomCardSetDescription setRow
       url = arkhamCustomCardSetUrl setRow
       name = arkhamCustomCardSetName setRow
+      -- The icon and whether this is an expansion travel with them, so a
+      -- listing can be drawn without loading the set behind it. What the set
+      -- *declares* -- its tokens and keywords -- is not copied here: it is
+      -- stamped on every card in the snapshot, which is where an import of a
+      -- version reads it from.
+      icon = arkhamCustomCardSetIcon setRow
+      expansion = arkhamCustomCardSetInvestigatorExpansion setRow
       -- Printed order, which is the order the author put them in. It is fixed
       -- here rather than by whoever reads the version, because the listing only
       -- carries the first few and they have to be the first few.
@@ -611,6 +633,8 @@ postApiV1ArkhamCustomCardSetPublishR setId = do
         $ [ ArkhamPublishedCardSetName P.=. name
           , ArkhamPublishedCardSetDescription P.=. description
           , ArkhamPublishedCardSetUrl P.=. url
+          , ArkhamPublishedCardSetIcon P.=. icon
+          , ArkhamPublishedCardSetInvestigatorExpansion P.=. expansion
           , ArkhamPublishedCardSetLatestVersion P.=. version
           , ArkhamPublishedCardSetUpdatedAt P.=. now
           ]
@@ -625,7 +649,18 @@ postApiV1ArkhamCustomCardSetPublishR setId = do
             ForReview -> Nothing
       found <-
         P.insert
-          $ ArkhamPublishedCardSet userId (Just setId) name description url 1 approved now now
+          $ ArkhamPublishedCardSet
+            userId
+            (Just setId)
+            name
+            description
+            url
+            icon
+            expansion
+            1
+            approved
+            now
+            now
       versionId <-
         P.insert $ ArkhamPublishedCardSetVersion found 1 publishNote name snapshot now
       submit publication found versionId userId 1 notify now
@@ -765,6 +800,13 @@ importVersion userId publishedId version = do
   listing <- runDB $ DB.get publishedId
   let description = arkhamPublishedCardSetDescription =<< listing
       url = arkhamPublishedCardSetUrl =<< listing
+      icon = arkhamPublishedCardSetIcon =<< listing
+      expansion = maybe False arkhamPublishedCardSetInvestigatorExpansion listing
+      {- What the set declared, read back off the cards the version was
+      published with. The version carries no room of its own for it, and does
+      not need one: every card in it was stamped from the author's row, so the
+      cards are the record. -}
+      (tokens, keywords) = setDeclarationsFromCards cards
 
   existing <- mineFollowing userId publishedId
   -- A first subscription has to find a name nobody else of yours is using.
@@ -772,7 +814,20 @@ importVersion userId publishedId version = do
     Just _ -> pure name
     Nothing -> freeName userId name
 
-  prepared <- traverse (prepareCardForSet userId name') cards
+  let incoming =
+        ArkhamCustomCardSet
+          userId
+          name'
+          description
+          url
+          Nothing
+          expansion
+          icon
+          tokens
+          keywords
+          now
+          now
+  prepared <- traverse (prepareCardForSet userId incoming) cards
 
   runDB do
     setId <- case existing of
@@ -782,11 +837,15 @@ importVersion userId publishedId version = do
           [ ArkhamCustomCardSetName P.=. name'
           , ArkhamCustomCardSetDescription P.=. description
           , ArkhamCustomCardSetUrl P.=. url
+          , ArkhamCustomCardSetInvestigatorExpansion P.=. expansion
+          , ArkhamCustomCardSetIcon P.=. icon
+          , ArkhamCustomCardSetTokens P.=. tokens
+          , ArkhamCustomCardSetKeywords P.=. keywords
           , ArkhamCustomCardSetUpdatedAt P.=. now
           ]
         P.deleteWhere [ArkhamCustomCardCustomCardSetId P.==. found]
         pure found
-      Nothing -> P.insert $ ArkhamCustomCardSet userId name' description url Nothing now now
+      Nothing -> P.insert incoming
     for_ prepared $ persistCard userId setId now
     -- Written after the cards, so a failed import leaves nothing claiming to be
     -- up to date.

@@ -3,6 +3,9 @@
 module Arkham.Token where
 
 import Arkham.Prelude hiding (Index)
+import Control.Monad.Fail (fail)
+import Data.Data (dataTypeConstrs, dataTypeOf, fromConstr, showConstr)
+import Data.Text qualified as T
 import GHC.OverloadedLabels
 
 -- Make sure to update src/arkham/types/Token.ts
@@ -74,8 +77,58 @@ data Token
   | Warning
   | Whistle
   | Wish
+  | -- | A marker a custom card set brings with it, named by the slug its set
+    -- declared (@Arkham.Custom.SetDefs@). Open rather than a constructor per
+    -- set: the engine never knows what a set will call its tokens, and a token
+    -- like Tension has no game effect of its own beyond being counted.
+    Custom Text
   deriving stock (Show, Eq, Ord, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)
+  deriving anyclass (ToJSONKey, FromJSONKey)
+
+{- | What marks a token as a set's own rather than one the engine prints.
+
+Prefixed rather than written bare: a set is free to call its token anything, and
+a slug that happened to match a token the engine gained later would silently
+become that token in every saved game. The prefix is the one thing a core name
+can never be.
+-}
+customTokenPrefix :: Text
+customTokenPrefix = "custom:"
+
+{- | Core tokens serialize as their bare constructor name, as the derived
+all-nullary encoding did, so saved games round-trip untouched. A 'Custom' token
+serializes as its prefixed slug, which no core name can be.
+-}
+instance ToJSON Token where
+  toJSON = \case
+    Custom slug -> toJSON (customTokenPrefix <> slug)
+    t -> toJSON (tshow t)
+
+instance FromJSON Token where
+  parseJSON = withText "Token" \t -> case T.stripPrefix customTokenPrefix t of
+    Just slug | not (T.null slug) -> pure $ Custom slug
+    _ -> case lookup t coreTokenByName of
+      Just token -> pure token
+      Nothing -> fail $ "Unknown token: " <> show t
+
+-- | Every token the engine itself prints.
+coreTokens :: [Token]
+coreTokens =
+  [ fromConstr con
+  | con <- dataTypeConstrs (dataTypeOf (Custom ""))
+  , showConstr con /= "Custom"
+  ]
+
+coreTokenByName :: Map Text Token
+coreTokenByName = mapFromList [(tshow t, t) | t <- coreTokens]
+
+{- | The slug a custom token was declared under, for whatever has to look its
+name and image up in the set that brought it.
+-}
+customTokenSlugOf :: Token -> Maybe Text
+customTokenSlugOf = \case
+  Custom slug -> Just slug
+  _ -> Nothing
 
 tokenIsUse :: Token -> Bool
 tokenIsUse = \case
@@ -83,6 +136,9 @@ tokenIsUse = \case
   Horror -> False
   Clue -> False
   Doom -> False
+  -- A set's own token is a marker its cards place on themselves, not a supply
+  -- anything spends, so it is never a use.
+  Custom _ -> False
   _ -> True
 
 instance IsLabel "damage" Token where

@@ -587,6 +587,13 @@ def main() -> int:
             "_modifiers": [
                 "kind", "matcher", "modifiers", "if", "each", "eachBind", "let", "requires",
             ],
+            # A keyword the card's set declares, and what this card fills its
+            # slots with. Only the four keys below are fixed: the rest are whatever
+            # slots that keyword declared, so what a card is asked for is the
+            # keyword's business and cannot be listed here. `modifiers` and
+            # `abilities` are the card's own half of the result, gated by the
+            # keyword's `activeWhen` rather than substituted into its templates.
+            "_keywords": ["keyword", "token", "modifiers", "abilities", "…the keyword's slots"],
             "_revelationPlacementValues": vocabulary["revelationPlacements"],
         },
     }

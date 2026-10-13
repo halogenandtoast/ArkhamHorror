@@ -938,6 +938,7 @@
       "optional": [
         "metadata",
         "tooltip",
+        "resultLabel",
         "displayAsAction",
         "displayAs",
         "delayAdditionalCosts",
@@ -951,7 +952,8 @@
         "fightCriteriaOverride",
         "evadeCriteriaOverride",
         "nonBlocking",
-        "blocksIn"
+        "blocksIn",
+        "chaosTokenEffects"
       ]
     },
     "UsedAbility": {
@@ -1454,6 +1456,54 @@
         "remove"
       ]
     },
+    "CustomSetToken": {
+      "required": [
+        "slug"
+      ],
+      "optional": [
+        "name",
+        "image"
+      ]
+    },
+    "KeywordSlot": {
+      "required": [
+        "name"
+      ],
+      "optional": [
+        "label",
+        "kind",
+        "required"
+      ]
+    },
+    "KeywordBehavior": {
+      "required": [],
+      "optional": [
+        "abilities",
+        "modifiers",
+        "handlers",
+        "activeWhen"
+      ]
+    },
+    "CustomSetKeyword": {
+      "required": [
+        "name"
+      ],
+      "optional": [
+        "description",
+        "token",
+        "slots",
+        "behavior"
+      ]
+    },
+    "KeywordEffect": {
+      "required": [],
+      "optional": [
+        "keyword",
+        "token",
+        "modifiers",
+        "abilities"
+      ]
+    },
     "ArkhamBuildDecklistMeta": {
       "required": [],
       "optional": [
@@ -1809,12 +1859,14 @@
         "gameTurnHistory",
         "gameRoundHistory",
         "gameSettings",
+        "gameRoundCount",
         "gameWindowTick",
         "gameWindowTickStack",
         "gameEntryTicks",
         "gameCustomCards",
         "gameTombstones",
         "gameRetiredInvestigators",
+        "gameCommittedEntities",
         "gameHighlightedCards",
         "gameRetainedQuestion",
         "gameSimultaneousAsks",
@@ -1823,7 +1875,9 @@
         "gameUndoTurnStep",
         "gameUndoPhaseStep",
         "gameUndoRoundStep",
-        "gameLocationOffsets"
+        "gameLocationOffsets",
+        "gameCardPlayStack",
+        "gameLogBlockStack"
       ]
     },
     "Settings": {
@@ -2138,6 +2192,7 @@
         "locationGroups",
         "grid",
         "deckDiscards",
+        "substitutions",
         "useHardExpertReference",
         "customChaosBags",
         "keys",
@@ -2387,6 +2442,10 @@
     "_setAside": {
       "holds": "card data, not steps",
       "readIn": "arkham-api/library/Arkham/Custom/Overlay.hs"
+    },
+    "_keywords": {
+      "holds": "card data, not steps",
+      "readIn": "arkham-api/library/Arkham/Custom/SetDefs.hs"
     }
   },
   "arrayTolerantDecoders": [
@@ -2710,6 +2769,13 @@
       "eachBind",
       "let",
       "requires"
+    ],
+    "_keywords": [
+      "keyword",
+      "token",
+      "modifiers",
+      "abilities",
+      "\u2026the keyword's slots"
     ],
     "_revelationPlacementValues": [
       "threatArea",

@@ -9,9 +9,11 @@ module Api.Handler.Arkham.CustomCards (
   prepareCardForSet,
   persistCard,
   saveCardInSet,
-  stampSetName,
+  stampSet,
   unsubscribeSet,
   normalizeUrl,
+  hostArt,
+  setDeclarationsFromCards,
 ) where
 
 import Amazonka
@@ -28,6 +30,7 @@ import Arkham.Card.CustomCard (
   registerCustomCards,
   sanitizeCustomCardCode,
  )
+import Arkham.Custom.SetDefs qualified as SetDefs
 import Auth.ApiKey qualified as ApiKey
 import Crypto.Hash.SHA256 qualified as SHA256
 import Data.Aeson.Types (parseMaybe, withObject)
@@ -106,29 +109,62 @@ normalizeUrl raw = case T.strip <$> raw of
     | any (`T.isPrefixOf` T.toLower text) ["http://", "https://"] -> pure (Just text)
     | otherwise -> invalidArgs ["A set's link has to start with http:// or https://"]
 
-{- | The set's name, written into the card's own def.
+{- | What the set it belongs to writes into a card's own def: its name, and --
+for an investigator expansion -- the tokens and keywords the set brings with it.
 
-The set row is what a card belongs to. This copy travels with the card, and is
-what names the set when a card arrives somewhere there are no set rows to read:
-a card exported on its own and imported into another account, and the pre-set
-libraries the backfill migration filed by this same field. Nothing in a running
-app reads it to display a set -- that comes off the row.
+The set row is what a card belongs to. These copies travel with the card, and
+are what answer for the set when a card arrives somewhere there are no set rows
+to read: a card exported on its own and imported into another account, the
+pre-set libraries the backfill migration filed by the name field, and a card in
+a running game, where the engine and the client have the def and nothing else.
+The keywords are read there to resolve what a card's @_keywords@ refers to, and
+the tokens to draw a marker the engine only knows the slug of.
+
+An ordinary set writes nothing but its name: an empty list is nothing to say, so
+the key goes rather than being written onto every card of every set that has no
+tokens.
 -}
-stampSetName :: Text -> CardDef -> CardDef
-stampSetName name def = def {cdMeta = Map.insert "set" (String name) (cdMeta def)}
+stampSet :: ArkhamCustomCardSet -> CardDef -> CardDef
+stampSet set def = def {cdMeta = stamped}
+ where
+  stamped =
+    Map.insert "set" (String (arkhamCustomCardSetName set))
+      $ declared SetDefs.setTokensMetaKey (arkhamCustomCardSetTokens set)
+      $ declared SetDefs.setKeywordsMetaKey (arkhamCustomCardSetKeywords set)
+      $ cdMeta def
+  declared key value meta = case value of
+    Array xs | null xs -> Map.delete key meta
+    Null -> Map.delete key meta
+    _ -> Map.insert key value meta
+
+{- | The tokens and keywords a set declared, read back off the cards it was
+published or exported with.
+
+Every card carries a copy ('stampSet'), so what a set brings with it survives
+anywhere a card goes -- which means an import does not need the set's own row,
+or a published version to have been written in a format that had room for it.
+The first card that says anything answers for the set; they are all stamped from
+the same row, so any of them would.
+-}
+setDeclarationsFromCards :: [CustomCard] -> (Value, Value)
+setDeclarationsFromCards cards = (declared SetDefs.setTokensMetaKey, declared SetDefs.setKeywordsMetaKey)
+ where
+  declared key =
+    fromMaybe (Array mempty)
+      $ listToMaybe [v | card <- cards, Just v <- [Map.lookup key (cdMeta (customCardDef card))]]
 
 {- | Everything a card needs doing to it before it can be written: the code
-checked, the set name stamped on, and any inlined art uploaded.
+checked, what its set declares stamped on, and any inlined art uploaded.
 
 Split from the write because uploading is the part that can fail, and an import
 empties a set before it refills it. Preparing every card first means a card that
 cannot be stored fails while the set it is replacing is still whole.
 -}
-prepareCardForSet :: UserId -> Text -> CustomCard -> Handler (CardCode, CustomCard)
-prepareCardForSet userId setName card0 = do
+prepareCardForSet :: UserId -> ArkhamCustomCardSet -> CustomCard -> Handler (CardCode, CustomCard)
+prepareCardForSet userId set card0 = do
   (cardCode, card') <- normalizeCard card0
   art <- traverse (hostArt userId) (customCardArt card')
-  def <- hostDefArt userId (stampSetName setName (customCardDef card'))
+  def <- hostDefArt userId (stampSet set (customCardDef card'))
   pure (cardCode, card' {customCardArt = art, customCardDef = def})
 
 {- | Write a prepared card into a set. Runs in the caller's transaction, so an
@@ -179,12 +215,12 @@ persistCard userId setId now (cardCode, card) = do
 saveCardInSet
   :: UserId
   -> ArkhamCustomCardSetId
-  -> Text
+  -> ArkhamCustomCardSet
   -> UTCTime
   -> CustomCard
   -> Handler (Entity ArkhamCustomCard)
-saveCardInSet userId setId setName now card0 = do
-  prepared <- prepareCardForSet userId setName card0
+saveCardInSet userId setId set now card0 = do
+  prepared <- prepareCardForSet userId set card0
   runDB $ persistCard userId setId now prepared
 
 -- | A card is always saved into a set, so the set it goes in comes with it.
@@ -206,7 +242,7 @@ postApiV1ArkhamCustomCardsR = do
   SaveCardPost {saveCardPostSetId, saveCardPostCard} <- requireCheckJsonBody
   set <- ownedCardSet userId saveCardPostSetId
   now <- liftIO getCurrentTime
-  saveCardInSet userId saveCardPostSetId (arkhamCustomCardSetName set) now saveCardPostCard
+  saveCardInSet userId saveCardPostSetId set now saveCardPostCard
 
 deleteApiV1ArkhamCustomCardR :: ArkhamCustomCardId -> Handler ()
 deleteApiV1ArkhamCustomCardR cardId = do

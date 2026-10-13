@@ -33,6 +33,10 @@ is the point of it not being on the version.
 with the description for the same reason: it says where to read more about the
 set, not what is in a version of it.
 
+@icon@ and @investigatorExpansion@ travel with them: an expansion symbol is what
+a browser draws the set with, and whether it is an expansion at all decides where
+it is filed. Both are copies, so a listing can be drawn without loading the set.
+
 @ArkhamPublishedCardSetVersion@ holds a version's cards outright rather than
 reading them back off the author's set. A version has to stay importable exactly
 as published: someone who edited their copy and wants the published one back has
@@ -63,6 +67,8 @@ ArkhamPublishedCardSet sql=arkham_published_card_sets
   name Text
   description Text Maybe
   url Text Maybe
+  icon Text Maybe
+  investigatorExpansion Bool default=False
   latestVersion Int
   approvedVersion Int Maybe
   createdAt UTCTime

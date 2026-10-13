@@ -50,6 +50,8 @@ data DebugSkillTestSpec = DebugSkillTestSpec
   }
   deriving stock (Show, Eq, Ord, Data)
 
-$(deriveJSON defaultOptions ''DebugTestSkill)
-$(deriveJSON defaultOptions ''DebugTestDifficulty)
-$(deriveJSON (aesonOptions $ Just "debugTest") ''DebugSkillTestSpec)
+mconcat
+  [ deriveJSON defaultOptions ''DebugTestSkill
+  , deriveJSON defaultOptions ''DebugTestDifficulty
+  , deriveJSON (aesonOptions $ Just "debugTest") ''DebugSkillTestSpec
+  ]

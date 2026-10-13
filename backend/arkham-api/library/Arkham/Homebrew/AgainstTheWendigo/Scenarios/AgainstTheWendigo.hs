@@ -24,10 +24,11 @@ import Arkham.Homebrew.AgainstTheWendigo.ScenarioDeckKeys (pattern StudentsFateD
 import Arkham.Homebrew.AgainstTheWendigo.Sets qualified as Set
 import Arkham.Location.Grid (Pos (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
-import Arkham.Trait (Trait (Madness))
+import Arkham.Trait (Trait (Ally, Madness))
 
 newtype AgainstTheWendigo = AgainstTheWendigo ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -168,6 +169,29 @@ instance RunMessage AgainstTheWendigo where
     PassedSkillTestWithToken _ Tablet -> do
       ranges <- select $ LocationWithTitle "Mountain Range" <> UnrevealedLocation
       for_ (take 1 ranges) \lid -> placeClues ScenarioSource lid 1
+      pure s
+    -- "[skull]: If you fail, lose 1 resource." Hard/expert loses 2.
+    FailedSkillTestWithToken iid Skull -> do
+      loseResources iid Skull (if isEasyStandard attrs then 1 else 2)
+      pure s
+    {- "[cultist]: If you fail, an Ally asset you control takes 1 damage and 1
+    horror." Hard/expert removes one from the game instead. -}
+    FailedSkillTestWithToken iid Cultist -> do
+      allies <- select $ AssetWithTrait Ally <> assetControlledBy iid
+      unless (null allies) $ chooseTargetM iid allies \ally ->
+        if isEasyStandard attrs
+          then push $ DealAssetDamageWithCheck ally (toSource Cultist) 1 1 True
+          else removeFromGame ally
+      pure s
+    -- "[tablet]: ... If you fail, take 1 horror."
+    FailedSkillTestWithToken iid Tablet -> do
+      assignHorror iid Tablet 1
+      pure s
+    -- "[elder thing]: If you fail, take 1 horror." Hard/expert adds 1 damage.
+    FailedSkillTestWithToken iid ElderThing -> do
+      if isEasyStandard attrs
+        then assignHorror iid ElderThing 1
+        else assignDamageAndHorror iid ElderThing 1 1
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of

@@ -316,6 +316,8 @@ data WindowMatcher
   | GameEnds Timing
   | InvestigatorEliminated Timing Who
   | InvestigatorResigned Timing Who
+  | SuffersPhysicalTrauma Timing Who
+  | SuffersMentalTrauma Timing Who
   | AnyWindow
   | AnyWindowIfEnemy EnemyMatcher
   | NotAnyWindow

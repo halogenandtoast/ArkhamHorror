@@ -124,6 +124,9 @@ an act's @Objective $ forced AnyWindow@. #5812
 hasOwnEliminatedWindow :: InvestigatorId -> [Window] -> Bool
 hasOwnEliminatedWindow iid = any $ \case
   (windowType -> InvestigatorEliminated iid') -> iid' == iid
+  -- Defeat applies its trauma on the way out, so this window belongs to an
+  -- investigator who is already defeated by the time it resolves.
+  (windowType -> SufferedTrauma iid' _ _) -> iid' == iid
   (windowType -> EndOfGame {}) -> True
   _ -> False
 
@@ -364,6 +367,8 @@ data WindowType
   | InvestigatorWouldBeDefeated DefeatedBy InvestigatorId
   | InvestigatorEliminated InvestigatorId
   | InvestigatorResigned InvestigatorId
+  | -- | Physical then mental, as 'Arkham.Message.SufferTrauma' carries them.
+    SufferedTrauma InvestigatorId Int Int
   | LastClueRemovedFromAsset AssetId
   | LastClueRemovedFromLocation LocationId
   | LeavePlay Target

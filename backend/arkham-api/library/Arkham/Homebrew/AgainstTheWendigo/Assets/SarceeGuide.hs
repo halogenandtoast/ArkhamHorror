@@ -29,11 +29,13 @@ instance HasModifiersFor SarceeGuide where
 instance HasAbilities SarceeGuide where
   getAbilities (SarceeGuide a) =
     [ -- "{reaction} When you resolve a skill test in a Wild location: You get +1 [intellect]."
-      controlled a 1 (exists (YourLocation <> LocationWithTrait Wild) <> duringUnresolvedTest)
+      wantsSkillTest #intellect
+        $ controlled a 1 (exists (YourLocation <> LocationWithTrait Wild) <> duringUnresolvedTest)
         $ triggered (InitiatedSkillTest #when You AnySkillType AnySkillTestValue AnySkillTest) mempty
     , -- "{reaction} When you resolve a skill test at stage 4 of a Navigate action, or
       -- triggered by a River treachery card: You get +1 [combat] or +1 [agility]."
-      controlled a 2 duringUnresolvedTest
+      wantsSkillTest (oneOf [#combat, #agility])
+        $ controlled a 2 duringUnresolvedTest
         $ triggered (InitiatedSkillTest #when You AnySkillType AnySkillTestValue navigateOrRiverTest) mempty
     , {- "Forced - If an investigator in your location reveals or puts into play a
       Wendigo card: Test [willpower] (2) (before resolving the Revelation effect)."

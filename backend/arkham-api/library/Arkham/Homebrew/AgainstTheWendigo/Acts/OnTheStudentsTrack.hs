@@ -5,6 +5,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.AgainstTheWendigo.Helpers (drawStudentsFate)
 import Arkham.Homebrew.AgainstTheWendigo.Key
+import Arkham.Homebrew.AgainstTheWendigo.ScenarioDeckKeys (pattern StudentsFateDeck)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log (record)
 
@@ -17,7 +18,8 @@ onTheStudentsTrack = act (2, A) OnTheStudentsTrack Cards.onTheStudentsTrack Noth
 
 instance HasAbilities OnTheStudentsTrack where
   getAbilities = actAbilities \x ->
-    [ restricted x 1 (exists $ InvestigatorAt Anywhere)
+    [ -- The deck runs out, and without this the clues are still spent on nothing.
+      restricted x 1 (exists (InvestigatorAt Anywhere) <> ScenarioDeckWithCard StudentsFateDeck)
         $ FastAbility
         $ GroupClueCost (PerPlayer 2) Anywhere
     , onlyOnce

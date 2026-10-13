@@ -373,6 +373,7 @@ time once the clues are gone, including at a location that was already empty.
 fateReaction :: (Sourceable a, HasCardCode a, Be a LocationMatcher) => a -> [CardDef] -> Ability
 fateReaction a fates =
   onlyOnce
+    $ nonBlocking
     $ restricted a 1 (Here <> (thisExists a LocationWithoutClues <> mapOneOf (exists . asideFate) fates))
     $ freeReaction AnyWindow
 

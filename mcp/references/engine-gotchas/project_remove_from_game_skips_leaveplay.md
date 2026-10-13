@@ -33,4 +33,28 @@ pointing at an id that no longer exists. `arkham-replay --undo N --answers` with
 `{"tag":"Raw", …}` message reproducing the removal, plus `--trace`, shows the whole removal as
 just two lines when the windows are being skipped.
 
+## Assets: `RemoveFromGame` raises no leave-play window either
+
+The claim above that "`RemoveFromGame` already did the right thing" holds for enemies only.
+For an asset it is the opposite. `Asset/Runner.hs`'s clause does push the right thing --
+`pushAll [RemoveFromPlay (toSource a), ObtainCard a.cardId]` -- but `Game/Runner.hs`'s
+`RemoveFromGame (AssetTarget aid)` clause runs `RemoveAsset aid` *inline*, in the same
+message, and that deletes the asset from `gameEntities`. By the time the queued
+`RemoveFromPlay` is dequeued there is no entity left to match `isSource a source`, so the
+`LeavePlay` windows are never built. A `--trace` of a `removeFromGame` on an asset is two
+lines: `RemoveFromGame`, then `ObtainCard`.
+
+So a card whose text keys off being *removed from the game* cannot watch
+`AssetWouldLeavePlay`/`AssetDiscarded` and then reach that state with `removeFromGame`.
+Discard it instead and let `RemoveFromGameInsteadOfDiscard` convert it: the `Discard`
+clause queues `[... RemoveFromPlay, discardMsg, afterWindows]`, so the leave-play window
+fires while the asset is still in play and the removal lands right after. Against the
+Wendigo's Lost Child does this from `Do (AssetDefeated …)` -- it also has to intercept that,
+since the attrs runner routes any defeated asset with victory points to `AddToVictory`
+without consulting the modifier.
+
+Norman Falkner's ability 4 comment ("that removal raises the same leave-play window a
+discard does") describes the intent, not the engine; his `sentOutOfPlay` meta flag
+suppresses the ability on that path anyway, so the gap is invisible there.
+
 Related: [[project_enemy_removal_attached_treacheries]], [[project_removed_entities_cleared]].

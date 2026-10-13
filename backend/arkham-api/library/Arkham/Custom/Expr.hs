@@ -62,9 +62,10 @@ import Arkham.Location.Types (Location)
 import Arkham.Matcher
 import Arkham.Name (toTitle)
 import Arkham.Prelude
+import Arkham.SkillTestResult
 import Arkham.Projection
 import Arkham.Query (QueryElement)
-import Arkham.SkillTest.Base (skillTestCommittedCards, skillTestIconValues, skillTestId)
+import Arkham.SkillTest.Base (skillTestResult, skillTestCommittedCards, skillTestIconValues, skillTestId)
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (parseMaybe)
@@ -334,6 +335,16 @@ icons or "succeed by" is talking about it.
 skillTestProp :: HasGame m => Text -> m Value
 skillTestProp prop = case prop of
   "matchingIcons" -> toJSON . toList <$> getSkillTestMatchingSkillIcons
+  {- By how much it went, as a plain number: positive for a success, negative
+  for a failure, zero for a test that has not been resolved. "For every 2 points
+  you succeed by" has no other way to count. -}
+  "margin" ->
+    getSkillTest <&> \case
+      Just st -> toJSON $ case skillTestResult st of
+        SucceededBy _ n -> n
+        FailedBy _ n -> negate n
+        Unrun -> 0
+      Nothing -> toJSON (0 :: Int)
   "difficulty" -> toJSON <$> getSkillTestDifficulty
   "action" -> toJSON <$> getSkillTestAction
   "investigator" -> toJSON <$> getSkillTestInvestigator

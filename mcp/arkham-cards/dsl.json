@@ -888,6 +888,7 @@
     ],
     "skillTestProperties": [
       "matchingIcons",
+      "margin",
       "difficulty",
       "action",
       "investigator",

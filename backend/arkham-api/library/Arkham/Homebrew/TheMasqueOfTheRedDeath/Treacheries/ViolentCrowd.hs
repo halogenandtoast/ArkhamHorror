@@ -27,8 +27,8 @@ instance HasAbilities ViolentCrowd where
     -- "your location gains: '[skull]: -1. If you fail, take 1 damage.'" and
     -- "At the end of the round, discard Violent Crowd."
     InThreatArea iid ->
-      [ describedSkullEffect (-1) "If you fail, take 1 damage." (proxied (locationWithInvestigator iid) a) 1
-      , restricted a 2 (InThreatAreaOf You) $ forced $ RoundEnds #when
+      [ describedSkullEffect (-1) "violentCrowd.skull" (proxied (locationWithInvestigator iid) a) 1
+      , restricted a 2 (InThreatAreaOf You) $ silent $ RoundEnds #when
       ]
     _ -> []
 

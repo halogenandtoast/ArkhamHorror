@@ -370,6 +370,15 @@ data ModifierType
   | ForceSpawnLocation LocationMatcher
   | ForcedChaosTokenChange ChaosTokenFace [ChaosTokenFace]
   | Foresight Text
+  | {- | On a 'ChaosTokenFaceTarget': this face also carries every chaos token effect
+    DECLARED for the named face, so the skill test window predicts it.
+
+    A declaration only (see 'abilityChaosTokenEffects') -- the card that broadens the
+    faces still resolves the effect itself. The Masque of the Red Death's agendas print
+    exactly this: "add each [skull] effect on your location to each [cultist] and
+    [tablet] token you reveal during skill tests."
+    -}
+    GainsChaosTokenEffectsOf ChaosTokenFace
   | GainVictory Int
   | GiveAdditionalAction AdditionalAction
   | HandSize Int

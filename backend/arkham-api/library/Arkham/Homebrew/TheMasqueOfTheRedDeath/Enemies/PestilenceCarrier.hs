@@ -23,7 +23,7 @@ instance HasAbilities PestilenceCarrier where
   getAbilities (PestilenceCarrier a) =
     extend
       a
-      [ describedSkullEffect 0 "Move Pestilence Carrier once toward you." (proxied Anywhere a) 1
+      [ describedSkullEffect 0 "pestilenceCarrier.skull" (proxied Anywhere a) 1
       | a.ready
       , isNothing a.placement.inThreatAreaOf
       ]

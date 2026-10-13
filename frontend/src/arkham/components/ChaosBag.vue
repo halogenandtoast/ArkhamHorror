@@ -119,6 +119,10 @@ const breakdownRows = computed(() =>
   [...(breakdown.value?.tokens ?? [])].sort((a, b) => compareTokenFaces(a.face, b.face))
 )
 
+// A face that has already been drawn still carries its effects, but it is no longer in
+// the bag, so it is left out of the counted grid.
+const bagRows = computed(() => breakdownRows.value.filter((entry) => entry.count > 0))
+
 // Every card effect on every face, flattened for the popover. Kept out of the token
 // grid above so the two-column layout there stays intact.
 const breakdownEffects = computed(() =>
@@ -234,7 +238,7 @@ const choose = (idx: number) => emit('choose', idx)
           </div>
 
           <div class="stats__table">
-            <div v-for="entry in breakdownRows" :key="entry.face" class="stats__row">
+            <div v-for="entry in bagRows" :key="entry.face" class="stats__row">
               <img class="stats__token" :src="chaosTokenImage(entry.face)" />
               <span class="stats__multiplier">&times;{{ entry.count }}</span>
               <span class="stats__value">{{ entryValueLabel(entry) }}</span>

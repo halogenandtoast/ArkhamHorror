@@ -1177,14 +1177,23 @@ getSkillTestValueBreakdown s = do
     faceEffects <- getChaosTokenFaceEffects s fullModifiers
     let modifiers' = map modifierType fullModifiers
     let tokens = chaosBagChaosTokens bag
-    entries <- for tokens.uniqueByFace \tok -> do
+    {- A revealed token has left the bag, but the window still draws a band for its
+    face, so that face gets an entry of its own -- counted 0, since it is no longer
+    drawable, which leaves the odds untouched. -}
+    let revealed = skillTestResolvedChaosTokens s <> s.revealedChaosTokens
+    let drawn = uniqueTokenFaces [t | t <- revealed, t.face `notElem` map (.face) tokens]
+    entries <- for (tokens.uniqueByFace <> drawn) \tok -> do
       value <- getModifiedChaosTokenValue s tok
       ChaosTokenValue _ tokenModifier <- getChaosTokenValue s.investigator tok.face ()
+      faceModifiers <- getModifiers (ChaosTokenFaceTarget tok.face)
       -- TODO: need some way for homebrew to  hook into these
       let autoFail = tokenModifier == AutoFailModifier
           autoSuccess = tokenModifier == AutoSuccessModifier
           revealsAnother = tok.face `elem` [#curse, #bless, #frost]
-          effects = [e | (face, e) <- faceEffects, face == tok.face]
+          printed = [e | (face, e) <- faceEffects, face == tok.face]
+          gained = [f | GainsChaosTokenEffectsOf f <- faceModifiers]
+          effects =
+            printed <> [e | (face, e) <- faceEffects, face `elem` gained, e `notElem` printed]
           effectValue = sum $ mapMaybe ctfeValue effects
       pure
         $ ChaosTokenValueEntry

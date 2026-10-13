@@ -55,13 +55,18 @@ instance RunMessage TheMothBurnedByTheFlame where
       pure a
     _ -> TheMothBurnedByTheFlame <$> liftRunMessage msg attrs
 
--- | Every card in play that can hold doom, other than The Moth herself.
+{- | Every card in play that can hold doom, other than The Moth herself.
+
+An investigator card is one of them -- "any other card" names no type, and doom
+sits on an investigator as readily as on anything else.
+-}
 getOtherCards :: HasGame m => AssetAttrs -> m [Target]
 getOtherCards attrs = do
   assets <- selectTargets (not_ (be attrs) :: AssetMatcher)
+  investigators <- selectTargets UneliminatedInvestigator
   enemies <- selectTargets AnyEnemy
   locations <- selectTargets Anywhere
   treacheries <- selectTargets AnyTreachery
   acts <- selectTargets AnyAct
   agendas <- selectTargets AnyAgenda
-  pure $ assets <> enemies <> locations <> treacheries <> acts <> agendas
+  pure $ assets <> investigators <> enemies <> locations <> treacheries <> acts <> agendas

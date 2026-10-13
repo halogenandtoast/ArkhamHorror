@@ -38,9 +38,9 @@ instance HasAbilities TheRedDeath where
         mkAbility a 2
           $ forced
           $ oneOf
-            [ Matcher.EnemyDefeated #when Anyone byRedDeath AnyEnemy
-            , Matcher.AssetDefeated #when byRedDeath AnyAsset
-            , Matcher.InvestigatorDefeated #when byRedDeath Anyone
+            [ Matcher.EnemyDefeated #when Anyone byRedDeath EnemyWithAnyDoom
+            , Matcher.AssetDefeated #when byRedDeath AssetWithAnyDoom
+            , Matcher.InvestigatorDefeated #when byRedDeath InvestigatorWithAnyDoom
             ]
       ]
    where

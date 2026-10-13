@@ -36,7 +36,7 @@ instance HasAbilities GrandBallroom where
   getAbilities (GrandBallroom a) =
     extendRevealed
       a
-      [ describedSkullEffect 0 "-1 for every 2 revealed _Manor_ locations in play." a 1
+      [ describedSkullEffect 0 "grandBallroom.skull" a 1
       , locationResignAction a
       ]
 

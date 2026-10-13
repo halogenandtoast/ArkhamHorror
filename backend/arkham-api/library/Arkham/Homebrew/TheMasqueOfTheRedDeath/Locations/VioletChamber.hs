@@ -39,7 +39,7 @@ instance HasModifiersFor VioletChamber where
 instance HasAbilities VioletChamber where
   -- "[skull]: -2. -0 instead if this test is printed on an event."
   getAbilities (VioletChamber a) =
-    extendRevealed1 a $ describedSkullEffect 0 "-2. -0 instead if this test is printed on an event." a 1
+    extendRevealed1 a $ describedSkullEffect 0 "violetChamber.skull" a 1
 
 instance RunMessage VioletChamber where
   runMessage msg l@(VioletChamber attrs) = runQueueT do

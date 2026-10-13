@@ -4,6 +4,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Investigator (getCanPlaceCluesOnLocationCount)
+import Arkham.Helpers.Modifiers (ModifierType (GainsChaosTokenEffectsOf), modifiedWhen_)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Homebrew.TheMasqueOfTheRedDeath.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.TheMasqueOfTheRedDeath.Helpers (addSkullEffectsToToken, scenarioI18n)
@@ -15,8 +16,15 @@ import Arkham.Name (toTitle)
 import Arkham.Projection
 
 newtype UnderTheSkin = UnderTheSkin AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
+  deriving anyclass (IsAgenda, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+{- | The declaration half of the [skull] broadening below, so the skill test window
+shows the chambers' effects on the faces that will pick them up.
+-}
+instance HasModifiersFor UnderTheSkin where
+  getModifiersFor (UnderTheSkin a) = for_ [#cultist, #tablet] \face ->
+    modifiedWhen_ a (onSide A a) (ChaosTokenFaceTarget face) [GainsChaosTokenEffectsOf #skull]
 
 underTheSkin :: AgendaCard UnderTheSkin
 underTheSkin = agenda (2, A) UnderTheSkin Cards.underTheSkin (Static 5)

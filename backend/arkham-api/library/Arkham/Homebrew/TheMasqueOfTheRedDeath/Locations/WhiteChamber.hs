@@ -31,7 +31,7 @@ instance HasAbilities WhiteChamber where
     extendRevealed
       a
       -- "[skull]: 0. -2 instead if this test is printed on an asset you control."
-      [ describedSkullEffect 0 "0. -2 instead if this test is printed on an asset you control." a 1
+      [ describedSkullEffect 0 "whiteChamber.skull" a 1
       , -- "[reaction] When you would discover 1 or more clues from White Chamber via
         -- an ability printed on an asset: Discover 1 additional clue. (Group limit
         -- once per round.)"

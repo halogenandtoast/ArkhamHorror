@@ -40,7 +40,7 @@ instance HasAbilities PurpleChamber where
     extendRevealed1 a
       $ describedSkullEffect
         (-1)
-        "Reveal another token. If you reveal 2 or more non-{elderSign} symbol tokens during this test, this test automatically succeeds."
+        "purpleChamber.skull"
         a
         1
 

@@ -78,6 +78,47 @@
         "tablet": "-2. If you do not succeed by 3 or more, lose a resource.",
         "elderThing": "-3. If you do not succeed by 3 or more, take 1 damage or 1 horror."
       }
+    },
+    "tooltips": {
+      "grandBallroom": {
+        "skull": "-1 for every 2 revealed _Manor_ locations in play."
+      },
+      "blueChamber": {
+        "skull": "Each card committed to this test loses 1 matching icon."
+      },
+      "purpleChamber": {
+        "skull": "Reveal another token. If you reveal 2 or more non-{elderSign} symbol tokens during this test, this test automatically succeeds."
+      },
+      "greenChamber": {
+        "skull": "-1. -3 instead if you have discovered 1 or more clues this round."
+      },
+      "whiteChamber": {
+        "skull": "0. -2 instead if this test is printed on an asset you control."
+      },
+      "violetChamber": {
+        "skull": "-2. -0 instead if this test is printed on an event."
+      },
+      "blackChamber": {
+        "skull": "If you fail by 2 or more, choose a non-story asset you control and return it to your hand."
+      },
+      "infectedGuest": {
+        "skull": "Deal 1 damage to Infected Guest."
+      },
+      "pestilenceCarrier": {
+        "skull": "Move Pestilence Carrier once toward you."
+      },
+      "redSpectre": {
+        "skull": "If this test fails and Red Spectre is ready, it makes an immediate attack against you."
+      },
+      "shadowOfDeath": {
+        "skull": "If you fail, discard a card from your hand at random."
+      },
+      "violentCrowd": {
+        "skull": "If you fail, take 1 damage."
+      },
+      "morbidVisions": {
+        "skull": "If you fail, take 1 horror."
+      }
     }
   }
 }

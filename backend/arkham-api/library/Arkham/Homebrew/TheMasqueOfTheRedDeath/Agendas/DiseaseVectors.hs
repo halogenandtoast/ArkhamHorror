@@ -1,12 +1,20 @@
 module Arkham.Homebrew.TheMasqueOfTheRedDeath.Agendas.DiseaseVectors (diseaseVectors) where
 
 import Arkham.Agenda.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (GainsChaosTokenEffectsOf), modifiedWhen_)
 import Arkham.Homebrew.TheMasqueOfTheRedDeath.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.TheMasqueOfTheRedDeath.Helpers (addSkullEffectsToToken)
 
 newtype DiseaseVectors = DiseaseVectors AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
+  deriving anyclass (IsAgenda, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+{- | The declaration half of the [skull] broadening below, so the skill test window
+shows the chambers' effects on the faces that will pick them up.
+-}
+instance HasModifiersFor DiseaseVectors where
+  getModifiersFor (DiseaseVectors a) = for_ [#cultist, #tablet, #elderthing] \face ->
+    modifiedWhen_ a (onSide A a) (ChaosTokenFaceTarget face) [GainsChaosTokenEffectsOf #skull]
 
 diseaseVectors :: AgendaCard DiseaseVectors
 diseaseVectors = agenda (3, A) DiseaseVectors Cards.diseaseVectors (Static 6)

@@ -20,7 +20,7 @@ instance HasAbilities InfectedGuest where
   -- "Infected Guest's location gains: '[skull]: -1. Deal 1 damage to Infected Guest.'"
   getAbilities (InfectedGuest a) =
     extend1 a
-      $ describedSkullEffect (-1) "Deal 1 damage to Infected Guest." (proxied (locationWithEnemy a.id) a) 1
+      $ describedSkullEffect (-1) "infectedGuest.skull" (proxied (locationWithEnemy a.id) a) 1
 
 instance RunMessage InfectedGuest where
   runMessage msg e@(InfectedGuest attrs) = runQueueT $ case msg of

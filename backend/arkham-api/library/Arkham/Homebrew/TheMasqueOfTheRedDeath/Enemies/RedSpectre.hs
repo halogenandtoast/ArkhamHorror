@@ -20,7 +20,7 @@ instance HasAbilities RedSpectre where
     extend1 a
       $ describedSkullEffect
         0
-        "If this test fails and Red Spectre is ready, it makes an immediate attack against you."
+        "redSpectre.skull"
         (proxied (locationWithEnemy a.id) a)
         1
 

@@ -5,6 +5,7 @@ import { Card, cardDecoder} from '@/arkham/types/Card';
 import { SkillType, skillTypeDecoder} from '@/arkham/types/SkillType';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import { Target, targetDecoder } from '@/arkham/types/Target';
+import { handleEmbeddedI18n } from '@/arkham/i18n';
 import { TokenFace, tokenFaceDecoder } from '@/arkham/types/ChaosToken';
 
 export type SkillTestStep
@@ -88,12 +89,11 @@ export function chaosTokenEffectParts(
     value: effect.value === null
       ? null
       : (effect.value > 0 ? `+${effect.value}` : `${effect.value}`),
-    // The backend may hand `text` over either as an i18n key or as literal prose;
-    // keys have no spaces, so only those are worth asking about, and `t` returns
-    // the key itself when there is no entry, which is the raw text anyway.
-    text: effect.text
-      ? (/\s/.test(effect.text) ? effect.text : translate(effect.text))
-      : null,
+    // The backend may hand `text` over either as a `$`-prefixed i18n key (what
+    // `withI18nTooltip` produces) or as literal prose. `handleEmbeddedI18n` resolves
+    // the first and returns the second untouched, and leaves a key with no entry as
+    // written rather than blanking the line.
+    text: effect.text ? handleEmbeddedI18n(effect.text, translate) : null,
   }
 }
 

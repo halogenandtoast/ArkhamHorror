@@ -13,7 +13,14 @@ import { useCardStore } from '@/stores/cards'
 import { libraryCards, loadLibrary } from '@/arkham/customCardLibrary'
 import { stripCardCodePrefix } from '@/arkham/customCards'
 
-const props = defineProps<{ modelValue: string | null | undefined; placeholder?: string }>()
+const props = defineProps<{
+  modelValue: string | null | undefined
+  placeholder?: string
+  /* Which kinds of card are worth offering. An InvestigatorId is a card code
+   * like any other, but every card that is not an investigator is noise in a
+   * field that can only mean one. */
+  kinds?: string[]
+}>()
 const emit = defineEmits<{ 'update:modelValue': [v: string] }>()
 
 const cardStore = useCardStore()
@@ -83,7 +90,8 @@ const choices = computed<Choice[]>(() => {
     classes: d.classSymbols ?? [],
     set: d.encounterSet ?? undefined,
   }))
-  return [...mine, ...rest]
+  const all = [...mine, ...rest]
+  return props.kinds ? all.filter((c) => props.kinds!.includes(c.kind)) : all
 })
 
 const matching = computed(() => {

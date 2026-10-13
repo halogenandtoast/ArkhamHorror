@@ -114,15 +114,24 @@ export const cardBindings = (cardType?: string): Binding[] => [
 /* Meta the card is *built* from -- an enemy's prey, where it spawns -- is read
  * before any entity exists, so it cannot see the entity's own fields. Mirrors
  * `defBindings` in "Arkham.Card.CustomCard": the only name a def alone knows is
- * whose signature it is. */
-export const defBindings = (): Binding[] => [
-  {
-    name: 'investigator',
-    detail: 'InvestigatorId, on a signature card',
-    type: 'InvestigatorId',
-    origin: "whoever's signature this is",
-  },
-]
+ * whose signature it is.
+ *
+ * And it knows that from two places: the Signature deck restriction, and the
+ * investigator who lists this card among their signatures. Only the second is
+ * usable HERE -- writing `$investigator` into the deck restriction the binding
+ * is read from is circular, and resolves to nothing. So the name is offered
+ * only when an investigator claims the card. */
+export const defBindings = (hasSignatureOwner = false): Binding[] =>
+  hasSignatureOwner
+    ? [
+        {
+          name: 'investigator',
+          detail: 'InvestigatorId, on a signature card',
+          type: 'InvestigatorId',
+          origin: 'the investigator who lists this among their signatures',
+        },
+      ]
+    : []
 
 /* What paying for an ability gave up. Only an ability has this: a handler is a
  * reaction to a message and a modifier is read rather than used, so neither pays

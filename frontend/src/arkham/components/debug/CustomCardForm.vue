@@ -1191,14 +1191,14 @@ defineExpose({ loadCard, reset, buildCustomCard, snapshot, cardType: computed(()
             </div>
             <ValueEditor
               type="PreyMatcher"
-              :bindings="defBindings()"
+              :bindings="defBindings(!!signatureOwner)"
               label="Prey (defaults to anyone)"
               :modelValue="form.prey"
               @update:modelValue="form.prey = $event"
             />
             <ValueEditor
               type="SpawnAt"
-              :bindings="defBindings()"
+              :bindings="defBindings(!!signatureOwner)"
               label="Spawn (defaults to the usual rules)"
               :modelValue="form.spawnAt"
               @update:modelValue="form.spawnAt = $event"
@@ -1278,7 +1278,7 @@ defineExpose({ loadCard, reset, buildCustomCard, snapshot, cardType: computed(()
               optional
               type="Cost"
               label="Additional cost (optional)"
-              :bindings="defBindings()"
+              :bindings="defBindings(!!signatureOwner)"
               :modelValue="form.additionalCost"
               @update:modelValue="form.additionalCost = $event"
             />
@@ -1286,7 +1286,7 @@ defineExpose({ loadCard, reset, buildCustomCard, snapshot, cardType: computed(()
             <ValueEditor
               type="[DeckRestriction]"
               label="Deck restrictions (optional)"
-              :bindings="defBindings()"
+              :bindings="defBindings(!!signatureOwner)"
               :modelValue="form.deckRestrictions"
               @update:modelValue="form.deckRestrictions = $event ?? []"
             />

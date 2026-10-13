@@ -87,6 +87,15 @@ onClickOutside(bindingEl, () => (bindingInput.value = false))
  * only sees what the steps before it bound. */
 const inScope = computed(() => props.bindings ?? [])
 
+/* The card's own investigator, offered beside a field that wants one.
+ *
+ * A signature card already knows who it is for, so writing that id out by hand
+ * is both unreadable and wrong the moment the card is copied to another
+ * investigator. Only offered where it is actually in scope. */
+const investigatorBinding = computed(() =>
+  inScope.value.find((b) => b.name === 'investigator' && b.type === 'InvestigatorId'),
+)
+
 // Shapes that draw a single bordered row, which is where the segment lives.
 const hasOwnRow = computed(() => ['sum', 'text', 'number', 'raw'].includes(shape.value.kind))
 
@@ -789,6 +798,35 @@ const asComparison = computed(
       :modelValue="typeof modelValue === 'string' ? modelValue : null"
       @update:modelValue="emit('update:modelValue', $event)"
     />
+
+    <!-- An investigator's id IS a card code, and a custom one is a minted uuid
+         that says nothing about who it is. So it is named rather than typed, and
+         the same binding offer rides alongside: a signature card has
+         `$investigator` already bound, which is who the card is for however it
+         is later copied or renamed. -->
+    <div v-else-if="shape.type === 'InvestigatorId'" class="picked-row">
+      <CardCodeField
+        :kinds="['Investigator']"
+        :modelValue="typeof modelValue === 'string' ? modelValue : null"
+        placeholder="Which investigator"
+        @update:modelValue="emit('update:modelValue', $event)"
+      />
+      <button
+        v-if="investigatorBinding"
+        type="button"
+        class="link"
+        title="Use the investigator this card belongs to, rather than naming one"
+        @click="setBinding(investigatorBinding.name)"
+      >
+        use ${{ investigatorBinding.name }}
+      </button>
+      <BindingToggle
+        :open="bindingInput"
+        :count="applicable.length"
+        :type="type"
+        @toggle="bindingInput = !bindingInput"
+      />
+    </div>
 
     <!-- A log entry, which the schema cannot describe (it is an existential) and
          so would otherwise be three nested objects typed by hand. -->

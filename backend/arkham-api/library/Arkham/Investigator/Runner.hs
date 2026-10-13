@@ -663,6 +663,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           NoLimit -> False
           PlayerLimit PerWindow _ -> depth >= usedDepth || stillChecking u
           GroupLimit PerWindow _ -> depth >= usedDepth || stillChecking u
+          MaxPer _ PerWindow _ -> depth >= usedDepth || stillChecking u
           _ -> True
 
     usedAbilities <-

@@ -84,22 +84,22 @@ instance FetchCard PlayerCard where
   fetchCardMaybe_ = pure . Just . toCard
 
 instance FetchCard AssetId where
-  fetchCardMaybe_ = fieldMap Field.AssetCard Just
+  fetchCardMaybe_ = fieldMay Field.AssetCard
 
 instance FetchCard EventId where
-  fetchCardMaybe_ = fieldMap Field.EventCard Just
+  fetchCardMaybe_ = fieldMay Field.EventCard
 
 instance FetchCard TreacheryId where
-  fetchCardMaybe_ = fieldMap Field.TreacheryCard Just
+  fetchCardMaybe_ = fieldMay Field.TreacheryCard
 
 instance FetchCard EnemyId where
-  fetchCardMaybe_ = fieldMap Field.EnemyCard Just
+  fetchCardMaybe_ = fieldMay Field.EnemyCard
 
 instance FetchCard LocationId where
-  fetchCardMaybe_ = fieldMap Field.LocationCard Just
+  fetchCardMaybe_ = fieldMay Field.LocationCard
 
 instance FetchCard StoryId where
-  fetchCardMaybe_ = fieldMap Field.StoryCard Just
+  fetchCardMaybe_ = fieldMay Field.StoryCard
 
 instance FetchCard CardId where
   fetchCardMaybe_ = fmap Just . getCard

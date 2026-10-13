@@ -525,6 +525,18 @@ const optionsOf = (step: any): any[] => step.choose?.options ?? []
 const setOption = (step: any, index: number, option: any, at: number) =>
   set(at, { ...step, choose: { ...step.choose, options: optionsOf(step).map((o, i) => (i === index ? option : o)) } })
 
+/* Switching an option between the two things it can be. The keys the other kind
+ * reads are dropped rather than left behind: a `query` beside a `label` is not
+ * half of each, it is a query, and the label would simply never be shown. */
+function setOptionSource(step: any, oi: number, at: number, kind: string) {
+  const option = optionsOf(step)[oi] ?? {}
+  const next =
+    kind === 'query'
+      ? { ...option, label: undefined, query: { kind: 'enemy', matcher: null }, bind: 'chosen' }
+      : { ...option, query: undefined, bind: undefined, label: option.label ?? '' }
+  setOption(step, oi, next, at)
+}
+
 const addOption = (step: any, at: number) =>
   set(at, { ...step, choose: { ...step.choose, options: [...optionsOf(step), { label: '', steps: [] }] } })
 
@@ -1114,9 +1126,24 @@ const removeOption = (step: any, index: number, at: number) =>
       </template>
 
       <template v-else-if="kindOf(step) === 'choose'">
+        <p class="hint">
+          Named options, each with steps of its own. An option can instead stand for one option per
+          thing a matcher finds, bound for that option's steps — which is what lets a single prompt
+          span several kinds of thing, where a Choose from can only span one.
+        </p>
         <div v-for="(option, oi) in optionsOf(step)" :key="oi" class="option">
           <div class="row">
             <label>
+              This option is
+              <select
+                :value="option.query ? 'query' : 'one'"
+                @change="setOptionSource(step, oi, index, ($event.target as HTMLSelectElement).value)"
+              >
+                <option value="one">one named option</option>
+                <option value="query">one per thing a matcher finds</option>
+              </select>
+            </label>
+            <label v-if="!option.query">
               Option label
               <input
                 :value="option.label"
@@ -1124,8 +1151,46 @@ const removeOption = (step: any, index: number, at: number) =>
                 @keydown.stop
               />
             </label>
+            <label v-if="option.query">
+              Kind
+              <select
+                :value="option.query?.kind"
+                @change="setOption(step, oi, { ...option, query: { kind: ($event.target as HTMLSelectElement).value, matcher: null } }, index)"
+              >
+                <option v-for="(_, kind) in queryKinds" :key="kind" :value="kind">{{ kind }}</option>
+              </select>
+            </label>
+            <label v-if="option.query">
+              Bind to
+              <input
+                :value="option.bind"
+                placeholder="chosen"
+                @input="setOption(step, oi, { ...option, bind: ($event.target as HTMLInputElement).value }, index)"
+                @keydown.stop
+              />
+            </label>
             <button type="button" @click="removeOption(step, oi, index)">×</button>
           </div>
+
+          <ValueEditor
+            v-if="option.query"
+            :bindings="innerScope(index)"
+            :type="matcherType(option.query?.kind)"
+            label="Matcher"
+            :modelValue="option.query?.matcher"
+            @update:modelValue="setOption(step, oi, { ...option, query: { ...option.query, matcher: $event } }, index)"
+          />
+
+          <!-- Whether this option is on the table at all. Read before the query
+               runs, so it cannot name what the option binds. -->
+          <ValueEditor
+            optional
+            type="Criterion"
+            label="Only offered when (optional)"
+            :bindings="innerScope(index)"
+            :modelValue="option.criteria?.criteria"
+            @update:modelValue="setOption(step, oi, { ...option, criteria: $event ? { criteria: $event } : undefined }, index)"
+          />
           <!-- Said where it is created, the way every other binding in the
                builder is: an option with a query stands for one option per thing
                found, and that thing is what its steps are written against. -->

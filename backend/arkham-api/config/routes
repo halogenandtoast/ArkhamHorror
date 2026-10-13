@@ -135,6 +135,9 @@
           / ApiV1AdminCardSetSubmissionR GET
           /approve ApiV1AdminCardSetSubmissionApproveR POST
           /deny ApiV1AdminCardSetSubmissionDenyR POST
+      /users ApiV1AdminUsersP:
+        / ApiV1AdminUsersR GET
+        /#UserId/features ApiV1AdminUserFeaturesR PUT
       /games ApiV1AdminGamesP:
         / ApiV1AdminGamesR GET
         !/active ApiV1AdminActiveGamesR GET

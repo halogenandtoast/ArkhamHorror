@@ -4,6 +4,9 @@ export interface User {
   beta: boolean;
   phaseTransitionNotifications?: boolean;
   admin: boolean;
+  /* Features an admin has let this account into, from the users row. Not the
+   * same as `beta`, which the account sets for itself. */
+  features?: string[];
 }
 
 export interface Authentication {

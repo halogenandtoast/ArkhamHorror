@@ -30,12 +30,15 @@ const showDeleteConfirm = ref(false)
 const ALL_TABS = ['account', 'connections', 'features', 'apiKeys'] as const
 type Tab = (typeof ALL_TABS)[number]
 
-/* API keys are admin-only while they settle. The endpoints are gated in
- * Foundation's isAuthorized too, so this is the UI agreeing with the server
- * rather than being the gate itself. */
+/* API keys are behind a per-account grant while they roll out, and admins have
+ * it implicitly. The endpoints are gated in Foundation's isAuthorized too, so
+ * this is the UI agreeing with the server rather than being the gate itself. */
+const canUseApiKeys = computed(
+  () => props.user.admin || (props.user.features ?? []).includes('apiKeys'),
+)
 const tabs = computed<readonly Tab[]>(() =>
   ALL_TABS.filter(
-    (tab) => (tab !== 'apiKeys' || props.user.admin) && (tab !== 'connections' || dev),
+    (tab) => (tab !== 'apiKeys' || canUseApiKeys.value) && (tab !== 'connections' || dev),
   ),
 )
 /* The arkham.build callback comes back to ?arkhamBuild=<outcome>, which the

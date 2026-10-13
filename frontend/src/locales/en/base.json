@@ -1130,6 +1130,27 @@
     "decidedApproved": "Approved by {by} on {at}.",
     "decidedDenied": "Denied by {by} on {at}."
   },
+  "adminUsers": {
+    "title": "Feature Access",
+    "note": "Granting a feature here is the only way into it",
+    "loading": "Loading accounts\u2026",
+    "loadFailed": "Could not load the accounts.",
+    "searchLabel": "Find an account",
+    "searchPlaceholder": "Username or email address\u2026",
+    "search": "Look up",
+    "searching": "Looking up\u2026",
+    "showGranted": "Show granted",
+    "noMatches": "No account matches that.",
+    "noneGranted": "Nobody has been granted a feature yet.",
+    "admin": "Admin",
+    "adminImplicit": "Admins reach every feature whatever this row says.",
+    "granted": "{username} can now use {feature}.",
+    "revoked": "{username} can no longer use {feature}.",
+    "saveFailed": "Could not change that grant.",
+    "feature": {
+      "apiKeys": "API keys"
+    }
+  },
   "adminNotifications": {
     "title": "Site Notifications",
     "liveWarning": "Writing one publishes it \u2014 there is no draft state",

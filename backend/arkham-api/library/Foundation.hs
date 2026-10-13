@@ -33,6 +33,7 @@ import Api.Arkham.Maintenance
 import Arkham.Card.CardCode
 import Arkham.Log.Entry (LogRow)
 import Auth.ApiKey qualified as ApiKey
+import Auth.Feature qualified as Feature
 import Auth.JWT qualified as JWT
 import Control.Monad.Logger (LogSource)
 import Data.Aeson (Result (Success), fromJSON)
@@ -297,19 +298,20 @@ instance Yesod App where
       AdminP _ -> do
         _ <- getAdminUser
         pure Authorized
-      -- API keys are admin-only while they settle. Gated here rather than in the
-      -- handlers to match the admin routes above, and because a gate a new
-      -- endpoint has to remember to apply is a gate that will be forgotten.
+      -- API keys are behind a per-account grant while they roll out. Gated here
+      -- rather than in the handlers to match the admin routes above, and because
+      -- a gate a new endpoint has to remember to apply is a gate that will be
+      -- forgotten.
       --
       -- `self` is deliberately excluded: it is the one endpoint a *key* calls
       -- about itself, so the MCP server can ask what its credential may do and
-      -- offer only the tools it can use. `getAdminUser` goes through
+      -- offer only the tools it can use. `getFeatureUser` goes through
       -- `getRequestUserId`, which is JWT-only, so gating it would 401 every key
       -- and take that away.
       ApiV1ApiKeysP keys -> case keys of
         ApiV1ApiKeySelfR -> pure Authorized
         _ -> do
-          _ <- getAdminUser
+          _ <- getFeatureUser Feature.apiKeys
           pure Authorized
       -- Authenticated by token inside the handler, deliberately not by
       -- 'getAdminUser': that reads the users table, which would make the one
@@ -541,6 +543,13 @@ callerFromKey required presented = do
           <> ". It has: "
           <> ApiKey.renderScopes granted
 
+      -- Checked on every request, like revocation above, rather than only where
+      -- a key is minted: taking the feature back off an account has to stop the
+      -- keys it already made, or the rollout has no way back.
+      owner <- runDB $ get404 (arkhamApiKeyUserId key)
+      unless (owner.admin || Feature.hasFeature Feature.apiKeys owner.features)
+        $ permissionDenied "API keys are not enabled for this account"
+
       -- A write is what is worth capping; a read costs a query and is not a way
       -- to fill a disk.
       let isWrite = ApiKey.cardsWrite `elem` required
@@ -632,6 +641,21 @@ getAdminUser = do
   userId <- getRequestUserId
   user <- runDB $ get404 userId
   unless user.admin $ permissionDenied "You must be an admin to access this endpoint"
+  pure $ Entity userId user
+
+{- | The account behind this request, provided it has been let into a feature.
+
+Admins pass whatever their row says: they are the ones doing the granting, and a
+rollout whose first casualty is the person running it is not a rollout. Everyone
+else needs the grant written on their row, which only 'ApiV1AdminUserFeaturesR'
+does -- so the gate cannot be opened by the account it gates.
+-}
+getFeatureUser :: Feature.Feature -> Handler (Entity User)
+getFeatureUser feature = do
+  userId <- getRequestUserId
+  user <- runDB $ get404 userId
+  unless (user.admin || Feature.hasFeature feature user.features)
+    $ permissionDenied "That feature is not enabled for your account"
   pure $ Entity userId user
 
 getRequestUser :: Handler (Entity User)

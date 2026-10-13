@@ -22,6 +22,7 @@ const sections = [
   { key: 'stats', path: '/admin/stats', label: 'admin.gameStats', icon: 'chart-simple' },
   { key: 'notifications', path: '/admin/notifications', label: 'admin.notifications', icon: 'bullhorn' },
   { key: 'submissions', path: '/admin/submissions', label: 'admin.submissions', icon: 'clipboard-check' },
+  { key: 'users', path: '/admin/users', label: 'admin.users', icon: 'user-gear' },
 ] as const
 
 const byRouteName: Record<string, string> = {
@@ -30,6 +31,7 @@ const byRouteName: Record<string, string> = {
   AdminGameStats: 'stats',
   AdminNotifications: 'notifications',
   AdminSubmissions: 'submissions',
+  AdminUsers: 'users',
 }
 
 const selected = computed(() => byRouteName[String(route.name)] ?? 'dashboard')

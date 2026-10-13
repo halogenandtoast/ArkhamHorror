@@ -33,6 +33,7 @@ library
       Api.Handler.Arkham.Admin.Archives
       Api.Handler.Arkham.Admin.GameStats
       Api.Handler.Arkham.Admin.Metrics
+      Api.Handler.Arkham.Admin.Users
       Api.Handler.Arkham.Archive
       Api.Handler.Arkham.BuildConnection
       Api.Handler.Arkham.Cards
@@ -8968,6 +8969,7 @@ library
       Arkham.Zone
       ArkhamBuild.OAuth
       Auth.ApiKey
+      Auth.Feature
       Auth.JWT
       Base.Api.Handler.Account
       Base.Api.Handler.Authentication

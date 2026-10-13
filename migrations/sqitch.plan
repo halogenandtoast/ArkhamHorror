@@ -36,3 +36,4 @@ add_key_to_log_entries [add_payload_to_log_entries] 2026-10-05T03:00:00Z Claude 
 log_entry_group [add_key_to_log_entries] 2026-10-06T00:00:00Z Claude <noreply@anthropic.com> # Group id on a log entry, replacing the revisable-row key
 arkham_build_connections [users] 2026-10-11T00:00:00Z Claude <noreply@anthropic.com> # arkham.build OAuth connections and pending authorization requests
 arkham_game_archives [arkham_games users] 2026-10-12T00:00:00Z Claude <noreply@anthropic.com> # Undo history offloaded to object storage, and the way back
+add_features_to_users [users] 2026-10-13T00:00:00Z Claude <noreply@anthropic.com> # Per-account grants for features that are not general yet

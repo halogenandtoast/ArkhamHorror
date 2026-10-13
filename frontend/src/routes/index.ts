@@ -64,6 +64,14 @@ export default [
         meta: { requiresAuth: true, requiresAdmin: true, title: "Arkham Horror: Notifications" },
       },
       {
+        // Who has been let into which feature, for rolling one out a few
+        // accounts at a time rather than to everybody at once.
+        path: 'users',
+        name: 'AdminUsers',
+        component: () => import('@/views/AdminUsers.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true, title: "Arkham Horror: Users" },
+      },
+      {
         // The card marketplace review queue: nothing people submit is listed
         // until it is approved here.
         path: 'submissions',

@@ -95,6 +95,7 @@ import Api.Handler.Arkham.Achievements
 import Api.Handler.Arkham.Admin.Archives
 import Api.Handler.Arkham.Admin.GameStats
 import Api.Handler.Arkham.Admin.Metrics
+import Api.Handler.Arkham.Admin.Users
 import Api.Handler.Arkham.BuildConnection
 import Api.Handler.Arkham.CardSetSubmissions
 import Api.Handler.Arkham.Cards

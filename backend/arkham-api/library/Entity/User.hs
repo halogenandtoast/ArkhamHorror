@@ -18,6 +18,7 @@ User json sql=users
     beta Bool
     phaseTransitionNotifications Bool default=False
     admin Bool default=False
+    features Text default=''
     UniqueUsername username
     UniqueEmail email
     deriving Show

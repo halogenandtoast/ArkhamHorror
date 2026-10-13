@@ -113,6 +113,38 @@ export const deleteNotification = async (id: number): Promise<void> => {
   await api.delete(`admin/notifications/${id}`)
 }
 
+/* ----------------------------------------------------------- admin: users ---
+
+   Feature grants, for rolling one out a few accounts at a time. With no query
+   the server answers with every account that has a grant on it, which is the
+   list of who is already in; with one it matches username and email alike,
+   which is how somebody new is found. */
+
+export interface AdminUser {
+  id: number
+  username: string
+  email: string
+  admin: boolean
+  features: string[]
+}
+
+export interface AdminUsers {
+  allFeatures: string[]
+  users: AdminUser[]
+}
+
+export const fetchAdminUsers = async (query?: string): Promise<AdminUsers> => {
+  const { data } = await api.get('admin/users', { params: query ? { q: query } : {} })
+  return data
+}
+
+/* The whole list, not a toggle: what is sent is what the account ends up with,
+ * so a stale page cannot flip something it was not showing. */
+export const updateUserFeatures = async (id: number, features: string[]): Promise<AdminUser> => {
+  const { data } = await api.put(`admin/users/${id}/features`, { features })
+  return data
+}
+
 export const findGame = async (playerId: string): Promise<GameDetailsEntry> => {
   const { data } = await api.get(`admin/games/find/${playerId}`)
   return gameDetailsEntryDecoder.decodePromise(data)

@@ -18,7 +18,12 @@ memoryVariant = treachery MemoryVariant Cards.memoryVariant
 instance HasAbilities MemoryVariant where
   getAbilities (MemoryVariant a) =
     -- ActiveEvent (not AnyEvent) so we skip events that attached during play (e.g. Breach the Door). See #4574.
-    [ mkAbility a 1 $ forced $ PlayEventDiscarding #after You ActiveEvent
+    -- MaxPer, so both copies share one bucket: the first to resolve sets the event aside
+    -- and the second would have nothing left to replace. #5842
+    [ limited (MaxPer Cards.memoryVariant PerWindow 1)
+        $ mkAbility a 1
+        $ forced
+        $ PlayEventDiscarding #after You ActiveEvent
     , skillTestAbility $ mkAbility a 2 actionAbility
     ]
 
@@ -28,9 +33,12 @@ instance RunMessage MemoryVariant where
       place attrs NextToAgenda
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 ws@(getPlayedEvent -> eid) _ -> do
-      push $ RemoveEvent eid
-      cancelWindowBatch ws
-      hollow iid =<< fetchCard eid
+      -- with both copies out, the other one may already have set this event aside, so
+      -- there is no discard left to replace. #5842
+      fetchCardMaybe eid >>= traverse_ \card -> do
+        push $ RemoveEvent eid
+        cancelWindowBatch ws
+        hollow iid card
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

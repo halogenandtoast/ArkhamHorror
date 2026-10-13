@@ -94,6 +94,50 @@ data AppSettings = AppSettings
     -- ^ Where to put custom card art. In development it goes in the frontend's
     -- public directory so it is served locally and never reaches the shared
     -- assets bucket; unset (the default outside development) means S3.
+    , appArkhamBuildApiBase :: Text
+    -- ^ arkham.build's API origin, @https://api.arkham.build@.
+    , appArkhamBuildClientId :: Maybe Text
+    , appArkhamBuildClientSecret :: Maybe Text
+    -- ^ Unset means the integration is off: no authorization can be started and
+    -- the settings page says so rather than offering a button that cannot work.
+    , appArkhamBuildRedirectUri :: Text
+    -- ^ Compared by arkham.build as an exact string against what an
+    -- administrator registered, and sent again at the token exchange, so it is
+    -- configured rather than derived from the request.
+    , appMaintenanceToken :: Maybe Text
+    -- ^ Shared secret for the maintenance switch
+    -- ("Api.Handler.Arkham.Maintenance"). Unset means the endpoint does not
+    -- exist at all, so an unconfigured deployment cannot have its maintenance
+    -- mode flipped by anyone who guesses the route.
+    --
+    -- A token rather than an admin login because 'Foundation.getAdminUser'
+    -- reads the users table: authenticating the one endpoint whose job is to
+    -- lift a lock on the database would make it the first thing to queue
+    -- behind that lock.
+    , appArchiveBucket :: Maybe Text
+    -- ^ S3 bucket that offloaded undo histories are written to
+    -- ("Api.Arkham.Archive"). Unset means the whole mechanism is off: no sweep
+    -- runs, nothing is uploaded, and no game can be archived or restored. A
+    -- deployment that has not been given somewhere to put the data must not
+    -- start deleting steps on the strength of a default bucket name.
+    , appArchiveSweepEnabled :: Bool
+    {- ^ Whether the daily sweep runs at all. __Off by default__, which is not
+    the same as the feature being off: with a bucket configured but this unset,
+    archiving and restoring work and are only ever started by hand, from the
+    admin panel. That is the order to do this in -- archive one game you picked,
+    restore it, and only then let a job loose on twenty thousand.
+    -}
+    , appArchiveAfterMonths :: Int
+    -- ^ How long a game must have gone untouched before its undo history is a
+    -- candidate for the sweep. A hand-picked game is not subject to it.
+    , appArchiveBatchSize :: Int
+    -- ^ Games per batch. The sweep works in batches with a pause between them
+    -- rather than in one pass, so the deletes land as a trickle against the
+    -- busiest table in the application instead of as one burst.
+    , appArchiveBatchPauseSeconds :: Int
+    -- ^ Seconds between batches, and so the whole throttle: a run drains the
+    -- entire backlog, and this is what decides how fast it does it. 10 games
+    -- every 20s is ~1,800 an hour.
     , appWebsocketCompression :: Bool
     -- ^ permessage-deflate on the game/event websockets. Defaults on; it takes
     -- a 206 KB 'PublicGame' update to ~33 KB. It is also the one thing on that
@@ -135,8 +179,26 @@ instance FromJSON AppSettings where
                 Just dir -> Just dir
                 -- Relative to the api package, which is where it is run from.
                 Nothing -> if dev then Just "../../frontend/public/img/custom" else Nothing
+        appArkhamBuildApiBase <- o .:? "arkham-build-api-base" .!= "https://api.arkham.build"
+        appArkhamBuildClientId <- nonEmpty' <$> o .:? "arkham-build-client-id"
+        appArkhamBuildClientSecret <- nonEmpty' <$> o .:? "arkham-build-client-secret"
+        mRedirectUri <- nonEmpty' <$> o .:? "arkham-build-redirect-uri"
+        let appArkhamBuildRedirectUri = fromMaybe
+                (if dev
+                    then "http://localhost:8080/api/auth/arkham-build/callback"
+                    else "https://arkhamhorror.app/api/auth/arkham-build/callback")
+                mRedirectUri
+        appMaintenanceToken <- nonEmpty' <$> o .:? "maintenance-token"
+        appArchiveBucket <- nonEmpty' <$> o .:? "archive-bucket"
+        appArchiveSweepEnabled <- o .:? "archive-sweep" .!= False
+        appArchiveAfterMonths <- o .:? "archive-after-months" .!= 6
+        appArchiveBatchSize <- o .:? "archive-batch-size" .!= 10
+        appArchiveBatchPauseSeconds <- o .:? "archive-batch-pause-seconds" .!= 20
         appWebsocketCompression <- o .:? "websocket-compression" .!= True
         pure AppSettings {..}
+
+nonEmpty' :: Maybe Text -> Maybe Text
+nonEmpty' = (>>= \t -> if T.null (T.strip t) then Nothing else Just (T.strip t))
 
 -- | Raw bytes at compile time of @config/settings.yml@
 configSettingsYmlBS :: ByteString

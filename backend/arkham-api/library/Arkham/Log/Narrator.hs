@@ -66,6 +66,7 @@ import Arkham.Act.Types (Field (..))
 import Arkham.Action
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types (Field (..))
+import Arkham.Asset.Types (Field (AssetDamage, AssetHorror))
 import Arkham.Attack.Types
 import Arkham.CampaignLogKey
 import Arkham.Card
@@ -85,15 +86,22 @@ import Arkham.Helpers.SkillTest (
  )
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Keyword (Keyword (Peril))
 import Arkham.Location.Types (Field (..))
 import Arkham.Log
 import Arkham.Log.Refs
-import Arkham.Matcher (InvestigatorMatcher (ActiveInvestigator), LocationMatcher, replaceYouMatcher)
+import Arkham.Matcher (
+  InvestigatorMatcher (ActiveInvestigator),
+  LocationMatcher,
+  investigatorEngagedWith,
+  replaceYouMatcher,
+ )
 import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Movement (moveForced)
 import Arkham.Phase
+import Arkham.Placement (Placement)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
@@ -455,6 +463,30 @@ oneShot = \case
     enemy <- enemyRefFor eid
     who <- investigatorRefFor iid
     pure $ Just $ mechanic [ikeyPart "log.engages" ["enemy" ~> enemy, "investigator" ~> who]]
+  {- An enemy pulled off everyone it was engaged with.
+
+  The bulk form only, not @DisengageEnemy@: that one is how a successful evade
+  ends, and the log already says "Daisy Walker evades the Ghoul Priest" -- a
+  disengage line after every evade is the same event twice.
+
+  Read before the message is processed, which is the only time the engagement is
+  still there to read. Nobody engaged means nothing to say rather than a line
+  about an enemy standing on its own: a swarm member reaches this with the host's
+  engagement, not its own, and the host gets the line. -}
+  EngageMessage (DisengageEnemyFromAll_ eid) -> Just do
+    enemy <- enemyRefFor eid
+    whos <- traverse investigatorRefFor =<< select (investigatorEngagedWith eid)
+    pure $ case whos of
+      [] -> Nothing
+      _ ->
+        Just
+          $ mechanic
+            [ ikeyPart
+                "log.disengages"
+                ["enemy" ~> enemy, "investigator" ~> LogList (map toLogPart whos)]
+            ]
+  Msg.PlaceTreachery tid placement -> renderAttaches (treacheryRefFor tid) placement
+  Msg.PlaceAsset aid placement -> renderAttaches (assetRefFor aid) placement
   HuntMessage (EnemyMove_ eid lid) -> Just do
     enemy <- enemyRefFor eid
     loc <- locationRefFor lid
@@ -508,8 +540,12 @@ oneShot = \case
   The @Do@ wrapper is what the runner finally handles
   (@Investigator/Runner.hs:1924/1931@), so it is the only form that reports the
   amount actually healed. -}
-  Do (HealDamage target _ n) | n > 0 -> Just (renderHealed "log.healsDamage" target n)
-  Do (HealHorror target _ n) | n > 0 -> Just (renderHealed "log.healsHorror" target n)
+  Do (HealDamage target _ n) | n > 0 -> Just do
+    available <- damageOn target
+    renderHealed "log.healsDamage" target (maybe n (min n) available)
+  Do (HealHorror target _ n) | n > 0 -> Just do
+    available <- horrorOn target
+    renderHealed "log.healsHorror" target (maybe n (min n) available)
   -- Clues spent, which is nearly always an act being pushed along.
   InvestigatorMessage (InvestigatorSpendClues_ iid n) | n > 0 -> Just do
     who <- investigatorRefFor iid
@@ -796,13 +832,42 @@ renderEnemyAttack details = do
 
 {- | "Daisy Walker heals 2 damage."
 
+The count is what actually came off, not what was asked for: healing 2 from an
+investigator carrying 1 damage heals 1, and the log said 2. Nothing there to
+heal means no line at all rather than a heal of zero.
+
 No chip for the target means something the reader has no name for was healed;
 saying nothing beats printing a uuid, same rule as damage.
 -}
 renderHealed :: HasGame m => Text -> Target -> Int -> m (Maybe LogEntry)
 renderHealed key target n = do
   mTarget <- targetRefFor target
-  pure $ flip fmap mTarget \t -> mechanic [ikeyPart key ["target" ~> t, "count" ~> n]]
+  pure do
+    guard (n > 0)
+    t <- mTarget
+    pure $ mechanic [ikeyPart key ["target" ~> t, "count" ~> n]]
+
+{- | What a target actually has to heal, for clamping the amount asked for.
+
+Read before the message is processed, which is the only point the old total is
+still there. 'Nothing' for anything that keeps neither -- the amount asked is
+then the best the log can say.
+-}
+damageOn :: HasGame m => Target -> m (Maybe Int)
+damageOn = \case
+  InvestigatorTarget iid -> fieldMay Investigator.InvestigatorDamage iid
+  AssetTarget aid -> fieldMay AssetDamage aid
+  SkillTestInitiatorTarget t -> damageOn t
+  ProxyTarget t _ -> damageOn t
+  _ -> pure Nothing
+
+horrorOn :: HasGame m => Target -> m (Maybe Int)
+horrorOn = \case
+  InvestigatorTarget iid -> fieldMay Investigator.InvestigatorHorror iid
+  AssetTarget aid -> fieldMay AssetHorror aid
+  SkillTestInitiatorTarget t -> horrorOn t
+  ProxyTarget t _ -> horrorOn t
+  _ -> pure Nothing
 
 {- | How an ability reads, by what kind it is.
 
@@ -973,6 +1038,19 @@ renderSpawned details = do
     Just loc -> ikeyPart "log.enemySpawnedAt" ["enemy" ~> enemy, "location" ~> loc]
     Nothing -> ikeyPart "log.enemySpawned" ["enemy" ~> enemy]
 
+{- | "Skinwalker attaches to Deer". Only an attachment to another card: a threat
+area, a play area and a location the card merely sits at all answer Nothing from
+'placementToAttached', so they say nothing.
+-}
+renderAttaches :: HasGame m => m LogRef -> Placement -> Maybe (m (Maybe LogEntry))
+renderAttaches getRef placement = do
+  host <- placement.attachedTo
+  pure do
+    card <- getRef
+    mHost <- targetRefFor host
+    pure $ flip fmap mHost \h ->
+      mechanic [ikeyPart "log.attachesTo" ["card" ~> card, "target" ~> h]]
+
 -- | "Ghoul Priest is defeated by Daisy Walker".
 renderDefeated :: HasGame m => Target -> Source -> m (Maybe LogEntry)
 renderDefeated target source = do
@@ -1068,7 +1146,7 @@ spawnChoiceLogTag eid = "spawnChoice:" <> idText eid
 either inside or outside a test decides where it belongs.
 -}
 openSkillTestKey :: HasGame m => m (Maybe Text)
-openSkillTestKey = fmap skillTestLogKey <$> getSkillTest
+openSkillTestKey = getSkillTest >>= traverse skillTestBlockKey
 
 {- | The block, written the moment the test begins.
 
@@ -1096,9 +1174,10 @@ renderSkillTestOpening st = do
         )
       (Just ref, Nothing) -> ("log.testOpensVs", [("target", toLogPart ref)])
       (Nothing, _) -> ("log.testOpens", [])
+  blockKey <- skillTestBlockKey st
   pure
     $ Just
-    $ opensGroup (skillTestLogKey st)
+    $ opensGroup blockKey
     $ test
       [ ikeyPart key
           $ [ "investigator" ~> who

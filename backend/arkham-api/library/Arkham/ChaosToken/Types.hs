@@ -296,6 +296,21 @@ isOddChaosToken = \case
   MinusSeven -> True
   _ -> False
 
+-- | Every printed numeric face, for cards that name "each numeric token".
+numericChaosTokenFaces :: [ChaosTokenFace]
+numericChaosTokenFaces =
+  [ PlusOne
+  , Zero
+  , MinusOne
+  , MinusTwo
+  , MinusThree
+  , MinusFour
+  , MinusFive
+  , MinusSix
+  , MinusSeven
+  , MinusEight
+  ]
+
 isSymbolChaosToken :: ChaosTokenFace -> Bool
 isSymbolChaosToken = \case
   Skull -> True

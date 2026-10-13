@@ -724,7 +724,7 @@ async function openDebugAddCard() {
   if (debugPlayerCards.value.length === 0) {
     debugAddCardLoading.value = true
     try {
-      const allCards = await Api.fetchCards(true)
+      const allCards = await Api.fetchCards(true, true)
       debugPlayerCards.value = allCards.filter(isDebugPlayerCard)
     } catch (error) {
       console.error(error)

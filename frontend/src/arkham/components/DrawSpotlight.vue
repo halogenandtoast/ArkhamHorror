@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
-import { type Card, cardId } from '@/arkham/types/Card'
+import { computed, onMounted, ref } from 'vue'
+import { type Card, cardId, toCardContents } from '@/arkham/types/Card'
+import { cardImage } from '@/arkham/cardImages'
 import type { Game } from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
 import { CARD_FLIGHT_TRANSITION_CLASS, cardFlightTransitionName } from '@/arkham/cardFlight'
@@ -26,14 +27,26 @@ import CardView from '@/arkham/components/Card.vue'
 /* `title` is optional: a story card you are being told to read already prints
  * its own name, so repeating it above the art is the duplication the card-only
  * presentation exists to remove. */
+/* `choices` turns the dismissal into a decision: a story card that asks
+ * something ("heal him" / "turn your back on him") prints its options on the
+ * card, so they belong under it rather than behind an OK and a second modal.
+ * Labels arrive already formatted, since only the caller knows the i18n scope. */
 const props = defineProps<{
   game: Game
   playerId: string
   title?: string
   cards: Card[]
+  choices?: { label: string; index: number }[]
+  /* The card turns over to its other face instead of turning up from its back:
+     a two-part story resolving its second part, where the far side is what the
+     card becomes. The OK waits for the turn to land, so the reader sees the new
+     face before being asked to move on. */
+  flip?: boolean
 }>()
 
-const emit = defineEmits<{ dismiss: [] }>()
+const emit = defineEmits<{ dismiss: []; choose: [number] }>()
+
+const hasChoices = computed(() => (props.choices?.length ?? 0) > 0)
 
 /* Above this a draw stops being a reveal and becomes a list: the cards overlap
  * into a fan and the title carries the count. Deliberately not a setting -- the
@@ -52,17 +65,38 @@ const cardStyle = (card: Card, i: number) => ({
   viewTransitionClass: CARD_FLIGHT_TRANSITION_CLASS,
 })
 
+/* The far side of the turn. Normally the generic card back, since a drawn card
+   turns up from face-down; for a flip it is the card's own other face, which is
+   the whole point of showing the turn. */
 const backFor = (card: Card) =>
-  imgsrc(card.tag === 'PlayerCard' ? 'backs/back_player.jpg' : 'backs/back_encounter.jpg')
+  props.flip
+    ? cardImage(toCardContents(card).cardCode, 'b')
+    : imgsrc(card.tag === 'PlayerCard' ? 'backs/back_player.jpg' : 'backs/back_encounter.jpg')
+
+/* Nothing to press until the card has finished turning. Matches the 0.3s
+   animation plus a beat to take the new face in; with reduced motion there is no
+   turn to wait for. */
+const settled = ref(!props.flip)
+
+onMounted(() => {
+  if (settled.value) return
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+    settled.value = true
+    return
+  }
+  setTimeout(() => {
+    settled.value = true
+  }, 700)
+})
 </script>
 
 <template>
   <div
     class="spotlight"
-    :class="{ 'spotlight--fan': isFan }"
+    :class="{ 'spotlight--fan': isFan, 'spotlight--flip-over': flip }"
     role="dialog"
     aria-modal="true"
-    @click="emit('dismiss')"
+    @click="hasChoices || !settled || emit('dismiss')"
   >
     <div class="spotlight__inner">
       <h2 v-if="title" class="spotlight__title">{{ title }}</h2>
@@ -88,7 +122,17 @@ const backFor = (card: Card) =>
         </div>
       </div>
 
-      <button type="button" class="spotlight__ok" @click.stop="emit('dismiss')">
+      <div v-if="hasChoices" class="spotlight__choices">
+        <button
+          v-for="choice in choices"
+          :key="choice.index"
+          type="button"
+          class="spotlight__ok"
+          @click.stop="emit('choose', choice.index)"
+          v-html="choice.label"
+        ></button>
+      </div>
+      <button v-else-if="settled" type="button" class="spotlight__ok" @click.stop="emit('dismiss')">
         {{ $t('ok') }}
       </button>
     </div>
@@ -204,6 +248,17 @@ const backFor = (card: Card) =>
   animation-delay: inherit;
 }
 
+/* A turn-over runs the same two animations the other way round: the face you
+   were reading turns away and the other side turns in. */
+.spotlight--flip-over .spotlight__card .card.back {
+  animation-name: spotlight-flip-front;
+}
+
+.spotlight--flip-over .spotlight__card :deep(.card-container) {
+  transform: rotateY(0deg);
+  animation-name: spotlight-flip-back;
+}
+
 .spotlight__card :deep(.card) {
   width: var(--spotlight-card-width) !important;
   min-width: 0 !important;
@@ -247,6 +302,13 @@ const backFor = (card: Card) =>
 /* Deep enough to read as lamplit wood rather than a warning, and tinted from
    the same ramp so the overlay stays one object instead of an amber glow around
    a purple modal button. */
+.spotlight__choices {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
 .spotlight__ok {
   width: 100%;
   border: 0;

@@ -21,15 +21,25 @@ data CurrentUser = CurrentUser
   deriving stock Generic
   deriving anyclass ToJSON
 
-newtype SiteSettings = SiteSettings
+data SiteSettings = SiteSettings
   { assetHost :: Maybe Text
+  , maintenance :: Bool
   }
 
 instance ToJSON SiteSettings where
-  toJSON SiteSettings {assetHost} = object ["assetHost" .= assetHost]
+  toJSON SiteSettings {assetHost, maintenance} =
+    object ["assetHost" .= assetHost, "maintenance" .= maintenance]
 
+{- | Allowed through 'Foundation.maintenanceMiddleware', and so the one thing
+the client can still ask during a window. It reads no database -- the asset
+host is a setting and the flag is a 'TVar' -- which is what makes it safe to
+leave open.
+-}
 getApiV1SiteSettingsR :: Handler SiteSettings
-getApiV1SiteSettingsR = SiteSettings <$> getsApp (appAssetHost . appSettings)
+getApiV1SiteSettingsR = do
+  assetHost <- getsApp (appAssetHost . appSettings)
+  maintenance <- isJust <$> (getsApp appMaintenance >>= readTVarIO)
+  pure SiteSettings {..}
 
 putApiV1SettingsR :: Handler CurrentUser
 putApiV1SettingsR = do
@@ -42,5 +52,5 @@ putApiV1SettingsR = do
       for_ mPhaseTransitionNotifications \value ->
         set u [UserPhaseTransitionNotifications =. val value]
       where_ $ u.id ==. val userId
-    User { userUsername, userEmail, userBeta, userPhaseTransitionNotifications } <- get404 userId
+    User {userUsername, userEmail, userBeta, userPhaseTransitionNotifications} <- get404 userId
     pure $ CurrentUser userUsername userEmail userBeta userPhaseTransitionNotifications

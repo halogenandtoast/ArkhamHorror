@@ -18,14 +18,20 @@ const router = useRouter()
 const sections = [
   { key: 'dashboard', path: '/admin', label: 'admin.dashboard', icon: 'gear' },
   { key: 'rooms', path: '/admin/rooms', label: 'admin.rooms', icon: 'layer-group' },
+  { key: 'archives', path: '/admin/archives', label: 'admin.archives', icon: 'box-archive' },
   { key: 'stats', path: '/admin/stats', label: 'admin.gameStats', icon: 'chart-simple' },
+  { key: 'notifications', path: '/admin/notifications', label: 'admin.notifications', icon: 'bullhorn' },
   { key: 'submissions', path: '/admin/submissions', label: 'admin.submissions', icon: 'clipboard-check' },
+  { key: 'users', path: '/admin/users', label: 'admin.users', icon: 'user-gear' },
 ] as const
 
 const byRouteName: Record<string, string> = {
   Rooms: 'rooms',
+  AdminArchives: 'archives',
   AdminGameStats: 'stats',
+  AdminNotifications: 'notifications',
   AdminSubmissions: 'submissions',
+  AdminUsers: 'users',
 }
 
 const selected = computed(() => byRouteName[String(route.name)] ?? 'dashboard')

@@ -9,21 +9,22 @@ import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Enemies qualified as Cards
 import Arkham.Matcher
 
 newtype BernardEpstein = BernardEpstein EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bernardEpstein :: EnemyCard BernardEpstein
 bernardEpstein = enemy BernardEpstein Cards.bernardEpstein & setPrey LowestRemainingHealth
 
 instance HasModifiersFor BernardEpstein where
-  -- "Bernard Epstein gains +1 [per_investigator] health."
   getModifiersFor (BernardEpstein a) = do
     n <- getPlayerCount
     modifySelf a [HealthModifier n]
 
 instance HasAbilities BernardEpstein where
   getAbilities (BernardEpstein a) =
-    [skillTestAbility $ restricted a 1 OnSameLocation parleyAction_]
+    extend1 a
+      $ skillTestAbility
+      $ restricted a 1 OnSameLocation parleyAction_
 
 instance RunMessage BernardEpstein where
   runMessage msg e@(BernardEpstein attrs) = runQueueT $ case msg of
@@ -31,7 +32,6 @@ instance RunMessage BernardEpstein where
       sid <- getRandom
       parley sid iid (attrs.ability 1) attrs #intellect (Fixed 5)
       pure e
-    -- "If you succeed, put Bernard Epstein out of play."
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       removeFromGame attrs
       pure e

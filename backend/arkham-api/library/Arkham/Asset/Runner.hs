@@ -667,8 +667,12 @@ instance RunMessage AssetAttrs where
       -- A card that cannot leave play and then prints its own way out --
       -- "it cannot leave play except using the ability below" -- is the one
       -- thing allowed to discard it, so a discard it sources itself is let
-      -- through. Everything else is still stopped.
-      cannotLeavePlay <- if isSource a source then pure False else a `hasModifier` CannotLeavePlay
+      -- through. Everything else is still stopped. Permanent is the same rule
+      -- as a keyword rather than a modifier (#5841).
+      cannotLeavePlay <-
+        if isSource a source
+          then pure False
+          else orM [pure (toCardDef a).permanent, a `hasModifier` CannotLeavePlay]
       if cannotLeavePlay
         then pure a
         else do

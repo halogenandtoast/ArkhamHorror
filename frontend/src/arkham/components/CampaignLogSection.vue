@@ -1,12 +1,19 @@
 <script lang="ts" setup>
-defineProps<{ title: string; items: string[] }>()
+// `crossed` names the items that were erased: the log keeps the line and strikes
+// it through rather than dropping it.
+const props = defineProps<{ title: string; items: string[]; crossed?: string[] }>()
+
+const isCrossed = (item: string) => props.crossed?.includes(item) ?? false
 </script>
 
 <template>
   <div class="log-section">
     <h3 class="section-title">{{ title }}</h3>
     <ul class="log-list" v-if="items.length > 0">
-      <li v-for="item in items" :key="item">{{ item }}</li>
+      <li v-for="item in items" :key="item" :class="{ 'log-list__crossed': isCrossed(item) }">
+        <s v-if="isCrossed(item)">{{ item }}</s>
+        <template v-else>{{ item }}</template>
+      </li>
     </ul>
   </div>
 </template>
@@ -57,6 +64,10 @@ defineProps<{ title: string; items: string[] }>()
       color: rgba(255,255,255,0.25);
       flex-shrink: 0;
     }
+  }
+
+  li.log-list__crossed {
+    color: rgba(255,255,255,0.45);
   }
 }
 </style>

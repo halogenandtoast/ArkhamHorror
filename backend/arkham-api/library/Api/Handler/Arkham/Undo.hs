@@ -11,6 +11,7 @@ module Api.Handler.Arkham.Undo (
 import Api.Arkham.Epic (getGameUndoFloor, lookupGameEvent, revertEpicDeltasForGameStep)
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
+import Api.Handler.Arkham.Archive (checkArchiveSeam, isArchiveRefusal)
 import Api.Handler.Arkham.Games.Shared (propagateShared, publishToRoom)
 import Arkham.Card.CardCode
 import Arkham.Epic.Types (SharedEventState)
@@ -37,6 +38,15 @@ import Network.HTTP.Types.Status qualified as Status
 
 jsonError :: Text -> Json.Value
 jsonError msg = object ["error" .= msg]
+
+{- | How to answer a refused undo.
+
+409 for one the archive refused: nothing about the request was wrong, the
+history it needs is in cold storage, and fetching it is the client's next move.
+400 for everything else, as before.
+-}
+undoErrorStatus :: Json.Value -> Status.Status
+undoErrorStatus err = if isArchiveRefusal err then Status.status409 else Status.status400
 
 jsonErrorContents :: ToJSON v => v -> Text -> Json.Value
 jsonErrorContents v msg = object ["error" .= msg, "contents" .= v]
@@ -109,6 +119,11 @@ stepBack isDebug userId gameId = do
     -- act-clue advance (clues spent + acts flipped in OTHER groups have no sound
     -- local inverse). 0 = no floor (every non-epic game).
     undoFloor <- lift $ getGameUndoFloor gameId
+    {- This undo reverts step @n@ and lands on @n - 1@, whose row it requires
+    below, so @n - 1@ is the lowest step it reads. A game can be archived and
+    still have everything this needs -- it has been played since -- in which case
+    this is an ordinary undo and says nothing. -}
+    lift (checkArchiveSeam (n - 1) gameId) >>= traverse_ throwError
     Entity stepId step <- maybeToExceptM (jsonError "Missing step") $ getBy (UniqueStep gameId n)
     -- never delete the initial step as it can not be redone
     -- NOTE: actually we never want to step back if the patchOperations are empty, the first condition is therefor redundant
@@ -241,7 +256,7 @@ putApiV1ArkhamGameUndoR gameId = do
   case result of
     Left err -> do
       liftIO $ print err
-      sendStatusJSON Status.status400 err
+      sendStatusJSON (undoErrorStatus err) err
     Right (ArkhamGame {..}, mPropagate) -> do
       -- The surviving tail, NOT []. An empty list here is not "no change": the
       -- client replaces its log with whatever the update carries, so publishing
@@ -352,7 +367,7 @@ multiStepUndoHandler runStepBack gameId = do
   case eResult of
     Left err -> do
       liftIO $ print err
-      sendStatusJSON Status.status400 err
+      sendStatusJSON (undoErrorStatus err) err
     Right (ArkhamGame {..}, gameLog, mPropagate) -> do
       publishToRoom gameId
         $ GameUpdate
@@ -442,6 +457,13 @@ stepBackToRawStep userId gameId rawGame requestedStep = runExceptT do
   -- (see 'stepBack'); clamp the target up to it. 0 = no floor.
   undoFloor <- lift $ getGameUndoFloor gameId
   let toStep = max undoFloor requestedStep
+  {- Checked against the floor-clamped target, not the requested one: the clamp
+  can only raise it, and what matters is the lowest row actually read.
+
+  Correctness, not courtesy. Below the seam the select finds only the steps that
+  survived archiving, and reverting that partial set would land the game
+  somewhere it has never been. -}
+  lift (checkArchiveSeam (toStep + 1) gameId) >>= traverse_ throwError
   -- Select the steps to revert as those ABOVE the (possibly floor-clamped) target
   -- rather than the top @n@: identical to @limit n@ when unclamped (steps are
   -- contiguous, so @step > rawStep - n@ is exactly the newest n), but when the

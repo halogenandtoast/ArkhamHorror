@@ -9,5 +9,10 @@
       "doomOnFurthestCultistEnemy": "Place 1 doom on the furthest *Cultist* enemy from you",
       "damageOrHorrorAndDoomOnNearestCultistAsset": "Take 1 damage or horror and place 1 doom on the nearest *Cultist* story asset to you"
     }
+  },
+  "chamberToll": {
+    "label": {
+      "doomOnGuest": "Place {count} doom on the *Guest* asset at this location"
+    }
   }
 }

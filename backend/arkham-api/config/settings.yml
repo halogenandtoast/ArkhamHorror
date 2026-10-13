@@ -10,6 +10,41 @@ redis-conn: "_env:REDIS_CONN:"
 mailtrap-api-token: "_env:MAILTRAP_API_TOKEN:empty"
 bugsnag-api-token: "_env:BUGSNAG_API_TOKEN:empty"
 asset-host: "_env:ASSET_HOST:"
+# Shared secret for the maintenance switch (POST /api/v1/maintenance). Unset --
+# the default, and so the case in development -- means the endpoint 404s, so the
+# switch simply does not exist unless a deployment configures it. In production
+# it goes in terraform's `app_secrets` map, whose keys become env var names;
+# changing it needs a `terraform apply` AND a pod restart, because env is read
+# at container start. Set it up before you need it, not during.
+maintenance-token: "_env:MAINTENANCE_TOKEN:"
+
 # permessage-deflate on the game/event websockets. Kill switch, so a suspected
 # compression regression can be bisected in production with a restart.
 websocket-compression: "_env:ARKHAM_WS_COMPRESSION:true"
+
+# arkham.build OAuth. An arkham.build administrator issues the client id and a
+# one-time secret, and registers the redirect URIs; the server compares a URI as
+# an exact string, so it must match what was registered character for character.
+# Registered: http://localhost:8080/api/auth/arkham-build/callback and
+# https://arkhamhorror.app/api/auth/arkham-build/callback. In development it
+# defaults to the first, which the Vite dev server proxies through to this one.
+arkham-build-api-base: "_env:ARKHAM_BUILD_API_BASE:https://api.arkham.build"
+arkham-build-client-id: "_env:ARKHAM_BUILD_CLIENT_ID:"
+arkham-build-client-secret: "_env:ARKHAM_BUILD_CLIENT_SECRET:"
+arkham-build-redirect-uri: "_env:ARKHAM_BUILD_REDIRECT_URI:"
+
+# Offloading old games' undo history to object storage ("Api.Arkham.Archive").
+# `archive-bucket` unset -- the default, and so the case in development -- turns
+# the whole mechanism off: no daily sweep, no uploads, and the unarchive
+# endpoint 404s. There is no default bucket name on purpose; a deployment that
+# has not been told where to put the data must not start deleting steps.
+archive-bucket: "_env:ARCHIVE_BUCKET:"
+# The daily sweep, off by default. A configured bucket makes archiving and
+# restoring possible; this is what lets a job start one on its own. Leave it off
+# until a game you chose yourself has been archived and restored by hand.
+archive-sweep: "_env:ARCHIVE_SWEEP:false"
+archive-after-months: "_env:ARCHIVE_AFTER_MONTHS:6"
+# A run drains the whole backlog, so these two are the throttle: batch size and
+# the pause between batches. 10 games every 20s is ~1,800 an hour.
+archive-batch-size: "_env:ARCHIVE_BATCH_SIZE:10"
+archive-batch-pause-seconds: "_env:ARCHIVE_BATCH_PAUSE_SECONDS:20"

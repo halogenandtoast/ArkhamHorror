@@ -22,14 +22,20 @@ flag library-only
 
 library
   exposed-modules:
+      Api.Arkham.Archive
       Api.Arkham.Epic
       Api.Arkham.Export
       Api.Arkham.Helpers
+      Api.Arkham.Maintenance
       Api.Arkham.Types.MultiplayerVariant
       Api.Handler.ApiKeys
       Api.Handler.Arkham.Achievements
+      Api.Handler.Arkham.Admin.Archives
       Api.Handler.Arkham.Admin.GameStats
       Api.Handler.Arkham.Admin.Metrics
+      Api.Handler.Arkham.Admin.Users
+      Api.Handler.Arkham.Archive
+      Api.Handler.Arkham.BuildConnection
       Api.Handler.Arkham.Cards
       Api.Handler.Arkham.CardSetSubmissions
       Api.Handler.Arkham.CustomCards
@@ -42,6 +48,7 @@ library
       Api.Handler.Arkham.Games.Admin
       Api.Handler.Arkham.Games.Shared
       Api.Handler.Arkham.Investigators
+      Api.Handler.Arkham.Maintenance
       Api.Handler.Arkham.Old
       Api.Handler.Arkham.PendingGames
       Api.Handler.Arkham.PublishedCardSets
@@ -4197,6 +4204,7 @@ library
       Arkham.Homebrew.AgainstTheWendigo.ScenarioDeckKeys
       Arkham.Homebrew.AgainstTheWendigo.Scenarios.AgainstTheWendigo
       Arkham.Homebrew.AgainstTheWendigo.Sets
+      Arkham.Homebrew.AgainstTheWendigo.SideStoryDefs
       Arkham.Homebrew.AgainstTheWendigo.Stories.BernardsFateV1
       Arkham.Homebrew.AgainstTheWendigo.Stories.BernardsFateV2
       Arkham.Homebrew.AgainstTheWendigo.Stories.CharlieFoxtailsDestiny
@@ -4896,6 +4904,7 @@ library
       Arkham.Homebrew.ConsternationOnTheConstellation.Locations.SunDeck
       Arkham.Homebrew.ConsternationOnTheConstellation.Scenarios.ConsternationOnTheConstellation
       Arkham.Homebrew.ConsternationOnTheConstellation.Sets
+      Arkham.Homebrew.ConsternationOnTheConstellation.SideStoryDefs
       Arkham.Homebrew.ConsternationOnTheConstellation.Traits
       Arkham.Homebrew.ConsternationOnTheConstellation.Treacheries.CallOfRlyeh
       Arkham.Homebrew.ConsternationOnTheConstellation.Treacheries.ClapOfThunder
@@ -8960,7 +8969,9 @@ library
       Arkham.Window
       Arkham.Xp
       Arkham.Zone
+      ArkhamBuild.OAuth
       Auth.ApiKey
+      Auth.Feature
       Auth.JWT
       Base.Api.Handler.Account
       Base.Api.Handler.Authentication
@@ -8977,12 +8988,15 @@ library
       Entity.Arkham.Achievement
       Entity.Arkham.ApiKey
       Entity.Arkham.ArkhamDBDecklist
+      Entity.Arkham.BuildAuthRequest
+      Entity.Arkham.BuildConnection
       Entity.Arkham.CustomCard
       Entity.Arkham.CustomCardSet
       Entity.Arkham.Deck
       Entity.Arkham.DeckOverlay
       Entity.Arkham.Epic
       Entity.Arkham.Game
+      Entity.Arkham.GameArchive
       Entity.Arkham.GameRaw
       Entity.Arkham.LogEntry
       Entity.Arkham.Player
@@ -9421,6 +9435,7 @@ test-suite spec
       Arkham.Event.Events.BountySpec
       Arkham.Event.Events.BuryThemDeepSpec
       Arkham.Event.Events.ButterflyEffect1Spec
+      Arkham.Event.Events.CallingInFavorsSpec
       Arkham.Event.Events.CleanSweepSpec
       Arkham.Event.Events.CloseCall2Spec
       Arkham.Event.Events.Counterespionage1Spec
@@ -9469,6 +9484,7 @@ test-suite spec
       Arkham.Event.Events.SureGamble3Spec
       Arkham.Event.Events.ThePaintedWorldSpec
       Arkham.Event.Events.ThrowTheBookAtThemSpec
+      Arkham.Event.Events.TimeWarp2Spec
       Arkham.Event.Events.ToeToToeSpec
       Arkham.Event.Events.Transfiguration2Spec
       Arkham.Event.Events.TrapLimitSpec

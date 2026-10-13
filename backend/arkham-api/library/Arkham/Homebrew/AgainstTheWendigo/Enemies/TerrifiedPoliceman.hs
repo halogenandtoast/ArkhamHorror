@@ -19,25 +19,37 @@ terrifiedPoliceman =
 
 instance HasAbilities TerrifiedPoliceman where
   getAbilities (TerrifiedPoliceman a) =
-    [ {- | "At the end of each investigator turn, if Terrified Policeman is not
-      engaged: Terrified Policeman attacks the investigator in the same location,
-      or in a location directly to the North, South, East or West." The valley's
-      compass connections are the grid's, so the printed reach is the connected
-      locations. -}
-      restricted a 1 (notExists $ be a <> EnemyIsEngagedWith Anyone)
-        $ forced
-        $ TurnEnds #when Anyone
-    , skillTestAbility $ restricted a 2 OnSameLocation parleyAction_
-    ]
+    extend
+      a
+      [ {- "At the end of each investigator turn, if Terrified Policeman is not
+        engaged: Terrified Policeman attacks the investigator in the same location,
+        or in a location directly to the North, South, East or West." The valley's
+        compass connections are the grid's, so the printed reach is the connected
+        locations. -}
+        restricted a 1 (notExists (be a <> EnemyIsEngagedWith Anyone) <> exists (inReachOf a))
+          $ forced
+          $ TurnEnds #when Anyone
+      , skillTestAbility $ restricted a 2 OnSameLocation parleyAction_
+      ]
+
+{- | "...the investigator in the same location, or in a location directly to the
+North, South, East or West." The valley is laid out in the grid, so those four
+are the grid's own directions -- not its connections, which deliberately leave
+the outer columns unlinked. Read by the ability's criterion as well, so the
+Forced is not offered with nobody to attack.
+-}
+inReachOf :: EnemyAttrs -> InvestigatorMatcher
+inReachOf a =
+  InvestigatorAt
+    $ oneOf
+    $ locationWithEnemy a
+    : [LocationInDirection d (locationWithEnemy a) | d <- [minBound .. maxBound]]
 
 instance RunMessage TerrifiedPoliceman where
   runMessage msg e@(TerrifiedPoliceman attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      targets <-
-        select
-          $ InvestigatorAt
-          $ oneOf [locationWithEnemy attrs, connectedFrom (locationWithEnemy attrs)]
-      for_ (take 1 targets) \iid -> push $ InitiateEnemyAttack $ enemyAttack (toId attrs) attrs iid
+      targets <- select $ inReachOf attrs
+      for_ (take 1 targets) $ push . InitiateEnemyAttack . enemyAttack (toId attrs) attrs
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

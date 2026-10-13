@@ -1,10 +1,11 @@
 module Arkham.Homebrew.AgainstTheWendigo.Treacheries.MistInTheValley (mistInTheValley) where
 
 import Arkham.Ability
+import Arkham.Direction (Direction (LeftOf, RightOf))
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Treacheries qualified as Cards
-import Arkham.Homebrew.AgainstTheWendigo.Helpers (isSymbolFace)
+import Arkham.Homebrew.AgainstTheWendigo.Helpers (inDirectionsOf, isSymbolFace)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Import.Lifted
@@ -28,15 +29,17 @@ instance RunMessage MistInTheValley where
   runMessage msg t@(MistInTheValley attrs) = runQueueT $ case msg of
     -- "Attach to your location. Limit 1 per location."
     Revelation iid (isSource attrs -> True) -> do
-      already <- selectAny $ LocationWithTreachery (treacheryIs Cards.mistInTheValley) <> locationWithInvestigator iid
+      already <-
+        selectAny
+          $ LocationWithTreachery (treacheryIs Cards.mistInTheValley)
+          <> locationWithInvestigator iid
       if already
         then toDiscard attrs attrs
         else withLocationOf iid $ attachTreachery attrs
       pure t
-    {- | "At the end of the round, reveal a chaos token: if a symbol is revealed,
+    {- "At the end of the round, reveal a chaos token: if a symbol is revealed,
     attach this card to a location directly to the East or West. Otherwise
-    discard this card." The valley's compass connections are its grid
-    connections, so the east/west neighbours are the connected locations. -}
+    discard this card." -}
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       lead <- getLead
       requestChaosTokens lead (attrs.ability 1) 1
@@ -44,12 +47,11 @@ instance RunMessage MistInTheValley where
     RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) tokens -> do
       if any isSymbolFace tokens
         then do
-          neighbours <- case a.attached.location of
-            Nothing -> pure []
-            Just lid -> select $ connectedFrom (LocationWithId lid)
+          neighbours <- select $ inDirectionsOf [LeftOf, RightOf] attrs
+          when (length neighbours < 2) (continue_ iid)
           chooseOrRunOneM iid $ targets neighbours $ attachTreachery attrs
-        else toDiscard (attrs.ability 1) attrs
+        else do
+          continue_ iid
+          toDiscard (attrs.ability 1) attrs
       pure t
-     where
-      a = attrs
     _ -> MistInTheValley <$> liftRunMessage msg attrs

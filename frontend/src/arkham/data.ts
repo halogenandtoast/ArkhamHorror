@@ -20,6 +20,10 @@ export interface Scenario {
   requiredInvestigator?: string
   deckRequirements?: string[]
   campaign?: string
+  /* Who made it, credited under the box in the chooser. A homebrew box with no
+     campaign.json is a scenario entry, so the credit lives here as well as on
+     Campaign -- the two chooser tiles read whichever entry they were given. */
+  designer?: string
   // Which tab of the side-story chooser this belongs under. Declared rather
   // than derived: official side-story ids don't order by chapter the way
   // campaign ids do.

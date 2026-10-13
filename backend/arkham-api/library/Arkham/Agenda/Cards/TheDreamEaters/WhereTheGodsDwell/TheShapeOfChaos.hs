@@ -57,7 +57,7 @@ instance RunMessage TheShapeOfChaos where
                   labeled "shuffled" do
                     unfocusCards
                     initiateEnemyAttack nyarlathotep attrs iid
-                    shuffleBackIntoEncounterDeck nyarlathotep
+                    shuffleBackIntoEncounterDeck attrs nyarlathotep
                   labeled
                     "returned"
                     do

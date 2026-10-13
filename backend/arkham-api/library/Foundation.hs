@@ -29,9 +29,11 @@ import Control.Monad.Catch qualified as Catch
 import Data.IntMap.Strict qualified as IntMap
 import UnliftIO.Exception qualified as UnliftIO
 
+import Api.Arkham.Maintenance
 import Arkham.Card.CardCode
 import Arkham.Log.Entry (LogRow)
 import Auth.ApiKey qualified as ApiKey
+import Auth.Feature qualified as Feature
 import Auth.JWT qualified as JWT
 import Control.Monad.Logger (LogSource)
 import Data.Aeson (Result (Success), fromJSON)
@@ -55,7 +57,7 @@ import GHC.Records
 import Network.Bugsnag.Exception (AsException (..))
 import Network.Bugsnag.Yesod (bugsnagYesodMiddleware)
 import Network.HTTP.Client.Conduit (HasHttpManager (..), Manager)
-import Network.HTTP.Types (status429)
+import Network.HTTP.Types (status429, status503)
 import Orphans ()
 import ThirdEdition.Store qualified as ThirdEdition
 import Yesod.Core.Types (Logger)
@@ -213,6 +215,13 @@ data App = App
   publishes a heartbeat and watches this timestamp to decide whether the
   subscription is actually alive. See 'pubSubHealthChannel'.
   -}
+  , appMaintenance :: !(TVar (Maybe Maintenance))
+  {- ^ Maintenance mode for this pod: 'Just' while the app is deliberately
+  refusing traffic so the database can be worked on. Seeded from Redis at
+  startup and kept in step across replicas over 'maintenanceChannel', so it
+  is a cache of a shared decision rather than per-pod state. Enforced by
+  'maintenanceMiddleware'.
+  -}
   , appBugsnag :: Bugsnag.Settings
   }
 
@@ -266,7 +275,8 @@ instance Yesod App where
   -- To add it, chain it together with the defaultMiddleware: yesodMiddleware = defaultYesodMiddleware . defaultCsrfMiddleware
   -- For details, see the CSRF documentation in the Yesod.Core.Handler module of the yesod-core package.
   yesodMiddleware :: ToTypedContent res => Handler res -> Handler res
-  yesodMiddleware = bugsnagYesodMiddleware appBugsnag . defaultYesodMiddleware
+  yesodMiddleware =
+    maintenanceMiddleware . bugsnagYesodMiddleware appBugsnag . defaultYesodMiddleware
 
   defaultLayout :: Widget -> Handler Html
   defaultLayout _ = pure ""
@@ -281,24 +291,33 @@ instance Yesod App where
   isAuthorized HealthR _ = pure Authorized
   isAuthorized ErrorR _ = pure Authorized
   isAuthorized (ApiP api) _ = case api of
+    -- The OAuth callback arrives as a browser redirect with no credentials of
+    -- its own; what it may do comes from the state it carries.
+    ApiAuthArkhamBuildCallbackR -> pure Authorized
     ApiV1P v1 -> case v1 of
       AdminP _ -> do
         _ <- getAdminUser
         pure Authorized
-      -- API keys are admin-only while they settle. Gated here rather than in the
-      -- handlers to match the admin routes above, and because a gate a new
-      -- endpoint has to remember to apply is a gate that will be forgotten.
+      -- API keys are behind a per-account grant while they roll out. Gated here
+      -- rather than in the handlers to match the admin routes above, and because
+      -- a gate a new endpoint has to remember to apply is a gate that will be
+      -- forgotten.
       --
       -- `self` is deliberately excluded: it is the one endpoint a *key* calls
       -- about itself, so the MCP server can ask what its credential may do and
-      -- offer only the tools it can use. `getAdminUser` goes through
+      -- offer only the tools it can use. `getFeatureUser` goes through
       -- `getRequestUserId`, which is JWT-only, so gating it would 401 every key
       -- and take that away.
       ApiV1ApiKeysP keys -> case keys of
         ApiV1ApiKeySelfR -> pure Authorized
         _ -> do
-          _ <- getAdminUser
+          _ <- getFeatureUser Feature.apiKeys
           pure Authorized
+      -- Authenticated by token inside the handler, deliberately not by
+      -- 'getAdminUser': that reads the users table, which would make the one
+      -- endpoint whose job is to lift a lock on the database the first thing
+      -- to queue up behind it.
+      ApiV1MaintenanceR -> pure Authorized
       ApiV1ArkhamP arkham -> case arkham of
         ApiV1ArkhamGamesP games -> case games of
           ApiV1ArkhamGamesImportR -> pure Authorized
@@ -524,6 +543,13 @@ callerFromKey required presented = do
           <> ". It has: "
           <> ApiKey.renderScopes granted
 
+      -- Checked on every request, like revocation above, rather than only where
+      -- a key is minted: taking the feature back off an account has to stop the
+      -- keys it already made, or the rollout has no way back.
+      owner <- runDB $ get404 (arkhamApiKeyUserId key)
+      unless (owner.admin || Feature.hasFeature Feature.apiKeys owner.features)
+        $ permissionDenied "API keys are not enabled for this account"
+
       -- A write is what is worth capping; a read costs a query and is not a way
       -- to fill a disk.
       let isWrite = ApiKey.cardsWrite `elem` required
@@ -564,11 +590,72 @@ chargeApiKey now keyId key isWrite = do
            ]
        ]
 
+{- | Refuse every request with a 503 while maintenance mode is on.
+
+Composed OUTSIDE 'bugsnagYesodMiddleware' on purpose: a planned 503 is not an
+error report, and six replicas refusing traffic for an hour would bury the real
+exceptions under tens of thousands of them.
+
+The allow-list is not a convenience, it is what keeps the site reachable at
+all. All three Kubernetes probes AND the DigitalOcean load balancer health
+check point at @/health@ (@terraform/app.tf@, @terraform/ingress.tf@), so a
+@/health@ that 503s gets every container restarted and every node pulled out
+of rotation -- taking the maintenance notice down along with the app, and
+making the switch unreachable so it cannot be turned back off.
+'ApiV1MaintenanceR' is allowed through because it IS the off switch, and
+'ApiV1SiteSettingsR' because it is what tells the client to render the notice
+instead of a board that silently fails to load.
+
+In-flight requests are not interrupted, only new ones refused -- which is what
+makes turning the mode on a drain rather than a kill. Whatever is mid-action
+commits, the pool goes idle, and @pgPoolIdleTimeout@ (60s, "Settings") closes
+the connections on its own. Note what that does NOT tell you: the app going
+quiet is not the database being quiet. @pg_stat_activity@ is the only thing
+that can say whether it is safe to take a lock.
+-}
+maintenanceMiddleware :: ToTypedContent res => Handler res -> Handler res
+maintenanceMiddleware handler = do
+  mMode <- getsYesod appMaintenance >>= readTVarIO
+  mRoute <- getCurrentRoute
+  case mMode of
+    Just mode | not (any alwaysServed mRoute) -> do
+      -- Long enough that a client backing off does not hammer six replicas for
+      -- the length of the window, short enough to come back on its own after.
+      addHeader "Retry-After" "120"
+      sendResponseStatus status503
+        $ object
+          [ "maintenance" .= True
+          , "since" .= maintenanceSince mode
+          , "message" .= fromMaybe defaultMaintenanceMessage (maintenanceMessage mode)
+          ]
+    _ -> handler
+ where
+  alwaysServed = \case
+    HealthR -> True
+    ApiP (ApiV1P ApiV1MaintenanceR) -> True
+    ApiP (ApiV1P ApiV1SiteSettingsR) -> True
+    _ -> False
+
 getAdminUser :: Handler (Entity User)
 getAdminUser = do
   userId <- getRequestUserId
   user <- runDB $ get404 userId
   unless user.admin $ permissionDenied "You must be an admin to access this endpoint"
+  pure $ Entity userId user
+
+{- | The account behind this request, provided it has been let into a feature.
+
+Admins pass whatever their row says: they are the ones doing the granting, and a
+rollout whose first casualty is the person running it is not a rollout. Everyone
+else needs the grant written on their row, which only 'ApiV1AdminUserFeaturesR'
+does -- so the gate cannot be opened by the account it gates.
+-}
+getFeatureUser :: Feature.Feature -> Handler (Entity User)
+getFeatureUser feature = do
+  userId <- getRequestUserId
+  user <- runDB $ get404 userId
+  unless (user.admin || Feature.hasFeature feature user.features)
+    $ permissionDenied "That feature is not enabled for your account"
   pure $ Entity userId user
 
 getRequestUser :: Handler (Entity User)

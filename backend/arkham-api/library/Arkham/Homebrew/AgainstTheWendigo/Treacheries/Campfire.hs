@@ -1,5 +1,6 @@
 module Arkham.Homebrew.AgainstTheWendigo.Treacheries.Campfire (campfire) where
 
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers (Deck (..))
@@ -21,24 +22,28 @@ campfire = treachery Campfire Cards.campfire
 
 instance RunMessage Campfire where
   runMessage msg t@(Campfire attrs) = runQueueT $ case msg of
-    {- | "You can heal 1 damage and 1 horror to any investigators present in your
-    location. For each investigator healed by this effect, look at 1 card from
-    the top of the encounter deck. Draw every non-Animal Enemy you see. Then
-    shuffle the other cards back into the encounter deck." -}
     Revelation iid (isSource attrs -> True) -> do
-      present <- select $ InvestigatorAt $ locationWithInvestigator iid
-      scenarioI18n $ chooseUpToNM iid (length present) (ikey "campfire.done") do
+      present <- select $ InvestigatorAt (locationWithInvestigator iid) <> can.heal.any (toSource attrs)
+      scenarioI18n $ scope "campfire" $ chooseUpToNM iid (length present) "done" do
         targets present \other -> do
           healDamage other attrs 1
           healHorror other attrs 1
           doStep 1 msg
+      doStep 2 msg
       pure t
-    -- One peek per investigator healed.
-    DoStep 1 (Revelation iid (isSource attrs -> True)) -> do
-      deck <- getEncounterDeck
-      case take 1 (unDeck deck) of
-        [card] | toCard card `cardMatch` (CardWithType EnemyType <> not_ (CardWithTrait Animal)) -> do
-          drawCard iid card
-        _ -> shuffleDeck Deck.EncounterDeck
+    DoStep 1 (Revelation _iid (isSource attrs -> True)) -> do
+      let n = toResultDefault @Int 0 attrs.meta
+      pure $ Campfire $ attrs & setMeta (n + 1)
+    DoStep 2 (Revelation iid (isSource attrs -> True)) -> do
+      let n = toResultDefault @Int 0 attrs.meta
+      when (n > 0) do
+        deck <- getEncounterDeck
+        let cards = take n (unDeck deck)
+        focusCards cards do
+          let nonAnimals = filterCards (CardWithType EnemyType <> not_ (CardWithTrait Animal)) cards
+          if null nonAnimals
+            then continue_ iid
+            else chooseOneAtATimeM iid $ targets nonAnimals $ drawCard iid
+        shuffleDeck Deck.EncounterDeck
       pure t
     _ -> Campfire <$> liftRunMessage msg attrs

@@ -28,6 +28,6 @@ instance HasAbilities Basilisk where
 instance RunMessage Basilisk where
   runMessage msg e@(Basilisk attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      shuffleBackIntoEncounterDeck attrs
+      shuffleBackIntoEncounterDeck (attrs.ability 1) attrs
       pure e
     _ -> Basilisk <$> liftRunMessage msg attrs

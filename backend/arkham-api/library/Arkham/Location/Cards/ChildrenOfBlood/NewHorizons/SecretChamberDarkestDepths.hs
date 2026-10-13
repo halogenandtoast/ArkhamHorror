@@ -19,7 +19,7 @@ newtype SecretChamberDarkestDepths = SecretChamberDarkestDepths LocationAttrs
 secretChamberDarkestDepths :: LocationCard SecretChamberDarkestDepths
 secretChamberDarkestDepths =
   symbolLabel
-    $ location SecretChamberDarkestDepths Cards.secretChamberDarkestDepths 2 (PerPlayer 1)
+    $ location SecretChamberDarkestDepths Cards.secretChamberDarkestDepths 2 (PerPlayer 2)
 
 instance HasAbilities SecretChamberDarkestDepths where
   getAbilities (SecretChamberDarkestDepths a) =

@@ -29,7 +29,7 @@ instance RunMessage CosmicOmen where
       chooseOrRunOneM iid $ scope "cosmicOmen" do
         when (notNull glyphs) do
           labeled "shuffleGlyphIntoEncounterDeck" do
-            chooseTargetM iid glyphs shuffleBackIntoEncounterDeck
+            chooseTargetM iid glyphs (shuffleBackIntoEncounterDeck attrs)
         labeled "takeHorrorAndDiscard" do
           directHorror iid attrs 1
           randomDiscard iid attrs

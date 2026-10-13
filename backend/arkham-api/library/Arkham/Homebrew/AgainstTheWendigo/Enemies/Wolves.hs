@@ -10,20 +10,20 @@ newtype Wolves = Wolves EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wolves :: EnemyCard Wolves
-wolves = enemy Wolves Cards.wolves & setPrey (InvestigatorWithLowestSkill #willpower UneliminatedInvestigator)
+wolves =
+  enemy Wolves Cards.wolves
+    & setPrey (InvestigatorWithLowestSkill #willpower UneliminatedInvestigator)
 
 instance HasAbilities Wolves where
   getAbilities (Wolves a) =
-    [ restricted a 1 (notExists $ enemyIs Cards.wolves <> EnemyIsEngagedWith Anyone)
-        $ forced
-        $ PhaseEnds #when #enemy
-    ]
+    extend1 a
+      $ restricted a 1 (notExists $ enemyIs Cards.wolves <> EnemyIsEngagedWith Anyone)
+      $ forced
+      $ PhaseEnds #when #enemy
 
 instance RunMessage Wolves where
   runMessage msg e@(Wolves attrs) = runQueueT $ case msg of
-    -- "If Wolves are not engaged at the end of the enemy phase: Shuffle Wolves
-    -- into the encounter deck."
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ ShuffleBackIntoEncounterDeck (toSource attrs) (toTarget attrs)
+      shuffleBackIntoEncounterDeck (attrs.ability 1) attrs
       pure e
     _ -> Wolves <$> liftRunMessage msg attrs

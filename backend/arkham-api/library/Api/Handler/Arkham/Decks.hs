@@ -9,6 +9,7 @@ module Api.Handler.Arkham.Decks (
   postApiV1ArkhamSyncDeckR,
   putApiV1ArkhamDeckOverlayR,
   deleteApiV1ArkhamDeckOverlayR,
+  normalizeArkhamBuildDeckCodes,
 ) where
 
 import Import hiding (delete, on, update, (=.), (==.))

@@ -36,8 +36,6 @@ logfile
 *.eventlog.html
 *.hp
 
-.kamal/secrets
-
 # Large image assets (served from CloudFront CDN in both dev and prod)
 # Run `make fetch-images` to download locally if needed
 frontend/public/img/arkham/cards/

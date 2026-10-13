@@ -14,7 +14,8 @@ rookieMistake = treachery RookieMistake Cards.rookieMistake
 instance RunMessage RookieMistake where
   runMessage msg t@(RookieMistake attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      assets <- select $ assetControlledBy iid <> oneOf [AssetWithDamage, AssetWithHorror]
+      assets <-
+        select $ assetControlledBy iid <> DiscardableAsset <> oneOf [AssetWithDamage, AssetWithHorror]
       if null assets
         then shuffleIntoDeck iid attrs
         else for_ assets (toDiscardBy iid attrs)

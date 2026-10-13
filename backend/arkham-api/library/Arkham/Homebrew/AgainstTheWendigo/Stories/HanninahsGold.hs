@@ -15,7 +15,7 @@ import Arkham.Placement
 import Arkham.Story.Import.Lifted
 
 newtype HanninahsGold = HanninahsGold StoryAttrs
-  deriving anyclass (IsStory)
+  deriving anyclass IsStory
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 {- | "Choose if you want to listen to the prospector and attempt to leave the
@@ -46,14 +46,15 @@ instance HasAbilities HanninahsGold where
 instance RunMessage HanninahsGold where
   runMessage msg s@(HanninahsGold attrs) = runQueueT $ case msg of
     ResolveThisStory iid (is attrs -> True) -> do
-      selectForMaybeM (locationIs Locations.madProspector) \lid ->
-        push $ StoryMessage $ PlaceStory (toCard attrs) (AttachedToLocation lid)
-      chooseOneM iid $ scenarioI18n $ scope "hanninahsGold" do
+      -- The card prints both choices, so it stays on screen to be chosen from.
+      focusCards [toCard attrs] $ lift $ chooseOneM iid $ scenarioI18n $ scope "hanninahsGold" do
         labeled "listenToTheProspector"
           $ push
           $ HandleTargetChoice iid (toSource attrs) (toTarget attrs)
         labeled "seeTheGoldVein" nothing
-      pure s
+      mlid <- selectOne $ locationIs Locations.madProspector
+      pure $ HanninahsGold $ attrs & placementL %~ \placement ->
+        maybe placement AtLocation mlid
     -- Only choice 1 announces itself; the meta starts out False for choice 2.
     HandleTargetChoice _ (isSource attrs -> True) (isTarget attrs -> True) ->
       pure $ HanninahsGold $ setMeta True attrs

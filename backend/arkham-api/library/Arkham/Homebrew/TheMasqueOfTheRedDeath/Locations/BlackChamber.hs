@@ -2,7 +2,8 @@ module Arkham.Homebrew.TheMasqueOfTheRedDeath.Locations.BlackChamber (blackChamb
 
 import Arkham.Ability
 import Arkham.ChaosToken (pattern NegativeModifier)
-import Arkham.ChaosToken.Types (ChaosTokenValue (ChaosTokenValue))
+import Arkham.ChaosToken.Types (ChaosTokenValue (ChaosTokenValue), numericChaosTokenFaces)
+import Arkham.Helpers.Modifiers (modified_)
 import Arkham.Helpers.SkillTest (isSkillTestAt, withSkillTest)
 import Arkham.Homebrew.TheMasqueOfTheRedDeath.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.TheMasqueOfTheRedDeath.Helpers (addSkullEffectsToToken, describedSkullEffect)
@@ -12,8 +13,16 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
 newtype BlackChamber = BlackChamber LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+{- | The declaration half of the numeric-token clause below, so the skill test window
+shows the chambers' effects on the faces that will pick them up.
+-}
+instance HasModifiersFor BlackChamber where
+  getModifiersFor (BlackChamber a) = whenRevealed a do
+    whenM (isSkillTestAt a.id) $ for_ numericChaosTokenFaces \face ->
+      modified_ a (ChaosTokenFaceTarget face) [GainsChaosTokenEffectsOf #skull]
 
 blackChamber :: LocationCard BlackChamber
 blackChamber =
@@ -28,7 +37,7 @@ instance HasAbilities BlackChamber where
     extendRevealed1 a
       $ describedSkullEffect
         (-2)
-        "If you fail by 2 or more, choose a non-story asset you control and return it to your hand."
+        "blackChamber.skull"
         a
         1
 

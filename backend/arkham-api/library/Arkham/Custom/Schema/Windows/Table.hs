@@ -226,6 +226,8 @@ windowTable =
   , ("SpentClues", ["SpentClues"])
   , ("SpentUses", ["SpentUses"])
   , ("SuccessfullyInvestigatedWithNoClues", ["SuccessfullyInvestigateWithNoClues"])
+  , ("SuffersMentalTrauma", ["SufferedTrauma"])
+  , ("SuffersPhysicalTrauma", ["SufferedTrauma"])
   , ("TakeControlOfClues", ["TakeControlOfClues"])
   , ("TakeControlOfKey", ["TakeControlOfKey"])
   , ("TokensWouldBeRemovedFromChaosBag", ["TokensWouldBeRemovedFromChaosBag"])

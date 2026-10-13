@@ -382,6 +382,9 @@ function onDrop(event: DragEvent) {
           ref="frame"
           :[CARD_FLIGHT_ATTR]="enemy.cardId"
           :style="cardFlightStyle"
+          @drop="onDrop"
+          @dragover.prevent="dragover"
+          @dragenter.prevent
         >
           <div
             class="card-wrapper"
@@ -430,9 +433,6 @@ function onDrop(event: DragEvent) {
               :data-image-id="imageId"
               :data-swarm="isSwarm || undefined"
               @click="clicked"
-              @drop="onDrop"
-              @dragover.prevent="dragover"
-              @dragenter.prevent
             />
           </div>
 

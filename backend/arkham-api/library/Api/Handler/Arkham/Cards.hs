@@ -21,6 +21,14 @@ import Arkham.Trait
 import Data.Map.Strict qualified as Map
 import Data.Set qualified as Set
 
+{- | Whether a listing shows both sides of a double-sided card or only its front.
+
+Browsing wants the front alone; the debug card picker wants both, since it names a
+card by its def and has no front to flip. Gold Mining Revenues is the back of the
+story Hanninah's Gold, so the front is not a card you can put in a hand at all.
+-}
+data Sides = FrontsOnly | BothSides
+
 {- | The card defs to list in the card browser.
 
 Two defs that are the two sides of one physical card would otherwise each get
@@ -35,11 +43,14 @@ where the back is only art) hides nothing, and neither do sibling codes such as
 Defs carrying 'cdDuplicateOf' are the extra copies of one printed card, minted only
 so that code-keyed entities can tell them apart, and are likewise listed once.
 -}
-browsableCardDefs :: Map CardCode CardDef -> [CardDef]
-browsableCardDefs defs =
-  filter (\def -> isNothing (cdDuplicateOf def) && exactCardCode def `Set.notMember` backSides)
-    (toList defs)
+browsableCardDefs :: Sides -> Map CardCode CardDef -> [CardDef]
+browsableCardDefs sides defs =
+  filter (\def -> isNothing (cdDuplicateOf def) && keepSide def) (toList defs)
  where
+  keepSide def = case sides of
+    BothSides -> True
+    FrontsOnly -> exactCardCode def `Set.notMember` backSides
+
   codes :: Set CardCodeExact
   codes = Set.fromList [exactCardCode def | def <- toList defs]
 
@@ -66,6 +77,9 @@ getApiV1ArkhamCardsR :: Handler [CardDef]
 getApiV1ArkhamCardsR = do
   cardPool <- fromMaybe "player" <$> lookupGetParam "cardPool"
   showEncounter <- isJust <$> lookupGetParam "includeEncounter"
+  -- The debug card picker asks for this: it adds a def by name, so a back side
+  -- is a card it must be able to name.
+  sides <- maybe FrontsOnly (const BothSides) <$> lookupGetParam "allSides"
   let
     allCards =
       allInvestigatorCards
@@ -83,7 +97,7 @@ getApiV1ArkhamCardsR = do
 
   pure
     $ filter ((/= "01000") . toCardCode)
-    $ browsableCardDefs
+    $ browsableCardDefs sides
     $ cards
     `Map.difference` allSpecialPlayerAssetCards
 
@@ -101,7 +115,7 @@ getApiV1ArkhamHomebrewCardsR = do
           <> Homebrew.playerEventsMap
           <> Homebrew.storiesMap
 
-  pure $ browsableCardDefs allHomebrewCards
+  pure $ browsableCardDefs FrontsOnly allHomebrewCards
 
 getApiV1ArkhamCardR :: CardCode -> Handler CardDef
 getApiV1ArkhamCardR cCode = do

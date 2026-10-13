@@ -1,5 +1,63 @@
 {
   "name": "Against the Wendigo",
+  "about": {
+    "blurb": "Explore the wild Hanninah Valley in Canada’s North West, looking for the missing students of Dr. Nadelmann’s expedition, in this unofficial scenario for Arkham Horror: The Card Game.",
+    "sections": [
+      {
+        "rows": [
+          {
+            "role": "Guide illustrations",
+            "names": "“Wendigo” (page 1) by Frank Victoria — frankvictoria-lepicte.blogspot.com; “Sunset” (page 7) by Kim Taglia — facebook.com/KATFantasyArts; “Wendigo” (page 9) by Thomas Moor"
+          },
+          {
+            "role": "Card illustrations",
+            "names": "#8 and #9 by Lino Drieghe — linodriegheart.com; #12, #18, #19 and #25 by MCrassus Art — mcrassus.com, facebook.com/mcrassusart; #56 by Dehn Sora, from the Memoria Vetusta III (Saturnian Poetry) album cover by Blut Aus Nord"
+          },
+          {
+            "role": "Original French scenario and card design",
+            "names": "Vinn Quest"
+          },
+          {
+            "role": "Correction and improvement",
+            "names": "spiriT"
+          },
+          {
+            "role": "Proofreading",
+            "names": "spiriT, Hypotypoz, Metalm23, plaf"
+          },
+          {
+            "role": "Testers",
+            "names": "spiriT, Bboo, Pilunte, illisae, hopebreaker"
+          },
+          {
+            "role": "English translation",
+            "names": "Vinn Quest"
+          },
+          {
+            "role": "Proofreading",
+            "names": "Matthew “sonofyogsothoth” Adams and Stephen ‘St. Cretin’ Wohlert"
+          }
+        ]
+      },
+      {
+        "title": "Acknowledgments",
+        "text": [
+          "First of all, I warmly thank Kim Taglia for the two illustrations she made exclusively for this scenario.",
+          "I thank all the artists and rights holders who gave me permission to use their works to illustrate this scenario.",
+          "Thanks to Bewise and Pilunte for their French fan-made scenario, as well as for the work on Strange Eons and the French plug-in for this tool.",
+          "Thanks to Berith for his custom inserts.",
+          "Thanks to Metalm23 for the scenario cover card.",
+          "Thanks to all my proofreaders and testers, who have given a lot of their time to help me improve this scenario.",
+          "Thanks to FFG, Chaosium and Éditions Sans-Détour for offering us such remarkable games in the Lovecraftian mythos.",
+          "A huge thank you to SpiriT for his great ideas, advice and considerable amount of time he spent correcting, improving and testing the scenario. Thanks to you and Bboo for your passion and generosity. Without you, this scenario would never have happened.",
+          "Finally, a special thank you for my proofreaders Matthew and Stephen. Without you guys this scenario would never be available in English."
+        ]
+      }
+    ],
+    "notes": [
+      "Alone against the Wendigo is an adventure for the Call of Cthulhu roleplaying game, property of Chaosium (USA) and Éditions Sans-Détour (French edition)."
+    ]
+  },
   "key": {
     "theSarceeAreHuntingYouDown": "The Sarcee are hunting you down.",
     "youSavedCharlie": "You saved Charlie.",
@@ -20,9 +78,21 @@
     "Navigate": "Navigate",
     "WalkAlongTheRiver": "Walk Along the River"
   },
+  "sarceeTerritory": {
+    "spendResources": "Spend up to 5 resources to reduce the difficulty by as many points"
+  },
   "label": {
     "northHanninah": {
       "investigate": "Take control of the Expedition Notebook"
+    }
+  },
+  "tooltips": {
+    "northHanninah": {
+      "investigate": "{action}: _Investigate_. If you succeed, take control of the Expedition Notebook."
+    },
+    "sarceeTerritory": {
+      "persuade": "{action}: _Parley_. Test {intellect} (6). You can spend up to 5 resources to reduce the difficulty of this test by as many points. You try to convince Imala that you only want her and her husband to be safe.",
+      "intimidate": "{action}: _Parley_. Test {combat} (3). You're trying to intimidate Imala in order to make her confess where her husband is hiding. Record that the Sarcee are hunting you down."
     }
   }
 }

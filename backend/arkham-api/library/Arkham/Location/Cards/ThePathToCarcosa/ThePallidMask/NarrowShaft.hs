@@ -3,7 +3,6 @@ module Arkham.Location.Cards.ThePathToCarcosa.ThePallidMask.NarrowShaft (narrowS
 import Arkham.Ability
 import Arkham.Direction
 import Arkham.Draw.Types
-import Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Location.CardDefs.ThePathToCarcosa.ThePallidMask qualified as Cards
 import Arkham.Location.Helpers
@@ -35,14 +34,13 @@ instance HasAbilities NarrowShaft where
 
 instance RunMessage NarrowShaft where
   runMessage msg l@(NarrowShaft attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseCardAbility iid (isSource attrs -> True) 1 (getBatchId -> batchId) _ -> do
       sid <- getRandom
-      beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 3)
+      beginSkillTest sid iid (attrs.ability 1) (BatchTarget batchId) #agility (Fixed 3)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      batchId <- getBatchId . concat <$> getWindowStack
-      push $ CancelBatch batchId
       assignDamage iid (attrs.ability 1) 1
+      cancelMovement (attrs.ability 1) iid
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ DrawCards iid $ targetCardDraw attrs CatacombsDeck 1

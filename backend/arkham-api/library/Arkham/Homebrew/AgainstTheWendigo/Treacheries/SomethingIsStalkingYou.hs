@@ -17,7 +17,6 @@ somethingIsStalkingYou :: TreacheryCard SomethingIsStalkingYou
 somethingIsStalkingYou = treachery SomethingIsStalkingYou Cards.somethingIsStalkingYou
 
 instance HasModifiersFor SomethingIsStalkingYou where
-  -- "While this is in your threat area, you get -1 {willpower} and -1 {intellect}."
   getModifiersFor (SomethingIsStalkingYou a) =
     inThreatAreaGets a [SkillModifier #willpower (-1), SkillModifier #intellect (-1)]
 
@@ -30,13 +29,11 @@ instance RunMessage SomethingIsStalkingYou where
     Revelation iid (isSource attrs -> True) -> do
       placeInThreatArea attrs iid
       pure t
-    -- \| "At the end of the round, reveal a chaos token: on a symbol, keep this
-    --    card in your threat area. Otherwise, discard this card." The investigator
-    --    being stalked is the one who reveals.
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       requestChaosTokens iid (attrs.ability 1) 1
       pure t
-    RequestedChaosTokens (isAbilitySource attrs 1 -> True) _ tokens -> do
+    RequestedChaosTokens (isAbilitySource attrs 1 -> True) miid tokens -> do
+      for_ miid continue_
       unless (any isSymbolFace tokens) $ toDiscard (attrs.ability 1) attrs
       pure t
     _ -> SomethingIsStalkingYou <$> liftRunMessage msg attrs

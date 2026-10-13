@@ -32,7 +32,7 @@ import Arkham.Event.Types (Field (..))
 which imports this module. The boot file declares them, so taking them from
 there breaks the cycle -- the same trick "Arkham.Investigate" uses. -}
 import {-# SOURCE #-} Arkham.Game ()
-import Arkham.GameEnv (getCardMaybe, getCardPlayStack, getSkillTest)
+import Arkham.GameEnv (getCardMaybe, getCardPlayStack, getLogBlockStack, getSkillTest)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
@@ -216,18 +216,40 @@ sendLogInOpenBlock entry
 
 {- | The block an entry should join, if any.
 
-A skill test wins over a card play: playing a card to commit to a test happens
-inside the test, not the other way round.
+Innermost wins, and the order is the nesting: a skill test happens inside the
+card play that committed to it, and both happen inside whatever multi-step
+action opened a block around them.
 -}
 openBlockKey :: HasGame m => m (Maybe Text)
 openBlockKey =
   getSkillTest >>= \case
-    Just st -> pure $ Just (skillTestLogKey st)
-    Nothing -> fmap cardBlockKey . lastMay <$> getCardPlayStack
+    Just st -> Just <$> skillTestBlockKey st
+    Nothing -> do
+      mCardPlay <- fmap cardBlockKey . lastMay <$> getCardPlayStack
+      mAction <- lastMay <$> getLogBlockStack
+      pure $ mCardPlay <|> mAction
 
 -- | The key a skill test's block is filed under. Shared with the narrator.
 skillTestLogKey :: SkillTest -> Text
 skillTestLogKey st = "skillTest:" <> tshow st.id
+
+{- | 'skillTestLogKey', below whatever block an action opened around the test.
+
+A group id is a path: @navigate:x\/skillTest:y@ is a block inside a block, and
+the client reads the nesting back out of the id rather than being told it, which
+is what keeps rows flat and append-only.
+
+The parent comes from 'Arkham.Game.Base.gameLogBlockStack' alone, and
+deliberately not from the card-play stack, which changes under a running test --
+a card committed to it opens a block of its own. The path has to come out the
+same every time it is computed, or the test's rows scatter across two groups.
+-}
+skillTestBlockKey :: HasGame m => SkillTest -> m Text
+skillTestBlockKey st = do
+  mParent <- lastMay <$> getLogBlockStack
+  pure $ maybe key (\parent -> parent <> "/" <> key) mParent
+ where
+  key = skillTestLogKey st
 
 {- | The key the block around a card is filed under: a card being played, or an
 encounter card being drawn and resolved. Shared with the narrator.

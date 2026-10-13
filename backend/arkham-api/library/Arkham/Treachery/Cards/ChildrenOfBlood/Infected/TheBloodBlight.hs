@@ -17,7 +17,7 @@ theBloodBlight = treachery TheBloodBlight Cards.theBloodBlight
 instance HasAbilities TheBloodBlight where
   getAbilities (TheBloodBlight x) =
     [ restricted x 1 (InThreatAreaOf You <> exists (chaosToken_ #blood)) $ forced $ RoundEnds #when
-    , restricted x 2 (InThreatAreaOf You <> exists (SealedOnInvestigator You #blood)) actionAbility
+    , restricted x 2 (OnSameLocation <> exists (SealedOnInvestigator You #blood)) actionAbility
     ]
 
 instance RunMessage TheBloodBlight where

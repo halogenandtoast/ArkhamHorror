@@ -277,6 +277,23 @@ expandCompositeEnemies matcher = do
       oneOf (matcher : map snd composites)
         <> not_ (mapOneOf EnemyWithId (map fst composites))
 
+{- | Partition enemies into interaction groups: a composite enemy and the cards it
+stands for are one enemy to anything that counts enemies, so Cthulhu and the three
+facets on the Cthulhu Board engage you as a single enemy rather than four.
+
+Every input id ends up in exactly one group.
+-}
+compositeEnemyGroups :: HasGame m => [EnemyId] -> m [[EnemyId]]
+compositeEnemyGroups eids = do
+  clusters <- forMaybeM eids \eid -> do
+    getInteractAsOneOf eid >>= traverse \members ->
+      (eid :) . filter (`elem` eids) <$> select members
+  pure $ foldl' absorb (map pure eids) clusters
+ where
+  absorb groups cluster =
+    let (overlapping, rest) = partition (any (`elem` cluster)) groups
+     in nub (cluster <> concat overlapping) : rest
+
 getFightableEnemyIds
   :: (HasGame m, Sourceable source) => InvestigatorId -> source -> m [EnemyId]
 getFightableEnemyIds iid (toSource -> source) = do

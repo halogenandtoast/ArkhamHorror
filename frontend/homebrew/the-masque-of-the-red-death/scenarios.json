@@ -3,6 +3,7 @@
     "id": ":the-masque-of-the-red-death:001",
     "name": "The Masque of the Red Death",
     "campaign": ":the-masque-of-the-red-death",
+    "designer": "The Beard",
     "i18n": "scenario",
     "sideStory": true,
     "beta": true,

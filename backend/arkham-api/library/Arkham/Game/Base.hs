@@ -196,6 +196,18 @@ data Game = Game
     A stack, not a @Maybe@: playing a card can play another one, and a drawn
     treachery can surge into the next one.
   -}
+  , gameLogBlockStack :: [Text]
+  {- ^ The log blocks a resolving action has opened, innermost last.
+
+    The same job as 'gameCardPlayStack' and here for the same reason: a block
+    that spans an ask cannot be held by the narrator, whose ref is rebuilt every
+    action. A multi-step action (Against the Wendigo's Navigate) opens one so
+    everything the step does is filed under it rather than scattered beside it.
+
+    Opened and closed by 'Arkham.Message.OpenLogBlock' \/
+    'Arkham.Message.CloseLogBlock', and swept whenever the active abilities are,
+    so an action that never finishes cannot leave one capturing later rows.
+  -}
   }
   deriving stock (Eq, Show)
 

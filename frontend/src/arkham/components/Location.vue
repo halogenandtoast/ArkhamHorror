@@ -635,7 +635,15 @@ const hasAnyLocationVehicleAssets = computed(() =>
         />
       </div>
       <div class="location-column">
-        <div class="card-frame" :class="{ explosion, 'location--objective': hasObjective, 'objective-ring': hasObjective }" ref="frame" @click="clicked">
+        <div
+          class="card-frame"
+          :class="{ explosion, 'location--objective': hasObjective, 'objective-ring': hasObjective }"
+          ref="frame"
+          @click="clicked"
+          @drop="onDrop"
+          @dragover.prevent="dragover"
+          @dragenter.prevent
+        >
           <Locus v-if="locus" class="locus" />
           <span v-if="blocked" class="status-icon" v-tooltip="'Blocked'">
             <font-awesome-icon :icon="['fab', 'expeditedssl']" />
@@ -688,9 +696,6 @@ const hasAnyLocationVehicleAssets = computed(() =>
                 :src="displayedImage"
                 :class="{ 'location--can-interact': canInteract && !hasObjective && !blocked, 'location--can-interact-cursor': canInteract, 'source-highlight': sourceHighlighted }"
                 draggable="false"
-                @drop="onDrop"
-                @dragover.prevent="dragover"
-                @dragenter.prevent
               />
             </template>
           </div>

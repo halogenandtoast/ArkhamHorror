@@ -750,6 +750,7 @@ runGameMessage msg g = case msg of
           & (focusedChaosTokensL .~ mempty)
           & (activeCardL .~ Nothing)
           & (activeAbilitiesL .~ mempty)
+          & (logBlockStackL .~ mempty)
           & (actionRemovedEntitiesL .~ mempty)
           & (tombstonesL .~ mempty)
           & (activeAbilitiesL .~ mempty)
@@ -814,6 +815,7 @@ runGameMessage msg g = case msg of
       & (focusedChaosTokensL .~ mempty)
       & (activeCardL .~ Nothing)
       & (activeAbilitiesL .~ mempty)
+      & (logBlockStackL .~ mempty)
       & (playerOrderL .~ (g ^. entitiesL . investigatorsL . to keys))
       & (actionRemovedEntitiesL .~ mempty)
       & (tombstonesL .~ mempty)
@@ -1940,11 +1942,9 @@ runGameMessage msg g = case msg of
 
       card <- field AssetCard assetId
       underneath <- field AssetCardsUnderneath assetId
-      if assetIsStory $ toAttrs asset
-        then do
-          unless (cdDoubleSided (toCardDef asset)) do
-            push $ addToHand iid card
-        else pushAll [RemoveFromPlay (toSource assetId), addToHand iid card]
+      -- a double-sided story asset flips rather than leaving play
+      unless (assetIsStory (toAttrs asset) && cdDoubleSided (toCardDef asset)) do
+        pushAll [RemoveFromPlay (toSource assetId), addToHand iid card]
       for_ underneath (push . addToDiscard iid)
     pure g
   When (PlaceInBonded _ (toCardId -> cardId)) -> do
@@ -2936,6 +2936,7 @@ runGameMessage msg g = case msg of
       & (activePlayerIdL .~ player)
       & (turnPlayerInvestigatorIdL ?~ x)
       & (activeAbilitiesL .~ mempty)
+      & (logBlockStackL .~ mempty)
       & (actionRemovedEntitiesL .~ mempty)
       & (tombstonesL .~ mempty)
       & (entitiesL %~ clearRemovedEntities)
@@ -3134,7 +3135,7 @@ runGameMessage msg g = case msg of
       CampaignPhase {} -> error "should not be called in this situation"
     pure
       $ g
-      & (roundHistoryL %~ (<> view phaseHistoryL g))
+      & (roundHistoryL %~ foldPhaseHistory g)
       & (phaseHistoryL %~ mempty)
   EndInvestigation -> do
     whenWindow <- checkWindows [mkWhen (Window.PhaseEnds InvestigationPhase)]
@@ -3144,7 +3145,7 @@ runGameMessage msg g = case msg of
     pure
       $ g
       & (phaseHistoryL .~ mempty)
-      & (roundHistoryL %~ (<> view phaseHistoryL g))
+      & (roundHistoryL %~ foldPhaseHistory g)
       & (turnPlayerInvestigatorIdL .~ Nothing)
   Begin EnemyPhase -> do
     runQueueT $ runEnemyPhase EndEnemy
@@ -3168,7 +3169,7 @@ runGameMessage msg g = case msg of
         [mkWhen (Window.PhaseEnds EnemyPhase)]
     pure
       $ g
-      & (roundHistoryL %~ (<> view phaseHistoryL g))
+      & (roundHistoryL %~ foldPhaseHistory g)
       & (phaseHistoryL .~ mempty)
   Begin UpkeepPhase -> do
     let phaseStep step msgs = Msg.PhaseStep (UpkeepPhaseStep step) msgs
@@ -3197,7 +3198,7 @@ runGameMessage msg g = case msg of
         [mkWhen (Window.PhaseEnds UpkeepPhase)]
     pure
       $ g
-      & (roundHistoryL %~ (<> view phaseHistoryL g))
+      & (roundHistoryL %~ foldPhaseHistory g)
       & (phaseHistoryL .~ mempty)
   EndRoundWindow -> do
     windows' <-
@@ -3295,7 +3296,7 @@ runGameMessage msg g = case msg of
       =<< checkWindows [mkWhen (Window.PhaseEnds MythosPhase)]
     pure
       $ g
-      & (roundHistoryL %~ (<> view phaseHistoryL g))
+      & (roundHistoryL %~ foldPhaseHistory g)
       & (phaseHistoryL .~ mempty)
   BeginSkillTestWithPreMessages _ pre skillTest -> runMessage (BeginSkillTestWithPreMessages' pre skillTest) g
   BeginSkillTestWithPreMessages' pre skillTest -> do
@@ -4134,6 +4135,9 @@ runGameMessage msg g = case msg of
     case toCardType card of
       AssetType -> runMessage (RemoveAsset (coerce uuid)) g
       _ -> error "Unhandle remove card entity type"
+  -- Log only; see 'gameLogBlockStack'.
+  OpenLogBlock gid -> pure $ g & logBlockStackL %~ (<> [gid])
+  CloseLogBlock gid -> pure $ g & logBlockStackL %~ filter (/= gid)
   UseAbility _ a _ -> pure $ g & activeAbilitiesL %~ (a :)
   ResolvedAbility ab -> do
     -- a queued ResolveWindowInitiations is a set of in-flight abilities: their sources
@@ -4633,6 +4637,17 @@ runPreGameMessage msg g = case msg of
     card <- field EnemyCard details.enemy
     pure $ g & entryTicksL %~ insertMap card.id (gameWindowTick g)
   _ -> pure g
+
+{- | Fold a phase's history into the round's.
+
+@Map@'s own @<>@ is a left-biased union, so folding with it kept the round's
+existing entry for an investigator and dropped everything the phase recorded for
+them -- a 'RoundHistory' read saw only the first phase that recorded anything.
+'History' knows how to merge two of itself; this is the only thing that asks it
+to.
+-}
+foldPhaseHistory :: Game -> Map InvestigatorId History -> Map InvestigatorId History
+foldPhaseHistory g roundH = Map.unionWith (<>) roundH (view phaseHistoryL g)
 
 {- | Maintain the revert information for the in-flight action.
 

@@ -649,6 +649,26 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
           $ filter
             ((Just cardDef.title ==) . fmap toTitle . abilityCardDef . abilityLimit . usedAbility)
             usedAbilities'
+      MaxPer cardDef PerWindow n -> do
+        -- scoped to the current windows like GroupLimit PerWindow, but the bucket is the
+        -- card def rather than the ability, so every copy of the card shares it. Without
+        -- the `ws` intersection this would be a once-per-game limit, since EndCheckWindow
+        -- only prunes the Player/Group PerWindow records.
+        let
+          abilityCardDef = \case
+            MaxPer cDef _ _ -> Just cDef
+            _ -> Nothing
+        usedAbilities' <-
+          filterDepthSpecificAbilities
+            =<< concatMapM (field InvestigatorUsedAbilities)
+            =<< allInvestigators
+        let
+          matching =
+            filter
+              ((Just cardDef.title ==) . fmap toTitle . abilityCardDef . abilityLimit . usedAbility)
+              usedAbilities'
+        let countInWs u = length (filter (`elem` ws) (usedAbilityWindows u))
+        pure $ sum (map countInWs matching) < n
       MaxPer cardDef _ n -> do
         let
           abilityCardDef = \case

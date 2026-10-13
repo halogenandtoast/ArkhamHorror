@@ -16,12 +16,16 @@ terrifyingVisions = treachery TerrifyingVisions Cards.terrifyingVisions
 
 instance HasAbilities TerrifyingVisions where
   getAbilities (TerrifyingVisions a) =
-    [restricted a 1 (InThreatAreaOf You) $ forced $ TurnBegins #when You]
+    [ restricted
+        a
+        1
+        (InThreatAreaOf You <> exists (EnemyAt YourLocation <> mapOneOf withTrait [Animal, Monster]))
+        $ forced
+        $ TurnBegins #when You
+    ]
 
 instance RunMessage TerrifyingVisions where
   runMessage msg t@(TerrifyingVisions attrs) = runQueueT $ case msg of
-    -- "Revelation - Test {willpower} (4). If you fail, put Terrifying Visions
-    -- into your threat area."
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
       revelationSkillTest sid iid attrs #willpower (Fixed 4)
@@ -29,8 +33,6 @@ instance RunMessage TerrifyingVisions where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       placeInThreatArea attrs iid
       pure t
-    -- "Forced - At the beginning of your turn, take 1 horror for each Animal
-    -- enemy and each Monster enemy in your location."
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- selectCount $ enemyAtLocationWith iid <> mapOneOf EnemyWithTrait [Animal, Monster]
       assignHorror iid (attrs.ability 1) n

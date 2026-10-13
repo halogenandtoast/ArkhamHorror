@@ -3,6 +3,7 @@ module Arkham.Treachery.Cards.TheLabyrinthsOfLunacy.DreadfulMechanism (dreadfulM
 import Arkham.Ability
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Placement (Placement (InThreatArea))
 import Arkham.SlotType
 import Arkham.Treachery.CardDefs.TheLabyrinthsOfLunacy qualified as Cards
 import Arkham.Treachery.Import.Lifted hiding (PerformAction)
@@ -21,7 +22,7 @@ dreadfulMechanism = treachery (DreadfulMechanism . (`with` Meta False)) Cards.dr
 instance HasAbilities DreadfulMechanism where
   getAbilities (DreadfulMechanism (With a _)) =
     [ restricted a 1 (InThreatAreaOf You) $ forced $ PerformAction #after You AnyAction
-    , skillTestAbility $ restricted a 2 (InThreatAreaOf You) actionAbility
+    , skillTestAbility $ restricted a 2 OnSameLocation actionAbility
     ]
 
 instance RunMessage DreadfulMechanism where
@@ -41,7 +42,7 @@ instance RunMessage DreadfulMechanism where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 2) iid #combat (Fixed 2)
-      pure $ DreadfulMechanism $ attrs `with` Meta True
+      pure $ DreadfulMechanism $ attrs `with` Meta (attrs.placement == InThreatArea iid)
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       toDiscardBy iid (attrs.ability 2) attrs
       pure t

@@ -23,6 +23,7 @@ registrationToUser Registration {..} = do
           False
           False
           False
+          ""
 
 postApiV1RegistrationR :: Handler Token
 postApiV1RegistrationR = do

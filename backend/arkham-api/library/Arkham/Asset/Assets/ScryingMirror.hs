@@ -4,8 +4,10 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestRevealStrategy)
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.RequestedChaosTokenStrategy
 
 newtype ScryingMirror = ScryingMirror AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -26,5 +28,10 @@ instance RunMessage ScryingMirror where
   runMessage msg a@(ScryingMirror attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       modifyCurrentSkillTest attrs RevealChaosTokensBeforeCommittingCards
+      -- The step is performed *now*, while the window this reaction was used in is still
+      -- open, so anything else triggered there (Crystal Pendulum) sees the tokens.
+      getSkillTest >>= traverse_ \st -> do
+        strategy <- getSkillTestRevealStrategy st
+        push $ RequestChaosTokens (SkillTestSource st.id) (Just st.investigator) strategy SetAside
       pure a
     _ -> ScryingMirror <$> liftRunMessage msg attrs

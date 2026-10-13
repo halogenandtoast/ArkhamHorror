@@ -52,7 +52,7 @@ instance HasAbilities BlueChamber where
   -- "[skull]: Each card committed to this test loses 1 matching icon."
   getAbilities (BlueChamber a) =
     extendRevealed1 a
-      $ describedSkullEffect 0 "Each card committed to this test loses 1 matching icon." a 1
+      $ describedSkullEffect 0 "blueChamber.skull" a 1
 
 instance RunMessage BlueChamber where
   runMessage msg l@(BlueChamber attrs) = runQueueT do

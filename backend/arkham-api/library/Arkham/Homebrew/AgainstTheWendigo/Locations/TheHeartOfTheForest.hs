@@ -9,6 +9,7 @@ import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Locations qualified as Locations
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Move (forcedMoveTo)
 
 newtype TheHeartOfTheForest = TheHeartOfTheForest LocationAttrs
@@ -35,25 +36,28 @@ instance HasAbilities TheHeartOfTheForest where
   getAbilities (TheHeartOfTheForest a) =
     extendRevealed
       a
-      [ {- | "{reaction} When an investigator performs Investigate in The Heart
-        of the Forest, lose 1 action on your next turn: The Heart of the Forest
-        gets -1 shroud for this investigation." -}
+      [ {- "{reaction} When an investigator performs Investigate in The Heart of
+        the Forest, lose 1 action on your next turn: The Heart of the Forest gets
+        -1 shroud for this investigation." -}
         restricted a 1 Here
           $ triggered
             (InitiatedSkillTest #when You AnySkillType AnySkillTestValue (WhileInvestigating (be a)))
             mempty
-      , mkAbility a 2 $ forced $ RoundEnds #when
+      , mkAbility a 2 $ silent $ RoundEnds #when
       ]
 
 instance RunMessage TheHeartOfTheForest where
   runMessage msg l@(TheHeartOfTheForest attrs) = runQueueT $ case msg of
-    {- | "Put The Heart of the Forest into play. Move each investigator from the
+    {- "Put The Heart of the Forest into play. Move each investigator from the
     Impenetrable Forest to this location. This move does not trigger attacks of
-    opportunity." -}
-    Revelation _ (isSource attrs -> True) -> do
+    opportunity."
+
+    Revealing a location resolves no Revelation -- it was never drawn -- so the
+    move hangs off the reveal itself, the way North Hanninah's attachment does. -}
+    Msg.RevealLocation _ lid | lid == toId attrs -> do
       selectEach (InvestigatorAt $ locationIs Locations.impenetrableForest) \iid ->
         forcedMoveTo attrs iid attrs.id
-      pure l
+      TheHeartOfTheForest <$> liftRunMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       nextTurnModifier iid (attrs.ability 1) iid (FewerActions 1)
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) attrs.id (ShroudModifier (-1))

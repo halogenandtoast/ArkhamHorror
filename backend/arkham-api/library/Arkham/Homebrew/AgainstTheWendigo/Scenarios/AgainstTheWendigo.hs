@@ -11,9 +11,6 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Location (addDirectConnection, connectBothWays)
-import Arkham.Helpers.Modifiers (ModifierType (ConnectedToWhen))
-import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Helpers.Xp (XpBonus (NoBonus), toBonus)
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Agendas qualified as Agendas
@@ -25,14 +22,13 @@ import Arkham.Homebrew.AgainstTheWendigo.Helpers
 import Arkham.Homebrew.AgainstTheWendigo.Key
 import Arkham.Homebrew.AgainstTheWendigo.ScenarioDeckKeys (pattern StudentsFateDeck)
 import Arkham.Homebrew.AgainstTheWendigo.Sets qualified as Set
-import Arkham.Id (LocationId)
-import Arkham.Location.Types (Field (LocationClues))
+import Arkham.Location.Grid (Pos (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
-import Arkham.Trait (Trait (Madness))
+import Arkham.Trait (Trait (Ally, Madness))
 
 newtype AgainstTheWendigo = AgainstTheWendigo ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -45,11 +41,9 @@ againstTheWendigo difficulty =
     ":against-the-wendigo:001"
     "Against the Wendigo"
     difficulty
-    [ "uncharted1 northHanninah3 uncharted2"
-    , "uncharted3 northHanninah2 uncharted4"
-    , "uncharted5 northHanninah1 uncharted6"
-    , "sarceeTerritory jetty fortMcDonald"
-    ]
+    -- Every location is placed in the grid, which regenerates the layout as it
+    -- goes (@PlaceGrid@), so there is nothing to declare here.
+    []
 
 instance HasChaosTokenValue AgainstTheWendigo where
   getChaosTokenValue iid chaosTokenFace (AgainstTheWendigo attrs) = case chaosTokenFace of
@@ -83,6 +77,9 @@ studentFatePairs =
 
 instance RunMessage AgainstTheWendigo where
   runMessage msg s@(AgainstTheWendigo attrs) = runQueueT $ scenarioI18n $ case msg of
+    ScenarioSpecific "navigate.step" val -> do
+      logNavigateStep val
+      pure s
     PreScenarioSetup -> scope "prologue" do
       flavor $ h "title" >> p "body"
       pure s
@@ -105,23 +102,21 @@ instance RunMessage AgainstTheWendigo where
       gather Set.HanninahValley
       gatherAndSetAside Set.WendigosMyth
 
-      -- The bottom row: where the investigators start and where they can resign.
-      jetty <- placeLabeled "jetty" Locations.jetty
-      fort <- placeLabeled "fortMcDonald" Locations.fortMcDonald
-      sarcee <- placeLabeled "sarceeTerritory" Locations.sarceeTerritory
+      {- The valley is laid out in the grid: x runs West to East with the river at
+      0, y runs South to North with the bottom row at 0. Placing a location
+      there is what tells the engine which locations are printed next to which
+      -- the compass directions every card in this scenario talks about. -}
+      jetty <- placeInGrid (Pos 0 0) Locations.jetty
+      placeInGrid_ (Pos 1 0) Locations.fortMcDonald
+      placeInGrid_ (Pos (-1) 0) Locations.sarceeTerritory
       startAt jetty
-      connectBothWays jetty fort
-      connectBothWays jetty sarcee
 
       -- The middle column: the river running north out of the Jetty. The slots
       -- are numbered up from the Jetty, so northHanninah1 is the southernmost
       -- and the map reads these three in reverse.
       shuffledRiver <-
         shuffleM [Locations.northHanninah1, Locations.northHanninah2, Locations.northHanninah3]
-      riverSouthToNorth <-
-        for (zip ["northHanninah1", "northHanninah2", "northHanninah3"] shuffledRiver)
-          $ uncurry placeLabeled
-      for_ (zip (jetty : riverSouthToNorth) riverSouthToNorth) (uncurry connectBothWays)
+      for_ (zip [1 .. 3] shuffledRiver) \(y, def) -> placeInGrid_ (Pos 0 y) def
 
       -- The outer columns. One Mountain Range is removed at random; the rest are
       -- dealt one to the East and one to the West of each North Hanninah.
@@ -129,31 +124,11 @@ instance RunMessage AgainstTheWendigo where
         splitAt 1 <$> shuffleM [Locations.templeOfIthaqua, Locations.madProspector]
       removeEvery removedRange
       uncharted <- shuffleM (keptRange <> drop 2 unchartedLocations)
-      let slots = ["uncharted" <> tshow (n :: Int) | n <- [1 .. 6]]
-      outer <- for (zip slots uncharted) \(slot, def) -> (def,) <$> placeLabeled slot def
-
-      -- The rows, read down the map the way the slots are declared above:
-      -- uncharted1 and uncharted2 flank the *northernmost* river location.
-      let rows = zip (reverse riverSouthToNorth) (rowPairs outer)
-
-      {- Each North Hanninah reaches the Uncharted pair flanking it, and each of
-      them reaches back -- except Sinister Taiga, which prints nothing on its
-      unrevealed side. Until it is revealed it is a one-way trip in off the
-      river. -}
-      for_ rows \(mid, neighbours) ->
-        for_ neighbours \(def, lid) -> do
-          addDirectConnection mid lid
-          if def == Locations.sinisterTaiga
-            then revealedConnection lid mid
-            else addDirectConnection lid mid
-
-      {- Revealed, the Taiga also reaches "the Wild locations directly to the
-      North and South". Those print only their own river connection, so the link
-      stays one way out of the Taiga. -}
-      for_ (zip rows (drop 1 rows)) \((_, northRow), (_, southRow)) ->
-        for_ (zip northRow southRow) \((northDef, north), (southDef, south)) -> do
-          when (northDef == Locations.sinisterTaiga) $ revealedConnection north south
-          when (southDef == Locations.sinisterTaiga) $ revealedConnection south north
+      {- West then East of each river location, from the northernmost row down.
+      Nothing is wired by hand: every card prints which compass neighbours it
+      reaches, and the grid is what answers that. -}
+      let cells = [Pos x y | y <- [3, 2, 1], x <- [-1, 1]]
+      for_ (zip cells uncharted) (uncurry placeInGrid_)
 
       -- One of each pair of student fates survives; the three survivors are the deck.
       kept <- for studentFatePairs \(a, b) -> do
@@ -174,7 +149,7 @@ instance RunMessage AgainstTheWendigo where
         ]
 
       -- "If you don't have a [tablet] token in your chaos bag, add one for this game."
-      addChaosToken Tablet
+      addChaosTokenForGame Tablet
 
       setAgendaDeck
         [ Agendas.aDarkAndDisturbingValley
@@ -188,16 +163,35 @@ instance RunMessage AgainstTheWendigo where
         , Acts.northHanninahsMysteries
         ]
     {- The scenario reference card: "[tablet]: If you succeed, place 1 clue from
-    the reserve on the Mountain Range." Only this ever puts clues there, so the
-    Mountain Range's own "Forced - if there are 2 clues (3 for a 3 or 4 player
-    game): reveal it" is checked here too. -}
+    the reserve on the Mountain Range." Only this ever puts clues there. The
+    reveal at 2 clues (3 for a 3 or 4 player game) is the Mountain Range's own
+    Forced ability; see 'mountainRangeReveal'. -}
     PassedSkillTestWithToken _ Tablet -> do
       ranges <- select $ LocationWithTitle "Mountain Range" <> UnrevealedLocation
-      for_ (take 1 ranges) \lid -> do
-        placeClues ScenarioSource lid 1
-        n <- getPlayerCount
-        clues <- field LocationClues lid
-        when (clues >= if n >= 3 then 3 else 2) $ reveal lid
+      for_ (take 1 ranges) \lid -> placeClues ScenarioSource lid 1
+      pure s
+    -- "[skull]: If you fail, lose 1 resource." Hard/expert loses 2.
+    FailedSkillTestWithToken iid Skull -> do
+      loseResources iid Skull (if isEasyStandard attrs then 1 else 2)
+      pure s
+    {- "[cultist]: If you fail, an Ally asset you control takes 1 damage and 1
+    horror." Hard/expert removes one from the game instead. -}
+    FailedSkillTestWithToken iid Cultist -> do
+      allies <- select $ AssetWithTrait Ally <> assetControlledBy iid
+      unless (null allies) $ chooseTargetM iid allies \ally ->
+        if isEasyStandard attrs
+          then push $ DealAssetDamageWithCheck ally (toSource Cultist) 1 1 True
+          else removeFromGame ally
+      pure s
+    -- "[tablet]: ... If you fail, take 1 horror."
+    FailedSkillTestWithToken iid Tablet -> do
+      assignHorror iid Tablet 1
+      pure s
+    -- "[elder thing]: If you fail, take 1 horror." Hard/expert adds 1 damage.
+    FailedSkillTestWithToken iid ElderThing -> do
+      if isEasyStandard attrs
+        then assignHorror iid ElderThing 1
+        else assignDamageAndHorror iid ElderThing 1 1
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of
@@ -247,37 +241,47 @@ resignedOrDefeatedTrauma attrs = do
 {- | The epilogue's four passages, then Dr. Nadelmann's fate. Each passage is
 read only if the record it hangs off was made, and each one that hands a card
 over does so here.
+
+Resolutions 2-4 call this from inside their own @resolutions@ scope, so the
+scope is reset rather than nested -- the keys live beside them under @scenario@,
+not under @scenario.resolutions@.
 -}
-epilogue :: (HasI18n, ReverseQueue m) => m ()
-epilogue = scope "epilogue" do
-  charlieSurvived <- selectAny $ assetIs Assets.charlieFoxtail
-  when charlieSurvived do
-    flavor $ h "charlie" >> p "charlieBody"
-    investigators <- select UneliminatedInvestigator
-    addCampaignCardToDeckChoice investigators ShuffleIn Assets.tomahawk
+epilogue :: ReverseQueue m => m ()
+epilogue = scenarioI18n $ scope "epilogue" do
+  -- "Do not read the following if all investigators have been driven insane or killed."
+  anyLeft <- selectAny $ IncludeEliminated (not_ KilledInvestigator <> not_ InsaneInvestigator)
+  when anyLeft do
+    -- "Read the following passages each time they match your playing situation."
+    flavor $ h "intro" >> p "introBody"
 
-  whenHasRecord YouHaveFoundHanninahsGold do
-    flavor $ h "gold" >> p "goldBody"
-    investigators <- select UneliminatedInvestigator
-    addCampaignCardToDeckChoice investigators ShuffleIn Assets.goldMiningRevenues
+    charlieSurvived <- selectAny $ assetIs Assets.charlieFoxtail
+    when charlieSurvived do
+      flavor $ h "charlie" >> p "charlieBody"
+      investigators <- select UneliminatedInvestigator
+      addCampaignCardToDeckChoice investigators ShuffleIn Assets.tomahawk
 
-  whenHasRecord YouAreTheCustodianOfIthaquasKnowledge do
-    flavor $ h "ithaqua" >> p "ithaquaBody"
-    investigators <- select UneliminatedInvestigator
-    addCampaignCardToDeckChoice investigators ShuffleIn Assets.ithaquasKnowledge
+    whenHasRecord YouHaveFoundHanninahsGold do
+      flavor $ h "gold" >> p "goldBody"
+      investigators <- select UneliminatedInvestigator
+      addCampaignCardToDeckChoice investigators ShuffleIn Assets.goldMiningRevenues
 
-  -- Norman only counts as alive if he made it to the end still in play.
-  normanSurvived <- selectAny $ assetIs Assets.normanFalkner
-  if normanSurvived
-    then do
-      record NormanIsAlive
+    whenHasRecord YouAreTheCustodianOfIthaquasKnowledge do
+      flavor $ h "ithaqua" >> p "ithaquaBody"
+      investigators <- select UneliminatedInvestigator
+      addCampaignCardToDeckChoice investigators ShuffleIn Assets.ithaquasKnowledge
+
+    whenHasRecord NormanIsAlive do
       flavor $ h "normanAlive" >> p "normanAliveBody"
-    else whenHasRecord YouLetNormanDie do
+
+    whenHasRecord YouLetNormanDie do
       flavor $ h "normanDead" >> p "normanDeadBody"
-      -- "Add a [tablet] token to the Chaos bag for the rest of your campaign."
+      {- "If you added a [tablet] token to the Chaos bag for this game, keep it
+      for the rest of your campaign. Otherwise, add a [tablet] token to the
+      Chaos bag for the rest of your campaign." Setup's token is only for this
+      game, so either branch is one campaign token. -}
       addChaosToken Tablet
 
-  nadelmannsFate
+    nadelmannsFate
 
 {- | "Check your campaign log. If you defeated the Wendigo: read fate 1.
 Otherwise, if you have enough evidence to clear Dr. Nadelmann: fate 2.
@@ -293,6 +297,8 @@ nadelmannsFate = do
         | cleared = "nadelmann2"
         | stillRoams = "nadelmann3"
         | otherwise = "nadelmann4"
+  -- The guide prints the check itself above the passage, so it is read out too.
+  flavor $ p "nadelmannCheck"
   flavor $ h which >> p (which <> "Body")
 
 -- | Resolutions 2-4 are chosen by how many students' fates were discovered.
@@ -332,19 +338,6 @@ awardScenarioXp attrs extra = do
     $ [toBonus "savedCharlie" 1 | savedCharlie]
     <> [toBonus "savedTheGoldProspector" 1 | savedProspector]
     <> [extra]
-
-{- | A connection that exists only on a location's revealed side.
-'addDirectConnection' writes the unrevealed and revealed sides at once, so a
-one-sided connection has to come from a modifier instead.
--}
-revealedConnection :: ReverseQueue m => LocationId -> LocationId -> m ()
-revealedConnection from dest =
-  gameModifier ScenarioSource from $ ConnectedToWhen RevealedLocation (LocationWithId dest)
-
--- | The six Uncharted locations, paired off one row at a time.
-rowPairs :: [a] -> [[a]]
-rowPairs (a : b : rest) = [a, b] : rowPairs rest
-rowPairs xs = [xs | notNull xs]
 
 chaosBagContents :: Difficulty -> [ChaosTokenFace]
 chaosBagContents = \case

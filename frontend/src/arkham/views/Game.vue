@@ -38,6 +38,7 @@ import { LottieAnimation } from 'lottie-web-vue'
 import * as JsonDecoder from 'ts.data.json'
 import processingJSON from '@/assets/processing.json'
 import api from '@/api'
+import { setMaintenance } from '@/maintenance'
 import {
   fetchGame,
   buildWebsocketUrl,
@@ -48,6 +49,8 @@ import {
   undoPhase,
   undoRound,
   undoToStep,
+  unarchiveGame,
+  type GameArchive,
   markEventReady,
   eventTimeUp,
 } from '@/arkham/api'
@@ -165,6 +168,10 @@ type ServerResult =
   | { tag: 'GameAudio'; contents: string }
   | { tag: 'SharedStateUpdate'; contents: SharedEventState }
   | { tag: 'EventChanged' }
+  /* An archived undo history came back. The board does not change; this says
+   * the wait is over and undo works again. */
+  | { tag: 'GameUnarchived' }
+  | { tag: 'GameUnarchiveFailed'; contents: string }
   /* The room is gone -- the game was deleted, or an admin dropped it. The server
    * closes the socket right behind this, and `autoReconnect` would otherwise
    * recreate the very room that was just removed, so this leaves rather than
@@ -1331,9 +1338,17 @@ const { send, close } = useWebSocket(websocketUrl, {
  * otherwise bring the socket straight back up against a room the server has
  * just removed, and recreate it. Going home rather than showing a dead board,
  * because there is nothing left here to look at. */
-function roomClosed() {
+function roomClosed(reason: string) {
   close()
-  toast.info(t('gameClosed'), { timeout: 6000 })
+  /* Maintenance is the one reason the game still exists afterwards, so say so
+   * rather than "that game has been closed" -- which reads as though it were
+   * deleted. `setMaintenance` puts the notice up in place of the board; the
+   * socket carries this but no REST call has 503'd yet, so nothing else would. */
+  if (reason === 'maintenance') {
+    setMaintenance(true)
+  } else {
+    toast.info(t('gameClosed'), { timeout: 6000 })
+  }
   router.push({ name: 'Home' })
 }
 
@@ -1410,7 +1425,17 @@ const handleResult = (result: ServerResult) => {
   processing.value = false
   switch (result.tag) {
     case 'RoomClosed':
-      roomClosed()
+      roomClosed(result.contents)
+      return
+    case 'GameUnarchived':
+      unarchiving.value = false
+      archiveNotice.value = null
+      toast.success(t('archive.restored'), { timeout: 6000 })
+      return
+    case 'GameUnarchiveFailed':
+      unarchiving.value = false
+      toast.error(t('archive.restoreFailed'), { timeout: 8000 })
+      console.error('Unarchive failed', result.contents)
       return
     case 'GameError':
       if (props.spectate) return
@@ -2006,6 +2031,55 @@ const toggleSidebar = function () {
 // Undo
 const undoLock = ref(false)
 
+/* An undo the server refused because the history is in cold storage, and the
+ * fetch that is putting it back. See `noticeArchive`. */
+const archiveNotice = ref<{ reason: string; archive: GameArchive } | null>(null)
+const unarchiving = ref(false)
+
+type ArchiveRefusal = {
+  response?: { status?: number; data?: { error?: string; archive?: GameArchive } }
+}
+
+/* Turn a refused undo into the one thing the player can do about it.
+ *
+ * Nothing checks for an archive in advance -- the game payload carries no
+ * archived flag, because it would be false for all but a handful of games -- so
+ * a 409 from an undo is where this surfaces, and this is the only place in the
+ * client that has to know archives exist.
+ *
+ * Returns whether the error was handled, so the caller can fall through to its
+ * ordinary reporting for anything else. */
+function noticeArchive(e: unknown): boolean {
+  const response = (e as ArchiveRefusal).response
+  if (response?.status !== 409) return false
+  const reason = response.data?.error
+  const archive = response.data?.archive
+  if (!archive) return false
+  if (reason === 'restoring') {
+    // Someone at the table already asked; the outcome arrives on the socket.
+    unarchiving.value = true
+    toast.info(t('archive.alreadyRestoring'), { timeout: 6000 })
+    return true
+  }
+  if (reason !== 'archived' && reason !== 'restoreFailed') return false
+  archiveNotice.value = { reason, archive }
+  return true
+}
+
+async function requestUnarchive() {
+  const notice = archiveNotice.value
+  archiveNotice.value = null
+  if (!notice) return
+  unarchiving.value = true
+  try {
+    await unarchiveGame(props.gameId)
+  } catch (e) {
+    unarchiving.value = false
+    toast.error(t('archive.restoreFailed'), { timeout: 8000 })
+    console.error(e)
+  }
+}
+
 /*
  * Every undo goes through here so the lock is taken BEFORE any UI state is
  * touched and released in `finally`.
@@ -2034,7 +2108,7 @@ async function runUndo(call: (gameId: string) => Promise<void>) {
   } catch (e) {
     processing.value = false
     if (game.value && oldQuestion) setGameQuestion(oldQuestion)
-    console.log(e)
+    if (!noticeArchive(e)) console.log(e)
   } finally {
     undoLock.value = false
   }
@@ -3151,6 +3225,20 @@ onUnmounted(() => {
         ></div>
       </div>
     </template>
+    <div v-if="unarchiving" class="archive-restoring">
+      <ArrowPathIcon class="archive-restoring__icon" />
+      <span>{{ $t('archive.restoringBanner') }}</span>
+    </div>
+    <Prompt
+      v-if="archiveNotice"
+      :prompt="
+        archiveNotice.reason === 'restoreFailed'
+          ? $t('archive.retryPrompt')
+          : $t('archive.prompt', { steps: archiveNotice.archive.steps })
+      "
+      :yes="requestUnarchive"
+      :no="() => (archiveNotice = null)"
+    />
     <Prompt
       v-if="confirmingUndoScenario"
       prompt="$game.areYouSureUndoScenario"
@@ -3179,6 +3267,35 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
+/* Fetching an archive is a download of every step a game ever took, which can
+ * take a while, so it gets a standing indicator rather than only a toast. */
+.archive-restoring {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.85rem;
+}
+
+.archive-restoring__icon {
+  width: 16px;
+  height: 16px;
+  animation: archive-spin 1.2s linear infinite;
+}
+
+@keyframes archive-spin {
+  to { transform: rotate(360deg); }
+}
+
 .back-button {
   display: inline-flex;
   align-items: center;

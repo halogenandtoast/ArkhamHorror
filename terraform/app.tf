@@ -276,12 +276,22 @@ resource "kubernetes_deployment" "app" {
             value = tostring(var.app_db_pool)
           }
 
-          # var.app_secrets keys become env var names here, so a GHCRTS or DB_POOL
-          # placed in there would collide with the two above. Kubernetes resolves
-          # an explicit `env` ahead of `env_from`, so these win -- which is the
-          # right way round (the derived -N should not be silently overridable by
-          # an ad-hoc secret), but it does mean setting either in app_secrets has
-          # no effect. Change the variable instead.
+          # The archive sweep's on/off switch, here rather than in app_secrets so
+          # that flipping it shows up as a readable diff in `terraform plan`. See
+          # variable "app_archive_sweep". Applying it still needs a rollout
+          # restart: env_from and env alike are resolved at container start.
+          env {
+            name  = "ARCHIVE_SWEEP"
+            value = tostring(var.app_archive_sweep)
+          }
+
+          # var.app_secrets keys become env var names here, so a GHCRTS, DB_POOL
+          # or ARCHIVE_SWEEP placed in there would collide with the three above.
+          # Kubernetes resolves an explicit `env` ahead of `env_from`, so these
+          # win -- which is the right way round (the derived -N should not be
+          # silently overridable by an ad-hoc secret), but it does mean setting
+          # any of them in app_secrets has no effect. Change the variable
+          # instead.
           env_from {
             secret_ref {
               name = kubernetes_secret.app.metadata[0].name

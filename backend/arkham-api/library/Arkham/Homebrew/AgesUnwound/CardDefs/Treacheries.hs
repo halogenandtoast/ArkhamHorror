@@ -5,15 +5,6 @@ import Arkham.Homebrew.AgesUnwound.Traits
 import Arkham.Keyword qualified as Keyword
 import Arkham.Treachery.CardDefs.Import
 
-{- | The single-sided half of a card whose other face belongs to another card
-type. @Arkham.Treachery.CardDefs.Base@ has no @otherSideIs@ of its own (the location,
-story, enemy, act and agenda bases do), so this campaign declares one; the back
-and the front each name the other, which is what keeps the card browser from
-listing the same physical card twice.
--}
-otherSideIs :: CardCode -> CardDef -> CardDef
-otherSideIs cCode def = def {cdDoubleSided = False, cdOtherSide = Just cCode}
-
 inEveryShadow :: CardDef
 inEveryShadow =
   (treachery ":ages-unwound:020" "In Every Shadow" Set.NightOfFire 3)

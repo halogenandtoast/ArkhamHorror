@@ -1,6 +1,7 @@
 /health HealthR GET
 /error ErrorR GET
 /api ApiP:
+  /auth/arkham-build/callback ApiAuthArkhamBuildCallbackR GET
   /v1 ApiV1P:
     /authenticate ApiV1AuthenticationR POST
     /register ApiV1RegistrationR POST
@@ -14,7 +15,13 @@
       / ApiV1ApiKeysR GET POST
       !/self ApiV1ApiKeySelfR GET
       /#ArkhamApiKeyId ApiV1ApiKeyR DELETE
+    /arkham-build ApiV1ArkhamBuildP:
+      /connection ApiV1ArkhamBuildConnectionR GET DELETE
+      /authorize ApiV1ArkhamBuildAuthorizeR POST
+      /verify ApiV1ArkhamBuildVerifyR POST
+      /decks ApiV1ArkhamBuildDecksR GET
     /site-settings ApiV1SiteSettingsR GET
+    /maintenance ApiV1MaintenanceR GET POST DELETE
     /notifications ApiV1NotificationsR GET
     /3ed ApiV1ThirdEditionP:
       /catalog ApiV1ThirdEditionCatalogR GET
@@ -92,6 +99,8 @@
           /achievements ApiV1ArkhamGameAchievementsR GET
           /custom-cards ApiV1ArkhamGameCustomCardsR GET
           /step ApiV1ArkhamGameStepR GET
+          /archive ApiV1ArkhamGameArchiveR GET
+          /unarchive ApiV1ArkhamGameUnarchiveR PUT
       /events ApiV1ArkhamEventsP:
         / ApiV1ArkhamEventsR GET POST
         /#ArkhamEpicEventId ApiV1ArkhamEventP:
@@ -113,12 +122,22 @@
       /game-stats ApiV1AdminGameStatsP:
         / ApiV1AdminGameStatsR GET
         !/refresh ApiV1AdminGameStatsRefreshR POST
+      /archives ApiV1AdminArchivesP:
+        / ApiV1AdminArchivesR GET
+        !/run ApiV1AdminArchivesRunR POST
+        /#ArkhamGameId ApiV1AdminArchiveGameR POST
+      /notifications ApiV1AdminNotificationsP:
+        / ApiV1AdminNotificationsR GET POST
+        /#NotificationId ApiV1AdminNotificationR GET PUT DELETE
       /card-set-submissions ApiV1AdminCardSetSubmissionsP:
         / ApiV1AdminCardSetSubmissionsR GET
         /#ArkhamCardSetSubmissionId ApiV1AdminCardSetSubmissionP:
           / ApiV1AdminCardSetSubmissionR GET
           /approve ApiV1AdminCardSetSubmissionApproveR POST
           /deny ApiV1AdminCardSetSubmissionDenyR POST
+      /users ApiV1AdminUsersP:
+        / ApiV1AdminUsersR GET
+        /#UserId/features ApiV1AdminUserFeaturesR PUT
       /games ApiV1AdminGamesP:
         / ApiV1AdminGamesR GET
         !/active ApiV1AdminActiveGamesR GET

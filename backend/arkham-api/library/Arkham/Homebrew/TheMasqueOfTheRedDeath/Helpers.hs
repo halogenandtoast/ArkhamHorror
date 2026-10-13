@@ -22,7 +22,6 @@ import Arkham.ChaosToken.Types (ChaosToken, ChaosTokenModifier (NoModifier))
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push, pushAll)
 import Arkham.Classes.Query
-import Arkham.Constants (pattern AbilityMove)
 import Arkham.GameValue (GameValue (PerPlayer))
 import Arkham.Helpers.Investigator (getCanDiscoverClues)
 import Arkham.Helpers.Location (getLocationOf, withLocationOf)
@@ -37,13 +36,14 @@ import Arkham.Id
 import Arkham.Location.Types (LocationAttrs)
 import Arkham.Matcher hiding (IgnoreChaosToken)
 import Arkham.Message (
-  Message (AdvanceAgendaIfThresholdSatisfied, PaidInitialCostForAbility, UseCardAbility),
+  Message (AdvanceAgendaIfThresholdSatisfied, Do, UseCardAbility),
+  pattern PlaceDoom,
  )
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose (chooseOneM, labeled)
 import Arkham.Prelude
-import Arkham.Source (Sourceable, isSource)
-import Arkham.Target (toTarget)
+import Arkham.Source (Source (PaymentSource), Sourceable)
+import Arkham.Target (Target (AssetTarget), toTarget)
 import Arkham.Trait (Trait (Guest))
 import Arkham.Window (defaultWindows)
 
@@ -111,15 +111,16 @@ effect reads as the card prints it instead of as a bare card name.
 window folds into the face's total ahead of the draw. Pass @0@ when the card
 prints no number, or when the number is only known at resolution time -- Grand
 Ballroom's "-1 for every 2 revealed Manor locations" is computed, so it declares
-0 and carries the whole clause in @prose@ instead of showing a wrong prediction.
+0 and carries the whole clause in its text instead of showing a wrong prediction.
 
-@prose@ is the printed effect minus any leading value, since the window renders
-the value itself. It takes the usual card markup: @{skull}@ for an icon,
-@_Manor_@ for a trait.
+@key@ names the scenario-scoped locale entry holding the printed effect minus any
+leading value, since the window renders the value itself; the empty key is for a
+card whose effect is only a number. The entry takes the usual card markup:
+@{skull}@ for an icon, @_Manor_@ for a trait.
 -}
 describedSkullEffect :: (HasCardCode a, Sourceable a) => Int -> Text -> a -> Int -> Ability
-describedSkullEffect value prose a n =
-  (if null prose then id else withTooltip prose)
+describedSkullEffect value key a n =
+  (if null key then id else scenarioI18n (withI18nTooltip key))
     $ affectsChaosToken #skull modifier
     $ skullEffect a n
  where
@@ -160,29 +161,49 @@ as a group, or doom on the [[Guest]] standing in that room.
 offered only at the player count that prints it, and only while a [[Guest]] is
 still there to take it -- 'AssetDoomCost' is unaffordable with nothing to match,
 which is what drops that half of the 'OrCost'.
+
+The doom branch is labeled, since 'AssetDoomCost' renders as "place N doom on a card
+you control" -- true of the cost that named the type, wrong for a toll paid by the
+masked guest standing in the room.
 -}
 chamberToll :: Cost
 chamberToll =
   OrCost
     [ GroupClueCost (PerPlayer 1) Anywhere
-    , CostOnlyWhen onePlayerOrTwo (AssetDoomCost 1 guestHere)
-    , CostOnlyWhen (not_ onePlayerOrTwo) (AssetDoomCost 2 guestHere)
+    , CostOnlyWhen onePlayerOrTwo (doomOnGuest 1)
+    , CostOnlyWhen (not_ onePlayerOrTwo) (doomOnGuest 2)
     ]
  where
   onePlayerOrTwo = oneOf [PlayerCountIs 1, PlayerCountIs 2]
   guestHere = AssetWithTrait Guest <> AssetAt ThisLocation
+  doomOnGuest n =
+    LabeledCost
+      (campaignI18n $ scope "chamberToll" $ countVar n $ "$" <> labelKey "doomOnGuest")
+      (AssetDoomCost n guestHere)
 
 {- | "This doom can cause the current agenda to advance."
 
 Doom placed outside the mythos phase advances nothing on its own, so a chamber
 whose toll was paid in doom has to ask for the check. Call it before delegating
-to the base runner; it fires only on the move cost this location charged, and
-only when doom was what was spent.
+to the base runner.
+
+The hook is the payment itself rather than the move that charged it: the toll is
+not part of the move ability's cost. 'CostToEnterUnrevealed' is a placeholder the
+ability never pays ("unwrapped elsewhere"), and movement re-raises it as its own
+'PayAdditionalCost', whose active cost reports neither the ability nor what was
+spent. So match doom landing on this chamber's [[Guest]] as a cost payment. A
+[[Victim]]'s own entry toll is an ability rather than a cost, and prints no
+advance clause, so it stays out.
+
+The committed @Do@ form, because the plain 'PlaceTokens' only opens the when-window
+-- the asset defers the counter itself to the @Do@, so a check asked for any earlier
+counts the toll's doom as not yet paid.
 -}
 tollDoomMayAdvanceAgenda :: ReverseQueue m => LocationAttrs -> Message -> m ()
 tollDoomMayAdvanceAgenda attrs = \case
-  PaidInitialCostForAbility _ _ (AbilityRef source AbilityMove) payment
-    | isSource attrs source, totalDoomPayment payment > 0 -> push AdvanceAgendaIfThresholdSatisfied
+  Do (PlaceDoom (PaymentSource _) (AssetTarget aid) n) | n > 0 -> do
+    paidHere <- aid <=~> (AssetWithTrait Guest <> AssetAt (LocationWithId attrs.id))
+    when paidHere $ push AdvanceAgendaIfThresholdSatisfied
   _ -> pure ()
 
 -- | The campaign's own i18n scope; the folder name camelCased.

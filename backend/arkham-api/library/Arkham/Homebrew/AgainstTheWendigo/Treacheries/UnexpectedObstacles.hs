@@ -16,15 +16,14 @@ unexpectedObstacles :: TreacheryCard UnexpectedObstacles
 unexpectedObstacles = treachery UnexpectedObstacles Cards.unexpectedObstacles
 
 instance HasModifiersFor UnexpectedObstacles where
-  {- | "The first time you perform one of the following actions (Walk Along the
+  {- "The first time you perform one of the following actions (Walk Along the
   River, Navigate, move, fight or evade) each round, it costs 1 additional
-  action." 'AdditionalActionCostOf' already charges only the first such action
-  in a round. -}
+  action." One 'FirstOneOfPerformed' over the whole group, not one per action:
+  the surcharge is spent by whichever of the five comes first. -}
   getModifiersFor (UnexpectedObstacles a) =
     inThreatAreaGets
       a
-      [ AdditionalActionCostOf (IsAction act) 1
-      | act <- [WalkAlongTheRiver, Navigate, #move, #fight, #evade]
+      [ AdditionalActionCostOf (FirstOneOfPerformed [WalkAlongTheRiver, Navigate, #move, #fight, #evade]) 1
       ]
 
 instance HasAbilities UnexpectedObstacles where
@@ -36,13 +35,12 @@ instance RunMessage UnexpectedObstacles where
     Revelation iid (isSource attrs -> True) -> do
       placeInThreatArea attrs iid
       pure t
-    -- "At the end of the round, reveal a chaos token: on a symbol this card
-    -- stays in play. Otherwise discard this card."
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       lead <- getLead
       requestChaosTokens lead (attrs.ability 1) 1
       pure t
-    RequestedChaosTokens (isAbilitySource attrs 1 -> True) _ tokens -> do
+    RequestedChaosTokens (isAbilitySource attrs 1 -> True) miid tokens -> do
+      for_ miid continue_
       unless (any isSymbolFace tokens) $ toDiscard (attrs.ability 1) attrs
       pure t
     _ -> UnexpectedObstacles <$> liftRunMessage msg attrs

@@ -86,9 +86,11 @@ getSourceController = \case
 
 {- | Resolve which investigator(s) a source belongs to.
 
-When @creditUser@ is 'False' (the @SourceOwnedBy@ matcher) this is strict card
-ownership: an ability source resolves to the underlying card's controller/owner, so a
-location/encounter ability matches nobody.
+When @creditUser@ is 'False' (the @SourceOwnedBy@ matcher) this is card ownership: an
+ability source resolves to the underlying card's owner or controller, so a
+location/encounter ability matches nobody. Owner and controller only diverge for the cards
+that transfer control, and both are credited — Diana Stanley keys off ownership while
+Carolyn Fern and friends say "one of your card effects". See issue #5845.
 
 When @creditUser@ is 'True' (the @SourceUsedBy@ matcher) the investigator who *used* the
 ability is additionally credited, so effects performed via a location/encounter ability
@@ -108,23 +110,22 @@ checkSourceOwner creditUser whoMatcher = go
     UseAbilitySource iid' source' _
       | creditUser -> orM [elem iid' <$> select whoMatcher, go source']
       | otherwise -> go source'
-    AssetSource aid ->
-      selectAssetController aid >>= \case
-        Just iid' -> elem iid' <$> select whoMatcher
-        _ -> pure False
+    -- Owner and controller diverge for the cards that transfer control (Delay the
+    -- Inevitable, Solemn Vow, ...), so match either: Diana Stanley keys off ownership.
+    AssetSource aid -> do
+      controller <- selectAssetController aid
+      owner <- join <$> fieldMay AssetOwner aid
+      anyMatches [controller, owner]
     EventSource eid -> do
-      selectEventController eid >>= \case
-        Just controllerId -> elem controllerId <$> select whoMatcher
-        Nothing -> do
-          -- event may have been discarded already
-          mOwner <- (toCardOwner =<<) <$> fieldMay EventCard eid
-          case mOwner of
-            Just owner -> elem owner <$> select whoMatcher
-            Nothing -> pure False
+      controller <- selectEventController eid
+      owner <- fieldMay EventOwner eid
+      -- event may have been discarded already
+      cardOwner <- (toCardOwner =<<) <$> fieldMay EventCard eid
+      anyMatches [controller, owner, cardOwner]
     SkillSource sid -> do
-      selectSkillController sid >>= \case
-        Just controllerId -> elem controllerId <$> select whoMatcher
-        Nothing -> pure False
+      controller <- selectSkillController sid
+      owner <- fieldMay SkillOwner sid
+      anyMatches [controller, owner]
     InvestigatorSource iid -> elem iid <$> select whoMatcher
     ElderSignEffectSource iid -> elem iid <$> select whoMatcher
     -- A Scarlet Key's effects belong to the investigator who bears/controls it,
@@ -146,6 +147,10 @@ checkSourceOwner creditUser whoMatcher = go
         Just iid -> elem iid <$> select whoMatcher
     PaymentSource s' -> go s'
     _ -> pure False
+
+  anyMatches miids = do
+    matching <- select whoMatcher
+    pure $ any (`elem` matching) (catMaybes miids)
 
 sourceMatches :: (HasCallStack, HasGame m) => Source -> Matcher.SourceMatcher -> m Bool
 sourceMatches s = \case
@@ -211,8 +216,8 @@ sourceMatches s = \case
       isEventSource s
   Matcher.AnySource -> pure True
   Matcher.SourceMatches ms -> allM (sourceMatches s) ms
-  -- SourceOwnedBy is strict card ownership: an ability source resolves to the underlying
-  -- card's controller/owner. SourceUsedBy additionally credits the investigator who used the
+  -- SourceOwnedBy is card ownership: an ability source resolves to the underlying
+  -- card's owner or controller. SourceUsedBy additionally credits the investigator who used the
   -- ability (the performer), so effects dealt/healed via a location/encounter ability count
   -- for "you deal/heal/defeat" cards. See issue #4902.
   Matcher.SourceOwnedBy whoMatcher -> checkSourceOwner False whoMatcher s

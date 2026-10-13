@@ -1397,6 +1397,19 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       Window.InvestigatorResigned who ->
         matchWho iid who (Matcher.IncludeEliminated $ Matcher.replaceYouMatcher iid whoMatcher)
       _ -> noMatch
+    {- Trauma on defeat is suffered on the way out, so 'IncludeEliminated' here as
+    well: by the time the window resolves the investigator may already be
+    eliminated. -}
+    Matcher.SuffersPhysicalTrauma timing whoMatcher -> guardTiming timing $ \case
+      Window.SufferedTrauma who physical _
+        | physical > 0 ->
+            matchWho iid who (Matcher.IncludeEliminated $ Matcher.replaceYouMatcher iid whoMatcher)
+      _ -> noMatch
+    Matcher.SuffersMentalTrauma timing whoMatcher -> guardTiming timing $ \case
+      Window.SufferedTrauma who _ mental
+        | mental > 0 ->
+            matchWho iid who (Matcher.IncludeEliminated $ Matcher.replaceYouMatcher iid whoMatcher)
+      _ -> noMatch
     Matcher.PutLocationIntoPlay timing whoMatcher locationMatcher ->
       guardTiming timing $ \case
         Window.PutLocationIntoPlay who locationId ->

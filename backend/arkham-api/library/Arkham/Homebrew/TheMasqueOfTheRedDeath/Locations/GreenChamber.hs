@@ -30,11 +30,11 @@ instance HasAbilities GreenChamber where
     extendRevealed
       a
       -- "[skull]: -1. -3 instead if you have discovered 1 or more clues this round."
-      [ describedSkullEffect 0 "-1. -3 instead if you have discovered 1 or more clues this round." a 1
+      [ describedSkullEffect 0 "greenChamber.skull" a 1
       , -- "[reaction] After you deal damage to an enemy in excess of its remaining
         -- health: Discover 1 clue at Green Chamber. (Limit once per round.)"
         playerLimit PerRound
-          $ restricted a 2 Here
+          $ restricted a 2 (Here <> youExist (InvestigatorWithDiscoverableCluesAt (be a)))
           $ freeReaction
           $ EnemyDealtExcessDamage #after AnyDamageEffect AnyEnemy (SourceUsedBy You)
       ]

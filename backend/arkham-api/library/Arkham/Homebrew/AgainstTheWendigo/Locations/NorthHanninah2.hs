@@ -8,8 +8,12 @@ newtype NorthHanninah2 = NorthHanninah2 LocationAttrs
   deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
+{- "This location is connected to the River locations directly to the North
+or South and connected to the Wild locations directly to the East or West."
+-}
 northHanninah2 :: LocationCard NorthHanninah2
-northHanninah2 = location NorthHanninah2 Cards.northHanninah2 3 (PerPlayer 1)
+northHanninah2 =
+  locationWith NorthHanninah2 Cards.northHanninah2 3 (PerPlayer 1) connectsToAdjacent
 
 instance HasModifiersFor NorthHanninah2 where
   -- The scenario's river rule; see 'riverMovementBan'.

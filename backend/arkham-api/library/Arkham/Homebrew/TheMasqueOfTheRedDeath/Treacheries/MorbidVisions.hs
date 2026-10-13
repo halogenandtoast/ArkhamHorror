@@ -27,8 +27,8 @@ instance HasAbilities MorbidVisions where
     -- "your location gains: '[skull]: -1. If you fail, take 1 horror.'" and
     -- "At the end of the round, discard Morbid Visions."
     InThreatArea iid ->
-      [ describedSkullEffect (-1) "If you fail, take 1 horror." (proxied (locationWithInvestigator iid) a) 1
-      , restricted a 2 (InThreatAreaOf You) $ forced $ RoundEnds #when
+      [ describedSkullEffect (-1) "morbidVisions.skull" (proxied (locationWithInvestigator iid) a) 1
+      , restricted a 2 (InThreatAreaOf You) $ silent $ RoundEnds #when
       ]
     _ -> []
 

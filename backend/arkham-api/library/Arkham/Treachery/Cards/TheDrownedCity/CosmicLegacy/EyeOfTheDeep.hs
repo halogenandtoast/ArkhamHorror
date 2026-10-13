@@ -27,7 +27,7 @@ instance HasModifiersFor EyeOfTheDeep where
 
 instance HasAbilities EyeOfTheDeep where
   getAbilities (EyeOfTheDeep a) =
-    [skillTestAbility $ restricted a 1 (InThreatAreaOf You) actionAbility]
+    [skillTestAbility $ restricted a 1 OnSameLocation actionAbility]
 
 instance RunMessage EyeOfTheDeep where
   runMessage msg t@(EyeOfTheDeep attrs) = runQueueT $ case msg of

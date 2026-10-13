@@ -5,6 +5,7 @@ import Arkham.Act.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
+import Arkham.Location.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli qualified as Locations
 import Arkham.Location.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Locations
 import Arkham.Scenario.Deck
 
@@ -24,7 +25,8 @@ instance RunMessage IntoTheRuins where
       runExplore iid (attrs.ability 1)
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      chamberOfTime <- fetchCard Locations.chamberOfTime
+      chamberOfTime <-
+        fetchCard $ SetAsideCard <$> [Locations.chamberOfTime, Locations.chamberOfTimeRearrangedByTime]
       shuffleCardsIntoDeck ExplorationDeck (only chamberOfTime)
       unlessAnyHasSupply Chalk $ addToVictory_ attrs
       advanceActDeck attrs

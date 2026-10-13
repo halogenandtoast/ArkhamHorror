@@ -194,6 +194,9 @@ function selectGameMode(mode: 'Campaign' | 'SideStory') {
         <span v-for="requirement in s.deckRequirements" :key="requirement" class="requires-investigator">
           {{ requirement }}
         </span>
+        <span v-if="s.designer" class="designer-credit">
+          {{ $t('create.designedBy', { name: s.designer }) }}
+        </span>
       </div>
     </div>
   </template>

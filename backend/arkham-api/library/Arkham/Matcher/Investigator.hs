@@ -100,6 +100,11 @@ data InvestigatorMatcher
   | FewestCardsInHand
   | MostCardsInHand
   | MostDamage
+  | {- | "...the most damage on them and their <matcher> cards": the printed
+    idiom that counts an investigator's own damage together with the damage
+    on the assets they control.
+    -}
+    MostDamageIncludingAssets AssetMatcher
   | LowestRemainingHealth
   | LowestRemainingSanity
   | MostRemainingHealth

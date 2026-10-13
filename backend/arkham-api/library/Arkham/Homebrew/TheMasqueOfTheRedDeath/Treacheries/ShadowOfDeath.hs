@@ -27,7 +27,7 @@ instance HasAbilities ShadowOfDeath where
     InThreatArea iid ->
       [ describedSkullEffect
           (-1)
-          "If you fail, discard a card from your hand at random."
+          "shadowOfDeath.skull"
           (proxied (locationWithInvestigator iid) a)
           1
       , restricted a 2 (InThreatAreaOf You)

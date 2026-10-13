@@ -93,6 +93,7 @@ import Arkham.Helpers.Criteria
 import Arkham.Helpers.Customization (customizedSlots, hasCustomization)
 import Arkham.Helpers.Doom
 import Arkham.Helpers.Enemy (
+  compositeEnemyGroups,
   enemyEngagedInvestigators,
   getEnemyAttackDamageAndHorror,
   getModifiedKeywords,
@@ -357,6 +358,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gameAsIfAtIgnored = mempty
         , gameLocationOffsets = mempty
         , gameCardPlayStack = mempty
+        , gameLogBlockStack = mempty
         }
  where
   mode = case scenarioOrCampaignId of
@@ -1172,6 +1174,12 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
       flip runMatchesM as $ \i -> pure $ toId i `elem` fewest
     MostDamage -> do
       most <- highestAmongst UneliminatedInvestigator (field InvestigatorDamage)
+      flip runMatchesM as $ \i -> pure $ toId i `elem` most
+    MostDamageIncludingAssets assetMatcher -> do
+      most <- highestAmongst UneliminatedInvestigator \iid -> do
+        own <- field InvestigatorDamage iid
+        onAssets <- selectSum AssetDamage (assetMatcher <> assetControlledBy iid)
+        pure $ own + onAssets
       flip runMatchesM as $ \i -> pure $ toId i `elem` most
     MostCardsInHand -> do
       most <- highestAmongst UneliminatedInvestigator (fieldMap InvestigatorHand length)
@@ -4326,8 +4334,12 @@ enemyMatcherFilter es matcher' = do
                   _ -> pure False
             anyM canBeEngaged iids
     OnlyEnemyEngagedWith investigatorMatcher -> do
-      select (EnemyIsEngagedWith investigatorMatcher) >>= \case
-        [x] -> pure $ filter (\enemy -> enemy.id == x) es
+      -- A composite enemy counts once, not once per card: Cthulhu and the facets on
+      -- the Cthulhu Board are the only enemy engaged with you, so Machete still gets
+      -- its bonus damage.
+      engaged <- select (EnemyIsEngagedWith investigatorMatcher)
+      compositeEnemyGroups engaged >>= \case
+        [grp] -> pure $ filter (\enemy -> enemy.id `elem` grp) es
         _ -> pure []
     EnemyOwnedBy investigatorMatcher -> do
       iids <- select investigatorMatcher
@@ -4583,7 +4595,9 @@ enemyMatcherFilter es matcher' = do
                       , getCanPerformAbility iid [window] . overrideFunc
                       ]
                 )
-                (getAbilities enemy)
+                -- Mirrors the fight side: an enemy whose evade is restricted to
+                -- certain sources (OnlySources) reads them off the requestor.
+                (map (setRequestor source) $ getAbilities enemy)
     EnemyCanBeDefeatedBy source -> flip filterM es \enemy -> do
       modifiers <- getModifiers enemy
       let
@@ -5219,7 +5233,9 @@ getEnemyField f e = do
     EnemyKeywords -> do
       modifiers' <- foldMapM getModifiers [toTarget e, CardIdTarget $ toCardId $ toAttrs e]
       let
-        printedKeywords = toList $ cdKeywords (toCardDef attrs)
+        {- Keywords are printed in the text box, so a blanked one takes them with it
+        (FAQ: an enemy "loses the swarming keyword or its text box is blanked"). -}
+        printedKeywords = if Blank `elem` modifiers' then [] else toList $ cdKeywords (toCardDef attrs)
         keywords' =
           foldl'
             (\k m -> k & (`applyModifier` m) & (`applyRemoves` m) & (`applyForced` m))
@@ -6613,7 +6629,13 @@ instance Projection Treachery where
       TreacheryResources -> pure $ treacheryResources attrs
       TreacheryDoom -> pure $ treacheryDoom attrs
       TreacheryAttachedTarget -> pure $ treacheryAttachedTarget attrs
-      TreacheryTraits -> pure $ cdCardTraits cdef
+      TreacheryTraits -> do
+        -- Locations, assets, enemies and investigators all fold granted traits
+        -- in; a treachery that gains one (Ambush on the river) needs it too.
+        modifiers' <- foldMapM getModifiers [toTarget t, CardIdTarget $ toCardId t]
+        let addedTraits = setFromList [tr | AddTrait tr <- modifiers']
+        let removedTraits = setFromList [tr | RemoveTrait tr <- modifiers']
+        pure $ (cdCardTraits cdef <> addedTraits) `difference` removedTraits
       TreacheryKeywords -> do
         modifiers' <- foldMapM getModifiers [toTarget t, CardIdTarget $ toCardId t]
         let
@@ -7335,13 +7357,20 @@ handleBlanked g = do
 
 handleDefeatedByModifiers :: Map InvestigatorId (Int, Int) -> Game -> GameT Game
 handleDefeatedByModifiers beforeMap g = flip runReaderT g $ do
-  for_ (mapToList beforeMap) \(iid, (beforeHealth, beforeSanity)) -> do
-    whenJustM (getInvestigatorMaybe iid) \_ -> do
-      afterHealth <- field InvestigatorHealth iid
-      afterSanity <- field InvestigatorSanity iid
-      when (afterHealth < beforeHealth || afterSanity < beforeSanity)
-        $ push
-        $ CheckDefeated GameSource (InvestigatorTarget iid)
+  -- Once the resolution starts the scenario is over, and teardown is exactly what
+  -- lowers a maximum: EndOfGame reverting Transfiguration's form, a resolution
+  -- removing a story asset that granted health. Neither may defeat anyone -- with
+  -- Charon's Obol in play it killed the investigator outright (#5829). A
+  -- resolution that means to defeat someone pushes InvestigatorDefeated itself.
+  inResolution <- getInResolution
+  unless inResolution do
+    for_ (mapToList beforeMap) \(iid, (beforeHealth, beforeSanity)) -> do
+      whenJustM (getInvestigatorMaybe iid) \_ -> do
+        afterHealth <- field InvestigatorHealth iid
+        afterSanity <- field InvestigatorSanity iid
+        when (afterHealth < beforeHealth || afterSanity < beforeSanity)
+          $ push
+          $ CheckDefeated GameSource (InvestigatorTarget iid)
   getGame
 
 applyBlank :: Monad m => Source -> StateT (Map Target [Modifier]) m ()

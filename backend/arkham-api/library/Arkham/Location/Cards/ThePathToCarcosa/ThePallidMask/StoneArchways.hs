@@ -24,8 +24,9 @@ stoneArchways =
 
 instance HasModifiersFor StoneArchways where
   getModifiersFor (StoneArchways a) = do
-    modifySelect
+    modifySelectWhen
       a
+      a.revealed
       (UnrevealedLocation <> oneOf [LocationInDirection dir (be a) | dir <- [minBound ..]])
       [Blank]
 

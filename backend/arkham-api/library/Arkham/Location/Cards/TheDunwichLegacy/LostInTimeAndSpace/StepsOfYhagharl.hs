@@ -49,6 +49,6 @@ instance RunMessage StepsOfYhagharl where
               MoveTo m -> movement.id == m.id
               ResolveMovement iid' -> iid == iid'
               _ -> False
-          insteadOfMatching isMovement $ shuffleBackIntoEncounterDeck attrs
+          insteadOfMatching isMovement $ shuffleBackIntoEncounterDeck (attrs.ability 1) attrs
       pure l
     _ -> StepsOfYhagharl <$> liftRunMessage msg attrs

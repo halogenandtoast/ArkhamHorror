@@ -1,5 +1,13 @@
 <template>
-  <div v-if="!avifSupported" class="error-message container">
+  <div v-if="maintenanceActive" class="error-message maintenance container">
+    <header><h2 class="title">{{ $t('maintenance.title') }}</h2></header>
+    <section class="box">
+      <p>{{ maintenanceMessage || $t('maintenance.body') }}</p>
+      <p class="reassure">{{ $t('maintenance.reassure') }}</p>
+      <button @click="retry">{{ $t('maintenance.retry') }}</button>
+    </section>
+  </div>
+  <div v-else-if="!avifSupported" class="error-message container">
     <header><h2 class="title">Please update your browser</h2></header>
     <section class="box">
       <p>Your browser does not support AVIF images. Please update your browser or switch to a different one.</p>
@@ -28,10 +36,18 @@
 import { ModalsContainer } from 'vue-final-modal'
 import { ref, onMounted } from 'vue'
 import { useSiteSettingsStore } from '@/stores/site_settings'
+import { maintenanceActive, maintenanceMessage } from '@/maintenance'
 import { checkImageExists } from '@/arkham/helpers'
 import NavBar from '@/components/NavBar.vue'
 
 const settingsStore = useSiteSettingsStore()
+
+/* A full reload rather than refetching: the window may have ended a build
+ * later, and a client that sat through it holding stale chunks and a dead
+ * socket is better off starting clean. */
+function retry() {
+  window.location.reload()
+}
 
 onMounted(async () => {
   await settingsStore.init()

@@ -663,6 +663,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           NoLimit -> False
           PlayerLimit PerWindow _ -> depth >= usedDepth || stillChecking u
           GroupLimit PerWindow _ -> depth >= usedDepth || stillChecking u
+          MaxPer _ PerWindow _ -> depth >= usedDepth || stillChecking u
           _ -> True
 
     usedAbilities <-
@@ -2405,11 +2406,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   BeforeSkillTest skillTestId -> do
     getSkillTestInvestigator >>= traverse_ \iid' -> do
       when (iid' == a.id) do
-        skillTestModifiers' <- getModifiers skillTestId
-        push
-          $ if RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers'
-            then StartSkillTest investigatorId
-            else CommitToSkillTest skillTestId $ StartSkillTestButton investigatorId
+        push $ CommitToSkillTest skillTestId $ StartSkillTestButton investigatorId
     pure a
   CommitToSkillTest _skillTestId _ -> do
     getSkillTestInvestigator >>= traverse_ \iid' -> do

@@ -1,5 +1,40 @@
 {
   "name": "The Symphony of Erich Zann",
+  "about": {
+    "sections": [
+      {
+        "rows": [
+          {
+            "role": "Design",
+            "names": "Axolotl"
+          },
+          {
+            "role": "Special thanks to",
+            "names": "bluehg (Pat), Jaxtraxi, Kos, bigstupidgrin, Qulz, Tikatoy, flatresponse, Christopher U, and Vinn Quest for the wonderful feedback. Hope I didn’t forget anyone!"
+          }
+        ],
+        "text": [
+          "Thanks to everyone who tried out the scenario!",
+          "This scenario would not have been possible without the amazing design framework created by Matt Newman, Nate French and everyone involved in Arkham Horror: The Card Game at FFG."
+        ]
+      },
+      {
+        "title": "Design Notes",
+        "spoiler": true,
+        "text": [
+          "Now where do we begin? I thought it would be fun to write this retrospective, and perhaps some people may find it informative or interesting to read, so here it is. I always thought The Music of Erich Zann was the Lovecraft’s best story. It was simple, unnerving and didn’t have a clear answer as to what truly occurred or of the true nature of the threat. I knew I wanted to adapt the short story because of how unconventional it is to most of the game.",
+          "The first step was to figure out how to make music itself a threat to the investigators. I knew that I wanted the music to flow and the actions of the investigators be limited by what the music that is playing — in a way, the music would force the investigators to dance along with it. It took quite some time to tinker with, and went through various forms such as a separate encounter deck of face-up music treacheries of which you would shuffle every turn to determine the new music at the top, but at the end, with my philosophy of ‘simpler is usually better’, I decided to just add the music in as treacheries in the encounter deck.",
+          "During that time, the story was slowly coming together. I knew that I wanted to make a “Midnight Masks” or “The Last King” style scenario, where you would walk around and meet different and interesting people. It was only fitting for everyone you meet to be a musician — and voila, a cursed orchestra playing Erich Zann’s music. The musicians would then be mechanically tied to each type of music — their parley function combos with their music, to add a kind of rhythm to the meat of the scenario.",
+          "One last thing I thought would be fun to say. The only reason the Young Nightingale exists is because I miscounted the cards in the scenario, so there was missing a single encounter card at the end and it had to be in alphabetic order because reasons. Hence where the name of “Young Nightingale” came from. Along with that, I wanted music treacheries to gain surge to up the intensity near the end of the scenario, because the music treacheries aren’t very threatening when they just push out the others. The Nightingale itself basically just acts as a “surge” for music treacheries, but incorporated in an enemy to make it feel much scarier.",
+          "Anyway, I think you heard enough of this random rambling. Hope you enjoyed the scenario! I know I got a lot of feedback that there’s almost too many things to keep track of and it’s something that I’ve kept in mind for my future scenarios. I can’t wait to finish up the next one. It’s going to be out of this world.",
+          "— Axolotl"
+        ]
+      }
+    ],
+    "notes": [
+      "This scenario is an unofficial fan creation and in no way endorsed by Fantasy Flight Games. All rights to artwork belong to the relevant artists."
+    ]
+  },
   "key": {
     "youSavedAllTheMusicians": "You saved all the musicians.",
     "allIsQuietAtRueDAuseilForNow": "All is quiet at Rue d'Auseil... for now."

@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Cards
 import Arkham.Act.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Act.Sequence
 import Arkham.Helpers.Modifiers (ModifierType (..))
-import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Helpers.SkillTest (withSkillTest, withSkillTestInvestigator)
 import Arkham.Matcher
 import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers
 import Arkham.Trait (Trait (Cthulhu))
@@ -32,9 +32,10 @@ instance HasAbilities FightBack where
 
 instance RunMessage FightBack where
   runMessage msg a@(FightBack attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid -> do
-        skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+        withSkillTestInvestigator \iid ->
+          skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       advancedWithOther attrs

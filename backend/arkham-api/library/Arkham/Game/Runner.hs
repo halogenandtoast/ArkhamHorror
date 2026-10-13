@@ -1938,11 +1938,9 @@ runGameMessage msg g = case msg of
 
       card <- field AssetCard assetId
       underneath <- field AssetCardsUnderneath assetId
-      if assetIsStory $ toAttrs asset
-        then do
-          unless (cdDoubleSided (toCardDef asset)) do
-            push $ addToHand iid card
-        else pushAll [RemoveFromPlay (toSource assetId), addToHand iid card]
+      -- a double-sided story asset flips rather than leaving play
+      unless (assetIsStory (toAttrs asset) && cdDoubleSided (toCardDef asset)) do
+        pushAll [RemoveFromPlay (toSource assetId), addToHand iid card]
       for_ underneath (push . addToDiscard iid)
     pure g
   When (PlaceInBonded _ (toCardId -> cardId)) -> do

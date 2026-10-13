@@ -679,8 +679,30 @@ def _fields(step: dict, which: str) -> dict:
     return merged
 
 
-def _binds(step: dict, which: str) -> set[str]:
-    """What a step adds to scope for the steps after it."""
+#: Steps whose binding is in scope only for the steps written INSIDE them.
+#:
+#: `runForEach`, `runChooseFrom` and the rest build an inner env and hand it to
+#: their own steps; the env the outer run carries is returned unchanged. Only
+#: `let`, `query`, `random` and the steps that start a test add anything to what
+#: comes after. Crediting the others to the following steps let a card read a
+#: name that resolves to nothing there -- which is exactly the silent failure
+#: this checker exists to catch.
+INSIDE_ONLY = {
+    "forEach",
+    "chooseFrom",
+    "repeat",
+    "withSkillTest",
+    "withLocationOf",
+    "distribute",
+    "search",
+}
+
+
+def _binds(step: dict, which: str, *, inside: bool = True) -> set[str]:
+    """What a step binds. `inside` asks for its nested steps' scope; without it,
+    only what the steps AFTER this one can see."""
+    if not inside and which in INSIDE_ONLY:
+        return set()
     fields = _fields(step, which)
     payload = step.get(which)
     added: set[str] = set()
@@ -715,6 +737,14 @@ def _binds(step: dict, which: str) -> set[str]:
         added.add(bound("who"))
         amount = fields.get("amount")
         added.add(amount if isinstance(amount, str) and amount else "amount")
+    elif which == "search":
+        # The first card found and all of them, which only the `onFound` branch
+        # sees -- but scope here is one set per step, and naming them in the
+        # steps AFTER a search is harmless: the engine simply has nothing bound
+        # there, and an unbound name is already reported where it is used.
+        name = bound("card")
+        added.add(name)
+        added.add(f"{name}s")
 
     # Every step that starts a skill test binds the test it started.
     if which in ("fight", "investigate", "evade", "parley", "test"):
@@ -733,6 +763,10 @@ def _nested_blocks(step: dict, which: str) -> list[tuple[str, Any]]:
         block = fields.get(key)
         if isinstance(block, dict):
             blocks.append((f"{key}.steps", block.get("steps") or []))
+    # A search's two answers are plain step lists, not blocks with a `steps` key.
+    for key in ("onFound", "onNoneFound"):
+        if key in fields:
+            blocks.append((key, fields[key]))
     if which == "case" and isinstance(step.get(which), list):
         for index, branch in enumerate(step[which]):
             if isinstance(branch, dict):
@@ -808,7 +842,7 @@ def _walk_steps(steps: Any, path: str, bound: set[str], problems: list[Problem])
                     )
 
         _check_step(which, step, here, scope, problems)
-        scope |= _binds(step, which)
+        scope |= _binds(step, which, inside=False)
 
 
 def _check_step(which: str, step: dict, path: str, scope: set[str], problems: list[Problem]) -> None:
@@ -882,7 +916,15 @@ def _check_step(which: str, step: dict, path: str, scope: set[str], problems: li
 
     # Expressions, for their $bindings and their operators. The nested step lists
     # are walked above and must not be read as expressions.
-    handled = {"then", "else", "steps", "options", "onSuccess", "onFailure", "onReveal", "query"}
+    handled = {
+        "then", "else", "steps", "options", "onSuccess", "onFailure", "onReveal", "query",
+        # A search's two answers are step lists, walked above with the bindings
+        # the search makes. Read as expressions they would be walked again with
+        # the OUTER scope, and every name the search bound would be reported
+        # unbound -- the checker telling an author their card is broken when the
+        # steps it is looking at are not the ones that run.
+        "onFound", "onNoneFound",
+    }
     for key, value in fields.items():
         if key not in handled:
             _walk_expression(value, at(key), scope, problems)

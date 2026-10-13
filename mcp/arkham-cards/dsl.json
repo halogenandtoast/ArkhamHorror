@@ -804,6 +804,7 @@
       "recordCount",
       "apply",
       "iconValue",
+      "traits",
       "replicate",
       "unique",
       "concat",

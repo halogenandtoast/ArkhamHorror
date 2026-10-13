@@ -61,6 +61,7 @@ import Arkham.Investigator.Types (Investigator)
 import Arkham.Location.Types (Location)
 import Arkham.Matcher
 import Arkham.Name (toTitle)
+import Arkham.Homebrew.Defs (allTraits)
 import Arkham.Prelude
 import Arkham.SkillTestResult
 import Arkham.Projection
@@ -116,6 +117,10 @@ evalExpr env v0 = case substituteExpr env v0 of
     language builds a list of a given length, and several cards need one: "gains
     one {wild} for every 2 clues you control" is a list of icons whose length the
     game decides, and the modifier that takes it wants the list, not the count. -}
+    {- Every trait there is, so "name a [[Trait]]" is a choice over a list like
+    any other rather than a step of its own. Homebrew traits are included: the
+    list is the one the engine itself offers. -}
+    | Just _ <- KeyMap.lookup "traits" o -> pure $ toJSON allTraits
     | Just e <- KeyMap.lookup "replicate" o -> do
         n <- maybe (pure 0) (exprInt env) (KeyMap.lookup "times" o)
         x <- evalExpr env e

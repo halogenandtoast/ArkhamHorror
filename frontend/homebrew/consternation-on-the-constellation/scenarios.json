@@ -3,6 +3,7 @@
     "id": ":consternation-on-the-constellation:001",
     "name": "Consternation on the Constellation",
     "campaign": ":consternation-on-the-constellation",
+    "designer": "Mythos Busters",
     "i18n": "scenario",
     "sideStory": true,
     "dev": true,

@@ -3,6 +3,7 @@
     "id": ":the-symphony-of-erich-zann:001",
     "name": "The Symphony of Erich Zann",
     "campaign": ":the-symphony-of-erich-zann",
+    "designer": "Axolotl",
     "i18n": "scenario",
     "sideStory": true,
     "beta": true,

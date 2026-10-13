@@ -600,12 +600,14 @@ const spadeInjury = computed(() => {
               </span>
             </span>
             <template v-if="debug.active">
-              <button
-                v-tooltip="$t('debug.enemy.shiftFive')"
-                :disabled="investigator.remainingActions === 0"
-                @click="debugLoseActions"
-              >−</button>
-              <button v-tooltip="$t('debug.enemy.shiftFive')" @click="debugGainActions">+</button>
+              <span class="debug-actions-group">
+                <button
+                  v-tooltip="$t('debug.enemy.shiftFive')"
+                  :disabled="investigator.remainingActions === 0"
+                  @click="debugLoseActions"
+                >−</button>
+                <button v-tooltip="$t('debug.enemy.shiftFive')" @click="debugGainActions">+</button>
+              </span>
               <button @click="debugging = true">{{ $t('enemy.debug') }}</button>
               <CardDebugWindow
                 v-if="debugging"
@@ -1120,6 +1122,16 @@ i.action {
     :deep(img) {
       width: calc(var(--pool-token-width) * 1.2);
     }
+  }
+}
+
+.debug-actions-group {
+  display: flex;
+  gap: 2px;
+
+  > button {
+    flex: 1;
+    min-width: 0;
   }
 }
 

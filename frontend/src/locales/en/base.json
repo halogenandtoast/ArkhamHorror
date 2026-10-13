@@ -707,7 +707,7 @@
       "title": "Debug Deck",
       "size": "{count} card in the deck | {count} cards in the deck",
       "draw": "Draw",
-      "drawButton": "Draw {count} | Draw {count}",
+      "drawButton": "Draw",
       "selectDrawHint": "Pick any card in the deck and draw it",
       "search": "Search the top of the deck",
       "topX": "Top",
@@ -832,7 +832,6 @@
         "SkillCombat": "Combat",
         "SkillAgility": "Agility"
       },
-      "combined": "Combined",
       "fixed": "Fixed value",
       "action": "Action",
       "noAction": "None",

@@ -139,9 +139,10 @@ function valueLabel(entry: DebugRevealedChaosToken) {
 
 /* ---- Skill test ----------------------------------------------------------- */
 
-// One select for what the test is of: a single skill, or one of the two shapes.
-const testOf = ref<SkillType | 'combined' | 'fixed'>('SkillWillpower')
-const combinedSkills = ref<SkillType[]>([])
+// What the test is of, as toggle chips: one skill picked is a plain test, more
+// than one is a combined test. The fixed-value chip excludes the skills.
+const testSkills = ref<SkillType[]>(['SkillWillpower'])
+const testFixed = ref(false)
 const fixedValue = ref(0)
 const action = ref<DebugTestAction | ''>('')
 const targetId = ref('')
@@ -151,10 +152,16 @@ const testDifficulty = ref(0)
 
 const actions: DebugTestAction[] = ['Fight', 'Evade', 'Investigate', 'Parley']
 
-const toggleCombined = (skillType: SkillType) => {
-  combinedSkills.value = combinedSkills.value.includes(skillType)
-    ? combinedSkills.value.filter((s) => s !== skillType)
-    : skillTypes.filter((s) => s === skillType || combinedSkills.value.includes(s))
+const toggleSkill = (skillType: SkillType) => {
+  testFixed.value = false
+  testSkills.value = testSkills.value.includes(skillType)
+    ? testSkills.value.filter((s) => s !== skillType)
+    : skillTypes.filter((s) => s === skillType || testSkills.value.includes(s))
+}
+
+const toggleFixed = () => {
+  testFixed.value = !testFixed.value
+  if (testFixed.value) testSkills.value = []
 }
 
 const targetKind = computed(() => {
@@ -206,11 +213,11 @@ const sourceGroups = computed(() => {
 
 const form = computed<DebugSkillTestForm>(() => ({
   investigator: investigatorId.value,
-  skill: testOf.value === 'combined'
-    ? { kind: 'combined', skills: combinedSkills.value }
-    : testOf.value === 'fixed'
-      ? { kind: 'fixed', value: fixedValue.value }
-      : { kind: 'one', skill: testOf.value },
+  skill: testFixed.value
+    ? { kind: 'fixed', value: fixedValue.value }
+    : testSkills.value.length === 1
+      ? { kind: 'one', skill: testSkills.value[0] }
+      : { kind: 'combined', skills: testSkills.value },
   action: action.value || null,
   target: targetKind.value && targetId.value ? { tag: targetKind.value, contents: targetId.value } : null,
   sourceCard: sourceCard.value || null,
@@ -337,33 +344,34 @@ const startTest = () => {
       <template v-else>
         <p class="sandbox__note">{{ $t('debug.sandbox.testHelp') }}</p>
         <section class="sandbox__section sandbox__grid">
-          <label class="sandbox__field">
+          <!-- A row of its own, with the fixed value's box inline, so toggling
+               the chips never moves the fields after it. -->
+          <div class="sandbox__field sandbox__field--wide">
             <span>{{ $t('debug.sandbox.testOf') }}</span>
-            <select v-model="testOf">
-              <option v-for="skillType in skillTypes" :key="skillType" :value="skillType">
-                {{ $t(`debug.sandbox.skills.${skillType}`) }}
-              </option>
-              <option value="combined">{{ $t('debug.sandbox.combined') }}</option>
-              <option value="fixed">{{ $t('debug.sandbox.fixed') }}</option>
-            </select>
-          </label>
-          <div v-if="testOf === 'combined'" class="sandbox__field">
-            <span>&nbsp;</span>
             <div class="sandbox__chips">
               <button
                 v-for="skillType in skillTypes"
                 :key="skillType"
                 type="button"
                 class="sandbox__chip"
-                :class="{ 'sandbox__chip--on': combinedSkills.includes(skillType) }"
-                @click="toggleCombined(skillType)"
+                :class="{ 'sandbox__chip--on': testSkills.includes(skillType) }"
+                @click="toggleSkill(skillType)"
               >{{ $t(`debug.sandbox.skills.${skillType}`) }}</button>
+              <button
+                type="button"
+                class="sandbox__chip"
+                :class="{ 'sandbox__chip--on': testFixed }"
+                @click="toggleFixed"
+              >{{ $t('debug.sandbox.fixed') }}</button>
+              <input
+                v-if="testFixed"
+                v-model.number="fixedValue"
+                type="number"
+                min="0"
+                :aria-label="$t('debug.sandbox.fixed')"
+              />
             </div>
           </div>
-          <label v-else-if="testOf === 'fixed'" class="sandbox__field">
-            <span>&nbsp;</span>
-            <input v-model.number="fixedValue" type="number" min="0" />
-          </label>
 
           <label class="sandbox__field">
             <span>{{ $t('debug.sandbox.action') }}</span>
@@ -535,6 +543,10 @@ const startTest = () => {
   color: rgba(255, 255, 255, 0.5);
 }
 
+.sandbox__field--wide {
+  grid-column: 1 / -1;
+}
+
 .sandbox__field--inline {
   flex-direction: row;
   align-items: center;
@@ -659,6 +671,7 @@ const startTest = () => {
 .sandbox__chips {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 4px;
 }
 

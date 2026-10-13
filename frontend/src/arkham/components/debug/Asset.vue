@@ -139,6 +139,7 @@ const hasPool = computed(() => {
           </div>
         </div>
       </div>
+      <div class="asset--side">
       <div v-if="placeTokens" class="buttons">
         <select v-model="placeTokenType">
           <option v-for="token in tokenTypes" :key="token" :value="token">{{ token }}</option>
@@ -190,13 +191,16 @@ const hasPool = computed(() => {
         </router-link>
         <button @click="setModifiers = true">{{ $t('debug.common.modifiers') }}</button>
       </div>
-
-      </div>
+      <!-- Under the buttons, beside the card, rather than below the whole
+           window, so it fills space the card leaves empty. -->
       <SealedTokensSection
         :game="game"
         :tokens="asset.sealedChaosTokens"
         :target="{ tag: 'AssetTarget', contents: id }"
       />
+      </div>
+
+      </div>
       <button class="debug-close" @click="emit('close')">{{ $t('debug.common.close') }}</button>
     </div>
   </Draggable>
@@ -226,8 +230,16 @@ const hasPool = computed(() => {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  flex: 1;
   gap: 5px;
+}
+
+/* Right of the card: whichever button panel is showing, then sealed tokens */
+.asset--side {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: 10px;
 }
 
 .asset--outer {

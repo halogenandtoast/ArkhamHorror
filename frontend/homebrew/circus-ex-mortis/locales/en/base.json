@@ -1,5 +1,41 @@
 {
   "name": "Circus Ex Mortis",
+  "about": {
+    "sections": [
+      {
+        "rows": [
+          {
+            "role": "Campaign design",
+            "names": "Tyler Gotch"
+          },
+          {
+            "role": "Moon token design",
+            "names": "Hauke"
+          },
+          {
+            "role": "Playtesters",
+            "names": "Tofu Mushroom, Pugtato, Flanfy, Aughhhh, Gold, TerranChef, Deutereum, Antimarkovnikov, Erik T, Zyloemm, BardofSnow, Jefferson, DanDanRevolution, MickeytheQ, Drust, SimonD, thenumberInick, Buteremelse, Karrius, Jared Boyce, Marcus Lemmon, Harrison F, Chad Reverman"
+          },
+          {
+            "role": "Arkham Horror: The Card Game design",
+            "names": "Nate French and MJ Newman"
+          }
+        ]
+      },
+      {
+        "title": "Design Notes",
+        "spoiler": true,
+        "text": [
+          "Thanks for playing! Circus Ex Mortis is another idea I’ve had in mind for a while, as both a chance to add the flair and mystique of the circus to the mythos, and an interesting connection to Shub-Niggurath, an ancient one that has a relatively limited scope for having such a large stake in the mythos.",
+          "On the subject of Shub-Niggurath, there is some gray area concerning the Black Goat that I decided to include in the campaign. Some text refers to the Black Goat as another aspect of the all-mother, while others refer to it as a separate and distinctly male entity acting as a sort of figurehead for the cult. This led to the idea of disguising the Black Goat as Sylvester Blake to lead the circus in its mission.",
+          "Several elements of the plot developed more or less simultaneously to support each other, such as the ancient Roman history and the modern Liber Pater Society (which itself is a pastiche of the Hellfire Club with a thematic link to the cult). I have a particular fascination with fitting things both to Arkham canon and to real life events, so many elements like Apuleius and the eclipse in southern California at that exact date are historical fact, only adjusted to the mythos.",
+          "That same sort of simultaneous design also came together for both Amalthea Weaver and De Cultus Bestiae. Their inclusion was as much to make the story more personal to the investigators as they were a desire to have story assets that developed alongside the plot. I wanted players to feel that despite all the talk of destiny and prophecy, they had control over the future.",
+          "Unlike some other campaigns which take place almost entirely in secret or in remote places, the nature of the circus being a very public event and Blake’s scheme to raise the dark young on spectators of the traveling circus led to involving bystanders more than usual. It was more of a challenge than I expected though to make the involvement of bystanders constant without making each mission a tedious escort.",
+          "Once again, thank you for playing and for feedback if you have it. See you in the next campaign!"
+        ]
+      }
+    ]
+  },
   "interludes": {
     "1": "The Future and the Past",
     "2": "Written in Stone",

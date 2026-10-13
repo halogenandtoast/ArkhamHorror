@@ -1,5 +1,50 @@
 {
   "name": "Return to The Innsmouth Conspiracy",
+  "about": {
+    "sections": [
+      {
+        "rows": [
+          {
+            "role": "Design and development",
+            "names": "DerBK"
+          },
+          {
+            "role": "Graphics",
+            "names": "Hauke"
+          },
+          {
+            "role": "Template for dividers",
+            "names": "fabula_rasa"
+          },
+          {
+            "role": "Instructions for box construction",
+            "names": "Peyo"
+          },
+          {
+            "role": "Template for box design",
+            "names": "RebelSpy"
+          },
+          {
+            "role": "Print and play assistance",
+            "names": "coldtoes"
+          },
+          {
+            "role": "Original expansion design and development",
+            "names": "MJ Newman and Jeremy Zwirn with Josiah “Duke” Harrist"
+          }
+        ]
+      },
+      {
+        "title": "Acknowledgments",
+        "text": [
+          "Our thanks go to everyone who playtested and/or gave their feedback so far, you have been instrumental in making this set better. The same goes for everyone who commented on Discord, chats, Reddit and the like. Finally, a special thanks also goes to the people in the community responsible for the creation of tools like Strange Eons and Zoop. Without those tools, making this custom expansion would not have been possible."
+        ]
+      }
+    ],
+    "notes": [
+      "Anything Arkham Horror: The Card Game, including card art, is copyrighted by Fantasy Flight Games. This project is not affiliated with or supported by Fantasy Flight Games in any way."
+    ]
+  },
   "designer": "DerBK",
   "occultation": {
     "label": {

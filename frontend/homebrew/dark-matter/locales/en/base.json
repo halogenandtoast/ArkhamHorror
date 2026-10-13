@@ -1,5 +1,38 @@
 {
   "name": "Dark Matter",
+  "about": {
+    "sections": [
+      {
+        "rows": [
+          {
+            "role": "Designed by",
+            "names": "Axolotl"
+          },
+          {
+            "role": "Special thanks (in no particular order)",
+            "names": "MJ Grenier, bluehg (Pat), Ekthelion, Jaxtraxi, Eole, Syndicateassassin, The Beard, Zow Martinez, Spencer Wilkinson, Goober, Knot_I, Serpentine, DerBK, Dr. Jack Science, ZinjanthrOpus, LordHypnos, toastsushi, HarrisonF, Tofu Mushroom (who played the WIP version over 10 times!), CuddlyZombie, dantrolene, zyloemm, Gold, Curtis, Thoth, Tranman, lados_Kairon, zzorba, Pax Cecilia, SpiritReacher, Jam, Lew, ArtemisHarp and their stream on twitch, Kodab Games and their stream on twitch, PlayingBoardGames and their youtube channel, the MythosBusters, the SCED developers, Jefferson, bigstupidgrin, TerranChef, Serendipigans, Pugtato, brandonglee 123, mnBroncos, AnJoPeC, Argus, hunterSa, socraticmethod, TheBudiez, Bires, Sycopath, Antimarkovnikov, PuertoMateo, BMac, ElseWhere (check out the Strength in Numbers blog!), LuChu, etc. (Hope I didn’t forget anyone.)"
+          }
+        ],
+        "text": [
+          "Thanks to those mentioned above for unspeakable help, whether intentionally or through discussion, without them this campaign would not have been possible.",
+          "Thanks to the amazing design framework created by MJ Newman, Nate French and everyone involved in Arkham Horror: The Card Game at FFG."
+        ]
+      },
+      {
+        "title": "Design Notes",
+        "spoiler": true,
+        "text": [
+          "Hope you enjoyed this campaign! Creating it was quite a journey! This campaign originally began as a 3-part campaign, consisting of The Tatterdemalion, Electric Nightmare and Starfall, but I quickly realized, along with a few playtesters, that the setting and story was too interesting to leave so quickly.",
+          "The framework of Arkham Horror LCG is really a medium to tell stories in — and I knew that deep space sci-fi horror is a genre deeply connected to Lovecraftian themes and would have to be explored by custom scenarios eventually. I originally did not want to make it because it would have been very simple for a sci-fi themed campaign to stray in tone from the Arkham Files universe, but when I finally figured out a way to bring the investigators into the future that wasn’t too ridiculous, and how to incorporate the mythos in a way that fits the universe without being too obvious, I just had to create the campaign. The King in Yellow is my favourite Ancient One, with the way it plays with psychological horror and perception of reality, with a certain theatrical flare, and the Path to Carcosa is my favourite campaign released so far, so it was only natural for a virtual reality-bending memory-involved campaign to become a loose sequel to the Path to Carcosa. Hastur is not the Ancient One most would associate with deep space, which is precisely why it fits so well.",
+          "I hope this campaign satisfies the need for a deep space sci-fi campaign. I tried to incorporate as many sci-fi tropes that are to be expected from a “sci-fi” campaign organically as possible while keeping the tone and writing style of FFG’s stories. I do hope more people will explore the story space of sci-fi with the Arkham framework, perhaps even further in the future than I have, maybe something closer to a space-opera? Or even a pure adaptation of the Alien series. But for now, that will be it from me in this grim future setting.",
+          "Anyways, I do hope you all enjoyed this campaign. Alas, it’s time to work on the next one, whenever I have free time, in these dark ages."
+        ]
+      }
+    ],
+    "notes": [
+      "This campaign is an unofficial fan creation and in no way endorsed by Fantasy Flight Games. All rights to artwork belong to the relevant artists."
+    ]
+  },
   "xp": {
     "heirToCarcosa": "Heir to Carcosa"
   },

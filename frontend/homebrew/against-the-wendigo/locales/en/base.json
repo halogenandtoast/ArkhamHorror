@@ -1,28 +1,61 @@
 {
   "name": "Against the Wendigo",
   "about": {
-    "blurb": "Explore the wild Hanninah Valley in Canada's North West, looking for the missing students of Dr. Nadelmann's expedition, in this unofficial scenario for Arkham Horror: The Card Game.",
-    "credits": [
+    "blurb": "Explore the wild Hanninah Valley in Canada’s North West, looking for the missing students of Dr. Nadelmann’s expedition, in this unofficial scenario for Arkham Horror: The Card Game.",
+    "sections": [
       {
-        "role": "Scenario design, card design & English translation",
-        "names": "Vinn Quest"
+        "rows": [
+          {
+            "role": "Guide illustrations",
+            "names": "“Wendigo” (page 1) by Frank Victoria — frankvictoria-lepicte.blogspot.com; “Sunset” (page 7) by Kim Taglia — facebook.com/KATFantasyArts; “Wendigo” (page 9) by Thomas Moor"
+          },
+          {
+            "role": "Card illustrations",
+            "names": "#8 and #9 by Lino Drieghe — linodriegheart.com; #12, #18, #19 and #25 by MCrassus Art — mcrassus.com, facebook.com/mcrassusart; #56 by Dehn Sora, from the Memoria Vetusta III (Saturnian Poetry) album cover by Blut Aus Nord"
+          },
+          {
+            "role": "Original French scenario and card design",
+            "names": "Vinn Quest"
+          },
+          {
+            "role": "Correction and improvement",
+            "names": "spiriT"
+          },
+          {
+            "role": "Proofreading",
+            "names": "spiriT, Hypotypoz, Metalm23, plaf"
+          },
+          {
+            "role": "Testers",
+            "names": "spiriT, Bboo, Pilunte, illisae, hopebreaker"
+          },
+          {
+            "role": "English translation",
+            "names": "Vinn Quest"
+          },
+          {
+            "role": "Proofreading",
+            "names": "Matthew “sonofyogsothoth” Adams and Stephen ‘St. Cretin’ Wohlert"
+          }
+        ]
       },
       {
-        "role": "Proofreading & enhancement",
-        "names": "spiriT, Hypotypoz, Metalm23, plaf"
-      },
-      {
-        "role": "English translation proofreaders",
-        "names": "Matthew “sonofyogsothoth” Adams, Stephen “St. Cretin” Wohlert"
-      },
-      {
-        "role": "Playtesters",
-        "names": "spiriT, Bboo, Pilunte, illisae, hopebreaker"
-      },
-      {
-        "role": "Cover illustration",
-        "names": "Frank Victoria"
+        "title": "Acknowledgments",
+        "text": [
+          "First of all, I warmly thank Kim Taglia for the two illustrations she made exclusively for this scenario.",
+          "I thank all the artists and rights holders who gave me permission to use their works to illustrate this scenario.",
+          "Thanks to Bewise and Pilunte for their French fan-made scenario, as well as for the work on Strange Eons and the French plug-in for this tool.",
+          "Thanks to Berith for his custom inserts.",
+          "Thanks to Metalm23 for the scenario cover card.",
+          "Thanks to all my proofreaders and testers, who have given a lot of their time to help me improve this scenario.",
+          "Thanks to FFG, Chaosium and Éditions Sans-Détour for offering us such remarkable games in the Lovecraftian mythos.",
+          "A huge thank you to SpiriT for his great ideas, advice and considerable amount of time he spent correcting, improving and testing the scenario. Thanks to you and Bboo for your passion and generosity. Without you, this scenario would never have happened.",
+          "Finally, a special thank you for my proofreaders Matthew and Stephen. Without you guys this scenario would never be available in English."
+        ]
       }
+    ],
+    "notes": [
+      "Alone against the Wendigo is an adventure for the Call of Cthulhu roleplaying game, property of Chaosium (USA) and Éditions Sans-Détour (French edition)."
     ]
   },
   "key": {

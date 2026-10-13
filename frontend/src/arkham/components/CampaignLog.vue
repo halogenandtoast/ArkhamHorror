@@ -331,12 +331,26 @@ watch(hasRules, (has) => {
 })
 
 // --- About (homebrew boxes only) ------------------------------------------------
-/* Who made the fan box being played, and the credits printed on it. The block
-lives in the box's own locale scope as `<scope>.about = { blurb?, credits: [{ role,
-names }] }`, so a box opts in by shipping it -- nothing is registered here. The
-scope only resolves for a `:`-prefixed (homebrew) id, which is what keeps the tab
-off official content. */
+/* Who made the fan box being played, and whatever its back pages print: Credits,
+Acknowledgements, Design Notes. It lives in the box's own locale scope as
+
+  <scope>.about = {
+    blurb?,
+    sections: [{ title?, rows?: [{ role, names }], text?: [...], spoiler? }],
+    notes?: [...]
+  }
+
+so a box opts in by shipping the block -- nothing is registered here. Sections
+render in the order shipped, which is the order the box prints them; a `rows`
+section with no title is the common case and falls back to "Credits". A role may
+repeat (Against the Wendigo proofreads in two languages), so rows are positional.
+
+Only a `:`-prefixed id resolves to a homebrew scope and official content has no
+`about` block, which is what keeps the tab off it -- vue-i18n answers a missing
+scope with an empty object rather than undefined, so presence is tested on the
+contents. */
 type Credit = { role: string; names: string }
+type AboutSection = { title: string; rows: Credit[]; text: string[]; spoiler: boolean }
 
 const homebrewBoxScope = computed<string | null>(() => {
   const scenario = props.game.scenario
@@ -357,27 +371,51 @@ const homebrewBoxEntry = computed(() => {
   )
 })
 
+/* Truthiness, not a string check, on every leaf: vue-i18n hands back a compiled
+message function rather than a string once messages are precompiled, which is the
+assumption rulesAtScope already makes. */
+const aboutSections = (scope: string, raw: unknown): AboutSection[] => {
+  const list = (raw as { sections?: unknown }).sections
+  if (!Array.isArray(list)) return []
+  return list.map((entry, i) => {
+    const at = `${scope}.about.sections[${i}]`
+    const section = (entry ?? {}) as { title?: unknown; rows?: unknown; text?: unknown; spoiler?: unknown }
+    const rows: Credit[] = Array.isArray(section.rows)
+      ? section.rows.map((_, r) => ({
+          role: t(`${at}.rows[${r}].role`),
+          names: t(`${at}.rows[${r}].names`),
+        }))
+      : []
+    const text: string[] = Array.isArray(section.text)
+      ? section.text.map((_, x) => t(`${at}.text[${x}]`))
+      : []
+    return {
+      title: section.title ? t(`${at}.title`) : t('campaignLog.about.credits'),
+      rows,
+      text,
+      spoiler: !!section.spoiler,
+    }
+  }).filter((section) => section.rows.length > 0 || section.text.length > 0)
+}
+
 const about = computed(() => {
   const scope = homebrewBoxScope.value
   if (!scope) return null
   const raw = tm(`${scope}.about`) as unknown
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
-  const entries = (raw as { credits?: unknown }).credits
-  const credits: Credit[] = Array.isArray(entries)
-    ? entries.map((_, i) => ({
-        role: t(`${scope}.about.credits[${i}].role`),
-        names: t(`${scope}.about.credits[${i}].names`),
-      }))
+  const sections = aboutSections(scope, raw)
+  const rawNotes = (raw as { notes?: unknown }).notes
+  const notes: string[] = Array.isArray(rawNotes)
+    ? rawNotes.map((_, i) => t(`${scope}.about.notes[${i}]`))
     : []
-  // Truthiness, not a string check: vue-i18n hands back a compiled message
-  // function for a leaf once messages are precompiled, as rulesAtScope assumes.
   const hasBlurb = !!(raw as { blurb?: unknown }).blurb
-  if (!hasBlurb && credits.length === 0) return null
+  if (!hasBlurb && sections.length === 0 && notes.length === 0) return null
   return {
     title: homebrewBoxEntry.value?.name ?? t(`${scope}.name`),
     designer: homebrewBoxEntry.value?.designer,
     blurb: hasBlurb ? t(`${scope}.about.blurb`) : undefined,
-    credits,
+    sections,
+    notes,
   }
 })
 
@@ -1023,7 +1061,8 @@ onUnmounted(() => {
           :title="about.title"
           :blurb="about.blurb"
           :designer="about.designer"
-          :credits="about.credits"
+          :sections="about.sections"
+          :notes="about.notes"
         />
 
         <template v-for="(section, index) in additionalLogSections" :key="section.title">

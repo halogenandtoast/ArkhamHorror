@@ -437,6 +437,30 @@ def hand_written_decoders() -> dict[str, dict[str, list[str]]]:
     return decoders
 
 
+#: Where the editor keeps its own list of the steps it can show.
+EDITOR = ROOT / "frontend/src/arkham/components/debug/StepsEditor.vue"
+
+
+def editor_gap(steps: list[dict]) -> list[str]:
+    """Steps the engine runs that the card builder has no editor for.
+
+    The editor keeps its own `StepKind` union and falls back to the Push editor
+    for anything not in it -- so a step it has not learned shows as an empty
+    message, and saving that card writes the emptiness back. Four steps had
+    drifted out of it before this check existed.
+    """
+    if not EDITOR.exists():
+        return []
+    src = EDITOR.read_text()
+    shown = set(re.findall(r"kindOf\(step\) === '([a-zA-Z]+)'", src))
+    shown |= {
+        kind
+        for group in re.findall(r"\[([^\]]*)\]\.includes\(kindOf\(step\)\)", src)
+        for kind in re.findall(r"'([a-zA-Z]+)'", group)
+    }
+    return [s["step"] for s in steps if s["step"] not in shown]
+
+
 def main() -> int:
     steps_src = STEPS.read_text()
     expr_src = EXPR.read_text()
@@ -511,6 +535,11 @@ def main() -> int:
         # when the found cards come back, not by `runSearch` which asks.
         if key == "search":
             payload_keys = dedup(payload_keys + ["bind"])
+        # An outcome's margin. `runOutcomes` only chooses between one rider and
+        # a list of them; `by` is read a level deeper, in `runOutcome`, which is
+        # past where the chain is followed.
+        if key in ("fight", "investigate", "evade", "parley", "test", "withSkillTest"):
+            payload_keys = dedup(payload_keys + ["by"])
 
         read = lookups("\n".join([step_block, payload_block]))
         steps.append(
@@ -619,6 +648,13 @@ def main() -> int:
         f"{target.name}: {len(steps)} steps, {len(operators)} expression operators, "
         f"{sum(len(v) for v in vocabulary.values())} vocabulary entries"
     )
+    missing = editor_gap(steps)
+    if missing:
+        print(
+            f"warning: no editor in the card builder for {', '.join(missing)} -- "
+            "they will render as an empty Push and saving will drop them",
+            file=sys.stderr,
+        )
     return 0
 
 

@@ -34,6 +34,8 @@ data HistoryMatcher
   | DrewEnemyWithTrait Trait
   | PlayedCardsMatching ValueMatcher CardMatcher
   | SkillTestsPerformed ValueMatcher
+  | SuccessfulSkillTests ValueMatcher
+  | FailedSkillTests ValueMatcher
   | ActionsCompleted ValueMatcher
   | ActionsSpent ValueMatcher
   | TimesMoved ValueMatcher

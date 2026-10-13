@@ -21,5 +21,12 @@ isFailedResult = \case
   SucceededBy {} -> False
   Unrun -> False
 
+-- | Not the negation of 'isFailedResult': a test that never ran is neither.
+isSuccessResult :: SkillTestResult -> Bool
+isSuccessResult = \case
+  SucceededBy {} -> True
+  FailedBy {} -> False
+  Unrun -> False
+
 $(deriveJSON defaultOptions ''SkillTestResultType)
 $(deriveJSON defaultOptions ''SkillTestResult)

@@ -13,6 +13,7 @@ import Arkham.History as X
 import Arkham.Id
 import Arkham.Matcher qualified as Matcher
 import Arkham.Placement
+import Arkham.SkillTestResult (isFailedResult, isSuccessResult)
 import Arkham.Prelude
 
 historyMatches :: HasGame m => Matcher.HistoryMatcher -> History -> m Bool
@@ -42,6 +43,10 @@ historyMatches = \case
   Matcher.PlayedCardsMatching vMatcher matcher ->
     countIs vMatcher (length . filter ((`cardMatch` matcher) . playedCard) . historyPlayedCards)
   Matcher.SkillTestsPerformed vMatcher -> countIs vMatcher (length . historySkillTestsPerformed)
+  Matcher.SuccessfulSkillTests vMatcher ->
+    countIs vMatcher (length . filter (isSuccessResult . snd) . historySkillTestsPerformed)
+  Matcher.FailedSkillTests vMatcher ->
+    countIs vMatcher (length . filter (isFailedResult . snd) . historySkillTestsPerformed)
   Matcher.ActionsCompleted vMatcher -> countIs vMatcher historyActionsCompleted
   Matcher.ActionsSpent vMatcher -> countIs vMatcher historyActionsSpent
   Matcher.TimesMoved vMatcher -> countIs vMatcher historyMoved

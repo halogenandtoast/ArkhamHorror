@@ -15,4 +15,7 @@ declareHomebrewScenarioDeckKeys
     "ArkhamStreetsDeck"
   , -- Scenario V: the open-ended Task deck (see the core Task trait)
     "TaskDeck"
+  , -- True solo only: the stand-in for "another investigator's deck"
+    -- (see Arkham.Homebrew.AgesUnwound.DummyDeck)
+    "DummyDeck"
   ]

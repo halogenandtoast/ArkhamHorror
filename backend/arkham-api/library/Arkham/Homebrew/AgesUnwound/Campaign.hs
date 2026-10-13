@@ -3,9 +3,13 @@ module Arkham.Homebrew.AgesUnwound.Campaign (agesUnwound) where
 import Arkham.Campaign.Import.Lifted
 import Arkham.CampaignLog (CampaignLog (..))
 import Arkham.CampaignLogKey (toCampaignLogKey)
+import Arkham.Card (toCard)
+import Arkham.Deck qualified as Deck
 import Arkham.Helpers.FlavorText
 import Arkham.Homebrew.AgesUnwound.CampaignSteps
+import Arkham.Homebrew.AgesUnwound.DummyDeck (isDummyDeckCard)
 import Arkham.Homebrew.AgesUnwound.Import
+import Arkham.Homebrew.AgesUnwound.ScenarioDeckKeys (pattern DummyDeck)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 
@@ -90,5 +94,14 @@ instance RunMessage AgesUnwound where
       flavor $ setTitle "title" >> p (if bound then "bound" else "allTimesAreOne")
       when silverTwilight $ flavor $ setTitle "title" >> p "silverTwilight"
       gameOver
+      pure c
+    {- "When a card from the dummy deck would leave play, instead shuffle it back
+    into the dummy deck." Every player card that leaves play funnels through
+    'AddToDiscard', and the campaign entity is handed in-scenario messages too,
+    so one case here covers every scenario that builds the deck. The discard has
+    already happened by the time this runs: 'shuffleCardsIntoDeck' obtains the
+    card first, which takes it back out again. -}
+    AddToDiscard _ pc | isDummyDeckCard (toCard pc) -> do
+      shuffleCardsIntoDeck (Deck.ScenarioDeckByKey DummyDeck) [toCard pc]
       pure c
     _ -> lift $ defaultCampaignRunner msg c

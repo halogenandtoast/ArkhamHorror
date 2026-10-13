@@ -24,6 +24,7 @@ import Arkham.Homebrew.AgesUnwound.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.AgesUnwound.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.AgesUnwound.CardDefs.Treacheries qualified as Treacheries
+import Arkham.Homebrew.AgesUnwound.DummyDeck (setUpDummyDeck)
 import Arkham.Homebrew.AgesUnwound.Key
 import Arkham.Homebrew.AgesUnwound.Scenarios.TheMyriadGentleman.Helpers
 import Arkham.Homebrew.AgesUnwound.Sets qualified as Set
@@ -137,6 +138,10 @@ instance RunMessage TheMyriadGentleman where
       setAside [Treacheries.gazeOfAforgomon]
 
       setMeta emptyMyriadMeta
+
+      -- Army of One and Skills of Another Life both read "another
+      -- investigator's deck". See Arkham.Homebrew.AgesUnwound.DummyDeck.
+      setUpDummyDeck
 
       -- Intro 2: "When the game begins, place 1 doom on the current agenda."
       unlessM (getHasRecord TheInvestigatorsAcceptedAnOfferOfHelp) $ placeDoomOnAgenda 1

@@ -6,6 +6,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Message.Discard.Lifted (chooseAndDiscardCards)
 import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Agendas qualified as Cards
+import Arkham.Homebrew.AgesUnwound.DummyDeck (searchDummyDeck)
 import Arkham.Homebrew.AgesUnwound.Scenarios.TheMyriadGentleman.Helpers
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (InvestigatorDeck))
@@ -31,13 +32,14 @@ instance RunMessage ArmyOfOne where
 
       {- "Each player searches the top 6 cards of another player's deck for 2
       non-weakness, non-signature cards and draws them, then shuffles the searched
-      deck." With one investigator there is no other player's deck to search; the
-      campaign's solo dummy deck (guide p2) is out of scope for a digital table. -}
+      deck." In true solo the campaign's dummy deck (guide p2) is the deck this
+      searches. -}
       iids <- allInvestigators
       for_ iids \iid -> do
         let others = filter (/= iid) iids
-        unless (null others) do
-          chooseOrRunOneM iid $ targets others \other -> do
+        if null others
+          then searchDummyDeck iid attrs 6 2
+          else chooseOrRunOneM iid $ targets others \other -> do
             top6 <- fieldMap InvestigatorDeck (take 6 . (.cards)) other
             let eligible =
                   filter (\c -> toCard c `cardMatch` (NonWeakness <> not_ SignatureCard)) top6

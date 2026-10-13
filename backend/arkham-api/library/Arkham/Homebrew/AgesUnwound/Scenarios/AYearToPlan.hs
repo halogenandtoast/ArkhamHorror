@@ -29,6 +29,7 @@ import Arkham.Homebrew.AgesUnwound.CardDefs.Events qualified as Events
 import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.AgesUnwound.CardDefs.Skills qualified as Skills
 import Arkham.Homebrew.AgesUnwound.CardDefs.Treacheries qualified as Treacheries
+import Arkham.Homebrew.AgesUnwound.DummyDeck (setUpDummyDeck)
 import Arkham.Homebrew.AgesUnwound.Helpers (scenarioI18n)
 import Arkham.Homebrew.AgesUnwound.Key
 import Arkham.Homebrew.AgesUnwound.Missions.Helpers (
@@ -230,6 +231,10 @@ instance RunMessage AYearToPlan where
         Msg.createTreacheryAt helpingYourself NextToAct
       push createHelpingYourself
       placeTokens attrs helpingYourselfId Token.Resource strangeAssistance
+
+      -- Shifting Reality brings Skills of Another Life, which reads "another
+      -- investigator's deck". See Arkham.Homebrew.AgesUnwound.DummyDeck.
+      setUpDummyDeck
     -- [cultist]: "Draw a card or gain a resource."
     ResolveChaosToken _ Cultist iid -> do
       chooseOneM iid $ withI18n do

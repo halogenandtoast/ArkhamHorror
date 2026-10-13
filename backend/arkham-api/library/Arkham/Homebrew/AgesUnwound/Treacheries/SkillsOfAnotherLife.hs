@@ -3,6 +3,7 @@ module Arkham.Homebrew.AgesUnwound.Treacheries.SkillsOfAnotherLife (skillsOfAnot
 import Arkham.Capability
 import Arkham.Helpers.Message.Discard.Lifted (randomDiscardN)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Treacheries qualified as Cards
+import Arkham.Homebrew.AgesUnwound.DummyDeck (searchDummyDeck)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Strategy
@@ -25,8 +26,11 @@ instance RunMessage SkillsOfAnotherLife where
     Revelation iid (isSource attrs -> True) -> do
       randomDiscardN iid attrs 2
       others <- select $ not_ (InvestigatorWithId iid) <> can.manipulate.deck
-      unless (null others) do
-        chooseOrRunOneM iid $ targets others \other ->
+      -- True solo: the campaign's dummy deck stands in for the deck this would
+      -- have searched.
+      if null others
+        then searchDummyDeck iid attrs 3 1
+        else chooseOrRunOneM iid $ targets others \other ->
           search
             iid
             attrs

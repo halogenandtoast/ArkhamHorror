@@ -45,21 +45,15 @@ function setEntry(index: number, changes: Record<string, any>) {
   )
 }
 
-function add(name: string) {
-  if (!name) return
-  emit('update:modelValue', [...entries.value, { keyword: name }])
-}
-
-function remove(index: number) {
-  emit(
-    'update:modelValue',
-    entries.value.filter((_, i) => i !== index),
-  )
-}
-
 const declared = (name: string) => props.setKeywords.find((k) => k.name === name)
 
 const slotsOf = (entry: any): KeywordSlot[] => declared(entry.keyword)?.slots ?? []
+
+/* Whether this keyword asks the card for anything. One that does not is said by
+ * its chip alone. A keyword the set no longer declares always does: it is on the
+ * card, and saying so is the only way an author finds out. */
+const needsInput = (entry: any) =>
+  !declared(entry.keyword) || slotsOf(entry).length > 0 || hasResult(entry)
 
 /* What the card PRINTS, and how it WORKS, asked in that order.
  *
@@ -106,30 +100,17 @@ const EDITOR_TYPES: Record<string, string> = {
 
 <template>
   <div class="keyword-effects">
-    <p class="hint">{{ t(`${K}cardKeywordsHint`) }}</p>
-
-    <p v-if="!setKeywords.length" class="hint muted">{{ t(`${K}cardKeywordNone`) }}</p>
-
-    <div v-for="(entry, index) in entries" :key="index" class="block">
+    <!-- Which keywords are printed is said by the chips above; this is only what
+         each of them needs from THIS card. An entry with nothing to ask is
+         skipped, so turning on a keyword that takes no inputs adds no block. -->
+    <div v-for="(entry, index) in entries" :key="index">
+     <div v-if="needsInput(entry)" class="block">
       <div class="block-head">
-        <strong>{{ entry.keyword || t(`${K}keywordNameLabel`) }}</strong>
-        <button type="button" class="drop" @click="remove(index)">
-          <font-awesome-icon icon="trash" />
-        </button>
+        <strong>{{ entry.keyword }}</strong>
+        <span v-if="!declared(entry.keyword)" class="orphan">
+          {{ t(`${K}keywordNotDeclared`) }}
+        </span>
       </div>
-
-      <label>
-        {{ t(`${K}keywordNameLabel`) }}
-        <select
-          :value="entry.keyword"
-          @change="setEntry(index, { keyword: ($event.target as HTMLSelectElement).value })"
-        >
-          <option value="">—</option>
-          <option v-for="keyword in setKeywords" :key="keyword.name" :value="keyword.name">
-            {{ keyword.name }}
-          </option>
-        </select>
-      </label>
 
       <!-- What the set says this keyword means. Collapsed: it is read once and
            then known, and it is long enough to bury the fields under it. -->
@@ -137,10 +118,6 @@ const EDITOR_TYPES: Record<string, string> = {
         <summary>{{ t(`${K}keywordWhatItMeans`) }}</summary>
         <p class="declared">{{ declared(entry.keyword)?.description }}</p>
       </details>
-
-      <p v-if="entry.keyword && !slotsOf(entry).length && !hasResult(entry)" class="hint muted">
-        {{ t(`${K}keywordNoSlots`) }}
-      </p>
 
       <!-- What the card says. The clause above the fields, so what is being
            typed can be read back the way it is printed. -->
@@ -219,18 +196,8 @@ const EDITOR_TYPES: Record<string, string> = {
           @update:modifiers="setEntry(index, { modifiers: $event })"
         />
       </template>
+     </div>
     </div>
-
-    <select
-      v-if="setKeywords.length"
-      class="entry-menu"
-      @change="add(($event.target as HTMLSelectElement).value); ($event.target as HTMLSelectElement).value = ''"
-    >
-      <option value="">+ {{ t(`${K}addCardKeyword`) }}</option>
-      <option v-for="keyword in setKeywords" :key="keyword.name" :value="keyword.name">
-        {{ keyword.name }}
-      </option>
-    </select>
   </div>
 </template>
 
@@ -258,6 +225,13 @@ const EDITOR_TYPES: Record<string, string> = {
   flex-direction: column;
   gap: 0.5rem;
   padding: 0.6rem;
+}
+
+/* A keyword on the card that the set no longer declares. Its slots cannot be
+   shown -- nothing says what they are -- so saying so is all that is left. */
+.orphan {
+  color: var(--important);
+  font-size: 0.72rem;
 }
 
 .block-head {

@@ -990,6 +990,7 @@
     "keywordActiveWhen": "Active while",
     "keywordActiveWhenHint": "Gates the card’s own half of the result. Leave it empty for a keyword whose result is immediate rather than lasting.",
     "keywordNoSlots": "This keyword asks the card for nothing.",
+    "keywordNotDeclared": "this set no longer declares this keyword",
     "keywordWhileActive": "While active",
     "keywordWhileActiveHint": "Holds from the moment the condition is met until the card leaves play.",
     "keywordAsPrinted": "As printed on the card",

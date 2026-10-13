@@ -50,7 +50,9 @@ instance HasAbilities GettingYourBearings where
   getAbilities = actAbilities \a ->
     [ mkAbility a 1
         $ triggered (WouldMove #when You #any Anywhere connectingDestination) Free
-    , mkAbility a 2 $ forced $ RoundEnds #when
+    , restricted a 2 (exists $ EmptyLocation <> LocationWithResources (atMost 0))
+        $ forced
+        $ RoundEnds #when
     , restricted a 3 (exists $ You <> at_ Anywhere)
         $ FastAbility (GroupClueCost (PerPlayer 1) YourLocation)
     , restricted

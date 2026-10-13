@@ -49,7 +49,7 @@ instance HasAbilities OnTheLam where
         $ triggered (WouldMove #when You #any Anywhere connectingDestination) Free
     , restricted a 2 (notExists AccessibleLocation <> ScenarioDeckWithCard ArkhamStreetsDeck)
         $ ActionAbility #move Nothing (ActionCost 1)
-    , mkAbility a 3 $ forced $ RoundEnds #when
+    , restricted a 3 (exists EmptyLocation) $ forced $ RoundEnds #when
     ]
 
 instance RunMessage OnTheLam where

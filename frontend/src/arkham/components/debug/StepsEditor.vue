@@ -10,6 +10,7 @@ import { onClickOutside } from '@vueuse/core'
 import ExpressionEditor from '@/arkham/components/debug/ExpressionEditor.vue'
 import BoolField from '@/arkham/components/debug/BoolField.vue'
 import CardCodeField from '@/arkham/components/debug/CardCodeField.vue'
+import ConditionField from '@/arkham/components/debug/ConditionField.vue'
 import ScopeBar from '@/arkham/components/debug/ScopeBar.vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 import ValueMatcherField from '@/arkham/components/debug/ValueMatcherField.vue'
@@ -824,22 +825,12 @@ const removeOption = (step: any, index: number, at: number) =>
       />
 
       <template v-else-if="kindOf(step) === 'if'">
-        <p class="hint">Runs the matcher; takes the first branch when it finds anything.</p>
-        <label>
-          Kind
-          <select
-            :value="step.if?.kind"
-            @change="set(index, { ...step, if: { kind: ($event.target as HTMLSelectElement).value, matcher: null } })"
-          >
-            <option v-for="(_, kind) in queryKinds" :key="kind" :value="kind">{{ kind }}</option>
-          </select>
-        </label>
-        <ValueEditor
+        <p class="hint">Takes the first branch when the condition holds.</p>
+        <ConditionField
           :bindings="scopeFor(index)"
-          :type="matcherType(step.if?.kind)"
-          label="Matcher"
-          :modelValue="step.if?.matcher"
-          @update:modelValue="set(index, { ...step, if: { ...step.if, matcher: $event } })"
+          :queryKinds="queryKinds"
+          :modelValue="step.if"
+          @update:modelValue="set(index, { ...step, if: $event })"
         />
         <!-- Both branches belong to the If above them, so they are bounded and
              indented under it rather than left as two labelled step lists that
@@ -880,22 +871,12 @@ const removeOption = (step: any, index: number, at: number) =>
       </template>
 
       <template v-else-if="kindOf(step) === 'when'">
-        <p class="hint">Runs the steps below only when the matcher finds something.</p>
-        <label>
-          Kind
-          <select
-            :value="step.when?.kind"
-            @change="set(index, { ...step, when: { kind: ($event.target as HTMLSelectElement).value, matcher: null } })"
-          >
-            <option v-for="(_, kind) in queryKinds" :key="kind" :value="kind">{{ kind }}</option>
-          </select>
-        </label>
-        <ValueEditor
+        <p class="hint">Runs the steps below only when the condition holds.</p>
+        <ConditionField
           :bindings="scopeFor(index)"
-          :type="matcherType(step.when?.kind)"
-          label="Matcher"
-          :modelValue="step.when?.matcher"
-          @update:modelValue="set(index, { ...step, when: { ...step.when, matcher: $event } })"
+          :queryKinds="queryKinds"
+          :modelValue="step.when"
+          @update:modelValue="set(index, { ...step, when: $event })"
         />
         <div class="branch">
           <span class="branch-label">Then</span>
@@ -933,23 +914,14 @@ const removeOption = (step: any, index: number, at: number) =>
         <p class="hint">The first branch whose condition holds.</p>
         <div v-for="(b, bi) in step.case ?? []" :key="bi" class="option">
           <div class="row">
-            <label>
-              Kind
-              <select
-                :value="b.if?.kind"
-                @change="set(index, { ...step, case: step.case.map((x: any, i: number) => i === bi ? { ...x, if: { kind: ($event.target as HTMLSelectElement).value, matcher: null } } : x) })"
-              >
-                <option v-for="(_, kind) in queryKinds" :key="kind" :value="kind">{{ kind }}</option>
-              </select>
-            </label>
+            <span class="branch-label">Branch {{ bi + 1 }}</span>
             <button type="button" @click="set(index, { ...step, case: step.case.filter((_: any, i: number) => i !== bi) })">×</button>
           </div>
-          <ValueEditor
-          :bindings="scopeFor(index)"
-            :type="matcherType(b.if?.kind)"
-            label="Matcher"
-            :modelValue="b.if?.matcher"
-            @update:modelValue="set(index, { ...step, case: step.case.map((x: any, i: number) => i === bi ? { ...x, if: { ...x.if, matcher: $event } } : x) })"
+          <ConditionField
+            :bindings="scopeFor(index)"
+            :queryKinds="queryKinds"
+            :modelValue="b.if"
+            @update:modelValue="set(index, { ...step, case: step.case.map((x: any, i: number) => i === bi ? { ...x, if: $event } : x) })"
           />
           <StepsEditor
           :slotSteps="slotSteps"

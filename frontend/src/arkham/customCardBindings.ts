@@ -111,6 +111,42 @@ export const cardBindings = (cardType?: string): Binding[] => [
   }),
 ]
 
+/* What the card has remembered.
+ *
+ * A `SetGlobal` writes a key into the entity's own metaMap, and `bindings` in
+ * "Arkham.Custom.Ability" binds every key it finds there -- which is how a card
+ * reads back a choice it made on an earlier turn. The names cannot be known
+ * ahead of time, so they are read off the def: every SetGlobal written anywhere
+ * on this card names a binding the rest of the card may use.
+ *
+ * Real fields win a clash, so a key named after one is not offered. */
+const RESERVED = new Set([
+  'id', 'source', 'target', 'iid', 'controller', 'owner', 'investigator', 'cardId', 'drawnBy',
+  'meta', 'metaMap', 'placement', 'tokens', 'window', 'message', 'payment',
+])
+
+export function rememberedBindings(meta: unknown): Binding[] {
+  const keys = new Set<string>()
+  const walk = (node: any) => {
+    if (Array.isArray(node)) {
+      node.forEach(walk)
+      return
+    }
+    if (!node || typeof node !== 'object') return
+    if (node.tag === 'SetGlobal' && Array.isArray(node.contents)) {
+      const key = node.contents[1]
+      if (typeof key === 'string' && key && !RESERVED.has(key)) keys.add(key)
+    }
+    Object.values(node).forEach(walk)
+  }
+  walk(meta)
+  return [...keys].sort().map((name) => ({
+    name,
+    detail: 'whatever was remembered under this name',
+    origin: 'a Set Global written on this card',
+  }))
+}
+
 /* Meta the card is *built* from -- an enemy's prey, where it spawns -- is read
  * before any entity exists, so it cannot see the entity's own fields. Mirrors
  * `defBindings` in "Arkham.Card.CustomCard": the only name a def alone knows is

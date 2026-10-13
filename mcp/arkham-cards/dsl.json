@@ -80,6 +80,10 @@
         "matches",
         "eq",
         "ne",
+        "lt",
+        "lte",
+        "gt",
+        "gte",
         "kind",
         "matcher"
       ],
@@ -104,6 +108,10 @@
         "matches",
         "eq",
         "ne",
+        "lt",
+        "lte",
+        "gt",
+        "gte",
         "kind",
         "matcher"
       ],
@@ -130,6 +138,10 @@
         "matches",
         "eq",
         "ne",
+        "lt",
+        "lte",
+        "gt",
+        "gte",
         "kind",
         "matcher"
       ],
@@ -206,10 +218,10 @@
       "keysIn": "payload",
       "stepKeys": [],
       "payloadKeys": [
-        "of",
         "zones",
         "amount",
         "matcher",
+        "of",
         "how",
         "asDraw",
         "onFound",
@@ -327,7 +339,11 @@
         "source",
         "matches",
         "eq",
-        "ne"
+        "ne",
+        "lt",
+        "lte",
+        "gt",
+        "gte"
       ],
       "nestedKeys": {
         "opt": [
@@ -393,7 +409,11 @@
         "source",
         "matches",
         "eq",
-        "ne"
+        "ne",
+        "lt",
+        "lte",
+        "gt",
+        "gte"
       ],
       "nestedKeys": {},
       "bindingsRead": [
@@ -844,7 +864,11 @@
       "source",
       "matches",
       "eq",
-      "ne"
+      "ne",
+      "lt",
+      "lte",
+      "gt",
+      "gte"
     ],
     "note": "A condition is either a criterion or a matcher.\n\nA criterion covers what a card says about the situation (\"if you succeeded by 2\nor more\"); a matcher covers what is on the table. Both read as @if@ in the\neditor."
   },
@@ -895,6 +919,8 @@
       "action",
       "investigator",
       "committedCards",
+      "target",
+      "skills",
       "id"
     ],
     "transforms": [
@@ -1804,6 +1830,7 @@
       ],
       "optional": [
         "doom",
+        "metaMap",
         "waiting"
       ]
     },
@@ -1958,6 +1985,8 @@
       ],
       "optional": [
         "historyEnemiesAttackedBy",
+        "historyMovedTo",
+        "historyLocationsRevealed",
         "historyAttacksOfOpportunity",
         "historySuccessfulAttacks",
         "historySuccessfulEvasions",
@@ -2621,6 +2650,7 @@
       "windows",
       "target",
       "meta",
+      "metaMap",
       "tokens",
       "customizations",
       "printedUses",

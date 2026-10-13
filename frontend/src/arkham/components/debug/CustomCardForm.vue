@@ -20,7 +20,7 @@ import { readImage } from '@/arkham/customCardArt'
 import { libraryCards } from '@/arkham/customCardLibrary'
 import AbilityEditor from '@/arkham/components/debug/AbilityEditor.vue'
 import StepsEditor from '@/arkham/components/debug/StepsEditor.vue'
-import { cardBindings, defBindings } from '@/arkham/customCardBindings'
+import { cardBindings, defBindings, rememberedBindings } from '@/arkham/customCardBindings'
 import BoolField from '@/arkham/components/debug/BoolField.vue'
 import CardCodeField from '@/arkham/components/debug/CardCodeField.vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
@@ -393,6 +393,13 @@ const signatureChoices = computed(() =>
  * card learns whose it is by being listed there. Shown here because it is a
  * real deck restriction — only they can take it — and because it binds their id
  * as $investigator for this card's own abilities. */
+/* Names this card has written into its own metaMap with a Set Global, which
+ * the engine binds back for everything else the card does. Read off the card
+ * rather than declared, so the binding exists exactly where the write does. */
+const remembered = computed(() =>
+  rememberedBindings([form.onPlaySteps, form.abilities, form.handlers, form.modifiers]),
+)
+
 const loadedCode = ref<string | null>(null)
 
 const signatureOwner = computed(() => {
@@ -1138,7 +1145,7 @@ defineExpose({ loadCard, reset, buildCustomCard, snapshot, cardType: computed(()
             <p class="hint">What happens when it is played:</p>
             <StepsEditor
               :queryKinds="QUERY_KINDS"
-              :bindings="cardBindings(form.cardType)"
+              :bindings="[...cardBindings(form.cardType), ...remembered]"
               :path="'onPlay'"
               :modelValue="form.onPlaySteps"
               @update:modelValue="form.onPlaySteps = $event"
@@ -1319,6 +1326,7 @@ defineExpose({ loadCard, reset, buildCustomCard, snapshot, cardType: computed(()
             <AbilityEditor
               section="abilities"
               :cardType="form.cardType"
+              :extraBindings="remembered"
               :canRevelation="canHaveRevelation"
               :revelationImplied="revelationImplied"
               :hasRevelationPlacement="hasRevelationPlacement"
@@ -1348,6 +1356,7 @@ defineExpose({ loadCard, reset, buildCustomCard, snapshot, cardType: computed(()
             <AbilityEditor
               section="listeners"
               :cardType="form.cardType"
+              :extraBindings="remembered"
               :abilities="form.abilities"
               :modifiers="form.modifiers"
               v-model:handlers="form.handlers"

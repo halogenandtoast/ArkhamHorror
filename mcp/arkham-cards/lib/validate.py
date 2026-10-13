@@ -112,6 +112,26 @@ ENTITY_FOR_CARD_TYPE = {
 }
 
 
+def _remembered(node: Any, into: set[str]) -> set[str]:
+    """Names the card writes into its own metaMap with a `SetGlobal`.
+
+    `bindings` binds every key it finds there, which is how a card reads back a
+    choice it made on an earlier turn. The names are not declared anywhere, so
+    the only place to learn them is the writes themselves.
+    """
+    if isinstance(node, list):
+        for item in node:
+            _remembered(item, into)
+    elif isinstance(node, dict):
+        if node.get("tag") == "SetGlobal" and isinstance(node.get("contents"), list):
+            key = node["contents"][1] if len(node["contents"]) > 1 else None
+            if isinstance(key, str) and key:
+                into.add(key)
+        for item in node.values():
+            _remembered(item, into)
+    return into
+
+
 def _card_bindings(card_def: dict) -> set[str]:
     """Every `$name` this card can use without binding it first."""
     card_type = card_def.get("cardType")
@@ -121,7 +141,7 @@ def _card_bindings(card_def: dict) -> set[str]:
     else:
         # An unknown card type should not turn every field read into a warning.
         fields = [name for names in ENTITY_BINDINGS.values() for name in names]
-    return ALWAYS_BOUND | set(fields)
+    return ALWAYS_BOUND | set(fields) | _remembered(card_def.get("meta"), set())
 
 
 class Problem(dict):
@@ -170,6 +190,12 @@ def check_value(value: Any, type_expression: str, path: str = "", depth: int = 0
     # `null` outside a Maybe is the failure that looks most like success: the
     # builder writes it for a field nobody filled in, and it kills the whole
     # value rather than the field.
+    #
+    # Except where the field is raw JSON, which has a null: `SetGlobal` stores
+    # a Value, and remembering "nothing yet" under a name is how a card says
+    # the choice has not been made.
+    if value is None and type_expression.strip() in ("Value", "Aeson.Value"):
+        return []
     if value is None:
         return [
             Problem(

@@ -278,6 +278,13 @@ def _check_sum(value: Any, sum_schema: dict, written_as: str, path: str, depth: 
         ]
     tag = value.get("tag")
     if not isinstance(tag, str):
+        # A hand-written decoder need not use the tagged encoding its
+        # constructors imply: `Uses` is written `{"type", "amount"}`, chosen by
+        # which keys are there rather than by a tag. The decoder says which keys
+        # it reads, so an untagged object is checked against those instead of
+        # being reported as a missing tag.
+        if name in HAND_WRITTEN:
+            return _check_hand_written(value, name, path)
         return [Problem("error", path, f'{name} needs a "tag" naming one of its {len(constructors)} constructors')]
     con = constructors.get(tag)
     if con is None:
@@ -333,6 +340,107 @@ def _check_sum(value: Any, sum_schema: dict, written_as: str, path: str, depth: 
     problems = []
     for index, (item, field) in enumerate(zip(contents, fields)):
         problems += check_value(item, field["type"], f"{path}.contents[{index}]", depth + 1)
+    return problems
+
+
+#: What a keyword slot's `kind` says its value is. `text` is the card's own
+#: words and `value` is deliberately untyped -- a keyword may ask for anything.
+SLOT_TYPES = {
+    "window": "WindowMatcher",
+    "criterion": "Criterion",
+}
+
+
+def _check_keyword_effects(meta: dict, card_bindings: set, problems: list) -> None:
+    """A `_keywords` entry, checked against what its set declared.
+
+    These were the one part of a def nothing checked: a keyword's slots carry
+    windows, criteria and steps like anything else, but they live under names the
+    keyword invents, so there was no type to check them against. The set's
+    declarations are stamped onto every card as `setKeywords`, which is exactly
+    the missing half -- each slot says its `kind`, and that names the type.
+
+    Without this a keyword slot holding a matcher that does not exist validates
+    clean and the card silently does nothing. That is how Bullhorn carried an
+    `EnemyMatches` the engine has never had.
+    """
+    declared = {
+        k["name"]: k
+        for k in (meta.get("setKeywords") or [])
+        if isinstance(k, dict) and isinstance(k.get("name"), str)
+    }
+    for index, entry in enumerate(meta.get("_keywords") or []):
+        path = f"meta._keywords[{index}]"
+        if not isinstance(entry, dict):
+            problems.append(Problem("error", path, "a keyword entry is a JSON object"))
+            continue
+        name = entry.get("keyword")
+        keyword = declared.get(name)
+        if keyword is None:
+            # Not an error on its own: the declarations ride along on the card
+            # and a def checked outside its set has none to check against.
+            if declared:
+                problems.append(
+                    Problem("error", f"{path}.keyword",
+                            f"this set declares no keyword {name!r}",
+                            fix=f"it declares: {', '.join(sorted(declared)) or 'none'}")
+                )
+            continue
+
+        slots = {s["name"]: s for s in (keyword.get("slots") or []) if isinstance(s, dict)}
+        for slot_name, slot in slots.items():
+            if slot.get("required") and slot_name not in entry:
+                problems.append(
+                    Problem("error", f"{path}.{slot_name}",
+                            f"{name} requires {slot_name!r}, and gives the card nothing without it")
+                )
+        for key, value in entry.items():
+            if key in ("keyword", "token"):
+                continue
+            # The card's own half of the result, gated by the keyword.
+            if key == "modifiers":
+                for i, spec in enumerate(value or []):
+                    _check_modifier_spec(spec, f"{path}.modifiers[{i}]", card_bindings, problems)
+                continue
+            if key == "abilities":
+                for i, spec in enumerate(value or []):
+                    _check_ability_spec(spec, f"{path}.abilities[{i}]", card_bindings, problems)
+                continue
+            slot = slots.get(key)
+            if slot is None:
+                near = [k for k in sorted(slots) if key.lower() in k.lower()]
+                problems.append(
+                    Problem("error", f"{path}.{key}",
+                            f"{name} has no slot {key!r}, so nothing reads it",
+                            fix=f"its slots are: {', '.join(sorted(slots)) or 'none'}")
+                )
+                continue
+            kind = slot.get("kind")
+            if kind == "steps":
+                _walk_steps(value or [], f"{path}.{key}", card_bindings, problems)
+            elif kind in SLOT_TYPES:
+                problems += check_value(value, SLOT_TYPES[kind], f"{path}.{key}")
+
+
+def _check_hand_written(value: dict, name: str, path: str) -> list["Problem"]:
+    """An object read by a hand-written decoder, checked against its own keys.
+
+    Only the keys are checked, not their types: the decoder chooses among
+    several shapes by which keys are present (`Uses` takes a `limit` or not),
+    so there is no one constructor to read field types off.
+    """
+    decoder = HAND_WRITTEN[name]
+    known = set(decoder["required"]) | set(decoder["optional"])
+    problems = []
+    for key in value:
+        if key not in known:
+            near = [k for k in sorted(known) if key.lower() in k.lower()]
+            hint = f" Did you mean {', '.join(near[:3])}?" if near else ""
+            problems.append(Problem("error", f"{path}.{key}", f"{name} has no field {key!r}.{hint}"))
+    # Every shape the decoder accepts is an alternative, so a key it demands in
+    # one branch may be absent in another. Only a key no branch could do without
+    # -- one the decoder reads before any choice -- is worth insisting on, and
+    # the instance does not say which those are. So: nothing is reported missing.
     return problems
 
 
@@ -831,6 +939,84 @@ def _check_condition(condition: dict, path: str, problems: list[Problem]) -> Non
 # * The whole card
 
 
+def _check_modifier_spec(spec: Any, path: str, card_bindings: set, problems: list) -> None:
+    """One `_modifiers` entry: who gets the modifiers, and which they are.
+
+    Lifted out alongside '_check_ability_spec', and for the same reason: a
+    keyword's behaviour hands the card modifiers in exactly this shape.
+    """
+    if not isinstance(spec, dict):
+        problems.append(Problem("error", path, "a modifier spec is an object"))
+        return
+    kind = spec.get("kind")
+    if kind not in MATCHER_FOR_KIND:
+        problems.append(
+            Problem("error", f"{path}.kind", f'"{kind}" is not a modifier kind',
+                    fix=f"one of: {', '.join(VOCAB['modifierKinds'])}")
+        )
+    elif "matcher" in spec:
+        problems += check_value(spec["matcher"], MATCHER_FOR_KIND[kind], f"{path}.matcher")
+    lets = {
+        entry["name"]
+        for entry in spec.get("let") or []
+        if isinstance(entry, dict) and isinstance(entry.get("name"), str)
+    }
+    scope = set(card_bindings) | lets | {spec.get("eachBind") or "each"}
+    for i, modifier in enumerate(spec.get("modifiers") or []):
+        problems += check_value(modifier, "ModifierType", f"{path}.modifiers[{i}]")
+    if "if" in spec and isinstance(spec["if"], dict):
+        condition = spec["if"]
+        if "criteria" in condition:
+            problems += check_value(condition["criteria"], "Criterion", f"{path}.if.criteria")
+        elif "kind" in condition:
+            _check_query(condition, f"{path}.if", problems)
+    for key, value in spec.items():
+        if key not in ("modifiers", "matcher", "if"):
+            _walk_expression(value, f"{path}.{key}", scope, problems)
+
+
+def _check_ability_spec(spec: Any, path: str, card_bindings: set, problems: list) -> None:
+    """One `_abilities` entry.
+
+    Lifted out because a keyword's behaviour may give the card abilities of its
+    own, gated by the keyword -- the same shape, written somewhere else, and
+    worth the same checking.
+    """
+    if not isinstance(spec, dict):
+        problems.append(Problem("error", path, "an ability is an object"))
+        return
+    if "type" not in spec:
+        problems.append(
+            Problem("error", path, 'an ability needs a "type" (its AbilityType)')
+        )
+    else:
+        # The whole ability is dropped if this will not decode, which is the
+        # most expensive silent failure the DSL has.
+        found = check_value(spec["type"], "AbilityType", f"{path}.type")
+        for problem in found:
+            problem["message"] += (
+                " -- an AbilityType that will not decode makes customAbilities drop the"
+                " whole ability, so the card ends up with no ability at all."
+            )
+        problems += found
+    if "criteria" in spec:
+        problems += check_value(spec["criteria"], "Criterion", f"{path}.criteria")
+    if "limit" in spec:
+        problems += check_value(spec["limit"], "AbilityLimit", f"{path}.limit")
+    if "zone" in spec and spec["zone"] not in ("hand", "discard", "search", "topOfDeck"):
+        problems.append(
+            Problem("error", f"{path}.zone", f'"{spec["zone"]}" is not a zone',
+                    fix="hand, discard, search or topOfDeck")
+        )
+    unknown = set(spec) - set(DSL["specs"]["_abilities"])
+    for key in sorted(unknown):
+        problems.append(
+            Problem("warning", f"{path}.{key}", "an ability spec never reads this key",
+                    fix=f"it reads: {', '.join(DSL['specs']['_abilities'])}")
+        )
+    _walk_steps(spec.get("steps") or [], f"{path}.steps", card_bindings, problems)
+
+
 def lint(card_def: dict) -> list[Problem]:
     """Everything wrong with the def's behaviour, as far as the types can say."""
     problems: list[Problem] = []
@@ -841,40 +1027,7 @@ def lint(card_def: dict) -> list[Problem]:
     card_bindings = _card_bindings(card_def)
 
     for index, spec in enumerate(meta.get("_abilities") or []):
-        path = f"meta._abilities[{index}]"
-        if not isinstance(spec, dict):
-            problems.append(Problem("error", path, "an ability is an object"))
-            continue
-        if "type" not in spec:
-            problems.append(
-                Problem("error", path, 'an ability needs a "type" (its AbilityType)')
-            )
-        else:
-            # The whole ability is dropped if this will not decode, which is the
-            # most expensive silent failure the DSL has.
-            found = check_value(spec["type"], "AbilityType", f"{path}.type")
-            for problem in found:
-                problem["message"] += (
-                    " -- an AbilityType that will not decode makes customAbilities drop the"
-                    " whole ability, so the card ends up with no ability at all."
-                )
-            problems += found
-        if "criteria" in spec:
-            problems += check_value(spec["criteria"], "Criterion", f"{path}.criteria")
-        if "limit" in spec:
-            problems += check_value(spec["limit"], "AbilityLimit", f"{path}.limit")
-        if "zone" in spec and spec["zone"] not in ("hand", "discard", "search", "topOfDeck"):
-            problems.append(
-                Problem("error", f"{path}.zone", f'"{spec["zone"]}" is not a zone',
-                        fix="hand, discard, search or topOfDeck")
-            )
-        unknown = set(spec) - set(DSL["specs"]["_abilities"])
-        for key in sorted(unknown):
-            problems.append(
-                Problem("warning", f"{path}.{key}", "an ability spec never reads this key",
-                        fix=f"it reads: {', '.join(DSL['specs']['_abilities'])}")
-            )
-        _walk_steps(spec.get("steps") or [], f"{path}.steps", card_bindings, problems)
+        _check_ability_spec(spec, f"meta._abilities[{index}]", card_bindings, problems)
 
     messages = schema.message_constructors()
     for index, spec in enumerate(meta.get("_handlers") or []):
@@ -898,39 +1051,13 @@ def lint(card_def: dict) -> list[Problem]:
         _walk_steps(spec.get("steps") or [], f"{path}.steps", scope, problems)
 
     for index, spec in enumerate(meta.get("_modifiers") or []):
-        path = f"meta._modifiers[{index}]"
-        if not isinstance(spec, dict):
-            problems.append(Problem("error", path, "a modifier spec is an object"))
-            continue
-        kind = spec.get("kind")
-        if kind not in MATCHER_FOR_KIND:
-            problems.append(
-                Problem("error", f"{path}.kind", f'"{kind}" is not a modifier kind',
-                        fix=f"one of: {', '.join(VOCAB['modifierKinds'])}")
-            )
-        elif "matcher" in spec:
-            problems += check_value(spec["matcher"], MATCHER_FOR_KIND[kind], f"{path}.matcher")
-        lets = {
-            entry["name"]
-            for entry in spec.get("let") or []
-            if isinstance(entry, dict) and isinstance(entry.get("name"), str)
-        }
-        scope = set(card_bindings) | lets | {spec.get("eachBind") or "each"}
-        for i, modifier in enumerate(spec.get("modifiers") or []):
-            problems += check_value(modifier, "ModifierType", f"{path}.modifiers[{i}]")
-        if "if" in spec and isinstance(spec["if"], dict):
-            condition = spec["if"]
-            if "criteria" in condition:
-                problems += check_value(condition["criteria"], "Criterion", f"{path}.if.criteria")
-            elif "kind" in condition:
-                _check_query(condition, f"{path}.if", problems)
-        for key, value in spec.items():
-            if key not in ("modifiers", "matcher", "if"):
-                _walk_expression(value, f"{path}.{key}", scope, problems)
+        _check_modifier_spec(spec, f"meta._modifiers[{index}]", card_bindings, problems)
 
     for key in STEP_META_KEYS:
         if key in meta:
             _walk_steps(meta[key] or [], f"meta.{key}", card_bindings, problems)
+
+    _check_keyword_effects(meta, card_bindings, problems)
 
     # A behaviour key nothing reads is the quietest failure of all: the card looks
     # written and does nothing.

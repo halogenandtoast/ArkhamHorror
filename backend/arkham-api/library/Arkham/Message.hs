@@ -1089,6 +1089,10 @@ data Message
   | PutCardOnBottomOfDeck InvestigatorId DeckSignifier Card
   | PutOnBottomOfDeck InvestigatorId DeckSignifier Target
   | Record CampaignLogKey
+  | -- | Forget a key entirely: recorded, crossed out, counted and as a set. No
+    -- card does this yet (the game crosses entries out); the debug tools use it
+    -- to edit or delete an entry a player typed in.
+    ForgetRecord CampaignLogKey
   | RecordForInvestigator InvestigatorId CampaignLogKey
   | {- | Adjust a per-investigator tally in that investigator's own campaign log
     (e.g. Dark Matter "Memories"). Negative values cross off tallies; the
@@ -1396,9 +1400,6 @@ data Message
   | -- Debug: start a real skill test with no card behind it. See
     -- "Arkham.Debug.SkillTest".
     DebugBeginSkillTest DebugSkillTestSpec
-  | -- Debug: forget a campaign log key entirely (recorded, crossed out, counted),
-    -- so a player-typed entry can be edited or deleted.
-    DebugRemoveCampaignLogKey CampaignLogKey
   | DebugCustomize InvestigatorId CardId
   | DebugIncreaseCustomization InvestigatorId CardCode Customization [CustomizationChoice]
   | SetScenarioDifficulty Difficulty

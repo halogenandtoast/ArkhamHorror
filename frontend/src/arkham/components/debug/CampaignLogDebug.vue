@@ -18,7 +18,7 @@ import {
   isEditableLogKey,
   recordCountMessage,
   recordMessage,
-  removeLogKeyMessage,
+  forgetRecordMessage,
   renameCountMessage,
   renameNoteMessage,
   type CampaignLogKeyJson,
@@ -75,7 +75,7 @@ const setCount = (key: LogKey, event: Event) => {
   if (Number.isFinite(value)) send(recordCountMessage(rawKey(key), value))
 }
 
-const remove = (key: LogKey) => send(removeLogKeyMessage(rawKey(key)))
+const remove = (key: LogKey) => send(forgetRecordMessage(rawKey(key)))
 
 const newNote = ref('')
 const addNote = () => {

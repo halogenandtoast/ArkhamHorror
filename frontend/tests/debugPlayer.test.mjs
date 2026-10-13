@@ -7,7 +7,7 @@ import { createServer } from 'vite'
 /* The investigator and campaign debug tools send hand-written JSON that the
 backend's derived decoders must accept (Arkham.Message `DrawCards`,
 `DiscardFromHand`, `SufferTrauma`, `HealTrauma`, `ReportXp`, `GainXP`,
-`SpendXP`, `Record`, `RecordCount`, `DebugRemoveCampaignLogKey`), so the shapes
+`SpendXP`, `Record`, `RecordCount`, `ForgetRecord`), so the shapes
 are pinned here, along with how custom campaign log entries round-trip. */
 async function load(t) {
   const server = await createServer({
@@ -108,23 +108,23 @@ test('only free-text keys outside the running homebrew campaign are editable', a
 })
 
 test('campaign log edits are single steps', async (t) => {
-  const { recordMessage, recordCountMessage, removeLogKeyMessage, renameNoteMessage, renameCountMessage, customLogKey } =
+  const { recordMessage, recordCountMessage, forgetRecordMessage, renameNoteMessage, renameCountMessage, customLogKey } =
     await load(t)
   const old = customLogKey('Old note')
   assert.deepEqual(recordMessage(old), { tag: 'Record', contents: old })
   assert.deepEqual(recordCountMessage(old, 3.4), { tag: 'RecordCount', contents: [old, 3] })
-  assert.deepEqual(removeLogKeyMessage(old), { tag: 'DebugRemoveCampaignLogKey', contents: old })
+  assert.deepEqual(forgetRecordMessage(old), { tag: 'ForgetRecord', contents: old })
   assert.deepEqual(renameNoteMessage(old, 'New note'), {
     tag: 'Run',
     contents: [
-      { tag: 'DebugRemoveCampaignLogKey', contents: old },
+      { tag: 'ForgetRecord', contents: old },
       { tag: 'Record', contents: customLogKey('New note') },
     ],
   })
   assert.deepEqual(renameCountMessage(old, 'Favours', 2), {
     tag: 'Run',
     contents: [
-      { tag: 'DebugRemoveCampaignLogKey', contents: old },
+      { tag: 'ForgetRecord', contents: old },
       { tag: 'RecordCount', contents: [customLogKey('Favours'), 2] },
     ],
   })

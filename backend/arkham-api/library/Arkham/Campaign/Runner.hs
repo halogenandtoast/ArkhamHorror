@@ -456,7 +456,7 @@ defaultCampaignRunner msg a = case msg of
       . (logL . recordedSetsL %~ deleteMap key)
       . overRecordedCount key (const Nothing)
       . (logL . orderedKeysL %~ removeOrderedKey)
-  DebugRemoveCampaignLogKey key ->
+  ForgetRecord key ->
     pure
       $ updateAttrs a
       $ (logL %~ forgetCampaignLogKey key)

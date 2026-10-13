@@ -137,18 +137,18 @@ export const recordCountMessage = (key: CampaignLogKeyJson, value: number) => ({
   contents: [key, Math.floor(value)],
 })
 
-export const removeLogKeyMessage = (key: CampaignLogKeyJson) => ({
-  tag: 'DebugRemoveCampaignLogKey',
+export const forgetRecordMessage = (key: CampaignLogKeyJson) => ({
+  tag: 'ForgetRecord',
   contents: key,
 })
 
 // Editing is delete-then-record in one step, so a single undo puts it back.
 export const renameNoteMessage = (oldKey: CampaignLogKeyJson, text: string) => ({
   tag: 'Run',
-  contents: [removeLogKeyMessage(oldKey), recordMessage(customLogKey(text))],
+  contents: [forgetRecordMessage(oldKey), recordMessage(customLogKey(text))],
 })
 
 export const renameCountMessage = (oldKey: CampaignLogKeyJson, text: string, value: number) => ({
   tag: 'Run',
-  contents: [removeLogKeyMessage(oldKey), recordCountMessage(customLogKey(text), value)],
+  contents: [forgetRecordMessage(oldKey), recordCountMessage(customLogKey(text), value)],
 })

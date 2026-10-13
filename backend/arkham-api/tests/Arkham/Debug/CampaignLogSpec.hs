@@ -15,13 +15,13 @@ spec = describe "Debug campaign log, trauma and XP" do
   it "forgets a recorded custom note" . gameTest $ \_ -> do
     run $ Record note
     (member note . campaignLogRecorded <$> getCampaignLog) `shouldReturn` True
-    run $ DebugRemoveCampaignLogKey note
+    run $ ForgetRecord note
     (member note . campaignLogRecorded <$> getCampaignLog) `shouldReturn` False
 
   it "forgets a custom count" . gameTest $ \_ -> do
     run $ RecordCount note 3
     (lookup note . campaignLogRecordedCounts <$> getCampaignLog) `shouldReturn` Just 3
-    run $ DebugRemoveCampaignLogKey note
+    run $ ForgetRecord note
     (lookup note . campaignLogRecordedCounts <$> getCampaignLog) `shouldReturn` Nothing
 
   it "suffers and heals trauma" . gameTest $ \self -> do

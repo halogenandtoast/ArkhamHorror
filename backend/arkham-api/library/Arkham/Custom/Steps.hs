@@ -1167,8 +1167,19 @@ once -- "during a skill test".
 runWithSkillTest :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
 runWithSkillTest env spec = case spec of
   Object o -> do
-    SkillTest.getSkillTestId >>= traverse_ \sid ->
-      runSteps (KeyMap.insert (bindingName o "skillTestId") (toJSON sid) env) (subStepsOf o)
+    SkillTest.getSkillTestId >>= traverse_ \sid -> do
+      let env' = KeyMap.insert (bindingName o "skillTestId") (toJSON sid) env
+      runSteps env' (subStepsOf o)
+      {- "If you succeed, …" on a test this card did NOT start.
+      
+      The test-starting steps carry the same two keys, and they are the same
+      thing said about a different test: a card played into someone else's test
+      -- "reveal an additional token; if you succeed, deal 2 damage" -- has no
+      other way to say it. Its own steps have finished long before the result is
+      known, and the event that played them is in the discard pile by then, so a
+      handler cannot answer either. -}
+      for_ (KeyMap.lookup "onSuccess" o) (runOutcome env' sid (stepSource env) True)
+      for_ (KeyMap.lookup "onFailure" o) (runOutcome env' sid (stepSource env) False)
   _ -> pure ()
 
 {- | The steps inside, with the location of something bound for them.

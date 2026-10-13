@@ -87,6 +87,8 @@ module Arkham.Custom.Ability (
   runCustomSteps,
   customSteps,
   runCustomRevelation,
+  runCustomStepsIn,
+  playWindowBindings,
   abilitiesMetaKey,
   handlersMetaKey,
   modifiersMetaKey,
@@ -434,6 +436,32 @@ windowFields w = case toJSON (windowType w) of
     Just v -> [("w0", v)]
     Nothing -> []
   _ -> []
+
+{- | The window a fast event was played in, bound the way an ability binds the
+window it triggered on.
+
+An event's "Play after you take 1 or more damage" is a window like any other,
+and what it carries -- how much damage -- is most of what such a card then does.
+Without this the card can see that it was played but not what it was played on,
+and "gain 2 resources for each damage taken" has no number to work from.
+
+The matcher is the card's own @fastWindow@, which is the same question the
+engine asked in deciding the event could be played at all.
+-}
+playWindowBindings :: (CustomEntity a, HasGame m) => a -> InvestigatorId -> [Window] -> m Env
+playWindowBindings a iid ws = case cdFastWindow (toCardDef a) of
+  Nothing -> pure mempty
+  Just matcher -> do
+    mwindow <- findM (\w -> windowMatches iid (toSource a) w matcher) ws
+    pure $ case mwindow of
+      Nothing -> mempty
+      Just w -> KeyMap.fromList $ ("window", toJSON w) : windowFields w
+
+-- | As 'runCustomSteps', with more bindings in scope than the entity's own.
+runCustomStepsIn
+  :: (CustomEntity a, HasGameLogger m, ReverseQueue m) => a -> InvestigatorId -> Env -> Text -> m ()
+runCustomStepsIn a iid extra key =
+  runSteps (extra <> KeyMap.insert "iid" (toJSON iid) (bindings a)) (customSteps a key)
 
 {- | Run the steps stored under a named meta key.
 

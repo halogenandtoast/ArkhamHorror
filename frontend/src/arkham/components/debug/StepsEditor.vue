@@ -355,6 +355,10 @@ const TEST_KINDS = ['test', 'fight', 'investigate', 'evade', 'parley']
 
 const startsTest = (step: any) => TEST_KINDS.includes(kindOf(step)) && !step.fight?.basic
 
+/* Which steps can carry "if you succeed" and "if you fail": the ones that START
+ * a test, and `withSkillTest`, which names one already under way. */
+const hasOutcomes = (step: any) => startsTest(step) || kindOf(step) === 'withSkillTest'
+
 /* "If you succeed, …" and "If you fail, …". Kept on the step that started the
  * test because only it knows which test, and only here can the steps still see
  * what this run chose. */
@@ -2131,6 +2135,12 @@ const removeOption = (step: any, index: number, at: number) =>
           </template>
         </fieldset>
 
+      </template>
+
+      <!-- "If you succeed, …" belongs to any step that can name a test, not just
+           one that started it: a card played into someone else's test says it
+           too, and by then its own steps have long finished. -->
+      <template v-if="hasOutcomes(step)">
         <fieldset v-for="which in (['onSuccess', 'onFailure'] as const)" :key="which" class="outcome">
           <legend>{{ OUTCOME_LEGENDS[which] }}</legend>
           <BoolField
@@ -2151,7 +2161,7 @@ const removeOption = (step: any, index: number, at: number) =>
             <StepsEditor
               :slotSteps="slotSteps"
               :queryKinds="queryKinds"
-              :bindings="revealScope(index)"
+              :bindings="kindOf(step) === 'withSkillTest' ? innerScope(index) : revealScope(index)"
               :path="innerPath(index, which)"
               :announce="[]"
               :modelValue="outcome(step, which).steps ?? []"

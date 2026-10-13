@@ -8,8 +8,9 @@ import Arkham.Custom.Ability (
   isCustomAbility,
   runCustomAbility,
   runCustomHandlers,
+  playWindowBindings,
   runCustomRevelation,
-  runCustomSteps,
+  runCustomStepsIn,
   pattern ZonedUseThisAbility,
  )
 import Arkham.Event.Import.Lifted
@@ -35,7 +36,10 @@ instance RunMessage CustomEvent where
     -- What the event does when it is played: the common case, so it gets a
     -- place of its own rather than being written as a listener.
     PlayThisEvent iid (is attrs -> True) -> do
-      runCustomSteps attrs iid "_onPlay"
+      -- What a fast event was played ON is most of what it then does, so the
+      -- window it answered is bound for its steps.
+      windowEnv <- playWindowBindings attrs iid (eventWindows attrs)
+      runCustomStepsIn attrs iid windowEnv "_onPlay"
       pure x
     -- What it does when it is revealed. Not an ability: no one activates it, and
     -- the card may have to place itself before the engine tidies it away.

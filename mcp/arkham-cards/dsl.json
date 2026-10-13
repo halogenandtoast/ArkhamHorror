@@ -274,16 +274,22 @@
       "stepKeys": [],
       "payloadKeys": [
         "skillTestId",
+        "onSuccess",
+        "onFailure",
         "bind",
-        "steps"
+        "steps",
+        "by"
       ],
       "nestedKeys": {},
-      "bindingsRead": [],
+      "bindingsRead": [
+        "target"
+      ],
       "valueShape": null,
       "doc": "The steps inside, with the skill test being resolved bound for them.\n\nA block rather than a binding on every step: there may be no test, and a step\nthat reads @$skillTestId@ when there is none has nothing sensible to do. Running\nthe inner steps only when there is one says that once, where a card would say it\nonce -- \"during a skill test\".",
       "via": [
         "bindingName",
-        "subStepsOf"
+        "subStepsOf",
+        "runOutcome"
       ]
     },
     {
@@ -2444,7 +2450,7 @@
       "readIn": "arkham-api/library/Arkham/Custom/Ability.hs"
     },
     "_onPlay": {
-      "holds": "a list of steps",
+      "holds": "card data, not steps",
       "readIn": "arkham-api/library/Arkham/Custom/Event.hs"
     },
     "_elderSign": {

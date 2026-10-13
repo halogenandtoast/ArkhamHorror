@@ -24,8 +24,6 @@ data DebugRevealedChaosToken = DebugRevealedChaosToken
   }
   deriving stock (Show, Eq, Generic)
 
-$(deriveJSON (aesonOptions $ Just "debugRevealed") ''DebugRevealedChaosToken)
-
 data ChaosBag = ChaosBag
   { chaosBagChaosTokens :: [ChaosToken]
   , chaosBagSetAsideChaosTokens :: [ChaosToken]
@@ -49,7 +47,10 @@ allChaosBagChaosTokens ChaosBag {..} =
     <> chaosBagRevealedChaosTokens
     <> map debugRevealedToken chaosBagDebugRevealedChaosTokens
 
-$(deriveToJSON (aesonOptions $ Just "chaosBag") ''ChaosBag)
+mconcat
+  [ deriveJSON (aesonOptions $ Just "debugRevealed") ''DebugRevealedChaosToken
+  , deriveToJSON (aesonOptions $ Just "chaosBag") ''ChaosBag
+  ]
 
 instance FromJSON ChaosBag where
   parseJSON = withObject "ChaosBag" \o -> do

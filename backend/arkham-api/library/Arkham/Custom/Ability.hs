@@ -156,6 +156,14 @@ data AbilitySpec = AbilitySpec
   entity out of play if its def says so, which is why the def's zone list is
   derived from this rather than set beside it.
   -}
+  , specNoAttacksOfOpportunity :: Maybe Value
+  {- ^ "This action does not provoke attacks of opportunity", which lives on the
+  ability rather than in its cost or its steps -- so there was no way to say it
+  and a card that printed it provoked anyway.
+
+  @true@ is every enemy; an enemy matcher narrows it to the ones named, which is
+  what "does not provoke attacks of opportunity from X" wants.
+  -}
   , specSteps :: [Value]
   }
 
@@ -172,6 +180,8 @@ instance FromJSON AbilitySpec where
       .:? "tooltip"
       <*> o
       .:? "zone"
+      <*> o
+      .:? "noAttacksOfOpportunity"
       -- "effect" is the older name for a bare list of messages to push.
       <*> (o .:? "steps" >>= maybe (map pushStep <$> o .:? "effect" .!= []) pure)
 
@@ -320,7 +330,16 @@ customAbilities a =
             <> fromMaybe (abilityCriteria ab) (decodeWith env =<< specCriteria spec)
       , abilityLimit = fromMaybe (abilityLimit ab) (decodeWith env =<< specLimit spec)
       , abilityTooltip = specTooltip spec <|> abilityTooltip ab
+      , abilityDoesNotProvokeAttacksOfOpportunity = noAttacksOfOpportunity spec
       }
+
+  {- Which enemies this ability does not provoke. @true@ is all of them; a
+  matcher is the narrower "from X" wording. Anything else -- including @false@ --
+  leaves the ability provoking, which is the printed default. -}
+  noAttacksOfOpportunity spec = case specNoAttacksOfOpportunity spec of
+    Just (Bool True) -> Just AnyEnemy
+    Just v -> decodeWith env v
+    Nothing -> Nothing
 
 {- | Where the card must be. Search and the top of the deck are zones the card
 is /put/ into rather than states it can be asked about, so they add nothing.

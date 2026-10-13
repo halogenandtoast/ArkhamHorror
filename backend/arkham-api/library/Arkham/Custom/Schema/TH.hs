@@ -23,6 +23,9 @@ stringEncodedTypes =
       -- a slug, so the all-nullary rule below cannot spot it. It still writes
       -- itself as a bare string.
       "ChaosTokenFace"
+    , -- As above: every token the engine prints is nullary, and the one a custom
+      -- card set brings carries its slug ("custom:tension"). Both are strings.
+      "Token"
     ]
 
 {- | Types the editor renders itself. Expanding them would add nothing and, in

@@ -1417,6 +1417,7 @@
         "limit",
         "tooltip",
         "zone",
+        "noAttacksOfOpportunity",
         "steps",
         "effect"
       ]
@@ -2752,7 +2753,8 @@
       "tooltip",
       "zone",
       "steps",
-      "effect"
+      "effect",
+      "noAttacksOfOpportunity"
     ],
     "_handlers": [
       "on",

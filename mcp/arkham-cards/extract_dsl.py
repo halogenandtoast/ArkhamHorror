@@ -582,7 +582,10 @@ def main() -> int:
         "arrayTolerantDecoders": array_tolerant_decoders(),
         "entityBindings": entity_bindings(),
         "specs": {
-            "_abilities": ["type", "criteria", "limit", "tooltip", "zone", "steps", "effect"],
+            "_abilities": [
+                "type", "criteria", "limit", "tooltip", "zone", "steps", "effect",
+                "noAttacksOfOpportunity",
+            ],
             "_handlers": ["on", "requires", "global", "steps"],
             "_modifiers": [
                 "kind", "matcher", "modifiers", "if", "each", "eachBind", "let", "requires",

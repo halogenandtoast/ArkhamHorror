@@ -1,5 +1,30 @@
 {
   "name": "Against the Wendigo",
+  "about": {
+    "blurb": "Explore the wild Hanninah Valley in Canada's North West, looking for the missing students of Dr. Nadelmann's expedition, in this unofficial scenario for Arkham Horror: The Card Game.",
+    "credits": [
+      {
+        "role": "Scenario design, card design & English translation",
+        "names": "Vinn Quest"
+      },
+      {
+        "role": "Proofreading & enhancement",
+        "names": "spiriT, Hypotypoz, Metalm23, plaf"
+      },
+      {
+        "role": "English translation proofreaders",
+        "names": "Matthew “sonofyogsothoth” Adams, Stephen “St. Cretin” Wohlert"
+      },
+      {
+        "role": "Playtesters",
+        "names": "spiriT, Bboo, Pilunte, illisae, hopebreaker"
+      },
+      {
+        "role": "Cover illustration",
+        "names": "Frank Victoria"
+      }
+    ]
+  },
   "key": {
     "theSarceeAreHuntingYouDown": "The Sarcee are hunting you down.",
     "youSavedCharlie": "You saved Charlie.",

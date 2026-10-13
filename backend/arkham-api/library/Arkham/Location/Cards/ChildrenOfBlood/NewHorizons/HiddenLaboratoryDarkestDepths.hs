@@ -14,7 +14,7 @@ newtype HiddenLaboratoryDarkestDepths = HiddenLaboratoryDarkestDepths LocationAt
 hiddenLaboratoryDarkestDepths :: LocationCard HiddenLaboratoryDarkestDepths
 hiddenLaboratoryDarkestDepths =
   symbolLabel
-    $ location HiddenLaboratoryDarkestDepths Cards.hiddenLaboratoryDarkestDepths 4 (PerPlayer 1)
+    $ location HiddenLaboratoryDarkestDepths Cards.hiddenLaboratoryDarkestDepths 4 (PerPlayer 2)
 
 instance HasAbilities HiddenLaboratoryDarkestDepths where
   getAbilities (HiddenLaboratoryDarkestDepths a) =

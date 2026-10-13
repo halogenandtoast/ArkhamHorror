@@ -34,7 +34,7 @@ instance HasAbilities Easttown where
     extendRevealed1 a
       $ groupLimit PerRound
       $ restricted a 1 (Here <> youExist (HasMatchingAsset DiscardableAsset))
-      $ actionAbilityWithCost (DiscardAssetCost AnyAsset)
+      $ actionAbilityWithCost (DiscardAssetCost $ AnyAsset <> AssetControlledBy You)
 
 instance RunMessage Easttown where
   runMessage msg l@(Easttown attrs) = runQueueT $ case msg of

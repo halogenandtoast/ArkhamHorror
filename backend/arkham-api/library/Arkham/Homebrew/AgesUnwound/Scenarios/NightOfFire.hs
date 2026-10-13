@@ -96,8 +96,7 @@ instance RunMessage NightOfFire where
     Setup -> runScenarioSetup NightOfFire attrs do
       setup $ ul do
         li "gatherSets"
-        li.nested "placeRivertown" do
-          li "startAt"
+        li "placeRivertown"
         li "arkhamStreetsDeck"
         li "setAside"
         unscoped $ li "shuffleRemainder"

@@ -2,7 +2,6 @@ module Arkham.Homebrew.AgesUnwound.Locations.WinchmoreHouse (winchmoreHouse) whe
 
 import Arkham.Ability
 import Arkham.ForMovement
-import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectWhen)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -47,7 +46,12 @@ instance RunMessage WinchmoreHouse where
   runMessage msg l@(WinchmoreHouse attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       selectEach (enemyEngagedWith iid) (disengageEnemy iid)
-      connected <- getAccessibleLocations iid (attrs.ability 1)
+      -- The same matcher the criterion uses, deliberately NOT
+      -- `getAccessibleLocations`: that gates on `InvestigatorCanMove`, which is
+      -- false under this card's own `CannotMove`, so it returns [] and the ask
+      -- is silently skipped -- killing the one escape the card prints. The move
+      -- below is uncancelable, which is what carries the exemption.
+      connected <- select $ ConnectedFrom ForMovement (be attrs)
       chooseTargetM iid connected \lid ->
         moveToEdit (attrs.ability 1) iid lid \m -> m {moveCancelable = False}
       pure l

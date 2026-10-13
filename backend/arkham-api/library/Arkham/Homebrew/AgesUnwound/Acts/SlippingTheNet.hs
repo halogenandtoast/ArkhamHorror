@@ -23,7 +23,7 @@ Cramped Passage, advance." Act 2b put 1[per_investigator] clues on each of the
 three, so this cannot be vacuously true the moment the act enters play.
 -}
 instance HasAbilities SlippingTheNet where
-  getAbilities (SlippingTheNet a) =
+  getAbilities = actAbilities \a ->
     [ restricted
         a
         1

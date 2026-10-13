@@ -58,7 +58,8 @@ instance RunMessage AgesUnwound where
       scope "additionalRulesAndClarifications" do
         flavor $ setTitle "title" >> p "alert"
         flavor $ setTitle "title" >> p "storyCards"
-        flavor $ setTitle "title" >> p "gainingAndLosingActions"
+        flavor $ setTitle "title" >> p "swarming"
+        flavor $ setTitle "title" >> p "soloPlay"
       scope "prologue" $ flavor $ setTitle "title" >> p "body"
       -- "Mark 1 Strange Assistance in your Campaign Log."
       incrementRecordCount StrangeAssistance 1

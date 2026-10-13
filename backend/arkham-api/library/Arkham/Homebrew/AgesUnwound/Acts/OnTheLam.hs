@@ -44,7 +44,7 @@ move action, and to a non-empty Arkham Streets deck, so it is never offered for
 a move that would immediately be cancelled.
 -}
 instance HasAbilities OnTheLam where
-  getAbilities (OnTheLam a) =
+  getAbilities = actAbilities \a ->
     [ mkAbility a 1
         $ triggered (WouldMove #when You #any Anywhere connectingDestination) Free
     , restricted a 2 (notExists AccessibleLocation <> ScenarioDeckWithCard ArkhamStreetsDeck)
@@ -69,7 +69,10 @@ instance RunMessage OnTheLam where
     UseThisAbility _ (isSource attrs -> True) 3 -> do
       selectEach EmptyLocation \lid -> do
         card <- field Field.LocationCard lid
-        removeLocation lid
+        -- Not `removeLocation`: that diverts a clueless Victory X location into
+        -- the victory display instead of removing it, and French Hill is
+        -- Victory 1. Shuffling a location back is not overcoming it.
+        removeLocationWithoutVictory lid
         shuffleCardsIntoDeck (Deck.ScenarioDeckByKey ArkhamStreetsDeck) [card]
       pure a
     -- "Lost in Darkness. Flip back to act 1a." Nothing in the scenario advances

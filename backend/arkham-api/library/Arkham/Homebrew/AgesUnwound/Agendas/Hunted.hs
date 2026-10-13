@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Cost (getSpendableClueCount)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
-import Arkham.Helpers.Query (getInvestigators, getLead)
+import Arkham.Helpers.Query (getInvestigators, getLead, getSetAsideCardsMatching)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.AgesUnwound.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.AgesUnwound.CardDefs.Enemies qualified as Enemies
@@ -52,8 +52,13 @@ instance RunMessage Hunted where
       clues <- getSpendableClueCount iids
       scope "hunted" $ chooseOneM lead do
         labeledValidate (clues >= 2) "spendTwoClues" $ spendCluesAsAGroup iids 2
-        labeled "spawnTimeSpirits"
-          $ for_ iids (createSetAsideEnemy_ Enemies.timeSpirit)
+        labeled "spawnTimeSpirits" do
+          -- One distinct set-aside copy each: `createSetAsideEnemy_` resolves
+          -- the def through `selectJust`, and nothing is flushed between the
+          -- calls in this body, so looping the def would mint every Time Spirit
+          -- from the same card.
+          spirits <- getSetAsideCardsMatching (cardIs Enemies.timeSpirit)
+          for_ (zip iids spirits) \(iid, spirit) -> createEnemyWith_ spirit iid id
 
       {- "Shuffle Myriad Assassin, Irregulars and the Agents of Aforgomon
       encounter set into the encounter deck, along with the encounter discard

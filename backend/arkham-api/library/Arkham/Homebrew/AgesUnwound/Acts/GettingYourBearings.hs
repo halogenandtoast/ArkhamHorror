@@ -47,7 +47,7 @@ the streets have started to stay on the table, and its own Forced only sweeps
 away locations that are both empty /and/ resourceless.
 -}
 instance HasAbilities GettingYourBearings where
-  getAbilities (GettingYourBearings a) =
+  getAbilities = actAbilities \a ->
     [ mkAbility a 1
         $ triggered (WouldMove #when You #any Anywhere connectingDestination) Free
     , mkAbility a 2 $ forced $ RoundEnds #when
@@ -75,7 +75,10 @@ instance RunMessage GettingYourBearings where
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       selectEach (EmptyLocation <> LocationWithResources (atMost 0)) \lid -> do
         card <- field Field.LocationCard lid
-        removeLocation lid
+        -- Not `removeLocation`: that diverts a clueless Victory X location into
+        -- the victory display instead of removing it, and French Hill is
+        -- Victory 1. Shuffling a location back is not overcoming it.
+        removeLocationWithoutVictory lid
         shuffleCardsIntoDeck (Deck.ScenarioDeckByKey ArkhamStreetsDeck) [card]
       pure a
     {- "[free] Investigators at your location spend 1[per_investigator] clues, as

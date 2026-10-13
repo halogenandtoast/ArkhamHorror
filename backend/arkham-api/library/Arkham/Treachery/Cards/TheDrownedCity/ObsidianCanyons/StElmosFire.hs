@@ -28,14 +28,12 @@ instance RunMessage StElmosFire where
       case attrs.placement of
         AttachedToLocation lid -> do
           selectEach (investigatorAt lid) $ assignDamageTo (attrs.ability 1) 1
-          let adjacentWithoutFire =
-                connectedTo (LocationWithId lid)
-                  <> LocationWithoutTreachery (treacheryIs Cards.stElmosFire)
-          withInvestigators <- select $ adjacentWithoutFire <> LocationWithInvestigator Anyone
+          let adjacentLocations = connectedTo (LocationWithId lid)
+          withInvestigators <- select $ adjacentLocations <> LocationWithInvestigator Anyone
           candidates <-
             if notNull withInvestigators
               then pure withInvestigators
-              else select adjacentWithoutFire
+              else select adjacentLocations
           lead <- getLead
           chooseOrRunOneM lead $ targets candidates $ place attrs . AttachedToLocation
         _ -> pure ()

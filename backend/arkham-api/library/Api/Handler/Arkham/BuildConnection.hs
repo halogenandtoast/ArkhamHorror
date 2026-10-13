@@ -270,7 +270,7 @@ storeConnection userId now tokens profile = runDB do
             }
  where
   accessExpiry = addUTCTime (fromIntegral $ AB.expiresIn tokens) now
-  refreshExpiry = addUTCTime AB.initialRefreshLifetime now
+  refreshExpiry = addUTCTime AB.refreshLifetime now
 
 {- | Prove the stored credentials still work, and re-read the account they belong
 to while we are there.
@@ -318,7 +318,7 @@ getApiV1ArkhamBuildDecksR = do
   registerUserCustomCards userId
   token <- arkhamBuildAccessToken cfg userId >>= either sendFailure pure
 
-  manifest <- AB.fetchDeckManifest cfg token >>= either sendFailure pure
+  manifest <- AB.fetchDeckManifest cfg token Nothing >>= either sendFailure pure
 
   -- ArkhamDB is a separate upstream that can be down on its own. When it is, the
   -- manifest still lists account decks and the sync token is absent; asking for
@@ -437,7 +437,7 @@ arkhamBuildAccessToken cfg userId = runDB do
                         =. addUTCTime (fromIntegral $ AB.expiresIn tokens) now
                     , ArkhamBuildConnectionRefreshToken =. AB.refreshToken tokens
                     , ArkhamBuildConnectionRefreshTokenExpiresAt
-                        =. addUTCTime AB.rotatedRefreshLifetime now
+                        =. addUTCTime AB.refreshLifetime now
                     , ArkhamBuildConnectionUpdatedAt =. now
                     ]
                   pure $ Right $ AB.accessToken tokens

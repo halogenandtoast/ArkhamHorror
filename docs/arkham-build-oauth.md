@@ -80,7 +80,12 @@ reconnect while the connection keeps working for everything already granted.
 | `POST /api/v1/arkham-build/authorize` | JWT | Starts an authorization, returns the URL to send the browser to |
 | `GET /api/auth/arkham-build/callback` | none | arkham.build's redirect target; redirects back to `/#<returnTo>?arkhamBuild=<outcome>` |
 | `POST /api/v1/arkham-build/verify` | JWT | Calls `/v2/user/me` with the stored token, refreshing it first if needed |
+| `GET /api/v1/arkham-build/decks` | JWT | The user's decks, as chain tips, ready to import |
 | `DELETE /api/v1/arkham-build/connection` | JWT | Revokes the grant upstream and drops the row |
+
+The UI for both deck-facing pieces is behind `isDevBuild()` for now — the
+Connections tab in Settings and the arkham.build source tab on the new-deck page.
+The routes themselves are not gated; they fail closed without credentials.
 
 The frontend router uses **hash history**, so the outcome has to ride inside the
 fragment (`/#/settings?arkhamBuild=connected`) and is readable only through
@@ -96,21 +101,122 @@ being completed.
 
 ## Tokens
 
-An access token lasts an hour; a refresh token lasts 90 days, and 180 after its
-first rotation. Each refresh token works **exactly once** and returns its
-replacement, so `arkhamBuildAccessToken` holds the connection row `FOR UPDATE`
-across the exchange: two concurrent refreshes would otherwise each spend a token
-and leave a connection that can no longer be refreshed at all.
+An access token lasts an hour; a refresh token lasts 180 days, both as issued and
+after each rotation — `AB.refreshLifetime`. Each refresh token works **exactly
+once** and returns its replacement, so `arkhamBuildAccessToken` holds the
+connection row `FOR UPDATE` across the exchange: two concurrent refreshes would
+otherwise each spend a token and leave a connection that can no longer be
+refreshed at all.
 
 Both tokens are stored in the clear, because they have to be usable — a digest
-cannot be sent as a bearer token. What limits the damage is scope: we request
-`profile:read decks:read`, so a leaked token reads decks and nothing else. It
-cannot write or delete a deck, and it cannot touch anything on this site.
+cannot be sent as a bearer token. What limits the damage is scope: a leaked token
+can read and write the decks on that arkham.build account, and nothing else. It
+cannot delete one, and it cannot touch anything on this site.
+
+arkham.build also offers **optional PKCE** (S256 only). We do not use it. PKCE
+exists for a public client that cannot keep a secret, and the upstream docs are
+explicit that it does not replace confidential-client authentication. Adopting it
+would mean storing a verifier per authorization request for no gain.
+
+Every `/v2/*` route shares one rate limit: **100 requests per 60 seconds per
+client IP**, which blocks for a further 60 seconds once tripped. In production
+that is one IP for every player at once, so it is a per-deployment budget, not a
+per-player one — `AB.rateLimited` picks the 429 out of a `Failure`. It is the
+reason a deck list is one manifest plus batches of 250 rather than a read per
+deck.
+
+## What we call upstream
+
+The whole user API is eleven routes. `ArkhamBuild.OAuth` can now call ten of
+them; which of those have a caller is a separate question.
+
+| Upstream route | Scope | `AB.` function | Called from |
+| --- | --- | --- | --- |
+| `GET /v2/oauth/authorize` | — | `authorizeUrl` | `postApiV1ArkhamBuildAuthorizeR` |
+| `POST /v2/oauth/token` | — | `exchangeCode`, `refreshTokens` | the callback, and `arkhamBuildAccessToken` |
+| `POST /v2/oauth/revoke` | — | `revokeRefreshToken` | `deleteApiV1ArkhamBuildConnectionR`, and account deletion |
+| `GET /v2/user/me` | `profile:read` | `fetchProfile` | the connection and verify endpoints |
+| `GET /v2/user/decks/manifest` | `decks:read` | `fetchDeckManifest` | `getApiV1ArkhamBuildDecksR` |
+| `POST /v2/user/decks/batch` | `decks:read` | `fetchDeckBatch` | `getApiV1ArkhamBuildDecksR` |
+| `GET /v2/user/decks/{source}/{id}` | `decks:read` | `fetchDeck` | nothing yet — see *Syncing a deck* |
+| `POST /v2/user/decks/{source}/{id}/upgrade` | `decks:write` | `upgradeDeck` | nothing yet — see *Writing an upgrade back* |
+| `PUT /v2/user/decks/{source}/{id}` | `decks:write` | `replaceDeck` | nothing yet |
+| `POST /v2/user/decks/{source}` | `decks:write` | `createDeck` | nothing yet |
+| `DELETE /v2/user/decks/{source}/{id}` | `decks:delete` | — | not written: the scope is not requested, so the call could only ever 403 |
+
+### Addressing a deck
+
+A deck is a provider and an id, and an id means nothing to the other provider:
+`account` ids are strings, `arkhamdb` ids are positive integers. `DeckRef` keeps
+the id as the JSON it arrived as so it goes back unchanged, and renders it into a
+path segment only when a route needs one. An id that is neither shape fails
+locally rather than becoming a request.
+
+### Writing a deck
+
+A write replaces **all** mutable content, while silently ignoring the
+server-owned fields (`id`, `source`, `user_id`, `date_creation`, `date_update`,
+`version`, `previous_deck`, `next_deck`) mixed in with it.
+
+That matters because our `ArkhamDBDecklist` models nine of `OAuthDeck`'s
+twenty-four fields. Sending one as a write would erase everything it does not
+model — the player's `description_md`, their `tags`, their `exile_string`, the
+`xp` figures. So `DeckWrite` is the deck object itself rather than a record:
+`deckWrite` starts from a deck as read and the `with*` functions change one key,
+leaving the rest exactly as arkham.build had it. `newDeckWrite` is for a deck
+that did not come from there, and sets only the six fields the API requires.
+
+`meta` deserves the same care in the other direction: it is a JSON document
+inside a string, holding customizations, attachments, the extra deck and the
+alternate front. `withMeta` replaces the whole string, so a caller must edit it,
+not rebuild it.
+
+## Where the rest would go
+
+### Syncing a deck
+
+`postApiV1ArkhamSyncDeckR` re-reads a deck from its `url`. An arkham.build
+**account** deck has no public URL, so the button cannot work on anything
+imported through OAuth — and an arkham.build share URL is a version-pinned
+snapshot anyway (#5257). `fetchDeck` is the fix, but it needs the row to remember
+the `DeckRef` it came from: `arkham_decks` stores `url Text Maybe` and nothing
+else, so an OAuth-imported deck currently has no way back to its source. That is
+a migration, not a handler change.
+
+### Writing an upgrade back
+
+`putApiV1ArkhamGameDecksR` is the campaign's upgrade window. Today the player
+leaves, upgrades on arkham.build by hand, and pastes the result back; the handler
+only mirrors what it was given into `arkham_decks`.
+
+The engine already knows what the upgrade is worth: `campaignXpBreakdown`
+(`XpBreakdown`/`XpEntry`) is the experience earned, `campaignDecks` is the deck
+as the scenario left it, and `campaignStoryCards` the cards earned in play.
+`POST .../upgrade` takes exactly that shape — the child's desired content
+including its **total** `xp`, which may not be below what carries over from the
+parent, and with the same investigator. So the realistic first write is to create
+the child deck pre-loaded with the XP the campaign awarded and the exiles it
+recorded, and let the player spend it on arkham.build rather than re-entering it.
+
+Two upstream behaviours shape that handler. A parent that already has a child is
+a 409, which makes the call non-idempotent in a place that already has a
+resubmit problem (#5256) — the same guard that stops a double upgrade has to
+cover the write. And for an ArkhamDB parent, a child can be created upstream and
+then fail to be written: the API returns 409 with the new child's id, and the
+child stays linked in ArkhamDB. There is no rollback, so that id has to be
+recorded rather than discarded.
+
+### Creating and replacing
+
+`createDeck` would export a deck built here — a homebrew list, or one assembled
+in the card builder — to the player's arkham.build account. `replaceDeck` fits
+a deck we already own there and want to keep in step without starting a new
+history chain. Neither has a user-facing reason yet.
 
 ## Files
 
-- `backend/arkham-api/library/ArkhamBuild/OAuth.hs` — the protocol: URLs, token
-  exchange, refresh, revoke, `/v2/user/me`. No database, no `Handler`.
+- `backend/arkham-api/library/ArkhamBuild/OAuth.hs` — the protocol: every call,
+  and the DTOs they carry. No database, no `Handler`.
 - `backend/arkham-api/library/Api/Handler/Arkham/BuildConnection.hs` — the policy:
   who owns a connection, when to refresh it, where to send the browser.
 - `backend/arkham-api/library/Entity/Arkham/BuildConnection.hs`,
@@ -118,11 +224,6 @@ cannot write or delete a deck, and it cannot touch anything on this site.
 - `migrations/deploy/arkham_build_connections.sql` — both tables.
 - `frontend/src/components/ArkhamBuildConnection.vue` — the Connections panel in
   Settings, and `components/icons/ArkhamBuildLogo.vue` for its mark.
+- `frontend/src/arkham/components/NewDeck.vue` — the **arkham.build** source tab
+  on the new-deck page, which lists what `getApiV1ArkhamBuildDecksR` returns.
 
-## Not done yet
-
-Reading decks. The scopes and the token plumbing are in place, so the next step is
-`GET /v2/user/decks/manifest` plus `POST /v2/user/decks/batch` behind an endpoint
-that offers the user's arkham.build decks as import candidates, reusing
-`normalizeArkhamBuildDeckCodes` from `Api.Handler.Arkham.Decks` to translate
-custom-card ids.

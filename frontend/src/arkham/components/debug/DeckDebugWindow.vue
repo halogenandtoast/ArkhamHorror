@@ -107,8 +107,8 @@ const image = (card: CardContents) => imgsrc(cardImage(card))
             <button type="button" @click="stepDraw(-1)">−</button>
             <span>{{ drawCount }}</span>
             <button type="button" @click="stepDraw(1)">+</button>
+            <button type="button" class="deck-debug__stepper-draw" :disabled="deck.length === 0" @click="draw">{{ $t('debug.deck.drawButton') }}</button>
           </div>
-          <button type="button" :disabled="deck.length === 0" @click="draw">{{ $t('debug.deck.drawButton', { count: drawCount }) }}</button>
           <button type="button" :disabled="!canSelectDraw || deck.length === 0" v-tooltip="$t('debug.deck.selectDrawHint')" @click="selectDraw">
             {{ $t('draw.selectDraw') }}
           </button>
@@ -219,21 +219,46 @@ const image = (card: CardContents) => imgsrc(cardImage(card))
   width: 100%;
 }
 
+/* − count + Draw as one control: a single border, with the buttons as its segments */
 .deck-debug__stepper {
   display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  align-self: stretch;
+  align-items: stretch;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  background: var(--background-dark);
+  overflow: hidden;
 }
 
 .deck-debug__stepper span {
-  min-width: 1.6em;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.8em;
   font-weight: 600;
+  border-inline: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .deck-debug__stepper button {
   width: 26px;
-  padding: 4px 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.deck-debug__stepper button:hover:not(:disabled) {
+  border-color: transparent;
+}
+
+.deck-debug__stepper .deck-debug__stepper-draw {
+  width: auto;
+  padding: 0 10px;
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.deck-debug__stepper .deck-debug__stepper-draw:hover:not(:disabled) {
+  border-left-color: rgba(255, 255, 255, 0.15);
 }
 
 .deck-debug__field {

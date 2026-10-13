@@ -56,6 +56,8 @@ frontend/public/img/arkham/seals/
 frontend/public/img/arkham/playing-cards/
 # 3rd edition art, also on the CDN under img/ah3e/
 frontend-3ed/public/img/
+# Custom card art written by a local backend (custom-card-art-dir)
+frontend/public/img/custom/
 
 **/postgres_password.txt
 k8s/

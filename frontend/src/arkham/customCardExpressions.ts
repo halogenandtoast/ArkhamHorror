@@ -360,6 +360,7 @@ const STAGE_NAMES = [
   'apply',
   'get',
   'map',
+  'replicate',
   'filter',
   'first',
   'count',
@@ -445,6 +446,17 @@ export function stagesFor(from0: string | undefined): Stage[] {
       { name: 'divide', label: 'divided by', to: 'Int', template: { divide: [null, null] } },
     )
   }
+
+  /* The one stage that makes a list out of something that is not one: "this
+   * value, as many times as that works out to". A modifier like AddSkillIcons
+   * wants the list, not the count, so without this "one {wild} for every 2
+   * clues" cannot be said at all. */
+  stages.push({
+    name: 'replicate',
+    label: 'repeated a number of times',
+    to: listOf(from),
+    template: { replicate: null, times: 1 },
+  })
 
   if (list || unknown) {
     stages.push(

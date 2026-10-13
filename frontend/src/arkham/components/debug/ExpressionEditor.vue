@@ -293,6 +293,11 @@ const patchStage = (at: number, changes: Record<string, any>) =>
 const setStageProp = (at: number, prop: string) =>
   patchStage(at, { get: prop, kind: stageAt(at)?.kind ?? 'card' })
 
+/* How many times a `replicate` repeats. Beside the stage rather than inside it,
+ * as `get` keeps its `kind`: the value being repeated is what came down the
+ * chain, and this is only how long the list is. */
+const setStageTimes = (at: number, value: any) => patchStage(at, { times: value })
+
 const stagePredicateKey = (at: number) => {
   const f = stageAt(at)?.filter
   if (!f || typeof f !== 'object') return 'eq'
@@ -599,6 +604,19 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
         <p v-for="problem in stageOperandProblems(at)" :key="problem" class="pipe-error">
           {{ problem }}.
         </p>
+
+        <!-- How many times, which is beside the stage rather than inside it:
+             the value being repeated is what came down the chain. -->
+        <div v-if="keyAt(at) === 'replicate'" class="pipe-operand">
+          <ExpressionEditor
+            :modelValue="stageAt(at)?.times ?? 1"
+            :bindings="bindings"
+            :queryKinds="queryKinds"
+            expect="Int"
+            label="how many times"
+            @update:modelValue="setStageTimes(at, $event)"
+          />
+        </div>
 
         <div v-if="keyAt(at) === 'filter'" class="pipe-operand">
           <ExpressionEditor

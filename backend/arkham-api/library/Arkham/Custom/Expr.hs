@@ -111,6 +111,14 @@ evalExpr env v0 = case substituteExpr env v0 of
         values <- maybe mempty skillTestIconValues <$> getSkillTest
         let valueOf v = maybe 0 (\i -> findWithDefault 0 i values) (parseMaybe parseJSON v)
         pure $ toJSON (sum (map valueOf icons))
+    {- The same value, a worked-out number of times. Nothing else in the
+    language builds a list of a given length, and several cards need one: "gains
+    one {wild} for every 2 clues you control" is a list of icons whose length the
+    game decides, and the modifier that takes it wants the list, not the count. -}
+    | Just e <- KeyMap.lookup "replicate" o -> do
+        n <- maybe (pure 0) (exprInt env) (KeyMap.lookup "times" o)
+        x <- evalExpr env e
+        pure $ toJSON (List.replicate (max 0 n) x)
     | Just e <- KeyMap.lookup "unique" o -> unary e (List.nub . valueList)
     | Just e <- KeyMap.lookup "concat" o -> unary e (concatMap valueList . valueList)
     | Just e <- KeyMap.lookup "reverse" o -> unary e (reverse . valueList)

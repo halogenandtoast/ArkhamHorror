@@ -15,6 +15,9 @@ const K = 'customCardSets.'
 withDefaults(
   defineProps<{
     title: string
+    /* An expansion's own symbol, for a page that is one set. Decorative: the
+     * title beside it already names it. */
+    icon?: string | null
     lede?: string
     /** Hidden on the one page that is a detail view rather than a section. */
     experimental?: boolean
@@ -34,7 +37,10 @@ withDefaults(
     <section class="cc-page" :class="{ inline }">
       <header class="cc-head">
         <div class="cc-titles">
-          <h1>{{ title }}</h1>
+          <h1>
+            <img v-if="icon" class="cc-icon" :src="icon" alt="" />
+            {{ title }}
+          </h1>
           <p v-if="lede" class="cc-lede">{{ lede }}</p>
         </div>
         <!-- Whatever this page does at the top level: make a set, import one. -->
@@ -111,10 +117,21 @@ withDefaults(
   min-width: 0;
 
   h1 {
+    align-items: center;
+    display: flex;
     font-family: teutonic, sans-serif;
     font-size: 1.9em;
+    gap: 0.4rem;
     line-height: 1.1;
     margin: 0;
+  }
+
+  /* Sized to the heading rather than fixed, so the symbol keeps its proportion
+     to the name whatever the type scale does. */
+  .cc-icon {
+    height: 1.1em;
+    object-fit: contain;
+    width: 1.1em;
   }
 }
 

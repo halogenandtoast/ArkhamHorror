@@ -195,6 +195,7 @@ async function take() {
 <template>
   <CustomCardsPage
     :title="detail?.name ?? t(`${K}marketplace`)"
+    :icon="detail?.listing.icon"
     :experimental="false"
     :status="status"
     :error="error"

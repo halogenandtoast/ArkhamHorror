@@ -49,6 +49,13 @@ const props = defineProps<{
   hasRevelationPlacement?: boolean
   revelationPlacements?: { value: string; label: string }[]
   isInvestigator?: boolean
+  /* Names in scope besides the card's own. A KEYWORD's behaviour is edited with
+   * these same fields, and what it may refer to is its slots rather than any one
+   * card's fields -- so they are passed in rather than worked out here. */
+  extraBindings?: Binding[]
+  /* Slots that stand for a list of steps, offered as a step of their own. Only a
+   * keyword's behaviour has any. */
+  slotSteps?: Binding[]
 }>()
 const emit = defineEmits<{
   'update:abilities': [v: any[]]
@@ -511,7 +518,7 @@ const removeModifierLet = (index: number, at: number) =>
  * lets have named, in order, so a later let can build on an earlier one. Without
  * this a name the author just bound reads as unbound in every field below it. */
 const modifierScope = (modifier: any): Binding[] => {
-  const scope = [...cardBindings(props.cardType)]
+  const scope = [...cardBindings(props.cardType), ...(props.extraBindings ?? [])]
   for (const bound of modifierLets(modifier)) {
     const name = String(bound?.name ?? '').trim()
     if (!name) continue
@@ -537,7 +544,7 @@ const modifierScope = (modifier: any): Binding[] => {
 /* What the let at `at` can refer to: the card's bindings plus the lets before it,
  * never itself. */
 const letScope = (modifier: any, at: number): Binding[] => {
-  const scope = [...cardBindings(props.cardType)]
+  const scope = [...cardBindings(props.cardType), ...(props.extraBindings ?? [])]
   modifierLets(modifier)
     .slice(0, at)
     .forEach((bound: any) => {
@@ -603,15 +610,23 @@ const handlerAnchor = (index: number) => `ccb-handler-${index}-message`
  * window. */
 function abilityScope(ability: any, index: number): Binding[] {
   const name = abilityWindow(ability)
-  const base = [...cardBindings(props.cardType), ...paymentBindings()]
+  const base = [...cardBindings(props.cardType), ...(props.extraBindings ?? []), ...paymentBindings()]
   if (!name) return base
   return [...base, ...windowBindings(windowFields(name), name, abilityAnchor(index))]
 }
 
+/* The plain card scope plus whatever was passed in, for the places that want it
+ * without any of a step's or a window's own bindings. */
+const scopeWithExtras = computed(() => [
+  ...cardBindings(props.cardType),
+  ...(props.extraBindings ?? []),
+])
+
 function handlerScope(handler: any, index: number): Binding[] {
   const tag = handler.on
-  if (!knownMessage(tag)) return cardBindings(props.cardType)
-  return [...cardBindings(props.cardType), ...messageBindings(messageFields(tag), tag, handlerAnchor(index))]
+  const base = [...cardBindings(props.cardType), ...(props.extraBindings ?? [])]
+  if (!knownMessage(tag)) return base
+  return [...base, ...messageBindings(messageFields(tag), tag, handlerAnchor(index))]
 }
 
 </script>
@@ -773,6 +788,7 @@ function handlerScope(handler: any, index: number): Binding[] {
         </template>
 
         <StepsEditor
+          :slotSteps="slotSteps"
           :queryKinds="QUERY_KINDS"
           :bindings="abilityScope(ability, index)"
           :path="`ability${index}`"
@@ -795,7 +811,7 @@ function handlerScope(handler: any, index: number): Binding[] {
         <!-- What the constant inherits. A name one of its own lets works out is
              not inherited, so it is announced at the let that binds it rather
              than listed here as though it had always been there. -->
-        <ScopeBar :bindings="cardBindings(props.cardType)" />
+        <ScopeBar :bindings="scopeWithExtras" />
 
         <!-- First, because everything below can use what these work out -- the
              same order a `let` step sits in above the steps that read it. -->
@@ -934,8 +950,9 @@ function handlerScope(handler: any, index: number): Binding[] {
         </label>
         <p class="hint">What it does when it is revealed:</p>
         <StepsEditor
+          :slotSteps="slotSteps"
           :queryKinds="QUERY_KINDS"
-          :bindings="cardBindings(props.cardType)"
+          :bindings="scopeWithExtras"
           :path="'revelation'"
           :modelValue="revelationSteps"
           @update:modelValue="revelationSteps = $event"
@@ -956,16 +973,18 @@ function handlerScope(handler: any, index: number): Binding[] {
           flag this card's own abilities read has to be set:
         </p>
         <StepsEditor
+          :slotSteps="slotSteps"
           :queryKinds="QUERY_KINDS"
-          :bindings="cardBindings(props.cardType)"
+          :bindings="scopeWithExtras"
           :path="'elderSignReveal'"
           :modelValue="elderSignRevealSteps"
           @update:modelValue="elderSignRevealSteps = $event"
         />
         <p class="hint">What it does when it resolves, beyond the modifier:</p>
         <StepsEditor
+          :slotSteps="slotSteps"
           :queryKinds="QUERY_KINDS"
-          :bindings="cardBindings(props.cardType)"
+          :bindings="scopeWithExtras"
           :path="'elderSign'"
           :modelValue="elderSignSteps"
           @update:modelValue="elderSignSteps = $event"
@@ -975,8 +994,9 @@ function handlerScope(handler: any, index: number): Binding[] {
           so these run when the test is passed:
         </p>
         <StepsEditor
+          :slotSteps="slotSteps"
           :queryKinds="QUERY_KINDS"
-          :bindings="cardBindings(props.cardType)"
+          :bindings="scopeWithExtras"
           :path="'elderSignSuccess'"
           :modelValue="elderSignSuccessSteps"
           @update:modelValue="elderSignSuccessSteps = $event"
@@ -1072,6 +1092,7 @@ function handlerScope(handler: any, index: number): Binding[] {
         </p>
 
         <StepsEditor
+          :slotSteps="slotSteps"
           :queryKinds="QUERY_KINDS"
           :bindings="handlerScope(handler, index)"
           :path="`handler${index}`"

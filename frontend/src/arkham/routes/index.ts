@@ -9,6 +9,18 @@ export default [
     props: true,
   },
   {
+    /* One of your own sets, open in the builder.
+     *
+     * Its own url rather than a remembered selection, so a set can be linked to,
+     * bookmarked and reopened by a reload -- and so the back button means what
+     * it looks like it means after clicking into one. */
+    path: '/card-builder/sets/:setId',
+    name: 'CardBuilderSet',
+    component: () => import('@/arkham/views/CardBuilder.vue'),
+    meta: { requiresAuth: true, title: "Arkham Horror: Custom Card Sets" },
+    props: true,
+  },
+  {
     // Nested under the card builder's path, so the marketplace reads as part of
     // the same section rather than a separate corner of the app.
     path: '/card-builder/marketplace',

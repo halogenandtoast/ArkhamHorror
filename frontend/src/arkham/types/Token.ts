@@ -81,9 +81,30 @@ function literalUnionDecoder<const T extends readonly string[]>(
   );
 }
 
-export const tokenDecoder = literalUnionDecoder(TOKENS, "Token");
-export type KnownToken = JsonDecoder.FromDecoder<typeof tokenDecoder>;
+const knownTokenDecoder = literalUnionDecoder(TOKENS, "Token");
+export type KnownToken = JsonDecoder.FromDecoder<typeof knownTokenDecoder>;
 export type Token = KnownToken | (string & {});
+
+/* How the engine spells a token that belongs to a custom card set rather than
+ * one it prints itself (`Arkham.Token.customTokenPrefix`). */
+export const CUSTOM_TOKEN_PREFIX = 'custom:';
+
+export const customTokenSlug = (token: Token): string | null =>
+  token.startsWith(CUSTOM_TOKEN_PREFIX) ? token.slice(CUSTOM_TOKEN_PREFIX.length) : null;
+
+/* A set's own token is not a literal: the slug is the author's to choose, so
+ * anything past the prefix is one. Without this a card holding one decoded to
+ * nothing and the whole entity's tokens came back empty. */
+const customTokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.string().chain((t) =>
+  customTokenSlug(t)
+    ? JsonDecoder.constant<Token>(t)
+    : JsonDecoder.fail<Token>(`not a custom token: ${t}`),
+);
+
+export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>(
+  [knownTokenDecoder, customTokenDecoder],
+  "Token",
+);
 export const TokenType = Object.fromEntries(TOKENS.map((t) => [t, t])) as {
   readonly [K in KnownToken]: K;
 };

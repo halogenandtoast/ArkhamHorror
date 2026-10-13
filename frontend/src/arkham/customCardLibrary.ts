@@ -191,24 +191,46 @@ export async function createSet(name: string): Promise<LibrarySet> {
   return set
 }
 
-/* Rename, redescribe, relink, or any of them. `description` and `url` left out
- * keep whatever is stored, so renaming cannot wipe a blurb or a link. */
+/* Rename, redescribe, relink, mark as an expansion, or declare its tokens and
+ * keywords -- any of them. A field left out keeps whatever is stored, so
+ * renaming cannot wipe a blurb, a link, or a set's tokens. */
 export async function updateSet(
   id: string,
-  changes: { name: string; description?: string | null; url?: string | null },
+  changes: {
+    name: string
+    description?: string | null
+    url?: string | null
+    investigatorExpansion?: boolean
+    icon?: string | null
+    tokens?: Api.CustomSetToken[]
+    keywords?: Api.CustomSetKeyword[]
+  },
 ): Promise<LibrarySet> {
   const set = await Api.updateCustomCardSet(id, changes)
   upsertSet(set)
-  /* The name is stamped onto every card in the set so a card exported on its
-   * own still says where it came from; the server rewrites them, and the copies
-   * held here have to follow or an export taken before the next reload would
-   * carry the old name. The description and the link are not stamped on: they
-   * describe the set, and a card on its own is not the set. */
+  /* The name, and what the set declares, are stamped onto every card in it: a
+   * card exported on its own still says where it came from, and a card in a
+   * running game still knows what its keyword means and what its token looks
+   * like. The server rewrites them, and the copies held here have to follow or
+   * an export taken before the next reload would carry the old ones. The
+   * description, the link and the icon are not stamped on: they describe the
+   * set, and a card on its own is not the set. */
   for (const card of entries) {
-    if (card.setId === id) card.def.meta = { ...card.def.meta, set: set.name }
+    if (card.setId === id) card.def.meta = { ...card.def.meta, ...setStamp(set) }
   }
   registerCustomCards(entries.filter((c) => c.setId === id))
   return set
+}
+
+/* What a set writes into each of its cards' defs, mirroring `stampSet` on the
+ * server. An empty declaration is `undefined` rather than `[]`, so an ordinary
+ * set's cards carry nothing but its name. */
+function setStamp(set: LibrarySet): Record<string, unknown> {
+  return {
+    set: set.name,
+    setTokens: set.tokens?.length ? set.tokens : undefined,
+    setKeywords: set.keywords?.length ? set.keywords : undefined,
+  }
 }
 
 export const renameSet = (id: string, name: string) => updateSet(id, { name })
@@ -235,6 +257,10 @@ export async function importSet(payload: {
   description?: string | null
   url?: string | null
   sourceCode: string | null
+  investigatorExpansion?: boolean
+  icon?: string | null
+  tokens?: Api.CustomSetToken[]
+  keywords?: Api.CustomSetKeyword[]
   cards: CustomCard[]
 }): Promise<LibrarySet> {
   const { set, cards } = await Api.importCustomCardSet({
@@ -242,6 +268,10 @@ export async function importSet(payload: {
     description: payload.description,
     url: payload.url,
     sourceCode: payload.sourceCode,
+    investigatorExpansion: payload.investigatorExpansion,
+    icon: payload.icon,
+    tokens: payload.tokens,
+    keywords: payload.keywords,
     cards: payload.cards.map((c) => ({ def: c.def, art: c.art })),
   })
 
@@ -346,6 +376,13 @@ export type CardExport = {
     description?: string | null
     url?: string | null
     sourceCode: string | null
+    /* What an investigator expansion brings besides cards. Written out rather
+     * than left to the copies stamped on the cards so a file can be read and
+     * edited by hand; the server falls back to the cards when it is absent. */
+    investigatorExpansion?: boolean
+    icon?: string | null
+    tokens?: Api.CustomSetToken[]
+    keywords?: Api.CustomSetKeyword[]
   }
   cards: { def: any; art: string | null }[]
 }
@@ -355,6 +392,10 @@ export type ParsedCardExport = {
   description: string | null
   url: string | null
   sourceCode: string | null
+  investigatorExpansion?: boolean
+  icon?: string | null
+  tokens?: Api.CustomSetToken[]
+  keywords?: Api.CustomSetKeyword[]
   cards: CustomCard[]
 }
 
@@ -374,6 +415,16 @@ export async function exportCards(cards: CustomCard[], set?: LibrarySet): Promis
       art: (await inlineArt(c.art)) ?? c.art,
     })),
   )
+  const icon = set?.icon ? ((await inlineArt(set.icon)) ?? set.icon) : null
+  /* Token art is inlined for the same reason a card's is: it was uploaded under
+   * the exporter's account, on a host the importer may not even be able to read,
+   * so a bare URL is worth nothing to them. */
+  const tokens = await Promise.all(
+    (set?.tokens ?? []).map(async (t) => ({
+      ...t,
+      image: t.image ? ((await inlineArt(t.image)) ?? t.image) : null,
+    })),
+  )
   return {
     version: EXPORT_VERSION,
     ...(set
@@ -383,6 +434,10 @@ export async function exportCards(cards: CustomCard[], set?: LibrarySet): Promis
             description: set.description,
             url: set.url,
             sourceCode: set.sourceCode,
+            investigatorExpansion: set.investigatorExpansion,
+            icon,
+            tokens,
+            keywords: set.keywords ?? [],
           },
         }
       : {}),
@@ -448,6 +503,13 @@ export function parseCardExport(raw: string, fallbackName = 'Imported cards'): P
     description: described || null,
     url: linked || null,
     sourceCode: parsed?.set?.sourceCode ?? null,
+    /* Left undefined rather than defaulted when the file does not say: the
+     * server then reads the copies stamped on the cards, which is the only
+     * thing a file written before expansions existed has. */
+    investigatorExpansion: parsed?.set?.investigatorExpansion,
+    icon: parsed?.set?.icon,
+    tokens: parsed?.set?.tokens,
+    keywords: parsed?.set?.keywords,
     cards,
   }
 }

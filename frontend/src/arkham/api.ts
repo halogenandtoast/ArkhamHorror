@@ -216,6 +216,58 @@ export type StoredCustomCard = {
   updatedAt: string
 }
 
+/* A marker an investigator expansion brings with it: the token its cards place
+ * on themselves. `slug` is what the engine stores and what a card's keyword
+ * names; `name` is what a player reads; `image` is what it is drawn with, and a
+ * token without one falls back to a plain marker. */
+export type CustomSetToken = {
+  slug: string
+  name: string
+  image?: string | null
+}
+
+/* One thing a keyword asks each card that prints it to fill in.
+ *
+ * `kind` only decides which editor the builder puts there; the engine just
+ * substitutes whatever was filled in. `required` it does read: a card that
+ * leaves a required slot empty gets nothing from the keyword, rather than a
+ * template with a hole in it that quietly fails to decode. */
+export type KeywordSlot = {
+  name: string
+  label: string
+  kind: 'window' | 'criterion' | 'text' | 'steps' | 'value'
+  required: boolean
+}
+
+/* What a keyword does, as templates in the shapes the engine already runs.
+ *
+ * `abilities`, `modifiers` and `handlers` are appended to the card's own, with
+ * `$slot` replaced by what that card filled in. `activeWhen` gates the card's
+ * OWN result -- the modifiers and abilities on its `_keywords` entry -- which
+ * is how "that benefit remains active until the card leaves play" is said once
+ * for every card that prints the keyword. */
+export type KeywordBehavior = {
+  abilities: any[]
+  modifiers: any[]
+  handlers: any[]
+  activeWhen?: any
+}
+
+/* A keyword an investigator expansion prints on its own cards.
+ *
+ * `description` is the rules text as the box prints it. A keyword with no
+ * `behavior` is rules text and nothing more -- the cards that print it say what
+ * they do in the ordinary way, and the description is there so a player can
+ * read what the word means. One WITH a behavior is run by the engine, which
+ * knows nothing about the keyword beyond what is written here. */
+export type CustomSetKeyword = {
+  name: string
+  description: string
+  token?: string | null
+  slots: KeywordSlot[]
+  behavior?: KeywordBehavior | null
+}
+
 /* A set is what a card belongs to: the unit you build, export, and hand to
  * someone else. Every card has one. */
 export type StoredCustomCardSet = {
@@ -233,6 +285,17 @@ export type StoredCustomCardSet = {
   // The pack id an imported set came from, so re-importing that pack replaces
   // this set rather than making a second copy of it. Null for a set made here.
   sourceCode: string | null
+  /* Whether the set is an investigator expansion: a box, rather than a handful
+   * of cards. The three fields below belong to one and are only asked about
+   * when this is set. */
+  investigatorExpansion: boolean
+  // The expansion symbol. Shown in the marketplace; nothing in a game reads it.
+  icon: string | null
+  /* The markers this set's cards place on themselves. Counters, not chaos
+   * tokens -- a chaos token belongs to a scenario. */
+  tokens: CustomSetToken[]
+  // The keywords this set's cards print, and what each one means.
+  keywords: CustomSetKeyword[]
   cardCount: number
   updatedAt: string
   /* The marketplace listing this set came from and still follows. All three go
@@ -271,18 +334,27 @@ export const createCustomCardSet = async (
   return data
 }
 
-/* Name, description and link in one call, because they are one form.
+/* Everything about a set in one call, because it is one form.
  *
- * `description` and `url` are three-valued on the wire: leaving the key out
+ * Every field but the name is three-valued on the wire: leaving the key out
  * keeps whatever is stored, `null` clears it. So a caller that only means to
- * rename passes neither rather than passing null, which would silently wipe
- * them.
+ * rename passes nothing else rather than passing null, which would silently
+ * wipe the rest.
  *
- * Renaming stops a set following a published one; changing only the description
- * or the link does not. */
+ * Renaming, or changing what the set declares, stops it following a published
+ * one -- the cards carry copies, so those are the cards changing. Changing only
+ * the description, the link or the icon does not. */
 export const updateCustomCardSet = async (
   id: string,
-  changes: { name: string; description?: string | null; url?: string | null },
+  changes: {
+    name: string
+    description?: string | null
+    url?: string | null
+    investigatorExpansion?: boolean
+    icon?: string | null
+    tokens?: CustomSetToken[]
+    keywords?: CustomSetKeyword[]
+  },
 ): Promise<StoredCustomCardSet> => {
   const { data } = await api.put(`arkham/custom-card-sets/${id}`, changes)
   return data
@@ -304,6 +376,12 @@ export const importCustomCardSet = async (payload: {
   description?: string | null
   url?: string | null
   sourceCode: string | null
+  /* What the set declares. A file written before expansions existed carries
+   * none of it, and the server falls back to the copies stamped on the cards. */
+  investigatorExpansion?: boolean
+  icon?: string | null
+  tokens?: CustomSetToken[]
+  keywords?: CustomSetKeyword[]
   cards: { def: any; art: string | null }[]
 }): Promise<{ set: StoredCustomCardSet; cards: StoredCustomCard[] }> => {
   const { data } = await api.post('arkham/custom-card-sets/import', payload)
@@ -326,6 +404,11 @@ export type PublishedCardSet = {
   /* Where the set lives in the world, for the one thing a listing cannot say
    * for itself. The listing's own, like the description. */
   url: string | null
+  /* The expansion symbol, copied onto the listing when the set was published,
+   * so a symbol can be drawn beside a name without loading a card. */
+  icon: string | null
+  // Whether this is an investigator expansion rather than a handful of cards.
+  investigatorExpansion: boolean
   author: string
   mine: boolean
   /* Whether the author is an admin, which is what the marketplace calls

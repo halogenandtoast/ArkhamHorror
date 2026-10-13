@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { computed, ref, nextTick, onUnmounted } from 'vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
-import { type Token, type Tokens } from '@/arkham/types/Token'
+import { customTokenSlug, type Token, type Tokens } from '@/arkham/types/Token'
+import { customSetToken } from '@/arkham/customCards'
 import { useDebug } from '@/arkham/debug'
 import { draggedOff, removeDragAttrs, type RemoveTarget } from '@/arkham/debugCardDrop'
 
@@ -17,6 +18,10 @@ export type TokenPoolItem = {
   type: string
   amount?: number
   tooltip?: string
+  /* An image to draw instead of the one `type` names. Only a custom card set's
+   * own token has one: the engine knows it by a slug and the art came with the
+   * set, so there is no `type` to resolve it from. */
+  image?: string
   class?: unknown
   force?: boolean
   /* The backend `Token` tag to remove when this item is dragged to the debug trash.
@@ -107,9 +112,27 @@ const tokenKeys = computed<Token[]>(() => {
   return keys
 })
 
+/* A token a custom card set brought with it. The engine only knows its slug, so
+ * its name and its art are read back off the set, which stamped both onto every
+ * card in it. A token whose set is not registered still counts -- it is drawn as
+ * a plain marker labelled with its slug rather than disappearing. */
+type ResolvedTokenConfig = { type: string; tooltip?: string; image?: string }
+
+function customConfig(token: Token): ResolvedTokenConfig | null {
+  const slug = customTokenSlug(token)
+  if (!slug) return null
+  const declared = customSetToken(slug)
+  return {
+    type: 'resource',
+    tooltip: declared?.name || slug,
+    image: declared?.image ?? undefined,
+  }
+}
+
 const tokenItems = computed<TokenPoolItem[]>(() => tokenKeys.value.flatMap((token) => {
   const amount = props.tokens[token] ?? 0
-  const config = TOKEN_CONFIG[token] ?? { type: 'resource', tooltip: token }
+  const config: ResolvedTokenConfig =
+    TOKEN_CONFIG[token] ?? customConfig(token) ?? { type: 'resource', tooltip: token }
   const override = props.overrides[token] ?? {}
   const force = override.force ?? false
   if (!force && amount <= 0) return []
@@ -118,6 +141,7 @@ const tokenItems = computed<TokenPoolItem[]>(() => tokenKeys.value.flatMap((toke
     key: token,
     type: override.type ?? config.type,
     tooltip: override.tooltip ?? config.tooltip,
+    image: config.image,
     class: override.class,
     amount,
     force,
@@ -331,6 +355,7 @@ onUnmounted(() => {
       :type="item.type"
       :amount="item.amount"
       :tooltip="item.tooltip"
+      :image="item.image"
       :class="item.class"
       :style="itemStyle(item, i)"
       v-bind="removeAttrs(item)"
@@ -362,6 +387,7 @@ onUnmounted(() => {
         :type="item.type"
         :amount="item.amount"
         :tooltip="item.tooltip"
+        :image="item.image"
         :class="item.class"
         :style="{ ...clumpLayout.positions[i], viewTransitionName: vtName(item.key), display: item.hidden ? 'none' : undefined }"
         v-bind="removeAttrs(item)"

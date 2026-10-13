@@ -51,6 +51,7 @@ import {
   setCards,
   type LibrarySet,
 } from '@/arkham/customCardLibrary'
+import ExpansionDetails, { type ExpansionDraft } from '@/arkham/components/debug/ExpansionDetails.vue'
 
 const { t, te } = useI18n()
 const K = 'customCardSets.'
@@ -103,6 +104,15 @@ const renamingSetId = ref<string | null>(null)
 const renameDraft = ref('')
 const describeDraft = ref('')
 const linkDraft = ref('')
+/* What marking the set an investigator expansion unlocks: its symbol, its own
+ * tokens, its own keywords. Part of the same form, and so the same request: all
+ * of it is what the set says about itself. */
+const expansionDraft = ref<ExpansionDraft>({
+  investigatorExpansion: false,
+  icon: null,
+  tokens: [],
+  keywords: [],
+})
 
 const route = useRoute()
 const router = useRouter()
@@ -217,6 +227,16 @@ async function update(set: LibrarySet) {
  * a link followed while already here still lands. */
 async function openFromRoute() {
   await loadLibrary()
+  /* The url names the set, so a link to one opens it and a reload stays on it.
+   * A set that is not yours (or no longer exists) falls through to the list
+   * rather than to somebody else's set. */
+  const routed = typeof route.params.setId === 'string' ? route.params.setId : null
+  if (routed && sets.value.some((s) => s.id === routed)) {
+    if (activeSetId.value !== routed) chooseActiveSet(routed)
+    browsingSets.value = false
+  } else if (routed) {
+    browsingSets.value = true
+  }
   ensureActiveSet()
   const wanted = route.query.card
   if (typeof wanted !== 'string') return
@@ -233,12 +253,14 @@ onMounted(async () => {
   // Nothing has been typed yet, whether a card opened or the editor is blank.
   if (baseline.value === null) markClean()
 })
-watch(() => route.query.card, openFromRoute)
+watch(() => [route.params.setId, route.query.card], openFromRoute)
 
 /* Leaving the builder entirely. Navigating within it -- which is what opening a
  * card does, since the url names the card -- is not leaving: those paths ask on
  * their own, before they replace what is in the editor. */
-onBeforeRouteLeave(async (to) => (to.name === 'CardBuilder' ? true : await confirmDiscard()))
+onBeforeRouteLeave(async (to) =>
+  to.name === 'CardBuilder' || to.name === 'CardBuilderSet' ? true : await confirmDiscard(),
+)
 
 /* And leaving the site, where the browser asks in its own words and all we can
  * do is say that there is something to lose. */
@@ -254,6 +276,60 @@ onUnmounted(() => window.removeEventListener('beforeunload', warnOnUnload))
 const cards = computed(() => libraryCards())
 const sets = computed(() => librarySets())
 const activeSet = computed(() => librarySet(activeSetId.value))
+
+/* What the open set declares, for the card form: the keywords a card here can
+ * print, and the tokens one of them can be marked with. Empty for a set that is
+ * not an investigator expansion, which is what keeps the form from offering a
+ * keyword section to a set that has none. */
+const openSetDeclaration = computed(() => ({
+  keywords: activeSet.value?.keywords ?? [],
+  tokens: activeSet.value?.tokens ?? [],
+}))
+
+/* What the set declares, in a line. A count rather than the lists themselves:
+ * the button is a way in, and a panel about cards should not grow a section per
+ * kind of thing an expansion can hold. */
+const declarationSummary = computed(() => {
+  const set = activeSet.value
+  if (!set?.investigatorExpansion) return t(`${K}notAnExpansion`)
+  const parts = [
+    t(`${K}tokenCount`, set.tokens?.length ?? 0),
+    t(`${K}keywordCount`, set.keywords?.length ?? 0),
+  ]
+  return parts.join(', ')
+})
+
+/* Editing what the open set declares, without leaving it. The sets page can do
+ * this too, as part of the whole details form; this is the same edit reached
+ * from where the cards that use it are being written. */
+const editingDeclaration = ref(false)
+
+/* Open everything the set declares, in the main panel. */
+function startDeclaration(set: LibrarySet) {
+  startRename(set)
+  // `startRename` opens the details form on the sets page; only the expansion
+  // half is wanted here, so that is closed again and the draft kept.
+  renamingSetId.value = null
+  editingDeclaration.value = true
+}
+
+async function saveDeclaration(set: LibrarySet) {
+  const expansion = expansionDraft.value
+  editingDeclaration.value = false
+  error.value = null
+  try {
+    await updateSet(set.id, {
+      name: set.name,
+      investigatorExpansion: expansion.investigatorExpansion,
+      icon: expansion.icon,
+      tokens: expansion.tokens,
+      keywords: expansion.keywords,
+    })
+  } catch (e) {
+    console.error(e)
+    error.value = t(`${K}setRenameFailed`)
+  }
+}
 
 const inPrintedOrder = (setId: string) => setCards(setId).sort(byPrintedNumber)
 
@@ -275,7 +351,18 @@ const inSet = computed(() => !browsingSets.value && !!activeSet.value)
 function openSet(id: string) {
   chooseActiveSet(id)
   browsingSets.value = false
+  editingDeclaration.value = false
   startNew()
+  router.push({ name: 'CardBuilderSet', params: { setId: id } })
+}
+
+/* Back to the list, and to the url that is the list. Pushed rather than
+ * replaced: clicking into a set and out again is two steps, and the back button
+ * should retrace them. */
+function leaveSet() {
+  browsingSets.value = true
+  editingDeclaration.value = false
+  router.push({ name: 'CardBuilder', query: {} })
 }
 
 /* Falls back to whatever set is first rather than leaving nothing selected: a
@@ -376,6 +463,14 @@ function startRename(set: LibrarySet) {
   renameDraft.value = set.name
   describeDraft.value = set.description ?? ''
   linkDraft.value = set.url ?? ''
+  expansionDraft.value = {
+    investigatorExpansion: set.investigatorExpansion ?? false,
+    icon: set.icon ?? null,
+    // Copied rather than referenced: the editor replaces the whole draft on
+    // every keystroke, and the set in the library must not change until saved.
+    tokens: (set.tokens ?? []).map((token) => ({ ...token })),
+    keywords: (set.keywords ?? []).map((keyword) => ({ ...keyword })),
+  }
 }
 
 /* Only what actually changed is sent. The description and the link are left out
@@ -390,23 +485,47 @@ async function commitRename(set: LibrarySet) {
   const name = renameDraft.value.trim()
   const description = describeDraft.value.trim()
   const url = linkDraft.value.trim()
+  const expansion = expansionDraft.value
   leaveDetails(set)
   if (!name) return
   const renamed = name !== set.name
   const redescribed = description !== (set.description ?? '')
   const relinked = url !== (set.url ?? '')
-  if (!renamed && !redescribed && !relinked) return
+  /* Unticking the box leaves the tokens and the keywords where they are rather
+   * than sending empty lists: somebody who ticks it again has not lost the work,
+   * and a set that is not an expansion is not asked about either of them
+   * anywhere. */
+  const nowExpansion = expansion.investigatorExpansion
+  const declared = nowExpansion
+    ? { icon: expansion.icon, tokens: expansion.tokens, keywords: expansion.keywords }
+    : {}
+  const expansionChanged =
+    nowExpansion !== (set.investigatorExpansion ?? false)
+    || (nowExpansion && !sameDeclaration(set, expansion))
+  if (!renamed && !redescribed && !relinked && !expansionChanged) return
   error.value = null
   try {
     await updateSet(set.id, {
       name,
       ...(redescribed ? { description: description || null } : {}),
       ...(relinked ? { url: url || null } : {}),
+      ...(expansionChanged ? { investigatorExpansion: nowExpansion, ...declared } : {}),
     })
   } catch (e) {
     console.error(e)
     error.value = t(`${K}${isBadLink(e) ? 'setLinkInvalid' : 'setRenameFailed'}`)
   }
+}
+
+/* Whether the draft says the same as the set. Compared as JSON rather than
+ * field by field: these are small lists of plain records, and the alternative is
+ * a deep-equality walk written out for two shapes that will grow. */
+function sameDeclaration(set: LibrarySet, draft: ExpansionDraft): boolean {
+  return (
+    (set.icon ?? null) === draft.icon
+    && JSON.stringify(set.tokens ?? []) === JSON.stringify(draft.tokens)
+    && JSON.stringify(set.keywords ?? []) === JSON.stringify(draft.keywords)
+  )
 }
 
 
@@ -442,6 +561,7 @@ async function dropSet(set: LibrarySet) {
 
 async function edit(card: CustomCard) {
   if (!(await confirmDiscard())) return
+  editingDeclaration.value = false
   editingCode.value = card.def.cardCode
   browsingSets.value = false
   status.value = null
@@ -459,6 +579,9 @@ async function edit(card: CustomCard) {
 
 async function startNew() {
   if (!(await confirmDiscard())) return
+  // The declaration editor and the card form share the main panel, so reaching
+  // for a card is also leaving the declaration.
+  editingDeclaration.value = false
   editingCode.value = null
   status.value = null
   error.value = null
@@ -471,16 +594,26 @@ async function startNew() {
  * link is worth sharing. Replaced rather than pushed: opening one card after
  * another should not fill up the back button. */
 function syncRoute(cardCode: string | null) {
+  // Whichever page the card is on: a card opened inside a set keeps the set's
+  // url, so the link carries both and a reload comes back to the same place.
+  const where = activeSetId.value && !browsingSets.value
+    ? { name: 'CardBuilderSet', params: { setId: activeSetId.value } }
+    : { name: 'CardBuilder' }
   const current = route.query.card
+  const sameSet = route.params.setId === (where.params?.setId ?? undefined)
   if (cardCode === null) {
-    if (current === undefined) return
-    router.replace({ name: 'CardBuilder', query: {} })
+    if (current === undefined && sameSet) return
+    router.replace({ ...where, query: {} })
     return
   }
-  if (typeof current === 'string' && stripCardCodePrefix(current) === stripCardCodePrefix(cardCode)) {
+  if (
+    sameSet
+    && typeof current === 'string'
+    && stripCardCodePrefix(current) === stripCardCodePrefix(cardCode)
+  ) {
     return
   }
-  router.replace({ name: 'CardBuilder', query: { card: cardCode } })
+  router.replace({ ...where, query: { card: cardCode } })
 }
 
 async function save() {
@@ -978,6 +1111,7 @@ async function onImport(event: Event) {
               @keydown.stop
               @keydown.esc="leaveDetails(set)"
             />
+            <ExpansionDetails v-model="expansionDraft" />
             <div class="rename-actions">
               <button type="submit">{{ t(`${K}saveSetDetails`) }}</button>
               <button type="button" class="cancel" @click="leaveDetails(set)">
@@ -1182,8 +1316,34 @@ async function onImport(event: Event) {
         <h2 class="panel-title" :title="activeSet?.name">{{ activeSet?.name }}</h2>
       </div>
 
-      <button type="button" class="back-to-sets" @click="browsingSets = true">
+      <button type="button" class="back-to-sets" @click="leaveSet">
         ← {{ t(`${K}backToSets`) }}
+      </button>
+
+      <!-- What this set declares, where the cards that use it are. Without this
+           the tokens and keywords were only visible inside the set-details form
+           on the other page, which is no way to check what a card's keyword
+           refers to while writing it. Editable in place for the same reason. -->
+      <!-- What this set declares, where the cards that use it are: a list, so a
+           card's keyword can be checked against its rule while it is being
+           written. Editing happens in the main panel, which has the room for
+           it -- these only say what is there and open that editor. -->
+      <!-- One way in to everything the set declares. The tokens and the
+           keywords were two lists here with their own add buttons, which put a
+           growing menu of kinds in a panel whose job is the cards; the editor
+           they open has room for them and a tab each. -->
+      <button
+        v-if="activeSet"
+        type="button"
+        class="edit-expansion"
+        :class="{ on: editingDeclaration }"
+        @click="startDeclaration(activeSet)"
+      >
+        <font-awesome-icon icon="box-archive" />
+        <span class="edit-expansion-text">
+          <strong>{{ t(`${K}editExpansion`) }}</strong>
+          <small>{{ declarationSummary }}</small>
+        </span>
       </button>
 
       <div class="group-head">
@@ -1281,17 +1441,35 @@ async function onImport(event: Event) {
           <font-awesome-icon icon="layer-group" />
         </button>
         <h2>
-          {{ editingCode ? t(`${K}editingCard`) : t(`${K}newCard`) }}
-          <span v-if="dirty" class="unsaved" :title="t(`${K}unsavedTitle`)">
-            <span class="unsaved-dot" aria-hidden="true"></span>
-            {{ t(`${K}unsaved`) }}
-          </span>
-          <small v-if="activeSet" class="in-set">{{ t(`${K}inSet`, { name: activeSet.name }) }}</small>
+          <template v-if="editingDeclaration">{{ t(`${K}investigatorExpansion`) }}</template>
+          <template v-else>
+            {{ editingCode ? t(`${K}editingCard`) : t(`${K}newCard`) }}
+            <span v-if="dirty" class="unsaved" :title="t(`${K}unsavedTitle`)">
+              <span class="unsaved-dot" aria-hidden="true"></span>
+              {{ t(`${K}unsaved`) }}
+            </span>
+          </template>
+          <small v-if="activeSet" class="in-set">&#32;{{ t(`${K}inSet`, { name: activeSet.name }) }}</small>
         </h2>
         <div class="builder-actions">
           <span v-if="status && !dirty" class="status">{{ status }}</span>
           <span v-if="error" class="error">{{ error }}</span>
-          <button type="button" class="save" :class="{ dirty }" :disabled="busy" @click="save">
+          <template v-if="editingDeclaration">
+            <button type="button" class="save dirty" @click="saveDeclaration(activeSet!)">
+              {{ t(`${K}saveSetDetails`) }}
+            </button>
+            <button type="button" class="secondary" @click="editingDeclaration = false">
+              {{ t(`${K}publishCancel`) }}
+            </button>
+          </template>
+          <button
+            v-else
+            type="button"
+            class="save"
+            :class="{ dirty }"
+            :disabled="busy"
+            @click="save"
+          >
             {{ editingCode ? t(`${K}saveChanges`) : t(`${K}createCard`) }}
           </button>
           <!-- Only worth a slot up here while the panel's own "+ New card" is out
@@ -1307,9 +1485,19 @@ async function onImport(event: Event) {
         </div>
       </header>
 
-      <p v-if="editingCode" class="muted">{{ t(`${K}saveNote`) }}</p>
+      <template v-if="editingDeclaration">
+        <ExpansionDetails v-model="expansionDraft" />
+      </template>
 
-      <CustomCardForm ref="form" />
+      <template v-else>
+        <p v-if="editingCode" class="muted">{{ t(`${K}saveNote`) }}</p>
+
+        <CustomCardForm
+          ref="form"
+          :setKeywords="openSetDeclaration.keywords"
+          :setTokens="openSetDeclaration.tokens"
+        />
+      </template>
     </main>
   </div>
 
@@ -1957,6 +2145,50 @@ async function onImport(event: Event) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* One way in to everything the set declares. Sits with the panel's own buttons
+   rather than above the card list, because it is about the set and not about
+   which card is open. */
+.edit-expansion {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--box-border);
+  border-radius: 4px;
+  color: var(--title);
+  cursor: pointer;
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+  width: 100%;
+
+  &:hover,
+  &.on {
+    background: rgba(255, 255, 255, 0.09);
+  }
+
+  svg {
+    flex: none;
+    opacity: 0.7;
+  }
+}
+
+.edit-expansion-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  strong {
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  small {
+    font-size: 0.68rem;
+    opacity: 0.6;
+  }
 }
 
 .back-to-sets {

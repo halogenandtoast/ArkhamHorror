@@ -32,6 +32,10 @@ const props = defineProps<{
    * a top-level list wants; a nested list passes only what its enclosing step
    * adds, since the rest was already announced further up. */
   announce?: Binding[]
+  /* Slots that stand for a list of steps, offered as a step of their own. Only
+   * a KEYWORD's behaviour has any: a card's steps are its own, while a
+   * keyword's are written once and have to leave a place for each card's. */
+  slotSteps?: Binding[]
 }>()
 const emit = defineEmits<{ 'update:modelValue': [v: any[]] }>()
 
@@ -70,6 +74,10 @@ type StepKind =
   | 'draw'
   | 'gather'
   | 'customize'
+  /* Not a step the engine runs, but a slot standing where a list of steps goes.
+   * Only ever offered while editing a KEYWORD's behaviour, where the steps a
+   * card supplies are spliced in at this point. */
+  | 'slot'
 
 const KIND_LABELS: Record<StepKind, string> = {
   query: 'Query',
@@ -104,6 +112,7 @@ const KIND_LABELS: Record<StepKind, string> = {
   draw: 'Draw cards',
   gather: 'Gather',
   customize: 'Customize',
+  slot: 'Whatever the card fills in',
 }
 
 function kindOf(step: any): StepKind {
@@ -141,6 +150,9 @@ function kindOf(step: any): StepKind {
     'gather',
     'customize',
   ] as StepKind[]
+  // A slot is written as the bare `$name` the template substitutes, so it is a
+  // string where every other step is an object.
+  if (typeof step === 'string') return 'slot'
   for (const kind of kinds) {
     if (kind in (step ?? {})) return kind
   }
@@ -181,6 +193,7 @@ const blankStep = (kind: StepKind) =>
     draw: { draw: { amount: 1 } },
     gather: { gather: { cardCode: '' } },
     customize: { customize: { optional: true } },
+    slot: `$${props.slotSteps?.[0]?.name ?? ''}`,
   })[kind]
 
 /* One line each, taken from what the step's own editor says once it is there.
@@ -220,16 +233,23 @@ const KIND_HELP: Record<StepKind, string> = {
   draw: 'Draws cards. Nothing is drawn when the amount works out to zero or less.',
   gather: 'Shuffles a card into the encounter deck.',
   customize: 'Marks a checkbox on the upgrade sheet of a customizable card.',
+  slot: 'Splices in the steps whichever card prints this keyword supplied.',
 }
 
 /* A query is an expression now, so binding one is what a Let does and a Query
  * step adds nothing a Let cannot say. The kind stays known -- cards already
  * written hold Query steps, and those keep running and keep their editor -- it
  * is simply not offered for anything new. */
-const ADDABLE = (Object.keys(KIND_LABELS) as StepKind[])
-  .filter((k) => k !== 'query')
-  // By what the menu shows, not by the key behind it, since that is what is read.
-  .sort((a, b) => KIND_LABELS[a].localeCompare(KIND_LABELS[b]))
+/* `slot` is left out unless there is a slot to insert: on a card there is never
+ * one, and offering a step that can only produce `$` would be offering a way to
+ * write a step that does nothing. */
+const ADDABLE = computed(() =>
+  (Object.keys(KIND_LABELS) as StepKind[])
+    .filter((k) => k !== 'query')
+    .filter((k) => k !== 'slot' || (props.slotSteps?.length ?? 0) > 0)
+    // By what the menu shows, not by the key behind it, since that is what is read.
+    .sort((a, b) => KIND_LABELS[a].localeCompare(KIND_LABELS[b])),
+)
 
 const set = (index: number, step: any) =>
   emit('update:modelValue', steps.value.map((s, i) => (i === index ? step : s)))
@@ -458,8 +478,8 @@ const addSearch = ref('')
 
 const matchingKinds = computed(() => {
   const needle = addSearch.value.trim().toLowerCase()
-  if (!needle) return ADDABLE
-  return ADDABLE.filter(
+  if (!needle) return ADDABLE.value
+  return ADDABLE.value.filter(
     (k) =>
       KIND_LABELS[k].toLowerCase().includes(needle) || KIND_HELP[k].toLowerCase().includes(needle),
   )
@@ -639,6 +659,7 @@ const removeOption = (step: any, index: number, at: number) =>
         <div class="branch">
           <span class="branch-label">Then</span>
           <StepsEditor
+            :slotSteps="slotSteps"
             :bindings="innerScope(index)"
             :path="innerPath(index, 'then')"
             :announce="[]"
@@ -650,6 +671,7 @@ const removeOption = (step: any, index: number, at: number) =>
         <div class="branch">
           <span class="branch-label">Else</span>
           <StepsEditor
+            :slotSteps="slotSteps"
             :bindings="innerScope(index)"
             :path="innerPath(index, 'else')"
             :announce="[]"
@@ -690,6 +712,7 @@ const removeOption = (step: any, index: number, at: number) =>
         <div class="branch">
           <span class="branch-label">Then</span>
           <StepsEditor
+            :slotSteps="slotSteps"
             :bindings="innerScope(index)"
             :path="innerPath(index, 'then')"
             :announce="[]"
@@ -741,6 +764,7 @@ const removeOption = (step: any, index: number, at: number) =>
             @update:modelValue="set(index, { ...step, case: step.case.map((x: any, i: number) => i === bi ? { ...x, if: { ...x.if, matcher: $event } } : x) })"
           />
           <StepsEditor
+          :slotSteps="slotSteps"
           :bindings="innerScope(index)"
           :path="innerPath(index, `case${bi}`)"
           :announce="[]"
@@ -755,6 +779,7 @@ const removeOption = (step: any, index: number, at: number) =>
         <div class="branch">
           <span class="branch-label">Else</span>
           <StepsEditor
+            :slotSteps="slotSteps"
             :bindings="innerScope(index)"
             :path="innerPath(index, 'else')"
             :announce="[]"
@@ -813,6 +838,7 @@ const removeOption = (step: any, index: number, at: number) =>
           @update:modelValue="set(index, { ...step, forEach: { ...step.forEach, over: $event } })"
         />
         <StepsEditor
+          :slotSteps="slotSteps"
           :bindings="innerScope(index)"
           :path="innerPath(index, 'forEach')"
           :announce="addedInside(index)"
@@ -839,6 +865,7 @@ const removeOption = (step: any, index: number, at: number) =>
           />
         </label>
         <StepsEditor
+          :slotSteps="slotSteps"
           :bindings="innerScope(index)"
           :path="innerPath(index, 'withSkillTest')"
           :announce="addedInside(index)"
@@ -881,6 +908,7 @@ const removeOption = (step: any, index: number, at: number) =>
           @update:modelValue="set(index, { ...step, withLocationOf: { ...step.withLocationOf, of: $event } })"
         />
         <StepsEditor
+          :slotSteps="slotSteps"
           :bindings="innerScope(index)"
           :path="innerPath(index, 'withLocationOf')"
           :announce="addedInside(index)"
@@ -923,6 +951,7 @@ const removeOption = (step: any, index: number, at: number) =>
         <div class="branch">
           <span class="branch-label">With the answer</span>
           <StepsEditor
+            :slotSteps="slotSteps"
             :bindings="innerScope(index)"
             :path="innerPath(index, 'request')"
             :announce="[]"
@@ -986,6 +1015,7 @@ const removeOption = (step: any, index: number, at: number) =>
         <div class="branch">
           <span class="branch-label">For each share</span>
           <StepsEditor
+            :slotSteps="slotSteps"
             :bindings="innerScope(index)"
             :path="innerPath(index, 'distribute')"
             :announce="addedInside(index)"
@@ -1019,6 +1049,7 @@ const removeOption = (step: any, index: number, at: number) =>
           />
         </label>
         <StepsEditor
+          :slotSteps="slotSteps"
           :bindings="innerScope(index)"
           :path="innerPath(index, 'repeat')"
           :announce="addedInside(index)"
@@ -1072,6 +1103,7 @@ const removeOption = (step: any, index: number, at: number) =>
             <button type="button" @click="removeOption(step, oi, index)">×</button>
           </div>
           <StepsEditor
+          :slotSteps="slotSteps"
           :bindings="innerScope(index)"
           :path="innerPath(index, `option${oi}`)"
           :announce="[]"
@@ -1578,6 +1610,22 @@ const removeOption = (step: any, index: number, at: number) =>
         />
       </template>
 
+      <template v-else-if="kindOf(step) === 'slot'">
+        <p class="hint">
+          Whatever the card printing this keyword put in that slot is spliced in here. Nothing is
+          written at this point for a card that left it empty.
+        </p>
+        <label class="cap">Which slot</label>
+        <select
+          :value="String(step).replace(/^\$/, '')"
+          @change="set(index, `$${($event.target as HTMLSelectElement).value}`)"
+        >
+          <option v-for="slot in slotSteps ?? []" :key="slot.name" :value="slot.name">
+            {{ slot.detail || slot.name }}
+          </option>
+        </select>
+      </template>
+
       <template v-else-if="kindOf(step) === 'customize'">
         <p class="hint">
           Mark a checkbox on an upgrade sheet for a customizable card you own — pick the card and
@@ -1681,6 +1729,7 @@ const removeOption = (step: any, index: number, at: number) =>
           </p>
         </template>
         <StepsEditor
+          :slotSteps="slotSteps"
           :bindings="innerScope(index)"
           :path="innerPath(index, 'chooseFrom')"
           :announce="addedInside(index)"
@@ -1714,6 +1763,7 @@ const removeOption = (step: any, index: number, at: number) =>
               @update:modelValue="setOnReveal(index, kindOf(step), { ...onReveal(step, kindOf(step)), whenPassed: $event })"
             />
             <StepsEditor
+              :slotSteps="slotSteps"
               :queryKinds="queryKinds"
               :bindings="revealScope(index)"
               :path="innerPath(index, 'reveal')"
@@ -1742,6 +1792,7 @@ const removeOption = (step: any, index: number, at: number) =>
               the plain wording.
             </p>
             <StepsEditor
+              :slotSteps="slotSteps"
               :queryKinds="queryKinds"
               :bindings="revealScope(index)"
               :path="innerPath(index, which)"

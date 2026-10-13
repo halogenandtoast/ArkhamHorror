@@ -213,8 +213,13 @@ const stepKinds = [
   'setAside',
 ]
 
+/* A keyword's behaviour may hold a bare `$slot` where a list of steps goes, so a
+ * step is not always an object. `in` throws on a string, which took the whole
+ * editor down rather than the one step. */
 export const stepKind = (step: any): string =>
-  stepKinds.find((kind) => kind in (step ?? {})) ?? 'push'
+  step && typeof step === 'object'
+    ? (stepKinds.find((kind) => kind in step) ?? 'push')
+    : 'slot'
 
 const named = (value: any, fallback: string) =>
   typeof value === 'string' && value.trim() ? value.trim() : fallback
@@ -455,3 +460,58 @@ export function bindingFits(
   }
   return strip(binding.type) === strip(fieldType)
 }
+
+
+/* What a KEYWORD's behaviour templates can refer to.
+ *
+ * A keyword is written once for every card that will print it, so where a card's
+ * own template would name a value outright, a keyword's names a slot and each
+ * card fills it in. Those slots are bindings like any other, which is the whole
+ * trick: the ordinary editors already know how to offer a `$name` wherever one
+ * fits, so the keyword's behaviour is edited with exactly the same fields as a
+ * card's, and nobody has to type `$condition` into a JSON blob.
+ *
+ * A slot's `kind` is what decides where it is offered. One left as `value` gets
+ * no type, which the field editors read as "could be anything" and offer
+ * everywhere -- the same as a `let` whose expression they cannot pin down.
+ */
+const SLOT_TYPES: Record<string, string | undefined> = {
+  window: 'WindowMatcher',
+  criterion: 'Criterion',
+  text: 'Text',
+  // A list of steps is not a value any field takes; it is offered in a steps
+  // list instead (see `StepsEditor`'s slot step).
+  steps: undefined,
+  value: undefined,
+}
+
+export type KeywordSlotLike = { name: string; label?: string; kind?: string }
+
+export const keywordBindings = (slots: KeywordSlotLike[] = []): Binding[] => [
+  {
+    name: 'keywordToken',
+    detail: 'Token — the token this keyword marks itself with',
+    type: 'Token',
+    origin: 'the keyword',
+  },
+  { name: 'keywordName', detail: 'Text', type: 'Text', origin: 'the keyword' },
+  ...slots
+    .filter((slot) => String(slot.name ?? '').trim())
+    .map((slot) => ({
+      name: String(slot.name).trim(),
+      detail: slot.label || slot.name,
+      type: SLOT_TYPES[slot.kind ?? 'value'],
+      origin: 'a slot each card fills in',
+    })),
+]
+
+/* The slots that stand for a list of steps, which is the one place a slot goes
+ * that is not a field. */
+export const keywordStepSlots = (slots: KeywordSlotLike[] = []): Binding[] =>
+  slots
+    .filter((slot) => slot.kind === 'steps' && String(slot.name ?? '').trim())
+    .map((slot) => ({
+      name: String(slot.name).trim(),
+      detail: slot.label || slot.name,
+      origin: 'a slot each card fills in',
+    }))

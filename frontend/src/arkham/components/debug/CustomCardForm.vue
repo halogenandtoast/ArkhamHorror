@@ -16,6 +16,7 @@ import {
   type CustomCard,
 } from '@/arkham/customCards'
 import { cardImg, imgsrc } from '@/arkham/helpers'
+import { readImage } from '@/arkham/customCardArt'
 import { libraryCards } from '@/arkham/customCardLibrary'
 import AbilityEditor from '@/arkham/components/debug/AbilityEditor.vue'
 import StepsEditor from '@/arkham/components/debug/StepsEditor.vue'
@@ -24,6 +25,19 @@ import BoolField from '@/arkham/components/debug/BoolField.vue'
 import CardCodeField from '@/arkham/components/debug/CardCodeField.vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 import { loadSchema } from '@/arkham/schema'
+import KeywordEffectEditor from '@/arkham/components/debug/KeywordEffectEditor.vue'
+import type { CustomSetKeyword, CustomSetToken } from '@/arkham/api'
+
+/* What the set this card belongs to declares. A card prints one of its set's
+ * keywords, so the list of them has to come from outside the card: the set is
+ * what holds them, and this form only ever sees one card. */
+const props = withDefaults(
+  defineProps<{
+    setKeywords?: CustomSetKeyword[]
+    setTokens?: CustomSetToken[]
+  }>(),
+  { setKeywords: () => [], setTokens: () => [] },
+)
 
 /* The matcher kinds a step can query, shared with the ability editor. */
 const QUERY_KINDS: Record<string, string> = {
@@ -142,6 +156,8 @@ const blankForm = () => ({
   abilities: [] as any[],
   handlers: [] as any[],
   modifiers: [] as any[],
+  // Keywords this card prints, out of the ones its set declares.
+  keywordEffects: [] as any[],
   weaknessKind: '',
   // revelation
   revelation: false,
@@ -200,7 +216,6 @@ onUnmounted(clearArtPreviews)
 
 /* An investigator carries four images; everything else just its face. The extra
  * ones ride in meta so the card model stays one def plus one piece of art. */
-const MAX_ART_BYTES = 1024 * 1024
 
 type ArtSlot = { key: string; label: string; shape: 'card' | 'sideways' | 'portrait' }
 
@@ -577,6 +592,7 @@ function buildDef(cardCode: string): Record<string, any> {
   if (form.abilities.length) def.meta._abilities = form.abilities
   if (form.handlers.length) def.meta._handlers = form.handlers
   if (form.modifiers.length) def.meta._modifiers = form.modifiers
+  if (form.keywordEffects.length) def.meta._keywords = form.keywordEffects
 
   return def
 }
@@ -600,40 +616,6 @@ const previewDef = computed(() => {
 
 
 // ------------------------------------------------------------------- art ---
-
-/* Downscaled before upload: the art is served to every player who sees the
- * card, and a full-resolution scan has no business going up. */
-async function readImage(file: File): Promise<Blob> {
-  const dataUrl: string = await new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(reader.result as string)
-    reader.onerror = () => reject(reader.error)
-    reader.readAsDataURL(file)
-  })
-
-  const image = new Image()
-  await new Promise((resolve, reject) => {
-    image.onload = resolve
-    image.onerror = reject
-    image.src = dataUrl
-  })
-
-  const maxWidth = 500
-  const scale = Math.min(1, maxWidth / image.width)
-  const canvas = document.createElement('canvas')
-  canvas.width = Math.round(image.width * scale)
-  canvas.height = Math.round(image.height * scale)
-  canvas.getContext('2d')?.drawImage(image, 0, 0, canvas.width, canvas.height)
-
-  /* The server caps art at 1MB. 500px of WEBP is well under that, but step the
-   * quality down rather than fail on an image that happens not to be. */
-  for (const quality of [0.85, 0.7, 0.55, 0.4]) {
-    const blob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, 'image/webp', quality))
-    if (blob && blob.size <= MAX_ART_BYTES) return blob
-  }
-
-  throw new Error('Image is too large')
-}
 
 async function takeImage(slot: string, file: File | undefined) {
   if (!file || !file.type.startsWith('image/')) return
@@ -700,7 +682,11 @@ const FORM_KEYS = [
 const FORM_META_KEYS = [
   'shroud', 'revealClues', 'health', 'sanity', 'willpower', 'intellect', 'combat', 'agility',
   'backArt', 'portrait', 'portraitBack', 'number', 'set', 'prey', 'spawnAt',
-  '_abilities', '_handlers', '_modifiers', '_signatures', '_onRevelation', '_revelationPlacement',
+  /* Stamped on by the set, not the form's to edit -- but listed here so the form
+     does not put them in the raw block either, which would freeze a stale copy
+     onto the card that the set could no longer correct. */
+  'setTokens', 'setKeywords',
+  '_abilities', '_handlers', '_modifiers', '_keywords', '_signatures', '_onRevelation', '_revelationPlacement',
   '_elderSign', '_elderSignRevealSteps', '_elderSignSteps', '_elderSignSuccessSteps', '_onPlay',
 ]
 
@@ -780,6 +766,7 @@ async function loadCard(card: CustomCard) {
   form.abilities = meta._abilities ?? []
   form.handlers = meta._handlers ?? []
   form.modifiers = meta._modifiers ?? []
+  form.keywordEffects = meta._keywords ?? []
   form.additionalCost = def.additionalCost ?? null
   form.deckRestrictions = def.deckRestrictions ?? []
   form.bonded = (def.bondedWith ?? []).map((b: any) => ({
@@ -1276,6 +1263,19 @@ defineExpose({ loadCard, reset, buildCustomCard, snapshot, cardType: computed(()
               :abilities="form.abilities"
               :modifiers="form.modifiers"
               v-model:handlers="form.handlers"
+            />
+          </fieldset>
+
+          <!-- A keyword the card's set prints, with this card's own condition
+               and result. Only offered once the set has declared one. -->
+          <fieldset v-if="props.setKeywords.length || form.keywordEffects.length">
+            <legend>Expansion keywords</legend>
+            <KeywordEffectEditor
+              :setKeywords="props.setKeywords"
+              :setTokens="props.setTokens"
+              :cardType="form.cardType"
+              :queryKinds="QUERY_KINDS"
+              v-model="form.keywordEffects"
             />
           </fieldset>
 

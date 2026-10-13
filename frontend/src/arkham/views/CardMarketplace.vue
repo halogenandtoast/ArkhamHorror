@@ -294,6 +294,9 @@ async function unlist(set: Api.PublishedCardSet) {
                    stands behind it, and which version this is. The rest are
                    facts about it and stay on the line below. -->
               <div class="title-row">
+                <!-- An expansion's own symbol, the way a printed box is filed.
+                     Decorative: the name beside it already says which set. -->
+                <img v-if="set.icon" class="expansion-icon" :src="set.icon" alt="" />
                 <h2>
                   <router-link
                     class="set-link"
@@ -316,6 +319,9 @@ async function unlist(set: Api.PublishedCardSet) {
               <!-- One line of facts, each its own shape. The author is a button
                    because clicking it filters the page to them. -->
               <div class="facts">
+                <MetaChip v-if="set.investigatorExpansion" icon="box-archive">
+                  {{ t(`${K}investigatorExpansion`) }}
+                </MetaChip>
                 <button type="button" class="author" @click="author = set.author">
                   {{ t(`${K}byAuthor`, { author: set.author }) }}
                 </button>
@@ -567,6 +573,15 @@ async function unlist(set: Api.PublishedCardSet) {
   display: flex;
   flex-wrap: wrap;
   row-gap: 0.25rem;
+}
+
+/* Sized to the heading beside it rather than fixed, so the symbol stays in
+   proportion to the name whatever the type scale does. */
+.expansion-icon {
+  align-self: center;
+  height: 1.5em;
+  object-fit: contain;
+  width: 1.5em;
 }
 
 .set-link {

@@ -361,14 +361,33 @@ const hasOutcomes = (step: any) => startsTest(step) || kindOf(step) === 'withSki
 
 /* "If you succeed, …" and "If you fail, …". Kept on the step that started the
  * test because only it knows which test, and only here can the steps still see
- * what this run chose. */
-const outcome = (step: any, which: 'onSuccess' | 'onFailure') => step[kindOf(step)]?.[which] ?? null
+ * what this run chose.
+ *
+ * A card may say it twice — "if you succeed, evade the target; if you succeed by
+ * 2 or more, discover a clue" — so an outcome holds a LIST of riders, each with
+ * its own margin. One rider stays written as the bare block it has always been,
+ * so nothing already saved changes shape. */
+const outcomes = (step: any, which: 'onSuccess' | 'onFailure'): any[] => {
+  const held = step[kindOf(step)]?.[which]
+  if (Array.isArray(held)) return held
+  return held ? [held] : []
+}
 
-const setOutcome = (index: number, which: 'onSuccess' | 'onFailure', value: any) => {
+const setOutcomes = (index: number, which: 'onSuccess' | 'onFailure', riders: any[]) => {
   const step = steps.value[index]
   const kind = kindOf(step)
+  const value = riders.length === 0 ? undefined : riders.length === 1 ? riders[0] : riders
   set(index, { ...step, [kind]: { ...step[kind], [which]: value } })
 }
+
+const setRider = (index: number, which: 'onSuccess' | 'onFailure', at: number, rider: any) =>
+  setOutcomes(index, which, outcomes(steps.value[index], which).map((r, i) => (i === at ? rider : r)))
+
+const addRider = (index: number, which: 'onSuccess' | 'onFailure') =>
+  setOutcomes(index, which, [...outcomes(steps.value[index], which), { steps: [] }])
+
+const removeRider = (index: number, which: 'onSuccess' | 'onFailure', at: number) =>
+  setOutcomes(index, which, outcomes(steps.value[index], which).filter((_, i) => i !== at))
 
 /* Which of the two difficulty fields is in use. A calculation is a tagged
  * object; a number or an expression is not, so the shape says which was written
@@ -2154,14 +2173,18 @@ const removeOption = (step: any, index: number, at: number) =>
           <legend>{{ OUTCOME_LEGENDS[which] }}</legend>
           <BoolField
             label="something happens"
-            :modelValue="!!outcome(step, which)"
-            @update:modelValue="setOutcome(index, which, $event ? { steps: [] } : undefined)"
+            :modelValue="outcomes(step, which).length > 0"
+            @update:modelValue="setOutcomes(index, which, $event ? [{ steps: [] }] : [])"
           />
-          <template v-if="outcome(step, which)">
+          <div v-for="(rider, ri) in outcomes(step, which)" :key="ri" class="rider">
+            <div v-if="outcomes(step, which).length > 1" class="rider-head">
+              <span class="rider-label">and</span>
+              <button type="button" class="drop" @click="removeRider(index, which, ri)">remove</button>
+            </div>
             <ValueMatcherField
               :bindings="scopeFor(index)"
-              :modelValue="outcome(step, which).by"
-              @update:modelValue="setOutcome(index, which, { ...outcome(step, which), by: $event })"
+              :modelValue="rider.by"
+              @update:modelValue="setRider(index, which, ri, { ...rider, by: $event })"
             />
             <p class="hint">
               By how much, when the card says so — "if you succeed by 2 or more". Any value covers
@@ -2171,17 +2194,25 @@ const removeOption = (step: any, index: number, at: number) =>
               :slotSteps="slotSteps"
               :queryKinds="queryKinds"
               :bindings="kindOf(step) === 'withSkillTest' ? innerScope(index) : revealScope(index)"
-              :path="innerPath(index, which)"
+              :path="innerPath(index, `${which}${ri}`)"
               :announce="[]"
-              :modelValue="outcome(step, which).steps ?? []"
-              @update:modelValue="setOutcome(index, which, { ...outcome(step, which), steps: $event })"
+              :modelValue="rider.steps ?? []"
+              @update:modelValue="setRider(index, which, ri, { ...rider, steps: $event })"
             />
             <p class="hint">
               Worked out when the test begins, so these can name what this ability chose — the card
               revealed, the trait picked. A query inside them reads the board as it stands now,
               not after the test; use a handler for anything that has to look afterwards.
             </p>
-          </template>
+          </div>
+          <button
+            v-if="outcomes(step, which).length > 0"
+            type="button"
+            class="add-rider"
+            @click="addRider(index, which)"
+          >
+            + another, at a different margin
+          </button>
         </fieldset>
       </template>
       </div>
@@ -2308,6 +2339,40 @@ const removeOption = (step: any, index: number, at: number) =>
     font-size: 0.72rem;
     padding: 0 0.3rem;
   }
+}
+
+/* One rider of several. Separated only once there IS more than one, so the
+   ordinary single "if you succeed" reads exactly as it did before. */
+.rider {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  & + .rider {
+    border-top: 1px dashed #374151;
+    padding-top: 0.4rem;
+  }
+}
+
+.rider-head {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.rider-label {
+  color: #9ca3af;
+  font-size: 0.72rem;
+}
+
+.add-rider {
+  align-self: flex-start;
+  background: none;
+  border: 1px dashed #374151;
+  border-radius: 4px;
+  color: #9ca3af;
+  font-size: 0.72rem;
+  padding: 0.2rem 0.5rem;
 }
 
 

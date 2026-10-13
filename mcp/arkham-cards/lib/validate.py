@@ -730,7 +730,10 @@ def _binds(step: dict, which: str, *, inside: bool = True) -> set[str]:
         index = fields.get("i")
         added.add(index if isinstance(index, str) and index else bound("i"))
     elif which == "withSkillTest":
-        added.add(bound("skillTest"))
+        # `bindingName o "skillTestId"` in `runWithSkillTest`, and the editor
+        # announces the same. Named "skillTest" here, the checker reported every
+        # use of the name the engine actually binds as unbound.
+        added.add(bound("skillTestId"))
     elif which == "withLocationOf":
         added.add(bound("location"))
     elif which == "distribute":
@@ -760,13 +763,15 @@ def _nested_blocks(step: dict, which: str) -> list[tuple[str, Any]]:
         if key in fields:
             blocks.append((key, fields[key]))
     for key in ("onSuccess", "onFailure", "onReveal"):
-        block = fields.get(key)
-        if isinstance(block, dict):
-            blocks.append((f"{key}.steps", block.get("steps") or []))
-        elif isinstance(block, list):
-            # Wrong shape, reported in `_check_step`. Still walked, so the author
-            # gets the problems inside it in the same pass as the shape.
-            blocks.append((key, block))
+        for index, block in enumerate(_outcome_blocks(fields.get(key))):
+            where = f"{key}.steps" if index == 0 and isinstance(fields.get(key), dict) else f"{key}[{index}].steps"
+            if isinstance(block, dict):
+                blocks.append((where, block.get("steps") or []))
+            else:
+                # Wrong shape, reported in `_check_step`. Still walked, so the
+                # author gets what is inside it in the same pass as the shape.
+                blocks.append((key, fields[key]))
+                break
     # A search's two answers are plain step lists, not blocks with a `steps` key.
     for key in ("onFound", "onNoneFound"):
         if key in fields:
@@ -948,42 +953,56 @@ def _mentions(value: Any, tag_name: str) -> bool:
     return value == tag_name
 
 
-def _check_outcome_block(block: Any, key: str, path: str, problems: list[Problem]) -> None:
+def _outcome_blocks(value: Any) -> list[Any]:
+    """The riders written under one outcome key.
+
+    A card may say it twice -- "if you succeed, evade; if you succeed by 2 or
+    more, discover a clue" -- so a list is a list of riders. A lone block is the
+    same thing said once.
+    """
+    if value is None:
+        return []
+    return list(value) if isinstance(value, list) else [value]
+
+
+def _check_outcome_block(value: Any, key: str, path: str, problems: list[Problem]) -> None:
     """"If you succeed, ..." as the step that starts the test writes it.
 
     Two ways to write one that run as nothing at all:
 
-    A bare step list. `runOutcome` reads the block's `steps` key, so a list has
-    none and the whole branch is dropped -- and the editor reads `.steps` too, so
-    the builder would show the block empty and write that emptiness back.
+    A bare step list where a rider belongs. Each rider is read for its `steps`
+    key, so a step has none and the branch is dropped -- and the editor reads
+    `.steps` too, which means the builder would show the rider empty and write
+    that emptiness back.
 
-    A result criterion inside it. The steps are worked out when the test BEGINS
+    A result criterion inside one. The steps are worked out when the test BEGINS
     and held as messages, so a `SkillTestResultIs` there is asked of a test that
     has not run: it answers `Unrun` and everything under it is skipped. `by` is
     where the margin belongs.
     """
-    if block is None:
-        return
-    if isinstance(block, list):
-        problems.append(
-            Problem(
-                "error",
-                path,
-                f'"{key}" is a block, not a step list, so none of its steps ever run',
-                fix='write {"steps": [...]}, with "by" for "if you succeed by 2 or more"',
+    for index, block in enumerate(_outcome_blocks(value)):
+        at = path if isinstance(value, dict) else f"{path}[{index}]"
+        if not isinstance(block, dict) or not ({"steps", "by"} & set(block)):
+            problems.append(
+                Problem(
+                    "error",
+                    at,
+                    f'"{key}" holds riders, not steps, so none of this ever runs',
+                    fix='write {"steps": [...]}, with "by" for "if you succeed by 2 or more"'
+                    " -- a list of those says it more than once",
+                )
             )
-        )
-        return
-    if isinstance(block, dict) and _mentions(block.get("steps"), "SkillTestResultIs"):
-        problems.append(
-            Problem(
-                "error",
-                f"{path}.steps",
-                f'a result criterion inside "{key}" is asked before the test runs, '
-                "so it answers Unrun and these steps are skipped",
-                fix=f'say the margin as "{key}": {{"by": ...}} instead',
+            return
+        if _mentions(block.get("steps"), "SkillTestResultIs"):
+            problems.append(
+                Problem(
+                    "error",
+                    f"{at}.steps",
+                    f'a result criterion inside "{key}" is asked before the test runs, '
+                    "so it answers Unrun and these steps are skipped",
+                    fix=f'say the margin as "by" on this rider instead',
+                )
             )
-        )
 
 
 def _check_message(value: Any, path: str) -> list[Problem]:

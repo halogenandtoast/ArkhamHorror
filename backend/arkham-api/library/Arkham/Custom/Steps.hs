@@ -154,10 +154,22 @@ beginTest env spec f = do
   -- Registered before the test starts, the way a printed card does it: the
   -- effect has to be watching by the time tokens are revealed.
   for_ (KeyMap.lookup "onReveal" o) (runOnReveal env' sid source)
-  for_ (KeyMap.lookup "onSuccess" o) (runOutcome env' sid source True)
-  for_ (KeyMap.lookup "onFailure" o) (runOutcome env' sid source False)
+  for_ (KeyMap.lookup "onSuccess" o) (runOutcomes env' sid source True)
+  for_ (KeyMap.lookup "onFailure" o) (runOutcomes env' sid source False)
   f sid iid source
   pure env'
+
+{- | The success (or failure) riders a card prints, which may be more than one.
+
+"If you succeed, automatically evade the target. If you succeed by 2 or more,
+discover a clue" is two riders on the same test, each with its own margin, so a
+list of blocks is a list of riders and a lone block is the same thing said once.
+-}
+runOutcomes
+  :: (HasGameLogger m, ReverseQueue m) => Env -> SkillTestId -> Source -> Bool -> Value -> m ()
+runOutcomes env sid source passed = \case
+  Array blocks -> traverse_ (runOutcome env sid source passed) blocks
+  block -> runOutcome env sid source passed block
 
 {- | "If you succeed, …" and "If you fail, …", as a rider on the test the step
 just started.
@@ -1182,8 +1194,8 @@ runWithSkillTest env spec = case spec of
       other way to say it. Its own steps have finished long before the result is
       known, and the event that played them is in the discard pile by then, so a
       handler cannot answer either. -}
-      for_ (KeyMap.lookup "onSuccess" o) (runOutcome env' sid (stepSource env) True)
-      for_ (KeyMap.lookup "onFailure" o) (runOutcome env' sid (stepSource env) False)
+      for_ (KeyMap.lookup "onSuccess" o) (runOutcomes env' sid (stepSource env) True)
+      for_ (KeyMap.lookup "onFailure" o) (runOutcomes env' sid (stepSource env) False)
   _ -> pure ()
 
 {- | The steps inside, with the location of something bound for them.

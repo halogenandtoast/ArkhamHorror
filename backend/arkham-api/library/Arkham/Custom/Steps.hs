@@ -566,7 +566,11 @@ on the branch the player takes.
 runPlayCard :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
 runPlayCard env spec = case spec of
   Object o -> do
-    iid <- stepInvestigator env
+    {- Whose play it is. Defaults to whoever is resolving this, which is nearly
+    always right -- but "that investigator may immediately play another asset"
+    hands the play to someone else, and their hand and their resources are what
+    decide what is playable. -}
+    iid <- maybe (stepInvestigator env) pure (decodeWith env =<< KeyMap.lookup "iid" o)
     -- The card this ability belongs to, which is what pays for and plays it.
     let source = fromMaybe GameSource (KeyMap.lookup "source" env >>= parseMaybe parseJSON)
     discount <- do

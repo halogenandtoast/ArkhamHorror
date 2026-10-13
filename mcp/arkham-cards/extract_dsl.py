@@ -367,8 +367,16 @@ def meta_keys() -> dict[str, dict[str, str]]:
         text = path.read_text(errors="replace")
         where = str(path.relative_to(ARKHAM.parent.parent.parent))
         for key in dedup(re.findall(r'"(_[a-zA-Z]+)"', text)):
+            # Any of the runners that take a meta key and run what is under it
+            # as steps. Named one by one rather than matched loosely, because a
+            # runner left off this list quietly stops the checker looking at
+            # that key at all -- which is how `_onPlay` went unchecked the
+            # moment its call site gained a variant that passes extra bindings.
             runs_steps = bool(
-                re.search(rf'(?:runCustomSteps|customSteps)\b[^\n]*"{re.escape(key)}"', text)
+                re.search(
+                    rf'(?:runCustomSteps|runCustomStepsIn|customSteps)\b[^\n]*"{re.escape(key)}"',
+                    text,
+                )
             )
             entry = found.setdefault(key, {"holds": "", "readIn": where})
             if runs_steps:

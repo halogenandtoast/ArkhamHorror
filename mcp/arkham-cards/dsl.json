@@ -379,6 +379,7 @@
       "keysIn": "payload",
       "stepKeys": [],
       "payloadKeys": [
+        "iid",
         "discount",
         "discountIf",
         "matcher",
@@ -2450,7 +2451,7 @@
       "readIn": "arkham-api/library/Arkham/Custom/Ability.hs"
     },
     "_onPlay": {
-      "holds": "card data, not steps",
+      "holds": "a list of steps",
       "readIn": "arkham-api/library/Arkham/Custom/Event.hs"
     },
     "_elderSign": {

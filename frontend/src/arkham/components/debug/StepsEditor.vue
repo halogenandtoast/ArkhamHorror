@@ -1535,6 +1535,15 @@ const removeOption = (step: any, index: number, at: number) =>
         </p>
         <div class="row">
           <label>
+            Played by <span class="muted">(defaults to whoever is resolving this)</span>
+            <input
+              :value="step.playCard?.iid"
+              placeholder="$iid"
+              @input="set(index, { ...step, playCard: { ...step.playCard, iid: ($event.target as HTMLInputElement).value || undefined } })"
+              @keydown.stop
+            />
+          </label>
+          <label>
             This card (optional)
             <input
               :value="step.playCard?.card"

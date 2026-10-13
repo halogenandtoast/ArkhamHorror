@@ -76,6 +76,10 @@ type StepKind =
   | 'draw'
   | 'gather'
   | 'customize'
+  | 'place'
+  | 'discover'
+  | 'setAside'
+  | 'activateAbility'
   /* Not a step the engine runs, but a slot standing where a list of steps goes.
    * Only ever offered while editing a KEYWORD's behaviour, where the steps a
    * card supplies are spliced in at this point. */
@@ -115,6 +119,10 @@ const KIND_LABELS: Record<StepKind, string> = {
   draw: 'Draw cards',
   gather: 'Gather',
   customize: 'Customize',
+  place: 'Place a card',
+  discover: 'Discover clues',
+  setAside: 'Set cards aside',
+  activateAbility: "Activate another card's ability",
   slot: 'Whatever the card fills in',
 }
 
@@ -153,6 +161,10 @@ function kindOf(step: any): StepKind {
     'draw',
     'gather',
     'customize',
+    'place',
+    'discover',
+    'setAside',
+    'activateAbility',
   ] as StepKind[]
   // A slot is written as the bare `$name` the template substitutes, so it is a
   // string where every other step is an object.
@@ -206,6 +218,10 @@ const blankStep = (kind: StepKind) =>
     draw: { draw: { amount: 1 } },
     gather: { gather: { cardCode: '' } },
     customize: { customize: { optional: true } },
+    place: { place: { placement: null } },
+    discover: { discover: { amount: 1 } },
+    setAside: { setAside: {} },
+    activateAbility: { activateAbility: { matcher: null, modifiers: [] } },
     slot: `$${props.slotSteps?.[0]?.name ?? ''}`,
   })[kind]
 
@@ -247,6 +263,10 @@ const KIND_HELP: Record<StepKind, string> = {
   draw: 'Draws cards. Nothing is drawn when the amount works out to zero or less.',
   gather: 'Shuffles a card into the encounter deck.',
   customize: 'Marks a checkbox on the upgrade sheet of a customizable card.',
+  place: 'Puts a card somewhere — attached, in a play area, in a threat area. An event that places itself stays in play.',
+  discover: 'Discovers clues, with the id everything reacting to a discovery is keyed on.',
+  setAside: 'Makes copies of named cards in the set-aside zone, owned by an investigator.',
+  activateAbility: "Offers every ability of a named shape on OTHER cards, and uses the one chosen.",
   slot: 'Splices in the steps whichever card prints this keyword supplied.',
 }
 
@@ -382,6 +402,16 @@ const setOutcomes = (index: number, which: 'onSuccess' | 'onFailure', riders: an
 
 const setRider = (index: number, which: 'onSuccess' | 'onFailure', at: number, rider: any) =>
   setOutcomes(index, which, outcomes(steps.value[index], which).map((r, i) => (i === at ? rider : r)))
+
+/* One entry of a setAside list, with null meaning "take it out". Kept here
+ * rather than inline because the list may not exist yet. */
+const setAsideCard = (index: number, at: number, code: string | null) => {
+  const step = steps.value[index]
+  const cards = [...(step.setAside?.cards ?? [])]
+  if (code === null) cards.splice(at, 1)
+  else cards[at] = code
+  set(index, { ...step, setAside: { ...step.setAside, cards } })
+}
 
 const addRider = (index: number, which: 'onSuccess' | 'onFailure') =>
   setOutcomes(index, which, [...outcomes(steps.value[index], which), { steps: [] }])
@@ -1997,6 +2027,154 @@ const removeOption = (step: any, index: number, at: number) =>
           :modelValue="step.gather?.cardCode"
           @update:modelValue="set(index, { ...step, gather: { ...step.gather, cardCode: $event } })"
         />
+      </template>
+
+      <template v-else-if="kindOf(step) === 'discover'">
+        <p class="summary">
+          Discovers clues. Not a push: a discovery carries an id minted for it, which is what the
+          would-discover window and everything reacting to it are keyed on.
+        </p>
+        <ExpressionEditor
+          :queryKinds="queryKinds"
+          label="How many"
+          expect="Int"
+          :bindings="scopeFor(index)"
+          :modelValue="step.discover?.amount ?? 1"
+          @update:modelValue="set(index, { ...step, discover: { ...step.discover, amount: $event } })"
+        />
+        <ValueEditor
+          optional
+          :bindings="scopeFor(index)"
+          type="InvestigatorId"
+          label="Who discovers them (defaults to you)"
+          :modelValue="step.discover?.iid"
+          @update:modelValue="set(index, { ...step, discover: { ...step.discover, iid: $event } })"
+        />
+        <ValueEditor
+          optional
+          :bindings="scopeFor(index)"
+          type="LocationId"
+          label="From where (defaults to your location)"
+          :modelValue="step.discover?.location"
+          @update:modelValue="set(index, { ...step, discover: { ...step.discover, location: $event } })"
+        />
+        <BoolField
+          label="counts as investigating"
+          :modelValue="step.discover?.via === 'investigate'"
+          @update:modelValue="set(index, { ...step, discover: { ...step.discover, via: $event ? 'investigate' : undefined } })"
+        />
+        <p class="hint">
+          Which decides whether "discover 1 additional clue when you investigate" applies. A card
+          that just says "discover a clue" is not investigating.
+        </p>
+      </template>
+
+      <template v-else-if="kindOf(step) === 'place'">
+        <p class="summary">
+          Puts a card somewhere. "Attach to your location" and "put into play in your threat area"
+          are both a placement; the target says which message carries it, so only the placement is
+          written here.
+        </p>
+        <ValueEditor
+          :bindings="scopeFor(index)"
+          type="Placement"
+          label="Where it goes"
+          :modelValue="step.place?.placement"
+          @update:modelValue="set(index, { ...step, place: { ...step.place, placement: $event } })"
+        />
+        <ValueEditor
+          optional
+          :bindings="scopeFor(index)"
+          type="Target"
+          label="What is placed (defaults to this card)"
+          :modelValue="step.place?.target"
+          @update:modelValue="set(index, { ...step, place: { ...step.place, target: $event } })"
+        />
+        <p class="hint">
+          An event that places itself stays in play: the runner only discards one still in limbo
+          when it has finished resolving.
+        </p>
+      </template>
+
+      <template v-else-if="kindOf(step) === 'setAside'">
+        <p class="summary">
+          Makes copies of named cards in the set-aside zone, owned by an investigator — which is
+          what "you begin the game with each copy of X set aside" needs, since the copies are not
+          anywhere yet to be moved.
+        </p>
+        <label class="cap">Which cards</label>
+        <div v-for="(code, ci) in (step.setAside?.cards ?? [])" :key="ci" class="row">
+          <CardCodeField
+            :modelValue="code"
+            @update:modelValue="setAsideCard(index, ci, $event)"
+          />
+          <button type="button" class="drop" @click="setAsideCard(index, ci, null)">remove</button>
+        </div>
+        <button type="button" class="add-rider" @click="setAsideCard(index, (step.setAside?.cards ?? []).length, '')">
+          + a card
+        </button>
+        <p class="hint">
+          Left empty, it uses this card's own set-aside list — which is also what registers those
+          defs on the game, so a card set aside here and declared nowhere is a code it cannot
+          look up.
+        </p>
+        <ValueEditor
+          optional
+          :bindings="scopeFor(index)"
+          type="InvestigatorId"
+          label="Who owns them (defaults to you)"
+          :modelValue="step.setAside?.iid"
+          @update:modelValue="set(index, { ...step, setAside: { ...step.setAside, iid: $event } })"
+        />
+      </template>
+
+      <template v-else-if="kindOf(step) === 'activateAbility'">
+        <p class="summary">
+          Uses an ability that is not this card's own — "take a fight action printed on each
+          Firearm you control", "activate an ability on the attached card". Only abilities that
+          could actually be used are offered.
+        </p>
+        <ValueEditor
+          :bindings="scopeFor(index)"
+          type="AbilityMatcher"
+          label="Which abilities"
+          :modelValue="step.activateAbility?.matcher"
+          @update:modelValue="set(index, { ...step, activateAbility: { ...step.activateAbility, matcher: $event } })"
+        />
+        <ValueEditor
+          type="[ModifierType]"
+          label="Modifiers on those abilities"
+          :bindings="scopeFor(index)"
+          :modelValue="step.activateAbility?.modifiers"
+          @update:modelValue="set(index, { ...step, activateAbility: { ...step.activateAbility, modifiers: $event } })"
+        />
+        <p class="hint">
+          These go on the abilities themselves, not on anything on the table, so "without paying
+          its cost" is an action-cost modifier here rather than one anyone else can see.
+        </p>
+        <div class="row">
+          <BoolField
+            label="does not provoke attacks of opportunity"
+            :modelValue="!!step.activateAbility?.noAttacksOfOpportunity"
+            @update:modelValue="set(index, { ...step, activateAbility: { ...step.activateAbility, noAttacksOfOpportunity: $event } })"
+          />
+        </div>
+        <div class="row">
+          <BoolField
+            label="may decline"
+            :modelValue="!!step.activateAbility?.optional"
+            @update:modelValue="set(index, { ...step, activateAbility: { ...step.activateAbility, optional: $event } })"
+          />
+          <label v-if="step.activateAbility?.optional">
+            Decline label
+            <input
+              :value="step.activateAbility?.declineLabel"
+              placeholder="Do not"
+              @input="set(index, { ...step, activateAbility: { ...step.activateAbility, declineLabel: ($event.target as HTMLInputElement).value } })"
+              @keydown.stop
+            />
+          </label>
+        </div>
       </template>
 
       <template v-else-if="kindOf(step) === 'slot'">

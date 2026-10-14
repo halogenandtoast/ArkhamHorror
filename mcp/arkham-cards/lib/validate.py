@@ -1091,6 +1091,44 @@ def _expressions_in(value: Any, path: str) -> list[Problem]:
     return found
 
 
+def _check_deal_damage(value: Any, path: str) -> list[Problem]:
+    """`DealDamage` is enemies only.
+
+    The only handler for it is `EnemyTarget`, so one aimed at an investigator or
+    an asset reaches nothing and the damage simply never happens. Each other
+    entity has its own message, and an investigator has two: direct damage,
+    which goes where the card says, and an assignment, which the player places.
+    """
+    found: list[Problem] = []
+
+    def walk(v: Any, at: str) -> None:
+        if isinstance(v, dict):
+            if v.get("tag") == "DealDamage_":
+                target = (v.get("contents") or [None])[0]
+                tag = target.get("tag") if isinstance(target, dict) else None
+                if tag and tag != "EnemyTarget":
+                    found.append(
+                        Problem(
+                            "error",
+                            at,
+                            f"DealDamage is handled for enemies only, so a {tag} "
+                            "takes none of it",
+                            fix="an investigator takes `InvestigatorDirectDamage_` (where the "
+                            "card says) or `InvestigatorAssignDamage_` (where the player says); "
+                            "an asset takes `DealAssetDamageWithCheck`",
+                        )
+                    )
+                    return
+            for k, x in v.items():
+                walk(x, f"{at}.{k}")
+        elif isinstance(v, list):
+            for i, x in enumerate(v):
+                walk(x, f"{at}[{i}]")
+
+    walk(value, path)
+    return found
+
+
 def _check_message(value: Any, path: str) -> list[Problem]:
     """A pushed message, with a word about the grouping constructors.
 
@@ -1103,6 +1141,9 @@ def _check_message(value: Any, path: str) -> list[Problem]:
     expressions = _expressions_in(value, path)
     if expressions:
         return expressions
+    problems = _check_deal_damage(value, path)
+    if problems:
+        return problems
     problems = check_value(value, "Message", path)
     if not problems or not isinstance(value, dict):
         return problems

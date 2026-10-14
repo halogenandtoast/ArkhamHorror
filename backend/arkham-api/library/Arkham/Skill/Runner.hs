@@ -20,7 +20,7 @@ import Arkham.ChaosToken
 import Arkham.Classes.Entity
 import Arkham.Classes.RunMessage
 import Arkham.Helpers.Customization
-import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows)
+import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, wouldWindows)
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Window (mkWindow)
@@ -61,6 +61,21 @@ instance RunMessage SkillAttrs where
       case placementToAttached a.placement of
         Just attached | target == attached -> push $ toDiscard source a
         _ -> pure ()
+      pure a
+    {- Nothing discarded a skill ENTITY. A committed skill is swept up when the
+    test ends, and until a card attached one to a location there was nowhere
+    else for one to be -- so `Discard` on a `SkillTarget` reached no handler at
+    all and the card stayed where it was. Modelled on the event's: the
+    would-window, then the card to its owner's discard pile, with `Discarded`
+    taking it out of play. -}
+    Discard _ source (isTarget a -> True) -> do
+      (batchId, windowMessages) <- wouldWindows $ Window.WouldBeDiscarded (toTarget a)
+      let card = toCard a
+      let owner = fromMaybe a.owner (toCardOwner card)
+      let toPile = case card of
+            PlayerCard pc -> [AddToDiscard owner pc]
+            _ -> []
+      push $ Would batchId $ windowMessages <> [Discarded (toTarget a) source card] <> toPile
       pure a
     Discarded (isTarget a -> True) _ _ -> do
       runMessage (RemoveFromPlay (toSource a)) a

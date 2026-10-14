@@ -1051,6 +1051,45 @@ def _check_outcome_block(value: Any, key: str, path: str, problems: list[Problem
             )
 
 
+#: Keys that make an object an expression rather than a value. A pushed message
+#: is SUBSTITUTED, not evaluated -- `$name` is replaced, nothing is computed --
+#: so one of these left inside a push stays an object, the message fails to
+#: decode, and the whole push is dropped without a word.
+EXPRESSION_KEYS = {
+    "get", "map", "query", "field", "filter", "count", "sum", "concat", "take",
+    "skillTest", "traits", "min", "max",
+}
+
+
+def _expressions_in(value: Any, path: str) -> list[Problem]:
+    found: list[Problem] = []
+
+    def walk(v: Any, at: str) -> None:
+        if isinstance(v, dict):
+            used = sorted(set(v) & EXPRESSION_KEYS)
+            if used:
+                found.append(
+                    Problem(
+                        "error",
+                        at,
+                        f'"{used[0]}" is an expression, and a pushed message is '
+                        "substituted rather than evaluated, so this stays an object "
+                        "and the whole message is dropped",
+                        fix='bind it first with {"let": "name", "be": <the expression>} '
+                        'and push "$name"',
+                    )
+                )
+                return
+            for k, x in v.items():
+                walk(x, f"{at}.{k}")
+        elif isinstance(v, list):
+            for i, x in enumerate(v):
+                walk(x, f"{at}[{i}]")
+
+    walk(value, path)
+    return found
+
+
 def _check_message(value: Any, path: str) -> list[Problem]:
     """A pushed message, with a word about the grouping constructors.
 
@@ -1060,6 +1099,9 @@ def _check_message(value: Any, path: str) -> list[Problem]:
     and needs the wrapper. Saying which wrapper turns "no such constructor" into
     something to act on.
     """
+    expressions = _expressions_in(value, path)
+    if expressions:
+        return expressions
     problems = check_value(value, "Message", path)
     if not problems or not isinstance(value, dict):
         return problems

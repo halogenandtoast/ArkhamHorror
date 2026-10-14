@@ -458,12 +458,12 @@ unleashedChaosIMutationI =
 
 memoriesFadeToDust :: CardDef
 memoriesFadeToDust =
-  (treachery ":ages-unwound:256" "Memories Fade to Dust" Set.UnravellingAges 3)
+  (treachery ":ages-unwound:256" "Memories Fade to Dust" Set.UnravellingYears 3)
     { cdCardTraits = singleton Hex
     }
 
 acceleratedDecay :: CardDef
 acceleratedDecay =
-  (treachery ":ages-unwound:257" "Accelerated Decay" Set.UnravellingAges 2)
+  (treachery ":ages-unwound:257" "Accelerated Decay" Set.UnravellingYears 2)
     { cdCardTraits = singleton Hex
     }

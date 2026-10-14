@@ -167,13 +167,13 @@ instance RunMessage AYearToPlan where
         unscoped $ li "readyToBegin"
 
       {- "Gather all cards from the following encounter sets: A Year to Plan,
-      Missions, Myriad, Shifting Reality, Unravelling Ages, Dark Cult and The
+      Missions, Myriad, Shifting Reality, Unravelling Years, Dark Cult and The
       Midnight Masks." -}
       gather Set.AYearToPlan
       gather Set.Missions
       gather Set.Myriad
       gather Set.ShiftingReality
-      gather Set.UnravellingAges
+      gather Set.UnravellingYears
       gather Set.DarkCult
 
       {- "When gathering The Midnight Masks encounter set, only gather the 5

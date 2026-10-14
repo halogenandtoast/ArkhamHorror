@@ -108,10 +108,10 @@ instance RunMessage TheMyriadGentleman where
         unscoped $ li "readyToBegin"
 
       {- "Gather all cards from the following encounter sets: The Myriad Gentleman,
-      Shifting Reality, Unravelling Ages, Agents of Yog-Sothoth, Locked Doors." -}
+      Shifting Reality, Unravelling Years, Agents of Yog-Sothoth, Locked Doors." -}
       gather Set.TheMyriadGentleman
       gather Set.ShiftingReality
-      gather Set.UnravellingAges
+      gather Set.UnravellingYears
       gather Set.AgentsOfYogSothoth
       gather Set.LockedDoors
 

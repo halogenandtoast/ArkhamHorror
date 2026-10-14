@@ -112,11 +112,11 @@ instance RunMessage TimeRunsOut where
         unscoped $ li "readyToBegin"
 
       {- "Gather all cards from the following encounter sets: Time Runs Out,
-      Agents of Aforgomon, Paradox, Unravelling Ages." -}
+      Agents of Aforgomon, Paradox, Unravelling Years." -}
       gather Set.TimeRunsOut
       gather Set.AgentsOfAforgomon
       gather Set.Paradox
-      gather Set.UnravellingAges
+      gather Set.UnravellingYears
 
       -- "Check Campaign Log. If the investigators unleashed chaos, also gather
       -- the Unleashed Chaos encounter set."

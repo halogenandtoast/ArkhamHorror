@@ -15,7 +15,7 @@ module Arkham.Homebrew.AgesUnwound.Sets (
   pattern Thugs,
   pattern TimeRunsOut,
   pattern UnleashedChaos,
-  pattern UnravellingAges,
+  pattern UnravellingYears,
   pattern Unstuck,
 ) where
 
@@ -82,8 +82,8 @@ pattern UnleashedChaos :: EncounterSet
 pattern UnleashedChaos = Homebrew ":ages-unwound:unleashed_chaos"
 
 -- | Shared.
-pattern UnravellingAges :: EncounterSet
-pattern UnravellingAges = Homebrew ":ages-unwound:unravelling_ages"
+pattern UnravellingYears :: EncounterSet
+pattern UnravellingYears = Homebrew ":ages-unwound:unravelling_years"
 
 -- | Scenario IV.
 pattern Unstuck :: EncounterSet

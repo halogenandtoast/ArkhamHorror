@@ -4,15 +4,12 @@ import Arkham.Ability
 import Arkham.Act.Import.Lifted
 import Arkham.Card (genCard)
 import Arkham.Deck qualified as Deck
-import Arkham.ForMovement
-import Arkham.Helpers.Investigator (getJustLocation)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.AgesUnwound.Helpers (campaignI18n)
 import Arkham.Homebrew.AgesUnwound.ScenarioDeckKeys (pattern ArkhamStreetsDeck)
 import Arkham.Homebrew.AgesUnwound.Scenarios.NightOfFire.Helpers
 import Arkham.Location.Types qualified as Field
 import Arkham.Matcher
-import Arkham.Movement qualified as Movement
 import Arkham.Projection
 
 newtype OnTheLam = OnTheLam ActAttrs
@@ -21,18 +18,6 @@ newtype OnTheLam = OnTheLam ActAttrs
 
 onTheLam :: ActCard OnTheLam
 onTheLam = act (1, A) OnTheLam Cards.onTheLam Nothing
-
-{- | "a connecting location" -- and not a street that is itself being dealt.
-
-A new Arkham Streets location is put into play facedown and is only revealed
-when someone arrives, so an /unrevealed/ destination is already "a new Arkham
-Streets location" and must not be offered this redirect: otherwise every card
-that says "move to a new Arkham Streets location" would re-enter this window and
-could keep dealing the deck down. Twisting Alleys reads its own condition the
-same way.
--}
-connectingDestination :: LocationMatcher
-connectingDestination = ConnectedLocation ForMovement <> RevealedLocation
 
 {- | Ability 2 is the parenthetical on ability 1, not an extra ability: "(You may
 initiate a move even if there are no connecting locations in play.)"
@@ -60,14 +45,7 @@ for would be easy to miss. The act stays the ability's origin -- hence
 -}
 instance HasAbilities OnTheLam where
   getAbilities = actAbilities \a ->
-    [ mkAbility a 1
-        $ triggered
-          ( OrWindowMatcher
-              [ WouldMove #when You #any Anywhere connectingDestination
-              , WouldMove #when You (SourceIs $ a.ability 2) Anywhere YourLocation
-              ]
-          )
-          Free
+    [ mkAbility a 1 $ triggered (redirectableMove $ a.ability 2) Free
     , campaignI18n
         $ withI18nTooltip "onTheLam.move"
         $ restricted
@@ -90,14 +68,8 @@ instance RunMessage OnTheLam where
     -- play.)" The move is seeded on your own location so that ability 1 has a
     -- movement to retarget; it is ability 1, not this one, that deals the street.
     --
-    -- Built and pushed directly rather than with 'moveTo', which drops a move
-    -- whose destination is where you already stand ('moveToEdit'). That guard is
-    -- right for every other caller and is exactly what this ability needs to get
-    -- around: the whole point of the self-move is to open a would-move window
-    -- for the redirect to replace.
     UseThisAbility iid (isProxySource attrs -> True) 2 -> do
-      lid <- getJustLocation iid
-      push . Move =<< Movement.move (attrs.ability 2) iid lid
+      seedRedirectableMove (attrs.ability 2) iid
       pure a
     -- "Forced - At the end of the round: Shuffle each empty location into the
     -- Arkham Streets deck." Empty is the rules' sense: no investigators and no

@@ -20,16 +20,20 @@ module Arkham.Homebrew.AgesUnwound.Scenarios.NightOfFire.Helpers where
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (HasQueue, push)
+import Arkham.ForMovement
+import Arkham.Helpers.Investigator (getJustLocation)
 import Arkham.Helpers.Movement (replaceMovement)
 import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.Homebrew.AgesUnwound.Helpers (scenarioI18n)
 import Arkham.Homebrew.AgesUnwound.ScenarioDeckKeys (pattern ArkhamStreetsDeck)
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Message (Message (RemoveCardFromScenarioDeck))
+import Arkham.Matcher
+import Arkham.Message (Message (Move, RemoveCardFromScenarioDeck))
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Move (moveTo)
 import Arkham.Movement (Destination (ToLocation), Movement (moveDestination))
+import Arkham.Movement qualified as Movement
 import Arkham.Prelude
 import Arkham.Source
 import Control.Monad.Trans.Class (MonadTrans)
@@ -81,3 +85,44 @@ redirectToNewArkhamStreetsLocation source iid =
   putNewArkhamStreetsLocationIntoPlay >>= \case
     Nothing -> cancelMovement source iid
     Just lid -> replaceMovement iid \m -> m {moveDestination = ToLocation lid}
+
+{- | "a connecting location" -- and not a street that is itself being dealt.
+
+A new Arkham Streets location is put into play facedown and is only revealed
+when someone arrives, so an /unrevealed/ destination is already "a new Arkham
+Streets location" and must not be offered a redirect: otherwise every card that
+says "move to a new Arkham Streets location" would re-enter the window and could
+keep dealing the deck down. Twisting Alleys reads its own condition the same way.
+-}
+connectingDestination :: LocationMatcher
+connectingDestination = ConnectedLocation ForMovement <> RevealedLocation
+
+{- | The window the acts' "Instead, move to a new Arkham Streets location"
+reactions listen on: a move to a connecting location, or the self-move that the
+act's own move permission seeds when nothing is connected.
+
+The second entry is scoped to that permission's source rather than to any
+same-location move, so the reaction still cannot re-enter on the facedown street
+it just dealt.
+-}
+redirectableMove :: Source -> WindowMatcher
+redirectableMove permission =
+  OrWindowMatcher
+    [ WouldMove #when You #any Anywhere connectingDestination
+    , WouldMove #when You (SourceIs permission) Anywhere YourLocation
+    ]
+
+{- | The move an act's "(You may initiate a move even if there are no connecting
+locations in play.)" permission initiates: onto the location you already stand
+on, for that act's reaction to retarget.
+
+Built and pushed directly rather than with 'moveTo', which drops a move whose
+destination is where you already stand (see @moveToEdit@). That guard is right
+for every other caller and is exactly what this needs to get around -- the whole
+point of the self-move is to open a would-move window for the redirect to
+replace.
+-}
+seedRedirectableMove :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> m ()
+seedRedirectableMove source iid = do
+  lid <- getJustLocation iid
+  push . Move =<< Movement.move source iid lid

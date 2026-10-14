@@ -5,12 +5,12 @@ import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types (Field (EnemyPlacement))
-import Arkham.ForMovement
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Homebrew.AgesUnwound.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.AgesUnwound.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Locations
+import Arkham.Homebrew.AgesUnwound.Helpers (campaignI18n)
 import Arkham.Homebrew.AgesUnwound.ScenarioDeckKeys (pattern ArkhamStreetsDeck)
 import Arkham.Homebrew.AgesUnwound.Scenarios.NightOfFire.Helpers
 import Arkham.Keyword qualified as Keyword
@@ -29,27 +29,16 @@ newtype GettingYourBearings = GettingYourBearings ActAttrs
 gettingYourBearings :: ActCard GettingYourBearings
 gettingYourBearings = act (2, A) GettingYourBearings Cards.gettingYourBearings Nothing
 
-{- | "a connecting location" -- and not a street that is itself being dealt.
-
-A new Arkham Streets location is put into play facedown and is only revealed
-when someone arrives, so an /unrevealed/ destination is already "a new Arkham
-Streets location" and must not be offered this redirect: otherwise every card
-that says "move to a new Arkham Streets location" would re-enter this window and
-could keep dealing the deck down. Twisting Alleys reads its own condition the
-same way.
--}
-connectingDestination :: LocationMatcher
-connectingDestination = ConnectedLocation ForMovement <> RevealedLocation
-
-{- | Unlike On the Lam, this act's reaction prints no "you may initiate a move"
-parenthetical, so it gets no move-permission ability: by the time it is in play
-the streets have started to stay on the table, and its own Forced only sweeps
-away locations that are both empty /and/ resourceless.
+{- | Ability 5 is On the Lam's move permission again. This act's own Forced
+sweeps away every location that is both empty /and/ resourceless, so it can
+strand the table exactly as act 1 can -- and a move action is published by each
+accessible destination, so with nothing connected there is no move to redirect.
+It is numbered last to leave the printed abilities' indices alone; act 3 does
+not get it.
 -}
 instance HasAbilities GettingYourBearings where
   getAbilities = actAbilities \a ->
-    [ mkAbility a 1
-        $ triggered (WouldMove #when You #any Anywhere connectingDestination) Free
+    [ mkAbility a 1 $ triggered (redirectableMove $ a.ability 5) Free
     , restricted a 2 (exists $ EmptyLocation <> LocationWithResources (atMost 0))
         $ forced
         $ RoundEnds #when
@@ -63,6 +52,13 @@ instance HasAbilities GettingYourBearings where
         )
         $ Objective
         $ forced AnyWindow
+    , campaignI18n
+        $ withI18nTooltip "gettingYourBearings.move"
+        $ restricted
+          (proxied YouSource a)
+          5
+          (notExists AccessibleLocation <> ScenarioDeckWithCard ArkhamStreetsDeck)
+        $ ActionAbility #move Nothing (ActionCost 1)
     ]
 
 instance RunMessage GettingYourBearings where
@@ -91,6 +87,11 @@ instance RunMessage GettingYourBearings where
       pure a
     UseThisAbility _ (isSource attrs -> True) 4 -> do
       advanceVia #other attrs attrs
+      pure a
+    -- "(You may initiate a move even if there are no connecting locations in
+    -- play.)" Seeds a move on your own location for ability 1 to retarget.
+    UseThisAbility iid (isProxySource attrs -> True) 5 -> do
+      seedRedirectableMove (attrs.ability 5) iid
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       -- "Place 1[per_investigator] clues on each of A Place to Hide, Winchmore

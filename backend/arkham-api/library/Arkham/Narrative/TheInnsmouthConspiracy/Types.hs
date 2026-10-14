@@ -23,7 +23,6 @@ data InnsmouthNarrative m = InnsmouthNarrative
   , interlude1Part2 :: Flavor m
   , theVanishingOfElinaHarperIntro1 :: Flavor m
   , omitsTheVanishingOfElinaHarperIntro2 :: Omit
-  , omitsTheVanishingOfElinaHarperNoResolution :: Omit
   , inTooDeepFlashback6 :: Flavor m
   , inTooDeepFlashback8 :: Flavor m
   , interlude3NoKeys :: Extra m
@@ -41,7 +40,6 @@ noInnsmouthNarrative =
     , interlude1Part2 = Nothing
     , theVanishingOfElinaHarperIntro1 = Nothing
     , omitsTheVanishingOfElinaHarperIntro2 = False
-    , omitsTheVanishingOfElinaHarperNoResolution = False
     , inTooDeepFlashback6 = Nothing
     , inTooDeepFlashback8 = Nothing
     , interlude3NoKeys = Nothing

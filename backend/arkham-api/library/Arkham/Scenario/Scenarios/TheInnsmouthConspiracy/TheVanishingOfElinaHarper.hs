@@ -174,8 +174,7 @@ instance RunMessage TheVanishingOfElinaHarper where
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
-          narrative <- getInnsmouthNarrative
-          unless narrative.omitsTheVanishingOfElinaHarperNoResolution $ resolution "noResolution"
+          resolution "noResolution"
           push R1
         Resolution n -> do
           resolution $ case n of

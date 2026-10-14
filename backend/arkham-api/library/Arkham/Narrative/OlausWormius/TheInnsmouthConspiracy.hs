@@ -50,7 +50,6 @@ narrative =
     , interlude1Part2 = Just interlude1Part2
     , theVanishingOfElinaHarperIntro1 = Just theVanishingOfElinaHarperIntro1
     , omitsTheVanishingOfElinaHarperIntro2 = True
-    , omitsTheVanishingOfElinaHarperNoResolution = True
     , inTooDeepFlashback6 = Just inTooDeepFlashback6
     , inTooDeepFlashback8 = Just inTooDeepFlashback8
     , interlude3NoKeys = Just interlude3NoKeys

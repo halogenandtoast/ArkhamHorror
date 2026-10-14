@@ -18,8 +18,8 @@ import Arkham.Matcher
 import Data.Map.Strict qualified as Map
 
 newtype TheCultEnMasseLeaderlessFanaticism = TheCultEnMasseLeaderlessFanaticism EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theCultEnMasseLeaderlessFanaticism :: EnemyCard TheCultEnMasseLeaderlessFanaticism
 theCultEnMasseLeaderlessFanaticism =

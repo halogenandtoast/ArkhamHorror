@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Homebrew.AgesUnwound.CardDefs.Treacheries qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Placement
 import Arkham.Treachery.Import.Lifted hiding (RevealChaosToken)
 
 newtype AcceleratedDecay = AcceleratedDecay TreacheryAttrs
@@ -18,10 +19,13 @@ token during a skill test: Place 1 resource on Accelerated Decay, then take 1
 damage for each resource on Accelerated Decay."
 -}
 instance HasAbilities AcceleratedDecay where
-  getAbilities (AcceleratedDecay a) =
-    [ restricted a 1 (youExist $ be a.drawnBy) $ FastAbility Free
-    , restricted a 2 (youExist $ be a.drawnBy) $ forced $ RevealChaosToken #after You #skull
-    ]
+  getAbilities (AcceleratedDecay a) = case a.placement of
+    AttachedToAsset aid _ ->
+      [ nonBlocking
+          $ restricted a 1 (youExist (be a.drawnBy) <> exists (AssetWithId aid <> #discardable)) freeTrigger_
+      , restricted a 2 (youExist $ be a.drawnBy) $ forced $ RevealChaosToken #after You #skull
+      ]
+    _ -> []
 
 {- | "Revelation - Attach Accelerated Decay to an asset you control. (If you
 control no assets, take 2 damage.)"

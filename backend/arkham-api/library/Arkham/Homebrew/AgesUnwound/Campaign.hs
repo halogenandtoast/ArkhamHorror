@@ -60,10 +60,10 @@ instance RunMessage AgesUnwound where
     CampaignStep PrologueStep -> do
       scope "intro" $ flavor $ setTitle "title" >> p "body"
       scope "additionalRulesAndClarifications" do
-        flavor $ setTitle "title" >> p "alert"
-        flavor $ setTitle "title" >> p "storyCards"
-        flavor $ setTitle "title" >> p "swarming"
-        flavor $ setTitle "title" >> p "soloPlay"
+        flavor $ setTitle "title" >> compose (scope "alert" $ h3 "title" >> p "body")
+        flavor $ setTitle "title" >> compose (scope "storyCards" $ h3 "title" >> p "body")
+        flavor $ setTitle "title" >> compose (scope "swarming" $ h3 "title" >> p "body")
+        flavor $ setTitle "title" >> compose (scope "soloPlay" $ h3 "title" >> p "body")
       scope "prologue" $ flavor $ setTitle "title" >> p "body"
       -- "Mark 1 Strange Assistance in your Campaign Log."
       incrementRecordCount StrangeAssistance 1

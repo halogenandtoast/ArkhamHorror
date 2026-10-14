@@ -281,15 +281,44 @@ const remembered = computed(() => {
 // duplicating it. The section is shown only while that scenario is in play.
 type SpecialRule = { title?: string; bodyKey: string }
 
+/* Without that array, the rules are read off the blocks the backend already
+reads out during setup -- `<scenario>.rules.<name>` behind the `additionalRules`
+helper, and a campaign's own `additionalRulesAndClarifications` -- so a rule the
+engine prints is listed here without a second hand-written copy of it. Entries
+are `{ title, body }`, and the block's own `title` is the section heading rather
+than a rule. An older block whose entries are plain strings carries its heading
+inside the body, so it contributes a body and no title. */
+const ruleBlocks = ['rules', 'additionalRulesAndClarifications', 'additionalRules'] as const
+
+const rulesFromBlock = (at: string, entries: Record<string, unknown>): SpecialRule[] =>
+  Object.entries(entries)
+    .filter(([name]) => name !== 'title')
+    .map(([name, entry]) => {
+      const { title, body } = (entry ?? {}) as { title?: unknown; body?: unknown }
+      return {
+        title: title ? formatContent(t(`${at}.${name}.title`)) : undefined,
+        bodyKey: body ? `${at}.${name}.body` : `${at}.${name}`,
+      }
+    })
+
 const rulesAtScope = (scope: string | null): SpecialRule[] => {
   if (!scope) return []
   const key = `${scope}.specialRules`
   const raw = tm(key) as unknown
-  if (!Array.isArray(raw)) return []
-  return raw.map((rule: any, i: number) => ({
-    title: rule.title ? formatContent(t(`${key}[${i}].title`)) : undefined,
-    bodyKey: `${key}[${i}].body`,
-  }))
+  if (Array.isArray(raw)) {
+    return raw.map((rule: any, i: number) => ({
+      title: rule.title ? formatContent(t(`${key}[${i}].title`)) : undefined,
+      bodyKey: `${key}[${i}].body`,
+    }))
+  }
+  for (const block of ruleBlocks) {
+    const at = `${scope}.${block}`
+    const entries = tm(at) as unknown
+    if (!entries || typeof entries !== 'object' || Array.isArray(entries)) continue
+    const rules = rulesFromBlock(at, entries as Record<string, unknown>)
+    if (rules.length > 0) return rules
+  }
+  return []
 }
 
 const specialRules = computed<SpecialRule[]>(() =>

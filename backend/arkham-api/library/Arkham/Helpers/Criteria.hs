@@ -77,6 +77,7 @@ import Arkham.Location.Grid (Pos, isAdjacent)
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
+import Arkham.Movement (Destination (ToLocation, ToLocationMatching))
 import Arkham.Name
 import Arkham.Placement
 import Arkham.Prelude
@@ -262,6 +263,15 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
       <$> selectCount (Matcher.ChaosTokenFaceIs #curse)
       <*> selectCount (Matcher.ChaosTokenFaceIs #bless)
   Criteria.CanMoveTo matcher -> notNull <$> getCanMoveToMatchingLocations iid source matcher
+  Criteria.MovingTo matcher ->
+    field InvestigatorMovement iid >>= \case
+      Nothing -> pure False
+      -- A matcher destination is resolved to a single location before any of the
+      -- move's windows are built (see handleMove), so nothing can ask this while
+      -- the destination is still a matcher.
+      Just movement -> case movement.destination of
+        ToLocation lid -> lid <=~> matcher
+        ToLocationMatching _ -> pure False
   Criteria.AccessibleToYou matcher -> do
     -- getAccessibleLocations injects the mover's own as-if connections before asking
     -- the board, and already limits the answer to locations they may enter.

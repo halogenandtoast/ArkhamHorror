@@ -23,13 +23,21 @@ locations exist, instead cancel the effects of the move."
 already revealed": a new one is always put into play facedown and is revealed
 the moment you arrive, so an unrevealed destination can only be a street that
 was just dealt (or the one Eternity's Sentinel was placed on).
+
+It waits for the @Leaving@ window rather than @WouldMove@, and asks the live
+movement where it is going ('MovingTo'). Every "Instead, move to a new Arkham
+Streets location" in this scenario retargets the move from inside the
+@WouldMove@ window, so a trigger that reads the destination there reads the one
+the player is about to replace -- and would send you for a test on your way to
+exactly the new street that is supposed to exempt you.
 -}
 instance HasAbilities TwistingAlleys where
   getAbilities (TwistingAlleys a) =
     extendRevealed1 a
       $ skillTestAbility
-      $ forcedAbility a 1
-      $ WouldMove #when You #any (be a) RevealedLocation
+      $ restricted a 1 (MovingTo RevealedLocation)
+      $ forced
+      $ Leaves #when You (be a)
 
 instance RunMessage TwistingAlleys where
   runMessage msg l@(TwistingAlleys attrs) = runQueueT $ case msg of

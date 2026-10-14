@@ -284,6 +284,17 @@ data Criterion
   | ConcealedCardCount Int ConcealedCardMatcher
   | CanMoveThis GridDirection
   | CanMoveTo LocationMatcher
+  | {- | Your move already in flight is headed at a matching location.
+
+    Read off the live movement, not off the window, which is the whole point: a
+    @WouldMove@ window names the destination the move had when it opened, and a
+    card that retargets the move in that window (Ages Unwound's "Instead, move
+    to a new Arkham Streets location") leaves every other trigger in it looking
+    at a destination that is no longer true. A condition about where you are
+    going therefore belongs on a later timing point -- @Leaves #when@ -- asking
+    this.
+    -}
+    MovingTo LocationMatcher
   | {- | The matching location is one you could move to right now, counting the
     connections you personally move as if you had ('MovesAsIfConnectedTo').
 

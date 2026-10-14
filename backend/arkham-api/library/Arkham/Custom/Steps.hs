@@ -633,7 +633,10 @@ runPlayCard env spec = case spec of
     -- The card this ability belongs to, which is what pays for and plays it.
     let source = fromMaybe GameSource (KeyMap.lookup "source" env >>= parseMaybe parseJSON)
     discount <- do
-      let amount = fromMaybe 0 (KeyMap.lookup "discount" o >>= parseMaybe parseJSON)
+      -- An expression, not just a number: "paying the difference between their
+      -- costs" is read off the table, and a string there used to parse as no
+      -- discount at all.
+      amount <- maybe (pure 0) (exprInt env) (KeyMap.lookup "discount" o)
       case KeyMap.lookup "discountIf" o of
         Nothing -> pure amount
         Just condition -> bool 0 amount <$> runReadCondition env condition

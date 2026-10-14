@@ -75,6 +75,7 @@
         "else"
       ],
       "payloadKeys": [
+        "tag",
         "criteria",
         "source",
         "matches",
@@ -103,6 +104,7 @@
         "then"
       ],
       "payloadKeys": [
+        "tag",
         "criteria",
         "source",
         "matches",
@@ -133,6 +135,7 @@
       "payloadKeys": [
         "if",
         "steps",
+        "tag",
         "criteria",
         "source",
         "matches",
@@ -335,6 +338,7 @@
         "options",
         "oneAtATime",
         "done",
+        "tag",
         "criteria",
         "source",
         "matches",
@@ -406,6 +410,7 @@
         "free",
         "declineLabel",
         "optional",
+        "tag",
         "criteria",
         "source",
         "matches",
@@ -883,6 +888,7 @@
   },
   "conditions": {
     "forms": [
+      "tag",
       "criteria",
       "source",
       "matches",

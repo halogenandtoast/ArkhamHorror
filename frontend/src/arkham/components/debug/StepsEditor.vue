@@ -1599,15 +1599,6 @@ const removeOption = (step: any, index: number, at: number) =>
           />
         </div>
         <div class="row">
-          <label>
-            Discount
-            <input
-              type="number"
-              :value="step.playCard?.discount ?? 0"
-              @input="set(index, { ...step, playCard: { ...step.playCard, discount: Number(($event.target as HTMLInputElement).value) } })"
-              @keydown.stop
-            />
-          </label>
           <BoolField
             label="may decline"
             :modelValue="!!step.playCard?.optional"
@@ -1629,6 +1620,14 @@ const removeOption = (step: any, index: number, at: number) =>
           label="Which cards"
           :modelValue="step.playCard?.matcher"
           @update:modelValue="set(index, { ...step, playCard: { ...step.playCard, matcher: $event } })"
+        />
+        <ExpressionEditor
+          :queryKinds="queryKinds"
+          :bindings="scopeFor(index)"
+          label="Discount"
+          expect="Int"
+          :modelValue="step.playCard?.discount ?? 0"
+          @update:modelValue="set(index, { ...step, playCard: { ...step.playCard, discount: $event } })"
         />
         <ValueEditor
           optional

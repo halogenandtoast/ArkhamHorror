@@ -68,6 +68,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted (
+  additionalSkillTestOption,
   aspect,
   cancelBatch,
   chooseFightEnemyEdit,
@@ -751,6 +752,46 @@ runRepeatAbilities env spec = do
         | u <- mine
         ]
 
+{- | Tell a card the test's result again, so whatever it does about the result
+happens one more time.
+
+A committed card's "if you succeed" is a handler on the test's own notification
+(@PassedSkillTest@ / @FailedSkillTest@) rather than an ability -- that is true
+of the official skills and of the ones written here -- so the only way to
+resolve such an effect an additional time is to say it an additional time. That
+is what "resolve its effects an additional time" asks for.
+
+Defaults to this card. The message is the current test's own result, so a card
+cannot be told about a success the test did not have.
+-}
+runNotifyResult :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runNotifyResult env spec = do
+  let
+    o = specObject spec
+    target =
+      (KeyMap.lookup "target" o >>= decodeWith env)
+        <|> (KeyMap.lookup "target" env >>= parseMaybe parseJSON)
+  case target of
+    Nothing -> reportBadPayload env "notifyResult" (substitute env spec)
+    Just t -> push $ NotifyResultAgain (t :: Target)
+
+{- | Offer these steps as an option at the end of the test rather than resolving
+them now.
+
+Everything a successful test is worth is registered as an option and then
+ordered by the investigator -- a chaos token's effect, a committed card's rider,
+the investigation's own clue. A card that has something to say about the result
+belongs in that list, not ahead of it, and being in the list is also what lets
+it be resolved after the effects it talks about.
+-}
+runSkillTestOption :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runSkillTestOption env spec = do
+  let
+    o = specObject spec
+    label = textField env o "label" "Resolve"
+    steps = maybe [] subSteps (KeyMap.lookup "steps" o)
+  additionalSkillTestOption label (runSteps env steps)
+
 {- | Put a card somewhere.
 
 'Placement' is what "attach to your location" and "put into play in your threat
@@ -965,6 +1006,12 @@ runSteps env0 = void . foldM step env0
           pure env
       | Just spec <- KeyMap.lookup "repeatAbilities" o -> do
           runRepeatAbilities env spec
+          pure env
+      | Just spec <- KeyMap.lookup "notifyResult" o -> do
+          runNotifyResult env spec
+          pure env
+      | Just spec <- KeyMap.lookup "skillTestOption" o -> do
+          runSkillTestOption env spec
           pure env
       | Just spec <- KeyMap.lookup "place" o -> do
           runPlace env spec

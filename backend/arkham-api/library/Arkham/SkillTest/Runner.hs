@@ -990,6 +990,18 @@ instance RunMessage SkillTest where
         Unrun -> pure ()
 
       pure $ s & stepL .~ ApplySkillTestResultsStep
+    {- A second telling of the result, asked for by a card that resolves at ST.7
+    ("resolve its effects an additional time"). The result is read here rather
+    than where the ask was built: an option is captured before the result is
+    settled, so a message carrying it would carry @Unrun@. -}
+    NotifyResultAgain target -> do
+      result <- fromMaybe skillTestResult <$> getSkillTestResultWithResultModifiers
+      let tell f n = f skillTestInvestigator skillTestAction skillTestSource target skillTestType n
+      case result of
+        SucceededBy _ n -> push $ Priority $ tell PassedSkillTest n
+        FailedBy _ n -> push $ Priority $ tell FailedSkillTest n
+        Unrun -> pure ()
+      pure s
     SkillTestApplyResults -> do
       -- ST.6 Determine Success
       push SkillTestApplyResultsAfter

@@ -83,6 +83,12 @@ data SkillTestMessage
   | AfterSkillTestEnds_ Source Target SkillTest.SkillTestResult
   | SkillTestResults_ SkillTestResultsData
   | SkillTestUncommitCard_ InvestigatorId Card
+  | {- | Tell a target the test's result again, so an effect it has about the
+    result resolves one more time. The result is read when THIS resolves rather
+    than when it is pushed, because a card that asks for a second telling is
+    answered at ST.7 while the result it is about is only settled there.
+    -}
+    NotifyResultAgain_ Target
   | AfterSkillTestQuiet_ [Message]
   | AfterSkillTestOption_ InvestigatorId Text [Message]
   | EndSkillTestWindow_

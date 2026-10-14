@@ -1636,6 +1636,9 @@ pattern SkillTestUncommitCard iid c = SkillTestMessage (SkillTestUncommitCard_ i
 pattern AfterSkillTestQuiet :: [Message] -> Message
 pattern AfterSkillTestQuiet ms = SkillTestMessage (AfterSkillTestQuiet_ ms)
 
+pattern NotifyResultAgain :: Target -> Message
+pattern NotifyResultAgain t = SkillTestMessage (NotifyResultAgain_ t)
+
 pattern AfterSkillTestOption :: InvestigatorId -> Text -> [Message] -> Message
 pattern AfterSkillTestOption iid t ms = SkillTestMessage (AfterSkillTestOption_ iid t ms)
 

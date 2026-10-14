@@ -803,6 +803,37 @@
       "via": []
     },
     {
+      "step": "notifyResult",
+      "handler": "runNotifyResult",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "target"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "target"
+      ],
+      "valueShape": null,
+      "doc": "Tell a card the test's result again, so whatever it does about the result\nhappens one more time.\n\nA committed card's \"if you succeed\" is a handler on the test's own notification\n(@PassedSkillTest@ / @FailedSkillTest@) rather than an ability -- that is true\nof the official skills and of the ones written here -- so the only way to\nresolve such an effect an additional time is to say it an additional time. That\nis what \"resolve its effects an additional time\" asks for.\n\nDefaults to this card. The message is the current test's own result, so a card\ncannot be told about a success the test did not have.",
+      "via": []
+    },
+    {
+      "step": "skillTestOption",
+      "handler": "runSkillTestOption",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "label",
+        "steps"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": null,
+      "doc": "Offer these steps as an option at the end of the test rather than resolving\nthem now.\n\nEverything a successful test is worth is registered as an option and then\nordered by the investigator -- a chaos token's effect, a committed card's rider,\nthe investigation's own clue. A card that has something to say about the result\nbelongs in that list, not ahead of it, and being in the list is also what lets\nit be resolved after the effects it talks about.",
+      "via": []
+    },
+    {
       "step": "place",
       "handler": "runPlace",
       "keysIn": "payload",

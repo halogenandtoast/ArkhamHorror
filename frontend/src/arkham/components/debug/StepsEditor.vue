@@ -82,6 +82,8 @@ type StepKind =
   | 'setAside'
   | 'activateAbility'
   | 'repeatAbilities'
+  | 'notifyResult'
+  | 'skillTestOption'
   | 'seal'
   /* Not a step the engine runs, but a slot standing where a list of steps goes.
    * Only ever offered while editing a KEYWORD's behaviour, where the steps a
@@ -127,6 +129,8 @@ const KIND_LABELS: Record<StepKind, string> = {
   setAside: 'Set cards aside',
   activateAbility: "Activate another card's ability",
   repeatAbilities: "Repeat what a card's abilities did",
+  notifyResult: "Tell a card the test's result again",
+  skillTestOption: 'Offer this at the end of the test',
   seal: 'Seal chaos tokens',
   slot: 'Whatever the card fills in',
 }
@@ -171,6 +175,8 @@ function kindOf(step: any): StepKind {
     'setAside',
     'activateAbility',
     'repeatAbilities',
+    'notifyResult',
+    'skillTestOption',
     'seal',
   ] as StepKind[]
   // A slot is written as the bare `$name` the template substitutes, so it is a
@@ -230,6 +236,8 @@ const blankStep = (kind: StepKind) =>
     setAside: { setAside: {} },
     activateAbility: { activateAbility: { matcher: null, modifiers: [] } },
     repeatAbilities: { repeatAbilities: { source: null } },
+    notifyResult: { notifyResult: { target: null } },
+    skillTestOption: { skillTestOption: { label: '', steps: [] } },
     seal: { seal: { tokens: null } },
     slot: `$${props.slotSteps?.[0]?.name ?? ''}`,
   })[kind]
@@ -278,6 +286,10 @@ const KIND_HELP: Record<StepKind, string> = {
   activateAbility: "Offers every ability of a named shape on OTHER cards, and uses the one chosen.",
   repeatAbilities:
     "Pushes every ability USE already recorded for a source, so whatever it did happens again.",
+  notifyResult:
+    "Says the test's result to a card a second time, so its \"if you succeed\" happens again.",
+  skillTestOption:
+    'Registers these steps as one of the options the investigator orders at the end of a test.',
   seal: 'Seals chaos tokens on this card, or releases the ones it is holding.',
   slot: 'Splices in the steps whichever card prints this keyword supplied.',
 }
@@ -2142,6 +2154,56 @@ const removeOption = (step: any, index: number, at: number) =>
           The source is the entity, not the card: a committed skill's abilities belong to the
           skill standing in limbo for the test. A silent forced ability cannot be reached by
           "activate another card's ability" at all, which is what this is for.
+        </p>
+      </template>
+
+      <template v-else-if="kindOf(step) === 'notifyResult'">
+        <p class="summary">
+          Tells a card the current test's result again. A committed card's "if you succeed" is a
+          handler on that notification rather than an ability, so hearing it twice is what
+          "resolve its effects an additional time" means.
+        </p>
+        <ExpressionEditor
+          :queryKinds="queryKinds"
+          :bindings="scopeFor(index)"
+          label="Which card to tell (defaults to this one)"
+          expect="Target"
+          :modelValue="step.notifyResult?.target"
+          @update:modelValue="set(index, { ...step, notifyResult: { ...step.notifyResult, target: $event } })"
+        />
+        <p class="hint">
+          The message is the test's own result, so nothing is told about a success the test did not
+          have. A skill committed to the test is a <em>skill</em> target, standing in limbo.
+        </p>
+      </template>
+
+      <template v-else-if="kindOf(step) === 'skillTestOption'">
+        <p class="summary">
+          Holds these steps back and offers them as one of the options at the end of the test, in
+          the list the investigator puts in order — beside a chaos token's effect and the
+          investigation's own clue.
+        </p>
+        <label>
+          Label
+          <input
+            :value="step.skillTestOption?.label"
+            placeholder="Resolve"
+            @input="set(index, { ...step, skillTestOption: { ...step.skillTestOption, label: ($event.target as HTMLInputElement).value } })"
+            @keydown.stop
+          />
+        </label>
+        <StepsEditor
+          :slotSteps="slotSteps"
+          :bindings="innerScope(index)"
+          :path="innerPath(index, 'skillTestOption')"
+          :announce="addedInside(index)"
+          :queryKinds="queryKinds"
+          :modelValue="step.skillTestOption?.steps ?? []"
+          @update:modelValue="set(index, { ...step, skillTestOption: { ...step.skillTestOption, steps: $event } })"
+        />
+        <p class="hint">
+          An option resolves after every committed card has been told the result once, which is
+          what lets it speak about effects that have already happened.
         </p>
       </template>
 

@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import { imgsrc } from '@/arkham/helpers'
+import { computed } from 'vue'
+import { formatContent, imgsrc } from '@/arkham/helpers'
+import { narrativeHost } from '@/arkham/composables/useNarrative'
 
 /* A section is whatever the box prints under a heading: credit rows (role on the
    left, names on the right) or prose. A box may ship any number of either, in
@@ -14,15 +16,23 @@ export type AboutSection = {
   spoiler: boolean
 }
 
-defineProps<{
+type Props = {
   title: string
   blurb?: string
   designer?: string
+  /* Content still in testing, labelled where it is being read rather than only
+     where it was chosen -- a game is usually joined, not created. */
+  beta?: boolean
+  /* Where the work itself lives, for a player who wants the original. */
+  url?: string
   sections: AboutSection[]
   /* Small print the box itself carries -- a rights notice for source material it
      adapts, say. Separate from the generic unofficial-content line. */
   notes: string[]
-}>()
+}
+
+const props = defineProps<Props>()
+const host = computed(() => narrativeHost(props.url))
 
 const grunge = `url(${imgsrc('grunge.png')})`
 </script>
@@ -35,13 +45,19 @@ const grunge = `url(${imgsrc('grunge.png')})`
          reads on the parchment the rest of the log's flavor text uses. -->
     <div class="page">
       <header class="masthead">
-        <h4 class="box-title">{{ title }}</h4>
+        <h4 class="box-title">
+          {{ title }}
+          <span v-if="beta" class="beta-pill">{{ $t('campaignLog.about.beta') }}</span>
+        </h4>
         <p v-if="designer" class="box-designer">
           {{ $t('create.designedBy', { name: designer }) }}
         </p>
+        <p v-if="host" class="box-link">
+          <a :href="url" target="_blank" rel="noopener noreferrer">{{ host }}</a>
+        </p>
       </header>
 
-      <p v-if="blurb" class="blurb">{{ blurb }}</p>
+      <p v-if="blurb" class="blurb" v-html="formatContent(blurb)"></p>
 
       <template v-for="(section, s) in sections" :key="s">
         <details v-if="section.spoiler" class="section spoiler">
@@ -49,9 +65,12 @@ const grunge = `url(${imgsrc('grunge.png')})`
             <span class="sub-title">{{ section.title }}</span>
             <span class="spoiler-hint">{{ $t('campaignLog.about.spoiler') }}</span>
           </summary>
-          <p v-for="(paragraph, i) in section.text" :key="`t${i}`" class="prose">
-            {{ paragraph }}
-          </p>
+          <p
+            v-for="(paragraph, i) in section.text"
+            :key="`t${i}`"
+            class="prose"
+            v-html="formatContent(paragraph)"
+          ></p>
         </details>
 
         <section v-else class="section">
@@ -59,21 +78,24 @@ const grunge = `url(${imgsrc('grunge.png')})`
 
           <dl v-if="section.rows.length > 0" class="credits">
             <template v-for="(row, i) in section.rows" :key="i">
-              <dt>{{ row.role }}</dt>
-              <dd>{{ row.names }}</dd>
+              <dt v-html="formatContent(row.role)"></dt>
+              <dd v-html="formatContent(row.names)"></dd>
             </template>
           </dl>
 
-          <p v-for="(paragraph, i) in section.text" :key="`t${i}`" class="prose">
-            {{ paragraph }}
-          </p>
+          <p
+            v-for="(paragraph, i) in section.text"
+            :key="`t${i}`"
+            class="prose"
+            v-html="formatContent(paragraph)"
+          ></p>
         </section>
       </template>
 
       <!-- A div, not a <footer>: base.css styles the bare element as the app's own
            page footer (fixed to the viewport bottom, centred, 0.5em). -->
       <div class="fine-print">
-        <p v-for="(note, i) in notes" :key="i">{{ note }}</p>
+        <p v-for="(note, i) in notes" :key="i" v-html="formatContent(note)"></p>
         <p>{{ $t('campaignLog.about.unofficial') }}</p>
       </div>
     </div>
@@ -130,11 +152,56 @@ const grunge = `url(${imgsrc('grunge.png')})`
   margin: 0;
 }
 
+/* Darkgoldenrod, as every other beta marker in the app, but on parchment it
+   needs the darker ink to stay legible. */
+.beta-pill {
+  font-family: sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  margin-left: 8px;
+  border-radius: 999px;
+  background: darkgoldenrod;
+  color: white;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
 .box-designer {
   font-style: italic;
   font-size: 0.95em;
   color: var(--page-ink-2);
   margin: 2px 0 0;
+}
+
+/* `reset.css` sets `* { font: inherit }`, which flattens the emphasis
+   `formatContent` emits, so the markup has to ask for it back. `:deep`, because
+   v-html content carries no scope attribute. */
+:deep(i) {
+  font-style: italic;
+}
+
+:deep(strong),
+:deep(b) {
+  font-weight: bold;
+}
+
+/* The host, as its own text: it says where it goes and needs no translation. */
+.box-link {
+  font-size: 0.9em;
+  margin: 4px 0 0;
+}
+
+.box-link a {
+  color: #5a4a1e;
+  text-decoration: none;
+  border-bottom: 1px dotted rgba(90, 74, 30, 0.5);
+}
+
+.box-link a:hover {
+  color: var(--page-ink);
 }
 
 .blurb {

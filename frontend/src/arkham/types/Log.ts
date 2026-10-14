@@ -39,7 +39,10 @@ export type LogKey = {
   name?: string
 }
 
-export type CampaignOptionTag = { tag: string }
+/* `contents` carries a parameterised option's payload -- the name of the
+narrative variant a game was created with, say -- so an option is identified by
+both halves, as it is on the backend. */
+export type CampaignOptionTag = { tag: string, contents?: string }
 
 export type LogContents = {
   recorded: LogKey[];
@@ -85,6 +88,7 @@ export const logKeyDecoder: JsonDecoder.Decoder<LogKey> = JsonDecoder.succeed().
 
 const campaignOptionTagDecoder = JsonDecoder.object<CampaignOptionTag>({
   tag: JsonDecoder.string(),
+  contents: JsonDecoder.optional(JsonDecoder.string()),
 }, 'CampaignOptionTag');
 
 export const logContentsDecoder = JsonDecoder.object<LogContents>({

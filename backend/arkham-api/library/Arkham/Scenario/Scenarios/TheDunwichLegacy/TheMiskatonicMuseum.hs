@@ -10,11 +10,13 @@ import Arkham.Enemy.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as E
 import Arkham.Exception
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location
+import Arkham.Helpers.Narrative
 import Arkham.Helpers.Query
 import Arkham.Location.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted.Log
 import Arkham.Name
+import Arkham.Narrative.TheDunwichLegacy
 import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
@@ -69,24 +71,29 @@ standaloneChaosTokens =
 
 instance RunMessage TheMiskatonicMuseum where
   runMessage msg s@(TheMiskatonicMuseum attrs) = runQueueT $ scenarioI18n $ case msg of
-    PreScenarioSetup -> do
+    PreScenarioSetup -> scope "intro" do
       armitageKidnapped <- getHasRecordOrStandalone DrHenryArmitageWasKidnapped True
-      flavor $ scope "intro" do
-        h "title"
-        p "body"
-        p.validate armitageKidnapped "proceedToPart1"
-        p.validate (not armitageKidnapped) "proceedToPart2"
+      narrative <- getDunwichNarrative
+      storyBuild
+        =<< narrativeBuilder
+          narrative.theMiskatonicMuseumIntro
+          ( do
+              h "title"
+              p "body"
+              p.validate armitageKidnapped "proceedToPart1"
+              p.validate (not armitageKidnapped) "proceedToPart2"
+          )
       doStep (if armitageKidnapped then 1 else 2) msg
       pure s
-    DoStep 1 PreScenarioSetup -> do
-      flavor $ scope "intro.part1" do
-        h "title"
-        p "body"
+    DoStep 1 PreScenarioSetup -> scope "intro.part1" do
+      flavor $ h "title" >> p "body"
+      narrative <- getDunwichNarrative
+      onNarrative narrative.theMiskatonicMuseumIntroPart3
       pure s
-    DoStep 2 PreScenarioSetup -> do
-      flavor $ scope "intro.part2" do
-        h "title"
-        p "body"
+    DoStep 2 PreScenarioSetup -> scope "intro.part2" do
+      flavor $ h "title" >> p "body"
+      narrative <- getDunwichNarrative
+      onNarrative narrative.theMiskatonicMuseumIntroPart3
       pure s
     StandaloneSetup -> do
       push (SetChaosTokens standaloneChaosTokens)
@@ -177,16 +184,19 @@ instance RunMessage TheMiskatonicMuseum where
       withLocationOf iid \lid -> push (EnemySpawnFromOutOfPlay VoidZone Nothing lid eid)
       pure s
     ScenarioResolution r -> scope "resolutions" do
+      narrative <- getDunwichNarrative
       case r of
         NoResolution -> do
           resolutionWithXp "noResolution" $ allGainXp' attrs
           record TheInvestigatorsFailedToRecoverTheNecronomicon
         Resolution 1 -> do
-          resolutionWithXp "resolution1" $ allGainXp' attrs
+          key <- narrativeKey "resolution1" narrative.theMiskatonicMuseumResolution1
+          resolutionWithXp key $ allGainXp' attrs
           record TheInvestigatorsDestroyedTheNecronomicon
         Resolution 2 -> do
           investigators <- allInvestigators
-          resolutionWithXp "resolution2" $ allGainXp' attrs
+          key <- narrativeKey "resolution2" narrative.theMiskatonicMuseumResolution2
+          resolutionWithXp key $ allGainXp' attrs
           record TheInvestigatorsTookCustodyOfTheNecronomicon
           addCampaignCardToDeckChoice
             investigators

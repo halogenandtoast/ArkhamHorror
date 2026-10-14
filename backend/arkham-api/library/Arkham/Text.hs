@@ -65,6 +65,10 @@ data FlavorTextEntry
   | TarotEntry {tarot :: TarotCardArcana}
   | ChaosTokenEntry {chaosTokenFace :: ChaosTokenFace}
   | ChaosTokenMorphEntry {morphFrom :: ChaosTokenFace, morphTo :: ChaosTokenFace}
+  | {- | A numbered note, printed at the foot of the panel. The marker that
+    refers to it is written inline in the prose as @[^n]@.
+    -}
+    FootnoteEntry {number :: Int, entry :: FlavorTextEntry}
   | EntrySplit
   deriving stock (Show, Eq, Ord, Data)
 

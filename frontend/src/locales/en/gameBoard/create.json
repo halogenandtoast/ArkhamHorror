@@ -1,111 +1,104 @@
 {
-    "newGame": "New Game",
-
-    "numberOfPlayers" : "Number of Players",
-    "withFriends": "With Friends",
-    "multihandedSolo": "Solo",
-    "switchingPerspectives": "Switching Perspectives",
-    "switchingPerspectivesDescription": "In multihanded solo, you’ll sometimes need to act from a specific investigator’s point of view. Use the <strong>eye</strong> icon in the player tabs to switch to that investigator’s perspective.",
-
-    "campaign": "Campaign",
-    "standalone": "Standalone",
-    "sideStory": "Side Story",
-
-    "requiresInvestigator": "Requires {name}",
-    "alphaWarning": "This is currently being worked on. It likely doesn't work yet and you should not file bugs against it.",
-    "betaWarning": "This is ready for testing but expect your games to break frequently.",
-    "betaWarningScenario": "This scenario is ready for testing but expect your games to break frequently.",
-
-    "normal": "Normal",
-    "returnTo": "Return to...",
-    
-    "fullCampaign": "Full Campaign",
-    "bothScenarios": "Both Scenarios (Campaign)",
-    "scenarios": "Scenarios",
-    "partialCampaign": "Partial Campaign",
-    "multiplayerVariant": "Multiplayer Variant",
-    "campaignType": "Campaign Type",
-    "pickScenario": "Pick Scenario",
-
-    "difficulty": "Difficulty",
-    "Easy": "Easy",
-    "Standard": "Standard",
-    "Hard": "Hard",
-    "Expert": "Expert",
-
-    "includeTarotReadings": "Include Tarot Readings",
-
-    "playMode": "Play Mode",
-    "singleGroupMode": "Single Group Mode",
-    "epicMultiplayerMode": "Epic Multiplayer Mode",
-    "singleScenarioMode": "Single Scenario",
-    "miniCampaignMode": "Mini-Campaign",
-    "miniCampaignDescription": "<p>Play three consecutive games—one for each group—in an order of your choosing. Unlike a normal campaign:</p><ul><li>Use standalone deck construction rules. You do not need to start with 0 experience.</li><li>Players may swap investigators and/or decks between each scenario.</li><li>Experience is not earned or spent between scenarios.</li><li>There is no Campaign Log; investigators do not earn trauma, and those killed or driven insane may still be used in other scenarios.</li></ul>",
-    "numberOfGroups": "Number of Groups",
-    "groupName": "Group Name",
-    "groupPlayers": "Players",
-    "imposeTimeLimit": "Impose time limit",
-    "timeLimitMinutes": "Time limit (minutes)",
-
-    "gameName": "Game Name",
-    "create": "Create",
-
-    "chooseYourDeck": "Choose your deck | Choose your decks",
-    "decksChosen": "{chosen} of {total} decks chosen",
-    "seatNumber": "Investigator {number}",
-    "seatNoDeckYet": "No deck chosen yet",
-    "tabooList": "Taboo List: {tabooList}",
-    "useExistingDeck": "Use Existing Deck",
-    "loadNewDeck": "Load New Deck",
-    "selectADeck": "-- Select a Deck --",
-    "deckUrlPlaceholder": "ArkhamDB or arkham.build deck url",
-    "choose": "Choose",
-
-    "variant": "Campaign Variant",
-    "fullCampaignOption": {
-      "theDreamEaters": "The Dream-Eaters<br><small>8-part campaign</small>",
-      "theDreamQuest": "The Dream-Quest<br><small>4-part campaign</small>",
-      "theWebOfDreams": "The Web of Dreams<br><small>4-part campaign</small>"
+  "newGame": "New Game",
+  "numberOfPlayers": "Number of Players",
+  "withFriends": "With Friends",
+  "multihandedSolo": "Solo",
+  "switchingPerspectives": "Switching Perspectives",
+  "switchingPerspectivesDescription": "In multihanded solo, you’ll sometimes need to act from a specific investigator’s point of view. Use the <strong>eye</strong> icon in the player tabs to switch to that investigator’s perspective.",
+  "campaign": "Campaign",
+  "standalone": "Standalone",
+  "sideStory": "Side Story",
+  "requiresInvestigator": "Requires {name}",
+  "alphaWarning": "This is currently being worked on. It likely doesn't work yet and you should not file bugs against it.",
+  "betaWarning": "This is ready for testing but expect your games to break frequently.",
+  "betaWarningScenario": "This scenario is ready for testing but expect your games to break frequently.",
+  "normal": "Normal",
+  "returnTo": "Return to...",
+  "fullCampaign": "Full Campaign",
+  "bothScenarios": "Both Scenarios (Campaign)",
+  "scenarios": "Scenarios",
+  "partialCampaign": "Partial Campaign",
+  "multiplayerVariant": "Multiplayer Variant",
+  "campaignType": "Campaign Type",
+  "pickScenario": "Pick Scenario",
+  "difficulty": "Difficulty",
+  "Easy": "Easy",
+  "Standard": "Standard",
+  "Hard": "Hard",
+  "Expert": "Expert",
+  "includeTarotReadings": "Include Tarot Readings",
+  "playMode": "Play Mode",
+  "singleGroupMode": "Single Group Mode",
+  "epicMultiplayerMode": "Epic Multiplayer Mode",
+  "singleScenarioMode": "Single Scenario",
+  "miniCampaignMode": "Mini-Campaign",
+  "miniCampaignDescription": "<p>Play three consecutive games—one for each group—in an order of your choosing. Unlike a normal campaign:</p><ul><li>Use standalone deck construction rules. You do not need to start with 0 experience.</li><li>Players may swap investigators and/or decks between each scenario.</li><li>Experience is not earned or spent between scenarios.</li><li>There is no Campaign Log; investigators do not earn trauma, and those killed or driven insane may still be used in other scenarios.</li></ul>",
+  "numberOfGroups": "Number of Groups",
+  "groupName": "Group Name",
+  "groupPlayers": "Players",
+  "imposeTimeLimit": "Impose time limit",
+  "timeLimitMinutes": "Time limit (minutes)",
+  "gameName": "Game Name",
+  "create": "Create",
+  "chooseYourDeck": "Choose your deck | Choose your decks",
+  "decksChosen": "{chosen} of {total} decks chosen",
+  "seatNumber": "Investigator {number}",
+  "seatNoDeckYet": "No deck chosen yet",
+  "tabooList": "Taboo List: {tabooList}",
+  "useExistingDeck": "Use Existing Deck",
+  "loadNewDeck": "Load New Deck",
+  "selectADeck": "-- Select a Deck --",
+  "deckUrlPlaceholder": "ArkhamDB or arkham.build deck url",
+  "choose": "Choose",
+  "variant": "Campaign Variant",
+  "fullCampaignOption": {
+    "theDreamEaters": "The Dream-Eaters<br><small>8-part campaign</small>",
+    "theDreamQuest": "The Dream-Quest<br><small>4-part campaign</small>",
+    "theWebOfDreams": "The Web of Dreams<br><small>4-part campaign</small>"
+  },
+  "advancedRulesConfiguration": "Advanced Rules Configuration",
+  "rulesPresets": "Presets",
+  "presetCustom": "Custom",
+  "preset": {
+    "chapter1": {
+      "name": "Chapter 1",
+      "description": "Recommended for Chapter 1 campaigns."
     },
-
-    "advancedRulesConfiguration": "Advanced Rules Configuration",
-    "rulesPresets": "Presets",
-    "presetCustom": "Custom",
-
-    "preset": {
-      "chapter1": {
-        "name": "Chapter 1",
-        "description": "Recommended for Chapter 1 campaigns."
-      },
-      "chapter2": {
-        "name": "Chapter 2",
-        "description": "Recommended for Chapter 2 campaigns."
-      }
-    },
-
-    "chapter1Heading": "Chapter 1",
-    "chapter2Heading": "Chapter 2",
-    "homebrewHeading": "Homebrew",
-    "designedBy": "designed by {name}",
-    "sideStoriesHeading": "Side Stories",
-    "challengeScenariosHeading": "Challenge Scenarios",
-
-    "asIfAtBehavior": "\"As If\" At Behavior",
-    "asIfAtChapter1": "Chapter 1 Rules",
-    "asIfAtChapter1Description": "\"As If\" at a location applies for the duration of the entire card or ability, including window triggers from other cards.",
-    "asIfAtChapter2": "Chapter 2 Rules",
-    "asIfAtChapter2Description": "\"As If\" at a location applies only during the resolution of the specified ability or action. Other card abilities and window triggers resolve under the actual game state.",
-
-    "recommendedOptions": "Recommended Options",
-
-    "recommendedOption": {
-      "PlayersDoNotControlStoryAssetClues": {
-        "title": "Players Do Not Control Story Asset Clues",
-        "description": "Since The Feast of Hemlock Vale players now control clues on assets they control, this has some weird interactions in this campaign so it is recommended to enable this option to exclude story assets from that rule."
-      },
-      "UseSwarmPlaceholders": {
-        "title": "Use Placeholder Cards for Swarms",
-        "description": "Instead of using cards from the lead investigator's deck as swarm placeholders, generate placeholder cards that do not belong to any investigator's deck."
-      }
+    "chapter2": {
+      "name": "Chapter 2",
+      "description": "Recommended for Chapter 2 campaigns."
     }
+  },
+  "chapter1Heading": "Chapter 1",
+  "chapter2Heading": "Chapter 2",
+  "homebrewHeading": "Homebrew",
+  "designedBy": "designed by {name}",
+  "sideStoriesHeading": "Side Stories",
+  "challengeScenariosHeading": "Challenge Scenarios",
+  "asIfAtBehavior": "\"As If\" At Behavior",
+  "asIfAtChapter1": "Chapter 1 Rules",
+  "asIfAtChapter1Description": "\"As If\" at a location applies for the duration of the entire card or ability, including window triggers from other cards.",
+  "asIfAtChapter2": "Chapter 2 Rules",
+  "asIfAtChapter2Description": "\"As If\" at a location applies only during the resolution of the specified ability or action. Other card abilities and window triggers resolve under the actual game state.",
+  "recommendedOptions": "Recommended Options",
+  "recommendedOption": {
+    "PlayersDoNotControlStoryAssetClues": {
+      "title": "Players Do Not Control Story Asset Clues",
+      "description": "Since The Feast of Hemlock Vale players now control clues on assets they control, this has some weird interactions in this campaign so it is recommended to enable this option to exclude story assets from that rule."
+    },
+    "UseSwarmPlaceholders": {
+      "title": "Use Placeholder Cards for Swarms",
+      "description": "Instead of using cards from the lead investigator's deck as swarm placeholders, generate placeholder cards that do not belong to any investigator's deck."
+    }
+  },
+  "narrative": {
+    "title": "Story Text",
+    "description": "Which telling of this campaign's story you read. This changes the prose only — the cards, the rules, the setup and the campaign log are identical either way.",
+    "campaignGuide": "Official Campaign Guide",
+    "campaignGuideDescription": "The story as published, read from the Campaign Guide. This is the default.",
+    "community": "Community content",
+    "beta": "Beta",
+    "betaWarning": "This is ready for testing, but a community telling has seen far less play than the Campaign Guide. File a bug if something reads wrong.",
+    "by": "by {designer}"
+  }
 }

@@ -26,6 +26,7 @@ import CampaignLogRecordedSets from '@/arkham/components/CampaignLogRecordedSets
 import CampaignLogInvestigatorSection from '@/arkham/components/CampaignLogInvestigatorSection.vue'
 import CampaignLogPartners from '@/arkham/components/CampaignLogPartners.vue'
 import { achievementCatalog, activeAchievementPart, type AchievementPart } from '@/arkham/achievements'
+import { narrativeEntry, narrativeOf, narrativeTitle } from '@/arkham/composables/useNarrative'
 import CampaignLogChaosBag from '@/arkham/components/CampaignLogChaosBag.vue'
 import CampaignLogUltimatumsAndBoons from '@/arkham/components/CampaignLogUltimatumsAndBoons.vue'
 import CampaignLogAchievements from '@/arkham/components/CampaignLogAchievements.vue'
@@ -358,6 +359,18 @@ const homebrewBoxScope = computed<string | null>(() => {
   return homebrewScopeFromCampaignId(props.game.campaign?.id) ?? null
 })
 
+/* A community narrative variant ships its own front matter -- preface, how to
+use it, acknowledgments -- in the same file as its prose, so it lands at the
+campaign's own scope once merged. The About tab reads that scope, which has no
+`about` block in a game without a variant. */
+const narrativeAboutScope = computed<string | null>(() => {
+  if (!narrativeOf(props.game)) return null
+  const campaignId = props.game.campaign?.id
+  return campaignId ? campaignIdToI18n(campaignId) : null
+})
+
+const aboutScope = computed<string | null>(() => homebrewBoxScope.value ?? narrativeAboutScope.value)
+
 /* The box's entry in the chooser data, for its name and designer: a homebrew
 campaign declares them in campaign.json, a scenario-only box in its
 scenarios.json. */
@@ -399,7 +412,7 @@ const aboutSections = (scope: string, raw: unknown): AboutSection[] => {
 }
 
 const about = computed(() => {
-  const scope = homebrewBoxScope.value
+  const scope = aboutScope.value
   if (!scope) return null
   const raw = tm(`${scope}.about`) as unknown
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
@@ -410,9 +423,14 @@ const about = computed(() => {
     : []
   const hasBlurb = !!(raw as { blurb?: unknown }).blurb
   if (!hasBlurb && sections.length === 0 && notes.length === 0) return null
+  const narrative = narrativeEntry(narrativeOf(props.game))
   return {
-    title: homebrewBoxEntry.value?.name ?? t(`${scope}.name`),
-    designer: homebrewBoxEntry.value?.designer,
+    title: homebrewBoxEntry.value?.name
+      ?? (narrative ? narrativeTitle(narrative, props.game.campaign?.id) : null)
+      ?? t(`${scope}.name`),
+    designer: homebrewBoxEntry.value?.designer ?? narrative?.designer,
+    beta: !!narrative?.beta,
+    url: narrative?.url,
     blurb: hasBlurb ? t(`${scope}.about.blurb`) : undefined,
     sections,
     notes,
@@ -1061,6 +1079,8 @@ onUnmounted(() => {
           :title="about.title"
           :blurb="about.blurb"
           :designer="about.designer"
+          :beta="about.beta"
+          :url="about.url"
           :sections="about.sections"
           :notes="about.notes"
         />

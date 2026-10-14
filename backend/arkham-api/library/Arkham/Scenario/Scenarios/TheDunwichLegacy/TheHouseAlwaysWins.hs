@@ -12,6 +12,7 @@ import Arkham.Enemy.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as En
 import Arkham.Exception
 import Arkham.Helpers.Cost
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Narrative
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
 import Arkham.Location.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Locations
@@ -19,6 +20,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
+import Arkham.Narrative.TheDunwichLegacy
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheDunwichLegacy.TheHouseAlwaysWins.Helpers
@@ -52,10 +54,9 @@ instance HasChaosTokenValue TheHouseAlwaysWins where
 
 instance RunMessage TheHouseAlwaysWins where
   runMessage msg s@(TheHouseAlwaysWins attrs) = runQueueT $ scenarioI18n $ case msg of
-    PreScenarioSetup -> do
-      flavor $ scope "intro" do
-        h "title"
-        p "body"
+    PreScenarioSetup -> scope "intro" do
+      narrative <- getDunwichNarrative
+      storyBuild =<< narrativeBuilder narrative.theHouseAlwaysWinsIntro (h "title" >> p "body")
       pure s
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
@@ -133,7 +134,9 @@ instance RunMessage TheHouseAlwaysWins where
           unlessM (null <$> cheated) $ addChaosToken ElderThing
           endOfScenario
         Resolution 3 -> do
-          resolutionWithXp "resolution3" $ allGainXp' attrs
+          narrative <- getDunwichNarrative
+          narrativeResolution "resolution3" narrative.theHouseAlwaysWinsResolution3
+            $ allGainXp' attrs
           record NaomiHasTheInvestigatorsBacks
           record DrFrancisMorganWasKidnapped
           unlessM (null <$> cheated) $ addChaosToken ElderThing

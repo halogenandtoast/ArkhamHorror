@@ -99,6 +99,13 @@ function formatEntry(t: ComposerTranslation, entry: FlavorTextEntry, classes: { 
     case 'TarotEntry': return h('div', [h('img', { class: entryStyles(entry), src: imgsrc(`tarot/${tarotArcanaImage(entry.tarot)}`)})])
     case 'ChaosTokenEntry': return h('div', [h('img', { class: entryStyles(entry), src: chaosTokenImage(entry.chaosTokenFace)})])
     case 'ChaosTokenMorphEntry': return h(ChaosTokenMorph, { from: entry.morphFrom, to: entry.morphTo })
+    // A note printed at the foot of the panel. `[^n]` in the prose it annotates
+    // renders the marker that refers to it; `formatContent` turns both into the
+    // same superscript, so the number a reader sees is the one written here.
+    case 'FootnoteEntry': return h('div', { class: 'footnote' }, [
+      h('sup', { class: 'footnote-marker' }, String(entry.number)),
+      formatEntry(t, entry.entry),
+    ])
     case 'EntrySplit': return h('hr')
     default: return h('div', "Unknown entry type")
   }
@@ -119,6 +126,32 @@ export default defineComponent({
 
 <style scoped>
 .composite { display: contents; }
+
+/* Footnotes sit together under a rule at the end of the panel, the way the
+ * printed document sets them at the foot of its page. The first one draws the
+ * rule, so a panel with no notes has none. */
+.footnote, :deep(.footnote) {
+  display: flex;
+  gap: 0.4em;
+  font-size: 0.8em;
+  line-height: 1.4;
+  opacity: 0.75;
+  margin-top: 0.35em;
+}
+
+.footnote:first-of-type, :deep(.footnote:first-of-type) {
+  margin-top: 1.2em;
+  padding-top: 0.8em;
+  border-top: 1px solid rgb(255 255 255 / 25%);
+}
+
+.footnote-marker, :deep(.footnote-marker) {
+  flex: 0 0 auto;
+  font-weight: bold;
+  vertical-align: super;
+}
+
+.footnote :deep(p), :deep(.footnote p) { margin: 0; }
 
 .chaos-token, :deep(.chaos-token) {
   display: block;
@@ -314,6 +347,17 @@ export default defineComponent({
 .basic, :deep(.basic), p.basic, :deep(p.basic) {
   font-style: normal !important;
   font-family: auto !important;
+}
+
+/* The marker `[^n]` leaves in the prose, pointing at the note of the same number
+ * at the foot of the panel. */
+.footnote-ref, :deep(.footnote-ref) {
+  font-size: 0.7em;
+  font-style: normal;
+  font-weight: bold;
+  vertical-align: super;
+  line-height: 0;
+  padding-left: 1px;
 }
 
 .censor, :deep(.censor) {

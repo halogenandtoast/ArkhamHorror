@@ -6,6 +6,7 @@ import Arkham.Campaigns.TheDunwichLegacy.CampaignSteps
 import Arkham.Campaigns.TheDunwichLegacy.Helpers
 import Arkham.Helpers.FlavorText
 import Arkham.Message.Lifted.Choose
+import Arkham.Narrative.TheDunwichLegacy (addsFalseLeads)
 import Arkham.Resolution
 
 newtype ReturnToTheDunwichLegacy = ReturnToTheDunwichLegacy TheDunwichLegacy
@@ -24,7 +25,13 @@ instance IsCampaign ReturnToTheDunwichLegacy where
         then continue $ InterludeStep 1 Nothing
         else continue ReturnToExtracurricularActivities
     InterludeStep 1 _ -> continue ReturnToTheMiskatonicMuseum
+    -- The box leaves the campaign's shape alone, so a narrative that adds an
+    -- interlude here adds it to a "Return to" game too; its prose already does,
+    -- since the scenarios are the same.
+    ReturnToTheMiskatonicMuseum
+      | addsFalseLeads (toAttrs a).log.options -> continue FalseLeads
     ReturnToTheMiskatonicMuseum -> continue ReturnToTheEssexCountyExpress
+    FalseLeads -> continue ReturnToTheEssexCountyExpress
     ReturnToTheEssexCountyExpress -> continue ReturnToBloodOnTheAltar
     ReturnToBloodOnTheAltar ->
       case lookup "51032" (toAttrs a).resolutions of

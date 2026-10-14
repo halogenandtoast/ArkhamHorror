@@ -13,12 +13,14 @@ import Arkham.Enemy.CardDefs.TheDunwichLegacy.UndimensionedAndUnseen qualified a
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Narrative
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.CardDefs.TheDunwichLegacy.UndimensionedAndUnseen qualified as Locations
 import Arkham.Matcher hiding (ChosenRandomLocation, RevealLocation)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
+import Arkham.Narrative.TheDunwichLegacy
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
@@ -91,16 +93,20 @@ instance HasChaosTokenValue UndimensionedAndUnseen where
 instance RunMessage UndimensionedAndUnseen where
   runMessage msg s@(UndimensionedAndUnseen attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM (h "title" >> p "body") do
+      narrative <- getDunwichNarrative
+      intro <- narrativeBuilder narrative.undimensionedAndUnseenIntro (h "title" >> p "body")
+      storyWithChooseOneM intro do
         labeled "calm" $ doStep 1 msg
         labeled "warn" $ doStep 2 msg
       pure s
     DoStep 1 PreScenarioSetup -> scope "intro" do
-      flavor $ h "title" >> p "part1"
+      narrative <- getDunwichNarrative
+      storyBuild =<< narrativeBuilder narrative.undimensionedAndUnseenPart1 (h "title" >> p "part1")
       record YouCalmedTheTownsfolk
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
-      flavor $ h "title" >> p "part2"
+      narrative <- getDunwichNarrative
+      storyBuild =<< narrativeBuilder narrative.undimensionedAndUnseenPart2 (h "title" >> p "part2")
       record YouWarnedTheTownsfolk
       pure s
     StandaloneSetup -> do

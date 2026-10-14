@@ -221,6 +221,9 @@ export function formatContent(body: string) {
   return replaceIcons(body).
     replace(/_([^_]*)_/g, '<strong>$1</strong>').
     replace(/\*([^\*]*)\*/g, '<i>$1</i>').
+    // A footnote marker, pointing at the numbered note a `FootnoteEntry` prints
+    // at the foot of the same panel.
+    replace(/\[\^(\d+)\]/g, '<sup class="footnote-ref">$1</sup>').
     replace(/{asterisk}/g, '*').
     replace(/{underscore}/g, '_')
 }

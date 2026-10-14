@@ -12,12 +12,14 @@ import Arkham.Helpers.Agenda
 import Arkham.Helpers.Card
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Message.Discard.Lifted
+import Arkham.Helpers.Narrative
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Location.CardDefs.TheDunwichLegacy.TheEssexCountyExpress qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
+import Arkham.Narrative.TheDunwichLegacy
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheDunwichLegacy.TheEssexCountyExpress.Helpers
@@ -69,10 +71,9 @@ standaloneChaosTokens =
 
 instance RunMessage TheEssexCountyExpress where
   runMessage msg s@(TheEssexCountyExpress attrs) = runQueueT $ scenarioI18n $ case msg of
-    PreScenarioSetup -> do
-      flavor $ scope "intro" do
-        h "title"
-        p "body"
+    PreScenarioSetup -> scope "intro" do
+      narrative <- getDunwichNarrative
+      storyBuild =<< narrativeBuilder narrative.theEssexCountyExpressIntro (h "title" >> p "body")
       pure s
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens
@@ -212,7 +213,10 @@ instance RunMessage TheEssexCountyExpress where
       pure s
     DoStep 1 (ScenarioResolution r) -> scope "resolutions" do
       case r of
-        Resolution 1 -> resolutionWithXp "resolution1" $ allGainXp' attrs
+        Resolution 1 -> do
+          resolutionWithXp "resolution1" $ allGainXp' attrs
+          narrative <- getDunwichNarrative
+          onNarrative narrative.theEssexCountyExpressResolution1
         Resolution 2 -> do
           resolutionWithXp "resolution2" $ allGainXp' attrs
           record TheInvestigatorsWereDelayedOnTheirWayToDunwich

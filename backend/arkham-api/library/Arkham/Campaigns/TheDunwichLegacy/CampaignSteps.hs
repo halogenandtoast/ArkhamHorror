@@ -1,6 +1,7 @@
 module Arkham.Campaigns.TheDunwichLegacy.CampaignSteps where
 
 import Arkham.CampaignStep
+import Arkham.Prelude
 
 pattern ExtracurricularActivity :: CampaignStep
 pattern ExtracurricularActivity <- ScenarioStep "02041"
@@ -81,3 +82,13 @@ pattern ReturnToLostInTimeAndSpace :: CampaignStep
 pattern ReturnToLostInTimeAndSpace <- ScenarioStep "51053"
   where
     ReturnToLostInTimeAndSpace = ScenarioStep "51053"
+
+{- | "Interlude I-A: False Leads", an interlude a narrative variant may add
+between Scenarios II and III. A campaign-specific step rather than a numbered
+interlude, because numbering it would renumber the guide's own interludes in the
+campaign log.
+-}
+pattern FalseLeads :: CampaignStep
+pattern FalseLeads <- CampaignSpecificStep "falseLeads" Nothing
+  where
+    FalseLeads = CampaignSpecificStep "falseLeads" Nothing

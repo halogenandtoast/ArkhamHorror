@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
-import { imgsrc, campaignBox, scenarioBox } from '@/arkham/helpers'
+import { imgsrc, campaignBox, scenarioBox, formatContent } from '@/arkham/helpers'
 import { chaosTokenImage, compareTokenFaces, type TokenFace } from '@/arkham/types/ChaosToken'
 import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { Scenario, Campaign } from '@/arkham/data'
@@ -10,6 +10,12 @@ import { ACHIEVEMENT_CAMPAIGN_IDS } from '@/arkham/achievements'
 import { ultimatumEntryScope } from '@/arkham/homebrewData'
 import { refractionTagsFor } from '@/arkham/refractions'
 import { useSettings } from '@/stores/settings'
+import { narrativeBlurb, narrativeHost, narrativesFor, type NarrativeEntry } from '@/arkham/composables/useNarrative'
+import { filterDisplayable, type DisplayRuleOptions } from '@/arkham/displayRules'
+import { campaignIdToI18n } from '@/arkham/types/Scenario'
+import { useI18n } from 'vue-i18n'
+
+const { locale } = useI18n()
 
 type FullCampaignOption = {
   key: string
@@ -42,6 +48,10 @@ const props = defineProps<{
 
   chosenCampaignId: string | null
   chosenSideStoryId: string | null
+
+  /* The alpha/beta/dev gates this account passes, so options behind one are
+   * offered on the same terms as the campaigns behind one. */
+  displayRules: DisplayRuleOptions
 }>()
 
 const playerCount = defineModel<number>('playerCount', { required: true })
@@ -54,6 +64,19 @@ const includeTarotReadings = defineModel<boolean>('includeTarotReadings', { requ
 const campaignName = defineModel<string | null>('campaignName', { required: true })
 const fullCampaignOptionKey = defineModel<string | null>('fullCampaignOptionKey', { required: true })
 const sideStoryMode = defineModel<string>('sideStoryMode', { required: true })
+
+/* A community narrative variant: a rewrite of the campaign's prose that changes
+ * nothing mechanically. Off unless chosen -- the Campaign Guide's own wording is
+ * what a game gets by default. */
+const narrativeKey = defineModel<string | null>('narrativeKey', { required: true })
+
+const availableNarratives = computed(() =>
+  filterDisplayable(narrativesFor(props.selectedCampaign), props.displayRules),
+)
+
+/* Whether anything on offer here is still in testing, which is what the card's
+ * own warning is about -- not the campaign's beta state. */
+const narrativesInBeta = computed(() => availableNarratives.value.some((n) => n.beta))
 
 // "Epic Multiplayer" side-story flow. Only surfaced for side stories whose data
 // carries `epicMultiplayer: true` (src/arkham/data/side-stories.json).
@@ -348,6 +371,20 @@ const activePreset = computed<RulesPreset | null>(() => {
 function applyPreset(preset: RulesPreset) {
   const p = presets[preset]
   strictAsIfAt.value = p.strictAsIfAt
+}
+
+/* The scope a narrative's messages merge over, which is also where its own
+description of itself lives. */
+const narrativeCampaignScope = computed(() =>
+  props.selectedCampaign ? campaignIdToI18n(props.selectedCampaign) : null,
+)
+
+function narrativeName(n: NarrativeEntry) {
+  return (props.selectedCampaign ? n.campaigns[props.selectedCampaign]?.name : null) ?? n.key
+}
+
+function narrativeDescription(n: NarrativeEntry) {
+  return narrativeBlurb(n.key, narrativeCampaignScope.value, locale.value)
 }
 
 const recommendedToggles = computed<RecommendedToggle[]>(() => {
@@ -678,6 +715,70 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
             </div>
           </div>
         </transition>
+      </div>
+
+      <div v-if="availableNarratives.length > 0" class="card">
+        <div class="card-title">
+          {{ $t('create.narrative.title') }}
+          <span v-if="narrativesInBeta" class="uab-beta-pill">{{ $t('create.narrative.beta') }}</span>
+        </div>
+        <div class="narrative-intro">{{ $t('create.narrative.description') }}</div>
+        <div v-if="narrativesInBeta" class="narrative-beta-warning">
+          {{ $t('create.narrative.betaWarning') }}
+        </div>
+
+        <!-- One `name` across the options makes them a real radio group, so arrow
+             keys move between them and they are announced as one choice. -->
+        <div class="narrative-options" role="radiogroup" :aria-label="$t('create.narrative.title')">
+          <label class="narrative-option" :class="{ selected: narrativeKey === null }">
+            <div class="narrative-header">
+              <input
+                type="radio"
+                name="narrative"
+                :checked="narrativeKey === null"
+                @change="narrativeKey = null"
+              />
+              <span class="narrative-name">{{ $t('create.narrative.campaignGuide') }}</span>
+            </div>
+            <div class="narrative-desc">{{ $t('create.narrative.campaignGuideDescription') }}</div>
+          </label>
+
+          <label
+            v-for="n in availableNarratives"
+            :key="n.key"
+            class="narrative-option"
+            :class="{ selected: narrativeKey === n.key }"
+          >
+            <div class="narrative-header">
+              <input
+                type="radio"
+                name="narrative"
+                :checked="narrativeKey === n.key"
+                @change="narrativeKey = n.key"
+              />
+              <span class="narrative-name">{{ narrativeName(n) }}</span>
+              <span class="narrative-badge">{{ $t('create.narrative.community') }}</span>
+              <span v-if="n.beta" class="uab-beta-pill">{{ $t('create.narrative.beta') }}</span>
+            </div>
+            <div v-if="n.designer || n.url" class="narrative-byline">
+              <span v-if="n.designer">{{ $t('create.narrative.by', { designer: n.designer }) }}</span>
+              <!-- Inside a label, so the click must not also toggle the radio. -->
+              <a
+                v-if="n.url"
+                class="narrative-link"
+                :href="n.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                @click.stop
+              >{{ narrativeHost(n.url) }}</a>
+            </div>
+            <div
+              v-if="narrativeDescription(n)"
+              class="narrative-desc"
+              v-html="formatContent(narrativeDescription(n)!)"
+            ></div>
+          </label>
+        </div>
       </div>
 
       <div v-if="recommendedToggles.length > 0" class="card">
@@ -1171,6 +1272,121 @@ input[type='radio']:checked + label {
   font-size: 12px;
   line-height: 1.35;
   color: rgba(255, 255, 255, 0.6);
+}
+
+/* The story-text chooser follows the "As If" At cards: each option is a
+ * selectable panel that names itself and says what picking it does, so the
+ * choice reads without prior knowledge of what a narrative variant is. */
+.narrative-intro {
+  margin-bottom: 10px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* The card's own beta notice, sized to sit inside a card rather than across the
+ * top of the page like `.beta-warning`. */
+.narrative-beta-warning {
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.35;
+  background: rgba(184, 134, 11, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.narrative-options {
+  display: grid;
+  gap: 8px;
+}
+
+.narrative-option {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.narrative-option.selected {
+  background: rgba(110, 134, 64, 0.2);
+  border-color: rgba(110, 134, 64, 0.6);
+}
+
+.narrative-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.narrative-header :deep(input[type='radio']),
+.narrative-header input[type='radio'] {
+  display: inline-block !important;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  accent-color: rgb(110, 134, 64);
+}
+
+.narrative-name {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+/* Says plainly that this telling is not the published one. */
+.narrative-badge {
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+}
+
+.narrative-byline {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* The host, as its own text: it says where it goes and needs no translation. */
+.narrative-link {
+  color: rgb(146, 173, 92);
+  text-decoration: none;
+  border-bottom: 1px dotted rgba(146, 173, 92, 0.5);
+}
+
+.narrative-link:hover {
+  color: rgb(176, 203, 122);
+}
+
+.narrative-desc {
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* `reset.css` sets `* { font: inherit }`, so the emphasis `formatContent` emits
+ * has to ask for itself back. */
+.narrative-desc :deep(i) {
+  font-style: italic;
+}
+
+.narrative-desc :deep(strong),
+.narrative-desc :deep(b) {
+  font-weight: bold;
 }
 
 .recommended-list {

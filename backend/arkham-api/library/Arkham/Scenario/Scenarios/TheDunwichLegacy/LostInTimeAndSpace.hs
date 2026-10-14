@@ -12,6 +12,7 @@ import Arkham.Exception
 import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Narrative
 import Arkham.Helpers.Xp
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as Locations
@@ -21,6 +22,7 @@ import Arkham.Message (pattern AfterSkillTest)
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Name
+import Arkham.Narrative.TheDunwichLegacy
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
@@ -87,10 +89,9 @@ readInvestigatorDefeat a = do
 
 instance RunMessage LostInTimeAndSpace where
   runMessage msg s@(LostInTimeAndSpace attrs) = runQueueT $ scenarioI18n $ case msg of
-    PreScenarioSetup -> do
-      flavor $ scope "intro" do
-        h "title"
-        p "body"
+    PreScenarioSetup -> scope "intro" do
+      narrative <- getDunwichNarrative
+      storyBuild =<< narrativeBuilder narrative.lostInTimeAndSpaceIntro (h "title" >> p "body")
       pure s
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens

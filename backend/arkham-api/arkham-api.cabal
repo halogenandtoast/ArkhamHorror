@@ -4113,6 +4113,7 @@ library
       Arkham.Helpers.Modifiers
       Arkham.Helpers.Movement
       Arkham.Helpers.Name
+      Arkham.Helpers.Narrative
       Arkham.Helpers.Phase
       Arkham.Helpers.Phases
       Arkham.Helpers.Placement
@@ -7156,6 +7157,9 @@ library
       Arkham.ModifierData
       Arkham.Movement
       Arkham.Name
+      Arkham.Narrative.OlausWormius.TheDunwichLegacy
+      Arkham.Narrative.TheDunwichLegacy
+      Arkham.Narrative.TheDunwichLegacy.Types
       Arkham.Phase
       Arkham.Placement
       Arkham.PlayerCard

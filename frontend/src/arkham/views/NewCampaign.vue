@@ -61,6 +61,9 @@ const returnTo = ref(false)
 // Per-seat AI configuration (dev-only, Solo games only); see GameOptions.vue.
 
 const fullCampaignOptionKey = ref<string | null>(null)
+/* The community narrative variant chosen for this game, or null for the
+ * Campaign Guide's own prose -- which is the default. */
+const narrativeKey = ref<string | null>(null)
 const recommendedOptionState = ref<Record<string, boolean>>({})
 
 // Ultimatums and Boons variant tags selected in GameOptions (e.g. "BoonOfHades").
@@ -266,6 +269,7 @@ watch(selectedCampaign, (id) => {
   selectedScenario.value = null
   returnTo.value = false
   recommendedOptionState.value = {}
+  narrativeKey.value = null
   ultimatumsAndBoons.value = []
   strictAsIfAt.value = campaignChapter(campaignJSON.find((c) => c.id === id), id) === 2
 
@@ -325,9 +329,14 @@ async function start() {
 
   const variant = fullCampaignOptionKey.value ? [{ 'tag': 'CampaignVariant', 'contents': fullCampaignOptionKey.value }] : [];
 
+  const narrative = narrativeKey.value
+    ? [{ tag: 'NarrativeVariant', contents: narrativeKey.value }]
+    : []
+
   const options = [
     ...enabledRecommendedOptions,
     ...variant,
+    ...narrative,
     ...(miniCampaign.value ? [{ tag: 'PlayAsMiniCampaign' }] : []),
     ...(returnTo.value && scenario.value?.returnToVariant ? [{ tag: 'PlayWithTheBlobThatAteEverythingElse' }] : [])
   ]
@@ -448,6 +457,7 @@ async function start() {
           v-model:campaignName="campaignName"
           v-model:fullCampaignOptionKey="fullCampaignOptionKey"
           v-model:recommendedOptionState="recommendedOptionState"
+          v-model:narrativeKey="narrativeKey"
           v-model:ultimatumsAndBoons="ultimatumsAndBoons"
           v-model:achievementsEnabled="achievementsEnabled"
           v-model:epicMode="epicMode"
@@ -467,6 +477,7 @@ async function start() {
           :currentCampaignName="currentCampaignName"
           :chosenCampaignId="selectedCampaign"
           :chosenSideStoryId="gameMode === 'SideStory' ? selectedScenario : null"
+          :displayRules="displayRuleOptions"
         />
 
         <div class="wizard-actions buttons">

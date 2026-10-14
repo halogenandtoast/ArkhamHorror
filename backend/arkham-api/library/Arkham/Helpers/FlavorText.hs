@@ -113,6 +113,12 @@ cols body = do
 hr :: FlavorTextBuilder ()
 hr = addEntry FT.hr
 
+{- | A numbered note, rendered at the foot of the panel. Written after the prose
+it annotates, which carries the marker @[^n]@ with the same number.
+-}
+footnote :: HasI18n => Int -> Scope -> FlavorTextBuilder ()
+footnote n = addEntry . FT.footnote n
+
 img :: HasCardCode a => a -> FlavorTextBuilder ()
 img = addEntry . FT.img . toCardCode
 

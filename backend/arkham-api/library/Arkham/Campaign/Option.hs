@@ -9,6 +9,10 @@ data CampaignOption
   = PerformIntro
   | PlayersDoNotControlStoryAssetClues
   | CampaignVariant Text
+  | {- | A community narrative rewrite of the campaign's prose, selected at
+    creation. Changes nothing mechanically; see "Arkham.Helpers.Narrative".
+    -}
+    NarrativeVariant Text
   | -- | Night of the Zealot
     AddLitaChantler
   | -- | The Dunwich Legacy

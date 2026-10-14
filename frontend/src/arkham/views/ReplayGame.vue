@@ -2,6 +2,7 @@
 import { LottieAnimation } from "lottie-web-vue"
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { useNarrative } from '@/arkham/composables/useNarrative'
 import processingJSON from "@/assets/processing.json"
 import { ref, provide, watch, computed, onMounted, onUnmounted } from 'vue'
 import * as Arkham from '@/arkham/types/Game'
@@ -25,6 +26,9 @@ const debug = ref(false)
 provide('debug', debug)
 const ready = ref(false)
 const game = ref<Arkham.Game | null>(null)
+
+/* As in Game.vue: a narrative variant's messages follow the game being viewed. */
+useNarrative(game)
 const playerId = ref<string | null>(null)
 const gameLog = ref<readonly LogEntry[]>(Object.freeze([]))
 const totalSteps = ref(0)

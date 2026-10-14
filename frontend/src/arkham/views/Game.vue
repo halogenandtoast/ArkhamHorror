@@ -14,6 +14,7 @@ import { useToast } from 'vue-toastification'
 import { storeToRefs } from 'pinia'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { useNarrative } from '@/arkham/composables/useNarrative'
 import confetti from '@/effects/confetti'
 import { useWebSocket, useResizeObserver } from '@vueuse/core'
 import { MenuItem } from '@headlessui/vue'
@@ -325,6 +326,10 @@ interface PlayabilityInfo {
 }
 
 const game = shallowRef<Arkham.Game | null>(null)
+
+/* A community narrative variant rewrites the campaign's prose; its messages are
+ * merged over the campaign's scope for as long as this game is the one open. */
+useNarrative(game)
 
 /* A custom card someone else created shows up in the game payload before this
  * client has its def; refetch the game's custom cards when an unknown one

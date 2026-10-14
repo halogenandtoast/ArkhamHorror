@@ -11,12 +11,14 @@ import Arkham.Exception
 import Arkham.Helpers.Card
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location
+import Arkham.Helpers.Narrative
 import Arkham.Helpers.Xp
 import Arkham.Location.CardDefs.TheDunwichLegacy.BloodOnTheAltar qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (PlaceUnderneath, RevealLocation)
 import Arkham.Message.Lifted.Log
 import Arkham.Name
+import Arkham.Narrative.TheDunwichLegacy
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
@@ -71,10 +73,9 @@ removeNecronomicon = do
 
 instance RunMessage BloodOnTheAltar where
   runMessage msg s@(BloodOnTheAltar attrs) = runQueueT $ scenarioI18n $ case msg of
-    PreScenarioSetup -> do
-      flavor $ scope "intro" do
-        h "title"
-        p "body"
+    PreScenarioSetup -> scope "intro" do
+      narrative <- getDunwichNarrative
+      storyBuild =<< narrativeBuilder narrative.bloodOnTheAltarIntro (h "title" >> p "body")
       pure s
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens
@@ -217,6 +218,8 @@ instance RunMessage BloodOnTheAltar where
           removeNecronomicon
         Resolution 2 -> do
           resolutionWithXp "resolution2" doGainXp
+          narrative <- getDunwichNarrative
+          onNarrative narrative.bloodOnTheAltarResolution2
           record TheInvestigatorsRestoredSilasBishop
         Resolution 3 -> do
           resolutionWithXp "resolution3" doGainXp

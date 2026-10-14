@@ -15,6 +15,7 @@ import Arkham.Enemy.CardDefs.TheDunwichLegacy.WhereDoomAwaits qualified as Enemi
 import Arkham.Exception
 import Arkham.Helpers.EncounterSet
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Narrative
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario qualified as Scenario
 import Arkham.Helpers.SkillTest (withSkillTest)
@@ -22,6 +23,7 @@ import Arkham.Location.CardDefs.TheDunwichLegacy.WhereDoomAwaits qualified as Lo
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
+import Arkham.Narrative.TheDunwichLegacy
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
@@ -96,11 +98,16 @@ instance RunMessage WhereDoomAwaits where
   runMessage msg s@(WhereDoomAwaits attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
       hasTheInvestigatorsBack <- getHasRecord NaomiHasTheInvestigatorsBacks
-      flavor do
-        h "title"
-        p "body"
-        p.right.validate hasTheInvestigatorsBack "proceedToPart1"
-        p.right.validate (not hasTheInvestigatorsBack) "otherwise"
+      narrative <- getDunwichNarrative
+      storyBuild
+        =<< narrativeBuilder
+          narrative.whereDoomAwaitsIntro
+          ( do
+              h "title"
+              p "body"
+              p.right.validate hasTheInvestigatorsBack "proceedToPart1"
+              p.right.validate (not hasTheInvestigatorsBack) "otherwise"
+          )
       when hasTheInvestigatorsBack do
         flavor $ h "title" >> p "part1.body"
         whenM Scenario.getIsReturnTo do
@@ -216,7 +223,8 @@ instance RunMessage WhereDoomAwaits where
     Do (ScenarioResolution r) -> scope "resolutions" do
       case r of
         Resolution 1 -> do
-          resolutionWithXp "resolution1" $ allGainXp' attrs
+          narrative <- getDunwichNarrative
+          narrativeResolution "resolution1" narrative.whereDoomAwaitsResolution1 $ allGainXp' attrs
           record TheInvestigatorsEnteredTheGate
           endOfScenario
         Resolution 2 -> do

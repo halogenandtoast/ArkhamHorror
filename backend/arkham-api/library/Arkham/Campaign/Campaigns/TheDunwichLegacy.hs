@@ -13,10 +13,12 @@ import Arkham.Campaigns.TheDunwichLegacy.Import
 import Arkham.Card
 import Arkham.Helpers.Campaign (getOwner)
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Narrative
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Narrative.TheDunwichLegacy
 import Arkham.Resolution
 import Arkham.Treachery.CardDefs.TheDunwichLegacy.TheEssexCountyExpress qualified as Treacheries
 import GHC.Records
@@ -45,7 +47,12 @@ instance IsCampaign TheDunwichLegacy where
         then continue $ InterludeStep 1 Nothing
         else continue ExtracurricularActivity
     InterludeStep 1 _ -> continue TheMiskatonicMuseum
+    -- A narrative may add an interlude here, so a group that wants a side
+    -- scenario has a reason to take one before boarding the train.
+    TheMiskatonicMuseum
+      | addsFalseLeads a.attrs.log.options -> continue FalseLeads
     TheMiskatonicMuseum -> continue TheEssexCountyExpress
+    FalseLeads -> continue TheEssexCountyExpress
     TheEssexCountyExpress -> continue BloodOnTheAltar
     BloodOnTheAltar ->
       case lookup "02195" a.attrs.resolutions of
@@ -64,7 +71,9 @@ instance RunMessage TheDunwichLegacy where
   runMessage msg c =
     runQueueT $ campaignI18n $ lift (runDunwichAchievements msg) *> case msg of
       CampaignStep PrologueStep -> scope "prologue" do
-        storyWithChooseOneM (setTitle "title" >> p "body") do
+        narrative <- getDunwichNarrative
+        body <- narrativeBuilder narrative.prologue (setTitle "title" >> p "body")
+        storyWithChooseOneM body do
           labeled "extracurricularActivity" $ setNextCampaignStep ExtracurricularActivity
           labeled "theHouseAlwaysWins" $ setNextCampaignStep TheHouseAlwaysWins
         pure c
@@ -77,7 +86,9 @@ instance RunMessage TheDunwichLegacy where
           p.validate (not unconsciousForSeveralHours) "proceedToArmitagesFate2"
         if unconsciousForSeveralHours
           then do
-            interlude "armitagesFate1"
+            narrative <- getDunwichNarrative
+            storyBuild
+              =<< narrativeBuilder narrative.armitagesFate1 (setTitle "title" >> p "armitagesFate1")
             record DrHenryArmitageWasKidnapped
             interludeXpAll $ toBonus "bonus" 2
           else do
@@ -89,7 +100,15 @@ instance RunMessage TheDunwichLegacy where
 
         nextCampaignStep
         pure c
+      CampaignStep FalseLeads -> scope "interlude1a" do
+        -- The step exists only under a narrative that adds it, so the Campaign
+        -- Guide has no reading of it to fall back to.
+        narrative <- getDunwichNarrative
+        storyBuild =<< narrativeBuilder narrative.interlude1a (pure ())
+        nextCampaignStep
+        pure c
       CampaignStep (InterludeStep 2 _) -> scope "interlude2" do
+        narrative <- getDunwichNarrative
         sacrificedToYogSothoth <- getRecordSet SacrificedToYogSothoth
         let sacrificed = (`elem` sacrificedToYogSothoth) . recorded . toCardCode
         investigators <- allInvestigators
@@ -98,7 +117,8 @@ instance RunMessage TheDunwichLegacy where
         interlude "body"
 
         unless (sacrificed Assets.drHenryArmitage) do
-          interlude "drHenryArmitage"
+          armitageKey <- narrativeKey "drHenryArmitage" narrative.interlude2Armitage
+          interlude armitageKey
           record DrHenryArmitageSurvivedTheDunwichLegacy
 
           whenM (isNothing <$> getOwner Assets.drHenryArmitage) do
@@ -113,6 +133,7 @@ instance RunMessage TheDunwichLegacy where
 
         unless (sacrificed Assets.drFrancisMorgan) do
           interlude "drFrancisMorgan"
+          onNarrative narrative.interlude2FrancisMorgan
           record DrFrancisMorganSurvivedTheDunwichLegacy
 
           whenM (isNothing <$> getOwner Assets.drFrancisMorgan) do
@@ -137,14 +158,21 @@ instance RunMessage TheDunwichLegacy where
         pure c
       CampaignStep EpilogueStep -> scope "epilogue" do
         warned <- getHasRecord YouWarnedTheTownsfolk
-        storyBuild do
-          setTitle "title"
-          p "intro"
-          p $ if warned then "epilogue2" else "epilogue1"
+        narrative <- getDunwichNarrative
+        storyBuild
+          =<< narrativeBuilder
+            narrative.epilogue
+            ( do
+                setTitle "title"
+                p "intro"
+                p $ if warned then "epilogue2" else "epilogue1"
+            )
         gameOver
         pure c
       HandleOption PlayersDoNotControlStoryAssetClues -> do
         pure $ TheDunwichLegacy $ c.attrs & logL . optionsL %~ insertSet PlayersDoNotControlStoryAssetClues
+      HandleOption opt@(NarrativeVariant _) -> do
+        pure $ TheDunwichLegacy $ c.attrs & logL . optionsL %~ insertSet opt
       HandleOption option -> do
         investigators <- allInvestigators
         sacrificedToYogSothoth <- getRecordSet SacrificedToYogSothoth

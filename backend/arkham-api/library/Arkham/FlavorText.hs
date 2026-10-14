@@ -23,6 +23,7 @@ module Arkham.FlavorText (
   smallImg,
   chaosTokenImg,
   chaosTokenMorph,
+  footnote,
   UlItems,
 )
 where
@@ -80,6 +81,12 @@ chaosTokenMorph = ChaosTokenMorphEntry
 
 hr :: FlavorTextEntry
 hr = EntrySplit
+
+{- | A numbered note printed at the foot of the panel. The marker belongs in the
+prose it annotates, written @[^n]@ with the same number.
+-}
+footnote :: HasI18n => Int -> Scope -> FlavorTextEntry
+footnote n = FootnoteEntry n . i18nEntry
 
 li :: HasI18n => Text -> UlItems
 li t = tell [ListItemEntry (i18nEntry t) []]

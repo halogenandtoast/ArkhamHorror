@@ -176,6 +176,18 @@ const grunge = `url(${imgsrc('grunge.png')})`
   margin: 2px 0 0;
 }
 
+/* The marker `[^n]` leaves where a footnote is referenced, and the same marker
+   opening the note itself at the foot of the page. `FormattedEntry` styles these
+   for flavor text; the About page renders its own prose, so it needs its own. */
+:deep(.footnote-ref) {
+  font-size: 0.7em;
+  font-style: normal;
+  font-weight: bold;
+  vertical-align: super;
+  line-height: 0;
+  padding-left: 1px;
+}
+
 /* `reset.css` sets `* { font: inherit }`, which flattens the emphasis
    `formatContent` emits, so the markup has to ask for it back. `:deep`, because
    v-html content carries no scope attribute. */

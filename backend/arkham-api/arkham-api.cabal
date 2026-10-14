@@ -7158,8 +7158,11 @@ library
       Arkham.Movement
       Arkham.Name
       Arkham.Narrative.OlausWormius.TheDunwichLegacy
+      Arkham.Narrative.OlausWormius.TheInnsmouthConspiracy
       Arkham.Narrative.TheDunwichLegacy
       Arkham.Narrative.TheDunwichLegacy.Types
+      Arkham.Narrative.TheInnsmouthConspiracy
+      Arkham.Narrative.TheInnsmouthConspiracy.Types
       Arkham.Phase
       Arkham.Placement
       Arkham.PlayerCard

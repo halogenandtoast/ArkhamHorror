@@ -6,7 +6,9 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.ChaosToken
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query (select)
+import Arkham.Helpers.FlavorText (p, setTitle, storyBuild)
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Narrative (narrativeBuilder)
 import Arkham.Helpers.Query (getSetAsideCard)
 import Arkham.I18n
 import Arkham.Id
@@ -14,6 +16,7 @@ import Arkham.Matcher
 import Arkham.Message hiding (story)
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
+import Arkham.Narrative.TheInnsmouthConspiracy
 import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.SortedPair
@@ -58,7 +61,10 @@ flashback iid f = case f of
     joe <- getSetAsideCard Assets.joeSargentRattletrapBusDriver
     chooseTargetM iid iids (`takeControlOfSetAsideAsset` joe)
   Flashback6 -> do
-    scenarioI18n $ story $ i18nWithTitle "flashback6"
+    scenarioI18n do
+      narrative <- getInnsmouthNarrative
+      storyBuild
+        =<< narrativeBuilder narrative.inTooDeepFlashback6 (setTitle "flashback6.title" >> p "flashback6.body")
     recoverMemory AFollowedLead
     iids <- select $ InvestigatorAt "The Little Bookshop"
     teachings <- getSetAsideCard Assets.teachingsOfTheOrder
@@ -72,7 +78,10 @@ flashback iid f = case f of
     recoverMemory AnIntervention
     addChaosToken PlusOne
   Flashback8 -> do
-    scenarioI18n $ story $ i18nWithTitle "flashback8"
+    scenarioI18n do
+      narrative <- getInnsmouthNarrative
+      storyBuild
+        =<< narrativeBuilder narrative.inTooDeepFlashback8 (setTitle "flashback8.title" >> p "flashback8.body")
     recoverMemory AJailbreak
     chooseOneM iid $ scenarioI18n do
       labeled "removeCultist" $ removeChaosToken Cultist

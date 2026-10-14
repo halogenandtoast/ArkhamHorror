@@ -16,20 +16,8 @@ never names a variant; see "Arkham.Narrative.TheDunwichLegacy".
 -}
 module Arkham.Narrative.TheDunwichLegacy.Types where
 
-import Arkham.Helpers.FlavorText (FlavorTextBuilder)
-import Arkham.I18n
+import Arkham.Helpers.Narrative (Extra, Flavor, FlavorKey)
 import Arkham.Prelude
-
-{- | A beat whose flavor is replaced wholesale. The variant builds it in the
-monad, because its branches read the campaign log and the Lead Investigator.
--}
-type Flavor m = Maybe (m (FlavorTextBuilder ()))
-
--- | A beat whose locale key is chosen by game state, its mechanics left alone.
-type FlavorKey m = Maybe (m Scope)
-
--- | Narrative a variant adds beside a beat the Campaign Guide already prints.
-type Extra m = Maybe (m ())
 
 data DunwichNarrative m = DunwichNarrative
   { prologue :: Flavor m

@@ -5,7 +5,12 @@
     "url": "https://www.thewitchgame.info/othergaming",
     "beta": true,
     "campaigns": {
-      "02": { "name": "The Dunwich Legacy of Olaus Wormius" }
+      "02": {
+        "name": "The Dunwich Legacy of Olaus Wormius"
+      },
+      "07": {
+        "name": "The Innsmouth Conspiracy of Olaus Wormius"
+      }
     }
   }
 ]

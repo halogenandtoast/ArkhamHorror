@@ -17,10 +17,12 @@ import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.FogOverInnsmouth qualified a
 import Arkham.Exception
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Narrative
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Locations
 import Arkham.Matcher
+import Arkham.Narrative.TheInnsmouthConspiracy
 import Arkham.Message.Story (StoryMessage(..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -111,9 +113,10 @@ setupTheVanishingOfElinaHarper _attrs = scenarioI18n do
 instance RunMessage TheVanishingOfElinaHarper where
   runMessage msg s@(TheVanishingOfElinaHarper attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithHeading "intro1"
+      narrative <- getInnsmouthNarrative
+      storyBuild =<< narrativeBuilder narrative.theVanishingOfElinaHarperIntro1 (setTitle "intro1.title" >> h "intro1.title" >> p "intro1.body")
       story $ i18n "townInfo"
-      story $ i18nWithTitle "intro2"
+      unless narrative.omitsTheVanishingOfElinaHarperIntro2 $ story $ i18nWithTitle "intro2"
       standalone <- getIsStandalone
       unless standalone do
         chooseUpgradeDecks
@@ -171,7 +174,8 @@ instance RunMessage TheVanishingOfElinaHarper where
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
-          resolution "noResolution"
+          narrative <- getInnsmouthNarrative
+          unless narrative.omitsTheVanishingOfElinaHarperNoResolution $ resolution "noResolution"
           push R1
         Resolution n -> do
           resolution $ case n of

@@ -25,6 +25,7 @@ import Arkham.Classes.Query
 import Arkham.Helpers.Campaign (getCompletedScenarios)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log
+import Arkham.Helpers.Narrative
 import Arkham.Helpers.Query
 import Arkham.I18n
 import Arkham.Matcher
@@ -72,40 +73,6 @@ narrative =
     , whereDoomAwaitsResolution1 = Just whereDoomAwaitsResolution1
     , lostInTimeAndSpaceIntro = Just lostInTimeAndSpaceIntro
     }
-
--- * The Lead Investigator
-
---
-
-{- $lead
-The rewrite presupposes the Lead Investigator as the "you" of every scene and
-frames a handful of them around who that is. The predicates below answer the
-conditions it prints, in its own words.
--}
-
-leadIs :: HasGame m => InvestigatorMatcher -> m Bool
-leadIs matcher = do
-  lead <- getLead
-  lead <=~> matcher
-
-leadHasTrait :: HasGame m => Trait -> m Bool
-leadHasTrait = leadIs . InvestigatorWithTrait
-
-leadIsClass :: HasGame m => ClassSymbol -> m Bool
-leadIsClass = leadIs . InvestigatorWithClass
-
--- | By title, so a revised or parallel version of an investigator still counts.
-leadIsNamed :: HasGame m => [Text] -> m Bool
-leadIsNamed = anyM (leadIs . InvestigatorWithTitle)
-
--- | The first branch whose condition holds, else the rewrite's @otherwise@.
-firstBranch :: Monad m => [(m Bool, Scope)] -> m Scope
-firstBranch = go
- where
-  go [] = pure "otherwise"
-  go ((cond, key) : rest) = do
-    matched <- cond
-    if matched then pure key else go rest
 
 -- * Prologue
 

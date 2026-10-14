@@ -151,6 +151,13 @@ compose :: FlavorTextBuilder () -> FlavorTextBuilder ()
 compose builder = case buildFlavor builder of
   FlavorText _t b -> addEntry $ CompositeEntry b
 
+{- | The blue panel a flashback is printed in, around several entries. @.blue@ in
+a locale string styles one; this styles a block built from many.
+-}
+blueBlock :: FlavorTextBuilder () -> FlavorTextBuilder ()
+blueBlock builder = case buildFlavor builder of
+  FlavorText _t b -> addEntry $ ModifyEntry [BlueEntry] $ CompositeEntry b
+
 addEntry :: FlavorTextEntry -> FlavorTextBuilder ()
 addEntry entry = modify \s@FlavorText {flavorBody} -> s {flavorBody = flavorBody <> [entry]}
 

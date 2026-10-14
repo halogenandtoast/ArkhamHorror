@@ -25,13 +25,34 @@ variant, and adding one touches only that campaign's registry:
 module Arkham.Helpers.Narrative where
 
 import Arkham.Campaign.Option
+import Arkham.ClassSymbol
 import Arkham.Classes.HasGame
+import Arkham.Classes.Query
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log (getCampaignOptions)
+import Arkham.Helpers.Query (getLead)
 import Arkham.I18n
+import Arkham.Matcher
 import Arkham.Message.Lifted.Queue (ReverseQueue)
 import Arkham.Prelude
+import Arkham.Trait (Trait)
 import Data.Set qualified as Set
+
+{- | A beat whose flavor is replaced wholesale. The variant builds it in the
+monad, because its branches read the campaign log and the Lead Investigator.
+-}
+type Flavor m = Maybe (m (FlavorTextBuilder ()))
+
+-- | A beat whose locale key is chosen by game state, its mechanics left alone.
+type FlavorKey m = Maybe (m Scope)
+
+-- | Narrative a variant adds beside a beat the Campaign Guide already prints.
+type Extra m = Maybe (m ())
+
+{- | A block the Campaign Guide prints and the variant does not tell at all --
+its scene is covered elsewhere in the rewrite.
+-}
+type Omit = Bool
 
 {- | The narrative variant a campaign log was created with, if any.
 
@@ -84,3 +105,35 @@ is what a resolution a variant splits by trait or class uses.
 -}
 narrativeKey :: Applicative m => Scope -> Maybe (m Scope) -> m Scope
 narrativeKey base = fromMaybe (pure base)
+
+-- * The Lead Investigator
+
+{- $lead
+A rewrite that presupposes the Lead Investigator as the "you" of a scene frames
+some of them around who that is. These answer the conditions such a rewrite
+prints, in its own words.
+-}
+
+leadIs :: HasGame m => InvestigatorMatcher -> m Bool
+leadIs matcher = do
+  lead <- getLead
+  lead <=~> matcher
+
+leadHasTrait :: HasGame m => Trait -> m Bool
+leadHasTrait = leadIs . InvestigatorWithTrait
+
+leadIsClass :: HasGame m => ClassSymbol -> m Bool
+leadIsClass = leadIs . InvestigatorWithClass
+
+-- | By title, so a revised or parallel version of an investigator still counts.
+leadIsNamed :: HasGame m => [Text] -> m Bool
+leadIsNamed = anyM (leadIs . InvestigatorWithTitle)
+
+-- | The first branch whose condition holds, else the rewrite's @otherwise@.
+firstBranch :: Monad m => [(m Bool, Scope)] -> m Scope
+firstBranch = go
+ where
+  go [] = pure "otherwise"
+  go ((cond, key) : rest) = do
+    matched <- cond
+    if matched then pure key else go rest

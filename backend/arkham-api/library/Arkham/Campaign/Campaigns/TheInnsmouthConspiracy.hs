@@ -11,6 +11,8 @@ import Arkham.Campaign.Campaigns.TheInnsmouthConspiracy.Achievements (
   runInnsmouthConspiracyAchievements,
  )
 import Arkham.Campaign.Import.Lifted
+import Arkham.Campaign.Option
+import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheInnsmouthConspiracy.CampaignSteps
 import Arkham.Campaigns.TheInnsmouthConspiracy.Import
@@ -18,11 +20,13 @@ import Arkham.ChaosToken
 import Arkham.Helpers.Campaign (getOwner, withOwner)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log hiding (recordSetInsert)
+import Arkham.Helpers.Narrative
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Narrative.TheInnsmouthConspiracy
 import Arkham.Source
 
 newtype TheInnsmouthConspiracy = TheInnsmouthConspiracy CampaignAttrs
@@ -99,7 +103,7 @@ recoveredMemories = do
   pure $ filter ((`elem` memories) . recorded) (map fst flashback15Memories)
 
 instance RunMessage TheInnsmouthConspiracy where
-  runMessage msg c@(TheInnsmouthConspiracy _attrs) =
+  runMessage msg c@(TheInnsmouthConspiracy attrs) =
     runQueueT $ campaignI18n $ lift (runInnsmouthConspiracyAchievements msg) *> case msg of
       StartCampaign -> do
         recordSetInsert PossibleSuspects
@@ -135,7 +139,8 @@ instance RunMessage TheInnsmouthConspiracy where
         when (recorded AnEncounterWithASecretCult `elem` memoriesRecovered) do
           story $ i18nWithTitle "anEncounterWithASecretCult"
           eachInvestigator \iid -> gainXp iid CampaignSource (ikey "xp.anEncounterWithASecretCult") 1
-        story $ i18nWithTitle "part2"
+        narrative <- getInnsmouthNarrative
+        storyBuild =<< narrativeBuilder narrative.interlude1Part2 (setTitle "part2.title" >> p "part2.body")
         nextCampaignStep
         pure c
       CampaignStep (InterludeStep 2 _) -> scope "interlude2" do
@@ -181,12 +186,19 @@ instance RunMessage TheInnsmouthConspiracy where
             addChaosToken ElderThing
             record TheHeaddressWasBroughtToTheLighthouse
 
+        narrative <- getInnsmouthNarrative
+        when (keysFound == HasNoKeys) $ onNarrative narrative.interlude3NoKeys
+
         story $ i18n "beneathTheWaves2"
 
         nextCampaignStep
         pure c
       CampaignStep (InterludeStep 4 _) -> scope "interlude4" do
-        story $ i18nWithTitle "hiddenTruths"
+        narrative <- getInnsmouthNarrative
+        storyBuild
+          =<< narrativeBuilder
+            narrative.interlude4HiddenTruths
+            (setTitle "hiddenTruths.title" >> p "hiddenTruths.body")
 
         terrorDead <- getHasRecord TheTerrorOfDevilReefIsDead
         lifecycleKnown <- hasMemory TheLifecycleOfADeepOne
@@ -203,7 +215,7 @@ instance RunMessage TheInnsmouthConspiracy where
               [Assets.awakenedMantle, Assets.headdressOfYhaNthlei, Assets.wavewornIdol]
 
         when (gatekeeperDefeated && someRelic) do
-          story $ i18n "rightfulKeeper"
+          story . i18n =<< narrativeKey "rightfulKeeper" narrative.interlude4RightfulKeeper
           record TheGatewayToYhanthleiRecognizesYouAsTheRightfulKeeper
 
         removeCampaignCard Assets.thomasDawsonSoldierInANewWar
@@ -219,14 +231,19 @@ instance RunMessage TheInnsmouthConspiracy where
         nextCampaignStep
         pure c
       CampaignStep EpilogueStep -> scope "epilogue" do
+        narrative <- getInnsmouthNarrative
         readEpilogue1
         recovered <- recoveredMemories
         if all ((`elem` recovered) . fst) flashback15Memories
           then do
             recordTheHorribleTruth
             story $ i18nWithTitle "flashback15"
-          else story $ i18nWithTitle "epilogue2"
+          else unless narrative.omitsEpilogue2 $ story $ i18nWithTitle "epilogue2"
         gameOver
 
         pure c
+      -- There is no generic handler, so an option chosen at creation is dropped
+      -- unless the campaign puts it in its own log.
+      HandleOption opt@(NarrativeVariant _) ->
+        pure $ TheInnsmouthConspiracy $ attrs & logL . optionsL %~ insertSet opt
       _ -> lift $ defaultCampaignRunner msg c

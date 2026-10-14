@@ -1928,9 +1928,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   PutCardIntoPlay _ card _ _ _ -> handlePutCardIntoPlay a card
   Msg.InvestigatorDamage iid source damage horror | iid == investigatorId -> do
     mods <- getModifiers a
+    {- "Increase all horror taken by 1" increases horror you are taking, so it has
+    nothing to add to a message that carries none. Assignment splits an attack
+    into one message per kind (Runner/Damage.hs's damageInvestigator pushes
+    @damage 0@ and the horror half pushes @0 horror@), so adding to a zero turns
+    a 1/1 attack into 1 damage and 3 horror. -}
+    let bumped base xs = if base > 0 then base + sum xs else base
     -- CannotBeDamaged blocks damage only; horror still applies.
-    let damage' = if CannotBeDamaged `elem` mods then 0 else damage + sum [x | DamageTaken x <- mods]
-    let horror' = horror + sum [x | HorrorTaken x <- mods]
+    let damage' = if CannotBeDamaged `elem` mods then 0 else bumped damage [x | DamageTaken x <- mods]
+    let horror' = bumped horror [x | HorrorTaken x <- mods]
     if CancelOneDamageOrHorror `elem` mods
       then
         if

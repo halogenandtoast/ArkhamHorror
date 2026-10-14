@@ -1298,6 +1298,23 @@ def lint(card_def: dict) -> list[Problem]:
                 )
             )
 
+    # A play window of `AnyWindow` also matches the windows opened while the
+    # card is being played, so the play never finishes: the card is offered and
+    # clicking it does nothing. A bare "Fast." is `FastPlayerWindow`, which is
+    # what every official unrestricted fast event uses.
+    fast = card_def.get("fastWindow")
+    if isinstance(fast, dict) and fast.get("tag") == "AnyWindow":
+        problems.append(
+            Problem(
+                "error",
+                "fastWindow",
+                "AnyWindow as a PLAY window also matches the windows opened while "
+                "the card is being played, so the play never completes",
+                fix='use "FastPlayerWindow" for a bare "Fast.", or the window the '
+                'card\'s "Play when ..." names',
+            )
+        )
+
     for key in ("_modifiers", "_keywords"):
         for index, block in enumerate(meta.get(key) or []):
             inner = block.get("modifiers") if key == "_keywords" else block

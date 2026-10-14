@@ -21,6 +21,10 @@ import.meta.glob('@homebrew/*/*.css', { eager: true })
 
 export type HomebrewScenarioDeckDisplay = {
   image?: 'top-card-back'
+  // The art the deck is stacked on, as a card code (`:campaign:009b`) rather
+  // than an image path, so a deck of locations held unrevealed-side-up shows
+  // that side even while it is empty. Also the fallback for `top-card-back`.
+  back?: string
   className?: string
 }
 

@@ -3,7 +3,7 @@ import { computed, ComputedRef } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import type { Card } from '@/arkham/types/Card';
 import { cardImage, toCardContents } from '@/arkham/types/Card';
-import { imgsrc } from '@/arkham/helpers';
+import { cardImg, imgsrc } from '@/arkham/helpers';
 import { homebrewScenarioDeckDisplay } from '@/arkham/homebrewAssets';
 import { investigatorPortrait as portraitFor } from '@/arkham/cardImages';
 import { MessageType } from '@/arkham/types/Message'
@@ -57,6 +57,11 @@ const revealedCards = computed(() => props.deck[1].map(card => {
 const showCards = () => emits('show', revealedCards, props.deck[0], false)
 const homebrewDisplay = computed(() => homebrewScenarioDeckDisplay(props.deck[0]))
 
+const homebrewBack = computed(() => {
+  const back = homebrewDisplay.value?.back
+  return back ? cardImg(back) : null
+})
+
 const deckImage = computed(() => {
   if (homebrewDisplay.value?.image === 'top-card-back') {
     const topCard = props.deck[1][0]
@@ -64,8 +69,10 @@ const deckImage = computed(() => {
       const contents = toCardContents(topCard)
       return imgsrc(cardImage({ ...contents, isFlipped: true, facedown: false }))
     }
-    return imgsrc("backs/back_encounter.jpg")
+    return homebrewBack.value ?? imgsrc("backs/back_encounter.jpg")
   }
+
+  if (homebrewBack.value) return homebrewBack.value
 
   switch(props.deck[0]) {
     case 'UnknownPlacesDeck':

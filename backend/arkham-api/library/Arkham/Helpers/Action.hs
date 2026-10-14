@@ -357,6 +357,13 @@ getActionsWith iid ws f = do
         ProxySource (EnemyMatcherSource m) base -> do
           sources <- selectMap EnemySource m
           pure $ sources & map \source -> action {abilitySource = ProxySource source base}
+        -- An ability anchored on the investigator it is offered to, so the UI
+        -- draws its button on their portrait rather than on the card that
+        -- grants it. These abilities are collected per investigator, so @iid@
+        -- is the anchor -- unlike 'replaceMatcherSources', which has no seat to
+        -- work from and has to settle for `You`.
+        ProxySource YouSource base ->
+          pure [action {abilitySource = ProxySource (InvestigatorSource iid) base}]
         _ -> pure [action]
 
   entryTicks <- getEntryTicks

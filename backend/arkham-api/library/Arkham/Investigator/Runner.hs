@@ -382,6 +382,17 @@ getWindowSkippable _ _ w@(windowTiming &&& windowType -> (Timing.When, Window.Ac
     , withAlteredGame withoutCanModifiers
         $ passesCriteria iid Nothing ab.source ab.requestor [w] (abilityCriteria ab)
     ]
+-- A move onto the location you already stand on is not a legal move: it exists
+-- only so that something in the would-move window can retarget it (On the Lam's
+-- redirect, which is what makes a move action available with nothing connected
+-- in play). So the window stays unskippable until that has happened, exactly
+-- like a card cost only a reaction in the window can pay. Scoped to the
+-- investigator being moved -- another seat can do nothing about it and keeps its
+-- skip -- and it cannot deadlock, because the ask is only pushed at all when
+-- some ability or playable card is on offer.
+getWindowSkippable attrs _ (windowType -> Window.WouldMove iid _ fromLid toLid)
+  | iid == toId attrs =
+      pure $ fromLid /= toLid
 getWindowSkippable attrs ws (windowType -> Window.WouldPayCardCost iid _ _ card@(PlayerCard pc)) | iid == toId attrs = do
   allModifiers <- getModifiers card
   mCost <- getModifiedCardCost iid card

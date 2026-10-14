@@ -178,6 +178,9 @@
     }
   },
   "tooltips": {
+    "onTheLam": {
+      "move": "Move to a new Arkham Streets location"
+    },
     "frontHallway": {
       "haunted": "If the Hound of Unmaking is in play and undamaged, place 1 damage on it"
     },

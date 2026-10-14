@@ -182,14 +182,24 @@ async function unlist(set: Api.PublishedCardSet) {
       <li v-for="set in ordered" :key="set.id" class="panel">
         <div class="panel-head">
           <div class="about">
-            <h2>
-              <router-link
-                class="set-link"
-                :to="{ name: 'CardMarketplaceSet', params: { publishedId: set.id } }"
-              >
-                {{ set.name }}
-              </router-link>
-            </h2>
+            <div class="title-row">
+              <!-- An expansion's own symbol, the way a printed box is filed.
+                   Decorative: the name beside it already says which set. -->
+              <span
+                v-if="set.icon"
+                class="expansion-icon"
+                :style="{ '--set-icon-url': `url(${set.icon})` }"
+                aria-hidden="true"
+              ></span>
+              <h2>
+                <router-link
+                  class="set-link"
+                  :to="{ name: 'CardMarketplaceSet', params: { publishedId: set.id } }"
+                >
+                  {{ set.name }}
+                </router-link>
+              </h2>
+            </div>
 
             <div class="facts">
               <!-- Said for every listing, not only the troubled ones: this page
@@ -377,6 +387,27 @@ async function unlist(set: Api.PublishedCardSet) {
     line-height: 1.15;
     margin: 0;
   }
+}
+
+.title-row {
+  align-items: baseline;
+  column-gap: 0.4rem;
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 0.25rem;
+}
+
+/* A silhouette masked out of a solid fill rather than drawn as an image, so the
+   symbol takes the heading's colour exactly. Sized to the heading beside it
+   rather than fixed, so it stays in proportion whatever the type scale does. */
+.expansion-icon {
+  align-self: center;
+  background: currentColor;
+  flex: none;
+  height: 1.5em;
+  -webkit-mask: var(--set-icon-url) center / contain no-repeat;
+  mask: var(--set-icon-url) center / contain no-repeat;
+  width: 1.5em;
 }
 
 .set-link {

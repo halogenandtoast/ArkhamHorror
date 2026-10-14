@@ -38,7 +38,12 @@ withDefaults(
       <header class="cc-head">
         <div class="cc-titles">
           <h1>
-            <img v-if="icon" class="cc-icon" :src="icon" alt="" />
+            <span
+              v-if="icon"
+              class="cc-icon"
+              :style="{ '--set-icon-url': `url(${icon})` }"
+              aria-hidden="true"
+            ></span>
             {{ title }}
           </h1>
           <p v-if="lede" class="cc-lede">{{ lede }}</p>
@@ -126,11 +131,15 @@ withDefaults(
     margin: 0;
   }
 
-  /* Sized to the heading rather than fixed, so the symbol keeps its proportion
-     to the name whatever the type scale does. */
+  /* A silhouette masked out of a solid fill rather than drawn as an image, so
+     the symbol takes the title's colour exactly. Sized to the heading rather
+     than fixed, so it keeps its proportion whatever the type scale does. */
   .cc-icon {
+    background: currentColor;
+    flex: none;
     height: 1.1em;
-    object-fit: contain;
+    -webkit-mask: var(--set-icon-url) center / contain no-repeat;
+    mask: var(--set-icon-url) center / contain no-repeat;
     width: 1.1em;
   }
 }

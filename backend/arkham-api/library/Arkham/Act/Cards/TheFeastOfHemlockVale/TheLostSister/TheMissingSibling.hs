@@ -38,13 +38,15 @@ getLastClueLocation =
 
 placeCavernCard :: ReverseQueue m => LocationId -> m ()
 placeCavernCard lid = do
+  pos <- fieldJust LocationPosition lid
+  emptyPositions <- filterM (selectNone . LocationInPosition) pos.adjacents
   deck <- getScenarioDeck CavernsDeck
-  for_ (nonEmpty deck) \(card :| rest) -> do
-    setScenarioDeck CavernsDeck rest
-    pos <- fieldJust LocationPosition lid
-    emptyPositions <- filterM (selectNone . LocationInPosition) pos.adjacents
-    leadChooseOrRunOneM do
-      for_ emptyPositions \emptyPos -> gridLabeled_ emptyPos $ placeLocationInGrid_ emptyPos card
+  case (nonEmpty emptyPositions, nonEmpty deck) of
+    (Just positions, Just (card :| rest)) -> do
+      setScenarioDeck CavernsDeck rest
+      leadChooseOrRunOneM $ for_ positions \emptyPos ->
+        gridLabeled_ emptyPos $ placeLocationInGrid_ emptyPos card
+    _ -> pure ()
 
 instance RunMessage TheMissingSibling where
   runMessage msg a@(TheMissingSibling attrs) = runQueueT $ case msg of
@@ -58,10 +60,10 @@ instance RunMessage TheMissingSibling where
       let hasEmptyAdjacent lid = do
             pos <- fieldJust LocationPosition lid
             notNull <$> filterM (selectNone . LocationInPosition) pos.adjacents
-      locations <-
-        filterM hasEmptyAdjacent
-          =<< select
-            (FirstLocation [LocationWithTrait Coastal <> LocationWithoutInvestigators, LocationWithTrait Coastal])
+      coastal <- filterM hasEmptyAdjacent =<< select (LocationWithTrait Coastal)
+      unoccupied <- select $ LocationWithTrait Coastal <> LocationWithoutInvestigators
+      let preferred = filter (`elem` unoccupied) coastal
+      let locations = if null preferred then coastal else preferred
       leadChooseOrRunOneM $ targets locations \chosenLid -> do
         chosenPos <- fieldJust LocationPosition chosenLid
         emptyPositions <- filterM (selectNone . LocationInPosition) chosenPos.adjacents

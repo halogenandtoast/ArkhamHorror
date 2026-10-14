@@ -11,7 +11,7 @@ layout to print.
 -}
 module Arkham.Homebrew.AgesUnwound.Scenarios.NightOfFire (nightOfFire) where
 
-import Arkham.Helpers.FlavorText (flavor, h, li, p, setup, ul)
+import Arkham.Helpers.FlavorText (additionalRules, flavor, h, li, p, setup, ul)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Xp (toBonus)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Acts qualified as Acts
@@ -101,6 +101,8 @@ instance RunMessage NightOfFire where
         li "setAside"
         unscoped $ li "shuffleRemainder"
         unscoped $ li "readyToBegin"
+
+      additionalRules "arkhamStreets"
 
       {- "Gather all cards from the following encounter sets: Night of Fire,
       Agents of Aforgomon, Nyctophobia, Thugs and Unravelling Ages."

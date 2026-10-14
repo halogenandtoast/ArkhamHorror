@@ -12,6 +12,12 @@
       "arkhamStreetsDeck": "Shuffle the remaining locations into a separate deck, Arkham Streets side faceup.",
       "setAside": "Set Myriad Assassin, Irregulars, each copy of Eternity's Sentinel, each copy of Time Spirit and the Agents of Aforgomon encounter set aside, out of play. The Agents of Aforgomon encounter set can be identified by the following icon:<section class='encounter-sets'><img src='{imgPath}/homebrew/ages-unwound/sets/agents-of-chronos.png' /></section>"
     },
+    "rules": {
+      "arkhamStreets": {
+        "title": "Arkham Streets",
+        "body": "<p class='basic'>Several scenario effects will ask you to move to a new Arkham Streets location. To do this, put the top card of the Arkham Streets deck into play facedown, then move to it. If there are no locations remaining in the Arkham Streets deck, cancel the effect of the move.</p><p class='basic'>Note that once an Arkham Streets location is in play, its connections behave normally. It may not be possible to move back to your previous location, or for another investigator at your previous location to follow you.</p>"
+      }
+    },
     "hunted": {
       "label": {
         "spendTwoClues": "Spend 2 clues as a group",

@@ -1277,6 +1277,32 @@ def lint(card_def: dict) -> list[Problem]:
             )
         )
 
+    # `$iid` is the acting investigator, which a STEP has and a modifiers block
+    # does not: there it decodes as an id nobody has, and a field calculation on
+    # one throws -- every read of the game then answers 500. `$controller` or
+    # `$id` is the one the card means.
+    def _iid_in_modifiers(value, path):
+        if isinstance(value, dict):
+            for key, inner in value.items():
+                _iid_in_modifiers(inner, f"{path}.{key}")
+        elif isinstance(value, list):
+            for i, inner in enumerate(value):
+                _iid_in_modifiers(inner, f"{path}[{i}]")
+        elif value == "$iid":
+            problems.append(
+                Problem(
+                    "error",
+                    path,
+                    '"$iid" is not bound in a modifiers block, only in a step',
+                    fix='use "$controller" (who holds the card) or "$id" (the card itself)',
+                )
+            )
+
+    for key in ("_modifiers", "_keywords"):
+        for index, block in enumerate(meta.get(key) or []):
+            inner = block.get("modifiers") if key == "_keywords" else block
+            _iid_in_modifiers(inner, f"meta.{key}[{index}]")
+
     for index, spec in enumerate(meta.get("_abilities") or []):
         _check_ability_spec(spec, f"meta._abilities[{index}]", card_bindings, problems)
 

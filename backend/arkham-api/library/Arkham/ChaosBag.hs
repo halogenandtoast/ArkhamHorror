@@ -20,7 +20,16 @@ import Arkham.Helpers.Window (checkWhen, checkWindows)
 import Arkham.Homebrew.Tokens (chaosTokenFacePool, pooledChaosTokenFaces)
 import Arkham.Id
 import Arkham.Investigator.Types (Investigator)
-import Arkham.Log (LogPart (..), ikeyPart, investigatorRef, mechanic, notice, sendLog, toLogPart, (~>))
+import Arkham.Log (
+  LogPart (..),
+  ikeyPart,
+  investigatorRef,
+  mechanic,
+  notice,
+  sendLog,
+  toLogPart,
+  (~>),
+ )
 import Arkham.Log.Refs (sendLogInOpenBlock)
 import Arkham.Matcher (
   ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIs, ChaosTokenFaceIsNot, IncludeSealed),
@@ -41,7 +50,6 @@ import Control.Lens (universeOf)
 import Control.Monad.State.Strict (StateT, execStateT, gets, modify', put, runStateT)
 import Data.Data.Lens (uniplate)
 import Data.Map.Strict qualified as Map
-import UnliftIO (MonadUnliftIO)
 import UnliftIO.Exception qualified as UnliftIO
 
 {- | Match a chaos token that has already been drawn/revealed into a step.
@@ -166,10 +174,8 @@ replaceFirstChooseChoice source iid strategy replacement = \case
   (Decided step : rest) ->
     replaceFirstChoice source iid strategy replacement (Decided step) : rest
 
-{- | Take one token out of the bag, honouring the debug force-draw queue. The
-first queued face is used up whether or not the bag still holds it; a face no
-longer in the bag falls back to a random draw. Returns the drawn token (none
-from an empty bag), what is left in the bag, and the rest of the queue.
+{- | The first queued face is used up whether or not the bag still holds it; a
+face no longer in the bag falls back to a random draw.
 -}
 drawOneChaosToken
   :: MonadRandom m
@@ -186,9 +192,6 @@ drawOneChaosToken forceDraw bagChaosTokens = case forceDraw of
     (drawn, remaining) <- splitAt 1 <$> shuffleM bagChaosTokens
     pure (drawn, remaining, rest)
 
-{- | Draw up to @n@ tokens for the debug sandbox. It reads the same force-draw
-queue as a real draw, so forcing the next face steers the sandbox too.
--}
 drawDebugChaosTokens :: MonadRandom m => Int -> ChaosBag -> m ([ChaosToken], ChaosBag)
 drawDebugChaosTokens = go []
  where
@@ -199,11 +202,9 @@ drawDebugChaosTokens = go []
         (drawn, remaining, rest) <- drawOneChaosToken (chaosBagForceDraw bag) (chaosBagChaosTokens bag)
         go (acc <> drawn) (k - 1) (bag & (chaosTokensL .~ remaining) & (forceDrawL .~ rest))
 
-{- | The debug calculator's suggestion for a sandbox token: the scenario
-reference card (and elder sign) for that investigator, without any skill test
-modifiers since there is no test. A value the engine cannot work out outside a
-test -- one that reads the test's target, or a scenario lookup that throws --
-is left as 'Nothing' for the player to fill in, rather than failing the draw.
+{- | The debug calculator's suggestion for a sandbox token. A value the engine
+cannot work out without a test -- one reading the test's target, or a scenario
+lookup that throws -- is left 'Nothing' rather than failing the draw.
 -}
 debugRevealedChaosToken
   :: (HasGame m, MonadUnliftIO m) => InvestigatorId -> ChaosToken -> m DebugRevealedChaosToken
@@ -228,7 +229,6 @@ debugRevealedChaosToken iid token = do
  where
   readsSkillTest calc = notNull [() | EnemyTargetFieldCalculation {} <- universeOf uniplate calc]
 
--- | Put every sandbox token back into the bag, logging it when there are any.
 returnDebugRevealedChaosTokens :: HasGameLogger m => ChaosBag -> m ChaosBag
 returnDebugRevealedChaosTokens c = case map debugRevealedToken (chaosBagDebugRevealedChaosTokens c) of
   [] -> pure c

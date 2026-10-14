@@ -1,10 +1,7 @@
 <script lang="ts" setup>
-/* Pick a chaos token from the bag to seal on a card. Laid out like the chaos
- * bag viewer -- the bag's faces in bag order, a count on each -- so it reads
- * as "the bag", and a click seals one token of that face here.
- *
- * Stays open after a click so "seal three bless tokens" is three clicks; the
- * counts come from the game state, so they fall as each seal lands. */
+/* The bag's faces in bag order with a count on each; a click seals one token of
+ * that face. Stays open after a click, and the counts come from game state, so
+ * they fall as each seal lands. */
 import { computed } from 'vue'
 import Draggable from '@/components/Draggable.vue'
 import { useDebug } from '@/arkham/debug'

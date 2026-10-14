@@ -57,18 +57,16 @@ services:
       args:
         - GHC_VERSION=9.14.1
     environment:
-      # Custom card art (uploads, and the portraits an arkham.build import cuts
-      # out of investigator cards) is kept on disk under the mounted image
-      # directory below. Without this the image is a production build, which
-      # writes art to S3 -- and with no AWS credentials in the container every
-      # save that carries art fails with CredentialChainExhausted.
+      # This image is a production build, which writes custom card art to S3;
+      # with no AWS credentials in the container, every save carrying art fails
+      # with CredentialChainExhausted. Keep it on the mounted image volume.
       - CUSTOM_CARD_ART_DIR=/opt/arkham/src/frontend/dist/img/custom
-    # ASSET_HOST is auto-detected by web-entrypoint.sh:
-    #   unset (default): uses local images if present, CDN otherwise
-    # To override, uncomment one of the lines below:
-    #   - ASSET_HOST=                                 # force local images
-    #   - ASSET_HOST=https://assets.arkhamhorror.app # force CDN
-    #   - REDIS_CONN=redis://redis:6379
+      # ASSET_HOST is auto-detected by web-entrypoint.sh:
+      #   unset (default): uses local images if present, CDN otherwise
+      # To override, uncomment one of the lines below:
+      #   - ASSET_HOST=                                 # force local images
+      #   - ASSET_HOST=https://assets.arkhamhorror.app # force CDN
+      #   - REDIS_CONN=redis://redis:6379
     secrets:
       - postgres_password
     ports:

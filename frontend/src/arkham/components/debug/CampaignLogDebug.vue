@@ -1,13 +1,8 @@
 <script lang="ts" setup>
-/* Debug editor for the campaign log's free-text entries: add a note or a count
- * a custom card would have written, and edit or delete any player-written entry
- * -- including ones a custom card recorded. Official entries and a homebrew
- * campaign's own keys are left alone; this edits players' notes, not the
- * campaign.
- *
- * Works on the real campaign log, and on the standalone log outside a campaign,
- * so entries carry into later scenarios like any other. Every change is one
- * step: an edit is delete-then-record in a single `Run`. */
+/* Add, edit or delete the campaign log's free-text entries. Official entries
+ * and a homebrew campaign's own keys are left alone: this edits players' notes,
+ * not the campaign. An edit is delete-then-record in one `Run`, so it undoes
+ * as a single step. */
 import { computed, ref } from 'vue'
 import { useDebug } from '@/arkham/debug'
 import type { Game } from '@/arkham/types/Game'

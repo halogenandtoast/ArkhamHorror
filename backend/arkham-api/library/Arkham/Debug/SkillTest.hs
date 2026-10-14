@@ -1,12 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-{- | What the debug panel's skill test mode asks the engine to run. See
-@DebugBeginSkillTest@ in "Arkham.Message".
-
-A real skill test, built from plain data instead of from a card's ability, so
-an effect the engine does not support can still be played out with commits,
-reactions, token effects and the pass/fail consequences the target already
-knows how to apply.
+{- | What @DebugBeginSkillTest@ asks the engine to run: a real skill test built
+from plain data instead of from a card's ability.
 -}
 module Arkham.Debug.SkillTest where
 
@@ -42,9 +37,8 @@ data DebugSkillTestSpec = DebugSkillTestSpec
   , debugTestTarget :: Maybe Target
   -- ^ An enemy for fight/evade, a location for investigate; optional otherwise.
   , debugTestSourceCard :: Maybe CardId
-  {- ^ The card the test is "on", for effects that care (\"a skill test on a
-  Spell\"). Only its traits and identity are seen: the card's own text does not
-  run, because nothing it implements is the test's source.
+  {- ^ The card the test is "on", for effects that care ("a test on a Spell").
+  Only its traits and identity are seen; the card's own text does not run.
   -}
   , debugTestDifficulty :: DebugTestDifficulty
   }

@@ -1,12 +1,7 @@
 <script lang="ts" setup>
-/* Debug window for an investigator's own deck: draw, look at the top X cards
- * and move them, select a draw, shuffle.
- *
- * The whole deck already reaches the client in order (`investigator.deck`, top
- * card first), so "search the top X" needs no engine search: it snapshots the
- * ids of the top X cards and lists whichever of them are still in the deck, in
- * their current order. Moving one away therefore doesn't slide the next card
- * into view -- it is the X cards you looked at, as a player would hold them. */
+/* The whole deck already reaches the client in order, so "look at the top X"
+ * needs no engine search: it snapshots the ids and lists whichever are still in
+ * the deck. Moving one away does not slide the next card into view. */
 import { computed, ref } from 'vue'
 import Draggable from '@/components/Draggable.vue'
 import { useDebug } from '@/arkham/debug'
@@ -40,9 +35,9 @@ const drawCount = ref(1)
 const stepDraw = (by: 1 | -1) => { drawCount.value = clamp(drawCount.value + by, 1, 20) }
 const draw = () => debug.send(props.game.id, drawCardsMessage(iid.value, drawCount.value))
 
-/* ---- Select draw / shuffle (moved here from the deck itself) --------------- */
+/* ---- Select draw / shuffle ------------------------------------------------- */
 
-// Only one search at a time: a second would clobber the found cards of the first.
+// Only one search at a time: a second would clobber the first's found cards.
 const canSelectDraw = computed(() => Object.keys(props.investigator.foundCards).length === 0)
 
 const selectDraw = () =>

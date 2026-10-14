@@ -1,9 +1,7 @@
 <script lang="ts" setup>
 /* The debug window for cards that had none: investigators, events, skills,
- * treacheries and stories. Same frame as the enemy window -- card on the left,
- * a column of sections on the right, close along the bottom -- so every card's
- * debug window looks like the same tool. The default slot takes extra sections
- * for whatever a card kind grows later. */
+ * treacheries and stories. Same frame as the enemy window; the default slot
+ * takes extra sections a card kind needs. */
 import Draggable from '@/components/Draggable.vue'
 import { useEscape } from '@/composable/escape'
 import type { Game } from '@/arkham/types/Game'

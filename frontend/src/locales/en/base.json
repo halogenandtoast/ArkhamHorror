@@ -721,7 +721,6 @@
       "title": "Debug Story"
     },
     "card": {
-      "title": "Debug Card",
       "investigatorTitle": "Debug Investigator",
       "eventTitle": "Debug Event",
       "skillTitle": "Debug Skill",

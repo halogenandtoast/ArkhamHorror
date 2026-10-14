@@ -3,7 +3,6 @@ module Arkham.Debug.CampaignLogSpec (spec) where
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Helpers.Log (getCampaignLog)
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection (field)
 import TestImport.New
 

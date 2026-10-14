@@ -44,9 +44,7 @@ export const enemyTarget = (id: string): SealTarget => ({ tag: 'EnemyTarget', co
 export const locationTarget = (id: string): SealTarget => ({ tag: 'LocationTarget', contents: id })
 export const investigatorTarget = (id: string): SealTarget =>
   ({ tag: 'InvestigatorTarget', contents: id })
-/* Treacheries keep plain tokens -- no uses -- so a Resource stays a resource. A
- * treachery attached to another card takes the drop itself; anything it refuses
- * still bubbles to the card underneath. */
+/* Treacheries keep plain tokens -- no uses -- so a Resource stays a resource. */
 export const treacheryTarget = (id: string): SealTarget =>
   ({ tag: 'TreacheryTarget', contents: id })
 export const scenarioTarget: TokensOnlyTarget = { tag: 'ScenarioTarget' }

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-/* The red Debug button of a panel's hidden debug controls (see
- * `useShiftHoverDebug`). The parent places it and handles the click. */
+/* The Debug button of a panel's hidden debug controls (see `useShiftHoverDebug`);
+ * the parent places it and handles the click. */
 defineProps<{ active: boolean }>()
 </script>
 

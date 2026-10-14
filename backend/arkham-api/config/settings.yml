@@ -18,10 +18,11 @@ asset-host: "_env:ASSET_HOST:"
 # at container start. Set it up before you need it, not during.
 maintenance-token: "_env:MAINTENANCE_TOKEN:"
 
-# Where custom card art is written. Unset means S3 (or, in a development build,
-# the frontend's public directory). The default is `null` rather than empty so
-# that leaving it unset keeps that fallback instead of reading as "".
+# Where custom card art is written. `null` rather than empty, so leaving it
+# unset keeps the fallback (S3, or the frontend's public directory in a
+# development build) instead of reading as "".
 custom-card-art-dir: "_env:CUSTOM_CARD_ART_DIR:null"
+
 # permessage-deflate on the game/event websockets. Kill switch, so a suspected
 # compression regression can be bisected in production with a restart.
 websocket-compression: "_env:ARKHAM_WS_COMPRESSION:true"

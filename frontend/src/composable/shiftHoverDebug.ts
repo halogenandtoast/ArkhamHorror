@@ -1,11 +1,8 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 
-/* The campaign log's hidden debug controls: hold Shift over a panel and a red
- * Debug button shows in its corner; clicking it turns that panel's controls on
- * until it is clicked again. The same convention as Hemlock Vale's resident
- * notes, and independent of the board's debug mode.
- *
- * Returns plain refs: destructure them so a template unwraps them. */
+/* Hold Shift over a panel and a Debug button shows in its corner; clicking it
+ * turns that panel's controls on until clicked again. Independent of the
+ * board's debug mode. */
 export function useShiftHoverDebug() {
   const active = ref(false)
   const hovering = ref(false)

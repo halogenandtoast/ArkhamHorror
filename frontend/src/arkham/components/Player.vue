@@ -755,7 +755,6 @@ async function debugAddCardToHand(card: CardDef) {
 
 const debug = useDebug()
 
-// Debug: one card from hand to the discard pile, picked by the engine at random.
 const discardRandom = () => debug.send(props.game.id, discardRandomMessage(props.investigator.id))
 const events = computed(() => props.investigator.events.map((e) => props.game.events[e]).filter(e => e))
 const skills = computed(() => props.investigator.skills.map((e) => props.game.skills[e]).filter(e => e))

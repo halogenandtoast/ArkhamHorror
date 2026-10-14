@@ -36,7 +36,6 @@ const bags = computed(() => [
 const active = computed(() => bags.value.find(bag => bag.id === selected.value))
 const displayedTokens = computed(() => [...(active.value?.bag.tokens ?? [])].sort((a, b) => compareTokenFaces(a.face, b.face)))
 const regularCount = computed(() => props.game.scenario?.chaosBag.chaosTokens.length ?? 0)
-// Tokens the debug reveal has out of the bag; flagged so nobody forgets them.
 const sandboxOut = computed(() => props.game.scenario?.chaosBag.debugRevealedChaosTokens.length ?? 0)
 const count = computed(() => active.value?.bag.tokens.length ?? regularCount.value)
 const title = computed(() => active.value?.label ?? t('gameBar.chaosBag'))

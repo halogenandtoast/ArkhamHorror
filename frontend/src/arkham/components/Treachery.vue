@@ -57,7 +57,6 @@ watch(() => props.mobileHandOpen, (open) => {
 const image = computed(() => cardImage(props.treachery.cardCode))
 const id = computed(() => props.treachery.id)
 const debugging = ref(false)
-// Debug: tokens from the debug token panel, and seal drags from the bag, land here.
 const cardDrop = cardDropHandlers(props.game.id, () => treacheryTarget(props.treachery.id))
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const isExhausted = computed(() => props.treachery.exhausted)

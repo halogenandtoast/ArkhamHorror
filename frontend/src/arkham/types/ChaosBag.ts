@@ -133,9 +133,8 @@ export const chaosBagStepDecoder: JsonDecoder.Decoder<ChaosBagStep> = JsonDecode
 ], 'ChaosBagStep')
 
 
-/** Debug sandbox: a token drawn out of the bag without being revealed to the
- * game. `value` is the scenario reference card's suggestion at draw time; null
- * with neither auto flag means the engine could not work it out outside a test. */
+/** Debug sandbox: a token out of the bag but not revealed to the game. `value`
+ * null with neither auto flag means the engine could not work it out. */
 export type DebugRevealedChaosToken = {
   token: ChaosToken
   value: number | null

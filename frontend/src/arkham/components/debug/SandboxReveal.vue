@@ -1,20 +1,9 @@
 <script lang="ts" setup>
-/* Debug reveal: agency over the chaos bag for effects the engine cannot run.
- *
- * Two modes, because they answer different needs:
- *  - "Reveal only" draws real tokens out of the bag without revealing them to
- *    the game, so nothing triggers. Everyone sees them (they live on the bag and
- *    are logged), and the calculator beside them changes nothing.
- *  - "Skill test" starts a real skill test with no card behind it, so commits,
- *    reactions, token effects and the target's own pass/fail handling all run.
- *
- * Everything a player can already do by hand -- damage, clues, skill +/-, the
- * reveal rule -- stays with the existing debug tools rather than growing a
- * control here. See `@/arkham/debugSandbox` for the wire format.
- *
- * Shown read-only to players outside debug mode while tokens are out, so a
- * token missing from the bag is never a mystery.
- */
+/* Two modes: "Reveal only" draws real tokens out of the bag without revealing
+ * them to the game, so nothing triggers and the calculator beside them changes
+ * nothing; "Skill test" starts a real test with no card behind it. Shown
+ * read-only outside debug mode while tokens are out, so a token missing from
+ * the bag is never a mystery. */
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDebug } from '@/arkham/debug'
@@ -139,8 +128,8 @@ function valueLabel(entry: DebugRevealedChaosToken) {
 
 /* ---- Skill test ----------------------------------------------------------- */
 
-// What the test is of, as toggle chips: one skill picked is a plain test, more
-// than one is a combined test. The fixed-value chip excludes the skills.
+// One skill picked is a plain test, more than one is combined; the fixed-value
+// chip excludes the skills.
 const testSkills = ref<SkillType[]>(['SkillWillpower'])
 const testFixed = ref(false)
 const fixedValue = ref(0)

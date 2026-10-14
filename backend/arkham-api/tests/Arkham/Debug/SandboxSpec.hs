@@ -28,6 +28,13 @@ debugTest self skill =
     , debugTestDifficulty = DebugDifficultyFixed 0
     }
 
+loadsBagWithoutSandboxField :: IO ()
+loadsBagWithoutSandboxField = case toJSON emptyChaosBag of
+  Object o -> do
+    let old = Object (KeyMap.delete "debugRevealedChaosTokens" o)
+    fmap chaosBagDebugRevealedChaosTokens (decode (encode old) :: Maybe ChaosBag) `shouldBe` Just []
+  _ -> expectationFailure "a chaos bag should encode as an object"
+
 spec :: Spec
 spec = do
   describe "Debug sandbox reveal" do
@@ -61,7 +68,9 @@ spec = do
       setChaosTokens [MinusTwo]
       run $ DebugRevealChaosTokens (toId self) 1
       tokens <- sandbox
-      liftIO $ map (\t -> (debugRevealedValue t, debugRevealedAutoFail t)) tokens `shouldBe` [(Just (-2), False)]
+      liftIO
+        $ map (\t -> (debugRevealedValue t, debugRevealedAutoFail t)) tokens
+        `shouldBe` [(Just (-2), False)]
 
     it "marks an auto-fail as such" . gameTest $ \self -> do
       setChaosTokens [AutoFail]
@@ -99,12 +108,7 @@ spec = do
       sandbox `shouldReturn` []
       bagFaces `shouldReturn` [Zero]
 
-    it "loads a saved bag from before the sandbox existed" do
-      case toJSON emptyChaosBag of
-        Object o -> do
-          let old = Object (KeyMap.delete "debugRevealedChaosTokens" o)
-          fmap chaosBagDebugRevealedChaosTokens (decode (encode old) :: Maybe ChaosBag) `shouldBe` Just []
-        _ -> expectationFailure "a chaos bag should encode as an object"
+    it "loads a saved bag from before the sandbox existed" loadsBagWithoutSandboxField
 
   describe "Debug skill test" do
     it "investigates a location against its shroud" . gameTest $ \self -> do

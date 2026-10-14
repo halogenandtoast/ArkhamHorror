@@ -1,15 +1,8 @@
-/* Debug tools that act on an investigator and their campaign: drawing,
- * discarding at random, trauma, XP and free-text campaign log entries.
- *
- * Each builder is the exact JSON the backend's derived decoders take, kept in
- * one place so the shapes are unit-tested rather than scattered through
- * templates. Everything is sent through `debug.send`, so it is synced to every
- * player and undoable like any other step. */
+/* The exact JSON the backend's derived decoders take, kept in one place so the
+ * shapes are unit-tested rather than scattered through templates. */
 
 const gameSource = { tag: 'GameSource' }
 
-/* A real draw from the top of the investigator's own deck: draw windows fire,
- * and a weakness drawn this way resolves as it would from any other draw. */
 export const drawCardsMessage = (investigatorId: string, amount: number) => ({
   tag: 'DrawCards',
   contents: [
@@ -45,8 +38,6 @@ export const discardRandomMessage = (investigatorId: string) => ({
   },
 })
 
-/* "+" follows the rules: the engine checks trauma against health and sanity and
- * kills or drives the investigator insane at the limit. "-" heals, floored at 0. */
 export type TraumaKind = 'physical' | 'mental'
 
 const traumaPair = (kind: TraumaKind, amount: number) =>
@@ -62,8 +53,7 @@ export const healTraumaMessage = (investigatorId: string, kind: TraumaKind, amou
   contents: [investigatorId, ...traumaPair(kind, amount)],
 })
 
-/* Gaining XP reports it to the campaign's XP breakdown first, as card effects
- * do (`gainXp` in Arkham.Message.Lifted), so the breakdown still adds up. */
+// Report to the XP breakdown first, as `gainXp` does, so it still adds up.
 export const gainXpMessage = (investigatorId: string, amount = 1) => ({
   tag: 'Run',
   contents: [
@@ -81,7 +71,6 @@ export const gainXpMessage = (investigatorId: string, amount = 1) => ({
   ],
 })
 
-// Spending is already reported as "Spent Xp" and floors at 0 in the engine.
 export const spendXpMessage = (investigatorId: string, amount = 1) => ({
   tag: 'SpendXP',
   contents: [investigatorId, amount],
@@ -89,9 +78,8 @@ export const spendXpMessage = (investigatorId: string, amount = 1) => ({
 
 /* ---- Campaign log --------------------------------------------------------- */
 
-/* Custom entries are free-text homebrew keys under the `custom.` scope -- the
- * same key type a custom card's `record` step writes -- so they live in the real
- * campaign log (or the standalone one) and survive into later scenarios. */
+/* Custom entries are free-text homebrew keys under the `custom.` scope, so they
+ * live in the real campaign log and survive into later scenarios. */
 export const CUSTOM_LOG_SCOPE = 'custom.'
 
 export type CampaignLogKeyJson = { tag: string, contents?: unknown }
@@ -101,7 +89,6 @@ export const customLogKey = (text: string): CampaignLogKeyJson => ({
   contents: `${CUSTOM_LOG_SCOPE}${text.trim()}`,
 })
 
-/* The text a player typed for a custom entry, or null for any other key. */
 export function customLogText(raw: unknown): string | null {
   if (typeof raw !== 'object' || raw === null) return null
   const { tag, contents } = raw as CampaignLogKeyJson
@@ -109,10 +96,8 @@ export function customLogText(raw: unknown): string | null {
   return contents.startsWith(CUSTOM_LOG_SCOPE) ? contents.slice(CUSTOM_LOG_SCOPE.length) : null
 }
 
-/* A free-text homebrew key that does not belong to the running homebrew
- * campaign: a custom entry, or one a custom card recorded. These are the
- * entries the debug panel may edit and delete; a homebrew campaign's own keys
- * (`<scope>.Key`) are its campaign log, not a player's notes. */
+/* A homebrew campaign's own keys (`<scope>.Key`) are its campaign log, not a
+ * player's notes, so they are not editable. */
 export function isEditableLogKey(raw: unknown, campaignScope?: string): boolean {
   if (typeof raw !== 'object' || raw === null) return false
   const { tag, contents } = raw as CampaignLogKeyJson
@@ -121,8 +106,6 @@ export function isEditableLogKey(raw: unknown, campaignScope?: string): boolean 
   return !campaignScope || !contents.startsWith(`${campaignScope}.`)
 }
 
-/* How an editable entry reads: the typed text for a custom entry, otherwise the
- * homebrew key's own text. */
 export function editableLogText(raw: unknown): string {
   const custom = customLogText(raw)
   if (custom !== null) return custom

@@ -59,8 +59,8 @@ function debugGainActions(event: MouseEvent) {
   })
 }
 
-// The inverse of "+": a negative gain, so no "lose actions" windows fire and
-// additional actions are left alone. The engine clamps at zero as well.
+// A negative gain, so no "lose actions" windows fire and additional actions
+// are left alone.
 function debugLoseActions(event: MouseEvent) {
   const amount = Math.min(event.shiftKey ? 5 : 1, props.investigator.remainingActions)
   if (amount <= 0) return

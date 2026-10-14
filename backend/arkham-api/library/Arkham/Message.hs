@@ -1094,9 +1094,9 @@ data Message
   | PutCardOnBottomOfDeck InvestigatorId DeckSignifier Card
   | PutOnBottomOfDeck InvestigatorId DeckSignifier Target
   | Record CampaignLogKey
-  | -- | Forget a key entirely: recorded, crossed out, counted and as a set. No
-    -- card does this yet (the game crosses entries out); the debug tools use it
-    -- to edit or delete an entry a player typed in.
+  | {- | Forget a key entirely: recorded, crossed out, counted and as a set.
+    No card does this yet; the game crosses entries out instead.
+    -}
     ForgetRecord CampaignLogKey
   | RecordForInvestigator InvestigatorId CampaignLogKey
   | {- | Adjust a per-investigator tally in that investigator's own campaign log
@@ -1402,8 +1402,7 @@ data Message
     that is no longer in the bag is a no-op instead of a fabricated seal.
     -}
     DebugSealChaosToken ChaosTokenId Target
-  | -- Debug: start a real skill test with no card behind it. See
-    -- "Arkham.Debug.SkillTest".
+  | -- Debug: start a real skill test with no card behind it.
     DebugBeginSkillTest DebugSkillTestSpec
   | DebugCustomize InvestigatorId CardId
   | DebugIncreaseCustomization InvestigatorId CardCode Customization [CustomizationChoice]

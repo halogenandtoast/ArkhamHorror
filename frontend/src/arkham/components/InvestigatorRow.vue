@@ -34,8 +34,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const expanded = ref(false)
 
-// Trauma follows the rules: suffering it can kill or drive the investigator
-// insane at the limit. XP is reported to the breakdown like any other gain.
+// Trauma follows the rules: it can kill or drive the investigator insane.
 const { active: debugActive, showToggle, onEnter, onLeave, toggle: toggleDebug } = useShiftHoverDebug()
 const showDebugToggle = computed(() => props.debuggable && showToggle.value)
 const debugging = computed(() => props.debuggable && debugActive.value)

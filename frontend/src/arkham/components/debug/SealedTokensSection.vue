@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-/* A card's sealed chaos tokens, for every debug window: each token is its own
- * release button (back to the bag), pool tokens such as bless and curse can
- * instead be released out of play, and "Seal a token" opens the bag picker.
- *
- * Always shown, even with nothing sealed, so sealing is always one click away. */
+/* A card's sealed chaos tokens: each token is its own release button, pool
+ * tokens such as bless and curse can instead go out of play. Always shown, even
+ * with nothing sealed, so sealing is one click away. */
 import { ref } from 'vue'
 import { useDebug } from '@/arkham/debug'
 import type { Game } from '@/arkham/types/Game'
@@ -61,8 +59,6 @@ const releaseToPool = (token: ChaosToken) => debug.send(props.game.id, releaseTo
 </template>
 
 <style scoped>
-/* Same section vocabulary as the enemy window (and ScenarioDebug.vue), so the
-   sealed pool looks the same in every debug window. */
 .sealed-section {
   display: flex;
   flex-direction: column;

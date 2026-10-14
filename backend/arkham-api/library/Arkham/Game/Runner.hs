@@ -3040,10 +3040,10 @@ runGameMessage msg g = case msg of
       refuse key = g <$ Log.sendLog (Log.notice [Log.ikeyPart key []])
       -- an enemy target, and its value for "use the target's value" if it has one
       enemyWithValue eid fld = do
-        exists <- selectAny $ EnemyWithId eid
+        inPlay <- selectAny $ EnemyWithId eid
         value <- fieldMayJoin fld eid
         pure
-          $ if exists
+          $ if inPlay
             then Just (EnemyTarget eid, Calc.EnemyMaybeFieldCalculation eid fld <$ value)
             else Nothing
     iids <- getInvestigators
@@ -3056,10 +3056,10 @@ runGameMessage msg g = case msg of
       (Just Action.Parley, Just (EnemyTarget eid)) -> fmap (\(t, _) -> (t, Nothing)) <$> enemyWithValue eid Field.EnemyFight
       (Just Action.Parley, Nothing) -> pure $ Just (toTarget iid, Nothing)
       (Just Action.Investigate, Just (LocationTarget lid)) -> do
-        exists <- selectAny $ LocationWithId lid
+        inPlay <- selectAny $ LocationWithId lid
         shroud <- fieldMayJoin LocationShroud lid
         pure
-          $ if exists
+          $ if inPlay
             then Just (LocationTarget lid, Calc.LocationMaybeFieldCalculation lid LocationShroud <$ shroud)
             else Nothing
       _ -> pure Nothing

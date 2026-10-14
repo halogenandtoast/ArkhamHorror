@@ -1,11 +1,6 @@
-/* Debug sandbox: the frontend half of the backend `DebugRevealChaosTokens_` /
- * `DebugReturnChaosTokens_` (Arkham.ChaosBag) and `DebugBeginSkillTest`
- * (Arkham.Debug.SkillTest).
- *
- * The reveal draws real tokens out of the bag without revealing them to the
- * game, so nothing triggers; the calculator here is informational only and
- * never talks to the server. A skill test started from here is a real one,
- * built from plain data instead of a card's ability. */
+/* The frontend half of `DebugRevealChaosTokens_` / `DebugReturnChaosTokens_`
+ * and `DebugBeginSkillTest`. The calculator here is informational only and
+ * never talks to the server. */
 import type { TokenFace } from '@/arkham/types/ChaosToken'
 
 export type SandboxToken = {
@@ -23,11 +18,8 @@ export type SandboxResult =
   | { kind: 'pass', total: number, by: number }
   | { kind: 'fail', total: number, by: number }
 
-/* Mirrors the rules the real test applies (`calculateSkillTestResultsData`):
- * an auto-fail beats an auto-success, the modified skill never drops below 0,
- * and a tie succeeds unless something says ties fail. Two frost tokens are an
- * auto-fail; the scenario only counts frost from a real reveal, so the sandbox
- * has to apply that rule itself. */
+/* Mirrors `calculateSkillTestResultsData`. Frost is counted here too: the
+ * scenario only tallies frost from a real reveal. */
 export function sandboxResult(
   tokens: SandboxToken[],
   skill: number,
@@ -47,8 +39,6 @@ export function sandboxResult(
     : { kind: 'fail', total, by: difficulty - total }
 }
 
-/* A player-typed number replaces the engine's suggestion and its auto flags:
- * the override is the player saying what the token is worth. */
 export function withOverride(token: SandboxToken, override: number | undefined): SandboxToken {
   if (override === undefined || Number.isNaN(override)) return token
   return { ...token, value: override, autoFail: false, autoSuccess: false }
@@ -85,7 +75,6 @@ export type DebugSkillTestForm = {
   difficulty: { kind: 'fixed', value: number } | { kind: 'target' }
 }
 
-/* Which target kind an action needs, or null when the target is optional. */
 export function targetKindFor(action: DebugTestAction | null): DebugTestTarget['tag'] | null {
   switch (action) {
     case 'Fight':
@@ -98,8 +87,8 @@ export function targetKindFor(action: DebugTestAction | null): DebugTestTarget['
   }
 }
 
-/* Why the form cannot start yet, or null when it can. The server re-checks all
- * of it -- this only keeps the button honest. */
+/* Why the form cannot start yet, or null when it can. The server re-checks it
+ * all; this only keeps the button honest. */
 export function formProblem(form: DebugSkillTestForm): string | null {
   if (!form.investigator) return 'investigator'
   if (form.skill.kind === 'combined' && form.skill.skills.length === 0) return 'skill'

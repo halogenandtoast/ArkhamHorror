@@ -10,11 +10,8 @@ import Arkham.Source
 import Data.Aeson.TH
 import GHC.Records
 
-{- | A token drawn by the debug sandbox reveal: out of the bag, but never
-revealed to the game. The value is a snapshot of the scenario reference card
-(and elder sign) at draw time, for the debug calculator only. 'Nothing' with
-neither auto flag set means the engine could not work it out outside a skill
-test, and the player fills it in.
+{- | A 'Nothing' value with neither flag set is one the engine could not work
+out outside a skill test; the debug calculator asks the player for it.
 -}
 data DebugRevealedChaosToken = DebugRevealedChaosToken
   { debugRevealedToken :: ChaosToken
@@ -37,8 +34,6 @@ data ChaosBag = ChaosBag
   }
   deriving stock (Show, Eq, Generic)
 
--- Sandbox tokens are out of the bag only for the debug reveal; they still
--- belong to it, so they count here.
 allChaosBagChaosTokens :: ChaosBag -> [ChaosToken]
 allChaosBagChaosTokens ChaosBag {..} =
   nub

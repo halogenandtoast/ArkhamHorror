@@ -99,6 +99,13 @@ instance HasField "outOfGame" Placement Bool where
 instance HasField "isAttached" Placement Bool where
   getField = isJust . placementToAttached
 
+-- An attached enemy has no location of its own (a Wraith marking a haunted
+-- location). Attached to an asset is the exception: it rides the asset.
+instance HasField "isAttachedWithoutLocation" Placement Bool where
+  getField = \case
+    AttachedToAsset {} -> False
+    p -> p.isAttached
+
 instance HasField "isInPlay" Placement Bool where
   getField = isInPlayPlacement
 

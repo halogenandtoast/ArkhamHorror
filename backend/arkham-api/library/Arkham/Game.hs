@@ -5268,14 +5268,14 @@ getEnemyField f e = do
           _ -> ks
       setFromList
         <$> ( keywords' & mapMaybeM \case
-                Keyword.ScenarioModifierKeyword k v kw -> do
-                  ok <- selectAny (ScenarioWithModifier (ScenarioModifierValue k v))
-                  if ok
-                    then pure $ Just kw
-                    else
-                      selectAny (EnemyWithModifier (ScenarioModifierValue k v)) <&> \case
-                        True -> Just kw
-                        False -> Nothing
+                Keyword.ScenarioModifierKeyword k v kw ->
+                  {- The enemy's own value for the key overrides the scenario's: The Lost
+                  Sister is globally Day and marks only enemies at Dark locations Night. -}
+                  case [v' | ScenarioModifierValue k' v' <- modifiers', k' == k] of
+                    (v' : _) -> pure $ if v' == v then Just kw else Nothing
+                    [] -> do
+                      ok <- selectAny (ScenarioWithModifier (ScenarioModifierValue k v))
+                      pure $ if ok then Just kw else Nothing
                 other -> pure $ Just other
             )
     EnemyAbilities -> pure $ getAbilities e

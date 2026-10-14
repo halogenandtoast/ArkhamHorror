@@ -33,10 +33,6 @@
     "duplicitousIllusion": {},
     "phantomBeasts": {},
     "shadowyPerformance": {},
-    "xp": {
-      "unmaskedBlake": "learning the truth about the ringmaster",
-      "bigTop": "revealing each *The Big Top* location"
-    },
     "tokens": {
       "easyStandard": {
         "skull": "-2. -4 instead if there are 5 or more resources on this card.",
@@ -52,6 +48,10 @@
       }
     },
     "resolutions": {
+      "xp": {
+        "unmaskedBlake": "learning the truth about the ringmaster",
+        "bigTop": "revealing each _The Big Top_ location"
+      },
       "noResolution": {
         "title": "No Resolution",
         "body": "<p class='basic'>_If no resolution was reached (each investigator was defeated):_ If the investigators were defeated during act 1, read _Resolution 1_. If the investigators were defeated during act 2, read _Resolution 2_. Otherwise, read _Resolution 3_.</p>"

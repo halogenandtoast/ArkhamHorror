@@ -10,6 +10,7 @@ defineProps<{
   recordedCounts: [LogKey, number][]
   recordedSetsEntries: [string, any[]][]
   displayRecordValue: (key: string, value: any) => string
+  homebrewScope?: string
 }>()
 
 const { t } = useI18n()
@@ -29,6 +30,7 @@ const { t } = useI18n()
         :entries="recordedSetsEntries"
         :counts="[]"
         :displayRecordValue="displayRecordValue"
+        :homebrewScope="homebrewScope"
       />
     </template>
 
@@ -38,6 +40,7 @@ const { t } = useI18n()
         :entries="[]"
         :counts="recordedCounts"
         :displayRecordValue="displayRecordValue"
+        :homebrewScope="homebrewScope"
       />
     </template>
   </div>

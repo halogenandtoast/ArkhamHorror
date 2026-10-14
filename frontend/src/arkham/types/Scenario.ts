@@ -122,12 +122,63 @@ export const scenarioDetailsDecoder = JsonDecoder.object<ScenarioDetails>({
   variant: v2Optional(JsonDecoder.string()),
 }, 'ScenarioDetails');
 
+/* A homebrew campaign's own remembered key. `homebrewKey` is namespaced
+ * `<campaignScope>.KeyName`, exactly like `HomebrewCampaignLogKey`, so the scope
+ * travels with the key instead of being read off whichever scenario is showing.
+ * `name` is the investigator it was remembered about (`...For`), `payload` the
+ * arbitrary value it carries (`...With`); the locale entry may interpolate
+ * either. */
+export type HomebrewRemembered = {
+  tag: "HomebrewRemembered"
+  homebrewKey: string
+  name?: Name
+  payload?: Record<string, unknown>
+}
+
 export type Remembered=
     { tag: "YouOweBiancaResources", contents: number } |
     { tag: "RememberNamed" | "RememberedName", actualTag: string, name: Name } |
-    { tag: string, contents?: undefined, actualTag?: undefined, name?: undefined }
+    HomebrewRemembered |
+    { tag: string, contents?: undefined, actualTag?: undefined, name?: undefined, homebrewKey?: undefined, payload?: undefined }
+
+const labeledDecoder = JsonDecoder.object(
+  { getLabel: nameDecoder, unLabel: JsonDecoder.string() },
+  'labeled'
+)
 
 const rememberedDecoder = JsonDecoder.oneOf([
+  JsonDecoder.object(
+    {
+      tag: JsonDecoder.literal('HomebrewScenarioLogKeyFor'),
+      contents: JsonDecoder.tuple([JsonDecoder.string(), labeledDecoder], 'HomebrewScenarioLogKeyFor'),
+    },
+    'Remembered'
+  ).map<Remembered>(({ contents }) => ({
+    tag: 'HomebrewRemembered',
+    homebrewKey: contents[0],
+    name: contents[1].getLabel,
+  })),
+  JsonDecoder.object(
+    {
+      tag: JsonDecoder.literal('HomebrewScenarioLogKeyWith'),
+      contents: JsonDecoder.tuple(
+        [JsonDecoder.string(), JsonDecoder.succeed()],
+        'HomebrewScenarioLogKeyWith'
+      ),
+    },
+    'Remembered'
+  ).map<Remembered>(({ contents }) => ({
+    tag: 'HomebrewRemembered',
+    homebrewKey: contents[0],
+    payload:
+      typeof contents[1] === 'object' && contents[1] !== null && !Array.isArray(contents[1])
+        ? (contents[1] as Record<string, unknown>)
+        : undefined,
+  })),
+  JsonDecoder.object(
+    { tag: JsonDecoder.literal('HomebrewScenarioLogKey'), contents: JsonDecoder.string() },
+    'Remembered'
+  ).map<Remembered>(({ contents }) => ({ tag: 'HomebrewRemembered', homebrewKey: contents })),
   JsonDecoder.object<Remembered>(
     {
       tag: JsonDecoder.literal('YouOweBiancaResources'),

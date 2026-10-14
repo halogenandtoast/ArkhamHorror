@@ -104,6 +104,12 @@
   "illusoryLocus": {
     "cluesToSpend": "Clues to spend"
   },
+  "remembered": {
+    "aViceForRevelry": "{name} has \"a vice for revelry.\"",
+    "aViceForIntimacy": "{name} has \"a vice for intimacy.\"",
+    "aViceForOpulence": "{name} has \"a vice for opulence.\"",
+    "aViceForViolence": "{name} has \"a vice for violence.\""
+  },
   "key": {
     "theRingmasterDoesNotSuspectYou": "The ringmaster does not suspect you.",
     "theRingmasterHasHisEyeOnYou": "The ringmaster has his eye on you.",

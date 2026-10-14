@@ -265,6 +265,19 @@ const remembered = computed(() => {
   const toKey = (s: string) => (s.charAt(0).toLowerCase() + s.slice(1)).replace(/'/g, '')
   return log.map((record: Remembered) => {
     if (record.tag == 'YouOweBiancaResources') return `You owe Bianca resources (${record.contents})`
+    /* A homebrew key names its own campaign scope (`circusExMortis.AViceForOpulence`),
+     * so it reads from the campaign rather than from whichever scenario is showing --
+     * the same split `formatKey` makes for the campaign log. A key written without one
+     * (a custom card's, say) falls back to the campaign whose log we are rendering. */
+    if (record.tag === 'HomebrewRemembered' && record.homebrewKey) {
+      const [scope, key] = record.homebrewKey.split('.', 2)
+      const path = key
+        ? `${toKey(scope)}.remembered.${toKey(key)}`
+        : `${homebrewScope.value}.remembered.${toKey(record.homebrewKey)}`
+      const named = { ...(record.payload ?? {}), name: record.name ? simpleName(record.name) : '' }
+      const translated = t(path, named)
+      return translated === path ? logTitle(path) : translated
+    }
     if (record.tag === 'RememberedName' && record.actualTag && record.name) {
       return t(`${prefix}.remembered.${toKey(record.actualTag)}`, {
         name: simpleName(record.name),
@@ -1243,6 +1256,7 @@ onUnmounted(() => {
             :recordedCounts="m.recordedCounts"
             :recordedSetsEntries="m.recordedSetsEntries"
             :displayRecordValue="displayRecordValue"
+            :homebrewScope="homebrewScope"
           />
 
           <ArtifactsEarned v-if="game.campaign?.id === '11'" :log="selectedLog" :game-id="game.id" @refresh="emit('refresh')" />

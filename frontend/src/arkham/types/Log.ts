@@ -183,3 +183,17 @@ export function formatKey(key: LogKey, fallbackHomebrewScope?: string): string {
 
   return `${prefix}.key.unknown`
 }
+
+/* The path a scope-less homebrew key would have got with the campaign in hand.
+ *
+ * `logContentsDecoder` has no campaign to pass `formatKey` as a fallback, so a
+ * key that carries no scope of its own (Circus Ex Mortis' do not) is baked into
+ * `recordedSets` as `homebrewCampaignLog.key.x`, which no locale defines. A
+ * caller that knows whose log it is re-points it here rather than re-deriving
+ * the prefix. */
+const UNSCOPED_HOMEBREW_PREFIX = 'homebrewCampaignLog.key.'
+
+export function withHomebrewScope(path: string, scope?: string): string {
+  if (!scope || !path.startsWith(UNSCOPED_HOMEBREW_PREFIX)) return path
+  return `${scope}.key.${path.slice(UNSCOPED_HOMEBREW_PREFIX.length)}`
+}

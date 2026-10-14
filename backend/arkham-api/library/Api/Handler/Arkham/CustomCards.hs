@@ -10,9 +10,12 @@ module Api.Handler.Arkham.CustomCards (
   persistCard,
   saveCardInSet,
   stampSet,
-  touchSet,
-  unsubscribeSet,
+  requireUnlocked,
   freeName,
+  myCopyOfSet,
+  myCopyOfListing,
+  followOnly,
+  Source (..),
   normalizeUrl,
   printedOrder,
   hostArt,
@@ -45,6 +48,8 @@ import Data.Char (isDigit)
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Data.Time.Clock
+import Data.Traversable (for)
+import Database.Persist qualified as DB
 import Database.Persist.Sql (SqlPersistT)
 import Import hiding ((==.))
 import Import qualified as P
@@ -80,17 +85,55 @@ most needs it, and because the set handlers already depend on this module --
 the other direction would be a cycle.
 -}
 
-{- | Stop a set following the published set it came from.
+{- | Whether this set follows somebody else's, and so cannot be edited.
 
-Called wherever the set's contents change. A subscription says "this is what was
-published"; once a card in it has been touched that is no longer true, so the row
-goes. Taking the published version again is how you get back to it.
+A set in a collection is one of two things. One is your own: you can do anything
+to it. The other is a copy that follows a source -- a marketplace listing, or a
+link somebody sent you -- which you can read, deckbuild with, play, and bring up
+to date, and not change. Changing it would make it no longer what it follows.
 
-It lives here rather than with the marketplace handlers because those import this
-module, and the card writes that have to call it are here.
+The old rule was the other way round: editing a followed set quietly stopped it
+following. That lost the author's updates over a typo, and it never fired for the
+commonest edit of all, since saving a card goes through a path that did not know
+to do it -- so a "subscribed" set could drift into being something else while
+still claiming to be what was published. Refusing the edit says the same thing
+and can be acted on: "Add to my editor" is one button, and then the set is yours.
+
+Both sources are asked, because a set can follow either. Neither counts once it
+is out of reach: an author who removes you, stops sharing, or unlists the set has
+left you with a copy that can never catch up, and a lock whose point is fidelity
+to a source means nothing without the source.
+
+It lives here rather than with the marketplace or share handlers because those
+import this module, and the writes that have to refuse are here.
 -}
-unsubscribeSet :: ArkhamCustomCardSetId -> SqlPersistT Handler ()
-unsubscribeSet setId = P.deleteWhere [ArkhamCardSetSubscriptionCustomCardSetId P.==. setId]
+lockedSet :: ArkhamCustomCardSetId -> Handler Bool
+lockedSet setId = do
+  listing <- runDB $ P.getBy (UniqueCardSetSubscription setId)
+  case listing of
+    Just (Entity _ row) | arkhamCardSetSubscriptionSubscribed row -> pure True
+    _ ->
+      runDB
+        $ isJust
+        <$> P.selectFirst
+          [ ArkhamCardSetShareAccessCustomCardSetId P.==. Just setId
+          , ArkhamCardSetShareAccessSubscribed P.==. True
+          , ArkhamCardSetShareAccessRevokedAt P.==. Nothing
+          ]
+          []
+
+{- | Refuse to change a set that follows somebody else's.
+
+A 403 rather than a quiet no-op: the client hides these controls on a locked set,
+so anything that reaches here is a stale page or a script, and both are better
+told.
+-}
+requireUnlocked :: ArkhamCustomCardSetId -> Handler ()
+requireUnlocked setId = do
+  locked <- lockedSet setId
+  when locked
+    $ permissionDenied
+      "That set follows someone else's. Add it to your editor to make it yours."
 
 ownedCardSet :: UserId -> ArkhamCustomCardSetId -> Handler ArkhamCustomCardSet
 ownedCardSet userId setId = do
@@ -112,6 +155,79 @@ saying what the first one said.
 -}
 touchSet :: ArkhamCustomCardSetId -> UTCTime -> SqlPersistT Handler ()
 touchSet setId now = P.update setId [ArkhamCustomCardSetUpdatedAt P.=. now]
+
+{- | The caller's own copy of somebody else's set, however they came by it.
+
+A copy can arrive two ways -- from a link, or from the marketplace -- and either
+can arrive second. A card code is unique per account, so the second copy cannot
+sit beside the first: writing it moves the cards out of the one already here and
+leaves an empty set behind. So "have I got this already?" has to ask both routes,
+and the write that follows replaces what it finds rather than adding to it.
+
+Asked by the author's own set, because that is what both routes point at: a share
+hangs off it, and a listing names it. A listing whose author deleted their set
+names nothing, and the caller is left to be found by their subscription instead
+(see 'Api.Handler.Arkham.PublishedCardSets.myCopyOf').
+-}
+myCopyOfSet :: UserId -> ArkhamCustomCardSetId -> Handler (Maybe ArkhamCustomCardSetId)
+myCopyOfSet userId sourceId = do
+  viaShare <- do
+    shares <- runDB $ P.selectList [ArkhamCardSetShareCustomCardSetId P.==. sourceId] []
+    copies <- for shares \(Entity shareId _) -> do
+      access <- runDB $ P.getBy (UniqueCardSetShareAccess shareId userId)
+      pure $ arkhamCardSetShareAccessCustomCardSetId . entityVal =<< access
+    pure $ listToMaybe (catMaybes copies)
+  case viaShare of
+    Just found -> pure (Just found)
+    Nothing -> do
+      listings <-
+        runDB $ P.selectList [ArkhamPublishedCardSetCustomCardSetId P.==. Just sourceId] []
+      copies <- for listings \(Entity publishedId _) -> myCopyOfListing userId publishedId
+      pure $ listToMaybe (catMaybes copies)
+
+{- | The caller's own copy of a listing, found by the row that records it.
+
+Every subscription to the listing has to be looked at rather than the first one:
+on a set other people have taken, the first row found is somebody else's, and
+stopping there would report the caller as having no copy and make them a second.
+
+Whether it still follows the listing or not -- the row is also "this set of mine
+is my copy of that", which is as true of a copy taken into the editor.
+-}
+myCopyOfListing :: UserId -> ArkhamPublishedCardSetId -> Handler (Maybe ArkhamCustomCardSetId)
+myCopyOfListing userId publishedId = do
+  subs <-
+    runDB $ P.selectList [ArkhamCardSetSubscriptionPublishedCardSetId P.==. publishedId] []
+  ours <- for subs \(Entity _ sub) -> do
+    let setId = arkhamCardSetSubscriptionCustomCardSetId sub
+    owner <- runDB $ DB.get setId
+    pure $ case owner of
+      Just set | arkhamCustomCardSetUserId set == userId -> Just setId
+      _ -> Nothing
+  pure $ listToMaybe (catMaybes ours)
+
+{- | Say this set no longer follows whatever it used to, bar the one route that
+is taking it over.
+
+One source at a time: a copy that both a link and a listing claim is a set
+answering to two things that can disagree about what is in it. Taking it either
+way therefore silences the other -- the row itself stays, because it is also the
+record of which set of yours is your copy of that.
+-}
+followOnly :: Source -> ArkhamCustomCardSetId -> SqlPersistT Handler ()
+followOnly source setId = do
+  when (source /= FromShare)
+    $ P.updateWhere
+      [ArkhamCardSetShareAccessCustomCardSetId P.==. Just setId]
+      [ArkhamCardSetShareAccessSubscribed P.=. False]
+  when (source /= FromListing)
+    $ P.updateWhere
+      [ArkhamCardSetSubscriptionCustomCardSetId P.==. setId]
+      [ArkhamCardSetSubscriptionSubscribed P.=. False]
+
+-- | Which of the two routes a copy is being taken through.
+data Source = FromShare | FromListing
+  deriving stock Eq
 
 {- | A name no set of this user's holds, bar the one being written.
 
@@ -203,7 +319,7 @@ Sorted on the leading digits rather than the text, so 10 follows 9. A card with 
 number sorts last, since it has said nothing about where it goes.
 -}
 printedOrder :: Value -> (Int, Text)
-printedOrder value = (maybe maxBound id (readMaybe (T.unpack digits)), number)
+printedOrder value = (fromMaybe maxBound (readMaybe (T.unpack digits)), number)
  where
   number = case value of
     Object o -> case KeyMap.lookup "meta" o of
@@ -306,17 +422,18 @@ postApiV1ArkhamCustomCardsR = do
   userId <- callerUserId <$> getScopedCaller [ApiKey.cardsWrite]
   SaveCardPost {saveCardPostSetId, saveCardPostCard} <- requireCheckJsonBody
   set <- ownedCardSet userId saveCardPostSetId
+  requireUnlocked saveCardPostSetId
   now <- liftIO getCurrentTime
   saveCardInSet userId saveCardPostSetId set now saveCardPostCard
 
 deleteApiV1ArkhamCustomCardR :: ArkhamCustomCardId -> Handler ()
 deleteApiV1ArkhamCustomCardR cardId = do
   userId <- callerUserId <$> getScopedCaller [ApiKey.cardsWrite]
+  row <- runDB $ get404 cardId
+  when (arkhamCustomCardUserId row /= userId) $ permissionDenied "Not your card"
+  requireUnlocked (arkhamCustomCardCustomCardSetId row)
   now <- liftIO getCurrentTime
   runDB do
-    row <- get404 cardId
-    when (arkhamCustomCardUserId row /= userId) $ lift $ permissionDenied "Not your card"
-    unsubscribeSet (arkhamCustomCardCustomCardSetId row)
     P.delete cardId
     touchSet (arkhamCustomCardCustomCardSetId row) now
 

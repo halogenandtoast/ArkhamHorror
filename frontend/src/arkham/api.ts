@@ -298,8 +298,14 @@ export type StoredCustomCardSet = {
   keywords: CustomSetKeyword[]
   cardCount: number
   updatedAt: string
-  /* The marketplace listing this set came from and still follows. All three go
-   * null the moment the set is edited, which is what stops it updating. */
+  /* Whether this set follows somebody else's — a marketplace listing, or a link
+   * somebody sent you — and so cannot be edited. Its cards, its details and a
+   * file imported over it are all refused; "Add to my editor" is the way out,
+   * and makes it an ordinary set of yours. */
+  locked: boolean
+  /* The marketplace listing this set follows. All three are null on a copy that
+   * was imported rather than subscribed, and on one since taken into the
+   * editor: both are yours, and a listing has nothing more to say about either. */
   publishedCardSetId: string | null
   subscribedVersion: number | null
   latestVersion: number | null
@@ -319,11 +325,15 @@ export type StoredCustomCardSet = {
    * hand over the link without a request per set. */
   shareToken: string | null
   shareCount: number
-  /* The share link this set is a copy of, for a set somebody handed you — the
-   * other direction from `shareToken`, and the way back to the page that can
-   * take the author's newest cards. Null once they stop sharing or remove you,
-   * because there is then nothing at the other end of it. */
+  /* The share link this set follows, for a set somebody handed you — the other
+   * direction from `shareToken`, and the way back to the page that can take the
+   * author's newest cards. Null on a copy that was imported rather than
+   * subscribed, and once they stop sharing or remove you, because there is then
+   * nothing at the other end of it. */
   sharedToken: string | null
+  // Who shared it — the one thing such a copy has to say for itself that the
+  // rest of the row cannot.
+  sharedBy: string | null
   // The author has changed that set since you took it.
   sharedBehind: boolean
 }
@@ -375,6 +385,20 @@ export const updateCustomCardSet = async (
 // Takes the set's cards with it.
 export const deleteCustomCardSet = async (id: string): Promise<void> => {
   await api.delete(`arkham/custom-card-sets/${id}`)
+}
+
+/* Take a followed set into your editor: stop following it, keep the cards.
+ *
+ * The way out of a locked copy of a published set. Nothing is fetched — the
+ * cards are already here — and what changes is only that this copy stops claiming
+ * to be what was published, so it can be edited, published and shared like any
+ * set of yours. Subscribing again from the listing puts it back.
+ *
+ * Refused for a copy taken from a share link: that set is unpublished and stays
+ * the author's. */
+export const unlockCustomCardSet = async (id: string): Promise<StoredCustomCardSet> => {
+  const { data } = await api.post(`arkham/custom-card-sets/${id}/unlock`, {})
+  return data
 }
 
 /* One call, one set: whatever the set held before is replaced by exactly these
@@ -449,11 +473,19 @@ export type SharedCardSet = {
   updatedAt: string
   // Your own copy, if you have taken one.
   setId: string | null
-  takenAt: string | null
-  // The author has changed the set since you took it.
+  /* The marketplace listing for this set, once the author has published it and a
+   * version has been approved. It changes what you may do: a shared set stays
+   * the author's, but a published one is public, so subscribing to the listing
+   * gives an ordinary marketplace copy — editable via "Add to my editor", and
+   * exportable. Subscribing there adopts the copy you already have. */
+  listing: string | null
+  /* Whether that copy follows this set, and so is locked, rather than being an
+   * ordinary set of yours imported from it. */
+  subscribed: boolean
+  /* The author has changed the set since you took it — the whole of whether
+   * there is anything to do here. Subscribing again is how it catches up, and
+   * when it is level there is nothing to take and no button for it. */
   behind: boolean
-  // You have changed your copy since, so taking it again would throw that away.
-  edited: boolean
 }
 
 // The link to send. Hash history, so the route lives after the `#`.
@@ -505,11 +537,15 @@ export const fetchSharedCardSet = async (token: string): Promise<SharedCardSet> 
   return data
 }
 
-/* Take the author's set as it stands into your own library. Taking it again
- * replaces the copy you have, which is how you catch up -- and why the page
- * warns first when you have edited it. */
-export const copySharedCardSet = async (token: string): Promise<SharedCardSet> => {
-  const { data } = await api.post(`arkham/shared-card-sets/${token}/copy`, {})
+/* The one way to take a shared set: subscribe. The copy is locked, so it stays
+ * what the author shared, and subscribing again is how it catches up.
+ *
+ * The marketplace's other way — importing a copy of your own, to edit and keep —
+ * is not offered for a shared set, because that set is unpublished. It was handed
+ * to a few people to try, not given away, and a copy somebody can edit is a copy
+ * they can export and pass on. */
+export const subscribeToSharedCardSet = async (token: string): Promise<SharedCardSet> => {
+  const { data } = await api.post(`arkham/shared-card-sets/${token}/subscribe`, {})
   return data
 }
 
@@ -650,13 +686,28 @@ export const unpublishCardSet = async (id: string): Promise<void> => {
   await api.delete(`arkham/published-card-sets/${id}`)
 }
 
-/* Take a published set into your collection and follow it from then on. The
- * import happens on the server, so the cards never round-trip through here. */
+/* Take a published set into your collection and follow it from then on: the copy
+ * is locked, so it stays what was published, and subscribing again is how it
+ * catches up. The import happens on the server, so the cards never round-trip
+ * through here. */
 export const subscribeToCardSet = async (
   id: string,
   version?: number,
 ): Promise<PublishedCardSet> => {
   const { data } = await api.post(`arkham/published-card-sets/${id}/subscribe`, {
+    version: version ?? null,
+  })
+  return data
+}
+
+/* Take it as your own instead: the same cards, editable, frozen at this version
+ * and hearing nothing more from the listing. One replaces the other — a card
+ * code is unique per account, so nobody holds both. */
+export const importCardSet = async (
+  id: string,
+  version?: number,
+): Promise<PublishedCardSet> => {
+  const { data } = await api.post(`arkham/published-card-sets/${id}/import`, {
     version: version ?? null,
   })
   return data

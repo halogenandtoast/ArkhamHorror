@@ -30,9 +30,12 @@ import { useUserStore } from '@/stores/user'
 import {
   createSet,
   exportCards,
+  canExport,
+  canUnlock,
   isAwaitingReview,
   isFromShare,
   isListed,
+  isLocked,
   isShared,
   isSubscribed,
   publishSet,
@@ -49,6 +52,7 @@ import {
   loadLibrary,
   removeFromLibrary,
   removeSet,
+  unlockSet,
   updateSet,
   saveToLibrary,
   setCards,
@@ -223,6 +227,23 @@ async function update(set: LibrarySet) {
   } catch (e) {
     console.error(e)
     error.value = t(`${K}updateFailed`)
+  }
+}
+
+/* ------------------------------------------------------------------- lock ---
+
+   A set taken from a listing or a link follows it, which means it stays what was
+   published or shared: the server refuses every edit, and the controls that
+   would try are not shown. This is the one button that changes that. */
+async function unlock(set: LibrarySet) {
+  status.value = null
+  error.value = null
+  try {
+    await unlockSet(set.id)
+    status.value = t(`${K}unlocked`, { name: set.name })
+  } catch (e) {
+    console.error(e)
+    error.value = t(`${K}unlockFailed`)
   }
 }
 
@@ -428,6 +449,18 @@ onUnmounted(() => window.removeEventListener('beforeunload', warnOnUnload))
 const cards = computed(() => libraryCards())
 const sets = computed(() => librarySets())
 const activeSet = computed(() => librarySet(activeSetId.value))
+
+/* The set open in the editor, when it is one that follows something. Drives the
+ * editor pane: no new cards, no saving, no deleting, and the form itself inside
+ * a disabled fieldset, so its fields read rather than invite. */
+const activeSetLocked = computed(() => !!activeSet.value && isLocked(activeSet.value))
+
+/* The two things that depend on where a locked set came from. A copy of
+ * something published can be taken into the editor and exported like any set of
+ * yours; one taken from a share link is the author's unpublished work, so it can
+ * be neither. */
+const activeSetUnlockable = computed(() => !!activeSet.value && canUnlock(activeSet.value))
+const activeSetExportable = computed(() => !!activeSet.value && canExport(activeSet.value))
 
 /* What the open set declares, for the card form: the keywords a card here can
  * print, and the tokens one of them can be marked with. Empty for a set that is
@@ -808,7 +841,25 @@ async function remove(card: CustomCard) {
 
 // ---------------------------------------------------------------- export ---
 
+/* The set a card belongs to, which is what decides whether it may leave. Read
+ * per card rather than from the open set, because the selection and the one-card
+ * export both run from a panel that is only ever showing one set, and a wrong
+ * answer here is somebody's unpublished work in a file. */
+const exportable = (cards: CustomCard[]) =>
+  cards.every((c) => {
+    const set = librarySet(libraryCard(c.def.cardCode)?.setId ?? null)
+    return !set || canExport(set)
+  })
+
 async function download(cards: CustomCard[], filename: string, set?: LibrarySet) {
+  /* Somebody else's unpublished work is not yours to hand on. The buttons are
+   * not rendered for one, so nothing here should reach this -- it is the rule
+   * stated where the file is written rather than only where it is asked for.
+   *
+   * Not a guarantee, and not meant as one: the cards are in the library this
+   * reads because playing with them needs them there. It is the affordance that
+   * is withdrawn. */
+  if ((set && !canExport(set)) || !exportable(cards)) return
   // The art is fetched and inlined, so this waits on the network.
   const blob = new Blob([JSON.stringify(await exportCards(cards, set), null, 2)], {
     type: 'application/json',
@@ -1273,15 +1324,27 @@ async function onImport(event: Event) {
           </form>
           <div v-else class="set-identity">
             <button type="button" class="set-open" @click="openSet(set.id)">
+              <!-- An expansion's own symbol, the way a printed box is filed.
+                   Decorative: the name beside it already says which set. -->
+              <span
+                v-if="set.icon"
+                class="expansion-icon"
+                :style="{ '--set-icon-url': `url(${set.icon})` }"
+                aria-hidden="true"
+              ></span>
               <span class="name">{{ set.name }}</span>
             </button>
             <div class="set-facts">
               <MetaChip>{{ set.cardCount ? t(`${K}cardCount`, set.cardCount) : t(`${K}emptySetShort`) }}</MetaChip>
+              <!-- The lock is the chip's own: a set you follow is one you can
+                   read, play and update, and not edit. One chip rather than two,
+                   because where it came from and why it is locked are the same
+                   fact. -->
               <MetaChip
                 v-if="isSubscribed(set)"
                 tone="good"
-                icon="circle-check"
-                v-tooltip="t(`${K}editingUnsubscribes`)"
+                icon="lock"
+                v-tooltip="t(`${K}lockedHelp`)"
               >
                 {{ t(`${K}subscribedBadge`, { version: set.subscribedVersion }) }}
               </MetaChip>
@@ -1302,10 +1365,17 @@ async function onImport(event: Event) {
                 v-if="isFromShare(set)"
                 class="from-share"
                 :to="{ name: 'SharedCardSet', params: { token: set.sharedToken } }"
-                v-tooltip="t(`${K}fromShareHelp`)"
+                v-tooltip="
+                  set.sharedBy
+                    ? t(`${K}sharedBy`, { author: set.sharedBy })
+                    : t(`${K}fromShareHelp`)
+                "
                 @click.stop
               >
-                <MetaChip :tone="set.sharedBehind ? 'good' : 'plain'" icon="link">
+                <MetaChip
+                  :tone="set.sharedBehind ? 'good' : 'plain'"
+                  :icon="set.sharedBehind ? 'link' : 'lock'"
+                >
                   {{ t(`${K}${set.sharedBehind ? 'fromShareBehind' : 'fromShareChip'}`) }}
                 </MetaChip>
               </router-link>
@@ -1351,8 +1421,24 @@ async function onImport(event: Event) {
               {{ t(`${K}updateTo`, { version: set.latestVersion }) }}
             </button>
 
+            <!-- A locked copy of a *published* set: the one thing to do with it
+                 beyond reading it and taking it again is to make it yours. A
+                 copy taken from a share link has no such button -- that set is
+                 unpublished, and it stays the author's. -->
+            <button
+              v-if="canUnlock(set)"
+              type="button"
+              class="unlock"
+              v-tooltip="t(`${K}unlockHelp`)"
+              @click="unlock(set)"
+            >
+              <font-awesome-icon icon="unlock" />
+              {{ t(`${K}unlockSet`) }}
+            </button>
+
             <div class="row-actions" role="group" :aria-label="t(`${K}setActions`)">
               <button
+                v-if="!isLocked(set)"
                 type="button"
                 v-tooltip="publishTitle(set)"
                 :aria-label="publishTitle(set)"
@@ -1364,6 +1450,7 @@ async function onImport(event: Event) {
                    what an unfinished set wants. Beside publishing, because they
                    are the two ways a set leaves your account. -->
               <button
+                v-if="!isLocked(set)"
                 type="button"
                 :class="{ on: isShared(set) }"
                 v-tooltip="t(`${K}shareSet`, { name: set.name })"
@@ -1373,10 +1460,14 @@ async function onImport(event: Event) {
               >
                 <font-awesome-icon icon="link" />
               </button>
-              <button type="button" v-tooltip="t(`${K}renameSet`)" :aria-label="t(`${K}renameSet`)" @click="startRename(set)">
+              <button v-if="!isLocked(set)" type="button" v-tooltip="t(`${K}renameSet`)" :aria-label="t(`${K}renameSet`)" @click="startRename(set)">
                 <font-awesome-icon icon="pen" />
               </button>
+              <!-- Somebody else's unpublished work is not yours to hand on, so
+                   a set taken from a share link has no export. Everything else
+                   in your library does, your own shared sets included. -->
               <button
+                v-if="canExport(set)"
                 type="button"
                 v-tooltip="t(`${K}exportSet`, { name: set.name })"
                 :aria-label="t(`${K}exportSet`, { name: set.name })"
@@ -1387,6 +1478,7 @@ async function onImport(event: Event) {
               <!-- Adds to this set rather than becoming one, which is what a card
                    somebody sent you needs: it has no set of its own to land as. -->
               <label
+                v-if="!isLocked(set)"
                 class="set-import"
                 v-tooltip="t(`${K}importIntoSet`, { name: set.name })"
                 :aria-label="t(`${K}importIntoSet`, { name: set.name })"
@@ -1643,6 +1735,7 @@ async function onImport(event: Event) {
         type="button"
         class="edit-expansion"
         :class="{ on: editingDeclaration }"
+        :disabled="activeSetLocked"
         @click="startDeclaration(activeSet)"
       >
         <font-awesome-icon icon="box-archive" />
@@ -1654,7 +1747,9 @@ async function onImport(event: Event) {
 
       <div class="group-head">
         <h3>{{ t(`${K}cardCount`, activeCards.length) }}</h3>
-        <div class="row-actions">
+        <!-- Selecting cards is only ever for exporting them, so a set with no
+             export has no selection either. -->
+        <div v-if="activeSetExportable" class="row-actions">
           <button
             type="button"
             :disabled="!activeCards.length"
@@ -1665,6 +1760,7 @@ async function onImport(event: Event) {
             <font-awesome-icon icon="check-double" />
           </button>
           <button
+            v-if="activeSetExportable"
             type="button"
             :disabled="!selected.length"
             v-tooltip="t(`${K}exportSelected`, { count: selected.length })"
@@ -1685,7 +1781,35 @@ async function onImport(event: Event) {
         </div>
       </div>
 
-      <button type="button" class="new-card" @click="startNew">+ {{ t(`${K}newCard`) }}</button>
+      <!-- A set that follows somebody else's stays what they published or
+           shared, so there is nothing to add to it and nothing to throw away.
+           For a copy of something published, the button that makes it yours sits
+           where the new-card button was; for one taken from a share link there
+           is no such button, and the box says so instead of leaving the missing
+           controls to be puzzled over. -->
+      <button
+        v-if="activeSetUnlockable"
+        type="button"
+        class="unlock-panel"
+        @click="unlock(activeSet!)"
+      >
+        <font-awesome-icon icon="unlock" />
+        <span class="unlock-text">
+          <strong>{{ t(`${K}unlockSet`) }}</strong>
+          <small>{{ t(`${K}lockedPanelHelp`) }}</small>
+        </span>
+      </button>
+      <p v-else-if="activeSetLocked" class="shared-note">
+        <font-awesome-icon icon="lock" />
+        <span>
+          {{
+            activeSet?.sharedBy
+              ? t(`${K}sharedBy`, { author: activeSet.sharedBy })
+              : t(`${K}sharedPanelHelp`)
+          }}
+        </span>
+      </p>
+      <button v-else type="button" class="new-card" @click="startNew">+ {{ t(`${K}newCard`) }}</button>
 
       <p v-if="!activeCards.length" class="muted">{{ t(`${K}emptySetPanel`) }}</p>
       <ul v-else class="library-list">
@@ -1694,7 +1818,12 @@ async function onImport(event: Event) {
           :key="card.def.cardCode"
           :class="{ editing: editingCode === card.def.cardCode }"
         >
-          <input type="checkbox" :checked="isSelected(card.def.cardCode)" @change="toggleSelected(card.def.cardCode)" />
+          <input
+            v-if="activeSetExportable"
+            type="checkbox"
+            :checked="isSelected(card.def.cardCode)"
+            @change="toggleSelected(card.def.cardCode)"
+          />
           <button type="button" class="library-card" @click="edit(card)">
             <img :src="cardArt(card)" :data-image-id="card.def.cardCode" alt="" />
             <span class="text">
@@ -1702,11 +1831,13 @@ async function onImport(event: Event) {
               <small>{{ card.def.cardType.replace(/Type$/, '') }}</small>
             </span>
           </button>
-          <div class="row-actions">
-            <button type="button" v-tooltip="t(`${K}exportCard`)" :aria-label="t(`${K}exportCard`)" @click="exportOne(card)">
+          <!-- Nothing to do to a card in a set that follows somebody else's, so
+               no box to do it in: an empty one reads as a control that failed. -->
+          <div v-if="activeSetExportable || !activeSetLocked" class="row-actions">
+            <button v-if="activeSetExportable" type="button" v-tooltip="t(`${K}exportCard`)" :aria-label="t(`${K}exportCard`)" @click="exportOne(card)">
               <font-awesome-icon icon="download" />
             </button>
-            <button type="button" class="delete" v-tooltip="t(`${K}deleteCard`)" :aria-label="t(`${K}deleteCard`)" @click="deletingCard = card">
+            <button v-if="!activeSetLocked" type="button" class="delete" v-tooltip="t(`${K}deleteCard`)" :aria-label="t(`${K}deleteCard`)" @click="deletingCard = card">
               <font-awesome-icon icon="trash" />
             </button>
           </div>
@@ -1748,6 +1879,12 @@ async function onImport(event: Event) {
         </button>
         <h2>
           <template v-if="editingDeclaration">{{ t(`${K}investigatorExpansion`) }}</template>
+          <!-- A locked set has no new card to start and nothing unsaved in it,
+               so its resting state is "nothing picked" and its open state is
+               just the card, read. -->
+          <template v-else-if="activeSetLocked">
+            {{ editingCode ? t(`${K}lockedReadingCard`) : t(`${K}lockedNothingPicked`) }}
+          </template>
           <template v-else>
             {{ editingCode ? t(`${K}editingCard`) : t(`${K}newCard`) }}
             <span v-if="dirty" class="unsaved" :title="t(`${K}unsavedTitle`)">
@@ -1755,12 +1892,19 @@ async function onImport(event: Event) {
               {{ t(`${K}unsaved`) }}
             </span>
           </template>
-          <small v-if="activeSet" class="in-set">&#32;{{ t(`${K}inSet`, { name: activeSet.name }) }}</small>
+          <small v-if="activeSet" class="in-set">{{ t(`${K}inSet`, { name: activeSet.name }) }}</small>
         </h2>
         <div class="builder-actions">
           <span v-if="status && !dirty" class="status">{{ status }}</span>
           <span v-if="error" class="error">{{ error }}</span>
-          <template v-if="editingDeclaration">
+          <!-- Nothing to save on a set that follows somebody else's. Said
+               where the save button was, so the absence is an answer rather
+               than a thing that failed to render. -->
+          <span v-if="activeSetLocked" class="locked-note">
+            <font-awesome-icon icon="lock" />
+            {{ t(`${K}lockedEditorNote`) }}
+          </span>
+          <template v-else-if="editingDeclaration">
             <button type="button" class="save dirty" @click="saveDeclaration(activeSet!)">
               {{ t(`${K}saveSetDetails`) }}
             </button>
@@ -1781,7 +1925,7 @@ async function onImport(event: Event) {
           <!-- Only worth a slot up here while the panel's own "+ New card" is out
                of reach. -->
           <button
-            v-if="libraryCollapsed && editingCode"
+            v-if="!activeSetLocked && libraryCollapsed && editingCode"
             type="button"
             class="secondary"
             @click="startNew"
@@ -1795,14 +1939,25 @@ async function onImport(event: Event) {
         <ExpansionDetails v-model="expansionDraft" />
       </template>
 
+      <!-- Nothing picked, in a set whose cards can only be read. An empty form
+           here would be an invitation the set cannot accept. -->
+      <p v-else-if="activeSetLocked && !editingCode" class="locked-empty">
+        <font-awesome-icon icon="lock" />
+        <span>{{ t(`${K}lockedPickHint`) }}</span>
+      </p>
+
       <template v-else>
         <p v-if="editingCode" class="muted">{{ t(`${K}saveNote`) }}</p>
 
-        <CustomCardForm
-          ref="form"
-          :setKeywords="openSetDeclaration.keywords"
-          :setTokens="openSetDeclaration.tokens"
-        />
+        <!-- A native disabled fieldset, which disables every control inside it:
+             the card reads as it is rather than as a form that will not take. -->
+        <fieldset class="card-form" :disabled="activeSetLocked">
+          <CustomCardForm
+            ref="form"
+            :setKeywords="openSetDeclaration.keywords"
+            :setTokens="openSetDeclaration.tokens"
+          />
+        </fieldset>
       </template>
     </main>
   </div>
@@ -2179,6 +2334,113 @@ async function onImport(event: Event) {
   }
 }
 
+/* A fieldset only here to carry `disabled`, so it must not look like one. */
+.card-form {
+  border: 0;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+/* The way out of a locked set, where the thing it replaces was: beside the row's
+   other actions on the sets page, and where "+ New card" sits in the panel. */
+.unlock {
+  align-items: center;
+  background: none;
+  border: 1px solid var(--box-border);
+  border-radius: 5px;
+  color: var(--title);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.8rem;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+
+  &:hover {
+    border-color: var(--background-mid);
+  }
+}
+
+.unlock-panel {
+  align-items: center;
+  background: none;
+  border: 1px solid var(--box-border);
+  border-radius: 6px;
+  color: var(--title);
+  cursor: pointer;
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+  padding: 0.5rem 0.65rem;
+  text-align: left;
+  width: 100%;
+
+  &:hover {
+    border-color: var(--background-mid);
+  }
+
+  .unlock-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+
+    small {
+      color: color-mix(in srgb, var(--title) 60%, transparent);
+      font-size: 0.72rem;
+      line-height: 1.3;
+    }
+  }
+}
+
+/* The editor with nothing picked, in a set that can only be read. */
+.locked-empty {
+  align-items: center;
+  color: color-mix(in srgb, var(--title) 60%, transparent);
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 3rem 1rem;
+
+  svg {
+    opacity: 0.6;
+  }
+}
+
+/* Why a shared set has no "make it mine" button, where that button would be. */
+.shared-note {
+  align-items: baseline;
+  border: 1px solid var(--box-border);
+  border-radius: 6px;
+  color: color-mix(in srgb, var(--title) 65%, transparent);
+  display: flex;
+  font-size: 0.78rem;
+  gap: 0.45rem;
+  line-height: 1.35;
+  margin: 0 0 0.6rem;
+  padding: 0.5rem 0.65rem;
+
+  svg {
+    flex: none;
+    font-size: 0.85em;
+    opacity: 0.7;
+  }
+}
+
+/* Where the save button would be, saying why there isn't one. */
+.locked-note {
+  align-items: center;
+  color: color-mix(in srgb, var(--title) 65%, transparent);
+  display: inline-flex;
+  font-size: 0.8rem;
+  gap: 0.4rem;
+
+  svg {
+    font-size: 0.85em;
+    opacity: 0.7;
+  }
+}
+
 /* A chip that is a link. The chip carries all the appearance; this only has to
    stop the anchor adding an underline and a color of its own. */
 .from-share {
@@ -2336,26 +2598,52 @@ async function onImport(event: Event) {
   }
 }
 
+/* `baseline`, not `center`: the chips beside this button line up on the set
+   name's baseline, and a centred flex container has no baseline of its own to
+   give them -- they dropped to the bottom of the button. The symbol opts out
+   with `align-self` so the name is what the row aligns to. */
 .set-open {
+  align-items: baseline;
   background: none;
   border: none;
   border-radius: 4px;
   color: inherit;
   cursor: pointer;
-  display: block;
+  display: flex;
+  gap: 0.4rem;
   max-width: 100%;
   min-width: 0;
   padding: 0;
   text-align: left;
+
+  /* A silhouette masked out of a solid fill rather than drawn as an image, so
+     the symbol takes the name's colour exactly. Sized to the name rather than
+     fixed, so it stays in proportion whatever the type scale does. */
+  .expansion-icon {
+    align-self: center;
+    background: currentColor;
+    flex: none;
+    height: 1.5em;
+    -webkit-mask: var(--set-icon-url) center / contain no-repeat;
+    mask: var(--set-icon-url) center / contain no-repeat;
+    width: 1.5em;
+  }
 
   .name {
     display: block;
     font-family: teutonic, sans-serif;
     font-size: 1.3em;
     line-height: 1.15;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  /* The symbol lights with the name: the whole button is the hover target, so
+     leaving it behind would read as the symbol not being part of it. */
+  &:hover .expansion-icon {
+    color: white;
   }
 
   &:hover .name {
@@ -2784,9 +3072,13 @@ async function onImport(event: Event) {
   }
 }
 
+/* The margin, rather than a leading `&#32;`: whether that entity survives
+   depends on whether the branch before it ends in an element or in text, which
+   is not a thing a space should depend on. */
 .in-set {
   font-family: sans-serif;
   font-size: 0.6em;
+  margin-left: 0.5em;
   opacity: 0.6;
 }
 

@@ -8,7 +8,7 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import * as Api from '@/arkham/api'
-import { subscribeToSet } from '@/arkham/customCardLibrary'
+import { importPublishedSet, subscribeToSet } from '@/arkham/customCardLibrary'
 import { isBadLink, setLinkLabel } from '@/arkham/setLink'
 import type { CustomCard } from '@/arkham/customCards'
 import { useRoute } from 'vue-router'
@@ -162,14 +162,18 @@ async function toggleLike(set: Api.PublishedCardSet) {
   }
 }
 
-async function take(set: Api.PublishedCardSet) {
+/* The two ways to take a published set. Subscribing follows the listing and
+ * leaves the copy locked to what was published; importing hands over an ordinary
+ * set of your own. Nobody can hold both, so each replaces the other. */
+async function take(set: Api.PublishedCardSet, how: 'subscribe' | 'import') {
   busy.value = set.id
   status.value = null
   error.value = null
   try {
-    await subscribeToSet(set.id)
+    if (how === 'subscribe') await subscribeToSet(set.id)
+    else await importPublishedSet(set.id)
     await load()
-    status.value = t(`${K}imported_`, { name: set.name })
+    status.value = t(`${K}${how === 'subscribe' ? 'subscribed_' : 'imported_'}`, { name: set.name })
   } catch (e) {
     console.error(e)
     error.value = t(`${K}subscribeFailed`)
@@ -296,7 +300,12 @@ async function unlist(set: Api.PublishedCardSet) {
               <div class="title-row">
                 <!-- An expansion's own symbol, the way a printed box is filed.
                      Decorative: the name beside it already says which set. -->
-                <img v-if="set.icon" class="expansion-icon" :src="set.icon" alt="" />
+                <span
+                  v-if="set.icon"
+                  class="expansion-icon"
+                  :style="{ '--set-icon-url': `url(${set.icon})` }"
+                  aria-hidden="true"
+                ></span>
                 <h2>
                   <router-link
                     class="set-link"
@@ -417,23 +426,35 @@ async function unlist(set: Api.PublishedCardSet) {
                 <font-awesome-icon icon="thumbs-up" />
                 <span v-if="set.likes">{{ set.likes }}</span>
               </button>
-              <!-- There is nothing to import until a version has been approved,
-                   which only your own listing can fail to have. -->
-              <button
-                v-if="isListed(set)"
-                type="button"
-                class="go"
-                :disabled="busy === set.id"
-                @click="take(set)"
-              >
-                {{
-                  behind(set)
-                    ? t(`${K}updateTo`, { version: set.latestVersion })
-                    : isSubscribed(set)
-                      ? t(`${K}reimport`)
-                      : t(`${K}importToCollection`)
-                }}
-              </button>
+              <!-- There is nothing to take until a version has been approved,
+                   which only your own listing can fail to have. Two buttons,
+                   because following a set and owning a copy of it are two
+                   different things. -->
+              <template v-if="isListed(set)">
+                <button
+                  type="button"
+                  class="quiet"
+                  :disabled="busy === set.id"
+                  @click="take(set, 'import')"
+                >
+                  {{ t(`${K}importToCollection`) }}
+                </button>
+                <!-- Gone once you follow this version: a locked copy cannot
+                     have drifted, so there is nothing to take again. -->
+                <button
+                  v-if="!isSubscribed(set) || behind(set)"
+                  type="button"
+                  class="go"
+                  :disabled="busy === set.id"
+                  @click="take(set, 'subscribe')"
+                >
+                  {{
+                    behind(set)
+                      ? t(`${K}updateTo`, { version: set.latestVersion })
+                      : t(`${K}subscribeToSet`)
+                  }}
+                </button>
+              </template>
               <button
                 v-if="set.mine"
                 type="button"
@@ -575,12 +596,16 @@ async function unlist(set: Api.PublishedCardSet) {
   row-gap: 0.25rem;
 }
 
-/* Sized to the heading beside it rather than fixed, so the symbol stays in
-   proportion to the name whatever the type scale does. */
+/* A silhouette masked out of a solid fill rather than drawn as an image, so the
+   symbol takes the heading's colour exactly. Sized to the heading beside it
+   rather than fixed, so it stays in proportion whatever the type scale does. */
 .expansion-icon {
   align-self: center;
+  background: currentColor;
+  flex: none;
   height: 1.5em;
-  object-fit: contain;
+  -webkit-mask: var(--set-icon-url) center / contain no-repeat;
+  mask: var(--set-icon-url) center / contain no-repeat;
   width: 1.5em;
 }
 

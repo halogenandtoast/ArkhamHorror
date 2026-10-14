@@ -52,16 +52,18 @@
           / ApiV1ArkhamCustomCardSetR PUT DELETE
           /publish ApiV1ArkhamCustomCardSetPublishR POST
           /sync ApiV1ArkhamCustomCardSetSyncR POST
+          /unlock ApiV1ArkhamCustomCardSetUnlockR POST
           /share ApiV1ArkhamCustomCardSetShareR GET POST DELETE
           /share/#ArkhamCardSetShareAccessId ApiV1ArkhamCustomCardSetShareAccessR PUT
       /shared-card-sets/#Text ApiV1ArkhamSharedCardSetP:
         / ApiV1ArkhamSharedCardSetR GET
-        /copy ApiV1ArkhamSharedCardSetCopyR POST
+        /subscribe ApiV1ArkhamSharedCardSetSubscribeR POST
       /published-card-sets ApiV1ArkhamPublishedCardSetsP:
         / ApiV1ArkhamPublishedCardSetsR GET
         /#ArkhamPublishedCardSetId ApiV1ArkhamPublishedCardSetP:
           / ApiV1ArkhamPublishedCardSetR GET PUT DELETE
           /subscribe ApiV1ArkhamPublishedCardSetSubscribeR POST
+          /import ApiV1ArkhamPublishedCardSetImportR POST
           /like ApiV1ArkhamPublishedCardSetLikeR POST DELETE
       /homebrew/cards ApiV1ArkhamHomebrewCardsR GET
       /card/#CardCode ApiV1ArkhamCardR GET

@@ -309,30 +309,70 @@ export async function subscribeToSet(id: string, version?: number) {
   return published
 }
 
+/* The other way to take a published set: your own copy, editable, frozen where
+ * it was. Replaces a subscribed copy of the same listing, since nobody can hold
+ * both. */
+export async function importPublishedSet(id: string, version?: number) {
+  const published = await Api.importCardSet(id, version)
+  await loadLibrary(true)
+  return published
+}
+
 export async function syncSet(id: string) {
   const published = await Api.syncCustomCardSet(id)
   await loadLibrary(true)
   return published
 }
 
-/* Take a set somebody shared the link to. The server does the import, so the
- * cards never round-trip through here; the library is reloaded rather than
- * patched, because a copy taken again replaces every card in it. */
-export async function takeSharedSet(token: string) {
-  const shared = await Api.copySharedCardSet(token)
+/* Take a set somebody shared the link to. Subscribing is the only way: the copy
+ * is locked, so it stays what they shared, and subscribing again is how it
+ * catches up with them.
+ *
+ * The server does the import, so the cards never round-trip through here; the
+ * library is reloaded rather than patched, because taking a set again replaces
+ * every card in it. */
+export async function subscribeToSharedSet(token: string) {
+  const shared = await Api.subscribeToSharedCardSet(token)
   await loadLibrary(true)
   return shared
+}
+
+/* Take a followed set into your editor. Nothing is fetched -- the cards are
+ * already here -- so the set alone is replaced rather than the library
+ * reloaded. */
+export async function unlockSet(id: string) {
+  const set = await Api.unlockCustomCardSet(id)
+  upsertSet(set)
+  return set
 }
 
 /* Whether this set is being handed to anyone by link, and to how many people.
  * Both read off the set the server sent, so a row can say so without asking. */
 export const isShared = (set: LibrarySet) => set.shareToken !== null
 
-/* The other direction: a set somebody handed you by link, and whether they have
- * changed it since. Taking it again is the shared set's own page, not a button
- * here -- it replaces every card in the copy, which wants the sentence that page
- * has room for. */
+/* Whether this set follows somebody else's and so cannot be edited: its cards,
+ * its details, and a file imported over it are all refused by the server, and
+ * the builder hides the controls that would try. */
+export const isLocked = (set: LibrarySet) => set.locked
+
+/* Whether this set was handed to you by a link rather than taken from the
+ * marketplace, which decides what you may do with it beyond playing.
+ *
+ * A published set is public: a copy of one can be taken into your editor and
+ * exported like any set of yours. A shared one is the author's unpublished work,
+ * lent to a few people to try — so there is no editor copy and nothing to
+ * export, and passing the cards on stays the author's to do. The only ways out
+ * of one are to leave it or to delete it. */
 export const isFromShare = (set: LibrarySet) => set.sharedToken !== null
+
+/* Whether "Add to my editor" applies: a locked copy of something published. */
+export const canUnlock = (set: LibrarySet) => set.locked && !isFromShare(set)
+
+/* Whether the export controls are offered. Somebody else's unpublished work is
+ * not yours to hand on; everything else in your library is. */
+export const canExport = (set: LibrarySet) => !isFromShare(set)
+
+
 
 /* Whether a set is still following what it was published as, and whether there
  * is a newer version than the one it is on. */

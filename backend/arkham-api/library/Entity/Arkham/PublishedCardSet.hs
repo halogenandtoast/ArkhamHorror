@@ -42,11 +42,23 @@ reading them back off the author's set. A version has to stay importable exactly
 as published: someone who edited their copy and wants the published one back has
 to be able to take it again, and the author has meanwhile moved on.
 
-@ArkhamCardSetSubscription@ is one of your sets following a published one. It is
+@ArkhamCardSetSubscription@ is one of your sets taken from a published one. It is
 its own table rather than columns on @ArkhamCustomCardSet@ because the listing
 already points at that table, and pointing back would make the two modules import
-each other. The row is deleted rather than updated when the set is edited: what
-is in it is then not what was published.
+each other.
+
+It says two things. One is which set of yours is your copy of that listing, which
+is how taking it again replaces the copy you have rather than leaving you with
+two -- and is as true of an imported copy as a subscribed one. The other is
+@subscribed@: whether that copy still /follows/ the listing, in which case it is
+locked and catches up when you take it again, or has been taken into your editor,
+in which case it is an ordinary set of yours and the listing has nothing more to
+say about it.
+
+A set used to stop following by having this row deleted when it was edited, which
+lost the author's updates over a typo and never fired for the commonest edit of
+all -- saving a card, which went through a path that did not know to do it. A
+followed copy is locked now, so there is no edit to react to.
 
 @ArkhamCardSetSubmission@ is a version waiting to be reviewed, or the record of
 it having been. Publishing makes one; nothing is importable until someone has
@@ -98,6 +110,7 @@ ArkhamCardSetSubscription sql=arkham_card_set_subscriptions
   Id UUID default=uuid_generate_v4()
   customCardSetId ArkhamCustomCardSetId OnDeleteCascade
   publishedCardSetId ArkhamPublishedCardSetId OnDeleteCascade
+  subscribed Bool default=True
   version Int
   createdAt UTCTime
   updatedAt UTCTime

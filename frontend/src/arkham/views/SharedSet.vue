@@ -13,7 +13,7 @@
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import * as Api from '@/arkham/api'
-import { takeSharedSet } from '@/arkham/customCardLibrary'
+import { subscribeToSharedSet } from '@/arkham/customCardLibrary'
 import { setLinkLabel } from '@/arkham/setLink'
 import type { CustomCard } from '@/arkham/customCards'
 import CardOverlay from '@/arkham/components/CardOverlay.vue'
@@ -83,39 +83,35 @@ const shown = computed(() => {
 
 const have = computed(() => !!set.value?.setId)
 
+/* Which of the two you took it as. A subscribed copy is locked and catches up
+ * with the author; an imported one is an ordinary set of yours. */
+const following = computed(() => have.value && !!set.value?.subscribed)
+
 const changed = computed(() =>
   set.value ? new Date(set.value.updatedAt).toLocaleString() : '',
 )
 
-/* What the one button says. Taking a copy you already have is the way to catch
- * up with the author, so the same action is three different sentences depending
- * on where you stand. */
-const takeLabel = computed(() => {
-  if (!have.value) return t(`${K}takeShared`)
-  if (set.value?.behind) return t(`${K}takeSharedUpdate`)
-  return t(`${K}takeSharedAgain`)
-})
+/* Whether there is anything to take, and what the button says about it.
+ *
+ * Only two states, because a subscribed copy cannot be edited: you do not have
+ * it, or the author has moved on since you took it. Subscribing when neither is
+ * true would write the same cards over themselves, so there is no button for it
+ * -- the "Subscribed" chip is the whole of what there is to say. */
+const canTake = computed(() => !following.value || !!set.value?.behind)
 
-/* Asked before the copy is replaced, and only when there is something of theirs
- * to lose. The copy is the recipient's -- taking it again is allowed, it just
- * should not be a surprise. */
-const confirming = ref(false)
-
-function startTake() {
-  if (set.value?.edited) confirming.value = true
-  else take()
-}
+const subscribeLabel = computed(() =>
+  following.value ? t(`${K}takeSharedUpdate`) : t(`${K}subscribeShared`),
+)
 
 async function take() {
   if (!set.value) return
-  confirming.value = false
   busy.value = true
   status.value = null
   error.value = null
   const name = set.value.name
   try {
-    set.value = await takeSharedSet(props.token)
-    status.value = t(`${K}sharedTaken`, { name })
+    set.value = await subscribeToSharedSet(props.token)
+    status.value = t(`${K}sharedSubscribed`, { name })
   } catch (e) {
     console.error(e)
     error.value = t(`${K}sharedTakeFailed`)
@@ -159,8 +155,8 @@ async function take() {
             <MetaChip icon="link">{{ t(`${K}sharedChip`) }}</MetaChip>
             <MetaChip>{{ t(`${K}cardCount`, cards.length) }}</MetaChip>
             <MetaChip>{{ t(`${K}sharedChangedAt`, { date: changed }) }}</MetaChip>
-            <MetaChip v-if="have && !set.behind" tone="good" icon="circle-check">
-              {{ t(`${K}sharedHave`) }}
+            <MetaChip v-if="following" tone="good" icon="lock">
+              {{ t(`${K}sharedFollowing`) }}
             </MetaChip>
           </div>
 
@@ -177,20 +173,39 @@ async function take() {
           </a>
 
           <!-- An unpublished set, said plainly: these cards are being tried out
-               rather than finished, and they can change under you. -->
-          <p class="unpublished">
+               rather than finished, they can change under you, and they stay the
+               author's -- which is what the locked copy and the missing export
+               button would otherwise leave somebody guessing at. -->
+          <p v-if="!set.listing" class="unpublished">
             <font-awesome-icon icon="flask" />
             <span>{{ t(`${K}sharedUnpublished`) }}</span>
+          </p>
+          <p v-if="!set.mine && !set.listing" class="unpublished">
+            <font-awesome-icon icon="lock" />
+            <span>{{ t(`${K}sharedStaysTheirs`) }}</span>
+          </p>
+          <!-- Published since they were given the link, which changes what they
+               may do with it: a published set is public, so a copy of it can be
+               taken into the editor and exported. Subscribing from the
+               marketplace adopts the copy they already have rather than making
+               a second, but they have to know to go and do it. -->
+          <p v-if="!set.mine && set.listing" class="unpublished">
+            <font-awesome-icon icon="store" />
+            <span>
+              {{ t(`${K}sharedNowPublished`) }}
+              <router-link
+                :to="{ name: 'CardMarketplaceSet', params: { publishedId: set.listing } }"
+              >
+                {{ t(`${K}sharedSeeListing`) }}
+              </router-link>
+            </span>
           </p>
 
           <p v-if="have && set.behind" class="behind">
             <font-awesome-icon icon="refresh" />
-            <span>{{ t(`${K}sharedBehind`) }}</span>
+            <span>{{ t(`${K}${following ? 'sharedBehind' : 'sharedBehindImported'}`) }}</span>
           </p>
-          <p v-else-if="have && set.edited" class="behind">
-            <font-awesome-icon icon="pen" />
-            <span>{{ t(`${K}sharedEdited`) }}</span>
-          </p>
+
         </div>
 
         <div class="actions">
@@ -205,32 +220,24 @@ async function take() {
             <font-awesome-icon icon="layer-group" />
             {{ t(`${K}sharedOpenCopy`) }}
           </router-link>
-          <!-- The author following their own link has nothing to take. -->
+          <!-- One way to take it, and it follows the author: the copy is locked,
+               so it stays what they shared, and this is also how it catches up.
+               The marketplace's other way -- a copy of your own, to edit and
+               keep -- is not offered, because this set is unpublished and
+               passing it on is the author's to do.
+
+               The author following their own link has nothing to take. -->
           <button
-            v-if="!set.mine"
+            v-if="!set.mine && canTake"
             type="button"
             class="go"
             :disabled="busy || !cards.length"
-            @click="startTake"
+            @click="take"
           >
-            {{ takeLabel }}
+            {{ subscribeLabel }}
           </button>
         </div>
       </header>
-
-      <!-- Replacing a copy they have changed, which is the only thing here that
-           can lose somebody work. -->
-      <section v-if="confirming" class="confirm-take">
-        <p>{{ t(`${K}sharedReplaceWarning`) }}</p>
-        <div class="confirm-actions">
-          <button type="button" class="confirm" :disabled="busy" @click="take">
-            {{ t(`${K}sharedReplaceConfirm`) }}
-          </button>
-          <button type="button" class="cancel" @click="confirming = false">
-            {{ t(`${K}publishCancel`) }}
-          </button>
-        </div>
-      </section>
 
       <p v-if="!cards.length" class="empty-state">
         <font-awesome-icon icon="layer-group" />
@@ -394,6 +401,7 @@ async function take() {
 /* The marketplace's own button language, so the two pages that hand you a set
    look like the same decision. */
 button.go,
+button.quiet,
 .confirm-actions button {
   align-items: center;
   border-radius: 5px;
@@ -425,6 +433,7 @@ button.go,
   }
 }
 
+button.quiet,
 .confirm-actions .cancel {
   background: none;
   border: 1px solid var(--box-border);

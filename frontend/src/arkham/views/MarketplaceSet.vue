@@ -9,7 +9,7 @@
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import * as Api from '@/arkham/api'
-import { subscribeToSet } from '@/arkham/customCardLibrary'
+import { importPublishedSet, subscribeToSet } from '@/arkham/customCardLibrary'
 import { isBadLink, setLinkLabel } from '@/arkham/setLink'
 import type { CustomCard } from '@/arkham/customCards'
 import CardOverlay from '@/arkham/components/CardOverlay.vue'
@@ -173,16 +173,25 @@ async function commitEdit() {
   }
 }
 
-async function take() {
+/* The two ways to take a published set, which are different things.
+ *
+ * Subscribing follows the listing: the copy is locked, so it stays what was
+ * published, and subscribing again is how it catches up. Importing hands over an
+ * ordinary set of your own -- editable, frozen at this version, hearing nothing
+ * more from here. A card code is unique per account, so nobody holds both and
+ * each replaces the other. */
+async function take(how: 'subscribe' | 'import') {
   if (!listing.value) return
   busy.value = true
   status.value = null
   error.value = null
   const name = listing.value.name
+  const id = listing.value.id
   try {
-    await subscribeToSet(listing.value.id)
+    if (how === 'subscribe') await subscribeToSet(id)
+    else await importPublishedSet(id)
     await load()
-    status.value = t(`${K}imported_`, { name })
+    status.value = t(`${K}${how === 'subscribe' ? 'subscribed_' : 'imported_'}`, { name })
   } catch (e) {
     console.error(e)
     error.value = t(`${K}subscribeFailed`)
@@ -232,7 +241,7 @@ async function take() {
             <MetaChip>{{ t(`${K}cardCount`, cards.length) }}</MetaChip>
             <MetaChip v-if="listing.likes" icon="thumbs-up">{{ listing.likes }}</MetaChip>
             <MetaChip>{{ t(`${K}publishedAt`, { date: published }) }}</MetaChip>
-            <MetaChip v-if="isSubscribed" tone="good" icon="circle-check">
+            <MetaChip v-if="isSubscribed" tone="good" icon="lock">
               {{ t(`${K}subscribedBadge`, { version: listing.subscribedVersion }) }}
             </MetaChip>
           </div>
@@ -317,16 +326,32 @@ async function take() {
             <font-awesome-icon icon="thumbs-up" />
             <span v-if="listing.likes">{{ listing.likes }}</span>
           </button>
-          <!-- Nothing to import until a version has been approved. -->
-          <button v-if="isListed" type="button" class="go" :disabled="busy" @click="take">
-            {{
-              behind
-                ? t(`${K}updateTo`, { version: listing.latestVersion })
-                : isSubscribed
-                  ? t(`${K}reimport`)
-                  : t(`${K}importToCollection`)
-            }}
-          </button>
+          <!-- Nothing to take until a version has been approved. Two buttons
+               because they are two things: one follows the listing and stays
+               locked to what was published, the other hands you a set of your
+               own to build on. -->
+          <template v-if="isListed">
+            <button type="button" class="quiet" :disabled="busy" @click="take('import')">
+              {{ t(`${K}importToCollection`) }}
+            </button>
+            <!-- Nothing to subscribe to when you already follow this version:
+                 a locked copy cannot have drifted, so taking it again would
+                 write the same cards over themselves. The chip says you have
+                 it; the button comes back when the author publishes a new one. -->
+            <button
+              v-if="!isSubscribed || behind"
+              type="button"
+              class="go"
+              :disabled="busy"
+              @click="take('subscribe')"
+            >
+              {{
+                behind
+                  ? t(`${K}updateTo`, { version: listing.latestVersion })
+                  : t(`${K}subscribeToSet`)
+              }}
+            </button>
+          </template>
         </div>
       </header>
 

@@ -43,16 +43,24 @@ replaces the copy they have rather than leaving them with two. It goes null
 rather than taking the row with it if they delete that copy, because they still
 have access and can take it again.
 
-@takenAt@ is when that copy was last written, and is what both sides of the
-"is anything out of date" question are answered from: the author has changes if
-their set's @updatedAt@ is newer, and the copy has been edited since if the
-copy's is. Neither is a flag anybody maintains, which is why saving a card has
-to touch the set row it belongs to.
+@subscribed@ is whether the copy still follows this set. Taking a shared set is
+only ever subscribing -- it is unpublished, so a copy of it stays the author's --
+and the flag goes off when the marketplace takes the copy over, which it can once
+the author publishes the set. The row stays either way, because it is also the
+record of which set of theirs is their copy of this one, and a card code is
+unique per account, so there is only ever the one.
+
+@takenAt@ is when that copy was last written, and is what "is there anything to
+take" is answered from: the author has changes if their set's @updatedAt@ is
+newer. Not a flag anybody maintains, which is why saving a card has to touch the
+set row it belongs to. The other direction -- the copy having been edited since
+-- was once asked here too and cannot happen now: a copy is locked.
 
 @revokedAt@ is the author cutting one person off without disturbing the link
 everyone else is holding. It takes nothing away from them: the cards they have
 taken are in their own library, and all this stops is reading the set and taking
-it again.
+it again. It also unlocks their copy, because a lock whose point is staying
+faithful to a source means nothing once the source is out of reach.
 -}
 mkEntity
   $(discoverEntities)
@@ -72,6 +80,7 @@ ArkhamCardSetShareAccess sql=arkham_card_set_share_accesses
   cardSetShareId ArkhamCardSetShareId OnDeleteCascade
   userId UserId OnDeleteCascade
   customCardSetId ArkhamCustomCardSetId Maybe OnDeleteSetNull
+  subscribed Bool default=True
   takenAt UTCTime Maybe
   revokedAt UTCTime Maybe
   createdAt UTCTime

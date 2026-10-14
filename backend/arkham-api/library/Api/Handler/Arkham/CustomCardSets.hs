@@ -1,5 +1,6 @@
 module Api.Handler.Arkham.CustomCardSets (
   getApiV1ArkhamCustomCardSetsR,
+  postApiV1ArkhamCustomCardSetUnlockR,
   postApiV1ArkhamCustomCardSetsR,
   postApiV1ArkhamCustomCardSetsImportR,
   putApiV1ArkhamCustomCardSetR,
@@ -12,9 +13,9 @@ import Api.Handler.Arkham.CustomCards (
   ownedCardSet,
   persistCard,
   prepareCardForSet,
+  requireUnlocked,
   setDeclarationsFromCards,
   stampSet,
-  unsubscribeSet,
  )
 import Arkham.Card.CustomCard (CustomCard (..))
 import Arkham.Custom.SetDefs qualified as SetDefs
@@ -22,6 +23,7 @@ import Auth.ApiKey qualified as ApiKey
 import Data.Aeson.Types (parseMaybe)
 import Data.Text qualified as T
 import Data.Time.Clock
+import Data.Traversable (for)
 import Database.Persist qualified as DB
 import Import hiding ((==.))
 import Import qualified as P
@@ -63,9 +65,17 @@ data CustomCardSetResponse = CustomCardSetResponse
   -}
   , customCardSetResponseCardCount :: Int
   , customCardSetResponseUpdatedAt :: UTCTime
+  , customCardSetResponseLocked :: Bool
+  {- ^ Whether this set follows somebody else's -- a marketplace listing, or a
+  link somebody sent you -- and so cannot be edited. The three ways a set is
+  changed (its cards, its details, a file imported over it) all refuse, and the
+  way out is "Add to my editor", which makes it an ordinary set of yours.
+  -}
   , customCardSetResponsePublishedCardSetId :: Maybe ArkhamPublishedCardSetId
   {- ^ The marketplace listing this set follows, and where it stands with it.
-  Absent once the set has been edited, which is what stops it updating.
+  Absent on a copy that was imported rather than subscribed, and on one since
+  taken into the editor: both are yours, and a listing has nothing more to say
+  about either.
   -}
   , customCardSetResponseSubscribedVersion :: Maybe Int
   , customCardSetResponseLatestVersion :: Maybe Int
@@ -97,13 +107,18 @@ data CustomCardSetResponse = CustomCardSetResponse
   from one three people are playing with.
   -}
   , customCardSetResponseSharedToken :: Maybe Text
-  {- ^ The share link this set is a copy of, for a set somebody handed you.
+  {- ^ The share link this set follows, for a set somebody handed you.
   The other direction from 'customCardSetResponseShareToken', which is a link
   of your own: this is the way back to the page that can take the author's
   newest cards, and the only way back, since the url arrived in a chat window.
 
   Absent once the author stops sharing or removes you, because there is then
   nothing at the other end of it.
+  -}
+  , customCardSetResponseSharedBy :: Maybe Text
+  {- ^ Who shared it. The one thing a copy taken through a link has to say for
+  itself that nothing else on the row can: a set with no author named is a set
+  that arrived from nowhere.
   -}
   , customCardSetResponseSharedBehind :: Bool
   {- ^ The author has changed that set since you took it. The same comparison
@@ -184,7 +199,7 @@ normalizeTokens userId raw = case parseMaybe parseJSON raw of
   Nothing -> invalidArgs ["A set's tokens have to be a list of {slug, name, image}"]
   Just (tokens :: [SetDefs.CustomSetToken]) -> do
     let named = [t | t <- tokens, not (T.null (T.strip (SetDefs.customSetTokenSlug t)))]
-    hosted <- forM named \t -> do
+    hosted <- for named \t -> do
       image <- traverse (hostArt userId) (SetDefs.customSetTokenImage t)
       pure t {SetDefs.customSetTokenImage = image}
     pure $ toJSON hosted
@@ -263,37 +278,65 @@ submissionFor setId = do
           [P.Desc ArkhamCardSetSubmissionVersion]
   pure (listing, submission)
 
-{- | The share link this set was taken through, and whether the author has moved
-on since -- for a set somebody handed you rather than one of your own.
+{- | The share link this set follows, and whether the author has moved on since.
 
 Found by the access row pointing at this set, which is what records that the copy
-was taken through a link at all. A revoked row answers with nothing: the link is
-dead for this account, so offering the way back to it would only be a 404.
+was taken through a link at all. Only a row that is still subscribed and not
+revoked: a copy that was imported, or taken into the editor, is an ordinary set
+of the caller's and follows nothing, and a dead link is nothing to send anyone
+back to.
 -}
-sharedSource :: ArkhamCustomCardSetId -> Handler (Maybe Text, Bool)
+sharedSource :: ArkhamCustomCardSetId -> Handler SharedFrom
 sharedSource setId = do
   access <-
     runDB
       $ P.selectFirst
         [ ArkhamCardSetShareAccessCustomCardSetId P.==. Just setId
+        , ArkhamCardSetShareAccessSubscribed P.==. True
         , ArkhamCardSetShareAccessRevokedAt P.==. Nothing
         ]
         []
   case access of
-    Nothing -> pure (Nothing, False)
+    Nothing -> pure $ SharedFrom Nothing Nothing False
     Just (Entity _ row) -> do
       share <- runDB $ DB.get (arkhamCardSetShareAccessCardSetShareId row)
       source <- maybe (pure Nothing) (runDB . DB.get . arkhamCardSetShareCustomCardSetId) share
+      author <- maybe (pure Nothing) (runDB . DB.get . arkhamCustomCardSetUserId) source
       let behind = fromMaybe False do
             at <- arkhamCardSetShareAccessTakenAt row
             set <- source
             pure $ arkhamCustomCardSetUpdatedAt set > at
-      pure (arkhamCardSetShareToken <$> share, behind)
+      pure
+        $ SharedFrom
+          (arkhamCardSetShareToken <$> share)
+          (userUsername <$> author)
+          behind
+
+{- | Where a set in somebody's collection came from, when it came from a link.
+
+Everything null and false for a set of their own, which is almost all of them.
+-}
+data SharedFrom = SharedFrom
+  { sharedFromToken :: Maybe Text
+  , sharedFromAuthor :: Maybe Text
+  , sharedFromBehind :: Bool
+  }
 
 setResponse :: Entity ArkhamCustomCardSet -> Handler CustomCardSetResponse
 setResponse (Entity setId row) = do
   cardCount <- runDB $ P.count [ArkhamCustomCardCustomCardSetId P.==. setId]
-  subscription <- runDB $ P.getBy (UniqueCardSetSubscription setId)
+  {- Only a subscription that is still followed. The row outlives that -- it is
+  also "this set of mine is my copy of that listing", which is how taking it
+  again replaces the copy rather than making a second one -- but a copy taken
+  into the editor is an ordinary set of yours, and nothing here should still be
+  reporting a version it is on or offering it an update. -}
+  subscription <-
+    runDB
+      $ P.selectFirst
+        [ ArkhamCardSetSubscriptionCustomCardSetId P.==. setId
+        , ArkhamCardSetSubscriptionSubscribed P.==. True
+        ]
+        []
   -- What a subscriber can update to is the newest *approved* version: an author's
   -- unreviewed submission is not an update, and is not importable.
   latest <- case subscription of
@@ -312,7 +355,8 @@ setResponse (Entity setId row) = do
           [ ArkhamCardSetShareAccessCardSetShareId P.==. shareId
           , ArkhamCardSetShareAccessRevokedAt P.==. Nothing
           ]
-  (sharedToken, sharedBehind) <- sharedSource setId
+  sharedFrom <- sharedSource setId
+  let locked = isJust subscription || isJust (sharedFromToken sharedFrom)
   pure
     $ CustomCardSetResponse
       { customCardSetResponseId = setId
@@ -326,6 +370,7 @@ setResponse (Entity setId row) = do
       , customCardSetResponseKeywords = arkhamCustomCardSetKeywords row
       , customCardSetResponseCardCount = cardCount
       , customCardSetResponseUpdatedAt = arkhamCustomCardSetUpdatedAt row
+      , customCardSetResponseLocked = locked
       , customCardSetResponsePublishedCardSetId =
           arkhamCardSetSubscriptionPublishedCardSetId . entityVal <$> subscription
       , customCardSetResponseSubscribedVersion =
@@ -342,8 +387,9 @@ setResponse (Entity setId row) = do
           arkhamPublishedCardSetApprovedVersion . entityVal =<< listing
       , customCardSetResponseShareToken = arkhamCardSetShareToken . entityVal <$> share
       , customCardSetResponseShareCount = shared
-      , customCardSetResponseSharedToken = sharedToken
-      , customCardSetResponseSharedBehind = sharedBehind
+      , customCardSetResponseSharedToken = sharedFromToken sharedFrom
+      , customCardSetResponseSharedBy = sharedFromAuthor sharedFrom
+      , customCardSetResponseSharedBehind = sharedFromBehind sharedFrom
       }
 
 getApiV1ArkhamCustomCardSetsR :: Handler [CustomCardSetResponse]
@@ -403,10 +449,9 @@ keyword with nothing to say what it means. Neither the description nor the link
 nor the icon is stamped onto the cards: they describe the set, and a card on its
 own is not the set.
 
-Renaming or changing a declaration stops the set following a published one --
-what is in it is then not what was published. Rewriting only the description,
-the link or the icon does not: nothing about the cards has changed, and taking
-someone's updates away for editing a blurb would be a trap.
+A set that follows somebody else's is refused outright, blurb and all: it is
+their set, and what it says about itself is theirs to write. "Add to my editor"
+is the way to make it yours.
 -}
 putApiV1ArkhamCustomCardSetR :: ArkhamCustomCardSetId -> Handler CustomCardSetResponse
 putApiV1ArkhamCustomCardSetR setId = do
@@ -414,6 +459,7 @@ putApiV1ArkhamCustomCardSetR setId = do
   post <- requireCheckJsonBody
   name <- requireName (setNameName post)
   row <- ownedCardSet userId setId
+  requireUnlocked setId
   now <- liftIO getCurrentTime
 
   clash <- runDB $ P.getBy (UniqueUserCustomCardSetName userId name)
@@ -451,8 +497,7 @@ putApiV1ArkhamCustomCardSetR setId = do
           , arkhamCustomCardSetUpdatedAt = now
           }
       -- Everything the cards carry a copy of. Any of it changing is the cards
-      -- changing, so it is both what has to be re-stamped and what stops the
-      -- set following a published one.
+      -- changing, so it is what has to be re-stamped onto them.
       restamp =
         name
           /= arkhamCustomCardSetName row
@@ -463,7 +508,6 @@ putApiV1ArkhamCustomCardSetR setId = do
 
   cards <- runDB $ P.selectList [ArkhamCustomCardCustomCardSetId P.==. setId] []
   runDB do
-    when restamp $ unsubscribeSet setId
     P.update
       setId
       [ ArkhamCustomCardSetName P.=. name
@@ -500,6 +544,43 @@ deleteApiV1ArkhamCustomCardSetR setId = do
     -- does not depend on the constraint being in place in a given database.
     P.deleteWhere [ArkhamCustomCardCustomCardSetId P.==. setId]
     P.delete setId
+
+{- | Take a followed set into your editor: stop following it, and keep the cards.
+
+The way out of a locked copy of a /published/ set, and the reason locking one is
+not a trap. What you have becomes an ordinary set of yours -- editable,
+publishable, shareable -- and stops hearing from the listing. The cards do not
+move and nothing is fetched: they are already here, and the only thing that
+changes is that this copy no longer claims to be what was published.
+
+The subscription row stays, with the flag off, because it is also "this set of
+mine is my copy of that listing" -- so subscribing again replaces this copy
+rather than leaving you with two under a numbered name, which a card code being
+unique per account would not let you keep anyway.
+
+A copy taken from a share link is refused. That set is unpublished: it was handed
+to a few people to try, not given away, and an editable copy of it is a copy that
+can be exported and passed on. Nothing here is the author's loss to take -- the
+only ways out of a shared copy are to leave it as it is or to delete it, and the
+author is the only person who can hand the cards on.
+
+Asking for a set that follows nothing is already the outcome, so it is a no-op
+rather than an error: the client is trying to end up with a set it can edit.
+-}
+postApiV1ArkhamCustomCardSetUnlockR :: ArkhamCustomCardSetId -> Handler CustomCardSetResponse
+postApiV1ArkhamCustomCardSetUnlockR setId = do
+  userId <- callerUserId <$> getScopedCaller [ApiKey.cardsWrite]
+  row <- ownedCardSet userId setId
+  sharedFrom <- sharedSource setId
+  when (isJust (sharedFromToken sharedFrom))
+    $ permissionDenied
+      "That set was shared with you rather than published. It stays the author's."
+  now <- liftIO getCurrentTime
+  runDB
+    $ P.updateWhere
+      [ArkhamCardSetSubscriptionCustomCardSetId P.==. setId]
+      [ArkhamCardSetSubscriptionSubscribed P.=. False, ArkhamCardSetSubscriptionUpdatedAt P.=. now]
+  setResponse $ Entity setId row
 
 {- | Import a whole set at once, replacing one already here.
 
@@ -539,6 +620,9 @@ postApiV1ArkhamCustomCardSetsImportR = do
   now <- liftIO getCurrentTime
 
   existing <- findSet userId name importSetSourceCode
+  -- A file replaces a set outright, which is exactly what must not happen to a
+  -- copy that is following somebody else's.
+  for_ existing \(Entity foundId _) -> requireUnlocked foundId
 
   {- A set matched by its pack id can be carrying a name some *other* set of
   yours already holds -- the pack was renamed to something you had used. Renaming

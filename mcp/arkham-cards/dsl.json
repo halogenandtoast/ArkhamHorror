@@ -724,8 +724,29 @@
         "cardCode"
       ],
       "valueShape": null,
-      "doc": "Gather a card from an encounter set into a deck.\n\n\"Gather X from the Y encounter set\" is a setup instruction, and setup is over\nby the time a card in play can act, so the nearest honest equivalent is to\nshuffle the card in where it would have ended up.",
+      "doc": "",
       "via": []
+    },
+    {
+      "step": "seal",
+      "handler": "runSeal",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "on",
+        "tokens",
+        "release"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "target"
+      ],
+      "valueShape": null,
+      "doc": "Seal chaos tokens on this card, or let the sealed ones go.\n\nTwo halves of the same thing, which is why they are one step: a card that seals\ntokens nearly always says when it stops, and splitting them would leave the\nauthor holding the join. @tokens@ names the ones to seal; @release@ with no\ntokens lets go of everything this card is holding, which is what \"release each\ntoken on it\" means.\n\nSealing is two messages and both are needed: the first takes the token out of\nthe bag, the second records where it went -- a token taken out and not recorded\nis simply gone.",
+      "via": [
+        "stepTarget",
+        "getSealedOn"
+      ]
     },
     {
       "step": "customize",
@@ -830,6 +851,7 @@
       "unique",
       "concat",
       "reverse",
+      "take",
       "count",
       "sum",
       "max",

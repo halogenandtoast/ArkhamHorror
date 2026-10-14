@@ -81,6 +81,7 @@ type StepKind =
   | 'discover'
   | 'setAside'
   | 'activateAbility'
+  | 'seal'
   /* Not a step the engine runs, but a slot standing where a list of steps goes.
    * Only ever offered while editing a KEYWORD's behaviour, where the steps a
    * card supplies are spliced in at this point. */
@@ -124,6 +125,7 @@ const KIND_LABELS: Record<StepKind, string> = {
   discover: 'Discover clues',
   setAside: 'Set cards aside',
   activateAbility: "Activate another card's ability",
+  seal: 'Seal chaos tokens',
   slot: 'Whatever the card fills in',
 }
 
@@ -166,6 +168,7 @@ function kindOf(step: any): StepKind {
     'discover',
     'setAside',
     'activateAbility',
+    'seal',
   ] as StepKind[]
   // A slot is written as the bare `$name` the template substitutes, so it is a
   // string where every other step is an object.
@@ -223,6 +226,7 @@ const blankStep = (kind: StepKind) =>
     discover: { discover: { amount: 1 } },
     setAside: { setAside: {} },
     activateAbility: { activateAbility: { matcher: null, modifiers: [] } },
+    seal: { seal: { tokens: null } },
     slot: `$${props.slotSteps?.[0]?.name ?? ''}`,
   })[kind]
 
@@ -268,6 +272,7 @@ const KIND_HELP: Record<StepKind, string> = {
   discover: 'Discovers clues, with the id everything reacting to a discovery is keyed on.',
   setAside: 'Makes copies of named cards in the set-aside zone, owned by an investigator.',
   activateAbility: "Offers every ability of a named shape on OTHER cards, and uses the one chosen.",
+  seal: 'Seals chaos tokens on this card, or releases the ones it is holding.',
   slot: 'Splices in the steps whichever card prints this keyword supplied.',
 }
 
@@ -2147,6 +2152,48 @@ const removeOption = (step: any, index: number, at: number) =>
             />
           </label>
         </div>
+      </template>
+
+      <template v-else-if="kindOf(step) === 'seal'">
+        <p class="summary">
+          Seals chaos tokens on this card, or lets go of the ones it is holding. Both halves are
+          here because a card that seals nearly always says when it stops.
+        </p>
+        <BoolField
+          label="release what it is holding"
+          :modelValue="!!step.seal?.release"
+          @update:modelValue="set(index, { ...step, seal: $event ? { release: true } : { tokens: null } })"
+        />
+        <ExpressionEditor
+          v-if="!step.seal?.release"
+          :queryKinds="queryKinds"
+          label="Which tokens"
+          expect="[ChaosToken]"
+          :bindings="scopeFor(index)"
+          :modelValue="step.seal?.tokens"
+          @update:modelValue="set(index, { ...step, seal: { ...step.seal, tokens: $event } })"
+        />
+        <p v-else class="hint">
+          Every token this card is holding, so "release each token on it" needs no list. Name
+          tokens below to release only some.
+        </p>
+        <ExpressionEditor
+          v-if="step.seal?.release"
+          :queryKinds="queryKinds"
+          label="Only these (optional)"
+          expect="[ChaosToken]"
+          :bindings="scopeFor(index)"
+          :modelValue="step.seal?.tokens"
+          @update:modelValue="set(index, { ...step, seal: { ...step.seal, tokens: $event } })"
+        />
+        <ValueEditor
+          optional
+          :bindings="scopeFor(index)"
+          type="Target"
+          label="On what (defaults to this card)"
+          :modelValue="step.seal?.on"
+          @update:modelValue="set(index, { ...step, seal: { ...step.seal, on: $event } })"
+        />
       </template>
 
       <template v-else-if="kindOf(step) === 'slot'">

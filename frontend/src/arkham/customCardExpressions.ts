@@ -276,7 +276,7 @@ export function expressionType(expr: any, bindings: Binding[] = []): string | un
   for (const key of ['count', 'sum', 'max', 'min', 'iconValue', 'add', 'subtract', 'multiply', 'divide']) {
     if (key in expr) return 'Int'
   }
-  for (const key of ['unique', 'reverse']) {
+  for (const key of ['unique', 'reverse', 'take']) {
     if (key in expr) return expressionType(expr[key], bindings)
   }
   if ('filter' in expr) return expressionType(expr.of, bindings)
@@ -366,6 +366,7 @@ const STAGE_NAMES = [
   'count',
   'unique',
   'reverse',
+  'take',
   'concat',
   'sum',
   'max',
@@ -465,6 +466,7 @@ export function stagesFor(from0: string | undefined): Stage[] {
       { name: 'count', label: 'how many there are', to: 'Int', template: { count: null } },
       { name: 'unique', label: 'without duplicates', to: from, template: { unique: null } },
       { name: 'reverse', label: 'reversed', to: from, template: { reverse: null } },
+      { name: 'take', label: 'the first few of them', to: from, template: { take: null, times: 1 } },
       {
         name: 'filter',
         label: 'only some of them',

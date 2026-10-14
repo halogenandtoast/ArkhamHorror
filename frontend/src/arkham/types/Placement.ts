@@ -24,6 +24,9 @@ export type Placement
   | { tag: "AttachedToLocation", contents: string }
   | { tag: "BetweenLocations", contents: [string, string] }
   | { tag: "AttachedToAsset", contents: [string, Placement | null] }
+  /** Attached to an event that stays in play, which is how an event can hold
+   * cards the way an asset can and give them back later. */
+  | { tag: "AttachedToEvent", contents: string }
   | { tag: "AsSwarm", swarmHost: string, swarmCard: Card }
   | { tag: "Limbo" }
   | { tag: "NextToAgenda" }
@@ -57,6 +60,7 @@ export const placementDecoder = JsonDecoder.oneOf<Placement>([
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AttachedToLocation"), contents: JsonDecoder.string() }, 'AttachedToLocation'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("BetweenLocations"), contents: JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.string()], 'BetweenLocationsContents') }, 'BetweenLocations'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AttachedToAsset"), contents: attachedToAssetContentsDecoder }, 'AttachedToAsset'),
+  JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AttachedToEvent"), contents: JsonDecoder.string() }, 'AttachedToEvent'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("InThreatArea"), contents: JsonDecoder.string() }, 'InThreatArea'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("FacedownInThreatArea"), contents: JsonDecoder.string() }, 'FacedownInThreatArea'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("InPlayArea"), contents: JsonDecoder.string() }, 'InPlayArea'),

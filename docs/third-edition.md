@@ -30,20 +30,18 @@ host starts it once every seat is taken (one user may hold several seats).
 Only a seat's holder can answer its questions; any seated player can undo, and
 use debug actions on tables created with debug on.
 
-Tables are **not** in Postgres. With Redis configured (production) they live
-there — `ah3e:table:<id>`, a capped undo history `ah3e:history:<id>`, and the
-index sets `ah3e:open` and `ah3e:user:<id>` — and expire after two weeks idle,
-so they survive refreshes, pod restarts and deploys. Writes are optimistic
-(`WATCH`/`MULTI`), so concurrent moves on different pods retry rather than
-clobber each other. Without Redis (default local dev) they live in process
-memory and vanish when the API restarts.
+Tables live in Postgres, one row each in `arkham_third_edition_tables`, with
+the undo history in `arkham_third_edition_history`. The whole table rides in a
+`payload` jsonb column -- the engine owns that shape and changes it often, so
+only what the lobby queries (host, started, version) is lifted out beside it.
+An update takes the row's write lock for its transaction, so two pods answering
+the same table queue up rather than race. A table nobody has touched in thirty
+days is deleted, swept along by the next table anyone creates.
 
-A table can be exported whole (`GET /api/v1/3ed/tables/<id>/export`: the stored
-table, engine state and all, not the game *view*) and loaded back as a new one
-(`POST /api/v1/3ed/tables/import`), where the loader hosts it and holds every
-seat. Filing a bug (`POST .../file-bug`) puts that same export in the Arkham bug
-bucket and hands back its URL for the GitHub issue; the upload itself is shared
-with the Arkham endpoint in `Api/BugUpload.hs`.
+They used to live in Redis (`ah3e:table:<id>` and friends), which cost a game
+every time the key was evicted under `allkeys_lru`, expired, or failed to
+decode after a deploy. `importRedisTables` brings any that are still there
+across at startup, once; it and `newRedisStore` can go a deploy or two later.
 
 Every change is published to the table's room (Redis channel
 `ah3e-<table id>`), whose websocket is a read-only feed; moves go over REST.
@@ -72,9 +70,11 @@ this touches the Arkham rooms, their Redis registry, or the heartbeat.
 ## Removing it
 
 Delete `backend/ah3e`, `frontend-3ed`, `backend/arkham-api/library/ThirdEdition`,
-`Api/Handler/ThirdEdition.hs` and this file, then undo the small hooks:
+`Api/Handler/ThirdEdition.hs`, `Entity/Arkham/ThirdEditionTable.hs` and this
+file, drop the two `arkham_third_edition_*` tables, then undo the small hooks:
 
-- `backend/stack.yaml` (`- ah3e`), `backend/arkham-api/package.yaml` (`- ah3e`)
+- `backend/stack.yaml` (`- ah3e`), `backend/arkham-api/package.yaml` (`- ah3e`),
+  `Model.hs` (the `ThirdEditionTable` export)
 - `config/routes` (the `/3ed` block), `Foundation.hs` (`appThirdEditionRooms`,
   `appThirdEditionStore`), `Application.hs` (their setup and the handler import)
 - `Dockerfile` (the `frontend-3ed` stage, its `COPY --from`, the `ah3e`

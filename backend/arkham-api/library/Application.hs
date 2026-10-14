@@ -21,6 +21,7 @@ module Application (
   db,
 ) where
 
+import Api.Arkham.Archive (archiveSweeper, restoreWorker)
 import Api.Arkham.Helpers (
   applyMaintenance,
   loadMaintenance,
@@ -31,7 +32,6 @@ import Api.Arkham.Helpers (
   roomHeartbeat,
   roomSourcesFrom,
  )
-import Api.Arkham.Archive (archiveSweeper, restoreWorker)
 import Api.Arkham.Maintenance (maintenanceChannel)
 import Arkham.Metrics qualified as Metrics
 import Config
@@ -96,6 +96,7 @@ import Api.Handler.Arkham.Admin.Archives
 import Api.Handler.Arkham.Admin.GameStats
 import Api.Handler.Arkham.Admin.Metrics
 import Api.Handler.Arkham.Admin.Users
+import Api.Handler.Arkham.Archive
 import Api.Handler.Arkham.BuildConnection
 import Api.Handler.Arkham.CardSetSubmissions
 import Api.Handler.Arkham.Cards
@@ -103,7 +104,6 @@ import Api.Handler.Arkham.CustomCardSets
 import Api.Handler.Arkham.CustomCards
 import Api.Handler.Arkham.Decks
 import Api.Handler.Arkham.Events
-import Api.Handler.Arkham.Archive
 import Api.Handler.Arkham.Game.Bug
 import Api.Handler.Arkham.Game.Debug
 import Api.Handler.Arkham.Games
@@ -180,20 +180,19 @@ makeFoundation appSettings = do
       _ <- forkIO $ pubSubSupervisor appPubSubHealth conn ctrl
       pure $ RedisBroker conn ctrl
 
-  appThirdEditionStore <- case appMessageBroker of
-    RedisBroker conn _ -> ThirdEdition.newRedisStore conn
-    WebSocketBroker -> ThirdEdition.newMemoryStore
-
   -- We need a log function to create a connection pool. We need a connection
   -- pool to create our foundation. And we need our foundation to get a
   -- logging function. To get out of this loop, we initially create a
   -- temporary foundation without a real connection pool, get a log function
   -- from there, and then create the real foundation.
-  let mkFoundation appConnPool = App {..}
+  let mkFoundation appConnPool appThirdEditionStore = App {..}
       -- The App {..} syntax is an example of record wild cards. For more
       -- information, see:
       -- https://ocharles.org.uk/blog/posts/2014-12-04-record-wildcards.html
-      tempFoundation = mkFoundation $ error "connPool forced in tempFoundation"
+      tempFoundation =
+        mkFoundation
+          (error "connPool forced in tempFoundation")
+          (error "thirdEditionStore forced in tempFoundation")
       logFunc = messageLoggerSource tempFoundation appLogger
 
   -- Create the database connection pool
@@ -206,7 +205,16 @@ makeFoundation appSettings = do
   -- Perform database migration using our application's logging settings.
   -- runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc
 
-  let foundation = mkFoundation pool
+  -- Third-edition tables are state, so they live in the database. Whatever is
+  -- still in Redis from before that was true is brought across once.
+  thirdEditionStore <- ThirdEdition.newPostgresStore pool
+  case appMessageBroker of
+    RedisBroker conn _ -> do
+      brought <- ThirdEdition.importRedisTables conn thirdEditionStore
+      when (brought > 0) $ putStrLn ("Imported " <> show brought <> " third-edition tables from Redis")
+    WebSocketBroker -> pure ()
+
+  let foundation = mkFoundation pool thirdEditionStore
 
   -- Per-pod heartbeat for the cross-server room registry: refreshes the
   -- 'arkham:rooms:seen' timestamps for any game this pod is still

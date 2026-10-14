@@ -9005,6 +9005,7 @@ library
       Entity.Arkham.PublishedCardSet
       Entity.Arkham.StatsRefresh
       Entity.Arkham.Step
+      Entity.Arkham.ThirdEditionTable
       Entity.Notification
       Entity.PasswordReset
       Entity.User

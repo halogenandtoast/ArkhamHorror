@@ -38,3 +38,4 @@ arkham_build_connections [users] 2026-10-11T00:00:00Z Claude <noreply@anthropic.
 arkham_game_archives [arkham_games users] 2026-10-12T00:00:00Z Claude <noreply@anthropic.com> # Undo history offloaded to object storage, and the way back
 add_features_to_users [users] 2026-10-13T00:00:00Z Claude <noreply@anthropic.com> # Per-account grants for features that are not general yet
 investigator_expansion_card_sets [add_urls_to_card_sets] 2026-10-13T01:00:00Z Claude <noreply@anthropic.com> # Expansion icon, custom tokens and custom keywords on a card set
+arkham_third_edition_tables [users] 2026-10-14T00:00:00Z Claude <noreply@anthropic.com> # Third-edition tables in the database, where a game in progress belongs

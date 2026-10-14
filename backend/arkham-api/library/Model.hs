@@ -23,6 +23,7 @@ import Entity.Arkham.GameArchive as X
 import Entity.Arkham.Player as X
 import Entity.Arkham.PublishedCardSet as X
 import Entity.Arkham.StatsRefresh as X
+import Entity.Arkham.ThirdEditionTable as X
 import Entity.Notification as X
 import Entity.PasswordReset as X
 import Entity.User as X

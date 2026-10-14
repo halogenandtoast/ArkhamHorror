@@ -2,32 +2,46 @@
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE NoFieldSelectors #-}
 
-{- | Where third-edition tables live. Not the database: in Redis when the app
-has one (production runs several pods, so a table must be visible from all of
-them), otherwise in this process. Either way a table outlives a page refresh,
-and in Redis it also outlives a deploy until it sits idle for 'tableTtl'.
+{- | Where third-edition tables live. Postgres, as of the store below: a game is
+state, not cache, and the Redis cluster it used to live in evicts under memory
+pressure ('allkeys_lru'), expires a quiet table after 'tableTtl' and loses one
+outright if a deploy changes the shape it decodes to.
+
+The Redis store is kept only for the bridge in 'importRedisTables'.
 
 Each table keeps a short history of earlier game states for undo.
 -}
 module ThirdEdition.Store (
   Store (..),
   HistoryChange (..),
-  newMemoryStore,
   newRedisStore,
+  newPostgresStore,
+  importRedisTables,
 ) where
 
 import AH3e.Game (Game)
-import Control.Concurrent.MVar (modifyMVar)
 import Control.Exception (throwIO)
-import Data.Aeson (FromJSON, decodeStrict, encode)
+import Data.Aeson (FromJSON, Value, decodeStrict, encode, toJSON)
+import Data.Aeson.Types (parseEither, parseJSON)
+import Data.ByteString qualified as BS
 import Data.List ((\\))
-import Data.Map.Strict qualified as Map
+import Data.Time (NominalDiffTime, UTCTime, addUTCTime, getCurrentTime)
 import Data.UUID (UUID)
 import Data.UUID qualified as UUID
-import Database.Persist.Sql (fromSqlKey)
+import Database.Persist qualified as P
+import Database.Persist.Sql (
+  ConnectionPool,
+  PersistValue (..),
+  Single (..),
+  SqlBackend,
+  fromSqlKey,
+  rawSql,
+  runSqlPool,
+  toPersistValue,
+ )
 import Database.Redis (Connection, Queued, RedisTx, TxResult (..))
 import Database.Redis qualified as R
-import Model (UserId)
+import Model
 import Relude
 import System.IO.Error (userError)
 import ThirdEdition.Table
@@ -54,36 +68,13 @@ data Store = Store
 historyLimit :: Int
 historyLimit = 100
 
+-- | How long a table survives with nobody touching it.
+staleAfter :: NominalDiffTime
+staleAfter = 30 * 24 * 60 * 60
+
 -- | An idle table is dropped after two weeks.
 tableTtl :: Integer
 tableTtl = 60 * 60 * 24 * 14
-
-newMemoryStore :: IO Store
-newMemoryStore = do
-  var <- newMVar (mempty :: Map UUID (Table, [Game]))
-  let withTables :: (Map UUID (Table, [Game]) -> IO (Map UUID (Table, [Game]), a)) -> IO a
-      withTables = modifyMVar var
-  pure
-    Store
-      { getTable = \tid -> fmap (second length) . Map.lookup tid <$> readMVar var
-      , insertTable = \t -> withTables \m -> pure (Map.insert t.id (t, []) m, ())
-      , updateTable = \tid f -> withTables \m -> case Map.lookup tid m of
-          Nothing -> pure (m, Left "No such table")
-          Just (t, hist) -> case f t (viaNonEmpty head hist) of
-            Left e -> pure (m, Left e)
-            Right (t', change) -> do
-              let hist' = applyHistory change hist
-              pure (Map.insert tid (t', hist') m, Right (t', length hist'))
-      , deleteTable = \tid -> withTables \m -> pure (Map.delete tid m, ())
-      , listTables = \uid -> do
-          tables <- map fst . Map.elems <$> readMVar var
-          pure ([t | t <- tables, not (started t)], [t | t <- tables, isSeated uid t])
-      }
- where
-  applyHistory = \case
-    KeepHistory -> id
-    PushHistory g -> take historyLimit . (g :)
-    PopHistory -> drop 1
 
 tableKey, historyKey :: UUID -> ByteString
 tableKey tid = "ah3e:table:" <> UUID.toASCIIBytes tid
@@ -196,3 +187,137 @@ newRedisStore conn =
 
 decodeJson :: FromJSON a => ByteString -> Maybe a
 decodeJson = decodeStrict
+
+-- ---------------------------------------------------------------- postgres ---
+
+{- | Tables in Postgres, one row each, with the undo history in rows of its own.
+
+An update takes the row's write lock for the length of its transaction rather
+than retrying optimistically the way the Redis store has to: two pods answering
+the same table queue up instead of racing, and the history rows move with the
+table in the same commit.
+-}
+newPostgresStore :: ConnectionPool -> IO Store
+newPostgresStore pool =
+  pure
+    Store
+      { getTable = \tid -> run do
+          mrow <- P.get (key tid)
+          case decodeRow =<< mrow of
+            Nothing -> pure Nothing
+            Just t -> Just . (t,) <$> historyDepth (key tid)
+      , insertTable = \t -> run do
+          now <- liftIO getCurrentTime
+          P.insertKey (key t.id) (rowFor t now)
+          -- A table nobody has touched in a month goes, history and all, as it did
+          -- under Redis's two-week expiry. New tables are rare, so this rides along
+          -- with one rather than wanting a scheduler of its own.
+          P.deleteWhere [ThirdEditionTableUpdatedAt P.<. addUTCTime (negate staleAfter) now]
+      , updateTable = \tid f -> run do
+          -- the lock is held until this transaction ends, so the read below and
+          -- the write that follows it see the same table
+          locked <- lockTable tid
+          case locked >>= decodeJsonValue of
+            Nothing -> pure (Left "No such table")
+            Just t -> do
+              prev <- latestHistory (key tid)
+              case f t prev of
+                Left e -> pure (Left e)
+                Right (t', change) -> do
+                  now <- liftIO getCurrentTime
+                  P.repsert (key t'.id) (rowFor t' now)
+                  applyHistory (key tid) change
+                  Right . (t',) <$> historyDepth (key tid)
+      , deleteTable = run . P.delete . key
+      , listTables = \uid -> run do
+          openRows <- P.selectList [ThirdEditionTableStarted P.==. False] []
+          mineRows :: [P.Entity ThirdEditionTable] <-
+            rawSql
+              "SELECT ?? FROM arkham_third_edition_tables \
+              \WHERE payload -> 'seats' @> ?::jsonb"
+              [PersistText ("[{\"user\":" <> show (fromSqlKey uid) <> "}]")]
+          let decode' :: [P.Entity ThirdEditionTable] -> [Table]
+              decode' = mapMaybe (decodeRow . P.entityVal)
+          pure (filter (not . started) (decode' openRows), decode' mineRows)
+      }
+ where
+  run :: ReaderT SqlBackend IO a -> IO a
+  run act = runSqlPool act pool
+
+  key = ThirdEditionTableKey
+
+  rowFor :: Table -> UTCTime -> ThirdEditionTable
+  rowFor t now = ThirdEditionTable t.host (started t) t.version (toJSON t) t.createdAt now
+
+  decodeRow = decodeJsonValue . (.payload)
+
+  historyDepth k = P.count [ThirdEditionHistoryTableId P.==. k]
+
+  latestHistory k = do
+    rows <-
+      P.selectList [ThirdEditionHistoryTableId P.==. k] [P.Desc ThirdEditionHistoryId, P.LimitTo 1]
+    pure (decodeJsonValue . (.game) . P.entityVal =<< listToMaybe rows)
+
+  applyHistory k = \case
+    KeepHistory -> pure ()
+    PushHistory g -> do
+      now <- liftIO getCurrentTime
+      _ <- P.insert (ThirdEditionHistory k (toJSON g) now)
+      -- the oldest states beyond the cap are of no use to anyone and the blobs are not small
+      keep <-
+        P.selectKeysList
+          [ThirdEditionHistoryTableId P.==. k]
+          [P.Desc ThirdEditionHistoryId, P.LimitTo historyLimit]
+      case keep of
+        [] -> pure ()
+        _ -> P.deleteWhere [ThirdEditionHistoryTableId P.==. k, ThirdEditionHistoryId P./<-. keep]
+    PopHistory -> do
+      newest <-
+        P.selectKeysList [ThirdEditionHistoryTableId P.==. k] [P.Desc ThirdEditionHistoryId, P.LimitTo 1]
+      traverse_ P.delete newest
+
+  -- SELECT ... FOR UPDATE: persistent has no combinator for it, and the lock is
+  -- the point of the query
+  lockTable :: UUID -> ReaderT SqlBackend IO (Maybe Value)
+  lockTable tid = do
+    rows <-
+      rawSql
+        "SELECT payload FROM arkham_third_edition_tables WHERE id = ? FOR UPDATE"
+        [toPersistValue tid]
+    pure (unSingle <$> listToMaybe rows)
+
+decodeJsonValue :: FromJSON a => Value -> Maybe a
+decodeJsonValue = rightToMaybe . parseEither parseJSON
+
+{- | Move whatever tables are still in Redis into the store, once, at startup.
+
+ponytail: a bridge, not a feature. Every table Redis is holding when the
+Postgres store ships would otherwise be unreachable; the undo history is left
+behind, since a game matters and a stack of its earlier states does not. Delete
+this (and the Redis store with it) a deploy or two later.
+-}
+importRedisTables :: Connection -> Store -> IO Int
+importRedisTables conn store = do
+  tids <- R.runRedis conn (scanTables R.cursor0 [])
+  length <$> filterM bring tids
+ where
+  scanTables cursor acc = do
+    -- the third argument is SCAN's TYPE filter, which we have no use for
+    res <-
+      R.scanOpts
+        cursor
+        R.defaultScanOpts {R.scanMatch = Just "ah3e:table:*", R.scanCount = Just 200}
+        Nothing
+    case res of
+      Left _ -> pure acc
+      Right (cursor', keys) -> do
+        let acc' = acc <> mapMaybe (UUID.fromASCIIBytes <=< BS.stripPrefix "ah3e:table:") keys
+        if cursor' == R.cursor0 then pure acc' else scanTables cursor' acc'
+  bring tid = do
+    here <- store.getTable tid
+    case here of
+      Just _ -> pure False
+      Nothing ->
+        R.runRedis conn (R.get ("ah3e:table:" <> UUID.toASCIIBytes tid)) >>= \case
+          Right (Just raw) | Just t <- decodeJson raw -> True <$ store.insertTable t
+          _ -> pure False

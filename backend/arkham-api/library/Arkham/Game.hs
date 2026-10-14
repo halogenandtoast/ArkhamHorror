@@ -2245,6 +2245,12 @@ replaceMatcherSources ability = case abilitySource ability of
   ProxySource (TreacheryMatcherSource m) base -> do
     sources <- selectMap TreacherySource m
     pure $ map (\source -> ability {abilitySource = ProxySource source base}) sources
+  -- See the matching case in 'Arkham.Helpers.Action.getActionsWith', which is
+  -- what actually offers these abilities; this path only serves the ability
+  -- matcher DSL, and has no seat to anchor on, so `You` stands in.
+  ProxySource YouSource base -> do
+    sources <- selectMap InvestigatorSource You
+    pure $ map (\source -> ability {abilitySource = ProxySource source base}) sources
   _ -> pure [ability]
 
 getLocationsMatching
@@ -5413,6 +5419,8 @@ instance Projection Investigator where
       InvestigatorSideDeck -> pure investigatorSideDeck
       InvestigatorDecks -> pure investigatorDecks
       InvestigatorDiscard -> pure investigatorDiscard
+      InvestigatorDeckLength -> pure $ length (unDeck investigatorDeck)
+      InvestigatorDiscardLength -> pure $ length investigatorDiscard
       InvestigatorClass -> case investigatorForm of
         TransfiguredForm inner ->
           pure

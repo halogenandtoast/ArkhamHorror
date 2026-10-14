@@ -128,6 +128,12 @@ def resolve(type_expression: str, depth: int = 0) -> dict | None:
     parts = text.split()
     if len(parts) > 1 and parts[0] in known:
         return _substitute_args(known[parts[0]], parts[1:])
+    # `Field Investigator Int` is `Field Investigator` with its result type
+    # written out. The result is not part of the JSON -- a field is just its
+    # constructor name -- so the narrower spelling resolves to the entity's
+    # field list, which is what a card's field name has to be one of.
+    if len(parts) > 2 and parts[0] == "Field" and f"Field {parts[1]}" in known:
+        return known[f"Field {parts[1]}"]
     return None
 
 

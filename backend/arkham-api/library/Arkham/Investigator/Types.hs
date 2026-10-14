@@ -141,6 +141,13 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorSideDeck :: Field Investigator (Maybe [PlayerCard])
   InvestigatorDecks :: Field Investigator (Map InvestigatorDeckKey [Card])
   InvestigatorDiscard :: Field Investigator [PlayerCard]
+  {- | How many cards are in the deck, and in the discard pile. The lists are
+  already readable; a card that asks "more cards in your discard than in your
+  deck" needs the counts as 'Int's, because that is what a calculation can be
+  built out of.
+  -}
+  InvestigatorDeckLength :: Field Investigator Int
+  InvestigatorDiscardLength :: Field Investigator Int
   InvestigatorClass :: Field Investigator ClassSymbol
   InvestigatorActionsTaken :: Field Investigator [[Action]]
   InvestigatorActionsPerformed :: Field Investigator [[Action]]
@@ -245,6 +252,8 @@ instance FromJSON (SomeField Investigator) where
     "InvestigatorDeck" -> pure $ SomeField InvestigatorDeck
     "InvestigatorDecks" -> pure $ SomeField InvestigatorDecks
     "InvestigatorDiscard" -> pure $ SomeField InvestigatorDiscard
+    "InvestigatorDeckLength" -> pure $ SomeField InvestigatorDeckLength
+    "InvestigatorDiscardLength" -> pure $ SomeField InvestigatorDiscardLength
     "InvestigatorClass" -> pure $ SomeField InvestigatorClass
     "InvestigatorActionsTaken" -> pure $ SomeField InvestigatorActionsTaken
     "InvestigatorActionsPerformed" -> pure $ SomeField InvestigatorActionsPerformed
@@ -306,11 +315,12 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorPlacement :: Placement
   , investigatorActionsTaken :: [[Action]]
   , investigatorActionsPerformed :: [[Action]]
-  , -- | Actions performed that the "same type of action" checks do not see.
-    -- They are still actions the investigator performed -- the
-    -- 'InvestigatorActionsPerformed' field hands both lists out together -- but
-    -- they are not what the next action is compared against.
-    investigatorIgnoredPerformedActions :: [[Action]]
+  , investigatorIgnoredPerformedActions :: [[Action]]
+  {- ^ Actions performed that the "same type of action" checks do not see.
+  They are still actions the investigator performed -- the
+  'InvestigatorActionsPerformed' field hands both lists out together -- but
+  they are not what the next action is compared against.
+  -}
   , investigatorRemainingActions :: Int
   , investigatorEndedTurn :: Bool
   , investigatorDeck :: Deck PlayerCard

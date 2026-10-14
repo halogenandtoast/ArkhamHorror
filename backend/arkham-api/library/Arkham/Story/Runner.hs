@@ -19,6 +19,7 @@ import Arkham.Story.Types as X
 import Arkham.Target as X
 
 import Arkham.Card.CardCode
+import Arkham.ChaosToken.Types (addSealedChaosToken)
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Scenario
 import Arkham.Metrics (withMetric)
@@ -81,7 +82,7 @@ instance RunMessage StoryAttrs where
     RemoveTokens _ target tType n | isTarget attrs target -> do
       pure $ attrs & tokensL %~ subtractTokens tType n
     SealedChaosToken token _ (isTarget attrs -> True) -> do
-      pure $ attrs & sealedChaosTokensL %~ (\ts -> if token `elem` ts then ts else token : ts)
+      pure $ attrs & sealedChaosTokensL %~ addSealedChaosToken token
     SealedChaosToken token _ _ -> do
       pure $ attrs & sealedChaosTokensL %~ filter (/= token)
     UnsealChaosToken token -> pure $ attrs & sealedChaosTokensL %~ filter (/= token)

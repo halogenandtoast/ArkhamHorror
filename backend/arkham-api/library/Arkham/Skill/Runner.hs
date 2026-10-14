@@ -39,7 +39,7 @@ instance RunMessage SkillAttrs where
                   IntMap.alter (Just . maybe (1, choices) (bimap (+ 1) (const choices))) i a.customizations
               }
     SealedChaosToken token _ (isTarget a -> True) -> do
-      pure $ a & sealedChaosTokensL %~ (token :)
+      pure $ a & sealedChaosTokensL %~ addSealedChaosToken token
     SealedChaosToken token _ _ -> do
       pure $ a & sealedChaosTokensL %~ filter (/= token)
     UnsealChaosToken token -> do

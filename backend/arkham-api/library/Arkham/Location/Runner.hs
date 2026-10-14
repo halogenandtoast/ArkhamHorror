@@ -30,7 +30,7 @@ import Arkham.Target as X
 import Arkham.Action qualified as Action
 import Arkham.Capability
 import Arkham.Card
-import Arkham.ChaosToken.Types (ChaosToken (..))
+import Arkham.ChaosToken.Types (ChaosToken (..), addSealedChaosToken)
 import Arkham.Classes.HasGame
 import Arkham.Constants
 import Arkham.Direction
@@ -142,7 +142,7 @@ instance RunMessage LocationAttrs where
       -- TODO: we may want life cycles around this, generally this might just be a bad idea
       pure $ updateLocation [upd] a
     SealedChaosToken token _ (isTarget a -> True) -> do
-      pure $ a & sealedChaosTokensL %~ (token :)
+      pure $ a & sealedChaosTokensL %~ addSealedChaosToken token
     SealedChaosToken token _ _ -> do
       pure $ a & sealedChaosTokensL %~ filter (/= token)
     PlacedChaosToken token lid | lid == locationId -> do

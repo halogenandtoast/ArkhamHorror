@@ -284,7 +284,7 @@ instance RunMessage AssetAttrs where
               }
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
     SealedChaosToken token _ (isTarget a -> True) -> do
-      pure $ a & sealedChaosTokensL %~ (\ts -> if token `elem` ts then ts else token : ts)
+      pure $ a & sealedChaosTokensL %~ addSealedChaosToken token
     SealedChaosToken token _ _ -> do
       pure $ a & sealedChaosTokensL %~ filter (/= token)
     UnsealChaosToken token -> runQueueT do

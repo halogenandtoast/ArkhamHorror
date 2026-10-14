@@ -64,6 +64,12 @@ instance Ord ChaosToken where
 instance Eq ChaosToken where
   (==) = (==) `on` chaosTokenId
 
+-- | Sealing a token that is already sealed here is not a second copy of it.
+addSealedChaosToken :: ChaosToken -> [ChaosToken] -> [ChaosToken]
+addSealedChaosToken token tokens
+  | token `elem` tokens = tokens
+  | otherwise = token : tokens
+
 instance ToGameLoggerFormat ChaosToken where
   format c = format c.face
 

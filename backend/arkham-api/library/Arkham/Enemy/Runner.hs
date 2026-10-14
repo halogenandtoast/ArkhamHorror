@@ -353,7 +353,7 @@ instance RunMessage EnemyAttrs where
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
     EndPhase -> pure $ a & movedFromHunterKeywordL .~ False
     SealedChaosToken token _ (isTarget a -> True) -> do
-      pure $ a & sealedChaosTokensL %~ (token :)
+      pure $ a & sealedChaosTokensL %~ addSealedChaosToken token
     SealedChaosToken token _ _ -> do
       pure $ a & sealedChaosTokensL %~ filter (/= token)
     UnsealChaosToken token -> do

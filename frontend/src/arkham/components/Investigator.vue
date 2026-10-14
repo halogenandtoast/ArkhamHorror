@@ -84,6 +84,7 @@ watch(() => props.playerId, () => {
         content: t('gameBar.viewBonded'),
         binding: "viewBonded",
         nested: 'view',
+        section: 'panels',
         action: () => toggleShowBonded()
       })
     } else {

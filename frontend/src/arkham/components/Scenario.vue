@@ -1102,6 +1102,7 @@ addEntry({
   content: t('gameBar.viewChaosBag'),
   binding: "viewChaosBag",
   nested: 'view',
+  section: 'panels',
   action: () => showChaosBag.value = !showChaosBag.value
 })
 
@@ -1110,14 +1111,16 @@ addEntry({
   icon: ViewColumnsIcon,
   content: t('gameBar.splitView'),
   nested: 'view',
+  section: 'layout',
   action: toggleSplitView
 })
 
 addEntry({
   id: "viewRemovedFromPlay",
   icon: ArchiveBoxXMarkIcon,
-  content: "View removed from Play",
+  content: t('gameBar.viewRemovedFromPlay'),
   nested: 'view',
+  section: 'panels',
   action: () => showRemovedFromPlay()
 })
 
@@ -1127,6 +1130,7 @@ addEntry({
   content: t('gameBar.rotateLayout'),
   binding: "rotateLayout",
   nested: 'view',
+  section: 'layout',
   action: () => {
     rotationSteps.value = (rotationSteps.value + 1) % 4
   }
@@ -1841,6 +1845,7 @@ watchEffect(() => {
       icon: EyeIcon,
       content: t('gameBar.showOutOfPlay'),
       nested: 'view',
+      section: 'panels',
       binding: 'showOutOfPlay',
       action: () => showOutOfPlay.value = !showOutOfPlay.value
     })

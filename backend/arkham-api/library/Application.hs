@@ -106,6 +106,7 @@ import Api.Handler.Arkham.Decks
 import Api.Handler.Arkham.Events
 import Api.Handler.Arkham.Game.Bug
 import Api.Handler.Arkham.Game.Debug
+import Api.Handler.Arkham.Game.LogExport
 import Api.Handler.Arkham.Games
 import Api.Handler.Arkham.Games.Admin
 import Api.Handler.Arkham.Investigators

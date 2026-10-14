@@ -31,6 +31,11 @@ import { ChevronDownIcon } from '@heroicons/vue/20/solid'
 button {
   background: none;
   border: 0;
+  /* base.css rounds every button by 6px. This one is a full-height tab in a flat
+     bar, and the rule in Game.vue that squares the rows cannot reach it: the
+     trigger is rendered here, so it carries this component's scope id and not
+     the bar's. */
+  border-radius: 0;
   display: flex;
   padding: 5px 10px;
   gap: 5px;

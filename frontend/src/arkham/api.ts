@@ -1156,6 +1156,72 @@ export const fetchLogBefore = async (gameId: string, beforeSeq: number): Promise
   return JsonDecoder.array(logRowDecoder, 'LogRow[]').decodePromise(data)
 }
 
+/* The scenarios a game's log covers, as step ranges, for the export dialog's
+ * scope picker. Empty for a game whose log predates the structured overhaul:
+ * there is no scenario banner row to find, so only the whole log can be
+ * exported. */
+export type LogExportSection = {
+  index: number
+  /* Absent when the banner row's payload would not decode: the client names the
+   * section from `cardCode`, or says it cannot. */
+  name: string | null
+  cardCode: string | null
+  fromStep: number
+  untilStep: number | null
+}
+
+const logExportSectionDecoder = JsonDecoder.object<LogExportSection>(
+  {
+    index: JsonDecoder.number(),
+    name: JsonDecoder.nullable(JsonDecoder.string()),
+    cardCode: JsonDecoder.nullable(JsonDecoder.string()),
+    fromStep: JsonDecoder.number(),
+    untilStep: JsonDecoder.nullable(JsonDecoder.number()),
+  },
+  'LogExportSection',
+)
+
+export const fetchLogSections = async (gameId: string): Promise<LogExportSection[]> => {
+  const { data } = await api.get(`arkham/games/${gameId}/log/sections`)
+  return JsonDecoder.array(logExportSectionDecoder, 'LogExportSection[]').decodePromise(data)
+}
+
+/* Which slice of the log to export. Both bounds absent is the whole game;
+ * `scenario` only names the slice in the exported file. */
+export type LogExportRange = {
+  fromStep?: number
+  untilStep?: number
+  scenario?: string
+}
+
+export type LogExport = {
+  gameName: string
+  scenario: string | null
+  rows: LogRow[]
+}
+
+/* The rows themselves, which the readable transcript is rendered from -- see
+ * logTranscript.ts for why that happens on this side. */
+export const fetchLogExport = async (gameId: string, range: LogExportRange): Promise<LogExport> => {
+  const { data } = await api.get(`arkham/games/${gameId}/log/export`, { params: range })
+  const rows = await JsonDecoder.array(logRowDecoder, 'LogRow[]').decodePromise(data.rows)
+  return { gameName: data.gameName, scenario: data.scenario ?? null, rows }
+}
+
+/* The same endpoint as a file to save, for the formats nothing has to render:
+ * the raw rows, or the server's own trace text. */
+export const fetchLogExportFile = async (
+  gameId: string,
+  range: LogExportRange,
+  format: 'json' | 'trace',
+): Promise<Blob> => {
+  const { data } = await api.get(`arkham/games/${gameId}/log/export`, {
+    params: { ...range, format },
+    responseType: 'blob',
+  })
+  return data
+}
+
 export const sayInLog = (gameId: string, investigatorId: string, text: string): Promise<void> =>
   /* The null is the speaker's name: the API fills it from the authenticated
    * session, so sending one here would be ignored anyway. */

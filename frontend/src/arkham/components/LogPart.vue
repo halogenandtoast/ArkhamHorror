@@ -11,7 +11,7 @@ import { computed } from 'vue'
 import { cardArt } from '@/arkham/cardImages'
 import { chaosTokenImage } from '@/arkham/types/ChaosToken'
 import { useDbCardStore } from '@/stores/dbCards'
-import { customCardDef, isCustomCardCode } from '@/arkham/customCards'
+import { logRefName as sharedRefName } from '@/arkham/logRefName'
 import type { LogPart, LogRef } from '@/arkham/types/GameLog'
 import { formatKey, logKeyTitle } from '@/arkham/types/Log'
 import { investigatorClass, splitRunes, type CssClassFlags } from '@/arkham/helpers'
@@ -24,34 +24,9 @@ const dbCards = useDbCardStore()
  * "<skill>-icon" as Investigator.vue and HistoryPanel.vue spell them. The
  * template renders that class rather than carrying its own glyph set. */
 
-/* The card database wins over the name the server sent.
- *
- * The narrator reads only messages, so it has no names to send and puts the
- * card code in `name` as a fallback. Resolving here is also better where the
- * server does have a name: this one is localized, and it follows a card whose
- * identity changed after the entry was written. */
+/* The name to show: see logRefName, which the transcript export shares. */
 function refName(ref: LogRef): string {
-  if (ref.cardCode) {
-    /* A custom card is in nobody's ArkhamDB index — look it up in the local
-     * registry instead, or a custom investigator renders as its '*'-prefixed
-     * code. */
-    if (isCustomCardCode(ref.cardCode)) {
-      const def = customCardDef(ref.cardCode)
-      if (def?.name?.title) return def.name.title
-    } else {
-      /* cardArt() strips the 'c' the engine prefixes onto a card code; the
-       * store is keyed without it, as Question.vue and useCardOptions do. */
-      const code = cardArt(ref.cardCode)
-      /* An act, agenda or double-sided card carries its side as a trailing
-       * letter (03047a), which ArkhamDB does not record separately -- the index
-       * is keyed on the bare 03047. getDbCard already tries an added 'a' for
-       * split-card fronts, so the missing direction is stripping one. Without
-       * this the log printed the raw code: "takes 1 damage from c03047a". */
-      const card = dbCards.getDbCard(code) ?? dbCards.getDbCard(code.replace(/[a-h]$/, ''))
-      if (card?.name) return card.name
-    }
-  }
-  return ref.name
+  return sharedRefName(ref, dbCards)
 }
 
 /* The art to show on hover. Prefers the specific copy, then the printed code,

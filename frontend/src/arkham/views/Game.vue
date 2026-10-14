@@ -24,10 +24,10 @@ import {
   BackwardIcon,
   BeakerIcon,
   BoltIcon,
+  BookOpenIcon,
   BugAntIcon,
   ClockIcon,
   DocumentArrowDownIcon,
-  DocumentTextIcon,
   EyeIcon,
   ExclamationTriangleIcon,
   FlagIcon,
@@ -109,6 +109,7 @@ import CardOverlay from '@/arkham/components/CardOverlay.vue'
 import CardView from '@/arkham/components/Card.vue'
 import MultiplayerLobby from '@/arkham/components/MultiplayerLobby.vue'
 import GameLog from '@/arkham/components/GameLog.vue'
+import ExportLogDialog from '@/arkham/components/ExportLogDialog.vue'
 import type { LogEntry, LogRow } from '@/arkham/types/GameLog'
 import {
   legacyLogEntry,
@@ -442,6 +443,7 @@ const playerId = ref<string | null>(null)
 const ready = ref(false)
 const resultQueue = ref<any>([])
 const showLog = ref(false)
+const showExportLog = ref(false)
 const showShortcuts = ref(false)
 const isMobileViewport = () =>
   typeof window !== 'undefined' && window.matchMedia('(max-width: 800px)').matches
@@ -788,6 +790,7 @@ addEntry({
   content: t('gameBar.viewSettings'),
   binding: 'viewSettings',
   nested: 'view',
+  section: 'preferences',
   action: () => (showSettings.value = !showSettings.value),
 })
 
@@ -797,7 +800,22 @@ addEntry({
   content: t('gameBar.viewHistory'),
   binding: 'viewHistory',
   nested: 'view',
+  section: 'panels',
   action: () => (showHistory.value = !showHistory.value),
+})
+
+/* Registered rather than written into the menu, so the View menu is built from
+   one list and the sections below do not have to special-case it. The key is
+   handled before `runMenuShortcut` ever sees it (it returns early), so naming
+   the binding here only labels the row -- it does not bind it twice. */
+addEntry({
+  id: 'shortcuts',
+  icon: BoltIcon,
+  content: t('gameBar.shortcuts'),
+  binding: 'showShortcuts',
+  nested: 'view',
+  section: 'preferences',
+  action: () => (showShortcuts.value = !showShortcuts.value),
 })
 
 // Computed
@@ -1684,6 +1702,25 @@ const menuShortcutKeys = (item: MenuEntry): string[] => {
   if (item.binding) return shortcutKeys(item.binding)
   return item.shortcut ? [item.shortcut] : []
 }
+
+/* The View menu, in blocks: what you can open, how the board is arranged, and
+   what you have set. An entry says which block it belongs to (see MenuSection),
+   so a panel registered by a scenario or an investigator lands in the right one
+   without this list knowing about it; an empty block draws nothing. */
+const VIEW_SECTIONS = [
+  { id: 'panels', label: 'gameBar.sectionPanels' },
+  { id: 'layout', label: 'gameBar.sectionLayout' },
+  { id: 'preferences', label: 'gameBar.sectionPreferences' },
+] as const
+
+const viewSections = computed(() =>
+  VIEW_SECTIONS.map((section) => ({
+    ...section,
+    items: menuItems.value.filter(
+      (item) => item.nested === 'view' && (item.section ?? 'panels') === section.id,
+    ),
+  })).filter((section) => section.items.length > 0),
+)
 
 /* The card under the cursor as a debug target. `data-id` sits on the card image for
  * assets, enemies and locations, and on the two wrappers an investigator renders as
@@ -2822,27 +2859,25 @@ onUnmounted(() => {
       <p>{{ $t('outOfSyncHint') }}</p>
     </div>
     <div class="game-bar">
-      <div class="game-bar-item">
-        <div>
-          <button @click="showLog = !showLog">
-            <DocumentTextIcon aria-hidden="true" />
-            {{ showLog ? $t('gameBar.closeLog') : $t('gameBar.viewLog') }}
-          </button>
-        </div>
+      <!-- The campaign screen. Not a menu and not a panel: it replaces the
+           board, so it is drawn as a mode you are in (active while open) and
+           sits apart from the menus. It also outgrew the name "log" -- it
+           carries achievements, special rules, partners, the chaos bag and the
+           campaign's own about page. -->
+      <div class="game-bar-item screen-switch" :class="{ active: showLog }">
+        <button :aria-pressed="showLog" @click="showLog = !showLog">
+          <BookOpenIcon aria-hidden="true" />
+          {{ $t('gameBar.campaign') }}
+        </button>
       </div>
       <div>
         <Menu>
           <EyeIcon aria-hidden="true" />
           {{ $t('gameBar.view') }}
           <template #items>
-            <MenuItem v-slot="{ active }">
-              <button :class="{ active }" @click="showShortcuts = !showShortcuts">
-                <BoltIcon aria-hidden="true" /> {{ $t('gameBar.shortcuts') }}
-                <span class="shortcut">{{ shortcutKeys('showShortcuts').join('+') }}</span>
-              </button>
-            </MenuItem>
-            <template v-for="item in menuItems" :key="item.id">
-              <MenuItem v-if="item.nested === 'view'" v-slot="{ active }">
+            <template v-for="section in viewSections" :key="section.id">
+              <div class="menu-section">{{ $t(section.label) }}</div>
+              <MenuItem v-for="item in section.items" :key="item.id" v-slot="{ active }">
                 <button :class="{ active }" @click="item.action">
                   <component v-if="item.icon" v-bind:is="item.icon"></component>
                   {{ item.content }}
@@ -2858,12 +2893,21 @@ onUnmounted(() => {
           <BeakerIcon aria-hidden="true" />
           {{ $t('gameBar.debug') }}
           <template #items>
+            <div class="menu-section">{{ $t('gameBar.sectionTools') }}</div>
             <MenuItem v-slot="{ active }">
               <button :class="{ active }" @click="debug.toggle">
                 <BugAntIcon aria-hidden="true" /> {{ $t('gameBar.toggleDebug') }}
                 <span class="shortcut">{{ shortcutKeys('toggleDebug').join('+') }}</span>
               </button>
             </MenuItem>
+            <MenuItem v-slot="{ active }">
+              <button :class="{ active }" @click="showEntityBrowser = true">
+                <TableCellsIcon aria-hidden="true" /> {{ $t('gameBar.debugEntities') }}
+              </button>
+            </MenuItem>
+            <!-- The debug exports: a game to feed back into the engine, which is
+                 a different thing from the log export next door. -->
+            <div class="menu-section">{{ $t('gameBar.sectionExports') }}</div>
             <MenuItem v-slot="{ active }">
               <button :class="{ active }" @click="debugExport('basic')">
                 <DocumentArrowDownIcon aria-hidden="true" /> {{ $t('gameBar.debugExport') }}
@@ -2877,11 +2921,6 @@ onUnmounted(() => {
             <MenuItem v-if="userStore.isAdmin" v-slot="{ active }">
               <button :class="{ active }" @click="debugExport('full')">
                 <DocumentArrowDownIcon aria-hidden="true" /> {{ $t('gameBar.debugExportFull') }}
-              </button>
-            </MenuItem>
-            <MenuItem v-slot="{ active }">
-              <button :class="{ active }" @click="showEntityBrowser = true">
-                <TableCellsIcon aria-hidden="true" /> {{ $t('gameBar.debugEntities') }}
               </button>
             </MenuItem>
           </template>
@@ -2964,6 +3003,18 @@ onUnmounted(() => {
         </div>
       </template>
       <div v-if="isActualScenarioView" class="right">
+        <!-- The log's own controls, with the log: exporting is only on offer
+             while the panel it would export is open. A seat, like the scrollback
+             endpoint it reads beside. -->
+        <button
+          v-if="showSidebar && !spectate"
+          class="drawer-toggle log-export"
+          :aria-label="$t('gameBar.exportLog')"
+          :title="$t('gameBar.exportLog')"
+          @click="showExportLog = true"
+        >
+          <DocumentArrowDownIcon aria-hidden="true" />
+        </button>
         <button
           class="drawer-toggle"
           :aria-label="$t('gameBar.toggleSidebar')"
@@ -3263,6 +3314,16 @@ onUnmounted(() => {
         @close="showEntityBrowser = false"
       />
     </Teleport>
+    <Teleport to="body">
+      <ExportLogDialog
+        v-if="showExportLog"
+        :gameId="gameId"
+        :gameName="game?.name ?? ''"
+        :playerId="playerId"
+        :legacyLocations="legacyLocations()"
+        @close="showExportLog = false"
+      />
+    </Teleport>
   </div>
 </template>
 
@@ -3387,6 +3448,31 @@ onUnmounted(() => {
 
 .game-bar div .undo-jump-header {
   display: flex;
+}
+
+/* A block heading inside a menu. Same voice as the undo group's own header,
+   which is where this look came from -- small caps, dim, and untouchable, so a
+   heading is never mistaken for a row you can pick. */
+.menu-section {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.55);
+  padding: 8px 10px 4px;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* The first heading in a menu has the menu's own edge above it. */
+.menu-items > .menu-section:first-child {
+  padding-top: 6px;
+}
+
+/* The campaign screen is a mode, not a popover, so it is set apart from the
+   menus by a rule rather than by a chevron it would be wrong to draw. */
+.game-bar .screen-switch {
+  border-right: 1px solid rgba(0, 0, 0, 0.35);
 }
 
 .undo-jump-header {
@@ -4332,6 +4418,10 @@ header {
     button {
       background: none;
       border: 0;
+      /* base.css rounds every button by 6px, which is right for a standalone
+         control and wrong here: these are full-width rows in a flat strip, so a
+         rounded highlight floats inside a square menu. */
+      border-radius: 0;
       display: inline;
       padding: 5px 10px;
       display: flex;
@@ -4348,6 +4438,13 @@ header {
     }
   }
   justify-content: flex-start;
+
+  /* The log's controls are a row, not a stack. `.game-bar div button` makes
+     every button here a block-level flex container, so a second control in this
+     group lands on its own line and takes the whole bar to two rows with it. */
+  .right {
+    display: flex;
+  }
 
   .right .drawer-toggle {
     justify-content: center;

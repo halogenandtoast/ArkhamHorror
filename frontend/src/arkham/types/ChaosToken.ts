@@ -141,3 +141,13 @@ export function chaosTokenImage(face: TokenFace): string {
 
   return imgsrc("chaos-tokens/ct-blank.png")
 }
+
+/* The locale-key segment for a face: the same slug its `{...}` format tag uses,
+ * so `log.token.skull` names the face the tag draws. Homebrew faces fall back to
+ * their own key, which is the only name they have. */
+export function chaosTokenKey(face: TokenFace): string {
+  const name = tokenImageNames[face as typeof tokenOrder[number]]
+  if (name) return name
+
+  return face.split(':').pop() ?? face
+}

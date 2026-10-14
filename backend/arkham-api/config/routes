@@ -90,6 +90,8 @@
           /undo/round ApiV1ArkhamGameUndoRoundR PUT
           /undo/step/#Int ApiV1ArkhamGameUndoStepR PUT
           /log/before/#Int ApiV1ArkhamGameLogBeforeR GET
+          /log/sections ApiV1ArkhamGameLogSectionsR GET
+          /log/export ApiV1ArkhamGameLogExportR GET
           /file-bug ApiV1ArkhamGameBugR POST
           /spectate ApiV1ArkhamGameSpectateR GET
           /export ApiV1ArkhamGameExportR GET

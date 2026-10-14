@@ -1,6 +1,17 @@
 import { reactive, toRefs, FunctionalComponent, HTMLAttributes, VNodeProps } from 'vue'
 import type { ShortcutAction } from '@/arkham/keybindings'
 
+/* Which block of the View menu an entry belongs to.
+ *
+ * The menu is built from whatever the board has registered, so the grouping has
+ * to travel with the entry rather than live in a list in Game.vue -- a panel
+ * registered by a card, a scenario or an investigator should land in the right
+ * block without the bar knowing it exists.
+ *
+ * 'panels' is the default: something you open and read.
+ */
+export type MenuSection = 'panels' | 'layout' | 'preferences'
+
 export type MenuEntry = {
   id: string;
   icon?: FunctionalComponent<HTMLAttributes & VNodeProps, {}, any, {}>;
@@ -11,6 +22,7 @@ export type MenuEntry = {
   binding?: ShortcutAction;
   shortcut?: string;
   nested?: string;
+  section?: MenuSection;
   action: () => void;
 }
 

@@ -63,6 +63,7 @@ import Arkham.Id
 import Arkham.Investigate (mkInvestigate, mkInvestigateLocation)
 import Arkham.Investigate qualified as Investigate
 import Arkham.Investigate.Types (Investigate (..))
+import Arkham.Investigator.Types (Field (InvestigatorUsedAbilities))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message qualified as Msg
@@ -718,6 +719,38 @@ runActivateAbility env spec = do
       unless (null usable && null declined)
         $ Prompt.chooseOne iid ([AbilityLabel iid ab ws [] [] | ab <- usable] <> declined)
 
+{- | Resolve again whatever a card's abilities already did.
+
+"Repeat the effects of a skill committed to that test" is not a thing the engine
+can be asked for: a card's effects are whatever its abilities did, and nothing
+records them as effects. What it does record is which abilities were USED --
+`usedAbilities` keeps each one with the windows it fired in -- so this points at
+a source and pushes every recorded use of it again, windows and all. A silent
+forced ability cannot be reached by `activateAbility` (it is never performable
+on demand), which is why repeating one has to go through its use rather than
+through the ability.
+
+The uses are read across every investigator, because the card committed to your
+test may be someone else's.
+-}
+runRepeatAbilities :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runRepeatAbilities env spec = do
+  let o = specObject spec
+  case KeyMap.lookup "source" o >>= decodeWith env of
+    Nothing -> reportBadPayload env "repeatAbilities" (substitute env spec)
+    Just source -> do
+      used <- selectAll InvestigatorUsedAbilities Anyone
+      let mine = filter ((== (source :: Source)) . abilitySource . usedAbility) used
+      pushAll
+        [ UseCardAbility
+            (usedAbilityInitiator u)
+            source
+            (abilityIndex (usedAbility u))
+            (usedAbilityWindows u)
+            NoPayment
+        | u <- mine
+        ]
+
 {- | Put a card somewhere.
 
 'Placement' is what "attach to your location" and "put into play in your threat
@@ -929,6 +962,9 @@ runSteps env0 = void . foldM step env0
           pure env
       | Just spec <- KeyMap.lookup "activateAbility" o -> do
           runActivateAbility env spec
+          pure env
+      | Just spec <- KeyMap.lookup "repeatAbilities" o -> do
+          runRepeatAbilities env spec
           pure env
       | Just spec <- KeyMap.lookup "place" o -> do
           runPlace env spec

@@ -789,6 +789,20 @@
       "via": []
     },
     {
+      "step": "repeatAbilities",
+      "handler": "runRepeatAbilities",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "source"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": null,
+      "doc": "Resolve again whatever a card's abilities already did.\n\n\"Repeat the effects of a skill committed to that test\" is not a thing the engine\ncan be asked for: a card's effects are whatever its abilities did, and nothing\nrecords them as effects. What it does record is which abilities were USED --\n`usedAbilities` keeps each one with the windows it fired in -- so this points at\na source and pushes every recorded use of it again, windows and all. A silent\nforced ability cannot be reached by `activateAbility` (it is never performable\non demand), which is why repeating one has to go through its use rather than\nthrough the ability.\n\nThe uses are read across every investigator, because the card committed to your\ntest may be someone else's.",
+      "via": []
+    },
+    {
       "step": "place",
       "handler": "runPlace",
       "keysIn": "payload",
@@ -1488,7 +1502,8 @@
         "choice",
         "forceDraw",
         "totalRevealedChaosTokens",
-        "pendingRequests"
+        "pendingRequests",
+        "debugRevealedChaosTokens"
       ]
     },
     "FieldCost": {

@@ -81,6 +81,7 @@ type StepKind =
   | 'discover'
   | 'setAside'
   | 'activateAbility'
+  | 'repeatAbilities'
   | 'seal'
   /* Not a step the engine runs, but a slot standing where a list of steps goes.
    * Only ever offered while editing a KEYWORD's behaviour, where the steps a
@@ -125,6 +126,7 @@ const KIND_LABELS: Record<StepKind, string> = {
   discover: 'Discover clues',
   setAside: 'Set cards aside',
   activateAbility: "Activate another card's ability",
+  repeatAbilities: "Repeat what a card's abilities did",
   seal: 'Seal chaos tokens',
   slot: 'Whatever the card fills in',
 }
@@ -168,6 +170,7 @@ function kindOf(step: any): StepKind {
     'discover',
     'setAside',
     'activateAbility',
+    'repeatAbilities',
     'seal',
   ] as StepKind[]
   // A slot is written as the bare `$name` the template substitutes, so it is a
@@ -226,6 +229,7 @@ const blankStep = (kind: StepKind) =>
     discover: { discover: { amount: 1 } },
     setAside: { setAside: {} },
     activateAbility: { activateAbility: { matcher: null, modifiers: [] } },
+    repeatAbilities: { repeatAbilities: { source: null } },
     seal: { seal: { tokens: null } },
     slot: `$${props.slotSteps?.[0]?.name ?? ''}`,
   })[kind]
@@ -272,6 +276,8 @@ const KIND_HELP: Record<StepKind, string> = {
   discover: 'Discovers clues, with the id everything reacting to a discovery is keyed on.',
   setAside: 'Makes copies of named cards in the set-aside zone, owned by an investigator.',
   activateAbility: "Offers every ability of a named shape on OTHER cards, and uses the one chosen.",
+  repeatAbilities:
+    "Pushes every ability USE already recorded for a source, so whatever it did happens again.",
   seal: 'Seals chaos tokens on this card, or releases the ones it is holding.',
   slot: 'Splices in the steps whichever card prints this keyword supplied.',
 }
@@ -2116,6 +2122,27 @@ const removeOption = (step: any, index: number, at: number) =>
           :modelValue="step.setAside?.iid"
           @update:modelValue="set(index, { ...step, setAside: { ...step.setAside, iid: $event } })"
         />
+      </template>
+
+      <template v-else-if="kindOf(step) === 'repeatAbilities'">
+        <p class="summary">
+          Does again whatever a card's abilities already did. Nothing records a card's
+          <em>effects</em>, but the game records which of its abilities were <em>used</em> — so
+          every recorded use of this source is pushed again, with the windows it fired in.
+        </p>
+        <ExpressionEditor
+          :queryKinds="queryKinds"
+          :bindings="scopeFor(index)"
+          label="Whose abilities"
+          expect="Source"
+          :modelValue="step.repeatAbilities?.source"
+          @update:modelValue="set(index, { ...step, repeatAbilities: { ...step.repeatAbilities, source: $event } })"
+        />
+        <p class="hint">
+          The source is the entity, not the card: a committed skill's abilities belong to the
+          skill standing in limbo for the test. A silent forced ability cannot be reached by
+          "activate another card's ability" at all, which is what this is for.
+        </p>
       </template>
 
       <template v-else-if="kindOf(step) === 'activateAbility'">

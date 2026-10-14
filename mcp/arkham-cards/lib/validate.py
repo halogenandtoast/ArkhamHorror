@@ -942,6 +942,21 @@ def _check_step(which: str, step: dict, path: str, scope: set[str], problems: li
     if isinstance(fields.get("query"), dict):
         _check_query(fields["query"], at("query"), problems)
 
+    # `over` is an expression and `query` is a matcher. `runChooseFrom` hands
+    # `over` to `evalExpr`, which does not know a `{kind, matcher}` query spec
+    # and answers with the spec itself: one option labelled "Choose", binding an
+    # object no message can decode, so the card plays and silently does nothing.
+    over = fields.get("over")
+    if isinstance(over, dict) and "kind" in over and "matcher" in over:
+        problems.append(
+            Problem(
+                "error",
+                at("over"),
+                "a query spec in `over`: `over` is an expression, so this binds the spec "
+                "itself and the step silently does nothing -- write it as `query`",
+            )
+        )
+
     inner = set(scope) | _binds(step, which)
     for key, block in _nested_blocks(step, which):
         _walk_steps(block, f"{path}.{key}" if key in STEPS[which]["stepKeys"] else f"{path}.{which}.{key}", inner, problems)

@@ -17,6 +17,7 @@ import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Messa
 import { MessageType } from '@/arkham/types/Message'
 import { cardId, toCardContents } from '@/arkham/types/Card'
 import SealedChaosTokens from '@/arkham/components/SealedChaosTokens.vue';
+import CardDebugWindow from '@/arkham/components/debug/CardDebugWindow.vue';
 import { investigatorTarget, cardDropHandlers } from '@/arkham/debugCardDrop';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import { useMenu } from '@/composable/menu';
@@ -45,6 +46,7 @@ const highlighter = useHighlighter()
 const isHighlighted = computed(() => highlighter.highlighted.value === props.investigator.id)
 const isAttackTarget = computed(() => props.game.enemyAttackTargets.some((e) => e.target.contents === props.investigator.id))
 const debug = useDebug()
+const debugging = ref(false)
 
 /* One handler reading shiftKey rather than a @click.exact / @click.shift pair: two
  * competing listeners only agree while the event's modifier state is exactly what
@@ -54,6 +56,17 @@ function debugGainActions(event: MouseEvent) {
   debug.send(props.game.id, {
     tag: 'GainActions',
     contents: [id.value, { tag: 'TestSource', contents: [] }, event.shiftKey ? 5 : 1],
+  })
+}
+
+// The inverse of "+": a negative gain, so no "lose actions" windows fire and
+// additional actions are left alone. The engine clamps at zero as well.
+function debugLoseActions(event: MouseEvent) {
+  const amount = Math.min(event.shiftKey ? 5 : 1, props.investigator.remainingActions)
+  if (amount <= 0) return
+  debug.send(props.game.id, {
+    tag: 'GainActions',
+    contents: [id.value, { tag: 'TestSource', contents: [] }, -amount],
   })
 }
 // Debug: a chaos token dragged from the bag seals here; a token from the debug
@@ -591,7 +604,24 @@ const spadeInjury = computed(() => {
               </span>
             </span>
             <template v-if="debug.active">
-              <button v-tooltip="$t('debug.enemy.shiftFive')" @click="debugGainActions">+</button>
+              <span class="debug-actions-group">
+                <button
+                  v-tooltip="$t('debug.enemy.shiftFive')"
+                  :disabled="investigator.remainingActions === 0"
+                  @click="debugLoseActions"
+                >−</button>
+                <button v-tooltip="$t('debug.enemy.shiftFive')" @click="debugGainActions">+</button>
+              </span>
+              <button @click="debugging = true">{{ $t('enemy.debug') }}</button>
+              <CardDebugWindow
+                v-if="debugging"
+                :game="game"
+                :title="$t('debug.card.investigatorTitle')"
+                :image="image"
+                :sealedTokens="investigator.sealedChaosTokens"
+                :target="{ tag: 'InvestigatorTarget', contents: id }"
+                @close="debugging = false"
+              />
             </template>
             <AbilityButton
               v-for="ability in abilities"
@@ -1096,6 +1126,16 @@ i.action {
     :deep(img) {
       width: calc(var(--pool-token-width) * 1.2);
     }
+  }
+}
+
+.debug-actions-group {
+  display: flex;
+  gap: 2px;
+
+  > button {
+    flex: 1;
+    min-width: 0;
   }
 }
 

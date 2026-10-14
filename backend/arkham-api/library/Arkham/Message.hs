@@ -61,6 +61,7 @@ import Arkham.Custom.Overlay (DeckOverlay)
 import Arkham.Customization
 import Arkham.DamageEffect
 import Arkham.Debug.CardDestination
+import Arkham.Debug.SkillTest
 import Arkham.Deck
 import Arkham.DeckBuilding.Adjustment
 import Arkham.Decklist.Type
@@ -1093,6 +1094,10 @@ data Message
   | PutCardOnBottomOfDeck InvestigatorId DeckSignifier Card
   | PutOnBottomOfDeck InvestigatorId DeckSignifier Target
   | Record CampaignLogKey
+  | -- | Forget a key entirely: recorded, crossed out, counted and as a set. No
+    -- card does this yet (the game crosses entries out); the debug tools use it
+    -- to edit or delete an entry a player typed in.
+    ForgetRecord CampaignLogKey
   | RecordForInvestigator InvestigatorId CampaignLogKey
   | {- | Adjust a per-investigator tally in that investigator's own campaign log
     (e.g. Dark Matter "Memories"). Negative values cross off tallies; the
@@ -1397,6 +1402,9 @@ data Message
     that is no longer in the bag is a no-op instead of a fabricated seal.
     -}
     DebugSealChaosToken ChaosTokenId Target
+  | -- Debug: start a real skill test with no card behind it. See
+    -- "Arkham.Debug.SkillTest".
+    DebugBeginSkillTest DebugSkillTestSpec
   | DebugCustomize InvestigatorId CardId
   | DebugIncreaseCustomization InvestigatorId CardCode Customization [CustomizationChoice]
   | SetScenarioDifficulty Difficulty
@@ -1733,6 +1741,12 @@ pattern ForceChaosTokenDrawToken t = ChaosBagMessage (ForceChaosTokenDrawToken_ 
 
 pattern DebugSetForcedChaosTokenDraws :: [ChaosTokenFace] -> Message
 pattern DebugSetForcedChaosTokenDraws fs = ChaosBagMessage (DebugSetForcedChaosTokenDraws_ fs)
+
+pattern DebugRevealChaosTokens :: InvestigatorId -> Int -> Message
+pattern DebugRevealChaosTokens iid n = ChaosBagMessage (DebugRevealChaosTokens_ iid n)
+
+pattern DebugReturnChaosTokens :: Message
+pattern DebugReturnChaosTokens = ChaosBagMessage DebugReturnChaosTokens_
 
 pattern SetChaosTokens :: [ChaosTokenFace] -> Message
 pattern SetChaosTokens fs = ChaosBagMessage (SetChaosTokens_ fs)

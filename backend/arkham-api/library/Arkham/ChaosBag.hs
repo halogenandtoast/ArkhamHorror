@@ -2,6 +2,7 @@
 
 module Arkham.ChaosBag (ChaosBag, emptyChaosBag, chaosTokensL) where
 
+import Arkham.Calculation (GameCalculation (EnemyTargetFieldCalculation))
 import Arkham.ChaosBag.Base
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
@@ -19,7 +20,7 @@ import Arkham.Helpers.Window (checkWhen, checkWindows)
 import Arkham.Homebrew.Tokens (chaosTokenFacePool, pooledChaosTokenFaces)
 import Arkham.Id
 import Arkham.Investigator.Types (Investigator)
-import Arkham.Log (LogPart (..), ikeyPart, investigatorRef, mechanic, toLogPart, (~>))
+import Arkham.Log (LogPart (..), ikeyPart, investigatorRef, mechanic, notice, sendLog, toLogPart, (~>))
 import Arkham.Log.Refs (sendLogInOpenBlock)
 import Arkham.Matcher (
   ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIs, ChaosTokenFaceIsNot, IncludeSealed),
@@ -36,8 +37,12 @@ import Arkham.Timing qualified as Timing
 import Arkham.UltimatumsAndBoons.Types
 import Arkham.Window (Window (..), mkAfter, mkCancel, mkWhen)
 import Arkham.Window qualified as Window
+import Control.Lens (universeOf)
 import Control.Monad.State.Strict (StateT, execStateT, gets, modify', put, runStateT)
+import Data.Data.Lens (uniplate)
 import Data.Map.Strict qualified as Map
+import UnliftIO (MonadUnliftIO)
+import UnliftIO.Exception qualified as UnliftIO
 
 {- | Match a chaos token that has already been drawn/revealed into a step.
 
@@ -161,6 +166,87 @@ replaceFirstChooseChoice source iid strategy replacement = \case
   (Decided step : rest) ->
     replaceFirstChoice source iid strategy replacement (Decided step) : rest
 
+{- | Take one token out of the bag, honouring the debug force-draw queue. The
+first queued face is used up whether or not the bag still holds it; a face no
+longer in the bag falls back to a random draw. Returns the drawn token (none
+from an empty bag), what is left in the bag, and the rest of the queue.
+-}
+drawOneChaosToken
+  :: MonadRandom m
+  => [ChaosTokenFace]
+  -> [ChaosToken]
+  -> m ([ChaosToken], [ChaosToken], [ChaosTokenFace])
+drawOneChaosToken forceDraw bagChaosTokens = case forceDraw of
+  face : rest -> case find ((== face) . chaosTokenFace) bagChaosTokens of
+    Just drawn -> pure ([drawn], delete drawn bagChaosTokens, rest)
+    Nothing -> randomDraw rest
+  [] -> randomDraw []
+ where
+  randomDraw rest = do
+    (drawn, remaining) <- splitAt 1 <$> shuffleM bagChaosTokens
+    pure (drawn, remaining, rest)
+
+{- | Draw up to @n@ tokens for the debug sandbox. It reads the same force-draw
+queue as a real draw, so forcing the next face steers the sandbox too.
+-}
+drawDebugChaosTokens :: MonadRandom m => Int -> ChaosBag -> m ([ChaosToken], ChaosBag)
+drawDebugChaosTokens = go []
+ where
+  go acc k bag
+    | k <= 0 = pure (acc, bag)
+    | null (chaosBagChaosTokens bag) = pure (acc, bag)
+    | otherwise = do
+        (drawn, remaining, rest) <- drawOneChaosToken (chaosBagForceDraw bag) (chaosBagChaosTokens bag)
+        go (acc <> drawn) (k - 1) (bag & (chaosTokensL .~ remaining) & (forceDrawL .~ rest))
+
+{- | The debug calculator's suggestion for a sandbox token: the scenario
+reference card (and elder sign) for that investigator, without any skill test
+modifiers since there is no test. A value the engine cannot work out outside a
+test -- one that reads the test's target, or a scenario lookup that throws --
+is left as 'Nothing' for the player to fill in, rather than failing the draw.
+-}
+debugRevealedChaosToken
+  :: (HasGame m, MonadUnliftIO m) => InvestigatorId -> ChaosToken -> m DebugRevealedChaosToken
+debugRevealedChaosToken iid token = do
+  result <- UnliftIO.tryAny do
+    ChaosTokenValue _ modifier <- getChaosTokenValue iid token.face ()
+    case modifier of
+      AutoFailModifier -> pure (Nothing, True, False)
+      AutoSuccessModifier -> pure (Nothing, False, True)
+      CalculatedModifier calc | readsSkillTest calc -> pure (Nothing, False, False)
+      other -> do
+        value <- traverse UnliftIO.evaluate =<< chaosTokenModifierToInt other
+        pure (value, False, False)
+  let (value, autoFail, autoSuccess) = either (const (Nothing, False, False)) id result
+  pure
+    DebugRevealedChaosToken
+      { debugRevealedToken = token
+      , debugRevealedValue = value
+      , debugRevealedAutoFail = autoFail
+      , debugRevealedAutoSuccess = autoSuccess
+      }
+ where
+  readsSkillTest calc = notNull [() | EnemyTargetFieldCalculation {} <- universeOf uniplate calc]
+
+-- | Put every sandbox token back into the bag, logging it when there are any.
+returnDebugRevealedChaosTokens :: HasGameLogger m => ChaosBag -> m ChaosBag
+returnDebugRevealedChaosTokens c = case map debugRevealedToken (chaosBagDebugRevealedChaosTokens c) of
+  [] -> pure c
+  tokens -> do
+    sendLog
+      $ mechanic
+        [ ikeyPart
+            "log.debug.returnsChaosTokens"
+            ["tokens" ~> LogList (map (toLogPart . (.face)) tokens), "count" ~> length tokens]
+        ]
+    pure
+      $ c
+      & ( chaosTokensL
+            %~ sort
+            . (<> map (\token -> token {chaosTokenRevealedBy = Nothing, chaosTokenCancelled = False}) tokens)
+        )
+      & (debugRevealedChaosTokensL .~ [])
+
 resolveFirstUnresolved
   :: (HasCallStack, HasGame m, MonadRandom m)
   => Source
@@ -210,30 +296,13 @@ resolveFirstUnresolved source iid strategy = \case
     Draw -> do
       bagChaosTokens <- gets chaosBagChaosTokens
       forceDraw <- gets chaosBagForceDraw
-      case forceDraw of
-        face : rest -> do
-          case find ((== face) . chaosTokenFace) bagChaosTokens of
-            Nothing -> do
-              (drawn, remaining) <- splitAt 1 <$> shuffleM bagChaosTokens
-              modify'
-                ( (forceDrawL .~ rest)
-                    . (chaosTokensL .~ remaining)
-                    . (setAsideChaosTokensL %~ (<> filter (not . (.sealed)) drawn))
-                )
-              pure (Resolved drawn, [])
-            Just drawn -> do
-              let remaining = delete drawn bagChaosTokens
-              modify'
-                ( (forceDrawL .~ rest)
-                    . (chaosTokensL .~ remaining)
-                    . (setAsideChaosTokensL %~ (<> filter (not . (.sealed)) [drawn]))
-                )
-              pure (Resolved [drawn], [])
-        [] -> do
-          (drawn, remaining) <- splitAt 1 <$> shuffleM bagChaosTokens
-          modify'
-            ((chaosTokensL .~ remaining) . (setAsideChaosTokensL %~ (<> filter (not . (.sealed)) drawn)))
-          pure (Resolved drawn, [])
+      (drawn, remaining, rest) <- drawOneChaosToken forceDraw bagChaosTokens
+      modify'
+        ( (forceDrawL .~ rest)
+            . (chaosTokensL .~ remaining)
+            . (setAsideChaosTokensL %~ (<> filter (not . (.sealed)) drawn))
+        )
+      pure (Resolved drawn, [])
     Choose chooseSource n tokenStrategy steps tokens' nested ->
       pure (Decided $ ChooseMatch chooseSource n tokenStrategy steps tokens' AnyChaosToken nested, [])
     ChooseMatch chooseSource 0 CancelChoice steps tokenGroups _ nested ->
@@ -637,6 +706,41 @@ replaceChooseMatchChoiceList steps replacement = case steps of
 
 instance RunMessage ChaosBag where
   runMessage msg c@ChaosBag {..} = case msg of
+    -- Sandbox tokens go back before any real test or draw, so the commit
+    -- window's odds and the draw itself see the whole bag.
+    BeginSkillTestWithPreMessages' _ _ | notNull chaosBagDebugRevealedChaosTokens -> do
+      returnDebugRevealedChaosTokens c
+    RequestChaosTokens _ _ _ _ | notNull chaosBagDebugRevealedChaosTokens -> do
+      c' <- returnDebugRevealedChaosTokens c
+      runMessage msg c'
+    DebugRevealChaosTokens iid n -> do
+      iids <- getInvestigators
+      let
+        drawInProgress = case chaosBagChoice of
+          Nothing -> False
+          Just (Resolved _) -> False
+          Just _ -> True
+        refuse key = c <$ sendLog (notice [ikeyPart key []])
+      if
+        | n < 1 || iid `notElem` iids -> refuse "log.debug.invalidRequest"
+        | drawInProgress -> refuse "log.debug.revealDuringDraw"
+        | null chaosBagChaosTokens -> refuse "log.debug.revealEmptyBag"
+        | otherwise -> do
+            (drawn, c') <- drawDebugChaosTokens n c
+            let drawn' = map (\token -> token {chaosTokenRevealedBy = Just iid, chaosTokenCancelled = False}) drawn
+            entries <- traverse (debugRevealedChaosToken iid) drawn'
+            investigator <- getAttrs @Investigator iid
+            sendLog
+              $ mechanic
+                [ ikeyPart
+                    "log.debug.revealsChaosTokens"
+                    [ "investigator" ~> investigatorRef investigator.id (toName investigator)
+                    , "tokens" ~> LogList (map (toLogPart . (.face)) drawn')
+                    , "count" ~> length drawn'
+                    ]
+                ]
+            pure $ c' & debugRevealedChaosTokensL <>~ entries
+    DebugReturnChaosTokens -> returnDebugRevealedChaosTokens c
     ForceChaosTokenDraw face -> do
       activeInvestigatorId <- getActiveInvestigatorId
       push $ StartSkillTest activeInvestigatorId
@@ -663,6 +767,7 @@ instance RunMessage ChaosBag where
         $ c
         & (chaosTokensL .~ sort tokens'')
         & (setAsideChaosTokensL .~ mempty)
+        & (debugRevealedChaosTokensL .~ [])
         & (tokenPoolL .~ pool)
     ReturnChaosTokensToPool tokensToPool -> do
       let toPool = and . sequence [isJust . chaosTokenFacePool . (.face), not . (.cancelled)]
@@ -674,6 +779,7 @@ instance RunMessage ChaosBag where
         $ c
         & (chaosTokensL %~ filter (`notElem` tokensToPool))
         & (setAsideChaosTokensL %~ filter (`notElem` tokensToPool))
+        & (debugRevealedChaosTokensL %~ filter ((`notElem` tokensToPool) . debugRevealedToken))
         & (tokenPoolL <>~ filter toPool tokensToPool)
     PassSkillTest -> do
       removeAllMessagesMatching \case
@@ -1055,6 +1161,7 @@ instance RunMessage ChaosBag where
         & (chaosTokensL %~ filter (/= token))
         & (setAsideChaosTokensL %~ filter (/= token))
         & (revealedChaosTokensL %~ filter (/= token))
+        & (debugRevealedChaosTokensL %~ filter ((/= token) . debugRevealedToken))
         & (tokenPoolL %~ filter (/= token))
     PlaceChaosToken token ->
       pure
@@ -1062,6 +1169,7 @@ instance RunMessage ChaosBag where
         & (chaosTokensL %~ filter (/= token))
         & (setAsideChaosTokensL %~ filter (/= token))
         & (revealedChaosTokensL %~ filter (/= token))
+        & (debugRevealedChaosTokensL %~ filter ((/= token) . debugRevealedToken))
         & (tokenPoolL %~ filter (/= token))
     SetChaosTokenAside token -> do
       pure $ c & setAsideChaosTokensL %~ (<> [token {chaosTokenSealed = False}])

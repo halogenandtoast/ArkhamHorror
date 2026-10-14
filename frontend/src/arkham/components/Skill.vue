@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import { useDebug } from '@/arkham/debug';
+import CardDebugWindow from '@/arkham/components/debug/CardDebugWindow.vue';
 import MissingCardBadge from '@/arkham/components/MissingCardBadge.vue';
 import { Game } from '@/arkham/types/Game';
 import Token from '@/arkham/components/Token.vue';
@@ -23,6 +25,8 @@ const emits = defineEmits<{
 }>()
 
 const id = computed(() => props.skill.id)
+const debug = useDebug()
+const debugging = ref(false)
 
 const cardCode = computed(() => props.skill.cardCode)
 const image = computed(() => {
@@ -99,6 +103,18 @@ const choose = (index: number) => emits('choose', index)
       :game="game"
       @click="choose(ability.index)"
       />
+    <template v-if="debug.active">
+      <button class="debug-open" @click="debugging = true">{{ $t('enemy.debug') }}</button>
+    </template>
+    <CardDebugWindow
+      v-if="debugging"
+      :game="game"
+      :title="$t('debug.card.skillTitle')"
+      :image="image"
+      :sealedTokens="skill.sealedChaosTokens"
+      :target="{ tag: 'SkillTarget', contents: id }"
+      @close="debugging = false"
+    />
   </div>
 </template>
 

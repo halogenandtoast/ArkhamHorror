@@ -699,7 +699,9 @@
       "state": "State",
       "sealedTokens": "Sealed Tokens",
       "release": "Release this token",
-      "shiftFive": "Shift-click for 5"
+      "shiftFive": "Shift-click for 5",
+      "disengage": "Disengage",
+      "disengageHint": "Moves the enemy off the investigator to their location. A ready enemy engages again at the next engagement check, so exhaust it too to keep it off."
     },
     "location": {
       "title": "Debug Location",
@@ -717,6 +719,62 @@
     },
     "story": {
       "title": "Debug Story"
+    },
+    "card": {
+      "title": "Debug Card",
+      "investigatorTitle": "Debug Investigator",
+      "eventTitle": "Debug Event",
+      "skillTitle": "Debug Skill",
+      "treacheryTitle": "Debug Treachery"
+    },
+    "deck": {
+      "title": "Debug Deck",
+      "size": "{count} card in the deck | {count} cards in the deck",
+      "draw": "Draw",
+      "drawButton": "Draw",
+      "selectDrawHint": "Pick any card in the deck and draw it",
+      "search": "Search the top of the deck",
+      "topX": "Top",
+      "look": "Look",
+      "done": "Done",
+      "positionHint": "Position in the deck, from the top",
+      "allMoved": "Every card you looked at has left the top of the deck.",
+      "toHand": "Hand",
+      "toDiscard": "Discard",
+      "toTop": "Top",
+      "toBottom": "Bottom",
+      "remove": "Remove"
+    },
+    "hand": {
+      "discardRandom": "Discard at random"
+    },
+    "campaign": {
+      "debugToggle": "Debug",
+      "xpHint": "Debug: adds experience (reported in the XP breakdown) or spends it",
+      "traumaHint": "Debug: + suffers trauma by the rules (reaching the limit kills or drives the investigator insane); − heals it",
+      "customEntries": "Custom entries (debug)",
+      "customEntriesHint": "Notes and counts written by players or custom cards. They are part of the real campaign log and carry into later scenarios.",
+      "edit": "Edit",
+      "rename": "Rename",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "countHint": "Set this count",
+      "notePlaceholder": "A note to record in the campaign log",
+      "countPlaceholder": "Name of a count",
+      "addNote": "Record note",
+      "addCount": "Record count"
+    },
+    "seals": {
+      "sealedTokens": "Sealed Tokens",
+      "none": "Nothing sealed here.",
+      "release": "Release this token to the chaos bag",
+      "toPool": "Pool",
+      "releaseToPool": "Release this token out of play, back to the token pool",
+      "seal": "Seal a token…",
+      "pickerTitle": "Seal a Token",
+      "pickerHint": "Click a token to seal one from the chaos bag here. The window stays open so you can seal more.",
+      "emptyBag": "The chaos bag is empty."
     },
     "common": {
       "place": "Place",
@@ -764,6 +822,67 @@
       "clear": "Clear",
       "addToken": "Add to the forced draws",
       "removeToken": "Remove from the forced draws"
+    },
+    "sandbox": {
+      "title": "Debug reveal",
+      "help": "Draw chaos tokens or run a skill test that a card can't do on its own. Reveal only triggers nothing; apply what the tokens mean with the other debug tools.",
+      "out": "{count} out",
+      "modeReveal": "Reveal only",
+      "modeTest": "Skill test",
+      "investigator": "Investigator",
+      "reveal": "Reveal",
+      "revealAnother": "Reveal another",
+      "return": "Return to bag",
+      "drawInProgress": "A draw is in progress",
+      "emptyBag": "The chaos bag is empty",
+      "noTokens": "No tokens out. Revealed tokens stay out of the bag until you return them, or until a real draw starts.",
+      "dragToSeal": "Drag onto a card to seal it",
+      "override": "Value",
+      "overrideHint": "Override the value for this calculation only",
+      "unknownValue": "This value depends on a skill test; type in what it's worth",
+      "calculator": "Calculator (changes nothing)",
+      "skill": "Skill",
+      "difficulty": "Difficulty",
+      "failTies": "Ties fail",
+      "pass": "Succeeds by {by} ({total} vs {difficulty})",
+      "fail": "Fails by {by} ({total} vs {difficulty})",
+      "autoFail": "Automatic failure",
+      "autoSuccess": "Automatic success",
+      "unknown": "Fill in the values marked ?",
+      "testHelp": "Starts a real skill test with no card behind it: commits, reactions and token effects run normally. Anything tied to a card's own text, action costs and attacks of opportunity are yours to apply.",
+      "testOf": "Test",
+      "skills": {
+        "SkillWillpower": "Willpower",
+        "SkillIntellect": "Intellect",
+        "SkillCombat": "Combat",
+        "SkillAgility": "Agility"
+      },
+      "fixed": "Fixed value",
+      "action": "Action",
+      "noAction": "None",
+      "actions": {
+        "Fight": "Fight",
+        "Evade": "Evade",
+        "Investigate": "Investigate",
+        "Parley": "Parley"
+      },
+      "target": "Target",
+      "noTarget": "None",
+      "useTargetValue": "Use the target's value",
+      "noTargetValue": "This target has no value to test against",
+      "source": "On card",
+      "sourceHint": "Only for effects that care what the test is on, such as \"a skill test on a Spell\". The card's own text does not run.",
+      "noSource": "None",
+      "sourceGroups": {
+        "hand": "In hand",
+        "assets": "Assets",
+        "events": "Events",
+        "treacheries": "Treacheries",
+        "enemies": "Enemies",
+        "locations": "Locations"
+      },
+      "start": "Start test",
+      "testActive": "A skill test is already in progress"
     }
   },
   "customizations": {

@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue';
 import MissingCardBadge from '@/arkham/components/MissingCardBadge.vue';
 import { CARD_FLIGHT_ATTR, useCardFlight } from '@/arkham/cardFlight'
 import { useDebug } from '@/arkham/debug';
+import { cardDropHandlers, treacheryTarget } from '@/arkham/debugCardDrop';
 import { cardImage } from '@/arkham/cardImages';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -12,6 +13,7 @@ import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import { IsMobile } from '@/arkham/isMobile'
 import Token from '@/arkham/components/Token.vue';
+import CardDebugWindow from '@/arkham/components/debug/CardDebugWindow.vue';
 import * as Arkham from '@/arkham/types/Treachery';
 
 export interface Props {
@@ -54,6 +56,9 @@ watch(() => props.mobileHandOpen, (open) => {
 })
 const image = computed(() => cardImage(props.treachery.cardCode))
 const id = computed(() => props.treachery.id)
+const debugging = ref(false)
+// Debug: tokens from the debug token panel, and seal drags from the bag, land here.
+const cardDrop = cardDropHandlers(props.game.id, () => treacheryTarget(props.treachery.id))
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const isExhausted = computed(() => props.treachery.exhausted)
 
@@ -115,6 +120,7 @@ function handleCardClick() {
     :class="{ attached, exhausted: isExhausted }"
     :[CARD_FLIGHT_ATTR]="treachery.cardId"
     :style="cardFlightStyle"
+    v-bind="cardDrop"
   >
     <MissingCardBadge :card-code="treachery.cardCode" />
     <AbilityButton
@@ -165,7 +171,17 @@ function handleCardClick() {
 
     <template v-if="debug.active">
       <button @click="debug.send(game.id, {tag: 'Discard', contents: [null, { tag: 'GameSource' }, { tag: 'TreacheryTarget', contents: id}]})">{{ $t('treachery.discard') }}</button>
+      <button class="debug-open" @click="debugging = true">{{ $t('enemy.debug') }}</button>
     </template>
+    <CardDebugWindow
+      v-if="debugging"
+      :game="game"
+      :title="$t('debug.card.treacheryTitle')"
+      :image="image"
+      :sealedTokens="treachery.sealedChaosTokens"
+      :target="{ tag: 'TreacheryTarget', contents: id }"
+      @close="debugging = false"
+    />
   </div>
 </template>
 

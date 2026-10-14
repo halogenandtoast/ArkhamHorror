@@ -410,7 +410,9 @@ handleSetActionsV2 a@InvestigatorAttrs {..} iid n = do
 
 handleGainActions a@InvestigatorAttrs {..} iid n = do
   -- TODO: If we add a window here we need to reconsider Ace of Rods, likely it would need a Do variant
-  pure $ a & remainingActionsL +~ n
+  -- A negative gain is the debug "-" button: a silent undo of "+", which
+  -- never takes the investigator below zero actions.
+  pure $ a & remainingActionsL %~ max 0 . (+ n)
 
 handleLoseAdditionalAction a@InvestigatorAttrs {..} iid n = do
   pure $ a & usedAdditionalActionsL %~ (n :)

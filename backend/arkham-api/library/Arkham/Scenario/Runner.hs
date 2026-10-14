@@ -1837,6 +1837,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       $ if isStandalone
         then a & standaloneCampaignLogL . recordedCountsL %~ insertMap key n
         else a
+  ForgetRecord key -> do
+    isStandalone <- getIsStandalone
+    pure
+      $ if isStandalone
+        then a & standaloneCampaignLogL %~ forgetCampaignLogKey key
+        else a
   IncrementRecordCount key n -> do
     isStandalone <- getIsStandalone
     pure

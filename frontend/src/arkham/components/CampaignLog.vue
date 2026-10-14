@@ -21,6 +21,10 @@ import { type ChaosBagChange, type RecordCountChange, chaosBagChangeDecoder, rec
 import * as JsonDecoder from 'ts.data.json'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import CampaignLogSection from '@/arkham/components/CampaignLogSection.vue'
+import CampaignLogDebug from '@/arkham/components/debug/CampaignLogDebug.vue'
+import DebugToggle from '@/arkham/components/debug/DebugToggle.vue'
+import { customLogText } from '@/arkham/debugPlayer'
+import { useShiftHoverDebug } from '@/composable/shiftHoverDebug'
 import CampaignLogSpecialRules from '@/arkham/components/CampaignLogSpecialRules.vue'
 import CampaignLogRecordedSets from '@/arkham/components/CampaignLogRecordedSets.vue'
 import CampaignLogInvestigatorSection from '@/arkham/components/CampaignLogInvestigatorSection.vue'
@@ -116,6 +120,15 @@ const campaignDefinition = computed<CampaignDefinition | null>(() => {
 
 // Scope for homebrew keys recorded before their campaign added a scope prefix.
 const homebrewScope = computed(() => homebrewScopeFromCampaignId(props.game.campaign?.id))
+
+// Shift over the log for a Debug button that opens the custom entries editor.
+const {
+  active: logDebugging,
+  showToggle: showLogDebugToggle,
+  onEnter: onLogEnter,
+  onLeave: onLogLeave,
+  toggle: toggleLogDebug,
+} = useShiftHoverDebug()
 
 const additionalLogSections = computed(() => campaignDefinition.value?.additional ?? [])
 const additionalTabId = (index: number): `additional:${number}` => `additional:${index}`
@@ -511,22 +524,26 @@ const TDC_TASK_KEYS = new Set([
   'PlumbTheDepths',
 ])
 
-const recorded = computed(() => {
+const recordedKeys = computed(() => {
   return selectedLog.value.recorded
     .filter(r => !['Teachings1', 'Teachings2', 'Teachings3'].includes(r.tag))
     .filter((c) => !isSection(c))
     .filter((c) => !(c.tag === 'TheDrownedCityKey' && TDC_ARTIFACT_KEYS.has(String((c as any).contents))))
     .filter((c) => !(c.tag === 'TheDrownedCityKey' && TDC_TASK_KEYS.has(String((c as any).contents))))
-    .map((k: LogKey) => formatKey(k, homebrewScope.value))
 })
+
+const recorded = computed(() => recordedKeys.value.map((k: LogKey) => formatKey(k, homebrewScope.value)))
+
+// A player-typed entry (see `customLogText`) reads exactly as it was typed; its
+// locale path would lose capitals and apostrophes.
+const logKeyLabel = (k: LogKey) => customLogText(k.raw) ?? logTitle(formatKey(k, homebrewScope.value))
+const recordedTitles = computed(() => recordedKeys.value.map(logKeyLabel))
 
 /* An erased record is taken out of `recorded`, but the log still shows the line
  * struck through, so it is listed after the standing ones. */
-const crossedOut = computed(() =>
-  selectedLog.value.crossedOut
-    .filter((c) => !isSection(c))
-    .map((k: LogKey) => formatKey(k, homebrewScope.value))
-)
+const crossedOutKeys = computed(() => selectedLog.value.crossedOut.filter((c) => !isSection(c)))
+const crossedOut = computed(() => crossedOutKeys.value.map((k: LogKey) => formatKey(k, homebrewScope.value)))
+const crossedOutTitles = computed(() => crossedOutKeys.value.map(logKeyLabel))
 
 type SectionModel = {
   key: string
@@ -1043,6 +1060,7 @@ onUnmounted(() => {
             :investigator="investigator"
             :game="game"
             :bonus-xp="bonusXp && bonusXp[investigator.id]"
+            :debuggable="showingMain"
           />
         </div>
 
@@ -1112,7 +1130,7 @@ onUnmounted(() => {
           :items="remembered"
         />
 
-        <div class="log-categories">
+        <div class="log-categories" @mouseenter="onLogEnter" @mouseleave="onLogLeave">
           <div v-if="hasSupplies" class="supplies-container">
             <h2>{{ t('theForgottenAge.supplies.title') }}</h2>
             <div class="supplies-content">
@@ -1164,8 +1182,8 @@ onUnmounted(() => {
           <CampaignLogSection
             v-if="recorded.length > 0 || crossedOut.length > 0"
             :title="t('campaignLog.campaignNotes')"
-            :items="[...recorded, ...crossedOut].map(logTitle)"
-            :crossed="crossedOut.map(logTitle)"
+            :items="[...recordedTitles, ...crossedOutTitles]"
+            :crossed="crossedOutTitles"
           />
 
           <!-- Campaign sections -->
@@ -1223,6 +1241,20 @@ onUnmounted(() => {
             v-if="Object.values(partners).length > 0"
             :partners="partners"
             :cardCodeToTitle="cardCodeToTitle"
+          />
+
+          <CampaignLogDebug
+            v-if="logDebugging && showingMain"
+            :game="game"
+            :log="selectedLog"
+            :homebrewScope="homebrewScope"
+          />
+
+          <DebugToggle
+            v-if="showLogDebugToggle && showingMain"
+            :active="logDebugging"
+            class="log-debug-toggle"
+            @click="toggleLogDebug"
           />
         </div>
         </template>
@@ -1426,6 +1458,10 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.log-debug-toggle {
+  align-self: flex-end;
 }
 
 .hemlock-overview {

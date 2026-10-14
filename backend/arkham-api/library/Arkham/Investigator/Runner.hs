@@ -1091,11 +1091,24 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure a
   AddToDiscard iid pc | investigatorOwnsCardCode a iid -> do
     modifiers' <- getModifiers a
-    case [target | PlaceUnderneathInsteadOfDiscard target <- modifiers'] of
-      (target : _) -> do
-        pushAll [ObtainCard (toCard pc).id, PlaceUnderneath target [toCard pc]]
-        pure a
-      [] -> handleAddToDiscard a iid pc
+    -- A card's own "instead of being discarded" modifiers are read here as
+    -- well as the investigator's: this is where a discarded player card lands,
+    -- so it is where a card that says it goes somewhere else has to be heard.
+    -- Only the committed-card path honored them before, which left the same
+    -- words unimplementable for a card in hand.
+    cardModifiers <- getModifiers (toCardId pc)
+    let mods = modifiers' <> cardModifiers
+    if
+      | (target : _) <- [t | PlaceUnderneathInsteadOfDiscard t <- mods] -> do
+          pushAll [ObtainCard (toCard pc).id, PlaceUnderneath target [toCard pc]]
+          pure a
+      | ShuffleIntoDeckInsteadOfDiscard `elem` mods -> do
+          push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [toCard pc]
+          pure a
+      | PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods -> do
+          push $ PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) (toCard pc)
+          pure a
+      | otherwise -> handleAddToDiscard a iid pc
   DiscardFromHand handDiscard | handDiscard.investigator == investigatorId -> handleDiscardFromHand a handDiscard msg
   Do (DiscardFromHand handDiscard) | handDiscard.investigator == investigatorId -> handleDoDiscardFromHand a handDiscard
   Discard _ source (CardIdTarget cardId) | isJust (find ((== cardId) . toCardId) investigatorHand) -> handleDiscard a source cardId

@@ -896,7 +896,15 @@ def _check_step(which: str, step: dict, path: str, scope: set[str], problems: li
 
     def typed(key: str, type_name: str) -> None:
         if key in fields:
-            problems.extend(check_value(fields[key], type_name, at(key)))
+            problems.extend(decoded(fields[key], type_name, at(key)))
+
+    def decoded(value: Any, type_name: str, where: str) -> list[Problem]:
+        """A payload the engine hands to `decodeWith`, which substitutes
+        `$bindings` and evaluates nothing: an expression left inside one stays
+        an object, the value fails to parse and the step does nothing at all.
+        """
+        expressions = _expressions_in(value, where)
+        return expressions or check_value(value, type_name, where)
 
     if which == "push":
         problems.extend(_check_message(payload, f"{path}.push"))
@@ -923,8 +931,11 @@ def _check_step(which: str, step: dict, path: str, scope: set[str], problems: li
 
     if which in ("fight", "investigate", "evade", "parley", "test"):
         typed("skill", "SkillType")
+    if which == "modify":
+        typed("target", "Target")
+        typed("window", "EffectWindow")
     for index, modifier in enumerate(fields.get("modifiers") or []):
-        problems.extend(check_value(modifier, "ModifierType", f"{at('modifiers')}[{index}]"))
+        problems.extend(decoded(modifier, "ModifierType", f"{at('modifiers')}[{index}]"))
 
     # `if`/`when` read a condition; `case` reads one per branch.
     for form in ("if", "when"):

@@ -98,6 +98,7 @@ import Api.Handler.Arkham.Admin.Metrics
 import Api.Handler.Arkham.Admin.Users
 import Api.Handler.Arkham.Archive
 import Api.Handler.Arkham.BuildConnection
+import Api.Handler.Arkham.CardSetShares
 import Api.Handler.Arkham.CardSetSubmissions
 import Api.Handler.Arkham.Cards
 import Api.Handler.Arkham.CustomCardSets

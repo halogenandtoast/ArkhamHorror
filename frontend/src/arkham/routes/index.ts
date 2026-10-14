@@ -49,6 +49,22 @@ export default [
     props: true,
   },
   {
+    /* A set somebody shared the link to. Its own page, nested with the rest of
+     * the section, rather than a mode of the marketplace: this set has not been
+     * published, has no version and no listing, and the only thing to do with
+     * it is take it.
+     *
+     * Behind auth like everything else here. Opening the link is what records
+     * that you have access, so there has to be a "you" -- and taking the cards
+     * means having a library to put them in. The router sends a signed-out
+     * visitor to sign in and brings them back to the link. */
+    path: '/card-builder/shared/:token',
+    name: 'SharedCardSet',
+    component: () => import('@/arkham/views/SharedSet.vue'),
+    meta: { requiresAuth: true, title: "Arkham Horror: Shared Card Set" },
+    props: true,
+  },
+  {
     path: '/cards',
     name: 'Cards',
     component: () => import('@/arkham/views/Cards.vue'),

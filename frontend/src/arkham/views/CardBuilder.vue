@@ -21,6 +21,7 @@ import {
   type SignatureSummary,
 } from '@/arkham/customCards'
 import { isBadLink, setLinkLabel } from '@/arkham/setLink'
+import * as Api from '@/arkham/api'
 import CustomCardsPage from '@/arkham/components/CustomCardsPage.vue'
 import FilterBar from '@/arkham/components/FilterBar.vue'
 import MetaChip from '@/arkham/components/MetaChip.vue'
@@ -30,7 +31,9 @@ import {
   createSet,
   exportCards,
   isAwaitingReview,
+  isFromShare,
   isListed,
+  isShared,
   isSubscribed,
   publishSet,
   syncSet,
@@ -138,6 +141,8 @@ function startPublish(set: LibrarySet) {
   publishingSetId.value = set.id
   publishNote.value = ''
   publishNotify.value = true
+  // Both answer "what do I do with this set", and open together they are a wall.
+  sharingSetId.value = null
   status.value = null
   error.value = null
 }
@@ -219,6 +224,153 @@ async function update(set: LibrarySet) {
     console.error(e)
     error.value = t(`${K}updateFailed`)
   }
+}
+
+/* ------------------------------------------------------------------ share ---
+
+   Handing an unpublished set to a few people. The marketplace is the other way
+   to do it and the wrong one for a set that is not finished: it is public,
+   reviewed, and versioned, and a playtest wants the people trying the cards to
+   have whatever changed this afternoon.
+
+   The panel is opened per set, like the publish form, and the two are mutually
+   exclusive: they are both "what do I do with this set", and open together they
+   would be a wall. */
+const sharingSetId = ref<string | null>(null)
+const share = ref<Api.CardSetShare | null>(null)
+const shareBusy = ref(false)
+const copied = ref(false)
+/* Both destructive in their own way -- one kills the link for everybody, the
+ * other for one person -- so each asks once, inline, rather than in a dialog
+ * over the top of the list it is about. */
+const confirmingStop = ref(false)
+const confirmingRotate = ref(false)
+
+const shareLink = computed(() => (share.value ? Api.shareUrl(share.value.token) : null))
+
+function resetShare() {
+  share.value = null
+  copied.value = false
+  confirmingStop.value = false
+  confirmingRotate.value = false
+}
+
+/* Opens on what is there: a set already shared loads its link and its people, a
+ * set that is not shows the one button that starts it. A 404 is the answer to
+ * "is this shared", not a failure. */
+async function openShare(set: LibrarySet) {
+  publishingSetId.value = null
+  status.value = null
+  error.value = null
+  if (sharingSetId.value === set.id) {
+    sharingSetId.value = null
+    resetShare()
+    return
+  }
+  sharingSetId.value = set.id
+  resetShare()
+  if (!set.shareToken) return
+  shareBusy.value = true
+  try {
+    share.value = await Api.fetchCardSetShare(set.id)
+  } catch (e) {
+    console.error(e)
+    error.value = t(`${K}shareLoadFailed`)
+  } finally {
+    shareBusy.value = false
+  }
+}
+
+async function startShare(set: LibrarySet) {
+  shareBusy.value = true
+  error.value = null
+  try {
+    share.value = await Api.shareCardSet(set.id)
+    await loadLibrary(true)
+    status.value = t(`${K}shareStarted`, { name: set.name })
+  } catch (e) {
+    console.error(e)
+    error.value = t(`${K}shareFailed`)
+  } finally {
+    shareBusy.value = false
+  }
+}
+
+/* A new link, which makes the old one worthless -- the way to deal with one that
+ * got somewhere it should not have. The people stay: they are the record of who
+ * took the set, which is still true of them, and anyone who should not have it
+ * is removed by themselves. */
+async function rotateShare(set: LibrarySet) {
+  confirmingRotate.value = false
+  shareBusy.value = true
+  error.value = null
+  try {
+    share.value = await Api.shareCardSet(set.id, true)
+    copied.value = false
+    status.value = t(`${K}shareRotated`)
+  } catch (e) {
+    console.error(e)
+    error.value = t(`${K}shareFailed`)
+  } finally {
+    shareBusy.value = false
+  }
+}
+
+/* Stop sharing. The link dies and the list of who had it goes with it; what
+ * anybody already took stays in their own library, which is what the warning
+ * above the button says. */
+async function stopShare(set: LibrarySet) {
+  confirmingStop.value = false
+  shareBusy.value = true
+  error.value = null
+  try {
+    await Api.unshareCardSet(set.id)
+    resetShare()
+    sharingSetId.value = null
+    await loadLibrary(true)
+    status.value = t(`${K}shareStopped`, { name: set.name })
+  } catch (e) {
+    console.error(e)
+    error.value = t(`${K}shareFailed`)
+  } finally {
+    shareBusy.value = false
+  }
+}
+
+/* One person, without disturbing the link everyone else holds. Nothing of
+ * theirs is taken away -- the cards they took are theirs -- all this stops is
+ * reading the set and taking it again. */
+async function setAccess(set: LibrarySet, access: Api.CardSetShareAccess, revoked: boolean) {
+  shareBusy.value = true
+  error.value = null
+  try {
+    share.value = await Api.setCardSetShareAccess(set.id, access.id, revoked)
+    await loadLibrary(true)
+  } catch (e) {
+    console.error(e)
+    error.value = t(`${K}shareFailed`)
+  } finally {
+    shareBusy.value = false
+  }
+}
+
+async function copyLink() {
+  if (!shareLink.value) return
+  try {
+    await navigator.clipboard.writeText(shareLink.value)
+    copied.value = true
+  } catch {
+    copied.value = false
+  }
+}
+
+/* Where one person stands with the set, in the words the author needs: they have
+ * it, they have an old one, or they have only looked. */
+function accessLine(access: Api.CardSetShareAccess): string {
+  if (access.revoked) return t(`${K}shareRemoved`)
+  if (!access.takenAt) return t(`${K}shareLookedOnly`)
+  const date = new Date(access.takenAt).toLocaleDateString()
+  return access.behind ? t(`${K}shareHasOlder`, { date }) : t(`${K}shareHasCurrent`, { date })
 }
 
 /* ?card=<code> opens the builder on that card: a deep link from a game ("Edit
@@ -1142,6 +1294,35 @@ async function onImport(event: Event) {
               >
                 {{ t(`${K}listedChip`, { version: set.approvedVersion }) }}
               </MetaChip>
+              <!-- Somebody else's set, taken through a link they sent. Links
+                   back to it rather than carrying a take button: taking it
+                   replaces every card in the copy, which wants the sentence
+                   that page has room for. -->
+              <router-link
+                v-if="isFromShare(set)"
+                class="from-share"
+                :to="{ name: 'SharedCardSet', params: { token: set.sharedToken } }"
+                v-tooltip="t(`${K}fromShareHelp`)"
+                @click.stop
+              >
+                <MetaChip :tone="set.sharedBehind ? 'good' : 'plain'" icon="link">
+                  {{ t(`${K}${set.sharedBehind ? 'fromShareBehind' : 'fromShareChip'}`) }}
+                </MetaChip>
+              </router-link>
+              <!-- Shared by link, with how many people have used it. A link
+                   nobody has opened says something different from one three
+                   people are playing with, so the count is the chip. -->
+              <MetaChip
+                v-if="isShared(set)"
+                icon="link"
+                v-tooltip="t(`${K}sharedChipHelp`)"
+              >
+                {{
+                  set.shareCount
+                    ? t(`${K}sharedWithCount`, set.shareCount)
+                    : t(`${K}sharedChip`)
+                }}
+              </MetaChip>
               <!-- Where the set lives in the world, shown as the host: it is
                    the only thing on this row that leads somewhere else, and
                    the whole address would crowd out the facts beside it. -->
@@ -1178,6 +1359,19 @@ async function onImport(event: Event) {
                 @click="startPublish(set)"
               >
                 <font-awesome-icon icon="store" />
+              </button>
+              <!-- Handing it to a few people rather than to everybody, which is
+                   what an unfinished set wants. Beside publishing, because they
+                   are the two ways a set leaves your account. -->
+              <button
+                type="button"
+                :class="{ on: isShared(set) }"
+                v-tooltip="t(`${K}shareSet`, { name: set.name })"
+                :aria-label="t(`${K}shareSet`, { name: set.name })"
+                :aria-expanded="sharingSetId === set.id"
+                @click="openShare(set)"
+              >
+                <font-awesome-icon icon="link" />
               </button>
               <button type="button" v-tooltip="t(`${K}renameSet`)" :aria-label="t(`${K}renameSet`)" @click="startRename(set)">
                 <font-awesome-icon icon="pen" />
@@ -1292,6 +1486,118 @@ async function onImport(event: Event) {
             </button>
           </div>
         </form>
+
+        <!-- The link, and everyone who has used it. Under the row rather than in
+             a dialog: it is a list that grows, and the author comes back to it. -->
+        <section v-if="sharingSetId === set.id" class="share">
+          <p class="share-lede">{{ t(`${K}shareLede`) }}</p>
+
+          <template v-if="share">
+            <div class="share-link">
+              <input
+                :value="shareLink"
+                type="text"
+                readonly
+                :aria-label="t(`${K}shareLinkLabel`)"
+                @focus="($event.target as HTMLInputElement).select()"
+                @keydown.stop
+              />
+              <button type="button" class="copy" @click="copyLink">
+                <font-awesome-icon icon="copy" />
+                {{ t(`${K}${copied ? 'shareCopied' : 'shareCopy'}`) }}
+              </button>
+            </div>
+            <small class="share-help">{{ t(`${K}shareLinkHelp`) }}</small>
+
+            <!-- Who has it. A share is a url, so this is everyone who has opened
+                 it -- there is no invitation list to compare it against. -->
+            <h4 class="share-people-title">
+              <font-awesome-icon icon="users" />
+              {{ t(`${K}sharePeople`) }}
+            </h4>
+            <p v-if="!share.people.length" class="share-nobody">
+              {{ t(`${K}shareNobodyYet`) }}
+            </p>
+            <ul v-else class="share-people">
+              <li v-for="person in share.people" :key="person.id" :class="{ off: person.revoked }">
+                <div class="who">
+                  <span class="name">{{ person.name }}</span>
+                  <span class="standing">{{ accessLine(person) }}</span>
+                </div>
+                <button
+                  type="button"
+                  class="quiet"
+                  :disabled="shareBusy"
+                  @click="setAccess(set, person, !person.revoked)"
+                >
+                  {{ t(`${K}${person.revoked ? 'shareAllowAgain' : 'shareRemovePerson'}`) }}
+                </button>
+              </li>
+            </ul>
+
+            <div class="share-actions">
+              <!-- A new link, which makes the one you sent worthless. Asked
+                   first, because somebody is holding the old one. -->
+              <template v-if="confirmingRotate">
+                <span class="confirm-line">{{ t(`${K}shareRotateWarning`) }}</span>
+                <button type="button" :disabled="shareBusy" @click="rotateShare(set)">
+                  {{ t(`${K}shareRotateConfirm`) }}
+                </button>
+                <button type="button" class="cancel" @click="confirmingRotate = false">
+                  {{ t(`${K}publishCancel`) }}
+                </button>
+              </template>
+              <template v-else-if="confirmingStop">
+                <span class="confirm-line">{{ t(`${K}shareStopWarning`) }}</span>
+                <button type="button" class="danger" :disabled="shareBusy" @click="stopShare(set)">
+                  {{ t(`${K}shareStopConfirm`) }}
+                </button>
+                <button type="button" class="cancel" @click="confirmingStop = false">
+                  {{ t(`${K}publishCancel`) }}
+                </button>
+              </template>
+              <template v-else>
+                <!-- What they will see when they open it, which is the one thing
+                     the link itself cannot tell you. -->
+                <router-link
+                  v-if="share"
+                  class="quiet preview"
+                  :to="{ name: 'SharedCardSet', params: { token: share.token } }"
+                >
+                  <font-awesome-icon icon="eye" />
+                  {{ t(`${K}sharePreview`) }}
+                </router-link>
+                <button type="button" class="quiet" @click="confirmingRotate = true">
+                  <font-awesome-icon icon="refresh" />
+                  {{ t(`${K}shareRotate`) }}
+                </button>
+                <button type="button" class="quiet danger" @click="confirmingStop = true">
+                  <font-awesome-icon icon="link-slash" />
+                  {{ t(`${K}shareStop`) }}
+                </button>
+                <button type="button" class="cancel" @click="openShare(set)">
+                  {{ t(`${K}shareClose`) }}
+                </button>
+              </template>
+            </div>
+          </template>
+
+          <p v-else-if="shareBusy" class="share-nobody">{{ t(`${K}loading`) }}</p>
+
+          <!-- Not shared yet: one button, and what it will do. An empty set can
+               be shared -- the link is made before the cards often enough -- and
+               says so to whoever opens it until there is something in it. -->
+          <div v-else class="share-actions">
+            <button type="button" :disabled="shareBusy" @click="startShare(set)">
+              <font-awesome-icon icon="link" />
+              {{ t(`${K}shareStart`) }}
+            </button>
+            <button type="button" class="cancel" @click="openShare(set)">
+              {{ t(`${K}publishCancel`) }}
+            </button>
+            <span v-if="!set.cardCount" class="confirm-line">{{ t(`${K}shareNeedsCards`) }}</span>
+          </div>
+        </section>
 
         <!-- As many cards as fit on one row, and no more: the grid's auto-fill
              decides how many that is, and the row below it is clipped. -->
@@ -1870,6 +2176,163 @@ async function onImport(event: Event) {
 
   .cancel {
     background: none;
+  }
+}
+
+/* A chip that is a link. The chip carries all the appearance; this only has to
+   stop the anchor adding an underline and a color of its own. */
+.from-share {
+  color: inherit;
+  display: inline-flex;
+  text-decoration: none;
+}
+
+/* The share panel. Same seam and same paddings as the publish form above it:
+   they are the two things you do with a whole set, and they sit in the same
+   place under the same row. */
+.share {
+  border-top: 1px solid var(--box-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.6rem 0.75rem;
+
+  .share-lede,
+  .share-help,
+  .share-nobody {
+    color: color-mix(in srgb, var(--title) 70%, transparent);
+    font-size: 0.75rem;
+    margin: 0;
+  }
+
+  .share-nobody {
+    font-style: italic;
+  }
+
+  /* The link, wide, selectable and read-only: it is something to copy, never to
+     edit, and a field you can put a cursor in is the one people reach for when
+     the button does not work. */
+  .share-link {
+    display: flex;
+    gap: 0.4rem;
+
+    input {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--box-border);
+      border-radius: 4px;
+      color: var(--title);
+      flex: 1 1 18rem;
+      font-family: monospace;
+      font-size: 0.8rem;
+      min-width: 0;
+      padding: 0.3rem 0.5rem;
+    }
+  }
+
+  .share-people-title {
+    align-items: center;
+    color: color-mix(in srgb, var(--title) 85%, transparent);
+    display: flex;
+    font-size: 0.78rem;
+    font-weight: normal;
+    gap: 0.35rem;
+    margin: 0.3rem 0 0;
+
+    svg {
+      opacity: 0.7;
+    }
+  }
+
+  .share-people {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      align-items: center;
+      background: rgba(0, 0, 0, 0.18);
+      border: 1px solid var(--box-border);
+      border-radius: 4px;
+      display: flex;
+      gap: 0.5rem;
+      justify-content: space-between;
+      padding: 0.3rem 0.5rem;
+
+      /* Somebody who has been removed stays on the list -- that they had it is
+         the fact worth keeping -- but reads as past tense. */
+      &.off {
+        opacity: 0.5;
+      }
+    }
+
+    .who {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.1rem 0.5rem;
+      min-width: 0;
+    }
+
+    .name {
+      font-size: 0.85rem;
+    }
+
+    .standing {
+      color: color-mix(in srgb, var(--title) 60%, transparent);
+      font-size: 0.75rem;
+    }
+  }
+
+  .share-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  /* What a button is about to do, where the buttons are: a confirmation the eye
+     reaches before the hand does. */
+  .confirm-line {
+    color: color-mix(in srgb, var(--title) 70%, transparent);
+    flex: 1 1 100%;
+    font-size: 0.75rem;
+  }
+
+  button {
+    align-items: center;
+    display: inline-flex;
+    font-size: 0.8rem;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+  }
+
+  .quiet,
+  .cancel {
+    background: none;
+    border: 1px solid var(--box-border);
+    color: color-mix(in srgb, var(--title) 85%, transparent);
+  }
+
+  /* A link wearing a button's clothes: same row, same job. */
+  .preview {
+    align-items: center;
+    border-radius: 4px;
+    display: inline-flex;
+    font-size: 0.8rem;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    text-decoration: none;
+  }
+
+  .cancel {
+    border-color: transparent;
+  }
+
+  /* Red only where something stops working for other people. */
+  .danger {
+    color: var(--survivor);
   }
 }
 

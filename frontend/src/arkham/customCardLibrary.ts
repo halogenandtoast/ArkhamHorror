@@ -315,6 +315,25 @@ export async function syncSet(id: string) {
   return published
 }
 
+/* Take a set somebody shared the link to. The server does the import, so the
+ * cards never round-trip through here; the library is reloaded rather than
+ * patched, because a copy taken again replaces every card in it. */
+export async function takeSharedSet(token: string) {
+  const shared = await Api.copySharedCardSet(token)
+  await loadLibrary(true)
+  return shared
+}
+
+/* Whether this set is being handed to anyone by link, and to how many people.
+ * Both read off the set the server sent, so a row can say so without asking. */
+export const isShared = (set: LibrarySet) => set.shareToken !== null
+
+/* The other direction: a set somebody handed you by link, and whether they have
+ * changed it since. Taking it again is the shared set's own page, not a button
+ * here -- it replaces every card in the copy, which wants the sentence that page
+ * has room for. */
+export const isFromShare = (set: LibrarySet) => set.sharedToken !== null
+
 /* Whether a set is still following what it was published as, and whether there
  * is a newer version than the one it is on. */
 export const isSubscribed = (set: LibrarySet) => set.publishedCardSetId !== null

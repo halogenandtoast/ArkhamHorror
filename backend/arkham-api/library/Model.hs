@@ -14,6 +14,7 @@ import Entity.Arkham.ApiKey as X
 import Entity.Arkham.ArkhamDBDecklist as X
 import Entity.Arkham.BuildAuthRequest as X
 import Entity.Arkham.BuildConnection as X
+import Entity.Arkham.CardSetShare as X
 import Entity.Arkham.CustomCard as X
 import Entity.Arkham.CustomCardSet as X
 import Entity.Arkham.Deck as X

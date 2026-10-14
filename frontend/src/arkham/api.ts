@@ -314,6 +314,18 @@ export type StoredCustomCardSet = {
   // The version of this set that is in the marketplace now, which is not
   // necessarily the one last submitted.
   approvedVersion: number | null
+  /* The secret in this set's share link, if it is being shared, and how many
+   * people have opened it. Carried here so a row can say the set is shared and
+   * hand over the link without a request per set. */
+  shareToken: string | null
+  shareCount: number
+  /* The share link this set is a copy of, for a set somebody handed you — the
+   * other direction from `shareToken`, and the way back to the page that can
+   * take the author's newest cards. Null once they stop sharing or remove you,
+   * because there is then nothing at the other end of it. */
+  sharedToken: string | null
+  // The author has changed that set since you took it.
+  sharedBehind: boolean
 }
 
 /* Where a submission stands. A set is listed only once a version of it is
@@ -386,6 +398,119 @@ export const importCustomCardSet = async (payload: {
 }): Promise<{ set: StoredCustomCardSet; cards: StoredCustomCard[] }> => {
   const { data } = await api.post('arkham/custom-card-sets/import', payload)
   return { set: data.set, cards: data.cards.map(toStoredCustomCard) }
+}
+
+/* ----------------------------------------------------------------- shares ---
+
+   A link that hands an unpublished set to a few people. The marketplace is the
+   other way to do this and the wrong one for a set that is not finished: it is
+   public, every version is reviewed before anyone can take it, and what
+   playtesting wants is for the people trying the cards to have whatever changed
+   this afternoon. Nothing here is versioned -- a share hands out the set as it
+   stands, and taking it again is how a friend catches up. */
+
+export type CardSetShare = {
+  setId: string
+  // The secret in the url. `shareUrl` is what turns it into a link to send.
+  token: string
+  createdAt: string
+  // When the link was last minted, so rotating it can be seen to have worked.
+  updatedAt: string
+  people: CardSetShareAccess[]
+}
+
+/* One person the link reached. A share is a url, so there is no invitation
+ * addressed to anybody: who has opened it is the whole of who has access. */
+export type CardSetShareAccess = {
+  id: string
+  name: string
+  // When they last took a copy. Null for somebody who has only looked.
+  takenAt: string | null
+  // Whether you have changed the set since they took it.
+  behind: boolean
+  revoked: boolean
+  firstSeenAt: string
+  lastSeenAt: string
+}
+
+// A shared set as the person holding the link sees it: the whole set, and what
+// they have of it.
+export type SharedCardSet = {
+  name: string
+  description: string | null
+  url: string | null
+  icon: string | null
+  investigatorExpansion: boolean
+  author: string
+  // You following your own link, which has nothing to take.
+  mine: boolean
+  cards: CustomCard[]
+  // When the author last changed the set, which is what "new" is measured from.
+  updatedAt: string
+  // Your own copy, if you have taken one.
+  setId: string | null
+  takenAt: string | null
+  // The author has changed the set since you took it.
+  behind: boolean
+  // You have changed your copy since, so taking it again would throw that away.
+  edited: boolean
+}
+
+// The link to send. Hash history, so the route lives after the `#`.
+export const shareUrl = (token: string) =>
+  `${window.location.origin}${window.location.pathname}#/card-builder/shared/${token}`
+
+// 404 for a set that is not being shared, which is how the panel knows to offer
+// to start.
+export const fetchCardSetShare = async (setId: string): Promise<CardSetShare> => {
+  const { data } = await api.get(`arkham/custom-card-sets/${setId}/share`)
+  return data
+}
+
+/* Start sharing, or -- with `rotate` -- mint a new link for a set already
+ * shared, which makes a link that got out worthless. Asking without `rotate`
+ * hands back the link that is there rather than making a second one. Rotating
+ * keeps the people: they are the record of who took the set, which is still
+ * true of them. */
+export const shareCardSet = async (setId: string, rotate = false): Promise<CardSetShare> => {
+  const { data } = await api.post(`arkham/custom-card-sets/${setId}/share`, { rotate })
+  return data
+}
+
+/* Stop sharing: the link stops working and the list of who had it goes with it.
+ * What anyone already took stays in their library -- those are their cards now,
+ * possibly in a deck or a game. */
+export const unshareCardSet = async (setId: string): Promise<void> => {
+  await api.delete(`arkham/custom-card-sets/${setId}/share`)
+}
+
+/* Cut one person off, or let them back in, without disturbing the link everyone
+ * else is holding. Takes nothing away from them: all it stops is reading the set
+ * and taking it again. */
+export const setCardSetShareAccess = async (
+  setId: string,
+  accessId: string,
+  revoked: boolean,
+): Promise<CardSetShare> => {
+  const { data } = await api.put(`arkham/custom-card-sets/${setId}/share/${accessId}`, {
+    revoked,
+  })
+  return data
+}
+
+/* The set behind a link. Reading it is what grants access -- there is no
+ * invitation to accept -- so this is also what puts you on the author's list. */
+export const fetchSharedCardSet = async (token: string): Promise<SharedCardSet> => {
+  const { data } = await api.get(`arkham/shared-card-sets/${token}`)
+  return data
+}
+
+/* Take the author's set as it stands into your own library. Taking it again
+ * replaces the copy you have, which is how you catch up -- and why the page
+ * warns first when you have edited it. */
+export const copySharedCardSet = async (token: string): Promise<SharedCardSet> => {
+  const { data } = await api.post(`arkham/shared-card-sets/${token}/copy`, {})
+  return data
 }
 
 /* ------------------------------------------------------------ marketplace ---

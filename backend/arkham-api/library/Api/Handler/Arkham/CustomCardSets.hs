@@ -85,6 +85,31 @@ data CustomCardSetResponse = CustomCardSetResponse
   {- ^ The version of this set that is in the marketplace now, which is not
   necessarily the one you last submitted.
   -}
+  , customCardSetResponseShareToken :: Maybe Text
+  {- ^ The secret in this set's share link, if it is being shared with anyone.
+  Carried on the set rather than fetched when the share panel is opened, so the
+  row can say that the set is shared and hand over the link without a request
+  per set.
+  -}
+  , customCardSetResponseShareCount :: Int
+  {- ^ How many people have opened the link and not been removed since. What
+  makes "shared" worth a chip: a link nobody has used says something different
+  from one three people are playing with.
+  -}
+  , customCardSetResponseSharedToken :: Maybe Text
+  {- ^ The share link this set is a copy of, for a set somebody handed you.
+  The other direction from 'customCardSetResponseShareToken', which is a link
+  of your own: this is the way back to the page that can take the author's
+  newest cards, and the only way back, since the url arrived in a chat window.
+
+  Absent once the author stops sharing or removes you, because there is then
+  nothing at the other end of it.
+  -}
+  , customCardSetResponseSharedBehind :: Bool
+  {- ^ The author has changed that set since you took it. The same comparison
+  their own page makes from the other side -- there is no "up to date" flag for
+  an edit of theirs to go stale against.
+  -}
   }
   deriving stock Generic
 
@@ -238,6 +263,33 @@ submissionFor setId = do
           [P.Desc ArkhamCardSetSubmissionVersion]
   pure (listing, submission)
 
+{- | The share link this set was taken through, and whether the author has moved
+on since -- for a set somebody handed you rather than one of your own.
+
+Found by the access row pointing at this set, which is what records that the copy
+was taken through a link at all. A revoked row answers with nothing: the link is
+dead for this account, so offering the way back to it would only be a 404.
+-}
+sharedSource :: ArkhamCustomCardSetId -> Handler (Maybe Text, Bool)
+sharedSource setId = do
+  access <-
+    runDB
+      $ P.selectFirst
+        [ ArkhamCardSetShareAccessCustomCardSetId P.==. Just setId
+        , ArkhamCardSetShareAccessRevokedAt P.==. Nothing
+        ]
+        []
+  case access of
+    Nothing -> pure (Nothing, False)
+    Just (Entity _ row) -> do
+      share <- runDB $ DB.get (arkhamCardSetShareAccessCardSetShareId row)
+      source <- maybe (pure Nothing) (runDB . DB.get . arkhamCardSetShareCustomCardSetId) share
+      let behind = fromMaybe False do
+            at <- arkhamCardSetShareAccessTakenAt row
+            set <- source
+            pure $ arkhamCustomCardSetUpdatedAt set > at
+      pure (arkhamCardSetShareToken <$> share, behind)
+
 setResponse :: Entity ArkhamCustomCardSet -> Handler CustomCardSetResponse
 setResponse (Entity setId row) = do
   cardCount <- runDB $ P.count [ArkhamCustomCardCustomCardSetId P.==. setId]
@@ -251,6 +303,16 @@ setResponse (Entity setId row) = do
         $ runDB
         $ DB.get (arkhamCardSetSubscriptionPublishedCardSetId sub)
   (listing, submission) <- submissionFor setId
+  share <- runDB $ P.getBy (UniqueCardSetShare setId)
+  shared <- case share of
+    Nothing -> pure 0
+    Just (Entity shareId _) ->
+      runDB
+        $ P.count
+          [ ArkhamCardSetShareAccessCardSetShareId P.==. shareId
+          , ArkhamCardSetShareAccessRevokedAt P.==. Nothing
+          ]
+  (sharedToken, sharedBehind) <- sharedSource setId
   pure
     $ CustomCardSetResponse
       { customCardSetResponseId = setId
@@ -278,6 +340,10 @@ setResponse (Entity setId row) = do
           arkhamCardSetSubmissionReason =<< submission
       , customCardSetResponseApprovedVersion =
           arkhamPublishedCardSetApprovedVersion . entityVal =<< listing
+      , customCardSetResponseShareToken = arkhamCardSetShareToken . entityVal <$> share
+      , customCardSetResponseShareCount = shared
+      , customCardSetResponseSharedToken = sharedToken
+      , customCardSetResponseSharedBehind = sharedBehind
       }
 
 getApiV1ArkhamCustomCardSetsR :: Handler [CustomCardSetResponse]

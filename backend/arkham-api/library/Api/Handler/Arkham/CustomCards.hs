@@ -10,8 +10,11 @@ module Api.Handler.Arkham.CustomCards (
   persistCard,
   saveCardInSet,
   stampSet,
+  touchSet,
   unsubscribeSet,
+  freeName,
   normalizeUrl,
+  printedOrder,
   hostArt,
   setDeclarationsFromCards,
 ) where
@@ -33,10 +36,12 @@ import Arkham.Card.CustomCard (
 import Arkham.Custom.SetDefs qualified as SetDefs
 import Auth.ApiKey qualified as ApiKey
 import Crypto.Hash.SHA256 qualified as SHA256
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (parseMaybe, withObject)
 import Data.ByteString.Base16 qualified as B16
 import Data.ByteString.Base64 qualified as B64
 import Data.ByteString.Lazy qualified as BSL
+import Data.Char (isDigit)
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Data.Time.Clock
@@ -92,6 +97,45 @@ ownedCardSet userId setId = do
   set <- runDB $ get404 setId
   unless (arkhamCustomCardSetUserId set == userId) $ permissionDenied "Not your card set"
   pure set
+
+{- | Say the set changed, for a change that happened to a card in it.
+
+A set's @updatedAt@ is read as "when this set last changed": it is what orders
+the builder's list by recency, and it is the whole of how someone holding a
+share of the set is told there is something new to take. A card being saved or
+thrown away is the set changing, and nothing else moves the set's own row when
+it happens, so these two writes have to.
+
+Not folded into 'persistCard': an import writes the set row itself and then
+every card through that, and this would be another hundred and fifty updates
+saying what the first one said.
+-}
+touchSet :: ArkhamCustomCardSetId -> UTCTime -> SqlPersistT Handler ()
+touchSet setId now = P.update setId [ArkhamCustomCardSetUpdatedAt P.=. now]
+
+{- | A name no set of this user's holds, bar the one being written.
+
+Taking a copy of something called what one of your own sets is called should not
+fail, and should not silently replace it. Lives here rather than with either
+importer because both the marketplace and a share link need it.
+
+The set being written is excepted because a copy taken /again/ is renamed to
+whatever the original is called now, and the name it already holds is its own: a
+copy keeping its name is not a clash, while a third set of yours holding that
+name still is -- which is a rename straight into a unique index, and used to be
+a 500 on the way to catching up with the author.
+-}
+freeName :: UserId -> Maybe ArkhamCustomCardSetId -> Text -> Handler Text
+freeName userId mine name = go name (2 :: Int)
+ where
+  go candidate attempt = do
+    taken <- runDB $ P.getBy (UniqueUserCustomCardSetName userId candidate)
+    case taken of
+      Nothing -> pure candidate
+      Just (Entity found _) | Just found == mine -> pure candidate
+      Just _
+        | attempt > 50 -> invalidArgs ["You already have a set called \"" <> name <> "\""]
+        | otherwise -> go (name <> " (" <> tshow attempt <> ")") (attempt + 1)
 
 {- | A link as it is stored: blank is nothing, trimmed, and an @http@ address or
 a refusal. The scheme is checked here rather than wherever it is shown, because
@@ -152,6 +196,24 @@ setDeclarationsFromCards cards = (declared SetDefs.setTokensMetaKey, declared Se
   declared key =
     fromMaybe (Array mempty)
       $ listToMaybe [v | card <- cards, Just v <- [Map.lookup key (cdMeta (customCardDef card))]]
+
+{- | A card's place in its set: the number printed on it, read out of its own def.
+
+Sorted on the leading digits rather than the text, so 10 follows 9. A card with no
+number sorts last, since it has said nothing about where it goes.
+-}
+printedOrder :: Value -> (Int, Text)
+printedOrder value = (maybe maxBound id (readMaybe (T.unpack digits)), number)
+ where
+  number = case value of
+    Object o -> case KeyMap.lookup "meta" o of
+      Just (Object m) -> case KeyMap.lookup "number" m of
+        Just (String t) -> t
+        Just (Number n) -> tshow (round n :: Int)
+        _ -> ""
+      _ -> ""
+    _ -> ""
+  digits = T.takeWhile isDigit number
 
 {- | Everything a card needs doing to it before it can be written: the code
 checked, what its set declares stamped on, and any inlined art uploaded.
@@ -221,7 +283,10 @@ saveCardInSet
   -> Handler (Entity ArkhamCustomCard)
 saveCardInSet userId setId set now card0 = do
   prepared <- prepareCardForSet userId set card0
-  runDB $ persistCard userId setId now prepared
+  runDB do
+    saved <- persistCard userId setId now prepared
+    touchSet setId now
+    pure saved
 
 -- | A card is always saved into a set, so the set it goes in comes with it.
 data SaveCardPost = SaveCardPost
@@ -247,11 +312,13 @@ postApiV1ArkhamCustomCardsR = do
 deleteApiV1ArkhamCustomCardR :: ArkhamCustomCardId -> Handler ()
 deleteApiV1ArkhamCustomCardR cardId = do
   userId <- callerUserId <$> getScopedCaller [ApiKey.cardsWrite]
+  now <- liftIO getCurrentTime
   runDB do
     row <- get404 cardId
     when (arkhamCustomCardUserId row /= userId) $ lift $ permissionDenied "Not your card"
     unsubscribeSet (arkhamCustomCardCustomCardSetId row)
     P.delete cardId
+    touchSet (arkhamCustomCardCustomCardSetId row) now
 
 {- | Where a custom card's art lives.
 
@@ -392,7 +459,8 @@ userCustomCards userId = do
   card can claim, and in that collision the imported card is the one the deck
   means. Left-biased union rather than row order, which is `updatedAt` and says
   nothing about which card is which. -}
-  pure $ Map.fromList [(cdCardCode (customCardDef c), c) | c <- cards]
+  pure
+    $ Map.fromList [(cdCardCode (customCardDef c), c) | c <- cards]
     `Map.union` Map.fromList [(code, c) | c <- cards, code <- drop 1 (customCardCodes c)]
 
 registerUserCustomCards :: UserId -> Handler ()

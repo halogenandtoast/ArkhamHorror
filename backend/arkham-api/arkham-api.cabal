@@ -38,6 +38,7 @@ library
       Api.Handler.Arkham.Archive
       Api.Handler.Arkham.BuildConnection
       Api.Handler.Arkham.Cards
+      Api.Handler.Arkham.CardSetShares
       Api.Handler.Arkham.CardSetSubmissions
       Api.Handler.Arkham.CustomCards
       Api.Handler.Arkham.CustomCardSets
@@ -9001,6 +9002,7 @@ library
       Entity.Arkham.ArkhamDBDecklist
       Entity.Arkham.BuildAuthRequest
       Entity.Arkham.BuildConnection
+      Entity.Arkham.CardSetShare
       Entity.Arkham.CustomCard
       Entity.Arkham.CustomCardSet
       Entity.Arkham.Deck

@@ -52,6 +52,11 @@
           / ApiV1ArkhamCustomCardSetR PUT DELETE
           /publish ApiV1ArkhamCustomCardSetPublishR POST
           /sync ApiV1ArkhamCustomCardSetSyncR POST
+          /share ApiV1ArkhamCustomCardSetShareR GET POST DELETE
+          /share/#ArkhamCardSetShareAccessId ApiV1ArkhamCustomCardSetShareAccessR PUT
+      /shared-card-sets/#Text ApiV1ArkhamSharedCardSetP:
+        / ApiV1ArkhamSharedCardSetR GET
+        /copy ApiV1ArkhamSharedCardSetCopyR POST
       /published-card-sets ApiV1ArkhamPublishedCardSetsP:
         / ApiV1ArkhamPublishedCardSetsR GET
         /#ArkhamPublishedCardSetId ApiV1ArkhamPublishedCardSetP:

@@ -31,16 +31,16 @@ module Api.Handler.Arkham.PublishedCardSets (
 ) where
 
 import Api.Handler.Arkham.CustomCards (
+  freeName,
   normalizeUrl,
   ownedCardSet,
   persistCard,
   prepareCardForSet,
+  printedOrder,
   setDeclarationsFromCards,
  )
 import Arkham.Card.CustomCard (CustomCard (..))
-import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (parseEither)
-import Data.Char (isDigit)
 import Data.Text qualified as T
 import Data.Time.Clock
 import Database.Persist qualified as DB
@@ -243,24 +243,6 @@ deleteApiV1ArkhamPublishedCardSetLikeR publishedId = do
       , ArkhamPublishedCardSetLikeUserId P.==. userId
       ]
   listingFor userId (Entity publishedId row)
-
-{- | A card's place in its set: the number printed on it, read out of its own def.
-
-Sorted on the leading digits rather than the text, so 10 follows 9. A card with no
-number sorts last, since it has said nothing about where it goes.
--}
-printedOrder :: Value -> (Int, Text)
-printedOrder value = (maybe maxBound id (readMaybe (T.unpack digits)), number)
- where
-  number = case value of
-    Object o -> case KeyMap.lookup "meta" o of
-      Just (Object m) -> case KeyMap.lookup "number" m of
-        Just (String t) -> t
-        Just (Number n) -> tshow (round n :: Int)
-        _ -> ""
-      _ -> ""
-    _ -> ""
-  digits = T.takeWhile isDigit number
 
 {- | How many cards a listing carries. Enough to fill a row at any width the
 listing is shown at; the extra are clipped by the layout rather than sent and
@@ -595,7 +577,7 @@ postApiV1ArkhamCustomCardSetPublishR setId = do
       name = arkhamCustomCardSetName setRow
       -- The icon and whether this is an expansion travel with them, so a
       -- listing can be drawn without loading the set behind it. What the set
-      -- *declares* -- its tokens and keywords -- is not copied here: it is
+      -- \*declares* -- its tokens and keywords -- is not copied here: it is
       -- stamped on every card in the snapshot, which is where an import of a
       -- version reads it from.
       icon = arkhamCustomCardSetIcon setRow
@@ -809,10 +791,11 @@ importVersion userId publishedId version = do
       (tokens, keywords) = setDeclarationsFromCards cards
 
   existing <- mineFollowing userId publishedId
-  -- A first subscription has to find a name nobody else of yours is using.
-  name' <- case existing of
-    Just _ -> pure name
-    Nothing -> freeName userId name
+  {- A name none of your other sets is using. The copy being replaced is excepted
+  from that, since the name it already holds is its own -- but a third set of
+  yours holding it is still a clash, and renaming into one is a unique index
+  violation rather than an update. -}
+  name' <- freeName userId existing name
 
   let incoming =
         ArkhamCustomCardSet
@@ -871,17 +854,3 @@ mineFollowing userId publishedId = do
       Just s | arkhamCustomCardSetUserId s == userId -> Just setId
       _ -> Nothing
   pure $ listToMaybe (catMaybes ours)
-
-{- | A name no other set of yours holds. Subscribing to something called what one
-of your own sets is called should not fail, and should not silently replace it.
--}
-freeName :: UserId -> Text -> Handler Text
-freeName userId name = go name (2 :: Int)
- where
-  go candidate attempt = do
-    taken <- runDB $ P.getBy (UniqueUserCustomCardSetName userId candidate)
-    case taken of
-      Nothing -> pure candidate
-      Just _
-        | attempt > 50 -> invalidArgs ["You already have a set called \"" <> name <> "\""]
-        | otherwise -> go (name <> " (" <> tshow attempt <> ")") (attempt + 1)

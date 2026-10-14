@@ -1074,6 +1074,11 @@ data Message
   | PlacedLocationDirection LocationId Direction LocationId
   | LocationMoved LocationId
   | PlayCard InvestigatorId Card (Maybe Target) Payment [Window] Bool
+  | {- | A card play has begun and its costs are about to be paid. Nothing else
+    reports that moment with the card in hand, and an effect waiting for "the
+    next card you play" needs it to bind itself to that card.
+    -}
+    NextCardPlayed InvestigatorId Card
   | CardEnteredPlay InvestigatorId Card
   | CardIsEnteringPlay InvestigatorId Card
   | ResolvedCard InvestigatorId Card

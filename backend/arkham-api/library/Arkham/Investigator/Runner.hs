@@ -44,6 +44,7 @@ import Arkham.Classes.HasGame
 import Arkham.CommitRestriction
 import Arkham.Deck qualified as Deck
 import Arkham.DefeatedBy
+import Arkham.Discard (DiscardStrategy (DiscardChoose))
 import Arkham.Discover
 import Arkham.Draw.Types
 import Arkham.Enemy.Types qualified as Field
@@ -1051,14 +1052,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure a
   Do (CheckHandSize iid) | iid == investigatorId -> do
     excess <- getExcessInHandCount a
-    -- investigatorHand: can only discard cards actually in hand
-    let viable = filter (isNothing . cdCardSubType . toCardDef) $ onlyPlayerCards investigatorHand
+    -- investigatorHand: can only discard cards actually in hand, and only ones
+    -- that are allowed to leave it -- otherwise the re-check below asks again
+    -- for a discard that can never happen.
+    viable <-
+      filterM (fmap (notElem CannotLeaveYourHand) . getModifiers . toCardId)
+        $ filter (isNothing . cdCardSubType . toCardDef)
+        $ onlyPlayerCards investigatorHand
 
-    {- Through the ordinary discard-from-hand machinery, one card at a time,
-    rather than a bare choice of `DiscardCard`. That machinery raises the
-    would-discard-from-hand window, which this discard used to slip past
-    entirely: nothing could react to a card leaving your hand at the end of the
-    round, and a card that replaces such a discard had nowhere to stand.
+    {- Through the ordinary discard-from-hand machinery, in one batch of the
+    whole excess, rather than a bare choice of `DiscardCard`. That machinery
+    raises the would-discard-from-hand window, which this discard used to slip
+    past entirely: nothing could react to a card leaving your hand at the end
+    of the round, and a card that replaces such a discard had nowhere to stand.
+    One batch, because a card that speaks of "those cards" means all of them.
 
     The re-check is pushed behind it rather than carried as the discard's
     `then`, which only fires once the discard has actually counted down. A
@@ -1066,7 +1073,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     investigator would be left over their limit. -}
     when (excess > 0 && notNull viable)
       $ pushAll
-        [ Msg.DiscardFromHand (chooseAndDiscardCard iid GameSource)
+        [ Msg.DiscardFromHand
+            $ discardFromHand iid GameSource DiscardChoose (min excess (length viable))
         , Do (CheckHandSize iid)
         ]
     pure a
@@ -1846,21 +1854,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             allows (#5424). The investigator is then over their limit until
             something sweeps them up. -}
             push $ InvestigatorPlayedAsset iid aid
-          else if null assetsThatCanProvideSlots
-          then
-            pushAll
-              $ InvestigatorPlayedAsset iid aid
-              : [toDiscardBy iid GameSource aid | canDiscardIncoming]
           else
-            push
-              $ chooseOne player
-              $ [ targetLabel
-                    aid'
-                    $ map (toDiscardBy iid GameSource) assets
-                    <> [InvestigatorPlayAsset iid aid]
-                | aid' <- assetsThatCanProvideSlots
-                , let assets = assetsInSlotsOf aid'
-                ]
+            if null assetsThatCanProvideSlots
+              then
+                pushAll
+                  $ InvestigatorPlayedAsset iid aid
+                  : [toDiscardBy iid GameSource aid | canDiscardIncoming]
+              else
+                push
+                  $ chooseOne player
+                  $ [ targetLabel
+                        aid'
+                        $ map (toDiscardBy iid GameSource) assets
+                        <> [InvestigatorPlayAsset iid aid]
+                    | aid' <- assetsThatCanProvideSlots
+                    , let assets = assetsInSlotsOf aid'
+                    ]
     pure a
   InvestigatorPlayedAsset iid aid | iid == investigatorId -> withAssetStillInPlay aid a do
     slotTypes <- field AssetSlots aid

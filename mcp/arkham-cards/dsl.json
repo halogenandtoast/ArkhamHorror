@@ -377,6 +377,7 @@
         "query",
         "bind",
         "steps",
+        "kind",
         "label",
         "declineLabel",
         "optional"

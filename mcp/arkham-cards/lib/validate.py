@@ -957,6 +957,19 @@ def _check_step(which: str, step: dict, path: str, scope: set[str], problems: li
             option_scope.add("chosen")
         if isinstance(option.get("query"), dict):
             _check_query(option["query"], f"{option_path}.query", problems)
+        # An option's own criterion, which decides whether it is offered at all.
+        # Untyped it was the one Criterion nothing checked, so a constructor
+        # written without the fields it needs simply hid the option.
+        if "criteria" in option:
+            # The wrapped form the builder writes, or a bare criterion, which
+            # the engine also reads. Either way it is a Criterion underneath.
+            held = option["criteria"]
+            if isinstance(held, dict) and "criteria" in held:
+                held = held["criteria"]
+                where = f"{option_path}.criteria.criteria"
+            else:
+                where = f"{option_path}.criteria"
+            problems.extend(check_value(held, "Criterion", where))
         _walk_steps(option.get("steps") or [], f"{option_path}.steps", option_scope, problems)
 
     # Expressions, for their $bindings and their operators. The nested step lists

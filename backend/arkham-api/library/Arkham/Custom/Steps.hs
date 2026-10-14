@@ -23,9 +23,8 @@ import Arkham.Discover (Discover (..), IsInvestigate (..), discoverAtYourLocatio
 import Arkham.Aspect (InsteadOf (..), IsAspect)
 import Arkham.Asset.Types (Field (AssetSealedChaosTokens))
 import Arkham.Calculation (GameCalculation (Fixed))
-import Arkham.ChaosToken (ChaosToken)
-import Arkham.Event.Types (Field (EventSealedChaosTokens))
 import Arkham.Card.PlayerCard (lookupPlayerCard)
+import Arkham.ChaosToken (ChaosToken)
 import Arkham.Custom.Env
 import Arkham.Custom.Expr (evalExpr, exprInt, runQuery, runQueryStep, valueList)
 import Arkham.Custom.Overlay (setAsideMetaKey)
@@ -33,6 +32,7 @@ import Arkham.Customization (CustomizationChoice (..))
 import Arkham.EffectMetadata (EffectMetadata (EffectModifiers))
 import Arkham.Evade (mkChooseEvade, mkChooseEvadeMatch)
 import Arkham.Evade qualified as Evade
+import Arkham.Event.Types (Field (EventSealedChaosTokens))
 import Arkham.Fight (ChooseFight (..))
 import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Helpers.Card (getCardEntityTarget)
@@ -87,9 +87,9 @@ import Arkham.Name (toTitle)
 import Arkham.PlayerCard (allPlayerCards)
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.SkillType (SkillType (SkillWillpower))
 import Arkham.Search (SearchType (..), mkSearch)
 import Arkham.Skill.Types (Field (SkillSealedChaosTokens))
+import Arkham.SkillType (SkillType (SkillWillpower))
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait (Trait, displayTrait)
@@ -426,6 +426,7 @@ runCustomize env spec = do
 by the time a card in play can act, so the nearest honest equivalent is to
 shuffle the card in where it would have ended up.
 -}
+
 {- | Seal chaos tokens on this card, or let the sealed ones go.
 
 Two halves of the same thing, which is why they are one step: a card that seals
@@ -992,6 +993,16 @@ editor.
 -}
 runReadCondition :: HasGame m => Env -> Value -> m Bool
 runReadCondition env condition = case condition of
+  {- A bare criterion, written where a condition is read. Nothing else here is
+  a tagged object -- a query is @kind@/@matcher@, a source test is
+  @source@/@matches@, a comparison is its operator -- so a @tag@ can only be a
+  criterion, and wrapping it in @{"criteria": ...}@ is a ceremony that is easy
+  to leave off and silent when it is: the condition falls through to an empty
+  query and reads as false. -}
+  Object o
+    | KeyMap.member "tag" o
+    , not (KeyMap.member "criteria" o) ->
+        runReadCondition env (object ["criteria" .= condition])
   Object o | Just criteria <- KeyMap.lookup "criteria" o -> case decodeWith env criteria of
     Nothing -> pure False
     Just criterion -> do
@@ -1246,7 +1257,7 @@ runWithSkillTest env spec = case spec of
       let env' = KeyMap.insert (bindingName o "skillTestId") (toJSON sid) env
       runSteps env' (subStepsOf o)
       {- "If you succeed, …" on a test this card did NOT start.
-      
+
       The test-starting steps carry the same two keys, and they are the same
       thing said about a different test: a card played into someone else's test
       -- "reveal an additional token; if you succeed, deal 2 damage" -- has no
@@ -1342,13 +1353,14 @@ runChoose env spec = case spec of
                 Just t -> targetLabel t (msgs <> continue)
                 Nothing -> Label (textField env opt "label" "Choose") (msgs <> continue)
       _ -> pure []
-    {- "You may ...": a way out of the loop, offered beside whatever is still
-    possible. Only when something is -- an ask holding nothing but "Done" is a
-    click that does nothing. -}
+    {- "You may ...": a way out, offered beside whatever is still possible. For
+    a one-at-a-time choice it ends the loop; for a single one it declines the
+    whole choice, which is what "you may" means on a card that offers one
+    thing. Only when something is possible -- an ask holding nothing but "Done"
+    is a click that does nothing. -}
     let done =
           [ Label (textField env o "done" "Done") []
-          | oneAtATime
-          , KeyMap.member "done" o
+          | KeyMap.member "done" o
           , not (all null labels)
           ]
     unless (all null labels) $ Prompt.chooseOne iid (concat labels <> done)
@@ -1476,8 +1488,11 @@ runChooseFrom env spec = case spec of
         Just (String n) -> Key.fromText n
         _ -> "chosen"
       steps = maybe [] subSteps (KeyMap.lookup "steps" o)
-      kind = case KeyMap.lookup "query" o of
-        Just (Object q) | Just (String k) <- KeyMap.lookup "kind" q -> k
+      -- An @over@ list has no query to say what is in it, so the kind can be
+      -- named beside it; otherwise the query already said.
+      kind = case (KeyMap.lookup "kind" o, KeyMap.lookup "query" o) of
+        (Just (String k), _) -> k
+        (_, Just (Object q)) | Just (String k) <- KeyMap.lookup "kind" q -> k
         _ -> ""
     -- Shown as the thing itself. Three cards all labelled "Choose" is no
     -- choice at all, the same way two events both reading "Play an event"

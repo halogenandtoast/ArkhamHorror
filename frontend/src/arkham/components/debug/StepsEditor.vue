@@ -500,6 +500,20 @@ const OUTCOME_LEGENDS: Record<string, string> = {
  * than leaving both for the runner to pick between. */
 const overSource = (block: any) => (block?.over === undefined ? 'query' : 'over')
 
+/* What an `over` list holds, so each option can show as that thing. Clearing it
+ * drops the key rather than storing an empty one, and takes the per-option
+ * label with it — a kind names every option on its own. */
+const setOverKind = (index: number, step: any, kind: string) => {
+  const chooseFrom = { ...step.chooseFrom }
+  if (kind) {
+    chooseFrom.kind = kind
+    delete chooseFrom.label
+  } else {
+    delete chooseFrom.kind
+  }
+  set(index, { ...step, chooseFrom })
+}
+
 const setSource = (index: number, kind: 'chooseFrom' | 'forEach', source: string) => {
   const step = steps.value[index]
   const { over: _over, query: _query, ...rest } = step[kind] ?? {}
@@ -1471,7 +1485,7 @@ const removeOption = (step: any, index: number, at: number) =>
             type="Criterion"
             label="Only offered when (optional)"
             :bindings="innerScope(index)"
-            :modelValue="option.criteria?.criteria"
+            :modelValue="option.criteria?.criteria ?? (option.criteria?.tag ? option.criteria : undefined)"
             @update:modelValue="setOption(step, oi, { ...option, criteria: $event ? { criteria: $event } : undefined }, index)"
           />
           <!-- Said where it is created, the way every other binding in the
@@ -2301,6 +2315,16 @@ const removeOption = (step: any, index: number, at: number) =>
             @update:modelValue="set(index, { ...step, chooseFrom: { ...step.chooseFrom, over: $event } })"
           />
           <label>
+            Holding
+            <select
+              :value="step.chooseFrom?.kind ?? ''"
+              @change="setOverKind(index, step, ($event.target as HTMLSelectElement).value)"
+            >
+              <option value="">plain words — a trait, a skill, a number</option>
+              <option v-for="(_, kind) in queryKinds" :key="kind" :value="kind">{{ kind }}</option>
+            </select>
+          </label>
+          <label v-if="!step.chooseFrom?.kind">
             Label each option
             <input
               :value="step.chooseFrom?.label"
@@ -2310,8 +2334,11 @@ const removeOption = (step: any, index: number, at: number) =>
             />
           </label>
           <p class="hint">
-            An entity shows as itself; a list has nothing behind it to show, so each option reads as
-            the value when that is already a word — a trait, a skill — and otherwise as this.
+            A matcher's options show as the thing itself; a list has nothing behind it to show unless
+            it says what it holds. Say so and each option is that card or entity; leave it as plain
+            words and the option reads as the value — a trait, a skill — or as the label above. One
+            label for every option is no choice at all, so name the kind whenever the list holds
+            cards.
           </p>
         </template>
         <StepsEditor

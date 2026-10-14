@@ -6,14 +6,16 @@ import Arkham.Custom.Ability (
   customAbilities,
   customModifiers,
   isCustomAbility,
+  playWindowBindings,
   runCustomAbility,
   runCustomHandlers,
-  playWindowBindings,
   runCustomRevelation,
   runCustomStepsIn,
   pattern ZonedUseThisAbility,
  )
 import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Use (toModifiedStartingUses)
+import Data.Map.Strict qualified as Map
 
 newtype CustomEvent = CustomEvent EventAttrs
   deriving anyclass IsEvent
@@ -36,11 +38,15 @@ instance RunMessage CustomEvent where
     -- What the event does when it is played: the common case, so it gets a
     -- place of its own rather than being written as a listener.
     PlayThisEvent iid (is attrs -> True) -> do
+      -- Nothing places an event's printed uses: every official event with them
+      -- sets its own tokens as it plays. A custom one has only the def's `uses`
+      -- field to say so, so that field is honoured here.
+      uses <- toModifiedStartingUses attrs (eventPrintedUses attrs)
       -- What a fast event was played ON is most of what it then does, so the
       -- window it answered is bound for its steps.
       windowEnv <- playWindowBindings attrs iid (eventWindows attrs)
       runCustomStepsIn attrs iid windowEnv "_onPlay"
-      pure x
+      pure $ CustomEvent $ attrs & tokensL %~ Map.unionWith (+) uses . coerce
     -- What it does when it is revealed. Not an ability: no one activates it, and
     -- the card may have to place itself before the engine tidies it away.
     Revelation iid (isSource attrs -> True) -> do

@@ -327,12 +327,14 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
     -- way), so an in-play copy of the same card -- whose id is random -- never
     -- answers true here.
     committed <- fieldMap InvestigatorCommittedCards (map toCardId) iid
-    pure $ case source of
-      AssetSource aid -> unsafeToCardId aid `elem` committed
-      EventSource eid -> unsafeToCardId eid `elem` committed
-      SkillSource sid -> unsafeToCardId sid `elem` committed
-      TreacherySource tid -> unsafeToCardId tid `elem` committed
-      _ -> False
+    case source of
+      AssetSource aid -> pure $ unsafeToCardId aid `elem` committed
+      EventSource eid -> pure $ unsafeToCardId eid `elem` committed
+      TreacherySource tid -> pure $ unsafeToCardId tid `elem` committed
+      -- A committed skill is the one kind that gets a real entity, with an id
+      -- of its own, so the card has to be read off it rather than out of it.
+      SkillSource sid -> maybe False ((`elem` committed) . toCardId) <$> fieldMay SkillCard sid
+      _ -> pure False
   Criteria.InYourHand -> do
     hand <-
       liftA2
@@ -540,6 +542,7 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
             StorySource sid -> maybe (pure False) (onSameLocation iid) =<< fieldMay StoryPlacement sid
             AssetSource aid -> maybe (pure False) (onSameLocation iid) =<< fieldMay AssetPlacement aid
             EnemySource eid -> maybe (pure False) (onSameLocation iid) =<< fieldMay EnemyPlacement eid
+            EventSource eid -> maybe (pure False) (onSameLocation iid) =<< fieldMay EventPlacement eid
             ConcealedCardSource cid -> maybe (pure False) (onSameLocation iid) =<< fieldMay ConcealedCardPlacement cid
             TreacherySource tid -> maybe (pure False) (onSameLocation iid) =<< fieldMay TreacheryPlacement tid
             LocationSource lid -> maybe (pure False) (onSameLocation iid) (Just $ AtLocation lid)

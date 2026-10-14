@@ -611,15 +611,14 @@ defaultAbilityLimit = \case
   -- not, and the act's Objective was offered once per seat (#5761). The period still
   -- scopes the bucket: PerWindow intersects `usedAbilityWindows`, PerTest is cleared at
   -- SkillTestEnds, and PerMove is rewritten to PerMovement by `upgradePerMove`.
-  ForcedAbility window' -> case window' of
-    SkillTestResult {} -> GroupLimit PerTest 1
-    Moves {} -> GroupLimit PerMove 1
-    Enters timing _ _ | timing /= #after -> GroupLimit PerMove 1
-    Enters timing _ _ | timing == #after -> GroupLimit PerWindow 1
-    EnemySpawns {} -> GroupLimit PerSpawn 1
-    _ -> GroupLimit PerWindow 1
-  SilentForcedAbility _ -> GroupLimit PerWindow 1
-  ForcedAbilityWithCost _ _ -> GroupLimit PerWindow 1
+  -- The three Forced shapes share one table: which window it is decides the
+  -- period, not which of them was written. A silent forced on a
+  -- `SkillTestResult` window used to take the bare `PerWindow` bucket, and a
+  -- criterion that stays true for the whole test then had nothing to stop it
+  -- firing again -- the message loop runs until the request times out.
+  ForcedAbility window' -> forcedLimit window'
+  SilentForcedAbility window' -> forcedLimit window'
+  ForcedAbilityWithCost window' _ -> forcedLimit window'
   ReactionAbility _ _ _ -> PlayerLimit PerWindow 1
   CustomizationReaction {} -> PlayerLimit PerWindow 1
   ConstantReaction {} -> PlayerLimit PerWindow 1
@@ -633,6 +632,14 @@ defaultAbilityLimit = \case
   Cosmos -> NoLimit
   ForcedWhen _ aType -> defaultAbilityLimit aType
   ConstantAbility -> NoLimit
+ where
+  forcedLimit = \case
+    SkillTestResult {} -> GroupLimit PerTest 1
+    Moves {} -> GroupLimit PerMove 1
+    Enters timing _ _ | timing /= #after -> GroupLimit PerMove 1
+    Enters timing _ _ | timing == #after -> GroupLimit PerWindow 1
+    EnemySpawns {} -> GroupLimit PerSpawn 1
+    _ -> GroupLimit PerWindow 1
 
 decreaseAbilityActionCost :: Ability -> Int -> Ability
 decreaseAbilityActionCost ab n = modifyAbilityCost (`decreaseActionCost` n) ab

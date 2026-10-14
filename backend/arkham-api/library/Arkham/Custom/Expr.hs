@@ -58,17 +58,16 @@ import Arkham.Helpers.SkillTest (
   getSkillTestSkillTypes,
  )
 import Arkham.Helpers.SkillTest.Target (getSkillTestTarget)
+import Arkham.Homebrew.Defs (allTraits)
 import Arkham.Id
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Location.Types (Location)
-import Arkham.Skill.Types (Skill)
 import Arkham.Matcher
 import Arkham.Name (toTitle)
-import Arkham.Homebrew.Defs (allTraits)
 import Arkham.Prelude
-import Arkham.SkillTestResult
 import Arkham.Projection
 import Arkham.Query (QueryElement)
+import Arkham.Skill.Types (Skill)
 import Arkham.SkillTest.Base (
   skillTestAdditionalRevealedChaosTokens,
   skillTestCommittedCards,
@@ -77,6 +76,7 @@ import Arkham.SkillTest.Base (
   skillTestResult,
   skillTestRevealedChaosTokens,
  )
+import Arkham.SkillTestResult
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (parseMaybe)
@@ -243,11 +243,27 @@ exprInt env = fmap toInt . evalExpr env
 {- | What @field@ reads: a key of an object, or -- when the key is a number --
 that position in a list.
 -}
+
+{- | A field of a serialized value, by the name a card author would write.
+
+Every Haskell record prefixes its fields with its own type -- a chaos token's
+face is @chaosTokenFace@, not @face@ -- which is a name nobody writing a card
+knows. So a miss falls back to the one field whose name ends with the key: one
+and only one, because two would be a guess rather than a reading.
+-}
 jsonField :: Text -> Value -> Value
 jsonField key = \case
-  Object o -> fromMaybe Null (KeyMap.lookup (Key.fromText key) o)
+  Object o -> case KeyMap.lookup (Key.fromText key) o of
+    Just v -> v
+    Nothing -> case [v | (k, v) <- KeyMap.toList o, Key.toText k `endsWithKey` key] of
+      [v] -> v
+      _ -> Null
   Array xs | Just i <- readMay (T.unpack key) -> fromMaybe Null (toList xs !!? i)
   _ -> Null
+ where
+  endsWithKey candidate k = case T.uncons k of
+    Just (c, rest) -> (T.toUpper (T.singleton c) <> rest) `T.isSuffixOf` candidate
+    Nothing -> False
 
 valueList :: Value -> [Value]
 valueList = \case

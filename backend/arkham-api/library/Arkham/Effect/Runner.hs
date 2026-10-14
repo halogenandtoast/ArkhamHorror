@@ -203,6 +203,7 @@ instance RunMessage EffectAttrs where
       getSkillTestInvestigator >>= \case
         Just iid -> pure $ replaceNextSkillTest sid iid a
         Nothing -> pure a
+    NextCardPlayed iid card -> pure $ replaceNextCardPlayed iid card a
     RepeatSkillTest sid stId | isEndOfWindow a (EffectSkillTestWindow stId) -> do
       getSkillTest >>= \case
         Nothing -> pure a

@@ -48,9 +48,18 @@ const value = () => props.modelValue ?? {}
 const formOf = (): string => {
   const v = value()
   if ('criteria' in v) return 'criteria'
+  // A bare criterion: nothing else here is a tagged object, and the engine
+  // reads one as a criterion, so the editor has to as well or it rewrites it
+  // to an empty query on save.
+  if ('tag' in v) return 'criteria'
   if ('source' in v || 'matches' in v) return 'source'
   if (COMPARISONS.some((c) => c in v)) return 'compare'
   return 'query'
+}
+
+const criterionOf = () => {
+  const v = value()
+  return 'criteria' in v ? v.criteria : 'tag' in v ? v : null
 }
 
 const comparisonOf = (): string => COMPARISONS.find((c) => c in value()) ?? 'eq'
@@ -120,7 +129,7 @@ const matcherType = (kind: string | undefined) => props.queryKinds[kind ?? 'enem
         :bindings="bindings"
         type="Criterion"
         label="Criterion"
-        :modelValue="modelValue?.criteria"
+        :modelValue="criterionOf()"
         @update:modelValue="emit('update:modelValue', { criteria: $event })"
       />
       <p class="hint">

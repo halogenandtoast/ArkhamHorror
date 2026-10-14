@@ -38,3 +38,24 @@ unplayability does not depend on that: any always-true criterion does it.
 Nothing static catches this. The def validates, every constructor exists, no binding
 is unbound, and the ability is well formed. It is only visible by playing the card
 and noticing the step counter stay put.
+
+## What actually stops a Forced repeating
+
+`defaultAbilityLimit` gives every Forced shape a *group* limit, and the window
+decides the period: a `SkillTestResult` window is `PerTest`, `Moves` and a
+non-after `Enters` are `PerMove`, `EnemySpawns` is `PerSpawn`, everything else
+`PerWindow`. The period is what a permanently-true criterion runs up against --
+`PerWindow` only intersects `usedAbilityWindows`, so if the same window is
+re-raised the bucket is empty again and the ability fires once more.
+
+`SilentForcedAbility` used to take a bare `PerWindow 1` whatever its window,
+which is why a silent forced on a `SkillTestResult` window looped: the test
+re-raises its result window while resolving, the bucket never matched, and the
+message loop ran until `RunMessagesTimeout` (30s) turned the request into a
+**500**. All three Forced shapes now share one table.
+
+So the two symptoms of an always-true Forced differ by where it is:
+
+* in a *play* window -- the card is simply unplayable, 200 with nothing moving;
+* in a window that is re-raised during resolution -- the request hangs for 30
+  seconds and comes back 500 with `RunMessagesTimeout` in the log.

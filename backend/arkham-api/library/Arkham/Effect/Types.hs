@@ -15,8 +15,9 @@ import Arkham.EffectMetadata
 import {-# SOURCE #-} Arkham.Helpers.Ref
 import Arkham.Id
 import Arkham.Json
+import Arkham.Matcher.Card (CardMatcher (CardWithId))
 import Arkham.Message
-import Arkham.Modifier (Modifier (..))
+import Arkham.Modifier (Modifier (..), ModifierType (ReduceCostOf))
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
@@ -144,6 +145,39 @@ replaceNextSkillTest :: SkillTestId -> InvestigatorId -> EffectAttrs -> EffectAt
 replaceNextSkillTest sid iid = mapEffectWindows \case
   EffectNextSkillTestWindow iid' | iid == iid' -> EffectSkillTestWindow sid
   a -> a
+
+{- | Bind a waiting "next card you play" window to the card whose play has just
+begun: from here on it is that card's cost window, so it is disabled when the
+card finishes being paid for.
+
+The cost modifiers it carries are narrowed to that one card at the same time.
+They sit on the investigator, so until the card is known they read as "every
+matching card costs less" -- which is what makes the card look affordable before
+it is played. Left that wide after binding they would go on reducing the cost of
+every card until the end of the round.
+-}
+replaceNextCardPlayed :: InvestigatorId -> Card -> EffectAttrs -> EffectAttrs
+replaceNextCardPlayed iid card attrs
+  | not bound = attrs
+  | otherwise =
+      (mapEffectWindows rePoint attrs) {effectMetadata = narrow <$> effectMetadata attrs}
+ where
+  waiting = \case
+    EffectNextCardPlayedWindow iid' matcher -> iid == iid' && card `cardMatch` matcher
+    _ -> False
+  bound = any waiting $ toEffectWindowList (effectWindow attrs)
+  rePoint w = if waiting w then EffectCardCostWindow (toCardId card) else w
+  narrow = \case
+    EffectModifiers ms -> EffectModifiers (map narrowModifier ms)
+    other -> other
+  narrowModifier m = m {modifierType = narrowType m.modifierType}
+  -- Only 'ReduceCostOf', whose matcher is a plain 'CardMatcher' and so can be
+  -- tested here. 'IncreaseCostOf' takes an extended matcher, which needs the
+  -- game to answer.
+  narrowType = \case
+    ReduceCostOf matcher n | card `cardMatch` matcher -> ReduceCostOf onlyThisCard n
+    other -> other
+  onlyThisCard = CardWithId (toCardId card)
 
 instance HasCardCode EffectAttrs where
   toCardCode = effectCardCode

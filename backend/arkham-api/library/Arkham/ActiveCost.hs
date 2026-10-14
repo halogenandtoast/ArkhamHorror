@@ -1763,6 +1763,9 @@ instance RunMessage ActiveCost where
               -- play off of Uncage the Soul)
               pushAll
                 $ (guard (notNull actions) *> [BeginAction, beforeWindowMsg])
+                -- Before the costs, so an effect waiting on "the next card you
+                -- play" is bound to this card by the time it is paid for.
+                <> [NextCardPlayed iid card]
                 <> mEffect
                 <> [ wouldPayWindowMsg
                    , Would

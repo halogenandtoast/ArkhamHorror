@@ -3,7 +3,7 @@ module Arkham.Homebrew.AgesUnwound.Sets (
   pattern AWorldTornDown,
   pattern AWorldTornDownAgain,
   pattern AYearToPlan,
-  pattern AgentsOfChronos,
+  pattern AgentsOfAforgomon,
   pattern Missions,
   pattern Myriad,
   pattern NightOfFire,
@@ -15,7 +15,7 @@ module Arkham.Homebrew.AgesUnwound.Sets (
   pattern Thugs,
   pattern TimeRunsOut,
   pattern UnleashedChaos,
-  pattern UnravellingYears,
+  pattern UnravellingAges,
   pattern Unstuck,
 ) where
 
@@ -33,9 +33,9 @@ pattern AWorldTornDownAgain = Homebrew ":ages-unwound:a_world_torn_down_again"
 pattern AYearToPlan :: EncounterSet
 pattern AYearToPlan = Homebrew ":ages-unwound:a_year_to_plan"
 
--- | Shared; the guide calls this set "Agents of Aforgomon".
-pattern AgentsOfChronos :: EncounterSet
-pattern AgentsOfChronos = Homebrew ":ages-unwound:agents_of_chronos"
+-- | Shared.
+pattern AgentsOfAforgomon :: EncounterSet
+pattern AgentsOfAforgomon = Homebrew ":ages-unwound:agents_of_aforgomon"
 
 -- | gathered only by Scenario V, but large and self-contained.
 pattern Missions :: EncounterSet
@@ -81,9 +81,9 @@ pattern TimeRunsOut = Homebrew ":ages-unwound:time_runs_out"
 pattern UnleashedChaos :: EncounterSet
 pattern UnleashedChaos = Homebrew ":ages-unwound:unleashed_chaos"
 
--- | Shared; the guide calls this set "Unravelling Ages".
-pattern UnravellingYears :: EncounterSet
-pattern UnravellingYears = Homebrew ":ages-unwound:unravelling_years"
+-- | Shared.
+pattern UnravellingAges :: EncounterSet
+pattern UnravellingAges = Homebrew ":ages-unwound:unravelling_ages"
 
 -- | Scenario IV.
 pattern Unstuck :: EncounterSet

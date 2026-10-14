@@ -243,13 +243,12 @@ instance RunMessage AWorldTornDownAgain where
       Again, Night of the Ritual, Agents of Aforgomon, Myriad, Nyctophobia, Thugs,
       Unleashed Chaos."
 
-      The guide's "Agents of Aforgomon" is the data's @agents_of_chronos@.
       Unleashed Chaos goes straight to the set-aside pool: setup sets "each copy of
       Unleashed Chaos" aside and act 2c /Chaos/ or /Backfire/ is what shuffles them
       in. -}
       gather Set.AWorldTornDownAgain
       gather Set.NightOfTheRitual
-      gather Set.AgentsOfChronos
+      gather Set.AgentsOfAforgomon
       gather Set.Myriad
       gather Set.Nyctophobia
       gather Set.Thugs

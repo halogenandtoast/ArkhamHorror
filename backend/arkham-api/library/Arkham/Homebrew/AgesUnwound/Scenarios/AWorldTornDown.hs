@@ -154,15 +154,14 @@ instance RunMessage AWorldTornDown where
       Down, Night of the Ritual, Agents of Aforgomon, Myriad, Nyctophobia, Thugs,
       Time Spirits, Unleashed Chaos."
 
-      The guide's "Agents of Aforgomon" is the data's @agents_of_chronos@. "Time
-      Spirits" is not an encounter set at all -- it is this campaign's Time Spirit
-      enemy, which lives in @night_of_fire@ -- so only that card is gathered from
-      there. Unleashed Chaos goes straight to the set-aside pool: setup step 3
+      "Time Spirits" is not an encounter set at all -- it is this campaign's Time
+      Spirit enemy, which lives in @night_of_fire@ -- so only that card is gathered
+      from there. Unleashed Chaos goes straight to the set-aside pool: setup step 3
       sets "each copy of Unleashed Chaos" aside, and /Backfire/ is what shuffles
       them in. -}
       gather Set.AWorldTornDown
       gather Set.NightOfTheRitual
-      gather Set.AgentsOfChronos
+      gather Set.AgentsOfAforgomon
       gather Set.Myriad
       gather Set.Nyctophobia
       gather Set.Thugs

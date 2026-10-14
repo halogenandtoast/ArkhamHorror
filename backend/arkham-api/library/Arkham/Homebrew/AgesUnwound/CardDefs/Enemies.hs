@@ -370,7 +370,7 @@ fateweaver =
 
 chronophage :: CardDef
 chronophage =
-  (enemy ":ages-unwound:218" "Chronophage" Set.AgentsOfChronos 1)
+  (enemy ":ages-unwound:218" "Chronophage" Set.AgentsOfAforgomon 1)
     { cdFight = fight 4
     , cdHealth = health 4
     , cdEvade = evade 3

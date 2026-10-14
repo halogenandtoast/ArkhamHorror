@@ -107,15 +107,13 @@ instance RunMessage NightOfFire where
       {- "Gather all cards from the following encounter sets: Night of Fire,
       Agents of Aforgomon, Nyctophobia, Thugs and Unravelling Ages."
 
-      The 2022 guide's "Agents of Aforgomon" and "Unravelling Ages" are the card
-      data's @agents_of_chronos@ and @unravelling_years@; the data wins on names.
-      Agents of Chronos is gathered straight to the set-aside pool rather than
+      Agents of Aforgomon is gathered straight to the set-aside pool rather than
       the encounter deck -- see the set-aside step below. -}
       gather Set.NightOfFire
       gather Set.Nyctophobia
       gather Set.Thugs
-      gather Set.UnravellingYears
-      gatherAndSetAside Set.AgentsOfChronos
+      gather Set.UnravellingAges
+      gatherAndSetAside Set.AgentsOfAforgomon
 
       {- "Set Myriad Assassin, Irregulars, each copy of Eternity's Sentinel, each
       copy of Time Spirit and the Agents of Aforgomon encounter set aside, out of

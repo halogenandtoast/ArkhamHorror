@@ -21,10 +21,6 @@ newtype Hunted = Hunted AgendaAttrs
 hunted :: AgendaCard Hunted
 hunted = agenda (1, A) Hunted Cards.hunted (Static 3)
 
-{- | "Doom on cards other than this agenda subtracts from the total doom in play
-instead of adding to it." Shared by all three Night of Fire agendas, and the
-reason Eternity's Sentinel's self-inflicted doom buys the investigators time.
--}
 instance HasModifiersFor Hunted where
   getModifiersFor (Hunted a) = modifySelf a [OtherDoomSubtracts]
 
@@ -34,8 +30,6 @@ instance HasAbilities Hunted where
 
 instance RunMessage Hunted where
   runMessage msg a@(Hunted attrs) = runQueueT $ nightOfFireI18n $ case msg of
-    -- "Forced - At the end of your turn, if you did not move at least once
-    -- during your turn: Test [agility] (2). If you fail, take 1 damage."
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 2)
@@ -62,11 +56,10 @@ instance RunMessage Hunted where
 
       {- "Shuffle Myriad Assassin, Irregulars and the Agents of Aforgomon
       encounter set into the encounter deck, along with the encounter discard
-      pile." The guide's "Agents of Aforgomon" is the data's
-      @agents_of_chronos@. -}
+      pile." -}
       shuffleSetAsideIntoEncounterDeck
         $ mapOneOf cardIs [Enemies.myriadAssassin, Enemies.irregulars]
-      shuffleSetAsideEncounterSet Set.AgentsOfChronos
+      shuffleSetAsideEncounterSet Set.AgentsOfAforgomon
       shuffleEncounterDiscardBackIn
 
       -- "Advance to act 2a and agenda 2a."

@@ -18,10 +18,13 @@ ancientAltar :: LocationCard AncientAltar
 ancientAltar = location AncientAltar Cards.ancientAltar 4 (PerPlayer 2)
 
 instance HasModifiersFor AncientAltar where
-  getModifiersFor (AncientAltar a) = do
-    -- Back: "Investigators cannot enter Ancient Altar unless there are 3 or more
-    -- Glyph cards in the victory display." and "Entering Ancient Altar from East
-    -- Antechamber costs 4 clues (as a group) per investigator."
+  getModifiersFor (AncientAltar a) = whenUnrevealed a do
+    -- Front: "You cannot enter this location unless there are 3 or more Glyph
+    -- cards in the victory display." and "As an additional cost to enter Ancient
+    -- Altar, investigators at East Antechamber must spend 4 clues, as a group."
+    --
+    -- Both are printed on the *unrevealed* face, so they only ever bar the entry
+    -- that reveals the Altar -- once it is face up neither one is in play.
     --
     -- Both modifiers belong on the investigators who might *enter* the Altar, not
     -- on the ones standing on it: a CannotEnter/AdditionalCostToEnterMatching held

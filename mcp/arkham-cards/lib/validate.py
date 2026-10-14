@@ -25,6 +25,7 @@ what saving reports only as a shrug.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -1250,7 +1251,41 @@ def _check_ability_spec(spec: Any, path: str, card_bindings: set, problems: list
             Problem("warning", f"{path}.{key}", "an ability spec never reads this key",
                     fix=f"it reads: {', '.join(DSL['specs']['_abilities'])}")
         )
+    _check_window_reads(spec, path, problems)
     _walk_steps(spec.get("steps") or [], f"{path}.steps", card_bindings, problems)
+
+
+def _check_window_reads(spec: dict, path: str, problems: list) -> None:
+    """`$w0`, `$w1` ... read the window's fields by position.
+
+    Past the end they read as nothing, and whatever they fed quietly does
+    nothing -- a criterion that is never true, a query that finds nobody. The
+    field count is in the schema whenever the matcher and the window share a
+    name, which is most of them; where they differ there is nothing to check
+    against and the read is left alone.
+    """
+    window = ((spec.get("type") or {}).get("window") or {})
+    tag = window.get("tag") if isinstance(window, dict) else None
+    if not isinstance(tag, str):
+        return
+    entry = schema.types().get("WindowType")
+    if not entry:
+        return
+    fields = {c["name"]: len(c["fields"]) for c in entry["constructors"]}
+    if tag not in fields:
+        return
+    read = {int(n) for n in re.findall(r'"\$w(\d+)"', json.dumps(spec.get("steps") or []))}
+    for index in sorted(n for n in read if n >= fields[tag]):
+        problems.append(
+            Problem(
+                "error",
+                f"{path}.steps",
+                f'"$w{index}" is past the end of {tag}, which carries '
+                f'{fields[tag]} field(s), so it reads as nothing',
+                fix=f'read $w0..$w{fields[tag] - 1}, and reach inside one with '
+                '{"field": "<name>", "of": "$w0"}' if fields[tag] else "this window carries no fields",
+            )
+        )
 
 
 def lint(card_def: dict) -> list[Problem]:

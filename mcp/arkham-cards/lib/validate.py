@@ -1262,6 +1262,21 @@ def lint(card_def: dict) -> list[Problem]:
 
     card_bindings = _card_bindings(card_def)
 
+    # `Criteria.Self` asks whether the ability's SOURCE is the acting
+    # investigator, so it is only ever true on an investigator card. Anywhere
+    # else it is a criterion that never holds, and the ability it guards simply
+    # never fires.
+    if card_def.get("cardType") != "InvestigatorType" and '"Self"' in json.dumps(meta):
+        problems.append(
+            Problem(
+                "error",
+                "meta",
+                '"Self" holds only when the source is an investigator, so on a '
+                f'{card_def.get("cardType")} it is always false',
+                fix="drop it, or say what you meant about this card another way",
+            )
+        )
+
     for index, spec in enumerate(meta.get("_abilities") or []):
         _check_ability_spec(spec, f"meta._abilities[{index}]", card_bindings, problems)
 

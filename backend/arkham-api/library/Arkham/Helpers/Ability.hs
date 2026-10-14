@@ -22,7 +22,7 @@ import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (getModifiers, withoutModifier)
 import Arkham.Helpers.Query (allInvestigators, getActiveInvestigatorId)
 import Arkham.Helpers.Scenario (getScenarioDeck)
-import Arkham.Helpers.Window (getThatEnemy, getThatInvestigator, windowMatches)
+import Arkham.Helpers.Window (getThatEnemy, getThatInvestigator, windowInvestigator, windowMatches)
 import Arkham.Homebrew.Defs (homebrewActionAffordability)
 import Arkham.I18n (cardNameVar, ikey', varStr, withI18n)
 import Arkham.Id
@@ -36,7 +36,6 @@ import Arkham.Scenario.Deck
 import Arkham.Source
 import Arkham.Target
 import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 getAbility :: HasGame m => AbilityRef -> m (Maybe Ability)
 getAbility ref = selectOne (Matcher.AbilityIs ref.source ref.index)
@@ -697,22 +696,22 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
             ((Just cardDef.title ==) . fmap toTitle . abilityCardDef . abilityLimit . usedAbility)
             usedAbilities'
       PerInvestigatorLimit _ n -> do
-        -- This is difficult and based on the window, so we need to match out the
-        -- relevant investigator ids from the window. If this becomes more prevalent
-        -- we may want a method from `Window -> Maybe InvestigatorId`
+        {- Which investigator the bucket belongs to comes from the window, via
+        `windowInvestigator`. Only `CommittedCard` was read before, so this
+        limit on any other window answered False and the ability was never
+        performable -- an ability silently switched off by the limit meant to
+        meter it. -}
         anyM
           ( \window ->
-              case windowType window of
-                Window.CommittedCard iid' _ -> do
+              case windowInvestigator (windowType window) of
+                Nothing -> pure False
+                Just iid' -> do
                   let
-                    matchingPerInvestigatorCount =
-                      flip count usedAbilities $ \usedAbility' ->
-                        flip any (usedAbilityWindows usedAbility') $ \case
-                          (windowType -> Window.CommittedCard iid'' _) ->
-                            usedAbility usedAbility' == ability && iid' == iid''
-                          _ -> False
-                  pure $ matchingPerInvestigatorCount < n
-                _ -> pure False
+                    sameSeat used =
+                      usedAbility used
+                        == ability
+                        && any ((== Just iid') . windowInvestigator . windowType) (usedAbilityWindows used)
+                  pure $ count sameSeat usedAbilities < n
           )
           ws
       GroupLimit PerCampaign n -> do

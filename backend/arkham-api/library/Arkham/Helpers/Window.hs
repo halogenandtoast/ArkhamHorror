@@ -66,7 +66,7 @@ import Arkham.Token
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window
 import Arkham.Window qualified as Window
-import Control.Lens (over, transform)
+import Control.Lens (over, toListOf, transform)
 import Control.Monad.Trans.Class
 import Data.Data (cast, gmapQ)
 import Data.Data.Lens (biplate)
@@ -133,6 +133,16 @@ pendingWindowEffect window = case (windowTiming window, windowType window) of
     Damaged target' _ -> target == target'
     CheckDefeated _ target' -> target == target'
     _ -> False
+
+{- | The investigator a window is about, for a per-investigator limit.
+
+Read off the shape rather than enumerated: a window that names a seat carries
+it as its first 'InvestigatorId', and there are far too many window types for a
+hand-written list to stay true as new ones arrive. A window that names none has
+no per-investigator bucket, which is the honest answer for it.
+-}
+windowInvestigator :: WindowType -> Maybe InvestigatorId
+windowInvestigator = listToMaybe . toListOf biplate
 
 windows :: [WindowType] -> [Message]
 windows windows' = [CheckWindows $ map (mkWindow timing) windows' | timing <- [#when, #at, #after]]

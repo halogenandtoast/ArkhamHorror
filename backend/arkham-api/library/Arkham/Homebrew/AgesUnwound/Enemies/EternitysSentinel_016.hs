@@ -43,10 +43,10 @@ instance HasAbilities EternitysSentinel_016 where
     extend
       a
       [ mkAbility a 1 $ forced $ EnemyAttacks #after Anyone AnyEnemyAttack (be a)
-      , restricted a 2 (thisExists a $ EnemyWithPlacement Global)
-          $ forced
+      , restricted a 2 (thisExists a $ EnemyWithPlacement InTheShadows)
+          $ silent
           $ LocationEntersPlay #after Anywhere
-      , restricted a 3 (thisExists a $ EnemyWithPlacement Global) $ forced $ RoundEnds #when
+      , restricted a 3 (thisExists a $ EnemyWithPlacement InTheShadows) $ forced $ RoundEnds #when
       ]
 
 instance RunMessage EternitysSentinel_016 where
@@ -54,13 +54,20 @@ instance RunMessage EternitysSentinel_016 where
     {- "Forced - After Eternity's Sentinel attacks: Place it next to the Arkham
     Streets deck (it is still in play, but at no location)."
 
-    'Global' is the engine's in-play-at-no-location placement (Hastur in Dim
-    Carcosa, Atlach-Nacha at the centre of its web) and is the one the frontend
-    draws in its own row. Engagement needs a shared location, so it is dropped
-    explicitly on the way out. -}
+    'InTheShadows' rather than 'Global': both are in play at no location, but
+    @onSameLocation@ answers True for 'Global' (Hastur in Dim Carcosa and
+    Atlach-Nacha are meant to be fought from anywhere), which satisfies the
+    standard fight criteria and leaves this one attackable while it sits beside
+    the deck. 'InTheShadows' answers False there, and also refuses damage from
+    player sources and any move or location entry -- which is what "Cannot be
+    damaged" and a Sentinel out of reach want. The frontend draws that zone in
+    the scenario-cards area, beside the decks.
+
+    Engagement needs a shared location, so it is dropped explicitly on the way
+    out. -}
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       disengageFromAll attrs
-      place attrs Global
+      place attrs InTheShadows
       pure e
     -- "After a new Arkham Streets location is put into play, place Eternity's
     -- Sentinel at that location."

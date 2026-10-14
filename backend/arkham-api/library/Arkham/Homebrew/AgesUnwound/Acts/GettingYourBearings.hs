@@ -125,7 +125,7 @@ instance RunMessage GettingYourBearings where
             watcher <- getSetAsideCard Enemies.eternitysSentinel_017
             push $ ReplaceEnemy sentinel watcher Swap
           placement <- field EnemyPlacement sentinel
-          when (placement == Global)
+          when (placement == InTheShadows)
             $ push
             $ EnemySpawnAtLocationMatching Nothing (locationIs Locations.rivertown) sentinel
 

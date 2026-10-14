@@ -380,6 +380,18 @@ export function createGameContext(tableId: string, catalog: Catalog) {
       }
     } else await run()
     if (animate) (next.view?.game?.phasesEntered ?? []).forEach(announcePhase)
+    announceLosses(cur?.view?.game, next.view?.game)
+  }
+
+  /* An investigator leaving the table is the one change nobody should have to
+  notice for themselves; the log beside it says what did it. */
+  function announceLosses(before: Game | null | undefined, after: Game | null | undefined) {
+    if (!before || !after) return
+    for (const [iid, i] of Object.entries(after.investigators)) {
+      const was = before.investigators[iid]?.status
+      if (!was || was === i.status) continue
+      if (i.status === 'Defeated' || i.status === 'Devoured') flash(`${invName(iid)} is ${i.status.toLowerCase()}`)
+    }
   }
 
   // updates apply one at a time, so each is compared against the one before it

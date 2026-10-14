@@ -12,6 +12,7 @@ import AH3e.Types.Ids
 import AH3e.Types.Skill
 import AH3e.Types.State
 import Data.Map.Strict qualified as Map
+import Data.Text qualified as T
 
 {- | Tokens go back into the mythos cup, and the table's cards hear about it: a
 card may answer tokens being added or returned (The Star), wherever they came from.
@@ -311,3 +312,29 @@ allMarkers = uses (#board . #spaces) \spaces -> [(s.id, m) | s <- Map.elems spac
 
 markerSpace :: Text -> GameM (Maybe SpaceId)
 markerSpace color = listToMaybe . map fst . filter ((== color) . (.color) . snd) <$> allMarkers
+
+{- | What to call a source in the log, so a line can say what did the harm.
+An unknown card is "something", never nothing: a blank there is exactly the
+"I died and I don't know why" the log is meant to answer.
+-}
+harmSourceText :: Source -> GameM Text
+harmSourceText = \case
+  SourceMonster mid -> nameOf mid
+  SourceCard cid -> nameOf cid
+  SourceEncounter cid -> nameOf cid
+  SourceHeadline cid -> nameOf cid
+  SourceInvestigator iid -> (.name) <$> getInvestigatorDef iid
+  SourceCodex n -> pure ("Card " <> tshow (coerce n :: Int))
+  SourceMythos -> pure "the mythos"
+  SourceScenario -> pure "the scenario"
+  SourceRules -> pure "the rules"
+  SourceDebug -> pure "debug"
+ where
+  nameOf cid = do
+    known <- uses #cards (Map.member cid)
+    if known then (.name) <$> getCardDef cid else pure "something"
+
+-- | "2 damage", "1 horror", "2 damage and 1 horror".
+harmText :: Int -> Int -> Text
+harmText dmg hor =
+  T.intercalate " and " $ [tshow dmg <> " damage" | dmg > 0] <> [tshow hor <> " horror" | hor > 0]

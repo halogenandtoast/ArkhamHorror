@@ -774,6 +774,9 @@ body.log-open { padding-right:min(360px, 90vw); }
 .log-result.pass .log-badge { background:var(--ok); } .log-result.fail .log-badge { background:var(--doom); }
 .log-clue { border-left-color:var(--clue); }
 .log-doom { border-left-color:var(--doom); }
+.log-harm { border-left-color:var(--doom); }
+.log-heal { border-left-color:var(--ok); }
+.log-defeat { border-left-color:var(--doom); background:color-mix(in srgb, var(--doom) 16%, var(--bg)); font-weight:600; }
 .log-codex { border-left-color:var(--accent); font-weight:600; }
 .log-inv { border-left-color:#2e7d32; font-weight:600; }
 .log-warn { border-left-color:#e6a100; color:var(--muted); font-size:12px; }
@@ -961,3 +964,16 @@ details pre { max-height:400px; overflow:auto; font-size:11px; }
 .bug-dialog input, .bug-dialog textarea { font:inherit; width:100%; box-sizing:border-box; margin-bottom:8px; padding:6px 8px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--ink); }
 .bug-buttons { display:flex; justify-content:flex-end; }
 .bug-buttons button { margin:0 0 0 6px; }
+
+/* a doom or clue landing on the map: it drops in and glows where it appeared, so
+the mythos phase does not place tokens somewhere nobody is looking */
+.anchor .tok.placed { animation:tokPlace 1.2s ease-out; }
+.anchor .tok.placed.doom-glow { --glow:var(--doom); }
+.anchor .tok.placed.clue-glow { --glow:var(--clue); }
+@keyframes tokPlace {
+  0% { transform:scale(.3); filter:drop-shadow(0 0 0 var(--glow)); }
+  30% { transform:scale(1.5); filter:drop-shadow(0 0 9px var(--glow)) drop-shadow(0 0 20px var(--glow)); }
+  70% { transform:scale(1); filter:drop-shadow(0 0 7px var(--glow)) drop-shadow(0 0 16px var(--glow)); }
+  100% { transform:scale(1); filter:none; }
+}
+@media (prefers-reduced-motion: reduce) { .anchor .tok.placed { animation:none; } }

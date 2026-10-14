@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { img, isBroken, markBroken } from '@/assets'
 import { useGame } from '@/game/context'
 import MonsterCard from '@/game/MonsterCard.vue'
@@ -19,6 +19,18 @@ const monsters = computed(() =>
 const bystanders = computed(() =>
   (ctx.game.value!.bystanders ?? []).filter(([, sid]) => sid === props.sid).map(([cid]) => cid),
 )
+/* A token placed here lands with a glow, so a doom or clue dropped during the
+mythos phase says where it appeared rather than quietly turning up in a count.
+The key restarts the animation when a second one lands on the same space. */
+const placed = ref<Record<'doom' | 'clues', number>>({ doom: 0, clues: 0 })
+watch(
+  () => [space.value?.doom ?? 0, space.value?.clues ?? 0] as const,
+  ([doom, clues], [wasDoom, wasClues]) => {
+    if (doom > wasDoom) placed.value.doom++
+    if (clues > wasClues) placed.value.clues++
+  },
+)
+
 const allyBack = img('backs/ally.webp')
 // the round marker, or the whole standee when that is what they asked for
 const pieceSrc = (iid: string) =>
@@ -44,10 +56,22 @@ function dragEnd() {
 <template>
   <template v-if="space">
     <span v-if="space.doom" :style="{ viewTransitionName: cssName(`doom-${sid}`), display: 'inline-flex' }"
-      ><Tok name="doom" :count="space.doom" :title="`${space.doom} doom`"
+      ><Tok
+        :key="`doom${placed.doom}`"
+        class="doom-glow"
+        :class="{ placed: placed.doom > 0 }"
+        name="doom"
+        :count="space.doom"
+        :title="`${space.doom} doom`"
     /></span>
     <span v-if="space.clues" :style="{ viewTransitionName: cssName(`clue-${sid}`), display: 'inline-flex' }"
-      ><Tok name="clue" :count="space.clues" :title="`${space.clues} clues`"
+      ><Tok
+        :key="`clue${placed.clues}`"
+        class="clue-glow"
+        :class="{ placed: placed.clues > 0 }"
+        name="clue"
+        :count="space.clues"
+        :title="`${space.clues} clues`"
     /></span>
     <template v-for="(m, k) in space.markers" :key="`marker-${k}`">
       <Tok v-if="m.faceUp" :name="`${m.color}-marker`" :title="`${m.color} marker`" />

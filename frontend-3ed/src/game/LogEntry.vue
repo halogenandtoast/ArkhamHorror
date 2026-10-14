@@ -17,6 +17,8 @@ type Entry =
   | { kind: 'result'; n: number }
   | { kind: 'end'; win: boolean }
   | { kind: 'clue'; where: string }
+  | { kind: 'harm'; who: string; what: string; from: string; kinds: string[] }
+  | { kind: 'heal'; who: string; what: string; kinds: string[] }
   | { kind: 'doom'; text: string }
   | { kind: 'plain'; cls: string }
 
@@ -55,10 +57,24 @@ const entry = computed((): Entry => {
   if (/^The investigators (win|lose)/.test(line) || /win the game|lose the game/.test(line))
     return { kind: 'end', win: /win/.test(line) }
   if ((m = /^A clue spawns in (.+)$/.exec(line))) return { kind: 'clue', where: neighborhoodName(m[1]) }
+  // who hurt whom, with the tokens taken shown beside it
+  if ((m = /^(.+) suffers (.+) from (.+)$/.exec(line)))
+    return {
+      kind: 'harm',
+      who: m[1],
+      what: m[2],
+      from: m[3],
+      kinds: ['damage', 'horror'].filter((k) => m![2].includes(k)),
+    }
+  if ((m = /^(.+) heals (.+)$/.exec(line)))
+    return { kind: 'heal', who: m[1], what: m[2], kinds: ['damage', 'horror'].filter((k) => m![2].includes(k)) }
+  // the track that filled, and the removal that follows it: the answer to "why did I die"
+  if (/ has taken \d+\/\d+ (damage|horror)$| is (defeated|devoured)$/.test(line))
+    return { kind: 'plain', cls: 'log-defeat' }
   if (/^(Gate burst|Outbreak|An anomaly)/.test(line))
     return { kind: 'doom', text: line.replace(/in ([a-z-]+)$/, (_, id: string) => `in ${neighborhoodName(id)}`) }
   if (/^Card \d+ (added|flips)|^Scenario: /.test(line)) return { kind: 'plain', cls: 'log-codex' }
-  if (/joins the investigation| is (Defeated|Devoured|Retired)$/.test(line)) return { kind: 'plain', cls: 'log-inv' }
+  if (/joins the investigation| is retired$/.test(line)) return { kind: 'plain', cls: 'log-inv' }
   if (/data missing|unavailable|Missing|hasn't been entered/.test(line)) return { kind: 'plain', cls: 'log-warn' }
   if (line.length > 110) return { kind: 'plain', cls: 'log-story' }
   return { kind: 'plain', cls: '' }
@@ -97,6 +113,16 @@ const entry = computed((): Entry => {
   <li v-else-if="entry.kind === 'clue'" class="log-entry log-clue">
     <Tok name="clue" title="clue" :size="22" /><span
       >A clue spawns in <b>{{ entry.where }}</b></span
+    >
+  </li>
+  <li v-else-if="entry.kind === 'harm'" class="log-entry log-harm">
+    <Tok v-for="k in entry.kinds" :key="k" :name="k" :title="k" :size="22" /><span
+      ><b>{{ entry.who }}</b> suffers {{ entry.what }} from <b>{{ entry.from }}</b></span
+    >
+  </li>
+  <li v-else-if="entry.kind === 'heal'" class="log-entry log-heal">
+    <Tok v-for="k in entry.kinds" :key="k" :name="k" :title="k" :size="22" /><span
+      ><b>{{ entry.who }}</b> heals {{ entry.what }}</span
     >
   </li>
   <li v-else-if="entry.kind === 'doom'" class="log-entry log-doom">

@@ -893,15 +893,28 @@ dispatch msg = case msg of
     let full value taken = maybe False (\v -> v > 0 && taken >= v) value
         dead = maybe False (\d -> full d.health a.damage || full d.sanity a.horror) md
     when dead $ push (DiscardAsset cid)
-  ApplyHarm iid _ dmg hor -> do
+  ApplyHarm iid src dmg hor -> do
     investigatorL iid . #damage += dmg
     investigatorL iid . #horror += hor
+    -- who hurt them, said as it happens, so the defeat below has a cause above it
+    when (dmg > 0 || hor > 0) do
+      d <- getInvestigatorDef iid
+      from <- harmSourceText src
+      logText (d.name <> " suffers " <> harmText dmg hor <> " from " <> from)
     push (CheckDefeat iid)
   CheckDefeat iid -> do
     i <- getInvestigator iid
     h <- investigatorHealth iid
     s <- investigatorSanity iid
-    when (isPlaying i && (i.damage >= h || i.horror >= s)) $ push (DefeatInvestigator iid)
+    let byDamage = i.damage >= h
+    when (isPlaying i && (byDamage || i.horror >= s)) do
+      d <- getInvestigatorDef iid
+      let filled =
+            if byDamage
+              then tshow i.damage <> "/" <> tshow h <> " damage"
+              else tshow i.horror <> "/" <> tshow s <> " horror"
+      logText (d.name <> " has taken " <> filled)
+      push (DefeatInvestigator iid)
   DefeatInvestigator iid -> do
     removeInvestigator iid Defeated True
     -- a card may want them kept rather than put away (Scraping at the Door)
@@ -909,8 +922,15 @@ dispatch msg = case msg of
   DevourInvestigator iid -> removeInvestigator iid Devoured True
   RetireInvestigator iid -> removeInvestigator iid Retired False
   RecoverInvestigator iid hp sp -> do
+    before <- getInvestigator iid
     investigatorL iid . #damage %= max 0 . subtract hp
     investigatorL iid . #horror %= max 0 . subtract sp
+    -- what came off, not what was offered: healing 2 with 1 damage taken heals 1
+    after <- getInvestigator iid
+    let healed = harmText (before.damage - after.damage) (before.horror - after.horror)
+    unless (T.null healed) do
+      d <- getInvestigatorDef iid
+      logText (d.name <> " heals " <> healed)
     when (sp > 0) $ offerRecoverySanity (RecoveredInvestigator iid) =<< investigatorSpace iid
   RecoverAsset cid hp sp -> do
     assetL cid . #damage %= max 0 . subtract hp
@@ -1997,6 +2017,13 @@ assignableAssets iid NormalHarm limit current = do
       guard (room > 0)
       pure (cid, room)
 
+statusText :: InvestigatorStatus -> Text
+statusText = \case
+  Defeated -> "defeated"
+  Devoured -> "devoured"
+  Retired -> "retired"
+  s -> T.toLower (tshow s)
+
 removeInvestigator :: InvestigatorId -> InvestigatorStatus -> Bool -> GameM ()
 removeInvestigator iid status addDoom = do
   i <- getInvestigator iid
@@ -2018,7 +2045,7 @@ removeInvestigator iid status addDoom = do
           , delayed = False
           }
     d <- getInvestigatorDef iid
-    logText (d.name <> " is " <> tshow status)
+    logText (d.name <> " is " <> statusText status)
     when addDoom $ push (PlaceDoomOnSheet 1)
     t <- use #turn
     ph <- use #phase

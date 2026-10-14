@@ -915,6 +915,7 @@
       "location",
       "investigator",
       "asset",
+      "skill",
       "act",
       "card"
     ],
@@ -943,6 +944,7 @@
       "committedCards",
       "target",
       "skills",
+      "revealedTokens",
       "id"
     ],
     "transforms": [

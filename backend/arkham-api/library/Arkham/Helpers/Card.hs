@@ -300,6 +300,8 @@ passesLimits iid c = do
     -- Handled in 'passesPerLocationLimits' so it applies at the play location
     -- and so the mirror exclusion is enforced for unlimited cards too.
     LimitPerTraitPerLocation {} -> pure True
+    -- As above: a per-location limit is about the location, not the table.
+    LimitPerLocation {} -> pure True
 
 -- | The traits a card limits to "N per location" via 'LimitPerTraitPerLocation'.
 perLocationLimitTraits :: Card -> [(Trait, Int)]
@@ -366,7 +368,13 @@ cardPassesLimitsAtLocation c lid = do
       all (\(t, m) -> m > length (filter (sharesTrait t) attached)) (perLocationLimitTraits c)
     notExcluded =
       not $ any (\x -> any ((`elem` cTraits) . fst) (perLocationLimitTraits x)) attached
-  pure $ ownLimitsOk && notExcluded
+    -- "Limit 1 per location" counts copies of this card already there.
+    sameTitle x = nameTitle (toName x) == nameTitle (toName c)
+    copiesOk =
+      all
+        (\m -> m > length (filter sameTitle attached))
+        [m | LimitPerLocation m <- cdLimits (toCardDef c)]
+  pure $ ownLimitsOk && notExcluded && copiesOk
 
 cardIsFast :: HasGame m => Card -> m Bool
 cardIsFast = cardIsFast' getModifiers

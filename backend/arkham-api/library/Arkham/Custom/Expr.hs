@@ -61,6 +61,7 @@ import Arkham.Helpers.SkillTest.Target (getSkillTestTarget)
 import Arkham.Id
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Location.Types (Location)
+import Arkham.Skill.Types (Skill)
 import Arkham.Matcher
 import Arkham.Name (toTitle)
 import Arkham.Homebrew.Defs (allTraits)
@@ -68,7 +69,14 @@ import Arkham.Prelude
 import Arkham.SkillTestResult
 import Arkham.Projection
 import Arkham.Query (QueryElement)
-import Arkham.SkillTest.Base (skillTestResult, skillTestCommittedCards, skillTestIconValues, skillTestId)
+import Arkham.SkillTest.Base (
+  skillTestAdditionalRevealedChaosTokens,
+  skillTestCommittedCards,
+  skillTestIconValues,
+  skillTestId,
+  skillTestResult,
+  skillTestRevealedChaosTokens,
+ )
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (parseMaybe)
@@ -388,6 +396,14 @@ skillTestProp prop = case prop of
   test another investigator takes using it -- has to read one off the test it
   is talking about; a test may use more than one, so this is a list. -}
   "skills" -> toJSON <$> getSkillTestSkillTypes
+  {- Every token the test has turned over, additional reveals included. A card
+  that does something with "each token revealed during this test" has nowhere
+  else to read them from. -}
+  "revealedTokens" ->
+    getSkillTest <&> \case
+      Just st ->
+        toJSON (skillTestRevealedChaosTokens st <> skillTestAdditionalRevealedChaosTokens st)
+      Nothing -> toJSON ([] :: [Value])
   "id" -> maybe Null (toJSON . skillTestId) <$> getSkillTest
   _ -> pure Null
 
@@ -410,6 +426,9 @@ getProp kind prop v = case kind of
   "location" -> entityProp @Location prop v
   "investigator" -> entityProp @Investigator prop v
   "asset" -> entityProp @Asset prop v
+  -- A skill is an entity like the rest once it is on the table rather than in
+  -- a hand: attached to a location, or sitting on a test.
+  "skill" -> entityProp @Skill prop v
   "act" -> entityProp @Act prop v
   -- The cost as it stands, discounts and all -- what a card means when it talks
   -- about "this card's resource cost" rather than the number printed on it.

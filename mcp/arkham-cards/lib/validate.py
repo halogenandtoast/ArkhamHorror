@@ -84,6 +84,7 @@ FIELD_TYPE_FOR_KIND = {
     "enemy": "Field Enemy",
     "investigator": "Field Investigator",
     "location": "Field Location",
+    "skill": "Field Skill",
 }
 
 # Bound before any step runs, whatever the card is.
@@ -1228,6 +1229,19 @@ def lint(card_def: dict) -> list[Problem]:
         scope = set(card_bindings)
         if isinstance(on, str) and on in messages:
             scope |= {str(i) for i in range(len(messages[on]))}
+        for at, pair in enumerate(spec.get("requires") or []):
+            if not (isinstance(pair, list) and len(pair) == 2):
+                problems.append(
+                    Problem(
+                        "error",
+                        f"{path}.requires[{at}]",
+                        "a requires is a pair of values to compare",
+                        fix='write ["$2", "$source"]',
+                    )
+                )
+                continue
+            for side in pair:
+                _walk_expression(side, f"{path}.requires[{at}]", scope, problems)
         _walk_steps(spec.get("steps") or [], f"{path}.steps", scope, problems)
 
     for index, spec in enumerate(meta.get("_modifiers") or []):

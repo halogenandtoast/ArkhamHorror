@@ -57,6 +57,42 @@ data instance Field Skill :: Type -> Type where
   SkillPlacement :: Field Skill Placement
   SkillSealedChaosTokens :: Field Skill [ChaosToken]
 
+deriving stock instance Show (Field Skill typ)
+deriving stock instance Ord (Field Skill typ)
+
+instance ToJSON (Field Skill typ) where
+  toJSON = toJSON . show
+
+instance Typeable typ => FromJSON (Field Skill typ) where
+  parseJSON x = do
+    z <- parseJSON @(SomeField Skill) x
+    case z of
+      SomeField (f :: Field Skill k) -> case eqT @typ @k of
+        Just Refl -> pure f
+        Nothing -> error "type mismatch"
+
+instance Data (SomeField Skill) where
+  gunfold _ _ _ = error "gunfold(Skill)"
+  toConstr _ = error "toConstr(Skill)"
+  dataTypeOf _ = error "dataTypeOf(Skill)"
+
+instance Typeable a => Data (Field Skill a) where
+  gunfold _ _ _ = error "gunfold(Skill)"
+  toConstr _ = error "toConstr(Skill)"
+  dataTypeOf _ = error "dataTypeOf(Skill)"
+
+{- | Named for reading, the way every other entity's fields are: an expression
+that asks a skill where it is sits beside one that asks an asset. -}
+instance FromJSON (SomeField Skill) where
+  parseJSON = withText "Field Skill" \case
+    "SkillTraits" -> pure $ SomeField SkillTraits
+    "SkillCard" -> pure $ SomeField SkillCard
+    "SkillOwner" -> pure $ SomeField SkillOwner
+    "SkillController" -> pure $ SomeField SkillController
+    "SkillPlacement" -> pure $ SomeField SkillPlacement
+    "SkillSealedChaosTokens" -> pure $ SomeField SkillSealedChaosTokens
+    _ -> error "no such field"
+
 data instance Field (InHandEntity Skill) :: Type -> Type where
   InHandSkillCardId :: Field (InHandEntity Skill) CardId
 

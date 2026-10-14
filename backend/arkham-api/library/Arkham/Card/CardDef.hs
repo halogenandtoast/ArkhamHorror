@@ -62,6 +62,11 @@ data CardLimit
   = LimitPerInvestigator Int
   | LimitInPlay Int
   | LimitPerTrait Trait Int
+  | {- | At most N copies of this card attached to any one location: "Attach
+    to your location. Limit 1 per location." Checked where the per-trait
+    version is, against the location the card would actually be played at.
+    -}
+    LimitPerLocation Int
   | MaxPerGame Int
   | MaxPerGamePerInvestigator Int
   | MaxPerRound Int

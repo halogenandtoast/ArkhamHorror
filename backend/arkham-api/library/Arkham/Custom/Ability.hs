@@ -599,8 +599,13 @@ runCustomHandlers a msg = do
     for_ (metaSpecs @HandlerSpec handlersMetaKey (toCardDef a)) \handler ->
       when (mentioned || handlerGlobal handler) $ for_ (matched (handlerOn handler) o) \fields -> do
         let env = messageBindings o fields <> bindings a
-            holds (l, r) = sameValue (substitute env l) (substitute env r)
-        when (all holds (handlerRequires handler)) $ runSteps env (handlerSteps handler)
+            {- Both sides are worked out, not merely substituted. A pair that
+            could only compare a binding against a literal cannot ask which
+            KIND of message arrived -- and a message that wraps another (a
+            `Will` carrying what is about to happen) can be told apart no
+            other way. -}
+            holds (l, r) = sameValue <$> evalExpr env l <*> evalExpr env r
+        whenM (allM holds (handlerRequires handler)) $ runSteps env (handlerSteps handler)
 
     {- A `request` step listens the same way, but its steps were written beside
        the message that asked rather than in a section of their own. Every pair

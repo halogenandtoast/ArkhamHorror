@@ -11,7 +11,7 @@ import Arkham.CampaignLogKey (CampaignLogKey, recorded)
 import Arkham.Card
 import Arkham.Classes.GameLogger (HasGameLogger, sendCustomCardIssue)
 import Arkham.Classes.HasGame (HasGame)
-import Arkham.Classes.HasQueue (push)
+import Arkham.Classes.HasQueue (push, pushAll)
 import Arkham.Classes.Query
 import Arkham.Deck qualified as Deck
 import Arkham.Discover (Discover (..), IsInvestigate (..), discoverAtYourLocation, discoverPure)
@@ -21,7 +21,10 @@ import Arkham.Discover (Discover (..), IsInvestigate (..), discoverAtYourLocatio
 -- modules into the cycle and onto their boot interfaces).
 
 import Arkham.Aspect (InsteadOf (..), IsAspect)
+import Arkham.Asset.Types (Field (AssetSealedChaosTokens))
 import Arkham.Calculation (GameCalculation (Fixed))
+import Arkham.ChaosToken (ChaosToken)
+import Arkham.Event.Types (Field (EventSealedChaosTokens))
 import Arkham.Card.PlayerCard (lookupPlayerCard)
 import Arkham.Custom.Env
 import Arkham.Custom.Expr (evalExpr, exprInt, runQuery, runQueryStep, valueList)
@@ -83,8 +86,10 @@ import Arkham.Modifier (Modifier (Modifier))
 import Arkham.Name (toTitle)
 import Arkham.PlayerCard (allPlayerCards)
 import Arkham.Prelude
+import Arkham.Projection
 import Arkham.SkillType (SkillType (SkillWillpower))
 import Arkham.Search (SearchType (..), mkSearch)
+import Arkham.Skill.Types (Field (SkillSealedChaosTokens))
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait (Trait, displayTrait)
@@ -233,12 +238,12 @@ withTestSkill
   -> a
   -> m ()
 withTestSkill env o iid source setSkill action =
-  case (field "skill", field "insteadOf") of
+  case (skillAt "skill", skillAt "insteadOf") of
     (Just using, Just replaced) -> aspect iid source (using `InsteadOf` replaced) (pure action)
     (Just using, Nothing) -> push $ toMessage (setSkill using action)
     _ -> push $ toMessage action
  where
-  field k = KeyMap.lookup k o >>= decodeWith @SkillType env
+  skillAt k = KeyMap.lookup k o >>= decodeWith @SkillType env
 
 {- | Investigate.
 
@@ -421,6 +426,47 @@ runCustomize env spec = do
 by the time a card in play can act, so the nearest honest equivalent is to
 shuffle the card in where it would have ended up.
 -}
+{- | Seal chaos tokens on this card, or let the sealed ones go.
+
+Two halves of the same thing, which is why they are one step: a card that seals
+tokens nearly always says when it stops, and splitting them would leave the
+author holding the join. @tokens@ names the ones to seal; @release@ with no
+tokens lets go of everything this card is holding, which is what "release each
+token on it" means.
+
+Sealing is two messages and both are needed: the first takes the token out of
+the bag, the second records where it went -- a token taken out and not recorded
+is simply gone.
+-}
+runSeal :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runSeal env spec = do
+  let o = specObject spec
+  iid <- stepInvestigator env
+  let
+    target = fromMaybe (stepTarget env) (decodeWith env =<< KeyMap.lookup "on" o)
+    named = KeyMap.lookup "tokens" o >>= decodeWith @[ChaosToken] env
+  if KeyMap.lookup "release" o == Just (Bool True)
+    then do
+      held <- maybe (getSealedOn target) pure named
+      pushAll [UnsealChaosToken token | token <- held]
+    else case named of
+      Nothing -> reportBadPayload env "seal" spec
+      Just tokens ->
+        pushAll
+          $ concat [[SealChaosToken token, SealedChaosToken token (Just iid) target] | token <- tokens]
+
+-- | What this card is holding sealed, so "release each token on it" needs no list.
+getSealedOn :: HasGame m => Target -> m [ChaosToken]
+getSealedOn = \case
+  AssetTarget aid -> field AssetSealedChaosTokens aid
+  EventTarget eid -> field EventSealedChaosTokens eid
+  SkillTarget sid -> field SkillSealedChaosTokens sid
+  _ -> pure []
+
+-- | The card the step belongs to, as a target.
+stepTarget :: Env -> Target
+stepTarget env = fromMaybe GameTarget (KeyMap.lookup "target" env >>= parseMaybe parseJSON)
+
 runGather :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
 runGather env spec = do
   let
@@ -870,6 +916,9 @@ runSteps env0 = void . foldM step env0
           pure env
       | Just spec <- KeyMap.lookup "gather" o -> do
           runGather env spec
+          pure env
+      | Just spec <- KeyMap.lookup "seal" o -> do
+          runSeal env spec
           pure env
       | Just spec <- KeyMap.lookup "customize" o -> do
           runCustomize env spec

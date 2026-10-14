@@ -9,6 +9,7 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.Query hiding (matches)
 import Arkham.Direction
 import Arkham.Enemy.Types (EnemyAttrs, Field (..))
+import Arkham.Event.Types (Field (EventPlacement))
 import Arkham.ForMovement
 import {-# SOURCE #-} Arkham.Helpers.Cost (getCanAffordCost)
 import Arkham.Helpers.GameValue (gameValueMatches)
@@ -104,6 +105,10 @@ placementLocation = \case
   AttachedToEnemy eid -> fieldMayJoin EnemyLocation eid
   AttachedToTreachery tid -> fieldMayJoin TreacheryLocation tid
   AttachedToAsset aid' _ -> fieldMayJoin AssetLocation aid'
+  -- An event has no location field of its own, so this is wherever the event
+  -- it is attached to has ended up -- usually a play area, which is its
+  -- controller's location.
+  AttachedToEvent eid -> placementLocation =<< field EventPlacement eid
   InVehicle aid' -> field AssetLocation aid'
   AttachedToAct _ -> pure Nothing
   AttachedToAgenda _ -> pure Nothing

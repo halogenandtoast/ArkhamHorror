@@ -299,6 +299,20 @@ toCanHoldMap = Map.map nub . foldr canHold mempty
 getCanHoldMap :: HasGame m => InvestigatorAttrs -> m (Map SlotType [SlotType])
 getCanHoldMap a = toCanHoldMap <$> getModifiers a
 
+{- | Whether a card, played now, would find a slot for each one it takes.
+
+Separate from 'fitsAvailableSlots', which asks about an asset already in play
+and so has to exempt the slots that asset is already holding. A card in hand
+holds none.
+-}
+cardFitsAvailableSlots :: (HasGame m, IsCard a) => a -> InvestigatorAttrs -> m Bool
+cardFitsAvailableSlots card a = do
+  let slotTypes = cdSlots (toCardDef card)
+  canHoldMap <- getCanHoldMap a
+  availableSlots <- concatForM (nub slotTypes) \slotType ->
+    map (const slotType) <$> availableSlotTypesFor slotType canHoldMap card a.slots
+  pure $ null (slotTypes \\ availableSlots)
+
 fitsAvailableSlots :: HasGame m => AssetId -> InvestigatorAttrs -> m FitsSlots
 fitsAvailableSlots aid a = do
   assetCard <- field Field.AssetCard aid

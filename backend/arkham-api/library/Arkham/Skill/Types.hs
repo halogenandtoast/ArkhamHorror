@@ -55,6 +55,7 @@ data instance Field Skill :: Type -> Type where
   SkillOwner :: Field Skill InvestigatorId
   SkillController :: Field Skill InvestigatorId
   SkillPlacement :: Field Skill Placement
+  SkillSealedChaosTokens :: Field Skill [ChaosToken]
 
 data instance Field (InHandEntity Skill) :: Type -> Type where
   InHandSkillCardId :: Field (InHandEntity Skill) CardId

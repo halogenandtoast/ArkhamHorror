@@ -92,6 +92,12 @@ data AssetMatcher
   | AssetWithSealedChaosTokens Int ChaosTokenMatcher
   | AssetWithoutSealedTokens
   | AssetInSlot SlotType
+  | {- | An asset that takes slots but is sitting in none of them -- what
+    "assets you control in excess of available slots" means once they are
+    allowed to stay. Normally nothing matches: playing an asset with no room
+    discards something to make room, or discards the asset.
+    -}
+    AssetInExcessOfSlots
   | AssetWithSlot SlotType
   | AssetInTwoHandSlots
   | AssetInSingleHand

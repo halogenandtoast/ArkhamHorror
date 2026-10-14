@@ -58,6 +58,12 @@ data ExtendedCardMatcher
   | ControlledBy Who
   | OwnedBy Who
   | InHandOf ForPlay Who
+  | {- | A card that, played now, would have no slot to go in. "Assets played
+    in excess of available slots gain fast" is a question about the card and
+    the table together, which neither a card matcher nor a slot matcher can
+    ask on its own.
+    -}
+    DoesNotFitSlotsOf Who
   | InDeckOf Who
   | InPlayAreaOf Who
   | InDiscardOf Who

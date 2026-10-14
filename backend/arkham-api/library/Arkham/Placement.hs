@@ -57,6 +57,12 @@ data Placement
   | AttachedToEnemy EnemyId
   | AttachedToTreachery TreacheryId -- Not used yet?
   | AttachedToAsset AssetId (Maybe Placement) -- Maybe Placement for Dr. Elli Horowitz
+  | {- | Attached to an EVENT that stays in play. An event can hold cards the
+    way an asset can -- Balancing Act takes your assets out of their slots and
+    gives them back when the round ends -- and the card it is attached to is
+    the one that says when they come back.
+    -}
+    AttachedToEvent EventId
   | AttachedToAct ActId
   | AttachedToAgenda AgendaId
   | NextToAgenda
@@ -125,6 +131,7 @@ placementToAttached = \case
   InThreatArea _ -> Nothing
   FacedownInThreatArea _ -> Nothing
   AttachedToAsset aid _ -> Just $ AssetTarget aid
+  AttachedToEvent eid -> Just $ EventTarget eid
   AttachedToAct aid -> Just $ ActTarget aid
   AttachedToAgenda aid -> Just $ AgendaTarget aid
   NextToAgenda -> Nothing
@@ -165,6 +172,7 @@ isInPlayPlacement = \case
   AttachedToEnemy {} -> True
   AttachedToTreachery {} -> True
   AttachedToAsset {} -> True
+  AttachedToEvent {} -> True
   AttachedToAct {} -> True
   AttachedToAgenda {} -> True
   NextToAgenda {} -> True -- is it in play, idk
@@ -223,6 +231,7 @@ treacheryPlacementToPlacement = \case
     LocationTarget lid -> AttachedToLocation lid
     EnemyTarget eid -> AttachedToEnemy eid
     AssetTarget aid -> AttachedToAsset aid Nothing
+    EventTarget eid -> AttachedToEvent eid
     ActTarget aid -> AttachedToAct aid
     AgendaTarget aid -> AttachedToAgenda aid
     InvestigatorTarget iid -> AttachedToInvestigator iid

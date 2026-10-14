@@ -280,6 +280,11 @@ data ModifierType
   | CannotTakeControlOfClues
   | CannotTriggerAbilityMatching AbilityMatcher
   | CannotTriggerFastAbilities
+  | {- | An asset played with no room for it stays anyway, unslotted, rather
+    than discarding something to make room or being discarded itself. Natalie
+    Soulier, who then sweeps them up again at the start of upkeep.
+    -}
+    KeepAssetsInExcessOfSlots
   | CardsCannotLeaveYourDiscardPile
   | ChangeChaosTokenModifier ChaosTokenModifier
   | ChangeRevealStrategy RevealStrategy

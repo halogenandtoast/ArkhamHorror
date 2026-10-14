@@ -4,6 +4,7 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Enemy.Types (Field (..))
+import Arkham.Event.Types (Field (EventPlacement))
 import Arkham.Helpers.Message
 import Arkham.Helpers.Window
 import Arkham.Id
@@ -32,6 +33,7 @@ placedInThreatArea = \case
   AttachedToEnemy eid -> fieldMapM EnemyPlacement placedInThreatArea eid
   AttachedToTreachery tid -> fieldMapM TreacheryPlacement placedInThreatArea tid
   AttachedToAsset aid _ -> fieldMapM AssetPlacement placedInThreatArea aid
+  AttachedToEvent eid -> fieldMapM EventPlacement placedInThreatArea eid
   AttachedToAct _ -> pure Nothing
   AttachedToAgenda _ -> pure Nothing
   AttachedToInvestigator _ -> pure Nothing
@@ -61,6 +63,7 @@ attachTo t = case toTarget t of
   EnemyTarget eid -> AttachedToEnemy eid
   AssetTarget aid -> AttachedToAsset aid Nothing
   ActTarget aid -> AttachedToAct aid
+  EventTarget eid -> AttachedToEvent eid
   AgendaTarget aid -> AttachedToAgenda aid
   InvestigatorTarget iid -> AttachedToInvestigator iid
   _ -> error $ "cannot attach to target: " <> show t
@@ -106,6 +109,10 @@ onSameLocation iid = \case
     liftA2 (==) (field TreacheryLocation tid) (field InvestigatorLocation iid)
   AttachedToAsset aid _ ->
     fieldMay AssetPlacement aid >>= \case
+      Nothing -> pure False
+      Just placement' -> onSameLocation iid placement'
+  AttachedToEvent eid ->
+    fieldMay EventPlacement eid >>= \case
       Nothing -> pure False
       Just placement' -> onSameLocation iid placement'
   AttachedToAct _ -> pure False

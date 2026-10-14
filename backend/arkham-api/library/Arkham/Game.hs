@@ -3325,6 +3325,12 @@ getAssetsMatching' matcher = do
       slotMaps <- Map.unionsWith (<>) <$> selectField InvestigatorSlots Anyone
       let inSlots = concatMap (.assets) $ Map.findWithDefault mempty slot slotMaps
       pure $ filter ((`elem` inSlots) . toId) as
+    AssetInExcessOfSlots -> do
+      slotMaps <- Map.unionsWith (<>) <$> selectField InvestigatorSlots Anyone
+      let slotted = concatMap (.assets) (concat (Map.elems slotMaps))
+      -- An asset that takes no slots is never in one, and is not in excess of
+      -- anything; only one that wanted a slot and did not get it counts.
+      pure $ filter (\a -> notNull (attr assetSlots a) && toId a `notElem` slotted) as
     AssetWithSlot slot ->
       as & filterM \a -> do
         slots <- field AssetSlots a.id
@@ -5984,6 +5990,11 @@ instance Query ExtendedCardMatcher where
               <*> concatMapM getAsIfInHandCards iids
           NotForPlay -> concatMapM (field InvestigatorHand) iids
         pure $ filter (`elem` cards) cs
+      DoesNotFitSlotsOf who -> do
+        iids <- select who
+        attrs <- traverse (fmap toAttrs . getInvestigator) iids
+        flip filterM cs \c ->
+          anyM (fmap not . cardFitsAvailableSlots c) attrs
       InDeckOf who -> do
         iids <- select who
         cards <- concatMapM (fmap (map PlayerCard . unDeck) . getCurrentDeck) iids
@@ -6549,6 +6560,7 @@ instance Projection Skill where
       SkillOwner -> pure skillOwner
       SkillController -> pure skillOwner -- for now controller and owner are the same
       SkillPlacement -> pure skillPlacement
+      SkillSealedChaosTokens -> pure skillSealedChaosTokens
 
 instance Projection (InDiscardEntity Skill) where
   getAttrs aid = do

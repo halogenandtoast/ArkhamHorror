@@ -82,7 +82,24 @@ evalExpr env v0 = case substituteExpr env v0 of
     | Just prop <- str =<< KeyMap.lookup "map" o -> withOf o (getProp (kindOf o) prop)
     | Just p <- KeyMap.lookup "filter" o -> do
         p' <- evalPredicate p
-        listOp o (filter (matches p'))
+        {- Keeping the elements rather than what was read off them. A plain
+        filter compares each element itself, which is no use for a list of
+        things with a property worth testing -- "the tokens that are not the
+        {auto_fail}" is a question about each token's face, and the answer
+        wanted is the tokens. @by@ says which property to read; without it the
+        element IS the value, as before. -}
+        case str =<< KeyMap.lookup "by" o of
+          Nothing -> listOp o (filter (matches p'))
+          Just prop -> case KeyMap.lookup "of" o of
+            Nothing -> pure Null
+            Just e -> do
+              xs <- valueList <$> evalExpr env e
+              -- With a `kind` it is a property the game is asked for; without
+              -- one it is a field of the element's own JSON, which is how a
+              -- chaos token's face is reached.
+              let readKey = if null (kindOf o) then pure . jsonField prop else getProp (kindOf o) prop
+              read' <- traverse readKey xs
+              pure $ toJSON [x | (x, k) <- zip xs read', matches p' k]
     | Just prop <- str =<< KeyMap.lookup "skillTest" o -> skillTestProp prop
     {- A field of the JSON itself, rather than a property the game has to be
        asked for. An entity's own serialized values are bound whole -- @$placement@
@@ -130,6 +147,12 @@ evalExpr env v0 = case substituteExpr env v0 of
     | Just e <- KeyMap.lookup "unique" o -> unary e (List.nub . valueList)
     | Just e <- KeyMap.lookup "concat" o -> unary e (concatMap valueList . valueList)
     | Just e <- KeyMap.lookup "reverse" o -> unary e (reverse . valueList)
+    {- The first @n@, for the readings that are "4 of them" rather than "all of
+    them": a card that seals four random tokens draws more than four and keeps
+    the first four it may have. -}
+    | Just e <- KeyMap.lookup "take" o -> do
+        n <- maybe (pure 0) (exprInt env) (KeyMap.lookup "times" o)
+        unary e (List.take (max 0 n) . valueList)
     | Just e <- KeyMap.lookup "count" o -> number e (length . valueList)
     | Just e <- KeyMap.lookup "sum" o -> number e (sum . nums)
     | Just e <- KeyMap.lookup "max" o -> number e (safely List.maximum . nums)

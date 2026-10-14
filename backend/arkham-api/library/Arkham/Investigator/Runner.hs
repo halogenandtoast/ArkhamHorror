@@ -1052,13 +1052,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   Do (CheckHandSize iid) | iid == investigatorId -> do
     excess <- getExcessInHandCount a
     -- investigatorHand: can only discard cards actually in hand
-    player <- getPlayer iid
     let viable = filter (isNothing . cdCardSubType . toCardDef) $ onlyPlayerCards investigatorHand
 
-    pushWhen (excess > 0 && notNull viable)
-      $ chooseOne player
-      $ [ targetLabel (toCardId card) [DiscardCard iid GameSource (toCardId card), Do (CheckHandSize iid)]
-        | card <- viable
+    {- Through the ordinary discard-from-hand machinery, one card at a time,
+    rather than a bare choice of `DiscardCard`. That machinery raises the
+    would-discard-from-hand window, which this discard used to slip past
+    entirely: nothing could react to a card leaving your hand at the end of the
+    round, and a card that replaces such a discard had nowhere to stand.
+
+    The re-check is pushed behind it rather than carried as the discard's
+    `then`, which only fires once the discard has actually counted down. A
+    replaced discard never counts down, so the `then` would never come and the
+    investigator would be left over their limit. -}
+    when (excess > 0 && notNull viable)
+      $ pushAll
+        [ Msg.DiscardFromHand (chooseAndDiscardCard iid GameSource)
+        , Do (CheckHandSize iid)
         ]
     pure a
   AddToDiscard iid pc | investigatorOwnsCardCode a iid -> do
@@ -1809,6 +1818,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     case fitsSlots of
       FitsSlots -> push (InvestigatorPlayedAsset iid aid)
       MissingSlots missingSlotTypes -> do
+        mods <- getModifiers iid
         canHoldMap <- getCanHoldMap a
         let additionalSlots = concatMap (\k -> findWithDefault [] k canHoldMap) missingSlotTypes
         assetsThatCanProvideSlots <-
@@ -1829,7 +1839,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         -- Unless it cannot leave play either, in which case nothing here is discardable at all: it
         -- enters play unslotted and the investigator simply sits over their slot limit (#5424).
         canDiscardIncoming <- aid <=~> DiscardableAsset
-        if null assetsThatCanProvideSlots
+        if KeepAssetsInExcessOfSlots `elem` mods
+          then
+            {- Nothing is discarded to make room and the asset is not discarded
+            either: it enters play holding no slot, which the engine already
+            allows (#5424). The investigator is then over their limit until
+            something sweeps them up. -}
+            push $ InvestigatorPlayedAsset iid aid
+          else if null assetsThatCanProvideSlots
           then
             pushAll
               $ InvestigatorPlayedAsset iid aid

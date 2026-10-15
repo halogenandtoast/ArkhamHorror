@@ -8,6 +8,7 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Location.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (InvestigatorDefeated, LocationCard)
@@ -25,10 +26,16 @@ newtype JourneyToTheNexus = JourneyToTheNexus ActAttrs
 instance HasAbilities JourneyToTheNexus where
   getAbilities (JourneyToTheNexus a) =
     [ restricted a 1 (exists $ YourLocation <> LocationWithoutClues) exploreAction_
-    , mkAbility a 2
+    , restricted
+        a
+        2
+        ( exists (You <> at_ (locationIs Locations.stepsOfYoth))
+            <> HasCalculation
+              (InvestigatorsFieldCalculation (at_ $ locationIs Locations.stepsOfYoth) InvestigatorClues)
+              (AtLeast $ PerPlayer 3)
+        )
         $ Objective
-        $ triggered (RoundEnds #when)
-        $ GroupClueCost (PerPlayer 3) "Steps of Yoth"
+        $ triggered (RoundEnds #when) Free
     ]
 
 journeyToTheNexus :: ActCard JourneyToTheNexus

@@ -9322,6 +9322,7 @@ test-suite spec
       Arkham.Act.Cards.TheBlobThatAteEverything.BlackwatersBaneEpicMultiplayerSpec
       Arkham.Act.Cards.TheBlobThatAteEverything.ExposeTheAnomalyEpicMultiplayerSpec
       Arkham.Act.Cards.TheForgottenAge.HeartOfTheElders.AFamiliarPatternSpec
+      Arkham.Act.Cards.TheForgottenAge.TheDepthsOfYoth.JourneyToTheNexusSpec
       Arkham.Act.Cards.TheScarletKeys.DancingMad.FalseStepV2Spec
       Arkham.ActionSpec
       Arkham.Agenda.Cards.MurderAtTheExcelsiorHotel.TheTrueCulpritV10Spec

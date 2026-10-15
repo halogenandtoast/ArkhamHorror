@@ -145,6 +145,45 @@ export const updateUserFeatures = async (id: number, features: string[]): Promis
   return data
 }
 
+/* What an account has been playing. Active or not is decided by the server from
+ * the game's own state, not from whether a room is open for it: a room is who
+ * is connected this second, and an abandoned game is still in progress.
+ *
+ * `total` is every game on the account, so a list capped at the server's limit
+ * can say it is capped rather than reading as the whole of it. */
+export interface AdminUserGame {
+  active: boolean
+  createdAt: string
+  updatedAt: string
+  game: GameDetailsEntry
+}
+
+export interface AdminUserGames {
+  total: number
+  games: AdminUserGame[]
+}
+
+const adminUserGameDecoder = JsonDecoder.object<AdminUserGame>(
+  {
+    active: JsonDecoder.boolean(),
+    createdAt: JsonDecoder.string(),
+    updatedAt: JsonDecoder.string(),
+    game: gameDetailsEntryDecoder,
+  },
+  'AdminUserGame',
+)
+
+export const fetchAdminUserGames = async (id: number): Promise<AdminUserGames> => {
+  const { data } = await api.get(`admin/users/${id}/games`)
+  return JsonDecoder.object<AdminUserGames>(
+    {
+      total: JsonDecoder.number(),
+      games: JsonDecoder.array(adminUserGameDecoder, 'AdminUserGame[]'),
+    },
+    'AdminUserGames',
+  ).decodePromise(data)
+}
+
 export const findGame = async (playerId: string): Promise<GameDetailsEntry> => {
   const { data } = await api.get(`admin/games/find/${playerId}`)
   return gameDetailsEntryDecoder.decodePromise(data)

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-/* Who has been let into which feature, and letting them in.
+/* Finding an account, what it has been let into, and what it has been playing.
  *
  * A feature rolls out a few accounts at a time, so the page opens on the list of
  * accounts that already have one -- short by definition, and the answer to "who
- * is in so far". Searching replaces it with the prefix match, which is how
- * somebody new is found. Clearing the box puts the first list back.
+ * is in so far". Searching replaces it with the match, which is how somebody new
+ * is found. Clearing the box puts the first list back.
  *
  * The search matches username and email alike, and the email is shown as well as
  * the name: a row that matched on one has to show the thing it matched.
@@ -13,10 +13,17 @@
  * what the account ends up with. Admins are shown as already having everything,
  * because the server treats them that way -- a checkbox that looked off while
  * the feature worked would be a lie about the gate.
+ *
+ * Games load only when a row is opened, because reporting them means decoding
+ * every game blob on the account and almost every row on screen is not the one
+ * being asked about. Active and finished are split on what the server says
+ * rather than recomputed here, so a game too broken to decode still lands in a
+ * list instead of disappearing from both.
  */
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import * as Api from '@/arkham/api'
+import GameRow from '@/arkham/components/GameRow.vue'
 
 const { t } = useI18n()
 const K = 'adminUsers.'
@@ -70,6 +77,53 @@ async function clearSearch() {
   query.value = ''
   status.value = null
   await load()
+}
+
+/* Keyed by account id rather than held on the row, so a search that replaces
+ * the rows does not have to carry what was already fetched -- and reopening an
+ * account that was open before the search still shows it without a refetch. */
+const games = ref<Record<number, Api.AdminUserGames>>({})
+const gamesOpen = ref<number[]>([])
+const gamesLoading = ref<number[]>([])
+const gamesError = ref<Record<number, string>>({})
+
+const isOpen = (row: Api.AdminUser) => gamesOpen.value.includes(row.id)
+
+/* The two headings a row's games are split under. Split on the server's answer
+ * rather than on the game state here, so an entry too broken to decode is still
+ * in one of them. */
+const gameGroups = computed(() => [
+  { active: true, heading: t(`${K}activeGames`), empty: t(`${K}noActiveGames`) },
+  { active: false, heading: t(`${K}inactiveGames`), empty: t(`${K}noInactiveGames`) },
+])
+
+function inGroup(entries: Api.AdminUserGame[], active: boolean) {
+  return entries.filter((entry) => entry.active === active)
+}
+
+function formatDate(at: string) {
+  return new Date(at).toLocaleString()
+}
+
+async function toggleGames(row: Api.AdminUser) {
+  if (isOpen(row)) {
+    gamesOpen.value = gamesOpen.value.filter((id) => id !== row.id)
+    return
+  }
+
+  gamesOpen.value = [...gamesOpen.value, row.id]
+  if (games.value[row.id]) return
+
+  gamesLoading.value = [...gamesLoading.value, row.id]
+  delete gamesError.value[row.id]
+  try {
+    games.value[row.id] = await Api.fetchAdminUserGames(row.id)
+  } catch (e) {
+    console.error(e)
+    gamesError.value[row.id] = t(`${K}gamesFailed`)
+  } finally {
+    gamesLoading.value = gamesLoading.value.filter((id) => id !== row.id)
+  }
 }
 
 function has(row: Api.AdminUser, feature: string) {
@@ -144,6 +198,14 @@ async function toggle(row: Api.AdminUser, feature: string) {
             <span class="email">{{ row.email }}</span>
             <span v-if="row.admin" class="tag admin">{{ t(`${K}admin`) }}</span>
           </p>
+          <button
+            type="button"
+            class="ghost"
+            :aria-expanded="isOpen(row)"
+            @click="toggleGames(row)"
+          >
+            {{ isOpen(row) ? t(`${K}hideGames`) : t(`${K}showGames`) }}
+          </button>
         </div>
 
         <div class="features">
@@ -159,6 +221,46 @@ async function toggle(row: Api.AdminUser, feature: string) {
         </div>
 
         <p v-if="row.admin" class="hint">{{ t(`${K}adminImplicit`) }}</p>
+
+        <div v-if="isOpen(row)" class="games">
+          <p v-if="gamesLoading.includes(row.id)" class="empty box">{{ t(`${K}gamesLoading`) }}</p>
+          <p v-else-if="gamesError[row.id]" class="error">{{ gamesError[row.id] }}</p>
+          <template v-else-if="games[row.id]">
+            <p v-if="!games[row.id].games.length" class="empty box">{{ t(`${K}noGames`) }}</p>
+            <template v-else>
+              <section
+                v-for="group in gameGroups"
+                :key="String(group.active)"
+                class="game-group"
+              >
+                <header class="group-header">
+                  <h3>{{ group.heading }}</h3>
+                  <span class="count-badge">{{ inGroup(games[row.id].games, group.active).length }}</span>
+                </header>
+                <p v-if="!inGroup(games[row.id].games, group.active).length" class="hint">
+                  {{ group.empty }}
+                </p>
+                <div v-else class="game-list">
+                  <div
+                    v-for="entry in inGroup(games[row.id].games, group.active)"
+                    :key="entry.game.id"
+                    class="game-entry"
+                  >
+                    <GameRow v-if="entry.game.tag === 'game'" :game="entry.game" :admin="true" />
+                    <p v-else class="error">{{ entry.game.name }} &mdash; {{ entry.game.error }}</p>
+                    <p class="played">{{ t(`${K}lastPlayed`, { at: formatDate(entry.updatedAt) }) }}</p>
+                  </div>
+                </div>
+              </section>
+              <p v-if="games[row.id].total > games[row.id].games.length" class="hint">
+                {{ t(`${K}gamesTruncated`, {
+                  shown: games[row.id].games.length,
+                  total: games[row.id].total,
+                }) }}
+              </p>
+            </template>
+          </template>
+        </div>
       </li>
     </ul>
   </section>
@@ -412,6 +514,55 @@ button:disabled {
 
 .feature input:disabled + span {
   opacity: 0.6;
+}
+
+/* ------------------------------------------------------------------ games --- */
+
+.games {
+  border-top: 1px solid color-mix(in srgb, var(--box-border) 70%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 12px;
+}
+
+.game-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.group-header {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.group-header h3 {
+  color: color-mix(in srgb, var(--title) 80%, transparent);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.game-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.game-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.played {
+  color: color-mix(in srgb, var(--title) 52%, transparent);
+  font-size: 0.75rem;
+  margin: 0;
 }
 
 @media (max-width: 620px) {

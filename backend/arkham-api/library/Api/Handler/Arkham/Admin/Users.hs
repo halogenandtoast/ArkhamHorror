@@ -13,17 +13,33 @@ page was showing, and the page may have been open since before the last change.
 An unknown feature name is refused rather than dropped. 'Feature.parseFeatures'
 would quietly ignore it, and a grant that reported success while granting nothing
 is the failure this whole mechanism exists to make visible.
+
+The third thing it answers is "what has this account been playing", because the
+question that reaches you about an account is almost always about a game on it.
+A game is reported as active or not from its own state rather than from whether
+a room is open for it: a room is who is connected right now, and an account that
+has not been seen for a week still has the games it left in progress.
 -}
 module Api.Handler.Arkham.Admin.Users (
   getApiV1AdminUsersR,
+  getApiV1AdminUserGamesR,
   putApiV1AdminUserFeaturesR,
 ) where
 
+import Api.Handler.Arkham.Games.Shared (
+  GameDetails (..),
+  GameDetailsEntry (..),
+  tryGameDetailsEntry,
+ )
+import Arkham.Game.State (GameState (IsOver))
 import Auth.Feature qualified as Feature
+import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
+import Data.Time.Clock (UTCTime)
 import Database.Esqueleto.Experimental
 import Database.Persist qualified as P
-import Import hiding (update, (!=.), (=.), (==.), (||.))
+import Entity.Arkham.GameRaw
+import Import hiding (on, update, (!=.), (=.), (==.), (||.))
 
 data UserRow = UserRow
   { userRowId :: UserId
@@ -128,3 +144,103 @@ putApiV1AdminUserFeaturesR userId = do
     P.update userId [UserFeatures P.=. Feature.renderFeatures features]
     get404 userId
   pure $ toRow (Entity userId user)
+
+{- | How many of an account's games to report, most recently played first.
+
+Decoding a game row means decoding the whole game blob, so this is the one
+number that decides what the panel costs. Fifty is far more than anybody needs
+to answer "what is this person playing", and the response says how many there
+are in total so a truncated list says so rather than looking complete.
+-}
+gamesLimit :: Int64
+gamesLimit = 50
+
+data AdminUserGame = AdminUserGame
+  { adminUserGameActive :: Bool
+  , adminUserGameCreatedAt :: UTCTime
+  , adminUserGameUpdatedAt :: UTCTime
+  , adminUserGameGame :: GameDetailsEntry
+  }
+
+instance ToJSON AdminUserGame where
+  toJSON AdminUserGame {..} =
+    object
+      [ "active" .= adminUserGameActive
+      , "createdAt" .= adminUserGameCreatedAt
+      , "updatedAt" .= adminUserGameUpdatedAt
+      , "game" .= adminUserGameGame
+      ]
+
+data UserGamesResponse = UserGamesResponse
+  { userGamesResponseTotal :: Int
+  -- ^ Every game on the account, not just the ones below 'gamesLimit'.
+  , userGamesResponseGames :: [AdminUserGame]
+  }
+
+instance ToJSON UserGamesResponse where
+  toJSON UserGamesResponse {..} =
+    object
+      [ "total" .= userGamesResponseTotal
+      , "games" .= userGamesResponseGames
+      ]
+
+toAdminUserGame :: MonadIO m => Map ArkhamGameId Int -> Entity ArkhamGameRaw -> m AdminUserGame
+toAdminUserGame countMap game = do
+  entry <- tryGameDetailsEntry game (fromMaybe 0 $ Map.lookup (coerce $ entityKey game) countMap)
+  pure
+    $ AdminUserGame
+      { adminUserGameActive = isActiveEntry entry
+      , adminUserGameCreatedAt = (entityVal game).createdAt
+      , adminUserGameUpdatedAt = (entityVal game).updatedAt
+      , adminUserGameGame = entry
+      }
+
+{- | A game that failed to decode is reported as inactive. Nobody can play it --
+that is what the failure means -- and the panel still lists it, so a broken game
+on an account is visible rather than quietly missing from both halves.
+-}
+isActiveEntry :: GameDetailsEntry -> Bool
+isActiveEntry = \case
+  FailedGameDetails {} -> False
+  SuccessGameDetails GameDetails {gameState} -> gameState /= IsOver
+
+getApiV1AdminUserGamesR :: UserId -> Handler UserGamesResponse
+getApiV1AdminUserGamesR userId = do
+  (total, games, countMap) <- runDB do
+    void $ get404 userId
+    total <-
+      fmap (sum . map unValue . toList) . selectOne $ do
+        players <- from $ table @ArkhamPlayer
+        where_ $ players.userId ==. val userId
+        pure (countRows @Int)
+
+    games <- select do
+      (players :& games) <-
+        from
+          $ table @ArkhamPlayer
+          `innerJoin` table @ArkhamGameRaw
+            `on` (\(players :& games) -> players.arkhamGameId ==. toBaseId games.id)
+      where_ $ players.userId ==. val userId
+      orderBy [desc games.updatedAt]
+      limit gamesLimit
+      pure games
+
+    -- Seat counts, for `hasOpenSeats`: the one field of a game row that is not
+    -- in the game blob.
+    let gameIds = map (coerce . entityKey) games :: [ArkhamGameId]
+    playerCounts <-
+      if null gameIds
+        then pure []
+        else select do
+          p <- from $ table @ArkhamPlayer
+          where_ $ p.arkhamGameId `in_` valList gameIds
+          groupBy p.arkhamGameId
+          pure (p.arkhamGameId, countRows @Int)
+
+    pure (total, games, Map.fromList [(gid, n) | (Value gid, Value n) <- playerCounts])
+
+  -- Decoded outside the transaction: a game blob is large and this is the
+  -- expensive half, so it should not be holding a connection.
+  rows <- traverse (toAdminUserGame countMap) games
+
+  pure $ UserGamesResponse {userGamesResponseTotal = total, userGamesResponseGames = rows}

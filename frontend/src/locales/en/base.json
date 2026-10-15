@@ -1390,8 +1390,8 @@
     "decidedDenied": "Denied by {by} on {at}."
   },
   "adminUsers": {
-    "title": "Feature Access",
-    "note": "Granting a feature here is the only way into it",
+    "title": "Users",
+    "note": "Find an account by name or email \u2014 granting a feature here is the only way into it",
     "loading": "Loading accounts\u2026",
     "loadFailed": "Could not load the accounts.",
     "searchLabel": "Find an account",
@@ -1406,6 +1406,17 @@
     "granted": "{username} can now use {feature}.",
     "revoked": "{username} can no longer use {feature}.",
     "saveFailed": "Could not change that grant.",
+    "showGames": "Games",
+    "hideGames": "Hide games",
+    "gamesLoading": "Loading games\u2026",
+    "gamesFailed": "Could not load this account's games.",
+    "noGames": "This account has no games.",
+    "activeGames": "In progress",
+    "inactiveGames": "Finished",
+    "noActiveGames": "Nothing in progress.",
+    "noInactiveGames": "Nothing finished.",
+    "lastPlayed": "Last played {at}",
+    "gamesTruncated": "Showing the {shown} most recently played of {total}.",
     "feature": {
       "apiKeys": "API keys"
     }

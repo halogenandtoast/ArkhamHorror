@@ -45,6 +45,8 @@ import Arkham.Source
 import Arkham.Story.Types (Field (..))
 import Arkham.Target
 import Arkham.Treachery.Types (Field (..))
+import Data.Text qualified as T
+import Text.Read (readMaybe)
 
 {- | A location chip, drawing its back when the location is not yet revealed --
 which is why this needs game state and the pure constructor cannot do it.
@@ -256,6 +258,39 @@ encounter card being drawn and resolved. Shared with the narrator.
 -}
 cardBlockKey :: CardId -> Text
 cardBlockKey cid = "cardPlay:" <> tshow cid
+
+{- | The block a batch of concealed-card placements is filed under.
+
+The key carries the investigator and the total on purpose. The only message
+that reliably marks the __end__ of a batch is the block's own
+'Arkham.Message.CloseLogBlock': two of the branches in @Scenario/Runner.hs@'s
+@PlaceConcealedCards@ place every card at once and never queue a tail message,
+and @CloseLogBlock@ carries nothing but the key. The narrator reads both back
+out of it -- the total to tell the first header from a revised one, and the
+investigator to name in the summary.
+
+The random token is what keeps a second batch out of the first: the client
+collects a block by id across the whole log (@groupLogEntries@) rather than by
+position, so a key reused next round would fold two batches into one block.
+Same reason a Navigate action's key is random.
+
+Fields are separated by @:@ and never @\/@, which the client reads as block
+nesting.
+-}
+placeConcealedBlockKey :: InvestigatorId -> Int -> BatchId -> Text
+placeConcealedBlockKey iid total token =
+  T.intercalate ":" ["placeConcealed", tshow total, idText iid, tshow token]
+
+{- | 'placeConcealedBlockKey' read back: who is placing, and how many in all.
+
+'Nothing' for any other block -- a Navigate action's, a card play's -- which is
+what keeps the narrator's summary off every other 'Arkham.Message.CloseLogBlock'.
+-}
+placeConcealedBlock :: Text -> Maybe (InvestigatorId, Int)
+placeConcealedBlock key = case T.splitOn ":" key of
+  ["placeConcealed", total, iid, _] ->
+    (InvestigatorId (CardCode iid),) <$> readMaybe (unpack total)
+  _ -> Nothing
 
 {- | Last resort when the entity is gone: the id, so the line still names
 something stable, and the client can still try its own lookup.

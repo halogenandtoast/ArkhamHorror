@@ -83,6 +83,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
+import Arkham.Log.Refs (placeConcealedBlockKey)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted hiding (discard)
 import Arkham.Message.Lifted.Choose
@@ -2183,8 +2184,28 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure $ a & setAsideCardsL %~ filter (/= card)
   SetDecksLayout layout -> do
     pure $ a & decksLayoutL .~ layout
-  PlaceConcealedCards _iid _cards lids -> do
+  PlaceConcealedCards iid cards lids -> do
+    {- A log block around the whole batch, so the placements read as one unit.
+
+    It has to live in game state rather than in the narrator: a batch of more
+    than one card asks for a location per card, and the narrator ref is rebuilt
+    every action. See 'Arkham.Log.Refs.placeConcealedBlockKey' for what the key
+    carries and why.
+
+    Only for more than one card -- a single placement is one line and a block
+    around it would be two rows saying the same thing. -}
+    mLogBlock <-
+      if length cards > 1
+        then do
+          token <- getRandom
+          let key = placeConcealedBlockKey iid (length cards) token
+          push $ OpenLogBlock key
+          pure (Just key)
+        else pure Nothing
     forTargets lids msg
+    -- Queued last, so it resolves behind every placement the chain queues
+    -- ahead of it, which is what makes it the end of the batch.
+    for_ mLogBlock $ push . CloseLogBlock
     pure a
   ForTargets ls (PlaceConcealedCards iid (card : cards) lids) -> do
     let

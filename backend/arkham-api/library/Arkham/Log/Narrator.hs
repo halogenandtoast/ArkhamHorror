@@ -69,16 +69,21 @@ import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Types (Field (AssetDamage, AssetHorror))
 import Arkham.Attack.Types
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers (concealedKindToCardDef)
+import Arkham.Campaigns.TheScarletKeys.Concealed.Kind (ConcealedCardKind (..))
+import Arkham.Campaigns.TheScarletKeys.Concealed.Matcher (
+  ConcealedCardMatcher (ConcealedCardWithId),
+ )
 import Arkham.Card
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasGame
-import Arkham.Classes.Query (select)
+import Arkham.Classes.Query (select, selectOne)
 import Arkham.Constants (notPlayerAbilityIndex)
 import Arkham.Cost (Cost (ActionCost, ResourceCost))
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Game.Base (Game (..))
 import Arkham.Game.Utils (modeScenario)
-import Arkham.GameEnv (getSkillTest)
+import Arkham.GameEnv (getCardMaybe, getLogBlockStack, getSkillTest)
 import Arkham.Helpers.Scenario (getInResolution)
 import Arkham.Helpers.SkillTest (
   calculateSkillTestResultsData,
@@ -100,8 +105,9 @@ import Arkham.Matcher (
 import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Movement (moveForced)
+import Arkham.Name (display, toName)
 import Arkham.Phase
-import Arkham.Placement (Placement)
+import Arkham.Placement (Placement (AtLocation, AttachedToLocation))
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
@@ -813,6 +819,141 @@ oneShot = \case
       else do
         ref <- agendaRefFor aid
         pure $ Just $ structure [ikeyPart "log.agendaAdvances" ["agenda" ~> ref]]
+  -- \* Taking something back
+
+  {- An enemy attack called off.
+
+  @ForTarget@ because the cancel is addressed to the enemy whose attack it is:
+  'Arkham.Message.Lifted.cancelAttack' pushes @Priority (ForTarget enemy
+  (CancelNext source AttackMessage))@, and both the enemy runner
+  (@Enemy/Runner.hs:2269@) and the enemy-proxy location runner
+  (@EnemyLocation/Runner.hs:292@) answer it by marking the attack cancelled.
+  @Priority@ is stripped by 'Arkham.Game.popMessageWithPriority' on the way out
+  of the queue, so this is the shape that reaches the narrator.
+
+  Always a real cancel, which is why it needs no guard: the enemy runner reads
+  the attack it is cancelling out of its own state and would not be here
+  without one. -}
+  ForTarget target (CancelEachNext _ source [AttackMessage]) -> Just do
+    mTarget <- targetRefFor target
+    mSource <- sourceRefFor source
+    pure $ flip fmap mTarget \t -> notice $ pure $ case mSource of
+      Just src -> ikeyPart "log.attackCancelledBy" ["enemy" ~> t, "source" ~> src]
+      Nothing -> ikeyPart "log.attackCancelled" ["enemy" ~> t]
+  {- A revelation called off: Ward of Protection and its kin.
+
+  The card id is what makes this worth a line -- "a revelation is cancelled"
+  without saying whose is a line a reader cannot use -- so the shapes that
+  carry none (every @CancelNext@, whose card id is 'Nothing') say nothing here.
+
+  Deliberately NOT the other two messages 'Arkham.Message.Lifted.cancelCardEffects'
+  pushes alongside this one. @CancelNext _ DrawEnemyMessage@ and @CancelSurge@
+  are both speculative: the first removes the next matching message /if there
+  is one/, and the second installs a @NoSurge@ modifier whether or not the card
+  has the keyword. Narrating them would print "the surge is cancelled" under
+  every Ward of Protection (5) played on a treachery that never had one. -}
+  CancelEachNext (Just cardId) source msgTypes | RevelationMessage `elem` msgTypes -> Just do
+    mCard <- getCardMaybe cardId
+    mSource <- sourceRefFor source
+    pure do
+      card <- mCard
+      pure $ notice $ pure $ case mSource of
+        Just src -> ikeyPart "log.revelationCancelledBy" ["card" ~> card, "source" ~> src]
+        Nothing -> ikeyPart "log.revelationCancelled" ["card" ~> card]
+  {- A chaos token taken back out of a test.
+
+  @ChaosTokenCanceled@, not the @CancelEachNext@ that
+  'Arkham.Message.Lifted.cancelChaosToken' pushes beside it: that one is the
+  queue surgery, and this one is the fact, pushed once the token's reveal and
+  resolution messages are already gone. -}
+  ChaosTokenCanceled _ source token -> Just do
+    mSource <- sourceRefFor source
+    pure $ Just $ notice $ pure $ case mSource of
+      Just src -> ikeyPart "log.chaosTokenCancelledBy" ["token" ~> token, "source" ~> src]
+      Nothing -> ikeyPart "log.chaosTokenCancelled" ["token" ~> token]
+  {- Damage and horror cancelled before it lands: Flesh Ward, Spectral Shield.
+
+  The source is deliberately left out. @CancelDamage@ carries none at all, and
+  the one on @CancelAssetDamage@ is the source of the /damage/ rather than of
+  the cancel -- so "cancelled by the Ghoul" would name the attacker as the
+  saviour. The card that did it is the line above this one anyway. -}
+  CancelDamage iid n | n > 0 -> Just (renderCancelled "log.damageCancelled" (InvestigatorTarget iid) n)
+  CancelHorror iid n | n > 0 -> Just (renderCancelled "log.horrorCancelled" (InvestigatorTarget iid) n)
+  CancelAssetDamage aid _ n | n > 0 -> Just (renderCancelled "log.damageCancelled" (AssetTarget aid) n)
+  CancelAssetHorror aid _ n | n > 0 -> Just (renderCancelled "log.horrorCancelled" (AssetTarget aid) n)
+  -- \* Concealed mini-cards
+
+  {- A mini-card exposed, and what was under it.
+
+  @Flip@ is the exposure: 'Arkham.Campaigns.TheScarletKeys.Concealed.Helpers.exposeConcealed'
+  pushes exactly this, and the mini-card's runner turns the card face up and
+  then resolves what is beneath it in a @DoStep 1@ of the same message. The
+  line is written here rather than at that step because the narrator runs
+  /before/ the message: this is the last point the kind can be read off the
+  entity, which for an enemy's mini-card is gone from play by @DoStep 1@.
+
+  A card that is already face up is not being exposed. @Flip@ toggles, and
+  'Arkham.Campaigns.TheScarletKeys.Concealed.Helpers.revealConcealed' turns one
+  up and back down again so an investigator can peek at it; only the face-down
+  to face-up direction is an exposure, and 'renderExposed' checks which it is.
+
+  The wrapped @DoStep@ forms are not this constructor, so they are no risk
+  here -- but note that a mini-card's /kind/ is hidden information until this
+  message runs, which is the whole reason the line is worth writing. -}
+  Flip iid source (ConcealedCardTarget cid) -> Just (renderExposed iid source cid)
+  {- A batch of mini-cards being placed, as one block.
+
+  Three rows, from three different messages, because that is how the engine
+  does it: @Scenario/Runner.hs@'s @PlaceConcealedCards@ consumes the list one
+  card at a time, asking for a location between each, so "how many are left"
+  arrives separately from "where that one went".
+
+  The header is the only narration that is deliberately written __again__ on
+  every pass. It is tagged and retracted first, so the bar counts down as cards
+  land rather than stacking up one line per placement -- the same trick
+  'Msg.RecordCount' uses for a count that supersedes the one before it.
+
+  @ForTargets@, not the bare @PlaceConcealedCards@: the bare one is the entry
+  point that opens the block, and the chain that does the work is this. Both
+  shapes, because the runner answers a @Do@-wrapped chain too (nothing pushes
+  one today; this costs a line and will not quietly stop working if something
+  does). -}
+  ForTargets _ (Msg.PlaceConcealedCards iid cards _)
+    | notNull cards -> Just (renderMustPlaceConcealed iid (length cards))
+  Do (ForTargets _ (Msg.PlaceConcealedCards iid cards _))
+    | notNull cards -> Just (renderMustPlaceConcealed iid (length cards))
+  {- One mini-card placed.
+
+  The bare constructor only. @Do (PlaceConcealedCard ...)@ is the bookkeeping
+  form -- it adjusts a placement and leaves @known@ and @flipped@ alone, which
+  is how Weald of Effigies swaps two mini-cards and how Gravity-Defying Climb
+  corrects one -- and none of that is a card being placed.
+
+  Carries no group of its own, so it joins whatever block is open: the batch's,
+  or nothing at all when a scenario places a single card on its own. -}
+  Msg.PlaceConcealedCard iid _ placement -> Just do
+    who <- investigatorRefFor iid
+    mLocation <- traverse locationRefFor (concealedPlacementLocation placement)
+    pure $ Just $ mechanic $ pure $ case mLocation of
+      Just loc -> ikeyPart "log.placesConcealedAt" ["investigator" ~> who, "location" ~> loc]
+      Nothing -> ikeyPart "log.placesConcealed" ["investigator" ~> who]
+  {- The batch's own end, which closes the block and is what it collapses to.
+
+  @CloseLogBlock@ is the only message every placement branch reaches: the two
+  that place every card at once never queue a tail, so there is no last
+  @PlaceConcealedCards@ to read. The key carries the total and the investigator
+  for exactly this -- see 'Arkham.Log.Refs.placeConcealedBlockKey' -- and the
+  guard is what keeps this off every other block's close.
+
+  The running header is taken back as the summary lands: "must place 1 more"
+  is not something a finished batch should still be saying. -}
+  CloseLogBlock key | Just (iid, total) <- placeConcealedBlock key -> Just do
+    who <- investigatorRefFor iid
+    retractLog (placeConcealedHeaderTag key)
+    pure
+      $ Just
+      $ closesGroup key
+      $ mechanic [ikeyPart "log.placedConcealed" ["investigator" ~> who, "count" ~> total]]
   _ -> Nothing
 
 -- | "Ghoul Priest attacks Daisy Walker." A massive attack names everyone it hits.
@@ -1260,3 +1401,135 @@ renderSkillTestType = \case
   AndSkillTest sks -> LogList (map toLogPart sks)
   ResourceSkillTest -> ikeyPart "log.resources" []
   BaseValueSkillTest {} -> ikeyPart "log.baseValue" []
+
+{- | "Daisy Walker exposes Void Chimera (Fellbeak) at the Outsiders' Lair."
+
+Everything but the investigator comes from game state, because the message
+carries only an id -- and what the mini-card /is/ is the point of the line.
+
+'Nothing' in the two cases where there is no exposure to report: the card is
+already face up (a peek flipping back down, or a second @Flip@), or it is gone
+from play entirely, which is routine here -- an exposure removes the mini-card.
+-}
+renderExposed
+  :: HasGame m => InvestigatorId -> Source -> ConcealedCardId -> m (Maybe LogEntry)
+renderExposed iid source cid = do
+  mConcealed <- selectOne (ConcealedCardWithId cid)
+  case mConcealed of
+    Just c | not c.flipped -> do
+      who <- investigatorRefFor iid
+      mLocation <- traverse locationRefFor (concealedPlacementLocation c.placement)
+      {- "from Lightfooted". The mini-card's own fight or evade ability resolves
+      to no ref, which is right: the test above it has already said what the
+      investigator did. -}
+      mSource <- sourceRefFor source
+      let
+        vars = ["investigator" ~> who, "card" ~> concealedCardPart c.kind]
+        entry = case mLocation of
+          Just loc -> mechanic [ikeyPart "log.exposesAt" (vars <> ["location" ~> loc])]
+          Nothing -> mechanic [ikeyPart "log.exposes" vars]
+      pure $ Just $ maybe entry (`because` entry) mSource
+    _ -> pure Nothing
+
+{- | Where a mini-card is, when its placement says so outright.
+
+A grid position deliberately answers 'Nothing': a card in the shadows is
+adjacent to the investigator rather than at a location, so "at the Knotted
+Tower" would name a board the card is not on.
+-}
+concealedPlacementLocation :: Placement -> Maybe LocationId
+concealedPlacementLocation = \case
+  AtLocation lid -> Just lid
+  AttachedToLocation lid -> Just lid
+  _ -> Nothing
+
+{- | "Daisy Walker must place 2 more concealed cards."
+
+Revised in place: the previous header is retracted before this one is sent, so
+the block's bar always says what is still owed instead of growing a line per
+placement.
+
+The total in the block's key is what tells the first header from a later one --
+the message itself only knows how many are left, and "must place 3 more" as the
+opening line would be wrong. No block open means no batch to count down and
+nothing to say: a single placement is its own line.
+-}
+renderMustPlaceConcealed
+  :: (HasGame m, HasGameLogger m) => InvestigatorId -> Int -> m (Maybe LogEntry)
+renderMustPlaceConcealed iid remaining = do
+  mBlock <- openPlaceConcealedBlock
+  case mBlock of
+    Nothing -> pure Nothing
+    Just (key, total) -> do
+      who <- investigatorRefFor iid
+      retractLog (placeConcealedHeaderTag key)
+      let k = if remaining >= total then "log.mustPlaceConcealed" else "log.mustPlaceMoreConcealed"
+      pure
+        $ Just
+        $ tagged (placeConcealedHeaderTag key)
+        $ opensGroup key
+        $ mechanic [ikeyPart k ["investigator" ~> who, "count" ~> remaining]]
+
+{- | The concealed-placement block in progress, and how many cards it is for.
+
+From 'getLogBlockStack' and not 'Arkham.Log.Refs.openBlockKey': that one
+answers with the innermost block of any kind, which during a placement inside a
+skill test is the test's -- and a header sent against a test's id would give
+that block a second one.
+-}
+openPlaceConcealedBlock :: HasGame m => m (Maybe (Text, Int))
+openPlaceConcealedBlock = do
+  stack <- getLogBlockStack
+  pure
+    $ listToMaybe [(key, total) | key <- reverse stack, Just (_, total) <- [placeConcealedBlock key]]
+
+-- | The tag the running header is retracted by. One per batch, so two cannot cross.
+placeConcealedHeaderTag :: Text -> Text
+placeConcealedHeaderTag key = "placeConcealedHeader:" <> key
+
+{- | What a mini-card turns out to be.
+
+An enemy names itself, from the 'CardDef' behind the kind rather than through
+'Arkham.Log.Refs.byCardCodeRef': a homebrew box's concealed enemy is in
+'Arkham.Homebrew.Defs.homebrewConcealedCardDefs' but not necessarily in
+'lookupCardDef', and the fallback there would print a bare card code.
+
+The rest have no card to point at and are named by key instead -- which is also
+why a kind this mapping has not been taught says "a concealed card" rather than
+guessing "a decoy". Calling the City of Remnants a decoy would be a lie about
+the board.
+-}
+concealedCardPart :: ConcealedCardKind -> LogPart
+concealedCardPart kind = case concealedKindToCardDef kind of
+  Just def -> LogRefPart $ (logRef RefEnemy (display $ toName def)) {logRefCardCode = Just (toCardCode def)}
+  Nothing -> ikeyPart ("log.concealed." <> concealedKindKey kind) []
+
+{- | The i18n leaf for a mini-card with no enemy behind it.
+
+Named mini-cards, so the log can say which decoy was turned over -- Void
+Chimera's four false forms are each printed with a name, and which one it was
+drives what other cards do about it.
+-}
+concealedKindKey :: ConcealedCardKind -> Text
+concealedKindKey = \case
+  Decoy -> "decoy"
+  DecoyVoidChimeraEarsplitter -> "decoyVoidChimeraEarsplitter"
+  DecoyVoidChimeraFellbeak -> "decoyVoidChimeraFellbeak"
+  DecoyVoidChimeraFellhound -> "decoyVoidChimeraFellhound"
+  DecoyVoidChimeraGorefeaster -> "decoyVoidChimeraGorefeaster"
+  CityOfRemnants -> "cityOfRemnants"
+  CityOfRemnantsL -> "cityOfRemnantsL"
+  CityOfRemnantsM -> "cityOfRemnantsM"
+  CityOfRemnantsR -> "cityOfRemnantsR"
+  MimeticNemesis -> "mimeticNemesis"
+  _ -> "card"
+
+{- | "1 damage to Daisy Walker is cancelled."
+
+No chip for the target means something the reader has no name for was spared;
+saying nothing beats printing a uuid, the same rule the damage line keeps.
+-}
+renderCancelled :: HasGame m => Text -> Target -> Int -> m (Maybe LogEntry)
+renderCancelled key target n = do
+  mTarget <- targetRefFor target
+  pure $ flip fmap mTarget \t -> notice [ikeyPart key ["target" ~> t, "count" ~> n]]

@@ -127,10 +127,17 @@ function requestUndo() {
       v-if="band"
       class="log-group__band"
       :type="hasDetail ? 'button' : undefined"
+      :aria-expanded="hasDetail ? open : undefined"
       @click="toggle"
     >
       <span class="log-group__line">
-        <span class="log-caret-spacer" />
+        <!-- The caret belongs to the block's first bar. With a header above,
+             that is the header and this stays a spacer; a block whose header
+             was retracted -- a finished batch of concealed placements -- or
+             undone away has only this bar, so the affordance has to live here
+             or the block looks like it does not open. -->
+        <span v-if="hasDetail && !header" class="log-caret" :class="{ 'log-caret--open': open }">&#9654;</span>
+        <span v-else class="log-caret-spacer" />
         <span class="log-group__body">
           <LogPart v-for="(part, i) in bandSentence" :key="i" :part="part" />
         </span>

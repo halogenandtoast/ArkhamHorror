@@ -1,0 +1,154 @@
+{
+  "scenario": {
+    "label": "The Phantom of the Opera",
+    "fullLabel": "The Phantom of the Opera",
+    "intro": {
+      "title": "The Malevolent Phantom",
+      "body": "<p>With the ongoing troubles of Arkham, it was often difficult to keep track of strange happenings abroad. However, macabre news from the Opera Garnier caused an international stir. The superstitious had long claimed that a ghost haunted the opera house, and a series of threats and murders gave a tangible truth to the rumors, culminating in the theater's chandelier crashing down into the audience mid-performance. It was all far beyond the capabilities of the Paris police.</p><p>Your arrival at the opera house some weeks later was met with gratitude by the opera managers and Raoul — a minor nobleman. With your assurance of help and secrecy, they entrusted you with details about the Phantom kept from the public, specifically his obsession with Christine Daaé — the young diva of the opera and Raoul's fiancée. The demands of the Phantom and the body count of defying those demands could not continue. The managers had devised a masquerade ball to entrap the fiend, and with you embedded in the crowd, they were blindly certain that it would be the Phantom's end. All of your instincts, on the other hand, pointed to a long night ahead.</p>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the *The Phantom of the Opera* encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{imgPath}/homebrew/the-phantom-of-the-opera/sets/the-phantom-of-the-opera.png' /></section>",
+      "grandFoyer": "Randomly choose two copies of Grand Foyer and remove them from the game. Put each other copy into play. Each investigator begins play at one randomly chosen copy of Grand Foyer.",
+      "setAside": "Set each other location and each story asset aside, out of play.",
+      "miniCards": "Gather each decoy mini-card and each of the following mini-cards: The Phantom, Buried Sorrows, Simmering Anger, Stifled Laughter, Chaotic Minion (A and B). Set them aside, out of play.",
+      "resolvePhantom": "Find The Phantom *(Lurking Mastermind)* and resolve his _concealed_ keyword.",
+      "shuffleRemainder": "Shuffle the remainder of the encounter cards to build the encounter deck."
+    },
+    "resolutions": {
+      "label": {
+        "addToDeck": "Any one investigator may add this card to their deck",
+        "declineReward": "Do not add it to any deck"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Resolution 1_: The world may never truly know what happened to the Phantom of the Opera. It was several months before Christine Daaé resurfaced, and she refused to speak of what transpired between them. You can only hope that the Phantom never surfaces again to terrorize the world.</p><ul><li>In your Campaign Log, record *the Phantom escaped justice*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>_Resolution 2_: The incident at the opera house became the talk of Paris. The Phantom had destroyed himself, and the Persian paid the price to keep you and Christine from the same fate. But knowing now the forces that the Phantom aligned himself with, you wonder if this truly is the end for anything.</p><ul><li>In your Campaign Log, record *the Phantom destroyed himself*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul>"
+      },
+      "resolution3": {
+        "title": "Resolution 3",
+        "body": "<p>_Resolution 3_: A dark silence accompanies you as you and the Persian escort Christine out of the Phantom's lair. No words are spoken, and no tears shed, for there is little left to mourn. The Phantom embraced the madness rather than fight it, and you could not allow his twisted mind to plot in service of unspeakable terrors. Paris rejoices at the Phantom's end, and while Christine seeks solace in her fiancée, the Persian approaches you in private. \"The matter has come to a grim ending, but I thank you for your part in preventing a worse one. If I can be of any assistance to you in any other matters, you need only ask.\"</p><ul><li>In your Campaign Log, record *the Phantom has fallen*.</li><li>Any one investigator may choose to add The Persian to their deck. Any one investigator may choose to add The Grasshopper to their deck. These cards do not count toward those investigators' deck sizes.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul>"
+      },
+      "resolution4": {
+        "title": "Resolution 4",
+        "body": "<p>_Resolution 4_: Your exit from the Phantom's lair is solemn, but not entirely sorrowful. Christine has a melancholy smile for Erik's change of heart as she is finally reunited with the vicomte. You on the other hand are relieved that he has turned his back on the twisted powers that nearly drove him over the brink. What becomes of the Phantom now may truly never be known, but all of Paris rejoices at the end of the threat. The Persian approaches you in private once you have returned from the sewers. \"You have my profound thanks for your part in this mission. Without you, a great tragedy might have come to pass. If I can be of any assistance to you in any other matters, you need only ask.\"</p><ul><li>In your Campaign Log, record *Erik lives on beneath Paris*.</li><li>Any one investigator may choose to add The Persian to their deck. Any one investigator may choose to add The Scorpion to their deck. These cards do not count toward those investigators' deck sizes.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul>"
+      }
+    },
+    "fixation": {
+      "label": {
+        "thePhantomAttacks": "The Phantom attacks you"
+      }
+    },
+    "grandFoyer": {
+      "label": {
+        "addDecoyAndShuffle": "Add a decoy to this location and shuffle all concealed mini-cards here",
+        "discardToExpose": "Discard an additional card from your hand to expose the chosen mini-card",
+        "spendToExpose": "Spend an additional resource to expose the chosen mini-card"
+      }
+    },
+    "masquerade": {
+      "label": {
+        "chooseGrandFoyer": "Choose a revealed copy of Grand Foyer",
+        "thePersian": "Choose an investigator to take control of The Persian"
+      }
+    },
+    "sinisterForces": {
+      "label": {
+        "forceYourHand": "Choose and reveal a concealed mini-card"
+      }
+    },
+    "terribleGuise": {
+      "label": {
+        "spawnAtConnecting": "Spawn Terrible Guise at a connecting location",
+        "takeHorrorAndSpawnEngaged": "Take 1 horror and spawn Terrible Guise engaged with you"
+      }
+    },
+    "thePersian": {
+      "label": {
+        "moveClueFromConnecting": "Move a clue from a revealed connecting location to your location"
+      }
+    },
+    "thePhantom": {
+      "label": {
+        "ignoreForcedEffect": "Ignore the forced effect on The Phantom",
+        "returnToTheShadows": "Return The Phantom to the shadows and resolve his _concealed_ keyword"
+      }
+    },
+    "tooltips": {
+      "auditorium": {
+        "drawIn": "{'{'}fast{'}'}: Move a concealed mini-card from any revealed location to Auditorium. (Group limit once per round.)",
+        "panic": "_Forced_ - When the agenda advances, if there are 1 or more investigators at Auditorium: Each investigator at Auditorium must either take 3 damage or lose 2 actions. (Max once per game.)"
+      },
+      "backstage": {
+        "scour": "{'{'}fast{'}'} Discard an asset you control: Look at the revealed sides of any two concealed mini-cards at this location."
+      },
+      "boxFive": {
+        "vantage": "{'{'}reaction{'}'} When the last clue is discovered from Box Five: Look at the revealed sides of any 1{'{'}perPlayer{'}'} concealed mini-cards in play. (Group limit once per game.)"
+      },
+      "chasingGhosts": {
+        "misdirect": "{'{'}reaction{'}'} When The Phantom would attack an investigator, spend 1 clue: Cancel that attack."
+      },
+      "grandFoyer": {
+        "resign": "{'{'}action{'}'}: _Resign._ You concede defeat to the Phantom and flee the opera house."
+      },
+      "grandFoyer_008": {
+        "parley": "{'{'}action{'}'} Choose and discard a card from your hand: _Parley._ Look at the revealed side of a concealed mini-card at this location. You may choose and discard an additional card from your hand to expose the chosen mini-card."
+      },
+      "grandFoyer_009": {
+        "parley": "{'{'}action{'}'} Spend 1 resource: _Parley._ Look at the revealed side of a concealed mini-card at this location. You may spend an additional resource to expose the chosen mini-card."
+      },
+      "grandFoyer_010": {
+        "parley": "{'{'}action{'}'}: _Parley._ Gather each concealed mini-card from each copy of Grand Foyer, remove a decoy from the collected cards, then randomly distribute the remaining concealed mini-cards among all copies of Grand Foyer. (Group limit once per round.)"
+      },
+      "grandFoyer_011": {
+        "parley": "{'{'}action{'}'}: _Parley._ Reduce the shroud value of this location by 2 for the next investigate, fight, or evade action performed this round."
+      },
+      "grandFoyer_012": {
+        "parley": "{'{'}action{'}'}: _Parley._ Choose a concealed mini-card at this location and look at its revealed side. If the chosen card is a decoy, you must either take 1 damage or 1 horror, or add a decoy to this location and shuffle all concealed mini-cards at this location. (Limit once per round.)"
+      },
+      "hiddenParlor": {
+        "dread": "{'{'}fast{'}'} If there are 1{'{'}perPlayer{'}'} or more non-_Elite_ enemies in the shadows and there is no horror on Hidden Parlor: Place 1 horror on Hidden Parlor.",
+        "openTheWay": "_Forced_ - After Organ Chamber is revealed: Reveal Hidden Parlor. Shuffle each concealed mini-card in play and redistribute them between each _Underground_ location equally.",
+        "peer": "{'{'}fast{'}'} Take 1 damage or 1 horror: Look at the revealed side of any concealed mini-card."
+      },
+      "masquerade": {
+        "unmasked": "{'{'}reaction{'}'} When The Phantom is exposed: Add 1 clue to the location where The Phantom's mini-card was exposed *(from the token bank)*."
+      },
+      "organChamber": {
+        "draw": "{'{'}action{'}'}: Move a concealed mini-card from a connecting location to Organ Chamber. If there are 2{'{'}perPlayer{'}'} or more concealed mini-cards at Organ Chamber and there is no horror on Organ Chamber, place 1 horror on Organ Chamber.",
+        "unmasked": "_Forced_ - After The Phantom is exposed: Reveal Organ Chamber."
+      },
+      "parisSewers_018": {
+        "glimpse": "{'{'}reaction{'}'} After your turn begins: Look at the revealed side of a concealed mini-card at this location.",
+        "toll": "_Forced_ - When you start your turn at this location: Take 1 damage, 1 horror, or lose 1 action."
+      },
+      "parisSewers_019": {
+        "sacrifice": "{'{'}reaction{'}'} After you fail a test while investigating at this location, discard a card from your hand with printed cost X or more, where X is the amount you failed by: Look at the revealed side of a concealed mini-card at this location."
+      },
+      "parisSewers_020": {
+        "sacrifice": "{'{'}reaction{'}'} After you fail a test while fighting at this location, discard a card from your hand with printed cost X or more, where X is the amount you failed by: Look at the revealed side of a concealed mini-card at this location."
+      },
+      "parisSewers_021": {
+        "sacrifice": "{'{'}reaction{'}'} After you fail a test while evading at this location, discard a card from your hand with printed cost X or more, where X is the amount you failed by: Look at the revealed side of a concealed mini-card at this location."
+      },
+      "parisSewers_022": {
+        "brace": "{'{'}fast{'}'} During a skill test at this location, exhaust a non-permanent asset you control: Reduce the difficulty of this test by 1. (Group limit twice per test.)"
+      },
+      "thePhantomsDomain": {
+        "misdirect": "{'{'}reaction{'}'} When The Phantom would attack an investigator, spend 1 clue: Cancel that attack."
+      },
+      "thePhantomsLair": {
+        "despair": "_Forced_ - After you end your turn at The Phantom's Lair and you did not discover clues or expose concealed mini-cards this round: Take 1 damage or 1 horror.",
+        "lure": "{'{'}action{'}'}: Add 1 clue to The Phantom's Lair. If there are 2{'{'}perPlayer{'}'} or more clues on The Phantom's Lair and there is no horror on The Phantom's Lair, place 1 horror on it."
+      }
+    },
+    "violentShade": {
+      "label": {
+        "spawnAtConnecting": "Spawn Violent Shade at a connecting location",
+        "takeDamageAndSpawnEngaged": "Take 1 damage and spawn Violent Shade engaged with you"
+      }
+    }
+  }
+}

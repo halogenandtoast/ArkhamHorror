@@ -5471,6 +5471,69 @@ library
       Arkham.Homebrew.TheMasqueOfTheRedDeath.Treacheries.SilentScrutiny
       Arkham.Homebrew.TheMasqueOfTheRedDeath.Treacheries.SuddenSymptoms
       Arkham.Homebrew.TheMasqueOfTheRedDeath.Treacheries.ViolentCrowd
+      Arkham.Homebrew.ThePhantomOfTheOpera.Acts.ChasingGhosts
+      Arkham.Homebrew.ThePhantomOfTheOpera.Acts.MasksUponMasks
+      Arkham.Homebrew.ThePhantomOfTheOpera.Acts.Masquerade
+      Arkham.Homebrew.ThePhantomOfTheOpera.Acts.ThePhantomsDomain
+      Arkham.Homebrew.ThePhantomOfTheOpera.Agendas.FaceToFace
+      Arkham.Homebrew.ThePhantomOfTheOpera.Agendas.SinisterForces
+      Arkham.Homebrew.ThePhantomOfTheOpera.Assets.ChristineDaae
+      Arkham.Homebrew.ThePhantomOfTheOpera.Assets.TheGrasshopper
+      Arkham.Homebrew.ThePhantomOfTheOpera.Assets.ThePersian
+      Arkham.Homebrew.ThePhantomOfTheOpera.Assets.TheScorpion
+      Arkham.Homebrew.ThePhantomOfTheOpera.CardDefEntries
+      Arkham.Homebrew.ThePhantomOfTheOpera.CardDefs.Acts
+      Arkham.Homebrew.ThePhantomOfTheOpera.CardDefs.Agendas
+      Arkham.Homebrew.ThePhantomOfTheOpera.CardDefs.Assets
+      Arkham.Homebrew.ThePhantomOfTheOpera.CardDefs.Enemies
+      Arkham.Homebrew.ThePhantomOfTheOpera.CardDefs.Locations
+      Arkham.Homebrew.ThePhantomOfTheOpera.CardDefs.Treacheries
+      Arkham.Homebrew.ThePhantomOfTheOpera.CardEntries
+      Arkham.Homebrew.ThePhantomOfTheOpera.Content
+      Arkham.Homebrew.ThePhantomOfTheOpera.Defs
+      Arkham.Homebrew.ThePhantomOfTheOpera.Enemies.BuriedSorrows
+      Arkham.Homebrew.ThePhantomOfTheOpera.Enemies.ChaoticMinionA
+      Arkham.Homebrew.ThePhantomOfTheOpera.Enemies.ChaoticMinionB
+      Arkham.Homebrew.ThePhantomOfTheOpera.Enemies.SimmeringAnger
+      Arkham.Homebrew.ThePhantomOfTheOpera.Enemies.StifledLaughter
+      Arkham.Homebrew.ThePhantomOfTheOpera.Enemies.TerribleGuise
+      Arkham.Homebrew.ThePhantomOfTheOpera.Enemies.ThePhantom
+      Arkham.Homebrew.ThePhantomOfTheOpera.Enemies.ThePhantomTragicFigure
+      Arkham.Homebrew.ThePhantomOfTheOpera.Enemies.ViolentShade
+      Arkham.Homebrew.ThePhantomOfTheOpera.Helpers
+      Arkham.Homebrew.ThePhantomOfTheOpera.Import
+      Arkham.Homebrew.ThePhantomOfTheOpera.Key
+      Arkham.Homebrew.ThePhantomOfTheOpera.Kinds
+      Arkham.Homebrew.ThePhantomOfTheOpera.Locations.Auditorium
+      Arkham.Homebrew.ThePhantomOfTheOpera.Locations.Backstage
+      Arkham.Homebrew.ThePhantomOfTheOpera.Locations.BoxFive
+      Arkham.Homebrew.ThePhantomOfTheOpera.Locations.GrandFoyer_008
+      Arkham.Homebrew.ThePhantomOfTheOpera.Locations.GrandFoyer_009
+      Arkham.Homebrew.ThePhantomOfTheOpera.Locations.GrandFoyer_010
+      Arkham.Homebrew.ThePhantomOfTheOpera.Locations.GrandFoyer_011
+      Arkham.Homebrew.ThePhantomOfTheOpera.Locations.GrandFoyer_012
+      Arkham.Homebrew.ThePhantomOfTheOpera.Locations.HiddenParlor
+      Arkham.Homebrew.ThePhantomOfTheOpera.Locations.OrganChamber
+      Arkham.Homebrew.ThePhantomOfTheOpera.Locations.ParisSewers_018
+      Arkham.Homebrew.ThePhantomOfTheOpera.Locations.ParisSewers_019
+      Arkham.Homebrew.ThePhantomOfTheOpera.Locations.ParisSewers_020
+      Arkham.Homebrew.ThePhantomOfTheOpera.Locations.ParisSewers_021
+      Arkham.Homebrew.ThePhantomOfTheOpera.Locations.ParisSewers_022
+      Arkham.Homebrew.ThePhantomOfTheOpera.Locations.ThePhantomsLair
+      Arkham.Homebrew.ThePhantomOfTheOpera.Scenarios.ThePhantomOfTheOpera
+      Arkham.Homebrew.ThePhantomOfTheOpera.Sets
+      Arkham.Homebrew.ThePhantomOfTheOpera.SideStoryDefs
+      Arkham.Homebrew.ThePhantomOfTheOpera.Traits
+      Arkham.Homebrew.ThePhantomOfTheOpera.Treacheries.AlwaysWatchingBait
+      Arkham.Homebrew.ThePhantomOfTheOpera.Treacheries.AlwaysWatchingFeint
+      Arkham.Homebrew.ThePhantomOfTheOpera.Treacheries.AlwaysWatchingGoad
+      Arkham.Homebrew.ThePhantomOfTheOpera.Treacheries.AngelOfMusic
+      Arkham.Homebrew.ThePhantomOfTheOpera.Treacheries.EchoingThreats
+      Arkham.Homebrew.ThePhantomOfTheOpera.Treacheries.Fixation
+      Arkham.Homebrew.ThePhantomOfTheOpera.Treacheries.InsidiousTrick
+      Arkham.Homebrew.ThePhantomOfTheOpera.Treacheries.ShroudedFaces
+      Arkham.Homebrew.ThePhantomOfTheOpera.Treacheries.SignsOfMadness
+      Arkham.Homebrew.ThePhantomOfTheOpera.Treacheries.ThePhantomStrikes
       Arkham.Homebrew.TheSymphonyOfErichZann.Acts.MusicFromAuseilTheatre
       Arkham.Homebrew.TheSymphonyOfErichZann.Acts.ThePossessedConductor
       Arkham.Homebrew.TheSymphonyOfErichZann.Acts.UndreamableOrchestra

@@ -1,0 +1,30 @@
+{
+  "name": "The Phantom of the Opera",
+  "about": {
+    "sections": [
+      {
+        "rows": [
+          {
+            "role": "Design",
+            "names": "The Beard"
+          }
+        ],
+        "text": [
+          "The Phantom of the Opera is a scenario for Arkham Horror: The Card Game based on the classic story by Gaston Leroux. It can be played as a standalone scenario, or as a side-story during any campaign.",
+          "This scenario uses the concealed effect, and requires the concealed decoy mini-cards included in The Scarlet Keys campaign expansion.",
+          "If you are playing The Scarlet Keys campaign, this scenario can be played by visiting Paris on the world map (as if there were a side-story location connected to London, Venice, and Monte Carlo).",
+          "This scenario would not have been possible without the amazing design framework created by Matt Newman, Nate French and everyone involved in Arkham Horror: The Card Game at FFG."
+        ]
+      }
+    ],
+    "notes": [
+      "This scenario is an unofficial fan creation and in no way endorsed by Fantasy Flight Games. All rights to artwork belong to the relevant artists."
+    ]
+  },
+  "key": {
+    "thePhantomEscapedJustice": "The Phantom escaped justice.",
+    "thePhantomDestroyedHimself": "The Phantom destroyed himself.",
+    "thePhantomHasFallen": "The Phantom has fallen.",
+    "erikLivesOnBeneathParis": "Erik lives on beneath Paris."
+  }
+}

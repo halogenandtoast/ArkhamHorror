@@ -306,14 +306,16 @@ export function scenarioToKeyI18n(scenario: Scenario): string {
 }
 
 // Maps a campaign id (e.g. "07" or "7") to its i18n scope root, so campaign-wide
-// content can be looked up even when no scenario is currently active.
+// content can be looked up even when no scenario is currently active. A "Return
+// to" box has its own campaign id but reuses the campaign's locale scope, the
+// same way its scenarios do.
 export function campaignIdToI18n(campaignId: string): string | null {
   switch (campaignId.replace(/^0+/, '')) {
-    case "1": return "nightOfTheZealot"
-    case "2": return "theDunwichLegacy"
-    case "3": return "thePathToCarcosa"
-    case "4": return "theForgottenAge"
-    case "5": return "theCircleUndone"
+    case "1": case "50": return "nightOfTheZealot"
+    case "2": case "51": return "theDunwichLegacy"
+    case "3": case "52": return "thePathToCarcosa"
+    case "4": case "53": return "theForgottenAge"
+    case "5": case "54": return "theCircleUndone"
     case "6": return "theDreamEaters"
     case "7": return "theInnsmouthConspiracy"
     case "8": return "edgeOfTheEarth"

@@ -121,10 +121,12 @@ interlude2FrancisMorgan = flavor $ footnote 11 "footnote11"
 
 -- * Scenario I-A: Extracurricular Activity
 
--- | Whether the night started at the Clover Club decides how you arrive.
+{- | Whether the night started at the Clover Club decides how you arrive. The
+Return box gives that scenario its own id, so both count.
+-}
 extracurricularActivityIntro :: (HasI18n, HasGame m) => m (FlavorTextBuilder ())
 extracurricularActivityIntro = do
-  completedTheHouseAlwaysWins <- elem "02062" <$> getCompletedScenarios
+  completedTheHouseAlwaysWins <- any (`elem` ["02062", "51015"]) <$> getCompletedScenarios
   pure do
     h "title"
     p $ if completedTheHouseAlwaysWins then "completedTheHouseAlwaysWins" else "firstScenario"

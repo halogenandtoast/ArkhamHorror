@@ -4,8 +4,15 @@ import type { Game } from '@/arkham/types/Game'
 import type { Scenario } from '@/arkham/types/Scenario'
 import { imgsrc, toCamelCase } from '@/arkham/helpers'
 import { useI18n } from 'vue-i18n';
-import { scenarioIdToI18n } from '@/arkham/types/Scenario'
+import { campaignIdToI18n, scenarioIdToI18n } from '@/arkham/types/Scenario'
 import { ScenarioOptions, defaultScenarioOptions, scenarioOptionsDecoder } from '@/arkham/types/ScenarioOptions';
+
+/* The locale scope a campaign's own text lives under. By id first, so a "Return
+to" box reads the campaign's scope rather than a scope of its own that no locale
+file has; by name for anything the id table does not know. */
+function campaignScope(campaign: { id: string; name: string }): string {
+  return campaignIdToI18n(campaign.id) ?? toCamelCase(campaign.name)
+}
 
 // Resolves a scenario name by id, including scenarios nested inside
 // multi-scenario side stories (e.g. Guardians of the Abyss).
@@ -350,7 +357,7 @@ export function campaignStepName(game: Game, step: CampaignStep, scenario?: Scen
 
   if (step.tag === 'InterludeStep') {
     if (game.campaign) {
-      const key = `${toCamelCase(game.campaign.name)}.interludes.${step.contents[0]}`
+      const key = `${campaignScope(game.campaign)}.interludes.${step.contents[0]}`
       if (te(key)) {
         return t(key)
       }
@@ -368,7 +375,7 @@ export function campaignStepName(game: Game, step: CampaignStep, scenario?: Scen
 
   if (step.tag === 'PrologueStep') {
     if (game.campaign) {
-      const key = `${toCamelCase(game.campaign.name)}.headings.prologue`
+      const key = `${campaignScope(game.campaign)}.headings.prologue`
       if (te(key)) return t(key)
     }
     return t('headings.prologue')
@@ -386,7 +393,7 @@ export function campaignStepName(game: Game, step: CampaignStep, scenario?: Scen
   if (step.tag === 'CampaignSpecificStep') {
     if (game.campaign) {
       const [a, b] = step.contents
-      const key = `${toCamelCase(game.campaign.name)}.headings.${b ? `${a}.${b}`: a}`
+      const key = `${campaignScope(game.campaign)}.headings.${b ? `${a}.${b}`: a}`
       if (te(key)) return t(key)
     }
   }

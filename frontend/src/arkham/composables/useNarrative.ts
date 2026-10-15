@@ -3,6 +3,7 @@ import { useI18n } from 'vue-i18n'
 import type { Game } from '@/arkham/types/Game'
 import { narrativeMessages } from '@/locales/narratives'
 import narrativesJSON from '@/arkham/data/narratives.json'
+import campaignJSON from '@/arkham/data/campaigns.json'
 import { escapeIconPlaceholders } from '@/locales/messages'
 
 export type NarrativeEntry = {
@@ -19,6 +20,20 @@ export type NarrativeEntry = {
 }
 
 export const narratives = narrativesJSON as NarrativeEntry[]
+
+/* A "Return to" box tells the same story out of the same locale scope, so a
+variant written for a campaign covers its Return too. The boxes are keyed by
+their own campaign id, which this maps back to the campaign a variant names. */
+const returnToBase = new Map<string, string>(
+  (campaignJSON as { id: string; returnTo?: { id: string } }[])
+    .filter((c) => c.returnTo?.id)
+    .map((c) => [c.returnTo!.id, c.id]),
+)
+
+export function baseCampaignId(campaignId: string | null | undefined): string | null {
+  if (!campaignId) return null
+  return returnToBase.get(campaignId) ?? campaignId
+}
 
 export function narrativeEntry(key: string | null | undefined): NarrativeEntry | null {
   if (!key) return null
@@ -41,8 +56,9 @@ export function narrativeTitle(
   entry: NarrativeEntry,
   campaignId: string | null | undefined,
 ): string | null {
-  if (!campaignId) return null
-  return entry.campaigns[campaignId]?.name ?? null
+  const id = baseCampaignId(campaignId)
+  if (!id) return null
+  return entry.campaigns[id]?.name ?? null
 }
 
 /* A variant's own one-line description of itself, out of its locale file.
@@ -69,8 +85,9 @@ export function narrativeBlurb(
 
 /* The narrative variants offered for a campaign, by its id. */
 export function narrativesFor(campaignId: string | null | undefined): NarrativeEntry[] {
-  if (!campaignId) return []
-  return narratives.filter((n) => campaignId in n.campaigns)
+  const id = baseCampaignId(campaignId)
+  if (!id) return []
+  return narratives.filter((n) => id in n.campaigns)
 }
 
 /* The variant a game was created with. It is a campaign option, so it is in the

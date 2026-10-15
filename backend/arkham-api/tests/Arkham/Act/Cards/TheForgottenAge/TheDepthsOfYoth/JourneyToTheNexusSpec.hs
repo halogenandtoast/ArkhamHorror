@@ -4,7 +4,6 @@ import Arkham.Ability (Ability, abilityCost, abilityIndex, abilitySource)
 import Arkham.Act (lookupAct)
 import Arkham.Act.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Acts
 import Arkham.Act.Types (Act)
-import Arkham.Cost (Cost (Free))
 import Arkham.Effect.Window (EffectWindow (EffectRoundWindow))
 import Arkham.EffectMetadata (EffectMetadata (EffectModifiers))
 import Arkham.Entities qualified as Entities

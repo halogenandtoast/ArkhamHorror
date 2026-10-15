@@ -5,6 +5,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.ChaosToken
+import Arkham.Cost (returnedChaosTokenPayments)
+import Arkham.GameEnv (getActiveCosts)
 import Arkham.Helpers.Modifiers
 import Arkham.I18n
 import Arkham.Matcher
@@ -37,6 +39,13 @@ instance RunMessage NephthysHuntressOfBast4 where
   runMessage msg a@(NephthysHuntressOfBast4 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getRemovedBlessTokens -> tokens) _ -> do
       for_ tokens $ sealChaosToken iid attrs
+      -- Sealing them "instead" means the removal never happened, so a cost that was
+      -- being paid by removing them went unpaid and the ability it belonged to resolves
+      -- no effect (parallel Zoey deals no additional damage). The tokens stay sealed.
+      costs <- getActiveCosts
+      for_ costs \cost ->
+        when (any (`elem` returnedChaosTokenPayments cost.payments) tokens)
+          $ push (CancelCostPayment cost.id)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (attrs.ability 2)

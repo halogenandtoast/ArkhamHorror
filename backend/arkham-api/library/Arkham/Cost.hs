@@ -469,6 +469,9 @@ totalResourcePayment = sumOf (cosmos . _ResourcePayment)
 sealChaosTokenPayments :: Payment -> [ChaosToken]
 sealChaosTokenPayments = toListOf (cosmos . _SealChaosTokenPayment)
 
+returnedChaosTokenPayments :: Payment -> [ChaosToken]
+returnedChaosTokenPayments = concat . toListOf (cosmos . _ReturnChaosTokensToPoolPayment)
+
 paymentTargets :: Payment -> [Target]
 paymentTargets = toListOf (cosmos . _SpendTokenPayment . _2)
 

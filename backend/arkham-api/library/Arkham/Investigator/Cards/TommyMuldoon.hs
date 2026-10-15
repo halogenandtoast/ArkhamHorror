@@ -55,8 +55,13 @@ instance RunMessage TommyMuldoon where
               (toTarget iid)
           else do
             gainResources iid (attrs.ability 1) (damage + horror)
-      cancelAssetLeavePlay asset
-      shuffleIntoDeck iid asset
+      owner <- field Field.AssetOwner asset
+      -- "Shuffle that asset into your deck" needs a card he owns; an ally owned by the
+      -- scenario or another investigator resolves its defeat normally instead, which for
+      -- a victory card means the victory display
+      when (owner == Just iid) $ whenM (can.shuffle.deck iid) do
+        cancelAssetLeavePlay asset
+        shuffleIntoDeck iid asset
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       hasDamage <- fieldSome InvestigatorDamage iid

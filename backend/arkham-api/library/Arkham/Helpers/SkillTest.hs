@@ -36,7 +36,7 @@ import Arkham.Helpers.Source
 import Arkham.Helpers.Target
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Keyword (Keyword (Peril))
+import Arkham.Keyword (Keyword (Hidden, Peril))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (IgnoreChaosToken)
 import Arkham.Matcher qualified as Matcher
@@ -672,6 +672,14 @@ getIsCommittable a c = runValidT do
     onlyCardComittedToTestCommitted = any onlyCardCommittedToTest allCommittedCards
   let cannotCommitCards = CannotCommitCards AnyCard `elem` modifiers'
   guard $ not $ c `elem` allCommittedCards || cannotCommitCards || onlyCardComittedToTestCommitted
+  -- A hidden card "cannot leave your hand by any means except those described on the
+  -- card", so committing it is out unless its own text allows it (Possession
+  -- (Traitorous)). Watcher from Another Dimension handed a wild icon by Friends in Low
+  -- Places (Bolstering) is otherwise committable on icons alone.
+  let cdef = toCardDef c
+  let isHidden = Hidden `elem` cdKeywords cdef
+  let committableByOwnText = CommittableTreachery `elem` cdCommitRestrictions cdef
+  guard $ not isHidden || committableByOwnText
   case c of
     PlayerCard card -> do
       let

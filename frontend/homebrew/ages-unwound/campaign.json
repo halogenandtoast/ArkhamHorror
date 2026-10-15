@@ -1,7 +1,8 @@
 {
   "id": ":ages-unwound",
   "name": "Ages Unwound",
-  "beta": true,
+  "dev": true,
+  "alpha": true,
   "homebrew": true,
   "chapter": 1,
   "designer": "Olivia Juliet",

@@ -1,0 +1,28 @@
+[
+  {
+    "id": ":the-fall-of-the-house-of-usher:001",
+    "name": "The Fall of the House of Usher",
+    "campaign": ":the-fall-of-the-house-of-usher",
+    "designer": "The Beard",
+    "i18n": "scenario",
+    "sideStory": true,
+    "beta": true,
+    "xp": 2,
+    "standalone": true,
+    "standaloneDifficulties": ["Standard", "Hard"],
+    "difficultyLevels": {
+      "Standard": [
+        "PlusOne", "PlusOne", "Zero", "Zero", "Zero",
+        "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo",
+        "MinusThree", "MinusThree", "MinusFour", "MinusFour", "MinusFive", "MinusSix",
+        "Skull", "Skull", "Skull", "Cultist", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+      ],
+      "Hard": [
+        "PlusOne", "Zero", "Zero", "Zero",
+        "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo",
+        "MinusThree", "MinusThree", "MinusFour", "MinusFour", "MinusFive", "MinusSix", "MinusEight",
+        "Skull", "Skull", "Skull", "Cultist", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+      ]
+    }
+  }
+]

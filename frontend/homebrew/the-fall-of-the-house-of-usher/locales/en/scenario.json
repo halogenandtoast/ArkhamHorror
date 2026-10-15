@@ -1,0 +1,108 @@
+{
+  "scenario": {
+    "label": "The Fall of the House of Usher",
+    "fullLabel": "The Fall of the House of Usher",
+    "intro": {
+      "title": "The Ancient Race of the Ushers",
+      "body": "<p>Dr. Armitage breathes a sigh through his nose as he thumbs through an occult tome, shaking his head. \"I can't find a shred of evidence, but I know something is dreadfully wrong. For years I have been acquainted with the Usher family — one of the earliest families to have emigrated from England, perhaps. Roderick and his sister Madeline are the last descendents of the Ushers. I haven't heard or talked to them in the better part of two decades, but now, out of the blue, Roderick sends me a letter pleading for my personal help. Their manor — the house of Usher, as it is called — is a morose place to be sure, but there has always been something unnatural about it, something that the Ushers have hidden for centuries. I cannot find a single hint as to what that secret might be, but I'd stake my reputation on there being something evil in that house. Evil enough that after ten generations, Roderick feels that he must act, or ask others to act if he cannot.</p><p>However, I am not as fit as I once was, nor is this my area of expertise. Can I rely on you to expose this evil?\"</p>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the *The Fall of the House of Usher* encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{imgPath}/homebrew/the-fall-of-the-house-of-usher/sets/the-fall-of-the-house-of-usher.png' /></section>",
+      "setAside": "Set the following cards aside, out of play: Madeline Usher, The Tarn, The Thing From the Tarn, Faded Silhouette, and each copy of The Mad Trist.",
+      "placeLocations": "Put each other location into play with its _Decadent_ side revealed. Investigators begin play at Roderick's Studio.",
+      "roderickUsher": "Put Roderick Usher into play at Roderick's Studio."
+    },
+    "resolutions": {
+      "label": {
+        "addToDeck": "Any one investigator may add this card to their deck",
+        "declineReward": "Do not add it to any deck"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Resolution 1_: You flee across the causeway, not stopping in your escape from the house until a red light reaches your peripheral vision. You turn to see the rays of the red setting sun shining through the great fissure in the manor. Walls and roofs collapse inward, and brick by brick, the house of Usher shakes apart, each piece dropping into the roiling waters of the dark tarn. You watch, transfixed by the sight, until at last the sounds of destruction cease and the waters of the tarn go still once more. The evil that dwells in those dark waters lies dormant once more, but for how long?</p><ul><li>In your Campaign Log, record that *the House of Usher has fallen*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>_Resolution 2_: You trudge slowly out the cracked door of the manor and look up at the broken ruin. What little remains of the house stands like a skeleton above the still waters of the tarn. There is nothing left here for you — or anyone else, you can only hope. The Usher family is no more, and you pray that no one ever returns to awaken the thing in the tarn. You can take little back to Arkham with you but Madeline's locket as proof of your deed, though you swear you can still feel her silent spirit following you as you depart the grounds.</p><ul><li>In your Campaign Log, record that *the investigators avenged the House of Usher*.</li><li>Any one investigator may choose to add Faded Silhouette to his or her deck. If an investigator took control of a copy of The Mad Trist during the scenario, any one investigator may choose to add that version of The Mad Trist to his or her deck. These cards do not count toward those investigators' deck sizes.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul>"
+      }
+    },
+    "luminousPhantasm": {
+      "label": {
+        "drawTopmostCurse": "Draw the topmost Curse treachery in the encounter discard pile"
+      }
+    },
+    "pestilentVapor": {
+      "label": {
+        "randomDiscard": "Each investigator at your location discards 1 card from their hand at random",
+        "chooseAndDiscard": "Each investigator at your location chooses and discards 2 cards from their hand",
+        "discardTopOfDeck": "Each investigator discards the top 3 cards of their deck"
+      }
+    },
+    "rushingAsunder": {
+      "label": {
+        "moveDoomToAgenda": "Move that doom to *Rushing Asunder*"
+      }
+    },
+    "theTarn": {
+      "label": {
+        "shuffleBack": "Choose cards to shuffle back into the encounter deck"
+      }
+    },
+    "tooltips": {
+      "banquetHall": {
+        "collapse": "_Forced_ - If there is damage on Banquet Hall equal to its shroud value: Flip Banquet Hall.",
+        "hospitality": "{'{'}action{'}'} Take 1 damage and 1 horror: Remember that you have \"accepted the Ushers' hospitality.\""
+      },
+      "banquetHallRuined": {
+        "evadeGeist": "{'{'}action{'}'} If you have \"accepted the Ushers' hospitality:\" Automatically evade a _Geist_ enemy in play. This action does not provoke attacks of opportunity. (Group limit once per round.)"
+      },
+      "grandHall": {
+        "collapse": "_Forced_ - If there is damage on Grand Hall equal to its shroud value: Flip Grand Hall."
+      },
+      "grandHallRuined": {
+        "placeClue": "At the end of the round, place 1 clue on Grand Hall."
+      },
+      "manorChapel": {
+        "collapse": "_Forced_ - If there is damage on Manor Chapel equal to its shroud value: Flip Manor Chapel.",
+        "removeDoom": "{'{'}action{'}'}: Remove all doom from an asset controlled by an investigator. (Group limit once per round.)"
+      },
+      "manorChapelRuined": {
+        "theMadTrist": "{'{'}action{'}'} If you have \"unearthed an archaic book:\" Test {'{'}willpower{'}'} or {'{'}combat{'}'} (4). If you succeed, put the set-aside The Mad Trist (Shelter From the Storm) into play under your control. This ability cannot be activated if a copy of The Mad Trist has already entered play during this scenario."
+      },
+      "portraitGallery": {
+        "collapse": "_Forced_ - If there is damage on Portrait Gallery equal to its shroud value: Flip Portrait Gallery.",
+        "peek": "{'{'}action{'}'} Choose and discard a card from your hand: Look at the top card of the encounter deck. You may discard that card. (Limit once per turn.)"
+      },
+      "portraitGalleryRuined": {
+        "theMadTrist": "{'{'}action{'}'} If you have “unearthed an archaic book:” Test {'{'}intellect{'}'} or {'{'}agility{'}'} (4). If you succeed, put the set-aside The Mad Trist (Dragon's Cunning) into play under your control. This ability cannot be activated if a copy of The Mad Trist has already entered play during this scenario."
+      },
+      "privateLibrary": {
+        "collapse": "_Forced_ - If there is damage on Private Library equal to its shroud value: Flip Private Library.",
+        "unearth": "{'{'}fast{'}'} If there are no clues on Private Library: Remember that you have “unearthed an archaic book.” (Group limit once per game.)"
+      },
+      "rodericksStudio": {
+        "collapse": "_Forced_ - If there is damage on Roderick's Studio equal to its shroud value: Flip Roderick's Studio."
+      },
+      "rodericksStudioRuined": {
+        "gainVictory": "{'{'}fast{'}'} Place 1 {'{'}perPlayer{'}'} clues as a group on Roderick's Studio: Roderick's Studio gains Victory 1 for the rest of the game. (Group limit once per game.)"
+      },
+      "theTarn": {
+        "parley": "{'{'}action{'}'}: _Parley._ Test {'{'}willpower{'}'} (3). If you succeed, choose and shuffle any amount of cards from the encounter discard pile back into the encounter deck. If you fail, shuffle each card in the encounter discard pile back into the encounter deck. (Group limit once per round.)"
+      },
+      "usherFamilyCrypt": {
+        "collapse": "_Forced_ - If there is damage on Usher Family Crypt equal to its shroud value: Flip Usher Family Crypt.",
+        "switchSign": "{'{'}reaction{'}'} When you reveal a {'{'}skull{'}'} token at Usher Family Crypt: Switch that token's \"-\" to \"+\"."
+      },
+      "usherFamilyCryptRuined": {
+        "omenOfDeath": "_Forced_ - When you reveal an {'{'}elderSign{'}'}, \"+1,\" or \"0\" token at Usher Family Crypt: Treat that token as a {'{'}skull{'}'} token instead."
+      },
+      "wineCellar": {
+        "collapse": "_Forced_ - If there is damage on Wine Cellar equal to its shroud value: Flip Wine Cellar.",
+        "fortifyingDraught": "{'{'}fast{'}'} During a skill test at Wine Cellar: You get +2 skill value for this test. After this test resolves, you get -1 to all skills until the end of the round. (Limit once per round.)"
+      },
+      "wineCellarRuined": {
+        "treacherousFooting": "_Forced_ - When you would move from Wine Cellar: Test {'{'}agility{'}'} (2). If you fail, take 1 damage or cancel the effects of the move."
+      }
+    }
+  }
+}

@@ -5351,6 +5351,64 @@ library
       Arkham.Homebrew.SideStoryDefs
       Arkham.Homebrew.SideStoryEntries
       Arkham.Homebrew.TH
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Acts.AncestralCorruption
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Acts.FleetingGlimpses
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Acts.TheDisturbedProprietor
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Agendas.HallOfAntiquity
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Agendas.RushingAsunder
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Assets.FadedSilhouette
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Assets.MadelineUsher
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Assets.RoderickUsher
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Assets.TheMadTristDragonsCunning
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Assets.TheMadTristShelterFromTheStorm
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.CardDefEntries
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.CardDefs.Acts
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.CardDefs.Agendas
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.CardDefs.Assets
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.CardDefs.Enemies
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.CardDefs.Locations
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.CardDefs.Treacheries
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.CardEntries
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Content
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Defs
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Enemies.LuminousPhantasm
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Enemies.ScionOfUsher
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Enemies.SecretiveSteward
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Enemies.ServantOfTwoMasters
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Enemies.TheThingFromTheTarn
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Helpers
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Import
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Key
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Locations.BanquetHall
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Locations.BanquetHallRuined
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Locations.GrandHall
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Locations.GrandHallRuined
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Locations.ManorChapel
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Locations.ManorChapelRuined
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Locations.PortraitGallery
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Locations.PortraitGalleryRuined
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Locations.PrivateLibrary
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Locations.PrivateLibraryRuined
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Locations.RodericksStudio
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Locations.RodericksStudioRuined
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Locations.TheTarn
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Locations.UsherFamilyCrypt
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Locations.UsherFamilyCryptRuined
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Locations.WineCellar
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Locations.WineCellarRuined
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Scenarios.TheFallOfTheHouseOfUsher
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Sets
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.SideStoryDefs
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Traits
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Treacheries.AuditoryHallucinations
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Treacheries.CollapsingRuin
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Treacheries.DecayedLegacy
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Treacheries.DesolateHeritage
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Treacheries.EnervatingTouch
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Treacheries.EnshroudedHost
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Treacheries.MorbidAcuteness
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Treacheries.NervousAffliction
+      Arkham.Homebrew.TheFallOfTheHouseOfUsher.Treacheries.PestilentVapor
       Arkham.Homebrew.TheMasqueOfTheRedDeath.Acts.TheMidnightHour
       Arkham.Homebrew.TheMasqueOfTheRedDeath.Acts.TheSevenChambers
       Arkham.Homebrew.TheMasqueOfTheRedDeath.Agendas.ANestOfVipers

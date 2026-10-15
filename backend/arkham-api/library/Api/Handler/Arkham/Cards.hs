@@ -111,6 +111,7 @@ getApiV1ArkhamHomebrewCardsR = do
           <> Homebrew.actsMap
           <> Homebrew.agendasMap
           <> Homebrew.encounterAssetsMap
+          <> Homebrew.playerAssetsMap
           <> Homebrew.playerSkillsMap
           <> Homebrew.playerEventsMap
           <> Homebrew.storiesMap

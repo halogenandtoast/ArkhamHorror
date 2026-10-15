@@ -1638,9 +1638,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         if
           | notNull concealed && exposeHere && clueCount > 0 ->
               Choose.chooseOneM iid do
-                Choose.labeledI "exposeConcealedCard" $ chooseExposeConcealedAt iid iid (LocationWithId lid)
+                Choose.labeledI "exposeConcealedCard"
+                  $ chooseExposeConcealedAtVia ExposedByDiscover iid iid (LocationWithId lid)
                 Choose.labeledI "discoverNormally" defaultDiscover
-          | notNull concealed && exposeHere -> chooseExposeConcealedAt iid iid (LocationWithId lid)
+          | notNull concealed && exposeHere ->
+              chooseExposeConcealedAtVia ExposedByDiscover iid iid (LocationWithId lid)
           -- The investigation declined its exposure prompt, and the location only qualified as
           -- discoverable because of the concealed card, so there is nothing left to discover.
           | notNull concealed && clueCount == 0 -> pure ()

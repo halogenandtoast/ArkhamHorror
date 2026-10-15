@@ -38,7 +38,7 @@ instance RunMessage StormOfSpirits3 where
             then DealDamage (EnemyTarget eid') $ delayDamage $ attack attrs 3
             else DealDamage (EnemyTarget eid') $ delayDamage $ isDirect $ attack attrs 3
       for_ eids $ checkDefeated attrs
-      chooseExposeConcealed iid attrs
+      chooseExposeConcealedVia ExposedByFight iid attrs
       pure e
     _ -> StormOfSpirits3 <$> liftRunMessage msg attrs
 

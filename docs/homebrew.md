@@ -201,6 +201,45 @@ declareHomebrewScenarioDeckKeys ["ScanningDeck"]
 
 Now use `ScanningDeck` anywhere the engine wants a deck key. Nothing else to wire.
 
+### A concealed mini-card kind
+
+The Scarlet Keys' concealed mini-cards are an engine mechanic, not a Scarlet
+Keys one, so your box can bring its own kinds. Name them in `Kinds.hs`:
+
+```haskell
+{-# LANGUAGE TemplateHaskell #-}
+module Arkham.Homebrew.YourCampaign.Kinds (module Arkham.Homebrew.YourCampaign.Kinds) where
+
+import Arkham.Homebrew.TH (declareHomebrewConcealedCardKinds)
+
+declareHomebrewConcealedCardKinds ["ThePhantom", "ChaoticMinionA"]
+```
+
+Your enemy card defs use those names the way Scarlet Keys uses its own —
+`cdKeywords = singleton $ Keyword.Concealed ThePhantom (Static 2)` — so
+`Kinds.hs` has to stay upstream of `CardDefs/`. The other half, which card each
+kind conceals, therefore goes in `Defs.hs`:
+
+```haskell
+instance IsHomebrewDefs YourCampaignDefs where
+  homebrewDefs =
+    (discoveredDefs $(generateHomebrewCardDefs))
+      { hdTraits = Traits.traits
+      , hdConcealedCardKinds =
+          [ (Kinds.ThePhantom, Enemies.thePhantom)
+          , (Kinds.ChaoticMinionA, Enemies.chaoticMinion)
+          ]
+      }
+```
+
+A decoy conceals nothing, so it gets no entry — and use the base game's `Decoy`
+rather than declaring your own; naming a kind that already exists in the base
+game fails the build, as every door does.
+
+Each kind is tagged `:your-campaign:the-phantom` — your box, read off the module
+name, then the kind, both kebab-cased — which is also where the frontend looks
+for its art: `frontend/homebrew/your-campaign/img/mini-cards/the-phantom.jpg`.
+
 ### Encounter sets
 
 Encounter sets go through the same kind of door in `Sets.hs`:

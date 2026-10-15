@@ -2,9 +2,10 @@ module Arkham.Helpers.Discover where
 
 import Arkham.Action qualified as Action
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers (
+  ExposeRoute (..),
   ForExpose (..),
-  chooseExposeConcealedAt,
-  exposeConcealed,
+  chooseExposeConcealedAtVia,
+  exposeConcealedVia,
   getConcealedAt,
  )
 import Arkham.Classes.HasGame
@@ -70,7 +71,8 @@ withExposeInsteadOfInvestigating iid (toSource -> source) lid msgs = do
   if null concealed
     then pure msgs
     else evalQueueT $ chooseOneM iid do
-      labeledI "exposeConcealedCard" $ chooseTargetM iid concealed (exposeConcealed iid source . (.id))
+      labeledI "exposeConcealedCard"
+        $ chooseTargetM iid concealed (exposeConcealedVia ExposedByDiscover iid source . (.id))
       labeledI "doNotExposeConcealed" $ pushAll msgs
 
 {- | Resolve a successful @Investigate@ at a location (regular or enemy-location).
@@ -141,4 +143,4 @@ resolveDiscoverCluesAt lid iid d = do
     else do
       concealed <- getConcealedAt (ForExpose $ toSource iid) lid
       when (notNull concealed) do
-        chooseExposeConcealedAt iid iid (LocationWithId lid)
+        chooseExposeConcealedAtVia ExposedByDiscover iid iid (LocationWithId lid)

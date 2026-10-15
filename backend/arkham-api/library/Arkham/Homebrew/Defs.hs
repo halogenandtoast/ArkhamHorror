@@ -8,6 +8,7 @@ instances enumerated by TH) — no edits here when adding a campaign.
 module Arkham.Homebrew.Defs where
 
 import Arkham.Action (Action, coreActions)
+import Arkham.Campaigns.TheScarletKeys.Concealed.Kind (ConcealedCardKind)
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Criteria (Criterion)
@@ -44,6 +45,13 @@ action (defaulting to always-affordable when absent).
 -}
 homebrewActionAffordability :: Map Action Criterion
 homebrewActionAffordability = mapFromList (hdActionAffordability allHomebrewDefs)
+
+{- | The card def behind each homebrew concealed mini-card kind. Core
+'Arkham.Campaigns.TheScarletKeys.Concealed.Helpers.concealedKindToCardDef'
+resolves a homebrew kind here.
+-}
+homebrewConcealedCardDefs :: Map ConcealedCardKind CardDef
+homebrewConcealedCardDefs = mapFromList (hdConcealedCardKinds allHomebrewDefs)
 
 defMap :: (HomebrewDefs -> [CardDef]) -> Map CardCode CardDef
 defMap slot = mapFromList $ map (toCardCode &&& id) (slot allHomebrewDefs)

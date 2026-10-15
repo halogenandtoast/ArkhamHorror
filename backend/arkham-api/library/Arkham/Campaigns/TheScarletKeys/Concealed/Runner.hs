@@ -87,7 +87,7 @@ instance RunMessage ConcealedCard where
       pure c
     PassedThisSkillTest iid (isAbilitySource c AbilityAttack -> True) -> do
       whenM (getCanExpose iid (c.ability AbilityAttack) c) do
-        push $ Flip iid (c.ability AbilityAttack) (toTarget c)
+        exposeConcealedVia ExposedByFight iid (c.ability AbilityAttack) c.id
       pure c
     UseThisAbility iid (isSource c -> True) AbilityEvade -> do
       mlocation <- concealedLocationFor iid c
@@ -99,7 +99,7 @@ instance RunMessage ConcealedCard where
       pure c
     PassedThisSkillTest iid (isAbilitySource c AbilityEvade -> True) -> do
       whenM (getCanExpose iid (c.ability AbilityEvade) c) do
-        push $ Flip iid (c.ability AbilityEvade) (toTarget c)
+        exposeConcealedVia ExposedByEvade iid (c.ability AbilityEvade) c.id
       pure c
     Flip iid _ (isTarget c -> True) -> do
       unless c.concealedCardFlipped $ chooseTargetM iid [c] \_ -> doStep 1 msg
@@ -133,7 +133,7 @@ instance RunMessage ConcealedCard where
     DoStep 2 (Flip _iid _ (isTarget c -> True)) -> do
       removeFromGame (toTarget c)
       inShadows <- selectAny (EnemyWithPlacement InTheShadows)
-      unless inShadows $ push RemoveAllConcealed
+      unless inShadows $ unlessM getKeepsConcealedInPlay $ push RemoveAllConcealed
       pure c
     DoStep 3 msg'@(Flip iid _ (isTarget c -> True)) -> do
       case concealedToCardDef c of
@@ -169,7 +169,7 @@ instance RunMessage ConcealedCard where
       fight sid iid source target skillType difficulty
       pure c
     PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ _ | isEnemyTarget c target -> do
-      whenM (getCanExpose iid source c) $ push $ Flip iid source (toTarget c)
+      whenM (getCanExpose iid source c) $ exposeConcealedVia ExposedByFight iid source c.id
       pure c
     TryEvadeEnemy sid iid eid source mTarget skillType | eid == coerce (unConcealedCardId c.id) -> do
       mlocation <- concealedLocationFor iid c
@@ -181,7 +181,7 @@ instance RunMessage ConcealedCard where
           evade sid iid source target skillType difficulty
       pure c
     PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ _ | isEnemyTarget c target -> do
-      whenM (getCanExpose iid source c) $ push $ Flip iid source (toTarget c)
+      whenM (getCanExpose iid source c) $ exposeConcealedVia ExposedByEvade iid source c.id
       pure c
     RemoveAllConcealed -> do
       removeFromGame (toTarget c)

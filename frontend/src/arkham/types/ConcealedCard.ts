@@ -38,6 +38,29 @@ export type ConcealedCardKind
   | 'TzuSanNiang'
   | 'VoidChimeraTrueForm'
   | 'WizardOfTheOrder'
+  | HomebrewConcealedCardKind
+
+/* A kind a homebrew box declares, tagged `:<box>:<slug>`; its mini-card art
+ * lives at `homebrew/<box>/mini-cards/<slug>.jpg`. */
+export type HomebrewConcealedCardKind = `:${string}:${string}`
+
+/* Mini-card art is filed under the kebab-cased kind, for core and homebrew alike
+ * -- the backend's `declareHomebrewConcealedCardKinds` builds the tag's slug the
+ * same way. */
+export const concealedCardImagePath = (kind: ConcealedCardKind): string => {
+  const match = kind.match(/^:([^:]+):(.+)$/)
+  if (match) return `homebrew/${match[1]}/mini-cards/${match[2]}.jpg`
+  return `mini-cards/${kind.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()}.jpg`
+}
+
+export const concealedCardBackPath = 'mini-cards/concealed-card.jpg'
+
+const homebrewConcealedKindDecoder: JsonDecoder.Decoder<ConcealedCardKind> =
+  JsonDecoder.string().flatMap((value) =>
+    /^:[^:]+:.+$/.test(value)
+      ? JsonDecoder.constant(value as HomebrewConcealedCardKind)
+      : JsonDecoder.fail<ConcealedCardKind>(`Unknown ConcealedCardKind ${value}`)
+  )
 
 export const concealedKindCardDecoder: JsonDecoder.Decoder<ConcealedCardKind> = JsonDecoder.oneOf<ConcealedCardKind>([
   JsonDecoder.literal('Decoy'),
@@ -68,6 +91,7 @@ export const concealedKindCardDecoder: JsonDecoder.Decoder<ConcealedCardKind> = 
   JsonDecoder.literal('TzuSanNiang'),
   JsonDecoder.literal('VoidChimeraTrueForm'),
   JsonDecoder.literal('WizardOfTheOrder'),
+  homebrewConcealedKindDecoder,
 ], 'ConcealedCardKind');
 
 export const concealedCardDecoder: JsonDecoder.Decoder<ConcealedCard> = JsonDecoder.object<ConcealedCard>(

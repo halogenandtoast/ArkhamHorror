@@ -5,7 +5,7 @@ import * as ArkhamGame from '@/arkham/types/Game'
 import { useDebug } from '@/arkham/debug';
 import { imgsrc } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
-import { ConcealedCard } from '@/arkham/types/ConcealedCard';
+import { ConcealedCard, concealedCardBackPath, concealedCardImagePath } from '@/arkham/types/ConcealedCard';
 import DebugConcealedCard from '@/arkham/components/debug/ConcealedCard.vue';
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
@@ -34,48 +34,13 @@ async function chooseAbility(ability: number) {
   choose(ability)
 }
 
-const imageName = computed(() => {
-  if (!props.card.flipped && !props.card.known) return 'concealed-card'
+const faceDown = computed(() => !props.card.flipped && !props.card.known)
 
-  switch (props.card.kind) {
-    case "Decoy": return 'decoy'
-    case "AcolyteAny": return 'acolyte-any'
-    case "ApportionedKa": return 'apportioned-ka'
-    case "CityOfRemnantsL": return 'city-of-remnants-l'
-    case "CityOfRemnantsM": return 'city-of-remnants-m'
-    case "CityOfRemnantsR": return 'city-of-remnants-r'
-    case "CoterieAgentA": return 'coterie-agent-a'
-    case "CoterieAgentB": return 'coterie-agent-b'
-    case "CoterieAgentC": return 'coterie-agent-c'
-    case "CoterieAssassinA": return 'coterie-assassin-a'
-    case "CoterieAssassinB": return 'coterie-assassin-b'
-    case "CoterieEnforcerA": return 'coterie-enforcer-a'
-    case "CoterieEnforcerB": return 'coterie-enforcer-b'
-    case "DecoyVoidChimeraEarsplitter": return 'decoy-void-chimera-earsplitter'
-    case "DecoyVoidChimeraFellbeak": return 'decoy-void-chimera-fellbeak'
-    case "DecoyVoidChimeraFellhound": return 'decoy-void-chimera-fellhound'
-    case "DecoyVoidChimeraGorefeaster": return 'decoy-void-chimera-gorefeaster'
-    case "DesiderioDelgadoAlvarez": return 'desiderio-delgado-alvarez'
-    case "EmissaryFromYuggoth": return 'emissary-from-yuggoth'
-    case "LaChicaRoja": return 'la-chica-roja'
-    case "MimeticNemesis": return 'mimetic-nemesis'
-    case "SinisterAspirantA": return 'sinister-aspirant-a'
-    case "SinisterAspirantB": return 'sinister-aspirant-b'
-    case "SinisterAspirantC": return 'sinister-aspirant-c'
-    case "TheRedGlovedMan": return 'the-red-gloved-man'
-    case "TzuSanNiang": return 'tzu-san-niang'
-    case "VoidChimeraTrueForm": return 'void-chimera-true-form'
-    case "WizardOfTheOrder": return 'wizard-of-the-order'
-  }
-})
+const image = computed(() =>
+  imgsrc(faceDown.value ? concealedCardBackPath : concealedCardImagePath(props.card.kind))
+)
 
-const image = computed(() => {
-  return imgsrc(`mini-cards/${imageName.value}.jpg`);
-})
-
-const concealedImage = computed(() => {
-  return imgsrc(`mini-cards/concealed-card.jpg`);
-})
+const concealedImage = computed(() => imgsrc(concealedCardBackPath))
 
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {

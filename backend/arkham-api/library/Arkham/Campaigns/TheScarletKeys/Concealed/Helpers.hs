@@ -27,7 +27,9 @@ import Arkham.Enemy.CardDefs.TheScarletKeys.ShadesOfSuffering qualified as Cards
 import Arkham.Helpers.Enemy
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Location
+import Arkham.Helpers.Modifiers (hasModifier)
 import Arkham.Helpers.Query (getLead)
+import Arkham.Homebrew.Defs (homebrewConcealedCardDefs)
 import Arkham.Id
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher.Enemy
@@ -43,6 +45,7 @@ import Arkham.Prelude
 import Arkham.Queue
 import Arkham.Source
 import Arkham.Target
+import Arkham.Window qualified as Window
 import Data.Monoid (First (..))
 
 getConcealedIds :: HasGame m => ForExpose -> InvestigatorId -> m [ConcealedCardId]
@@ -54,6 +57,56 @@ getConcealed fe iid = getLocationOf iid >>= maybe (pure []) (getConcealedAt fe)
 exposeConcealed
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> ConcealedCardId -> m ()
 exposeConcealed iid source cid = doFlip iid source cid
+
+-- | How a mini-card came to be exposed, for call sites that know.
+data ExposeRoute = ExposedByFight | ExposedByEvade | ExposedByDiscover
+  deriving stock (Show, Eq)
+
+exposeRouteKey :: ExposeRoute -> Text
+exposeRouteKey = \case
+  ExposedByFight -> "exposedVia[fight]"
+  ExposedByEvade -> "exposedVia[evade]"
+  ExposedByDiscover -> "exposedVia[discover]"
+
+exposeRouteKeyFor :: HasCardCode a => ExposeRoute -> a -> Text
+exposeRouteKeyFor route a = exposeRouteKey route <> "[" <> unCardCode (toCardCode a) <> "]"
+
+{- | Additive: raised alongside the @exposed[...]@ windows, which are untouched. No official card
+matches an @exposedVia[...]@ key, and a call site with no route raises nothing. Mirrors @exposed@ by
+also raising a card-code-qualified key; the mini-card is still in play here, before the @Flip@.
+-}
+exposedVia :: ReverseQueue m => ExposeRoute -> InvestigatorId -> ConcealedCardId -> m ()
+exposedVia route iid cid = do
+  mdef <- (concealedToCardDef =<<) <$> selectOne (ConcealedCardWithId cid)
+  let payload = toJSON $ ConcealedCardTarget cid
+  checkAfter $ Window.CampaignEvent (exposeRouteKey route) (Just iid) payload
+  for_ mdef \def -> checkAfter $ Window.CampaignEvent (exposeRouteKeyFor route def) (Just iid) payload
+
+afterExposedVia :: Maybe InvestigatorMatcher -> ExposeRoute -> WindowMatcher
+afterExposedVia who route = CampaignEvent #after who (exposeRouteKey route)
+
+afterExposedViaFor
+  :: HasCardCode a => Maybe InvestigatorMatcher -> ExposeRoute -> a -> WindowMatcher
+afterExposedViaFor who route a = CampaignEvent #after who (exposeRouteKeyFor route a)
+
+{- | Opt-out from the automatic sweep that ends an exposure when no enemy is left in the shadows.
+Additive and unused by official content; an explicit @RemoveAllConcealed@ still removes everything.
+Deliberately NOT @ScenarioModifier "doNotRemove"@, which Congress of the Keys already sets on grid
+mini-cards for a different purpose.
+-}
+keepConcealedInPlay :: ModifierType
+keepConcealedInPlay = ScenarioModifier "keepConcealedInPlay"
+
+getKeepsConcealedInPlay :: HasGame m => m Bool
+getKeepsConcealedInPlay = hasModifier ScenarioTarget keepConcealedInPlay
+
+-- | Queue order puts the window after the whole exposure resolves, not after the push.
+exposeConcealedVia
+  :: (ReverseQueue m, Sourceable source)
+  => ExposeRoute -> InvestigatorId -> source -> ConcealedCardId -> m ()
+exposeConcealedVia route iid source cid = do
+  exposeConcealed iid source cid
+  exposedVia route iid cid
 
 exposedInShadows
   :: (Sourceable a, HasCardCode a, ReverseQueue m)
@@ -80,13 +133,30 @@ turnOverAllConcealed source = do
 chooseExposeConcealed :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 chooseExposeConcealed iid source = chooseExposeConcealedAt iid source (LocationWithInvestigator $ InvestigatorWithId iid)
 
+chooseExposeConcealedVia
+  :: (ReverseQueue m, Sourceable source) => ExposeRoute -> InvestigatorId -> source -> m ()
+chooseExposeConcealedVia route iid source =
+  chooseExposeConcealedAtVia route iid source (LocationWithInvestigator $ InvestigatorWithId iid)
+
 chooseExposeConcealedAt
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> LocationMatcher -> m ()
-chooseExposeConcealedAt iid source lmatcher = do
+chooseExposeConcealedAt = chooseExposeConcealedAtWithRoute Nothing
+
+chooseExposeConcealedAtVia
+  :: (ReverseQueue m, Sourceable source)
+  => ExposeRoute -> InvestigatorId -> source -> LocationMatcher -> m ()
+chooseExposeConcealedAtVia = chooseExposeConcealedAtWithRoute . Just
+
+chooseExposeConcealedAtWithRoute
+  :: (ReverseQueue m, Sourceable source)
+  => Maybe ExposeRoute -> InvestigatorId -> source -> LocationMatcher -> m ()
+chooseExposeConcealedAtWithRoute mroute iid source lmatcher = do
   concealed <- getConcealedChoicesAt (ForExpose $ toSource source) lmatcher
   when (notNull concealed) do
     chooseOneM iid do
-      targets concealed (exposeConcealed iid source . (.id))
+      targets concealed \c -> do
+        exposeConcealed iid source c.id
+        for_ mroute \route -> exposedVia route iid c.id
       campaignI18n $ labeled "doNotExposeConcealed" nothing
 
 chooseRevealConcealedAt
@@ -195,7 +265,12 @@ concealedKindToCardDef = \case
   CoterieAssassinB -> Just Cards.coterieAssassinB
   VoidChimeraTrueForm -> Just Cards.voidChimeraTrueForm
   TzuSanNiang -> Just Cards.tzuSanNiangTheLadyWithTheRedParasol
+  k@(HomebrewConcealedCardKind _) -> lookup k homebrewConcealedCardDefs
   _ -> Nothing
 
 allConcealedCardDefs :: [CardDef]
-allConcealedCardDefs = Cards.desiderioDelgadoAlvarez107 : mapMaybe concealedKindToCardDef [minBound .. maxBound]
+allConcealedCardDefs =
+  Cards.desiderioDelgadoAlvarez107
+    : ( mapMaybe concealedKindToCardDef coreConcealedCardKinds
+          <> toList homebrewConcealedCardDefs
+      )

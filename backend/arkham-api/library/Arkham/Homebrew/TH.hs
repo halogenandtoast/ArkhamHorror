@@ -4,20 +4,27 @@ module Arkham.Homebrew.TH (
   discoverInstances,
   discoveredModules,
   declareOpenExtension,
+  declareOpenExtensionWith,
   declareHomebrewTraits,
   declareHomebrewScenarioDeckKeys,
   declareHomebrewActions,
+  declareHomebrewConcealedCardKinds,
 ) where
 
 import Arkham.Action (Action (HomebrewAction))
+import Arkham.Campaigns.TheScarletKeys.Concealed.Kind (
+  ConcealedCardKind (HomebrewConcealedCardKind),
+ )
 import Arkham.Prelude
 import Arkham.Scenario.Deck (ScenarioDeckKey (HomebrewScenarioDeckKey))
 import Arkham.Trait (Trait (HomebrewTrait))
 import Control.Monad.Fail
+import Data.Char qualified as Char
 import Data.List qualified as List
 import Data.Proxy (Proxy (..))
 import GHC.TypeLits (KnownSymbol, symbolVal)
 import Language.Haskell.TH
+import Language.Haskell.TH.Syntax qualified as THS
 
 {- | @$(discoverInstances ''SomeClass 'someMethod)@ expands to
 @mconcat [someMethod \@T1, someMethod \@T2, ...]@ for every instance of the
@@ -86,7 +93,17 @@ declareOpenExtension
   -> [String]
   -- ^ the names (each is both the pattern-synonym name and its @Text@ tag)
   -> Q [Dec]
-declareOpenExtension tyName ctorName mListName names = do
+declareOpenExtension = declareOpenExtensionWith id
+
+{- | 'declareOpenExtension' with a tag that differs from the declared name. Only
+for a type whose tag has to carry more than the name -- a concealed card kind
+names the box its mini-card art belongs to -- which gives up the
+promotion-stays-parse-safe guarantee above; the clash check against core
+constructors still holds.
+-}
+declareOpenExtensionWith
+  :: (String -> String) -> Name -> Name -> Maybe String -> [String] -> Q [Dec]
+declareOpenExtensionWith tagFor tyName ctorName mListName names = do
   let what = nameBase ctorName
   case names List.\\ List.nub names of
     [] -> pure ()
@@ -108,12 +125,12 @@ declareOpenExtension tyName ctorName mListName names = do
     synonyms s =
       let n = mkName s
        in [ PatSynSigD n (ConT tyName)
-          , PatSynD n (PrefixPatSyn []) ImplBidir (ConP ctorName [] [LitP (StringL s)])
+          , PatSynD n (PrefixPatSyn []) ImplBidir (ConP ctorName [] [LitP (StringL (tagFor s))])
           ]
     listDecs name =
       let ln = mkName name
        in [ SigD ln (AppT ListT (ConT tyName))
-          , ValD (VarP ln) (NormalB (ListE [AppE (ConE ctorName) (LitE (StringL s)) | s <- names])) []
+          , ValD (VarP ln) (NormalB (ListE [AppE (ConE ctorName) (LitE (StringL (tagFor s))) | s <- names])) []
           ]
   pure (concatMap synonyms names <> maybe [] listDecs mListName)
 
@@ -135,6 +152,40 @@ a campaign's @Defs.hs@ folds into @Arkham.Homebrew.Defs.allActions@.
 -}
 declareHomebrewActions :: [String] -> Q [Dec]
 declareHomebrewActions = declareOpenExtension ''Action 'HomebrewAction (Just "actions")
+
+{- | @$(declareHomebrewConcealedCardKinds ["ThePhantom", ...])@ — pattern
+synonyms over
+'Arkham.Campaigns.TheScarletKeys.Concealed.Kind.HomebrewConcealedCardKind', each
+tagged @":the-phantom-of-the-opera:the-phantom"@ — the box this module belongs
+to, then the name, both kebab-cased. That keeps the tag unique across boxes and
+is where the frontend reads the mini-card art from
+(@frontend\/homebrew\/the-phantom-of-the-opera\/img\/mini-cards\/the-phantom.jpg@).
+Pair each kind with the 'Arkham.Card.CardDef.CardDef' it conceals in
+@Arkham.Homebrew.DefsBase.hdConcealedCardKinds@.
+-}
+declareHomebrewConcealedCardKinds :: [String] -> Q [Dec]
+declareHomebrewConcealedCardKinds names = do
+  box <- homebrewBoxId
+  declareOpenExtensionWith
+    (\n -> ":" <> box <> ":" <> kebabCase n)
+    ''ConcealedCardKind
+    'HomebrewConcealedCardKind
+    Nothing
+    names
+
+{- | The splice site's box, kebab-cased: the id its encounter sets and card codes
+are namespaced by, and the folder its art lives in. Taken from the module name
+rather than asked for, so it cannot disagree with either.
+-}
+homebrewBoxId :: Q String
+homebrewBoxId = do
+  THS.Module _ (THS.ModName m) <- thisModule
+  case List.break (== '.') <$> List.stripPrefix "Arkham.Homebrew." m of
+    Just (box@(_ : _), '.' : _) -> pure (kebabCase box)
+    _ -> fail $ "expected a module under Arkham.Homebrew.<Box>, got " <> m
+
+kebabCase :: String -> String
+kebabCase = map (\c -> if c == ' ' then '-' else Char.toLower c) . splitCamelCase
 
 conNames :: Con -> [Name]
 conNames = \case

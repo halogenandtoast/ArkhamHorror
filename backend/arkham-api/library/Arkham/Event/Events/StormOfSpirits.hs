@@ -36,6 +36,6 @@ instance RunMessage StormOfSpirits where
         let setAttack = if eid == eid' then id else isDirect
         push $ DealDamage (toTarget eid') $ delayDamage $ setAttack $ attack attrs 2
       simultaneously $ for_ eids (checkDefeated attrs)
-      chooseExposeConcealed iid attrs
+      chooseExposeConcealedVia ExposedByFight iid attrs
       pure e
     _ -> StormOfSpirits <$> liftRunMessage msg attrs

@@ -16,6 +16,6 @@ instance RunMessage CunningDistraction where
   runMessage msg e@(CunningDistraction attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       selectEach (enemyAtLocationWith iid) (automaticallyEvadeEnemy iid)
-      chooseExposeConcealed iid attrs
+      chooseExposeConcealedVia ExposedByEvade iid attrs
       pure e
     _ -> CunningDistraction <$> liftRunMessage msg attrs

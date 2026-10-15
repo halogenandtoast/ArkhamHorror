@@ -3,6 +3,7 @@
 module Arkham.Homebrew.DefsBase where
 
 import Arkham.Action (Action)
+import Arkham.Campaigns.TheScarletKeys.Concealed.Kind (ConcealedCardKind)
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Criteria (Criterion)
@@ -50,6 +51,13 @@ data HomebrewDefs = HomebrewDefs
   and its use in @Arkham.Helpers.Ability.canDoAction'@). An action with no
   entry is always affordable.
   -}
+  , hdConcealedCardKinds :: [(ConcealedCardKind, CardDef)]
+  {- ^ The campaign's own concealed mini-card kinds (see its
+  @ConcealedKinds.hs@), each paired with the card def it conceals — the
+  homebrew half of
+  @Arkham.Campaigns.TheScarletKeys.Concealed.Helpers.concealedKindToCardDef@.
+  A kind that conceals nothing (a decoy of your own) pairs with no entry.
+  -}
   }
 
 instance Semigroup HomebrewDefs where
@@ -70,10 +78,11 @@ instance Semigroup HomebrewDefs where
       , hdTraits = hdTraits a <> hdTraits b
       , hdActions = hdActions a <> hdActions b
       , hdActionAffordability = hdActionAffordability a <> hdActionAffordability b
+      , hdConcealedCardKinds = hdConcealedCardKinds a <> hdConcealedCardKinds b
       }
 
 instance Monoid HomebrewDefs where
-  mempty = HomebrewDefs [] [] [] [] [] [] [] [] [] [] [] [] [] [] []
+  mempty = HomebrewDefs [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []
 
 {- | Implement in your campaign's @Defs.hs@ on a campaign-local tag type; the
 instance is discovered automatically (see 'Arkham.Homebrew.Defs').

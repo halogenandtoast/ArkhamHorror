@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { watch, shallowRef, ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
-import { fetchDeck, deleteDeck, fetchCards, syncDeck, setDeckOverlay, removeDeckOverlay } from '@/arkham/api';
+import { fetchDeck, deleteDeck, fetchCards, syncDeck, setDeckUrl, deckErrorMessage, setDeckOverlay, removeDeckOverlay } from '@/arkham/api';
 import { storeToRefs } from 'pinia'
 import { useSettings } from '@/stores/settings'
 import {
@@ -418,12 +418,42 @@ async function deleteDeckEvent() {
   }
 }
 
+// A sync can fail for a reason the player can act on -- most often a url that no
+// longer resolves, which is where the Change button below comes in. Unhandled, the
+// click did nothing at all.
 async function sync() {
-  if (deck.value) {
-    syncDeck(deck.value.id).then((newData) => {
-      toast.success(t('deckSyncedSuccessfully'), { timeout: 3000 })
-      deck.value = newData
-    })
+  if (!deck.value) return
+  try {
+    deck.value = await syncDeck(deck.value.id)
+    toast.success(t('deckSyncedSuccessfully'), { timeout: 3000 })
+  } catch (e) {
+    toast.error(deckErrorMessage(e) ?? t('deck.syncFailed'), { timeout: 8000 })
+  }
+}
+
+const urlEditing = ref(false)
+const urlDraft = ref('')
+const savingUrl = ref(false)
+
+function startUrlEdit() {
+  if (!deck.value) return
+  urlDraft.value = deck.value.url ?? ''
+  urlEditing.value = !urlEditing.value
+}
+
+// The server refetches the list from the new url in the same call, so this
+// replaces the whole deck rather than only its link.
+async function saveUrl() {
+  if (!deck.value) return
+  savingUrl.value = true
+  try {
+    deck.value = await setDeckUrl(deck.value.id, urlDraft.value)
+    urlEditing.value = false
+    toast.success(t('deck.urlChanged'), { timeout: 3000 })
+  } catch (e) {
+    toast.error(deckErrorMessage(e) ?? t('deck.urlChangeFailed'), { timeout: 8000 })
+  } finally {
+    savingUrl.value = false
   }
 }
 
@@ -497,6 +527,13 @@ watch(deckRef, (el) => {
               <a v-if="deck.url" class="action-btn" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener" :title="$t('deck.viewOnArkhamDb')"><font-awesome-icon icon="external-link" /></a>
               <a v-if="deck.url" class="action-btn" href="#" :title="$t('deck.syncDeck')" @click.prevent="sync"><font-awesome-icon icon="refresh" /></a>
               <a
+                class="action-btn"
+                :class="{ 'action-btn--on': urlEditing }"
+                href="#"
+                :title="$t('deck.changeUrl')"
+                @click.prevent="startUrlEdit"
+              ><font-awesome-icon icon="link" /></a>
+              <a
                 v-if="customCardsEnabled && hasLibraryCards"
                 class="action-btn"
                 :class="{ 'action-btn--on': overlayEditing || hasOverlay }"
@@ -505,6 +542,21 @@ watch(deckRef, (el) => {
                 @click.prevent="startOverlay"
               ><font-awesome-icon icon="layer-group" /></a>
               <a class="action-btn action-btn--delete" href="#" :title="$t('deck.deleteDeck')" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
+            </div>
+          </div>
+          <div v-if="urlEditing" class="overlay-bar">
+            <p class="overlay-help">{{ $t('deck.changeUrlHelp') }}</p>
+            <div class="overlay-row">
+              <label class="url-field">
+                {{ $t('deck.deckUrl') }}
+                <input v-model="urlDraft" type="url" spellcheck="false" :disabled="savingUrl" @keyup.enter="saveUrl" />
+              </label>
+              <div class="overlay-actions">
+                <button type="button" :disabled="savingUrl || !urlDraft.trim()" @click="saveUrl">
+                  {{ $t('deck.changeUrlSave') }}
+                </button>
+                <button type="button" :disabled="savingUrl" @click="urlEditing = false">{{ $t('cancel') }}</button>
+              </div>
             </div>
           </div>
           <div v-if="overlayEditing" class="overlay-bar">
@@ -831,6 +883,20 @@ watch(deckRef, (el) => {
     color: #e6ece4;
     font-size: 0.9rem;
     padding: 0.35rem;
+  }
+}
+
+.url-field {
+  flex: 1 1 24rem;
+
+  input {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid color-mix(in srgb, var(--spooky-green) 35%, transparent);
+    border-radius: 4px;
+    color: #e6ece4;
+    font-size: 0.9rem;
+    padding: 0.4rem 0.6rem;
+    width: 100%;
   }
 }
 

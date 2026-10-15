@@ -1149,6 +1149,19 @@ export const syncDeck = async (deckId: string): Promise<Deck> => {
   return deckDecoder.decodePromise(data)
 }
 
+/* Point a saved deck at a different url. The list comes back refetched from
+ * there, so the caller replaces the whole deck rather than just its url. */
+export const setDeckUrl = async (deckId: string, url: string): Promise<Deck> => {
+  const { data } = await api.put(`arkham/decks/${deckId}/url`, { url })
+  return deckDecoder.decodePromise(data)
+}
+
+/* The API reports a rejected deck request as a JSONError (Api.Handler.Arkham.Decks). */
+export const deckErrorMessage = (e: unknown): string | null => {
+  const msg = (e as { response?: { data?: { errorMsg?: string } } })?.response?.data?.errorMsg
+  return typeof msg === 'string' && msg.length > 0 ? msg : null
+}
+
 export const fileBug = (gameId: string): Promise<{ data: string }> =>
   api.post(`arkham/games/${gameId}/file-bug`)
 

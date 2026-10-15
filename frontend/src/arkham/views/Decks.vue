@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue'
 import * as Arkham from '@/arkham/types/Deck'
 import Prompt from '@/components/Prompt.vue'
-import { fetchDecks, deleteDeck, syncDeck } from '@/arkham/api'
+import { fetchDecks, deleteDeck, syncDeck, deckErrorMessage } from '@/arkham/api'
 import NewDeck from '@/arkham/components/NewDeck.vue';
 import Deck from '@/arkham/components/DeckRow.vue';
 import DeckToolbar from '@/arkham/components/DeckToolbar.vue';
@@ -59,10 +59,16 @@ const decks = computed(() => {
   return Arkham.sortDecks(result, sortBy.value)
 })
 
+// A sync can fail for a reason the player can act on -- most often a url that no
+// longer resolves -- so say which. Unhandled, the click did nothing at all.
 async function sync(deck: Arkham.Deck) {
-  syncDeck(deck.id).then(() => {
+  try {
+    const updated = await syncDeck(deck.id)
+    allDecks.value = allDecks.value.map((d) => d.id === updated.id ? updated : d)
     toast.success(t('deckSyncedSuccessfully'), { timeout: 3000 })
-  })
+  } catch (e) {
+    toast.error(deckErrorMessage(e) ?? t('deck.syncFailed'), { timeout: 8000 })
+  }
 }
 </script>
 

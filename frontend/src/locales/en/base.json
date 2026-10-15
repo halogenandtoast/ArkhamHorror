@@ -297,6 +297,13 @@
   "deck": {
     "viewOnArkhamDb": "View on ArkhamDB",
     "syncDeck": "Sync deck",
+    "syncFailed": "Could not sync this deck",
+    "changeUrl": "Change deck url",
+    "changeUrlHelp": "Point this deck at a different ArkhamDB or arkham.build url. The deck is refetched from there, so use this to go back to the deck you built after a campaign upgraded it \u2014 or when the url it is on no longer exists.",
+    "changeUrlSave": "Change and refetch",
+    "deckUrl": "Deck url",
+    "urlChanged": "Deck url changed",
+    "urlChangeFailed": "Could not change the deck url",
     "deleteDeck": "Delete deck",
     "lastPlayed": "Last played {date}",
     "neverPlayed": "Never played"

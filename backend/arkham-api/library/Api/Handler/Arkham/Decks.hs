@@ -9,6 +9,7 @@ module Api.Handler.Arkham.Decks (
   postApiV1ArkhamSyncDeckR,
   putApiV1ArkhamDeckOverlayR,
   deleteApiV1ArkhamDeckOverlayR,
+  putApiV1ArkhamDeckUrlR,
   normalizeArkhamBuildDeckCodes,
 ) where
 
@@ -93,6 +94,14 @@ newtype FetchDeckPost = FetchDeckPost
 instance FromJSON FetchDeckPost where
   parseJSON = genericParseJSON $ aesonOptions $ Just "fetchDeck"
 
+newtype UpdateDeckUrlPost = UpdateDeckUrlPost
+  { updateDeckUrl :: Text
+  }
+  deriving stock (Show, Generic)
+
+instance FromJSON UpdateDeckUrlPost where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "updateDeck"
+
 data UpgradeDeckPost = UpgradeDeckPost
   { udpInvestigatorId :: InvestigatorId
   , udpDeckUrl :: Maybe Text
@@ -146,9 +155,7 @@ postApiV1ArkhamDecksFetchR = do
   userId <- getRequestUserId
   registerUserCustomCards userId
   FetchDeckPost {..} <- requireCheckJsonBody
-  getDeckList fetchDeckUrl >>= \case
-    Right decklist -> pure decklist
-    Left err -> sendStatusJSON Status.status400 (JSONError $ T.pack err)
+  fetchDecklistFor fetchDeckUrl
 
 {- | Load an upgraded (or replacement) deck into a running campaign.
 
@@ -269,9 +276,6 @@ putApiV1ArkhamGameDecksR gameId = do
         $ GameUpdate
         $ PublicGame gameId arkhamGameName mempty arkhamGameCurrentData
  where
-  deckError :: Text -> Handler a
-  deckError = sendStatusJSON Status.status400 . JSONError
-
   -- True when the decklist upgrades the SAME investigator (an alternate art of them counts)
   -- rather than replacing them with a different one.
   sameInvestigator :: InvestigatorId -> ArkhamDBDecklist -> Bool
@@ -287,20 +291,38 @@ putApiV1ArkhamGameDecksR gameId = do
   resolveDecklist postData = case udpDeckList postData of
     Just decklist -> Just <$> validateDecklist decklist
     -- Neither a decklist nor a url: "continue without upgrading".
-    Nothing -> for (udpDeckUrl postData) \url ->
-      -- getDeckList's http call throws on a non-2xx response rather than returning Left.
-      try @_ @SomeException (getDeckList url) >>= \case
-        Right (Right decklist) -> validateDecklist decklist
-        Right (Left err) -> deckError $ "Could not read the deck at " <> url <> ": " <> T.pack err
-        Left _ -> deckError $ "Could not fetch the deck at " <> url
+    Nothing -> for (udpDeckUrl postData) (fetchDecklistFor >=> validateDecklist)
 
-  validateDecklist :: ArkhamDBDecklist -> Handler ArkhamDBDecklist
-  validateDecklist decklist = case toDeckErrors decklist of
-    [] -> pure decklist
-    errs ->
+deckError :: Text -> Handler a
+deckError = sendStatusJSON Status.status400 . JSONError
+
+{- | Fetch a decklist from a url, saying why it could not be read.
+
+'getDeckList' THROWS on a non-2xx response rather than returning Left, so every
+caller has to catch one: a url that no longer resolves otherwise escapes as a bare
+500 with nothing the player can act on. Deleting an upgrade on ArkhamDB deletes the
+deck it made, and a campaign upgrade walks the saved row's url forward onto exactly
+those decks (see 'putApiV1ArkhamGameDecksR'), so a dead url is the ordinary case
+here rather than a corner one.
+-}
+fetchDecklistFor :: Text -> Handler ArkhamDBDecklist
+fetchDecklistFor url =
+  try @_ @SomeException (getDeckList url) >>= \case
+    Right (Right decklist) -> pure decklist
+    Right (Left err) -> deckError $ "Could not read the deck at " <> url <> ": " <> T.pack err
+    Left _ ->
       deckError
-        $ "This deck contains cards that are not implemented yet: "
-        <> T.intercalate ", " [tshow cCode | UnimplementedCard cCode <- errs]
+        $ "Could not fetch the deck at "
+        <> url
+        <> ". If it has been deleted, point this deck at one that still exists."
+
+validateDecklist :: ArkhamDBDecklist -> Handler ArkhamDBDecklist
+validateDecklist decklist = case toDeckErrors decklist of
+  [] -> pure decklist
+  errs ->
+    deckError
+      $ "This deck contains cards that are not implemented yet: "
+      <> T.intercalate ", " [tshow cCode | UnimplementedCard cCode <- errs]
 
 fromPostData :: UserId -> CreateDeckPost -> ArkhamDeck
 fromPostData userId CreateDeckPost {..} = do
@@ -413,22 +435,48 @@ newtype JSONError = JSONError {errorMsg :: Text}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+{- | Refetch a deck from the url it was imported from.
+
+Every failure here used to come out the same way: nothing. 'getDeckList' throws
+rather than returning Left, so a dead url was an unhandled 500, and both client
+call sites were a bare @.then@ -- the player pressed Sync and the page did not
+move. 'fetchDecklistFor' reports the reason instead.
+-}
 postApiV1ArkhamSyncDeckR :: ArkhamDeckId -> Handler (Entity ArkhamDeck)
 postApiV1ArkhamSyncDeckR deckId = do
-  userId <- getRequestUserId
-  deck <- runDB $ get404 deckId
-  unless (arkhamDeckUserId deck == userId) do
-    sendStatusJSON
-      Status.status400
-      (JSONError "Deck does not belong to this user")
-  edecklist <- maybe (pure $ Left "no deck url") getDeckList (arkhamDeckUrl deck)
-  case edecklist of
-    Right decklist -> do
-      runDB $ update \d -> do
-        set d [ArkhamDeckList =. val decklist]
-        where_ $ d.id ==. val deckId
+  deck <- ownedDeck deckId
+  case arkhamDeckUrl deck of
+    Nothing ->
+      deckError
+        "This deck was not imported from a url, so there is nothing to sync from. Point it at one first."
+    Just deckUrl -> do
+      decklist <- fetchDecklistFor deckUrl
+      runDB $ P.update deckId [ArkhamDeckList P.=. decklist]
       pure $ Entity deckId $ deck {arkhamDeckList = decklist}
-    Left _ -> sendStatusJSON Status.status400 (JSONError "Could not sync deck")
+
+{- | Point a deck at a different url, and refetch it from there.
+
+A campaign upgrade rewrites the saved row in place and walks its url forward onto
+each new ArkhamDB deck, so a player who deletes those upgrades upstream is left
+holding an upgraded list whose url no longer exists -- with no way back to the deck
+they built. Repointing is that way back. The list is refetched in the same call so
+the url and the list cannot disagree, and both the fetch and the validation run
+before anything is written, so a bad url leaves the deck exactly as it was.
+-}
+putApiV1ArkhamDeckUrlR :: ArkhamDeckId -> Handler (Entity ArkhamDeck)
+putApiV1ArkhamDeckUrlR deckId = do
+  deck <- ownedDeck deckId
+  UpdateDeckUrlPost {..} <- requireCheckJsonBody
+  let deckUrl = T.strip updateDeckUrl
+  when (T.null deckUrl) $ deckError "Enter the url of the deck to point this at"
+  -- The deck may name cards only this user has built.
+  registerUserCustomCards (arkhamDeckUserId deck)
+  decklist <- fetchDecklistFor deckUrl >>= validateDecklist
+  -- An arkham.build decklist carries no url of its own (see 'getDeckList'), so the
+  -- one the player gave us is the only one there is.
+  let deckUrl' = fromMaybe deckUrl decklist.url
+  runDB $ P.update deckId [ArkhamDeckUrl P.=. Just deckUrl', ArkhamDeckList P.=. decklist]
+  pure $ Entity deckId $ deck {arkhamDeckUrl = Just deckUrl', arkhamDeckList = decklist}
 
 ownedDeck :: ArkhamDeckId -> Handler ArkhamDeck
 ownedDeck deckId = do

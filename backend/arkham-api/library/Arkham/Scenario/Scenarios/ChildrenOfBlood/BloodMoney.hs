@@ -246,6 +246,7 @@ instance RunMessage BloodMoney where
       gather Set.Bloodthirst
       gather Set.ChildrenOfBlood
       gather Set.Hunted
+      gather Set.Infected
       gatherJust Set.SanguineSecrets [Enemies.sanguineCultist, Enemies.bloodCrazedZealot]
       gather Set.ArcaneLock
       when (n >= 3) $ gather Set.Afflicted
@@ -275,6 +276,7 @@ instance RunMessage BloodMoney where
       setAsideEvery $ cardIs Enemies.spawnOfZburamoarte
       setAsideEvery $ cardIs Treacheries.sanguineRebirth
       setAsideEvery $ CardFromEncounterSet Set.SanguineSecrets <> #enemy
+      setAsideEvery $ CardFromEncounterSet Set.Infected
       setAside [Assets.chosenOfZburamoarteFightingTheHunger]
 
       setAside

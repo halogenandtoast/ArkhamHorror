@@ -5,7 +5,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.ChaosToken
-import Arkham.Cost (returnedChaosTokenPayments)
 import Arkham.GameEnv (getActiveCosts)
 import Arkham.Helpers.Modifiers
 import Arkham.I18n

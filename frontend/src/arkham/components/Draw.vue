@@ -16,6 +16,7 @@ import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import { useCardStore } from '@/stores/cards';
 import * as DebugMove from '@/arkham/debugCardMove';
 import { cardDropInFlight } from '@/arkham/debugCardDrop';
+import * as DebugInPlay from '@/arkham/debugInPlay';
 import DeckDebugWindow from '@/arkham/components/debug/DeckDebugWindow.vue';
 
 const { t } = useI18n();
@@ -182,13 +183,30 @@ function accepts(cardId: string, target: DebugMove.DebugDropTarget) {
  * answers from the id the drag source published instead. `null` means nothing is
  * being dragged; `false` means this card has no business in a player deck. */
 const deckAccepts = computed(() => DebugMove.draggedCardAccepted(props.game, cardStore.cards, 'playerDeck'))
-const discardAccepts = computed(() => DebugMove.draggedCardAccepted(props.game, cardStore.cards, 'playerDiscard'))
+
+/* An asset dragged out of play discards for real rather than being moved as a
+ * card -- the mirror of dropping it on the hand. Events and skills are left out
+ * because only the asset runner answers `Discard` for an in-play entity. */
+const inPlayDiscardAccepts = computed(() => {
+  const target = DebugInPlay.draggedInPlay.value
+  return target !== null && DebugInPlay.canDiscard(target)
+})
+
+const discardAccepts = computed(() => {
+  if (DebugInPlay.draggedInPlay.value) return inPlayDiscardAccepts.value
+  return DebugMove.draggedCardAccepted(props.game, cardStore.cards, 'playerDiscard')
+})
 const discardDraggedOver = ref(false)
 
 function onDropDiscard(event: DragEvent) {
   event.preventDefault()
   discardDraggedOver.value = false
   if (!debug.active) return
+  const inPlay = DebugInPlay.droppedInPlayTarget()
+  if (inPlay) {
+    if (DebugInPlay.canDiscard(inPlay)) debug.send(props.game.id, DebugInPlay.discardMessage(inPlay))
+    return
+  }
   const cardId = droppedCardId(event)
   // `DiscardCard` only answers for a card already in hand, and leaves every
   // other zone alone; `DebugMoveCard` obtains the card first.
@@ -248,6 +266,14 @@ function onDragOverDeck(event: DragEvent) {
   // target, so refuse it outright rather than advertising a card move.
   if (cardDropInFlight()) {
     if (event.dataTransfer) event.dataTransfer.dropEffect = 'none'
+    return
+  }
+  // An entity in play can go to hand or to the discard, but there is no
+  // "put a live asset into the deck", so refuse rather than advertise a shuffle.
+  if (DebugInPlay.draggedInPlay.value) {
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'none'
+    deckDropMode.value = null
+    deckDropPosition.value = null
     return
   }
   if (deckAccepts.value === false) {

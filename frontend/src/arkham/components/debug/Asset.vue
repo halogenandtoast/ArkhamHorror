@@ -2,6 +2,7 @@
 import Draggable from '@/components/Draggable.vue';
 import { computed, ref } from 'vue';
 import { useDebug } from '@/arkham/debug';
+import * as DebugInPlay from '@/arkham/debugInPlay';
 import { TokenType, Token } from '@/arkham/types/Token';
 import { cardImg, imgsrc } from '@/arkham/helpers';
 import { cardImage as cardToImage, asCardCode, toCardContents, type Card as ArkhamCard } from '@/arkham/types/Card';
@@ -52,6 +53,16 @@ const canFlip = computed(() => {
   const code = cardCode.value.replace(/^c/, '')
   return cardStore.cards.some(c => (c.cardCode === code && c.otherSide !== null) || c.otherSide === code)
 })
+
+/* Its owner's hand, falling back to the debugging player's investigator for a
+ * story or encounter asset that nobody owns. Dragging the card onto a hand says
+ * which one instead, so that path does not come through here. */
+const returnToHandInvestigator = computed(() => props.asset.owner ?? investigatorId.value)
+
+function returnToHand() {
+  const iid = returnToHandInvestigator.value
+  if (iid) debug.send(props.game.id, DebugInPlay.returnToHandMessage(iid, DebugInPlay.assetTarget(id.value)))
+}
 
 const exhausted = computed(() => props.asset.exhausted)
 const cardCode = computed(() => props.asset.cardCode)
@@ -178,6 +189,7 @@ const hasPool = computed(() => {
         <button v-else @click="debug.send(game.id, {tag: 'Exhaust', contents: { tag: 'AssetTarget', contents: id}})">{{ $t('debug.asset.exhaust') }}</button>
         <button v-if="asset.health || asset.sanity" @click="debug.send(game.id, {tag: 'AssetDefeated', contents: [{ tag: 'GameSource' }, id]})">{{ $t('debug.asset.defeat') }}</button>
         <button v-if="asset.owner" @click="debug.send(game.id, {tag: 'Discard', contents: [null, { tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}]})">{{ $t('debug.asset.discard') }}</button>
+        <button v-if="returnToHandInvestigator" @click="returnToHand">{{ $t('debug.common.returnToHand') }}</button>
         <button v-if="canFlip" @click="debug.send(game.id, {tag: 'Flip', contents: [flipInvestigator, { tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}]})">{{ $t('debug.asset.flip') }}</button>
         <button v-if="asset.spiritDeck" @click="inspectSpiritDeck = true">Inspect spirit deck</button>
         <button v-if="slots.length > 0" @click="showSlots = true">{{ $t('debug.asset.showSlots') }}</button>

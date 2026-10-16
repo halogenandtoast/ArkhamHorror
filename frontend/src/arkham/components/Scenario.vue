@@ -79,6 +79,7 @@ import { useGameChoices } from '@/arkham/composables/useGameChoices';
 import { setLocationOffset, resetLocationOffsets, updateGameRaw } from '@/arkham/api';
 import { useDebug, scenarioHasDebugOptions } from '@/arkham/debug'
 import * as DebugMove from '@/arkham/debugCardMove'
+import * as DebugInPlay from '@/arkham/debugInPlay'
 import { useCardStore } from '@/stores/cards'
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
@@ -1625,6 +1626,13 @@ function onDragOverEncounterDiscard(event: DragEvent) {
   // A chaos token seals onto a card in play; a deck or discard is not a seal
   // target, so refuse it outright rather than advertising a card move.
   if (cardDropInFlight()) {
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'none'
+    return
+  }
+  // An asset dragged out of play discards through the engine, which picks the
+  // pile itself (Draw.vue's discard is where that drop lives); this zone only
+  // moves cards, so refuse rather than advertise a drop it would ignore.
+  if (DebugInPlay.draggedInPlay.value) {
     if (event.dataTransfer) event.dataTransfer.dropEffect = 'none'
     return
   }

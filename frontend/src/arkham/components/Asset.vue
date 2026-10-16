@@ -30,6 +30,7 @@ import Story from '@/arkham/components/Story.vue';
 import { useCardFlip } from '@/arkham/composables/useCardFlip';
 import SealedChaosTokens from '@/arkham/components/SealedChaosTokens.vue';
 import { assetTarget, cardDropHandlers } from '@/arkham/debugCardDrop';
+import * as DebugInPlay from '@/arkham/debugInPlay';
 import * as Arkham from '@/arkham/types/Asset';
 import { useSettings } from '@/stores/settings';
 import { isManifestedSpiritAsset } from '@/arkham/spiritVisuals';
@@ -383,6 +384,10 @@ function startDrag(event: DragEvent) {
   if (event.dataTransfer) {
     event.dataTransfer.effectAllowed = 'copyMove'
     event.dataTransfer.setData('text/plain', JSON.stringify({ "tag": "AssetTarget", "contents": props.asset.id }))
+    // Publish it so the hand and discard can light up mid-drag. Debug only: the
+    // same drag tucks a permanent into the hidden stack outside of debug, and
+    // that must not advertise a drop that would return it to hand.
+    if (debug.active) DebugInPlay.beginInPlayDrag(DebugInPlay.assetTarget(props.asset.id))
   }
 }
 </script>

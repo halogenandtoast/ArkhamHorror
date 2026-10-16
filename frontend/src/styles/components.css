@@ -269,6 +269,36 @@ h2.title {
   border-color: var(--select);
 }
 
+/* A panel's row of actions. Global for the same reason as the rest of this
+   block, and because `CardDebugWindow` takes them through a slot, so the markup
+   lives in whichever card's component filled it. */
+.debug-actions {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 5px;
+}
+
+.debug-actions button {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  background: var(--background-dark);
+  color: var(--text);
+  font-size: 0.8rem;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.debug-actions button:hover:not(:disabled) {
+  background: var(--button);
+  border-color: var(--select);
+}
+
+.debug-actions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .count-pill {
   display: inline-flex;
   align-items: center;

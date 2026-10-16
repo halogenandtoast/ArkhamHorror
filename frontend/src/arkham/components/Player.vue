@@ -9,6 +9,7 @@ import { useDebug } from '@/arkham/debug'
 import * as DebugMove from '@/arkham/debugCardMove';
 import { discardRandomMessage } from '@/arkham/debugPlayer';
 import { cardDropInFlight } from '@/arkham/debugCardDrop';
+import * as DebugInPlay from '@/arkham/debugInPlay';
 import { Game } from '@/arkham/types/Game';
 import { toCardContents } from '@/arkham/types/Card';
 import { imgsrc } from '@/arkham/helpers';
@@ -883,15 +884,54 @@ const dragover = (e: DragEvent) => {
   }
 }
 
+/* Whether the hand would take whatever is in the air: a card from another zone
+ * (deck, discard, victory display) or an entity in play on its way back to hand.
+ * `null` means nothing of ours is being dragged, so the area stays unlit. */
+const handDropAccepts = computed(() => {
+  if (!debug.active) return null
+  if (cardDropInFlight()) return false
+  if (DebugInPlay.draggedInPlay.value) return true
+  // Any card may go to a hand, so the id alone is enough -- no back to check.
+  return DebugMove.draggedCardId.value === null ? null : true
+})
+
+const handDraggedOver = ref(false)
+
+function onDragOverHand(event: DragEvent) {
+  event.preventDefault()
+  if (!event.dataTransfer) return
+  // Tokens seal onto cards in play, never into a hand.
+  if (handDropAccepts.value !== true) {
+    event.dataTransfer.dropEffect = 'none'
+    return
+  }
+  // Must sit inside the drag's effectAllowed or the browser drops the drop: the
+  // card drags declare 'copy', the in-play ones 'copyMove'.
+  event.dataTransfer.dropEffect = 'copy'
+  handDraggedOver.value = true
+}
+
+function onDragLeaveHand(event: DragEvent) {
+  const from = event.currentTarget
+  const to = event.relatedTarget
+  if (from instanceof Node && to instanceof Node && from.contains(to)) return
+  handDraggedOver.value = false
+}
+
 function onDropHand(event: DragEvent) {
   event.preventDefault()
-  if (event.dataTransfer) {
-    const data = event.dataTransfer.getData('text/plain')
-    if (data) {
-      const json = JSON.parse(data)
-      if (json.tag === "CardTarget") {
-        DebugMove.debugMoveCard(props.game.id, json.contents, DebugMove.toHand(id.value))
-      }
+  handDraggedOver.value = false
+  if (!debug.active || !event.dataTransfer) return
+  const inPlay = DebugInPlay.droppedInPlayTarget()
+  if (inPlay) {
+    debug.send(props.game.id, DebugInPlay.returnToHandMessage(id.value, inPlay))
+    return
+  }
+  const data = event.dataTransfer.getData('text/plain')
+  if (data) {
+    const json = JSON.parse(data)
+    if (json.tag === "CardTarget") {
+      DebugMove.debugMoveCard(props.game.id, json.contents, DebugMove.toHand(id.value))
     }
   }
 }
@@ -1291,12 +1331,23 @@ function closeHand() {
           @choose="$emit('choose', $event)"
         />
       </div>
-      <div v-if="!isMobile" class="hand hand-area">
-        <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter"
-          @drop="onDropHand($event)"
-          @dragover.prevent="dragover($event)"
-          @dragenter.prevent
-          >
+      <!-- The drop zone is this whole area rather than the card row inside it:
+           `.hand` is `flex: 0`, so its box stops at the last card and a drop in
+           the empty space beside the hand hit nothing. -->
+      <div
+        v-if="!isMobile"
+        class="hand hand-area"
+        :class="{
+          'hand-area--droppable': handDropAccepts === true,
+          'hand-area--drop-target': handDraggedOver && handDropAccepts === true,
+        }"
+        @drop="onDropHand($event)"
+        @dragover.prevent="onDragOverHand($event)"
+        @dragleave="onDragLeaveHand($event)"
+        @dragend="handDraggedOver = false"
+        @dragenter.prevent
+      >
+        <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
           <div v-if="asIfInHandCards.length > 0" class="special-hand-card-stack">
             <span
               v-for="card in asIfInHandPhantomCards"
@@ -1370,7 +1421,18 @@ function closeHand() {
         <div v-if="investigator.handSize" class="hand-size" :class="handSizeClasses" :current-length="totalHandSize">{{ t('handSize') }}: {{totalHandSize}}/{{investigator.handSize}}</div>
       </div>
     </div>
-    <div v-if="isMobile" class="hand hand-area-IsMobile" :style="{ bottom: `${handAreaMarginBottom}px` }" @click="toggleHandAreaMarginBottom">
+    <div
+      v-if="isMobile"
+      class="hand hand-area-IsMobile"
+      :class="{ 'hand-area--drop-target': handDraggedOver && handDropAccepts === true }"
+      :style="{ bottom: `${handAreaMarginBottom}px` }"
+      @click="toggleHandAreaMarginBottom"
+      @drop="onDropHand($event)"
+      @dragover.prevent="onDragOverHand($event)"
+      @dragleave="onDragLeaveHand($event)"
+      @dragend="handDraggedOver = false"
+      @dragenter.prevent
+    >
       <div
         v-if="debug.active"
         v-show="handAreaPointerEvents === 'auto'"
@@ -1411,9 +1473,6 @@ function closeHand() {
         </svg>
       </button>
       <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter"
-        @drop="onDropHand($event)"
-        @dragover.prevent="dragover($event)"
-        @dragenter.prevent
         :style="{ pointerEvents: `${handAreaPointerEvents}`, flex: 1 }"
         >
         <div v-if="asIfInHandCards.length > 0" class="special-hand-card-stack">
@@ -1962,6 +2021,19 @@ function closeHand() {
   align-items: flex-start;
   flex: 1;
   max-width: 100%;
+}
+
+/* An empty hand has nothing to give the area height, so there would be nowhere
+   to aim. Held only while a drag is actually in flight, so the resting layout is
+   untouched. */
+.hand-area--droppable {
+  min-height: calc(var(--card-width) * 1.4);
+}
+
+/* Matches the deck and discard drop zones in Draw.vue. */
+.hand-area--drop-target {
+  outline: 3px solid var(--highlight);
+  outline-offset: 3px;
 }
 
 .hand-debug-actions button,

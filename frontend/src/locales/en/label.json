@@ -399,6 +399,8 @@
     "groupClueRange": "Spend {min}-{max} clues as a group",
     "groupDiscard": "Group discard {count} cards",
     "groupResource": "Spend {count} resources as a group",
+    "groupPlaceClueOnLocation": "Place {count} clue on their location as a group | Place {count} clues on their locations as a group",
+    "groupPlaceClueOnLocationPerPlayer": "Place {count} {'{'}perPlayer{'}'} clues on their locations as a group",
     "groupResourcePerPlayer": "Spend {count} {'{'}perPlayer{'}'} resources as a group",
     "groupSpendKey": "Spend key as a group",
     "horror": "{count} Horror",

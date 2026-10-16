@@ -27,6 +27,7 @@ data Token
   | Depth
   | Discovery
   | Doom
+  | Dose
   | Durability
   | Eclipse
   | Empowerment
@@ -167,6 +168,9 @@ instance IsLabel "obligation" Token where
 
 instance IsLabel "discovery" Token where
   fromLabel = Discovery
+
+instance IsLabel "dose" Token where
+  fromLabel = Dose
 
 instance IsLabel "chance" Token where
   fromLabel = Chance

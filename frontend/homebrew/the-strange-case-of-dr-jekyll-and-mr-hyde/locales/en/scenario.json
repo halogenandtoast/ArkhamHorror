@@ -1,0 +1,166 @@
+{
+  "scenario": {
+    "label": "The Strange Case of Dr. Jekyll and Mr. Hyde",
+    "fullLabel": "The Strange Case of Dr. Jekyll and Mr. Hyde",
+    "intro": {
+      "title": "An Incident in Northside",
+      "body": "<p>Your recent business finds you in Arkham's Northside district, the city's industrial center. This late at night, the streets are quiet — or were, until you heard the sudden commotion. Two hooded men pull another man along as he struggles and yells at them, but as you stumble onto the scene, they release him and flee. You approach the man urgently, but he desperately shuns you. “Get away! I don't mean to involve anyone else in this horrid business!” You assure the man that you are no stranger to occult matters, and he looks up at you anxiously. “Then... you may be my only hope of salvation from Hyde.”</p><p>The man introduces himself as Dr. Henry Jekyll, a physician and chemist, who has arrived in Arkham unwillingly, and yet at the same time, not. You press him further and inquire who Hyde is. “Hyde is... me. An evil part of me that I brought out through my reckless experiments. Despite my best intentions, Hyde has consorted with foul people — devotees of a being called Yog-Sothoth who see him as a sort of profane prophet. We have each sought to destroy the other without ending our own lives, and through his dealings with these vile cultists, Hyde has found a way. He brought us to America to complete this process. Even now, these cultists stalk the area, gathering components by whatever means necessary and bolstering their sick experiments with Hyde's evil genius. I beg of you, help me expunge Hyde and rid the world of his evil presence!”</p>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the *The Strange Case of Dr. Jekyll and Mr. Hyde* encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{imgPath}/homebrew/the-strange-case-of-dr-jekyll-and-mr-hyde/sets/the-strange-case-of-dr-jekyll-and-mr-hyde.png' /></section>",
+      "placeLocations": "Put all locations into play according to the suggested location placement. When placing locations, randomly choose one of each duplicate location to put into play and set the other aside, out of play. Investigators begin play at Northside Plaza.",
+      "setAside": "Set the following cards aside, out of play: Adapted Formula, Fundamental Formula, Duplicitous Drug, Your Other Half.",
+      "jekyll": "Put Henry Jekyll into play at Northside Plaza.",
+      "doom": "Place 1 doom on agenda 1a."
+    },
+    "essentialMaterials": {
+      "label": {
+        "cluesToSpend": "Spend up to {count} clues to get +2 skill value for each clue spent"
+      }
+    },
+    "adaptedFormula": {
+      "label": {
+        "cluesToSpend": "Spend up to {count} clues to get +2 skill value for each clue spent"
+      }
+    },
+    "chemicalSpill": {
+      "label": {
+        "loseAction": "Lose 1 action",
+        "takeDamageAndHorror": "Take 1 damage and 1 horror"
+      }
+    },
+    "festeringEvil": {
+      "label": {
+        "cluesToPlace": "Place 1 clue as a group to lose 1 fewer action | Place {count} clues as a group to lose {count} fewer actions"
+      }
+    },
+    "fundamentalFormula": {
+      "label": {
+        "tokensToFlip": "Flip up to {count} tokens on Fundamental Formula",
+        "flipToClue": "Flip a doom to a clue",
+        "flipToDoom": "Flip a clue to a doom",
+        "doneFlipping": "Flip no more tokens"
+      }
+    },
+    "henryJekyll": {
+      "label": {
+        "healYou": "Heal 1 damage and 1 horror from yourself",
+        "healAlly": "Heal 1 damage and 1 horror from an Ally asset you control"
+      }
+    },
+    "importsOffice": {
+      "label": {
+        "cluesToPlace": "Place up to {count} of your clues on Imports Office"
+      }
+    },
+    "duplicitousDrug": {
+      "label": {
+        "takeDirectDamage": "Take 1 direct damage",
+        "takeDirectHorror": "Take 1 direct horror"
+      }
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Resolution 1_: You withdraw ruefully, and Northside gradually falls silent once more. Hyde has escaped the district, and the cult's lackeys with him. This regrettably means a death sentence for Dr. Jekyll. Hidden away once more, they can concoct the drug at their leisure, and ensure that Hyde endures to further the machinations of Yog-Sothoth.</p><ul><li>In your Campaign Log, record that *Mr. Hyde escaped your grasp*.</li><li>If Sinister Chemist is in the victory display, any one investigator may choose to add Fundamental Formula to their deck. This card does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>_Resolution 2_: Dr. Jekyll chokes down the bitter liquid and his muscles seize up suddenly. He grits his teeth to keep from crying out, but you still have to hold him down until the convulsions subside and he lies on the cold cobblestones with a sheen of sweat and dilated pupils. “It's... done,” he pants, “and good riddance... to the evil of Hyde...”</p><p>You help Jekyll to a sitting position as you scan the quiet streets, but the cultists have all retreated at the destruction of their ally. You hope this blow sets their schemes back considerably, and the knowledge gleaned from the notebook may further assist you. Dr. Jekyll will need a long time to recover, but you can use his perfected formulas to aid you in your mission, if you dare.</p><ul><li>In your Campaign Log, record that *the investigators destroyed Mr. Hyde*.</li><li>Any one investigator may choose to add Duplicitous Drug to their deck. If Sinister Chemist is in the victory display, any one investigator may choose to add Fundamental Formula to their deck. These cards do not count toward those investigators' deck sizes.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul>"
+      }
+    },
+    "tooltips": {
+      "abandonedFactory": {
+        "clue": "{'{'}reaction{'}'} After you engage an enemy at Abandoned Factory: Discover a clue at Abandoned Factory. (Group limit once per round.)"
+      },
+      "adaptedFormula": {
+        "flip": "{'{'}fast{'}'} At the end of the round, if there is at least 1 resource on the fourth card and 2 resources on the fifth card in the arrangement: Flip this card and move it to your location.",
+        "gather": "{'{'}action{'}'} Test any skill (3). This test gets +1{'{'}perPlayer{'}'} difficulty. Investigators at your location may spend any amount of clues to give +2 skill value for each clue spent. If you succeed, place 1 resource on the card in the arrangement that matches your location."
+      },
+      "aggressiveMutation": {
+        "discard": "_Forced_ - After the attached enemy is evaded: Discard Aggressive Mutation."
+      },
+      "chemicalFirm": {
+        "blast": "{'{'}action{'}'}: Deal 1 damage to each enemy and investigator at Chemical Firm. (Group limit once per round.)",
+        "reaction": "{'{'}reaction{'}'} After you deal 1 or more damage to an enemy at Chemical Firm, take 1 damage: Deal 1 additional damage to that enemy. (Limit once per round.)"
+      },
+      "chemicalSpill": {
+        "discard": "_Forced_ - At the end of the round: Discard Chemical Spill.",
+        "toll": "_Forced_ - When you would move from the attached location, you must (choose one): — Lose 1 action. — Take 1 damage and 1 horror."
+      },
+      "creepingGrowth": {
+        "forced": "_Forced_ - At the end of the round, test {'{'}agility{'}'} (4). If you fail, take 1 damage and lose 2 resources. If your skill value was not reduced to 0 for this test, discard Creeping Growth."
+      },
+      "drugstore": {
+        "discard": "{'{'}fast{'}'} If there are no clues on Drugstore, choose and discard 3 cards from your hand: Add 1{'{'}perPlayer{'}'} clues to Drugstore. (Group limit once per round.)",
+        "resources": "{'{'}fast{'}'} If there are no clues on Drugstore, spend 3 resources: Add 1{'{'}perPlayer{'}'} clues to Drugstore. (Group limit once per round.)"
+      },
+      "edwardHyde": {
+        "endure": "_Forced_ - When Edward Hyde is defeated: Instead of discarding him, heal all damage from him, disengage him from all investigators, and exhaust him.",
+        "parley": "{'{'}fast{'}'} If Edward Hyde is exhausted: _Parley._ Test {'{'}willpower{'}'} or {'{'}intellect{'}'} (2). This test gets +1 difficulty for each horror on Edward Hyde. If you succeed, flip Edward Hyde. If you fail, ready Edward Hyde."
+      },
+      "essentialMaterials": {
+        "gather": "{'{'}action{'}'} Test any skill (3). This test gets +1{'{'}perPlayer{'}'} difficulty. Investigators at your location may spend any amount of clues to give +2 skill value for each clue spent. If you succeed, place 1 resource on the card in the arrangement that matches your location.",
+        "objective": "_Objective_ - If there are at least 2 resources on the first card, 1 resource on the second card, and 1 resource on the third card in the arrangement, you may advance."
+      },
+      "etchersShop": {
+        "discard": "{'{'}action{'}'} Discard an asset you control: Discover a clue from Etchers' Shop.",
+        "resources": "{'{'}action{'}'} Spend 3 resources: Discover a clue from Etchers' Shop."
+      },
+      "festeringEvil": {
+        "discard": "{'{'}action{'}'}{'{'}action{'}'}: Discard Festering Evil. Investigators at your location may place up to 2 clues they control on their location to reduce the cost of this ability by one action (to a minimum of {'{'}fast{'}'}).",
+        "flip": "_Forced_ - When the attached card flips: Each investigator at the attached card's location discards an asset they control."
+      },
+      "fleshyCreation": {
+        "purge": "_Forced_ - If there are 3 copies of Fleshy Creation next to the agenda deck: Discard them.",
+        "return": "_Forced_ - After you defeat Fleshy Creation: Instead of discarding it, remove all damage from it and move it next to the agenda deck."
+      },
+      "fundamentalFormula": {
+        "enter": "_Forced_ - When Fundamental Formula enters play: Place 1 clue and 1 doom on it. Clues and doom on Fundamental Formula do not count as clues or doom for the purposes of other game effects.",
+        "flip": "{'{'}reaction{'}'} At the start of your turn or after Fundamental Formula enters play: Flip any number of tokens on Fundamental Formula."
+      },
+      "duplicitousDrug": {
+        "hurt": "{'{'}fast{'}'} During your turn: Take 1 direct damage or direct horror.",
+        "transform": "{'{'}fast{'}'} Exhaust Duplicitous Drug and spend 1 dose: Set your investigator card aside with all tokens on it, out of play. Search your bonded cards for Your Other Half and put it into play, replacing your investigator card."
+      },
+      "henryJekyll": {
+        "heal": "{'{'}action{'}'}: Heal 1 damage and 1 horror from you or an Ally asset you control. Any investigator at Henry Jekyll's location may activate this ability. (Limit once per round.)"
+      },
+      "importsOffice": {
+        "play": "{'{'}action{'}'} Place any amount of your clues on Imports Office: Play an asset from your hand, reducing its cost by X where X is 2 times the amount of clues spent. (Group limit once per round.)",
+        "search": "{'{'}action{'}'} Place any amount of your clues on Imports Office: Choose an investigator at Imports Office to search the top X cards of their deck for an _Item_ asset, where X is 3 times the number of clues placed. Draw that card and shuffle the searched deck. (Group limit once per round.)"
+      },
+      "markOfTheGate": {
+        "forced": "_Forced_ - At the end of the round, test {'{'}willpower{'}'} (4). If you fail, take 1 horror and discard a card from your hand at random. If your skill value was not reduced to 0 for this test, discard Mark of the Gate."
+      },
+      "northsidePlaza": {
+        "clue": "_Forced_ - At the end of the round, if there is at least one non-_Elite_ enemy at Northside Plaza: Add 1 clue to Northside Plaza from the token bank.",
+        "resign": "{'{'}action{'}'}: _Resign._ As much as you'd like to help, this situation is beyond your control."
+      },
+      "servantOfYogSothoth": {
+        "approach": "_Forced_ - When an investigator at any location discovers any amount of clues or succeeds at a test as part of an {'{'}action{'}'} ability printed on a scenario card, if Servant of Yog-Sothoth is ready and unengaged: Move Servant of Yog-Sothoth once toward that investigator."
+      },
+      "sinisterChemist": {
+        "discard": "_Forced_ - When Sinister Chemist attacks you: Discard an _Item_ asset you control or an _Item_ asset in your hand.",
+        "intellect": "During attacks against Sinister Chemist, you may use your {'{'}intellect{'}'} instead of the skill indicated."
+      },
+      "supplyAndDemand": {
+        "toll": "_Forced_ - When an investigator would investigate a location or initiate a test from an {'{'}action{'}'} ability on a scenario card: That test gets +2 difficulty. If you fail, lose 1 resource. Whether you succeed or fail, discard Supply and Demand. (Max once per test.)"
+      },
+      "tannery": {
+        "damage": "{'{'}fast{'}'} When you commit a card to a skill test at Tannery, take 1 damage: Double the skill icons on that card. (Limit once per round.)",
+        "horror": "{'{'}fast{'}'} When you commit a card to a skill test at Tannery, take 1 horror: Double the skill icons on that card. (Limit once per round.)"
+      },
+      "tasteOfYourOwnMedicine": {
+        "objective": "_Objective_ - If Henry Jekyll is in play, you must immediately advance."
+      },
+      "trainyard": {
+        "forced": "_Forced_ - At the end of the round, each investigator at Trainyard tests {'{'}agility{'}'} (3). Each investigator who fails takes 1 damage. Deal 1 damage to each non-_Elite_ enemy at Trainyard."
+      },
+      "yourOtherHalf": {
+        "revert": "_Forced_ - When you would be defeated by damage or horror: Instead, remove Your Other Half from the game and put your chosen investigator card into play with all tokens on it, replacing Your Other Half. Then, draw each weakness beneath your investigator card.",
+        "suppress": "{'{'}reaction{'}'} When you draw a weakness: Place it facedown beneath your investigator card without resolving its effects."
+      }
+    }
+  }
+}

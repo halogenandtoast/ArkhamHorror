@@ -344,6 +344,15 @@ export function formatCost(cost: Cost, t: Translate): string {
           : 'label.cost.placeClueOnLocation'
       return t(key, { count })
     }
+    case 'GroupPlaceClueOnLocationCost': {
+      const contents = get<unknown[]>(cost, 'contents') ?? []
+      const gameValue = contents[0]
+      const key =
+        gameValueTag(gameValue) === 'PerPlayer'
+          ? 'label.cost.groupPlaceClueOnLocationPerPlayer'
+          : 'label.cost.groupPlaceClueOnLocation'
+      return t(key, { count: gameValueCount(gameValue) })
+    }
     case 'ShuffleTopOfScenarioDeckIntoYourDeck':
       return t('label.cost.shuffleTopOfScenarioDeck', { count: intAt(cost, 0) })
     case 'ChooseEnemyCost':

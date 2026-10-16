@@ -73,6 +73,7 @@ const TOKEN_CONFIG: Partial<Record<Token, { type: string; tooltip?: string }>> =
   Charge: { type: 'resource' },
   Obligation: { type: 'resource', tooltip: 'Obligation' },
   Discovery: { type: 'resource', tooltip: 'Discovery' },
+  Dose: { type: 'resource', tooltip: 'Dose' },
   Chance: { type: 'resource', tooltip: 'Chance' },
   Obsession: { type: 'resource', tooltip: 'Obsession' },
   Sign: { type: 'resource', tooltip: 'Sign' },

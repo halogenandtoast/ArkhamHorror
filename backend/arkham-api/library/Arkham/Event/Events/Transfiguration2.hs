@@ -4,6 +4,7 @@ import Arkham.CampaignLogKey
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Log
+import Arkham.Homebrew.Defs qualified as Homebrew
 import Arkham.Investigator.Cards (allInvestigatorCards)
 import Arkham.Investigator.Types (InvestigatorForm (..))
 import Arkham.Matcher
@@ -31,7 +32,14 @@ instance RunMessage Transfiguration2 where
         -- bonded investigator cards (Resolute Hank Samson, The Lost
         -- Homunculus) are not collection choices
         bonded = ["10016a", "10016b", "11068b"]
-        canBeChosen card = toName card `notElem` names && card.cardCode `notElem` bonded
+        -- allInvestigatorCards folds in homebrew investigator cards, which are not
+        -- in anybody's collection and must not change what this card offers.
+        canBeChosen card =
+          and
+            [ toName card `notElem` names
+            , card.cardCode `notElem` bonded
+            , card.cardCode `notMember` Homebrew.investigatorsMap
+            ]
         cards = filter canBeChosen allCards
 
       chooseOneM iid do

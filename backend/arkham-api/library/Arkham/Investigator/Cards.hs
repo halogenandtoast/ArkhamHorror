@@ -1,28 +1,21 @@
 {- HLINT ignore "Use camelCase" -}
-module Arkham.Investigator.Cards where
+module Arkham.Investigator.Cards (module Arkham.Investigator.Cards, module X) where
 
 import Arkham.Prelude
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
-import Arkham.Card.CardType
 import Arkham.ClassSymbol
 import Arkham.EncounterSet
+import Arkham.Homebrew.Defs qualified as Homebrew
+import Arkham.Investigator.Cards.Base as X
 import Arkham.Name
 import Arkham.Trait hiding (Supply)
 
-investigator :: CardCode -> Name -> ClassSymbol -> [Trait] -> CardDef
-investigator cardCode name classSymbol traits =
-  (emptyCardDef cardCode name InvestigatorType)
-    { cdClassSymbols = singleton classSymbol
-    , cdCardTraits = setFromList traits
-    , cdUnique = True
-    , cdLevel = Nothing
-    }
-
 allInvestigatorCards :: Map CardCode CardDef
 allInvestigatorCards =
-  mapFromList
+  (Homebrew.investigatorsMap <>)
+    $ mapFromList
     $ concatMap
       toCardCodePairs
       [ rolandBanks
@@ -125,12 +118,6 @@ allEncounterInvestigatorCards =
     $ concatMap
       toCardCodePairs
       [bodyOfAYithian, gavriellaMizrah, jeromeDavids, valentinoRivas, pennyWhite, shatteredSelf]
-
-withAlternate :: CardCode -> CardDef -> CardDef
-withAlternate ccode = withAlternates [ccode]
-
-withAlternates :: [CardCode] -> CardDef -> CardDef
-withAlternates ccodes def = def {cdAlternateCardCodes = ccodes}
 
 rolandBanks :: CardDef
 rolandBanks =

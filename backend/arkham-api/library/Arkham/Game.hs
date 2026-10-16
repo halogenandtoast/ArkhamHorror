@@ -2404,7 +2404,15 @@ getLocationsMatching lmatcher = do
     LocationWithFullTitle title subtitle -> pure $ filter ((== (title <:> subtitle)) . toName) ls
     LocationWithUnrevealedTitle title -> pure $ filter ((`hasTitle` title) . Unrevealed) ls
     LocationWithId locationId -> pure $ filter ((== locationId) . toId) ls
-    LocationWithSymbol locationSymbol -> pure $ filter ((== locationSymbol) . toLocationSymbol) ls
+    -- Every connection, distance and pathing query resolves a source location's
+    -- printed connections through this matcher, so excluding a DoesNotConnect
+    -- location here is the whole inbound half of its isolation (the outbound half
+    -- is Arkham.Helpers.Location.connectedMatcherParts). The symbol test comes
+    -- first so the modifier read only runs for a location carrying the symbol.
+    LocationWithSymbol locationSymbol -> flip filterM ls \l ->
+      if toLocationSymbol l == locationSymbol
+        then notElem DoesNotConnect <$> getModifiers (toId l)
+        else pure False
     LeftmostConnectionOf matcher -> do
       -- A location's connections are stored in printed order, so the first LocationWithSymbol
       -- among them is the leftmost icon on its card.
@@ -3308,8 +3316,11 @@ getAssetsMatching' matcher = do
         pure $ current - totalHeal > 0
     AssetWithDoom valueMatcher ->
       filterM ((`gameValueMatches` valueMatcher) . attr assetDoom) as
-    AssetWithClues valueMatcher ->
-      filterM ((`gameValueMatches` valueMatcher) . attr assetClues) as
+    -- clue counts read through 'IgnoreCluesOnThis', so an asset whose clues are
+    -- not clues is not offered as one anywhere this matcher chooses a source
+    AssetWithClues valueMatcher -> flip filterM as \a -> do
+      mods <- getModifiers (toId a)
+      gameValueMatches (subtractIgnoredClues mods (attr assetClues a)) valueMatcher
     AssetWithTokens valueMatcher tokenType ->
       filterM ((`gameValueMatches` valueMatcher) . Token.countTokens tokenType . attr assetTokens) as
     AssetWithSpendableUses valueMatcher tokenType -> flip filterM as \a -> do
@@ -4956,7 +4967,12 @@ instance Projection Asset where
       AssetMeta -> pure assetMeta
       AssetName -> pure $ toName attrs
       AssetCost -> pure . maybe 0 toPrintedCost . cdCost $ toCardDef attrs
-      AssetClues -> pure $ assetClues attrs
+      -- "clues on this do not count as clues": the tokens stay on the card, but
+      -- every clue count the engine reads off it sees the reduction, including
+      -- the controller's InvestigatorClues, which is what makes them spendable
+      AssetClues -> do
+        mods <- getModifiers (AssetTarget aid)
+        pure $ subtractIgnoredClues mods (assetClues attrs)
       AssetResources -> pure $ assetResources attrs
       AssetHorror -> pure $ assetHorror attrs
       AssetDamage -> pure $ assetDamage attrs

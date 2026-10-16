@@ -14,6 +14,7 @@ import Arkham.EncounterSet (EncounterSet)
 import Arkham.Enemy.Types (SomeEnemyCard)
 import Arkham.Event.Types (SomeEventCard)
 import Arkham.Id (CampaignId)
+import Arkham.Investigator.Types (SomeInvestigatorCard)
 import Arkham.Location.Types (SomeLocationCard)
 import Arkham.Prelude
 import Arkham.Scenario.Types (IsScenario)
@@ -38,6 +39,12 @@ data HomebrewContent = HomebrewContent
   , assets :: [SomeAssetCard]
   , enemies :: [SomeEnemyCard]
   , events :: [SomeEventCard]
+  , investigators :: [SomeInvestigatorCard]
+  {- ^ Investigator implementations. Folded into
+  @Arkham.Investigator.allInvestigators@, which is what @lookupInvestigator@,
+  @withInvestigatorCardCode@ and the @FromJSON Investigator@ instance all
+  resolve a card code through.
+  -}
   , locations :: [SomeLocationCard]
   , skills :: [SomeSkillCard]
   , stories :: [SomeStoryCard]
@@ -54,6 +61,7 @@ instance Semigroup HomebrewContent where
       , assets = a.assets <> b.assets
       , enemies = a.enemies <> b.enemies
       , events = a.events <> b.events
+      , investigators = a.investigators <> b.investigators
       , locations = a.locations <> b.locations
       , skills = a.skills <> b.skills
       , stories = a.stories <> b.stories
@@ -63,7 +71,7 @@ instance Semigroup HomebrewContent where
       }
 
 instance Monoid HomebrewContent where
-  mempty = HomebrewContent [] [] [] [] [] [] [] [] [] [] []
+  mempty = HomebrewContent [] [] [] [] [] [] [] [] [] [] [] []
 
 {- | Implement in your campaign's @Content.hs@ on a campaign-local tag type;
 the instance is discovered automatically (see 'Arkham.Homebrew.Registry').

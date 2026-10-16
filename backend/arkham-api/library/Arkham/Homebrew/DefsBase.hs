@@ -30,6 +30,12 @@ data HomebrewDefs = HomebrewDefs
   {- ^ Events with a *player* card back ('EventType'). As with assets, the back
   is carried by the card type, so 'EncounterEventType' is a separate slot.
   -}
+  , hdInvestigators :: [CardDef]
+  {- ^ Investigator cards contributed by this campaign. Folded into
+  @allInvestigatorCards@ (not @allEncounterInvestigatorCards@): that is the
+  aggregate every card-code lookup consults, including the one
+  'Arkham.Game' uses to read a transfigured form's printed traits.
+  -}
   , hdStories :: [CardDef]
   , hdPlayerStories :: [CardDef]
   {- ^ Story cards printed on a player card back (Dark Matter's "Delights").
@@ -73,6 +79,7 @@ instance Semigroup HomebrewDefs where
       , hdPlayerAssets = hdPlayerAssets a <> hdPlayerAssets b
       , hdPlayerSkills = hdPlayerSkills a <> hdPlayerSkills b
       , hdPlayerEvents = hdPlayerEvents a <> hdPlayerEvents b
+      , hdInvestigators = hdInvestigators a <> hdInvestigators b
       , hdStories = hdStories a <> hdStories b
       , hdPlayerStories = hdPlayerStories a <> hdPlayerStories b
       , hdTraits = hdTraits a <> hdTraits b
@@ -82,7 +89,7 @@ instance Semigroup HomebrewDefs where
       }
 
 instance Monoid HomebrewDefs where
-  mempty = HomebrewDefs [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []
+  mempty = HomebrewDefs [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []
 
 {- | Implement in your campaign's @Defs.hs@ on a campaign-local tag type; the
 instance is discovered automatically (see 'Arkham.Homebrew.Defs').
@@ -140,6 +147,7 @@ discoveredDefs = foldMap toDefs
     AssetType -> mempty {hdPlayerAssets = [def]}
     SkillType -> mempty {hdPlayerSkills = [def]}
     EventType -> mempty {hdPlayerEvents = [def]}
+    InvestigatorType -> mempty {hdInvestigators = [def]}
     StoryType
       | playerBack -> mempty {hdPlayerStories = [def]}
       | otherwise -> mempty {hdStories = [def]}

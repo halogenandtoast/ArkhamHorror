@@ -19,6 +19,7 @@ export const TOKENS = [
   "Depth",
   "Discovery",
   "Doom",
+  "Dose",
   "Durability",
   "Eclipse",
   "Empowerment",

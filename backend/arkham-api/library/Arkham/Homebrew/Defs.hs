@@ -86,6 +86,9 @@ playerSkillsMap = defMap hdPlayerSkills
 playerEventsMap :: Map CardCode CardDef
 playerEventsMap = defMap hdPlayerEvents
 
+investigatorsMap :: Map CardCode CardDef
+investigatorsMap = defMap hdInvestigators
+
 storiesMap :: Map CardCode CardDef
 storiesMap = defMap hdStories
 

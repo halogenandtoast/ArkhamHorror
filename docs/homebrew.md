@@ -136,6 +136,34 @@ signature is what discovery reads.
 Everything below is a door. Pick the one that matches what you want, and mirror
 the shape from Dark Matter or Circus Ex Mortis.
 
+### An investigator
+
+An investigator is a card like any other, with one wrinkle: the printed side goes
+in `CardDefs/Investigators.hs` and imports the builder from
+`Arkham.Investigator.Cards.Base`, **not** from `Arkham.Investigator.Cards`. The
+latter is the aggregate table, and it now folds your campaign in — importing it
+from your folder would close a loop through your own cards.
+
+```haskell
+yourOtherHalf :: CardDef
+yourOtherHalf =
+  (investigator ":your-campaign:035" ("Your Other Half" <:> "The Id Unleashed") Neutral [Lunatic])
+    { cdEncounterSet = Just Set.YourCampaign
+    }
+```
+
+The behavior goes in `Investigators/YourOtherHalf.hs` as
+`yourOtherHalf :: InvestigatorCard YourOtherHalf`, exactly like an enemy or an
+asset, and is discovered the same way. Nothing is registered centrally: the
+engine resolves your card code wherever it resolves an official one — building
+the investigator, reading it back out of a save, and answering "which
+investigator is this" for a transfigured form.
+
+Because it is a real investigator card code it is also deck-legal, which is
+usually not what a story investigator wants. One that replaces a player's own
+card mid-scenario is put into play with `SetInvestigatorForm` rather than chosen
+at setup.
+
 ### A new trait
 
 Say your locations need a `NewMoonCircus` trait. List your traits in

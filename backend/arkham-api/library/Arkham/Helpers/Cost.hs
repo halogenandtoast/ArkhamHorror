@@ -514,13 +514,14 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
       DiscoveredCluesCost -> pure True
       PlaceClueOnLocationCost gv -> do
         n <- getPlayerCountValue gv
-        canParallelRex <- iid <=~> Matcher.InvestigatorIs "90078"
-        z <-
-          if canParallelRex
-            then (`div` 2) <$> getRemainingCurseTokens
-            else pure 0
-        clues <- field InvestigatorClues iid
-        pure $ (clues + z) >= n
+        placeable <- getPlaceableClueCount iid
+        pure $ placeable >= n
+      GroupPlaceClueOnLocationCost gv locationMatcher -> do
+        n <- getPlayerCountValue gv
+        let lm = Matcher.replaceYouMatcher iid locationMatcher
+        iids <- select $ Matcher.InvestigatorAt lm
+        totalPlaceable <- sum <$> traverse getPlaceableClueCount iids
+        pure $ totalPlaceable >= n
       InvestigatorPlaceClueOnLocationCost investigatorMatcher gv -> do
         n <- getPlayerCountValue gv
         -- Unaffordable when the matcher resolves to nobody, so an ability whose
@@ -778,6 +779,21 @@ getSpendableClueCount investigatorIds =
 
 getSpendableClueCountOf :: HasGame m => Matcher.InvestigatorMatcher -> m Int
 getSpendableClueCountOf = select >=> getSpendableClueCount
+
+{- | How many clues this investigator can put on a location to pay a cost.
+
+Placing is not spending, so this is the clue pool itself rather than
+'getSpendableClueCount'. Parallel Rex turns 2 curse tokens into 1 placed clue at
+the @WouldPlaceClueOnLocation@ window, so he can pay past his pool.
+
+Shared by 'PlaceClueOnLocationCost' and 'GroupPlaceClueOnLocationCost' so the
+group cost counts a contributor exactly as the single cost counts a payer.
+-}
+getPlaceableClueCount :: HasGame m => InvestigatorId -> m Int
+getPlaceableClueCount iid = do
+  canParallelRex <- iid <=~> Matcher.InvestigatorIs "90078"
+  z <- if canParallelRex then (`div` 2) <$> getRemainingCurseTokens else pure 0
+  fieldMap InvestigatorClues (+ z) iid
 
 applyActionCostModifier :: [[Action]] -> [[Action]] -> [Action] -> ModifierType -> Int -> Int
 applyActionCostModifier _ _ actions (ActionCostOf (IsAction action') m) n

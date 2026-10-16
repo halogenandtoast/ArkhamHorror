@@ -128,6 +128,21 @@ data Cost
     discover clues, place 1 of their clues on that location instead").
     -}
     InvestigatorPlaceClueOnLocationCost InvestigatorMatcher GameValue
+  | {- | "Investigators at your location may place N clues they control on their
+    location": one total the matched investigators split between them, the way
+    'GroupClueCost' does for /spending/ clues.
+
+    Each contributor places their own clues on their /own/ location, because that
+    is what @InvestigatorPlaceCluesOnLocation@ does for the investigator charged.
+    So a matcher naming one location (the usual @YourLocation@) and the printed
+    "on their location" agree, while a wider matcher spreads the clues over the
+    contributors' locations rather than pooling them on the payer's.
+
+    Declared among the clue costs so it is paid in the same band as
+    'GroupClueCost': after the action cost, before anything is exhausted,
+    discarded or damaged.
+    -}
+    GroupPlaceClueOnLocationCost GameValue LocationMatcher
   | ExhaustCost Target
   | ShuffleTopOfScenarioDeckIntoYourDeck Int ScenarioDeckKey
   | ChooseEnemyCost EnemyMatcher
@@ -392,6 +407,15 @@ instance Semigroup Cost where
     (Static a, PerPlayer b) -> ClueCost (StaticWithPerPlayer a b)
     (PerPlayer a, Static b) -> ClueCost (StaticWithPerPlayer b a)
     _ -> Costs [ClueCost x, ClueCost y]
+  -- One placement of n, not n placements of 1: a group payment folds its unit
+  -- cost (@fold . replicate n@, see 'Entity.Answer'), and each placement raises
+  -- its own @WouldPlaceClueOnLocation@ window.
+  PlaceClueOnLocationCost x <> PlaceClueOnLocationCost y = case (x, y) of
+    (Static a, Static b) -> PlaceClueOnLocationCost (Static (a + b))
+    (PerPlayer a, PerPlayer b) -> PlaceClueOnLocationCost (PerPlayer (a + b))
+    (Static a, PerPlayer b) -> PlaceClueOnLocationCost (StaticWithPerPlayer a b)
+    (PerPlayer a, Static b) -> PlaceClueOnLocationCost (StaticWithPerPlayer b a)
+    _ -> Costs [PlaceClueOnLocationCost x, PlaceClueOnLocationCost y]
   Costs xs <> Costs ys = Costs (combineCosts $ sort $ xs <> ys)
   Costs xs <> a = Costs (combineCosts $ sort $ a : xs)
   a <> Costs xs = Costs (combineCosts $ sort $ a : xs)
@@ -405,6 +429,10 @@ combineCosts (x : y : rest) = case (x, y) of
   (ClueCost (PerPlayer a), ClueCost (PerPlayer b)) -> combineCosts $ ClueCost (PerPlayer $ a + b) : rest
   (ClueCost (Static a), ClueCost (PerPlayer b)) -> combineCosts $ ClueCost (StaticWithPerPlayer a b) : rest
   (ClueCost (PerPlayer a), ClueCost (Static b)) -> combineCosts $ ClueCost (StaticWithPerPlayer b a) : rest
+  (PlaceClueOnLocationCost (Static a), PlaceClueOnLocationCost (Static b)) ->
+    combineCosts $ PlaceClueOnLocationCost (Static $ a + b) : rest
+  (PlaceClueOnLocationCost (PerPlayer a), PlaceClueOnLocationCost (PerPlayer b)) ->
+    combineCosts $ PlaceClueOnLocationCost (PerPlayer $ a + b) : rest
   (ActionCost a, ActionCost b) -> combineCosts $ ActionCost (a + b) : rest
   (ResourceCost a, ResourceCost b) -> combineCosts $ ResourceCost (a + b) : rest
   (HorrorCost s1 t1 a, HorrorCost s2 t2 b) | s1 == s2 && t1 == t2 -> combineCosts $ HorrorCost s1 t1 (a + b) : rest

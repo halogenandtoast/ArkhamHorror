@@ -106,6 +106,7 @@ import Arkham.History
 import Arkham.I18n (cardNameVar, countVar, ikey', keyVar, withI18n)
 import Arkham.Investigate.Types
 import {-# SOURCE #-} Arkham.Investigator
+import Arkham.Investigator.Cards (allEncounterInvestigatorCards, allInvestigatorCards)
 import Arkham.Investigator.Runner.Action
 import Arkham.Investigator.Runner.Card
 import Arkham.Investigator.Runner.Damage
@@ -218,6 +219,16 @@ instance RunMessage Investigator where
                 }
           pure . Investigator $ overAttrs (const a'') a
         _ -> Investigator <$> runMessage msg' a
+
+{- | The card def behind a bonded card code that names an investigator card.
+
+Bonded cards are normally player cards, so 'lookupCardDef' never looks here;
+Your Other Half (The Strange Case of Dr. Jekyll and Mr. Hyde) is bonded to
+Duplicitous Drug and is an investigator card, which is the case this covers.
+-}
+lookupBondedInvestigatorCardDef :: CardCode -> Maybe CardDef
+lookupBondedInvestigatorCardDef cCode =
+  lookup cCode allInvestigatorCards <|> lookup cCode allEncounterInvestigatorCards
 
 instance RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
@@ -811,8 +822,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     let bonded = nub $ concatMap (cdBondedWith . toCardDef) (unDeck investigatorDeck)
 
     bondedCards <- concatForM bonded $ \(n, cCode) -> do
-      case lookupCardDef cCode of
-        Nothing -> error "missing card"
+      -- A bonded card can be an investigator card (Your Other Half), which is in
+      -- neither the player nor the encounter table that 'lookupCardDef' reads.
+      case lookupCardDef cCode <|> lookupBondedInvestigatorCardDef cCode of
+        Nothing -> error $ "missing bonded card " <> show cCode
         Just def -> do
           cs <- replicateM n (genCard def)
           traverse (Arkham.Card.setTaboo investigatorTaboo <=< setOwner iid) cs

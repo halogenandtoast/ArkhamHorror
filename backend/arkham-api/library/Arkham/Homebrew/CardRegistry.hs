@@ -9,6 +9,7 @@ import Arkham.Asset.Types (AssetCard, IsAsset, SomeAssetCard (..))
 import Arkham.Enemy.Types (EnemyCard, IsEnemy, SomeEnemyCard (..))
 import Arkham.Event.Types (EventCard, IsEvent, SomeEventCard (..))
 import Arkham.Homebrew.Types
+import Arkham.Investigator.Types (InvestigatorCard, IsInvestigator, SomeInvestigatorCard (..))
 import Arkham.Location.Types (IsLocation, LocationCard, SomeLocationCard (..))
 import Arkham.Prelude
 import Arkham.Skill.Types (IsSkill, SkillCard, SomeSkillCard (..))
@@ -32,6 +33,9 @@ enemyContent card = mempty {enemies = [SomeEnemyCard card]}
 
 eventContent :: IsEvent a => EventCard a -> HomebrewContent
 eventContent card = mempty {events = [SomeEventCard card]}
+
+investigatorContent :: IsInvestigator a => InvestigatorCard a -> HomebrewContent
+investigatorContent card = mempty {investigators = [SomeInvestigatorCard card]}
 
 locationContent :: IsLocation a => LocationCard a -> HomebrewContent
 locationContent card = mempty {locations = [SomeLocationCard card]}

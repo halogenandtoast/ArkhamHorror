@@ -114,6 +114,7 @@ getApiV1ArkhamHomebrewCardsR = do
           <> Homebrew.playerAssetsMap
           <> Homebrew.playerSkillsMap
           <> Homebrew.playerEventsMap
+          <> Homebrew.investigatorsMap
           <> Homebrew.storiesMap
 
   pure $ browsableCardDefs FrontsOnly allHomebrewCards

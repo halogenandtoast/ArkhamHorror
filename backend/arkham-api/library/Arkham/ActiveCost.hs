@@ -1342,6 +1342,45 @@ payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
         Just placer -> do
           push $ InvestigatorPlaceCluesOnLocation placer source n
           withPayment $ CluePayment placer n
+    GroupPlaceClueOnLocationCost x locationMatcher -> do
+      totalClues <- getPlayerCountValue x
+      let lm = replaceYouMatcher iid locationMatcher
+      iids <- select $ InvestigatorAt lm
+      -- Each contributor pays 'PlaceClueOnLocationCost' themselves, so the clues
+      -- come from their pool and land on their own location, and each records its
+      -- own 'CluePayment'.
+      contributors <- forMaybeM iids \iid' -> do
+        clues <- getPlaceableClueCount iid'
+        if clues > 0
+          then do
+            name <- fieldMap InvestigatorName toTitle iid'
+            pure $ Just (iid', name, clues)
+          else pure Nothing
+      let place iid' n = PayCost acId iid' True (PlaceClueOnLocationCost (Static n))
+      case contributors of
+        -- A zero total, or nobody who can place a clue, is nothing to ask about:
+        -- an empty 'ChoosePaymentAmounts' would be a question with no answer.
+        _ | totalClues <= 0 -> pure ()
+        [] -> pure ()
+        [(iid', _, _)] -> push $ place iid' totalClues
+        xs | sum (map (\(_, _, clues) -> clues) xs) == totalClues ->
+          for_ xs \(iid', _, clues) -> push $ place iid' clues
+        xs -> do
+          rs <- getRandoms
+          let
+            paymentOptions =
+              zipWith
+                (\choiceId (iid', name, clues) -> PaymentAmountChoice choiceId iid' 0 clues name $ place iid' 1)
+                rs
+                xs
+          lead <- getLeadPlayer
+          push
+            $ Ask lead
+            $ ChoosePaymentAmounts
+              ("$placeCluesOnLocationsAsGroup total=i:" <> tshow totalClues)
+              (Just $ TotalAmountTarget totalClues)
+              paymentOptions
+      pure c
     GroupClueCostRange (sVal, eVal) locationMatcher -> do
       let lm = replaceYouMatcher iid locationMatcher
       mVal <- min eVal . getSum <$> selectAgg Sum InvestigatorClues (InvestigatorAt lm)

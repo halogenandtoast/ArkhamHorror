@@ -17,6 +17,7 @@ import Arkham.Event.Types (SomeEventCard)
 import Arkham.Homebrew.ContentEntries (DiscoveredModules)
 import Arkham.Homebrew.TH
 import Arkham.Homebrew.Types as X
+import Arkham.Investigator.Types (SomeInvestigatorCard)
 import Arkham.Location.Types (SomeLocationCard)
 import Arkham.Prelude (Text)
 import Arkham.Skill.Types (SomeSkillCard)
@@ -46,6 +47,9 @@ enemies = allHomebrewContent.enemies
 
 events :: [SomeEventCard]
 events = allHomebrewContent.events
+
+investigators :: [SomeInvestigatorCard]
+investigators = allHomebrewContent.investigators
 
 locations :: [SomeLocationCard]
 locations = allHomebrewContent.locations

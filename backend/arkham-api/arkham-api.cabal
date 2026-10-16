@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.39.6.
+-- This file has been generated from package.yaml by hpack version 0.37.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -5578,6 +5578,63 @@ library
       Arkham.Homebrew.ThePhantomOfTheOpera.Treacheries.ShroudedFaces
       Arkham.Homebrew.ThePhantomOfTheOpera.Treacheries.SignsOfMadness
       Arkham.Homebrew.ThePhantomOfTheOpera.Treacheries.ThePhantomStrikes
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Acts.EssentialMaterials
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Acts.Gather
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Acts.TasteOfYourOwnMedicine
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Acts.TheMadmansNotebook
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Agendas.TheDualityOfMan
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Assets.DuplicitousDrug
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Assets.FundamentalFormula
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Assets.HenryJekyll
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.CardDefEntries
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.CardDefs.Acts
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.CardDefs.Agendas
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.CardDefs.Assets
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.CardDefs.Enemies
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.CardDefs.Investigators
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.CardDefs.Locations
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.CardDefs.Stories
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.CardDefs.Treacheries
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.CardEntries
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Content
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Defs
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Enemies.EdwardHyde
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Enemies.FleshyCreation
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Enemies.MisshapenBeast
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Enemies.ProfaneSculptor
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Enemies.ServantOfYogSothoth
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Enemies.SinisterChemist
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Helpers
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Import
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Investigators.YourOtherHalf
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Key
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Locations.AbandonedFactory
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Locations.ChemicalFirm_014
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Locations.ChemicalFirm_015
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Locations.Drugstore_008
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Locations.Drugstore_009
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Locations.EtchersShop_012
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Locations.EtchersShop_013
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Locations.ImportsOffice_010
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Locations.ImportsOffice_011
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Locations.NorthsidePlaza
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Locations.Tannery_016
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Locations.Tannery_017
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Locations.Trainyard
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Scenarios.TheStrangeCaseOfDrJekyllAndMrHyde
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Sets
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.SideStoryDefs
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Stories.AdaptedFormula
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Traits
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Treacheries.AggressiveMutation
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Treacheries.BrutishCry
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Treacheries.ChemicalSpill
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Treacheries.CreepingGrowth
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Treacheries.EnthrallingInterference
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Treacheries.FesteringEvil
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Treacheries.MarkOfTheGate
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Treacheries.SupplyAndDemand
+      Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Treacheries.SurgingFlesh
       Arkham.Homebrew.TheSymphonyOfErichZann.Acts.MusicFromAuseilTheatre
       Arkham.Homebrew.TheSymphonyOfErichZann.Acts.ThePossessedConductor
       Arkham.Homebrew.TheSymphonyOfErichZann.Acts.UndreamableOrchestra
@@ -5675,6 +5732,7 @@ library
       Arkham.Investigator.Cards.AndrePatel
       Arkham.Investigator.Cards.AshcanPete
       Arkham.Investigator.Cards.AshcanPeteParallel
+      Arkham.Investigator.Cards.Base
       Arkham.Investigator.Cards.BobJenkins
       Arkham.Investigator.Cards.BodyOfAYithian
       Arkham.Investigator.Cards.CalvinWright

@@ -11,6 +11,7 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Classes.Entity.TH
 import Arkham.Custom.Investigator (CustomInvestigator, customInvestigator)
+import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Id
 import Arkham.Investigator.Investigators
 import Arkham.Investigator.Runner hiding (allInvestigators)
@@ -74,7 +75,8 @@ withInvestigatorCardCode cCode f = case lookup cCode allInvestigators of
 
 allInvestigators :: Map CardCode SomeInvestigatorCard
 allInvestigators =
-  mapFromList
+  (mapFromList (concatMap someInvestigatorCardCodes Registry.investigators) <>)
+    $ mapFromList
     $ concatMap
       someInvestigatorCardCodes
       [ SomeInvestigatorCard rolandBanks

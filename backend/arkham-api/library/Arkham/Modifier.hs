@@ -329,6 +329,13 @@ data ModifierType
   | DoNotRevealAnotherChaosToken -- see: Ancient Covenant (2)
   | DoNotTakeUpSlot SlotType
   | DoNotTakeUpSlots
+  | {- | Isolates a location's connections: it connects to nothing and nothing
+    connects to it, while staying in play for everything else. Wired outbound in
+    'Arkham.Helpers.Location.connectedMatcherParts' and inbound in the
+    @LocationWithSymbol@ branch of 'Arkham.Game.getLocationsMatching'. Unlike
+    'LosesConnectionSymbol', which drops one symbol and is outbound-only.
+    -}
+    DoesNotConnect
   | DoesNotDamageOtherInvestigator
   | DoesNotReadyDuringUpkeep
   | DoomSubtracts
@@ -417,6 +424,13 @@ data ModifierType
     -}
     IgnoreChaosTokenSymbolEffects
   | IgnoreCommitOneRestriction
+  | {- | The tokens stay on the card and are still clues to the card itself, but
+    @n@ of them are subtracted from every clue count the engine reads off it:
+    the controller's 'InvestigatorClues' (so they are not spendable), the clue
+    matchers (so the card is not offered as a clue source), and anything
+    aggregating 'AssetClues'. The mirror of 'IgnoreDoomOnThis'.
+    -}
+    IgnoreCluesOnThis Int
   | IgnoreDoomOnThis Int
   | IgnoreEngagementRequirement
   | IgnoreHandSizeReduction
@@ -684,6 +698,14 @@ overModifierTypeM f m = f (modifierType m) <&> \mt -> m {modifierType = mt}
 
 setActiveDuringSetup :: Modifier -> Modifier
 setActiveDuringSetup m = m {modifierActiveDuringSetup = True}
+
+-- | Drop the clues 'IgnoreCluesOnThis' hides from a raw clue count.
+subtractIgnoredClues :: [ModifierType] -> Int -> Int
+subtractIgnoredClues mods n = foldl' go n mods
+ where
+  go k = \case
+    IgnoreCluesOnThis x -> max 0 (k - x)
+    _ -> k
 
 mconcat
   [ deriveToJSON defaultOptions ''ModifierType

@@ -19,6 +19,7 @@ module Api.Handler.Arkham.CustomCards (
   normalizeUrl,
   printedOrder,
   hostArt,
+  portableArt,
   setDeclarationsFromCards,
 ) where
 
@@ -341,7 +342,7 @@ cannot be stored fails while the set it is replacing is still whole.
 prepareCardForSet :: UserId -> ArkhamCustomCardSet -> CustomCard -> Handler (CardCode, CustomCard)
 prepareCardForSet userId set card0 = do
   (cardCode, card') <- normalizeCard card0
-  art <- traverse (hostArt userId) (customCardArt card')
+  art <- join <$> traverse (portableArt userId) (customCardArt card')
   def <- hostDefArt userId (stampSet set (customCardDef card'))
   pure (cardCode, card' {customCardArt = art, customCardDef = def})
 
@@ -528,6 +529,34 @@ hostArt userId art = case parseDataUri art of
   Nothing -> pure art
   Just (contentType, bytes) -> storeArt userId contentType bytes
 
+{- | Art as it can be stored here, if it can be at all.
+
+Art lives under the host of the library it was uploaded to. In production that
+is an asset host, so the address means the same thing to everyone. In
+development 'storeArt' writes to the frontend's public directory and answers
+with a bare path, which names a file on the machine it was uploaded on and
+nothing at all anywhere else.
+
+Such a path can arrive here: an export falls back to the URL when it cannot read
+the image, and a set's tokens are read back off the copy stamped on each card
+when the file names no set -- a loose card, or a selection out of the builder.
+Stored as given, it is an image that resolves to the single-page app on every
+request, which renders as broken art with nothing to say why.
+
+So it is dropped instead, and the token draws as a plain marker while the
+builder shows an empty image control -- which is true, and is one upload to put
+right. Only a path into a library is judged, and only where this server is not
+the one serving it; anything else is somebody else's address to keep.
+-}
+portableArt :: UserId -> Text -> Handler (Maybe Text)
+portableArt userId art = do
+  hosted <- hostArt userId art
+  servesLocally <- isJust <$> getsApp (appCustomCardArtDir . appSettings)
+  pure do
+    guard . not $ T.null (T.strip hosted)
+    guard $ servesLocally || not (("/" <> artPrefix) `T.isPrefixOf` hosted)
+    pure hosted
+
 {- | The images a def carries besides its face.
 
 An investigator has a card back and two portraits, and they live in meta rather
@@ -543,9 +572,10 @@ hostDefArt userId def = do
   pure def {cdMeta = meta}
  where
   host m k = case Map.lookup k m of
-    Just (String v) -> do
-      hosted <- hostArt userId v
-      pure $ Map.insert k (String hosted) m
+    Just (String v) ->
+      portableArt userId v <&> \case
+        Nothing -> Map.delete k m
+        Just hosted -> Map.insert k (String hosted) m
     _ -> pure m
 
 parseDataUri :: Text -> Maybe (Text, BSL.ByteString)

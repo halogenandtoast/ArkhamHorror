@@ -8,10 +8,10 @@ module Api.Handler.Arkham.CustomCardSets (
 ) where
 
 import Api.Handler.Arkham.CustomCards (
-  hostArt,
   normalizeUrl,
   ownedCardSet,
   persistCard,
+  portableArt,
   prepareCardForSet,
   requireUnlocked,
   setDeclarationsFromCards,
@@ -187,7 +187,8 @@ normalizeDescription raw = do
   pure text
 
 {- | A set's tokens as they are stored: checked against the type, trimmed of
-anything with no slug, and with any image that arrived inline uploaded.
+anything with no slug, and with any image that arrived inline uploaded and any
+image this host cannot serve dropped ('portableArt').
 
 Checked rather than stored as given because these are stamped onto every card
 in the set and read by the engine from there. A token the engine cannot decode
@@ -200,7 +201,7 @@ normalizeTokens userId raw = case parseMaybe parseJSON raw of
   Just (tokens :: [SetDefs.CustomSetToken]) -> do
     let named = [t | t <- tokens, not (T.null (T.strip (SetDefs.customSetTokenSlug t)))]
     hosted <- for named \t -> do
-      image <- traverse (hostArt userId) (SetDefs.customSetTokenImage t)
+      image <- join <$> traverse (portableArt userId) (SetDefs.customSetTokenImage t)
       pure t {SetDefs.customSetTokenImage = image}
     pure $ toJSON hosted
 
@@ -219,13 +220,14 @@ normalizeKeywords raw = case parseMaybe parseJSON raw of
 {- | An icon as it is stored: an image uploaded here, or nothing.
 
 An inline image is uploaded like a card's art; a URL is kept as given, which is
-what an export that could not read its own icon comes back as.
+what an export that could not read its own icon comes back as -- unless it is a
+path into the library it came from, which this host cannot serve ('portableArt').
 -}
 normalizeIcon :: UserId -> Maybe Text -> Handler (Maybe Text)
 normalizeIcon userId raw = case T.strip <$> raw of
   Nothing -> pure Nothing
   Just text | T.null text -> pure Nothing
-  Just text -> Just <$> hostArt userId text
+  Just text -> portableArt userId text
 
 data ImportSetPost = ImportSetPost
   { importSetName :: Text

@@ -468,20 +468,21 @@ export type ParsedCardExport = {
  * Falls back to the URL when the image cannot be read: a production asset host
  * that sends no CORS headers refuses the fetch, and half an export beats none. */
 export async function exportCards(cards: CustomCard[], set?: LibrarySet): Promise<CardExport> {
+  const inline = artInliner()
   const inlined = await Promise.all(
     cards.map(async (c) => ({
-      def: await inlineDefArt(c.def),
-      art: (await inlineArt(c.art)) ?? c.art,
+      def: await inlineDefArt(c.def, inline),
+      art: (await inline(c.art)) ?? c.art,
     })),
   )
-  const icon = set?.icon ? ((await inlineArt(set.icon)) ?? set.icon) : null
+  const icon = set?.icon ? ((await inline(set.icon)) ?? set.icon) : null
   /* Token art is inlined for the same reason a card's is: it was uploaded under
    * the exporter's account, on a host the importer may not even be able to read,
    * so a bare URL is worth nothing to them. */
   const tokens = await Promise.all(
     (set?.tokens ?? []).map(async (t) => ({
       ...t,
-      image: t.image ? ((await inlineArt(t.image)) ?? t.image) : null,
+      image: t.image ? ((await inline(t.image)) ?? t.image) : null,
     })),
   )
   return {
@@ -508,15 +509,60 @@ export async function exportCards(cards: CustomCard[], set?: LibrarySet): Promis
  * — and they live in meta rather than on the card. */
 const ART_META_KEYS = ['backArt', 'portrait', 'portraitBack']
 
-async function inlineDefArt(def: any): Promise<any> {
+async function inlineDefArt(def: any, inline: ArtInliner): Promise<any> {
   const meta = def?.meta
   if (!meta) return def
   const keys = ART_META_KEYS.filter((k) => typeof meta[k] === 'string')
-  if (!keys.length) return def
+  const tokens = await inlineSetTokenArt(meta, inline)
+  if (!keys.length && !tokens) return def
   const entries = await Promise.all(
-    keys.map(async (k) => [k, (await inlineArt(meta[k])) ?? meta[k]] as const),
+    keys.map(async (k) => [k, (await inline(meta[k])) ?? meta[k]] as const),
   )
-  return { ...def, meta: { ...meta, ...Object.fromEntries(entries) } }
+  return {
+    ...def,
+    meta: {
+      ...meta,
+      ...Object.fromEntries(entries),
+      ...(tokens ? { setTokens: tokens } : {}),
+    },
+  }
+}
+
+/* The tokens a set declares are stamped onto every card in it, and that copy is
+ * what an import reads the set back off when the file names no set at all — a
+ * card pasted on its own, or a selection exported out of the builder, neither of
+ * which has a set to carry the declaration. Inlined for the same reason the
+ * set's own copy is: a bare URL is a path into the exporter's library, and on
+ * another host it is a broken image rather than a token.
+ *
+ * Falls back to the URL like everything else here: half a token beats none, and
+ * the server drops an image it cannot serve rather than storing one. */
+async function inlineSetTokenArt(meta: any, inline: ArtInliner) {
+  if (!Array.isArray(meta.setTokens)) return null
+  return await Promise.all(
+    meta.setTokens.map(async (token: any) =>
+      token && typeof token.image === 'string'
+        ? { ...token, image: (await inline(token.image)) ?? token.image }
+        : token,
+    ),
+  )
+}
+
+/* One export, one fetch per image. A set's token art is stamped onto every card
+ * in it, so without this a selection of fifty cards would fetch the same marker
+ * fifty times and embed fifty copies of it. */
+type ArtInliner = (art: string | null) => Promise<string | null>
+
+function artInliner(): ArtInliner {
+  const seen = new Map<string, Promise<string | null>>()
+  return (art) => {
+    if (!art) return Promise.resolve(art)
+    const held = seen.get(art)
+    if (held) return held
+    const inflight = inlineArt(art)
+    seen.set(art, inflight)
+    return inflight
+  }
 }
 
 async function inlineArt(art: string | null): Promise<string | null> {

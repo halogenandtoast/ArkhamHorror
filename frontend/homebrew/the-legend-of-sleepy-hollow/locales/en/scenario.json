@@ -1,0 +1,141 @@
+{
+  "scenario": {
+    "label": "The Legend of Sleepy Hollow",
+    "fullLabel": "The Legend of Sleepy Hollow",
+    "intro": {
+      "title": "Terror Strikes Rural New York!",
+      "body": "<p>Sheriff Engle waves the opened letter in one hand as he gestures to you. “The New York police ignored the affair for lack of evidence, and now this Van Brunt character expects us to believe it's the work of some local boogeyman? If you want my opinion, the whole thing's hogwash. He did ask for you by name, though, so it's your call if you want to waste your time wandering the backwoods.”</p><p>The sheriff finally hands over the letter, letting you read the details for yourself. Frederic Van Brunt, a wealthy landowner of Dutch stock, has asked for your assistance in dealing with a spectre that he calls the Headless Horseman. He blames this ghost for the disappearances of four people in as many weeks from the local town and valley of Sleepy Hollow. The police have been skeptical and dismissive to say the least, but Van Brunt has stuck to his story. He has since sought out paranormal experts to deal with the phantom, and having heard of you through various newspaper clippings, has offered to pay handsomely for your assistance.</p><p>Whether or not you accept the reward is up to you, but the threat of a murderous phantom is challenge enough for your considerable skills.</p>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the *The Legend of Sleepy Hollow* encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{imgPath}/homebrew/the-legend-of-sleepy-hollow/sets/the-legend-of-sleepy-hollow.png' /></section>",
+      "headlessHorseman": "Put The Headless Horseman enemy next to the agenda deck, out of play.",
+      "setAside": "Set the following cards aside, out of play: Ichabod Crane, Ichabod's Books, all copies of Disembodied Skull, Secretive Hag, and Van Brunt's Reward.",
+      "placeLocations": "Put all locations into play according to the suggested location placement. Investigators begin play at Van Tassel Farmstead."
+    },
+    "cultist": {
+      "label": {
+        "worsenToken": "Make this token -{count} instead"
+      }
+    },
+    "tablet": {
+      "label": {
+        "worsenToken": "Make this token -{count} instead"
+      }
+    },
+    "banishingTheSpectre": {
+      "label": {
+        "cluesToSpend": "Spend 1-3 clues"
+      }
+    },
+    "ichabodCrane": {
+      "label": {
+        "drawCard": "Draw 1 card",
+        "placeCharge": "Place 1 charge on an asset you control"
+      }
+    },
+    "ichabodsBooks": {
+      "label": {
+        "cardsToDiscard": "Discard up to {count} cards from your hand"
+      }
+    },
+    "loomingSpirit": {
+      "label": {
+        "discard": "Choose and discard a card from your hand"
+      }
+    },
+    "theHessianHorseman": {
+      "label": {
+        "ichabod": "Choose an investigator to take control of Ichabod Crane"
+      }
+    },
+    "vanTasselFarmstead": {
+      "label": {
+        "resourcesToSpend": "Spend up to {count} resources to reduce this test's difficulty by 1 for every 2 spent"
+      }
+    },
+    "resolutions": {
+      "label": {
+        "addToDeck": "Any one investigator may add this card to their deck",
+        "declineReward": "Do not add it to any deck"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Resolution 1_: The Headless Horseman proves too much of an adversary for you to overcome. You flee for your life, only barely escaping the gruesome rider as darkness blankets the hollow. In the days following your narrow escape, you learn that Frederic Van Brunt and his staff have all disappeared under mysterious circumstances. The newspapers speculate that with his wealth, Van Brunt was committing tax fraud and fled the country once he was discovered. The truth of course is far more arcane than the papers are willing to print, and you hope that the evil power dwelling in the hollow never spreads beyond the cursed glen.</p><ul><li>In your Campaign Log, record that *the Headless Horseman continues to haunt Sleepy Hollow*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>_Resolution 2_: In the aftermath of the horseman's demise, the ambient sounds of the woods fade back in. It almost jars you as you realize how deathly silent the hollow was during your encounter. Ichabod's ghost slumps down in relief and exhaustion.</p><p>“A century of misery, ended at last... I owe you more than I can rightly guess, and let it not be said that Ichabod Crane is a debtor in life or death.” The frail spirit begins to fade, but you doubt that this is the last you've seen of him.</p><p>Frederic Van Brunt greets you heartily at his estate, heaping praise and promises upon you as he treats you to a lavish meal. You hardly feel in a state of mind to relax, but you can't deny that the monetary reward Van Brunt assured you will be quite welcome.</p><ul><li>In your Campaign Log, record that *the investigators banished the Headless Horseman from Sleepy Hollow*.</li><li>Each investigator may choose to add a copy of Van Brunt's Reward to their deck. Any one investigator may choose to add Ichabod Crane to their deck. These cards do not count toward each investigator's deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul>"
+      }
+    },
+    "tooltips": {
+      "accursedHollow": {
+        "banish": "{'{'}reaction{'}'} After you defeat a _Geist_ enemy at the attached location: Discard Accursed Hollow.",
+        "haunted": "_Haunted_ - Place 1 doom on Accursed Hollow."
+      },
+      "banishingTheSpectre": {
+        "banish": "{'{'}action{'}'} Spend 1-3 clues: _Fight._ This attack can only target The Headless Horseman and uses {'{'}intellect{'}'} instead of {'{'}combat{'}'}. You get +X {'{'}intellect{'}'} for this attack and deal +X damage, where X is the number of clues spent."
+      },
+      "bewitched": {
+        "break": "{'{'}action{'}'}: Test {'{'}willpower{'}'} (3). If you succeed, discard Bewitched. If there is an exhausted _Witch_ enemy at your location, you automatically succeed this test."
+      },
+      "decapitatedVictim": {
+        "haunted": "_Haunted_ - Take 1 horror."
+      },
+      "derelictSchoolhouse": {
+        "haunted": "_Haunted_ - Choose and discard a card from your hand.",
+        "history": "{'{'}action{'}'} Spend 1{'{'}perPlayer{'}'} clues as a group: You search through the damaged books scattered about the old schoolhouse. Remember that you “read the hollow's history.”"
+      },
+      "disembodiedSkull": {
+        "story": "{'{'}action{'}'} If you are engaged with Disembodied Skull: _Parley._ Test {'{'}intellect{'}'} (3). If you succeed, remember that you “listened to a victim's story.” If you fail, Disembodied Skull attacks you."
+      },
+      "ichabodCrane": {
+        "vigil": "{'{'}reaction{'}'} After doom is added to a card at your location, exhaust Ichabod Crane: Draw 1 card or place 1 charge on an asset you control (choose one)."
+      },
+      "ichabodsBooks": {
+        "divination": "{'{'}action{'}'} Test {'{'}willpower{'}'} (6): You attempt to perform a spell to gain more information about the Horseman. You may choose and discard any amount of cards from your hand to get +2 {'{'}willpower{'}'} on this test for each card discarded. If you succeed, remember that you “performed a divination spell.” Any investigator at Derelict Schoolhouse may activate this ability."
+      },
+      "majorAndresTree": {
+        "haunted": "_Haunted_ - You get -1 to all skills until the start of your next turn.",
+        "resign": "{'{'}action{'}'}: _Resign._ You flee the haunted hollow back to the safety of Tarry Town."
+      },
+      "markedByTheHorseman": {
+        "shake": "{'{'}action{'}'}: Test {'{'}agility{'}'} (3). If you fail, The Headless Horseman attacks you, even if he is at another location or out of play. Whether you succeed or fail, discard Marked by the Horseman."
+      },
+      "oldDutchChurch": {
+        "name": "{'{'}action{'}'} Test {'{'}intellect{'}'} (2). This test gets +1 difficulty for each clue on Old Dutch Church. If you succeed, remember that you “learned the Horseman's name.”"
+      },
+      "onTheWingsOfTheWind": {
+        "doom": "_Forced_ - When this agenda advances: Do not remove doom from each location in play."
+      },
+      "quickeningRitual": {
+        "break": "{'{'}action{'}'}: Test {'{'}willpower{'}'} (3). If you succeed, discard Quickening Ritual. If there is an exhausted _Witch_ enemy at your location, you automatically succeed this test.",
+        "surge": "_Forced_ - When an encounter card that you have drawn gains surge: Take 1 damage or 1 horror."
+      },
+      "secretiveHag": {
+        "discard": "_Forced_ - While Secretive Hag is at your location, if you reveal a {'{'}skull{'}'}, {'{'}cultist{'}'}, {'{'}tablet{'}'}, {'{'}elderThing{'}'}, or {'{'}autoFail{'}'} token: Discard a card from your hand at random.",
+        "witch": "{'{'}reaction{'}'} After Secretive Hag is defeated: Remember that you “interrogated an elder witch.”"
+      },
+      "theHeadlessHorseman": {
+        "flee": "_Forced_ - When The Headless Horseman would be defeated, heal all damage from him, discard all cards attached to him, and move him next to the agenda deck, out of play.",
+        "soul": "{'{'}reaction{'}'} After you successfully evade The Headless Horseman, take 1 horror: Remember that you “gazed into the Horseman's soul.”"
+      },
+      "vanTasselFarmstead": {
+        "hospitality": "{'{'}action{'}'} If you have 2 or fewer cards and 2 or fewer resources: Draw a card and gain a resource. (Limit once per turn.)",
+        "parley": "{'{'}action{'}'}: _Parley._ Test {'{'}willpower{'}'} (7). You may spend any amount of resources to reduce this test's difficulty by 1 for every 2 resources spent. If you succeed, remember that you “interviewed Van Brunt's staff.”"
+      },
+      "whitePlains": {
+        "haunted": "_Haunted_ - Take 1 damage.",
+        "skull": "{'{'}action{'}'}: Test {'{'}combat{'}'} or {'{'}agility{'}'} (4). This test gets +2 difficulty for each _Geist_ enemy at White Plains. If you succeed, remember that you “recovered the Horseman's skull.”",
+        "spawn": "_Forced_ - When you reveal White Plains: Search the encounter deck and discard pile for a _Geist_ enemy and spawn it at White Plains (2 enemies instead if there are 3 or 4 players)."
+      },
+      "wileysSwamp": {
+        "haunted": "_Haunted_ - Lose 1 resource. If you failed by 2 or more, also take 1 horror.",
+        "path": "{'{'}action{'}'}: Test {'{'}intellect{'}'} or {'{'}willpower{'}'} (6). Reduce this test's difficulty by 1 for each doom on a location in play. If you succeed, remember that you “studied the Horseman's path.”"
+      },
+      "witchOfTheHollow": {
+        "curse": "_Forced_ - After Witch of the Hollow attacks you, if there are no _Curse_ treachery cards in your threat area: Search the encounter deck and discard pile for a _Curse_ treachery and put it into play in your threat area.",
+        "doom": "_Forced_ - At the end of the round, place 1 doom on Witch of the Hollow."
+      }
+    }
+  }
+}

@@ -254,6 +254,8 @@ data WindowType
   | AgendaAdvance AgendaId
   | AgendaWouldAdvance AgendaAdvancementReason AgendaId
   | AllDrawEncounterCard
+  | -- | A card an investigator drew has gained surge, and that surge is resolving.
+    GainedSurge InvestigatorId Source
   | AfterCheckDoomThreshold
   | AllUndefeatedInvestigatorsResigned
   | AmongSearchedCards BatchId InvestigatorId

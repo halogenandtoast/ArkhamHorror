@@ -133,6 +133,7 @@ windowTable =
   , ("FloodLevelIncreased", ["FloodLevelChanged"])
   , ("GainsClues", ["GainsClues"])
   , ("GainsResources", ["GainsResources"])
+  , ("GainsSurge", ["GainedSurge"])
   , ("GameBegins", ["GameBegins"])
   , ("GameEnds", ["EndOfGame"])
   , ("IfEnemyDefeated", ["IfEnemyDefeated"])

@@ -1001,6 +1001,11 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       guardTiming timing $ \case
         Window.WouldPerformRevelationSkillTest who _ -> matchWho iid who whoMatcher
         _ -> noMatch
+    Matcher.GainsSurge timing whoMatcher sourceMatcher ->
+      guardTiming timing $ \case
+        Window.GainedSurge who surgeSource ->
+          andM [matchWho iid who whoMatcher, sourceMatches surgeSource sourceMatcher]
+        _ -> noMatch
     Matcher.WouldDrawEncounterCard timing whoMatcher phaseMatcher ->
       guardTiming timing $ \case
         Window.WouldDrawEncounterCard who _ p ->

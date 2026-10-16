@@ -1,0 +1,37 @@
+{
+  "name": "The Legend of Sleepy Hollow",
+  "about": {
+    "sections": [
+      {
+        "rows": [
+          {
+            "role": "Design",
+            "names": "The Beard"
+          }
+        ],
+        "text": [
+          "The Legend of Sleepy Hollow is a scenario for Arkham Horror: The Card Game based on the classic horror story by Washington Irving. This scenario can be played as a standalone scenario, or as a side-story during any campaign.",
+          "This scenario would not have been possible without the amazing design framework created by Matt Newman, Nate French and everyone involved in Arkham Horror: The Card Game at FFG."
+        ]
+      }
+    ],
+    "notes": [
+      "This scenario is an unofficial fan creation and in no way endorsed by Fantasy Flight Games. All rights to artwork belong to the relevant artists."
+    ]
+  },
+  "key": {
+    "theHeadlessHorsemanContinuesToHauntSleepyHollow": "The Headless Horseman continues to haunt Sleepy Hollow.",
+    "theInvestigatorsBanishedTheHeadlessHorseman": "The investigators banished the Headless Horseman from Sleepy Hollow."
+  },
+  "remembered": {
+    "gazedIntoTheHorsemansSoul": "An investigator “gazed into the Horseman’s soul.”",
+    "recoveredTheHorsemansSkull": "An investigator “recovered the Horseman’s skull.”",
+    "learnedTheHorsemansName": "An investigator “learned the Horseman’s name.”",
+    "studiedTheHorsemansPath": "An investigator “studied the Horseman’s path.”",
+    "interviewedVanBruntsStaff": "An investigator “interviewed Van Brunt’s staff.”",
+    "readTheHollowsHistory": "An investigator “read the hollow’s history.”",
+    "interrogatedAnElderWitch": "An investigator “interrogated an elder witch.”",
+    "listenedToAVictimsStory": "An investigator “listened to a victim’s story.”",
+    "performedADivinationSpell": "An investigator “performed a divination spell.”"
+  }
+}

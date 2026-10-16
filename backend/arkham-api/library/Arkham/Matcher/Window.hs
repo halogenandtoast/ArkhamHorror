@@ -288,6 +288,8 @@ data WindowMatcher
   | AssignedHorror Timing Who TargetListMatcher
   | DealtDamageOrHorror Timing SourceMatcher Who
   | InvestigatorDealtDamageOrHorror Timing SourceMatcher Who
+  | -- | "When an encounter card that you have drawn gains surge".
+    GainsSurge Timing Who SourceMatcher
   | WouldDrawEncounterCard Timing Who PhaseMatcher
   | WouldDrawCard Timing Who DeckMatcher
   | {- | 'WouldDrawCard', restricted by what caused the draw. The window itself

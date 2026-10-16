@@ -3729,7 +3729,10 @@ runGameMessage msg g = case msg of
         (effectId, surgeEffect) <- createSurgeEffect source cardId
         pure $ g & entitiesL . effectsL . at effectId ?~ surgeEffect
       Nothing -> pure g
-  Surge iid source -> g <$ push (drawEncounterCard iid source)
+  Surge iid source -> do
+    whenWindow <- checkWhen $ Window.GainedSurge iid source
+    pushAll [whenWindow, drawEncounterCard iid source]
+    pure g
   ReplaceCard cardId card -> do
     replaceCard cardId card -- We must update the IORef
     pure $ g & cardsL %~ insertMap cardId card

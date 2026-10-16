@@ -5409,6 +5409,50 @@ library
       Arkham.Homebrew.TheFallOfTheHouseOfUsher.Treacheries.MorbidAcuteness
       Arkham.Homebrew.TheFallOfTheHouseOfUsher.Treacheries.NervousAffliction
       Arkham.Homebrew.TheFallOfTheHouseOfUsher.Treacheries.PestilentVapor
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Acts.BanishingTheSpectre
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Acts.TheHessianHorseman
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Acts.TheTaleOfIchabodCrane
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Agendas.OnTheWingsOfTheWind
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Assets.IchabodCrane
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Assets.IchabodsBooks
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Assets.VanBruntsReward
+      Arkham.Homebrew.TheLegendOfSleepyHollow.CardDefEntries
+      Arkham.Homebrew.TheLegendOfSleepyHollow.CardDefs.Acts
+      Arkham.Homebrew.TheLegendOfSleepyHollow.CardDefs.Agendas
+      Arkham.Homebrew.TheLegendOfSleepyHollow.CardDefs.Assets
+      Arkham.Homebrew.TheLegendOfSleepyHollow.CardDefs.Enemies
+      Arkham.Homebrew.TheLegendOfSleepyHollow.CardDefs.Locations
+      Arkham.Homebrew.TheLegendOfSleepyHollow.CardDefs.Treacheries
+      Arkham.Homebrew.TheLegendOfSleepyHollow.CardEntries
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Content
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Defs
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Enemies.DecapitatedVictim
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Enemies.DisembodiedSkull
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Enemies.HessianSpectre
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Enemies.SecretiveHag
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Enemies.TheHeadlessHorseman
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Enemies.WitchOfTheHollow
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Helpers
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Import
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Key
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Locations.DerelictSchoolhouse
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Locations.MajorAndresTree
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Locations.OldDutchChurch
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Locations.VanTasselFarmstead
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Locations.WhitePlains
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Locations.WileysSwamp
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Scenarios.TheLegendOfSleepyHollow
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Sets
+      Arkham.Homebrew.TheLegendOfSleepyHollow.SideStoryDefs
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Traits
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Treacheries.AccursedHollow
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Treacheries.Bewitched
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Treacheries.BurgeoningEvil
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Treacheries.HurledPumpkin
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Treacheries.LoomingSpirit
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Treacheries.MarkedByTheHorseman
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Treacheries.QuickeningRitual
+      Arkham.Homebrew.TheLegendOfSleepyHollow.Treacheries.WhispersOnTheWind
       Arkham.Homebrew.TheMasqueOfTheRedDeath.Acts.TheMidnightHour
       Arkham.Homebrew.TheMasqueOfTheRedDeath.Acts.TheSevenChambers
       Arkham.Homebrew.TheMasqueOfTheRedDeath.Agendas.ANestOfVipers

@@ -244,6 +244,7 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   CardWithNonZeroCost -> maybe False ((> 0) . toPrintedCost) (cdCost $ toCardDef a)
   CardWithEvenCost -> maybe False (even . toPrintedCost) (cdCost $ toCardDef a)
   CardWithCost n -> maybe False ((== n) . toPrintedCost) (cdCost $ toCardDef a)
+  CardWithCostAtLeast n -> maybe False ((>= n) . toPrintedCost) (cdCost $ toCardDef a)
   CardWithOddSkillIcons -> odd $ length (cdSkills $ toCardDef a)
   CardWithEvenSkillIcons -> even $ length (cdSkills $ toCardDef a)
   CardWithNoSkills -> null (cdSkills $ toCardDef a)

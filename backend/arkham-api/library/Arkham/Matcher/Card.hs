@@ -271,6 +271,8 @@ data CardMatcher
   | CardWithAvailableCustomization
   | CardTaggedWith Text
   | SingleSidedCard
+  | -- | Printed cost of at least @n@; a card with no cost never matches.
+    CardWithCostAtLeast Int
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not CardMatcher where

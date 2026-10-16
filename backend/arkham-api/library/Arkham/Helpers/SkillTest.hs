@@ -556,14 +556,18 @@ skillIconCount SkillTest {..} = do
     addedIcons = foldMap (Sum . toValue) . filter matches $ flip concatMap mods \case
       AddSkillIcons icons -> icons
       _ -> []
-  cardIcons <- flip foldMapM (mapToList skillTestCommittedCards) \(iid, cards) -> do
-    flip foldMapM cards \card -> do
+  cardIcons <- flip concatMapM (mapToList skillTestCommittedCards) \(iid, cards) -> do
+    imods <- getModifiers iid
+    let less = sum [n | FewerMatchingIconsPerCard n <- imods]
+    flip concatMapM cards \card -> do
       icons <- sort . map toValue . filter matches <$> iconsForCard card
-      imods <- getModifiers iid
-      let less = sum [n | FewerMatchingIconsPerCard n <- imods]
-      pure $ foldMap Sum $ drop less icons
+      pure $ drop less icons
 
-  let totalIcons = getSum (cardIcons <> addedIcons)
+  -- "Ignore the first skill icon committed to all skill tests you perform" is
+  -- reckoned once over the whole test, so it reads the performer's modifiers.
+  performerMods <- getModifiers skillTestInvestigator
+  let ignored = sum [n | FewerMatchingIcons n <- performerMods]
+  let totalIcons = getSum (foldMap Sum (drop ignored (sort cardIcons)) <> addedIcons)
 
   case skillTestType of
     SkillSkillTest sType -> do

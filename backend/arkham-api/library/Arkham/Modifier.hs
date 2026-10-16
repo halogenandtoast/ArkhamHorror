@@ -367,6 +367,11 @@ data ModifierType
   | FailTies
   | FewerActions Int
   | FewerMatchingIconsPerCard Int
+  | {- | Ignore this many matching icons committed to each skill test this
+    investigator performs, across every card committed to it, rather than
+    'FewerMatchingIconsPerCard''s per-card reckoning.
+    -}
+    FewerMatchingIcons Int
   | FewerSlots SlotType Int
   | ForEach GameCalculation [ModifierType]
   | ForceConcealedPlacement Placement

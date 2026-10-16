@@ -7,6 +7,7 @@ import processingJSON from "@/assets/processing.json"
 import { ref, provide, watch, computed, onMounted, onUnmounted } from 'vue'
 import * as Arkham from '@/arkham/types/Game'
 import { fetchGameReplay } from '@/arkham/api'
+import { replayModeKey } from '@/arkham/debug'
 import { isTypingTarget } from '@/arkham/helpers'
 import GameLog from '@/arkham/components/GameLog.vue'
 import type { LogEntry } from '@/arkham/types/GameLog'
@@ -22,8 +23,8 @@ export interface Props {
 
 const props = defineProps<Props>()
 const { t } = useI18n()
-const debug = ref(false)
-provide('debug', debug)
+provide(replayModeKey, true)
+provide('spectate', ref(true))
 const ready = ref(false)
 const game = ref<Arkham.Game | null>(null)
 
@@ -38,43 +39,67 @@ const recorded = computed(() => campaignLog.value?.recorded ?? [])
 const recordedSets = computed<[string, unknown[]][]>(() => Object.entries(campaignLog.value?.recordedSets ?? {}))
 const processing = ref(false)
 const play = ref(false)
+const loadError = ref(false)
+provide('processing', processing)
 
 const router = useRouter()
-const currentStep = computed(() => parseInt(router.currentRoute.value.query.step as string) || 0)
+const currentStep = computed(() => {
+  const step = Number(router.currentRoute.value.query.step ?? 0)
+  return Number.isSafeInteger(step) && step >= 0 ? step : 0
+})
 
-
-watch(currentStep, nextStep => {
-  processing.value = true;
-  fetchGameReplay(props.gameId, nextStep).then(({ game: newGame, totalSteps: newTotalSteps }) => {
-    ready.value = true;
-    game.value = newGame;
+watch([() => props.gameId, currentStep], async ([gameId, nextStep], _, onCleanup) => {
+  let stale = false
+  onCleanup(() => { stale = true })
+  processing.value = true
+  loadError.value = false
+  try {
+    const { game: newGame, totalSteps: newTotalSteps } = await fetchGameReplay(gameId, nextStep)
+    if (stale) return
+    ready.value = true
+    game.value = newGame
     totalSteps.value = newTotalSteps
-    gameLog.value = Object.freeze(logRowsToEntries(newGame.log));
-    playerId.value = newGame.activePlayerId;
-    processing.value = false;
-  });
-}, {immediate: true})
+    gameLog.value = Object.freeze(logRowsToEntries(newGame.log, newGame.locations))
+    playerId.value = newGame.activePlayerId
+  } catch (error) {
+    if (stale) return
+    console.error('Failed to load replay step', error)
+    loadError.value = true
+    play.value = false
+  } finally {
+    if (!stale) processing.value = false
+  }
+}, { immediate: true })
+
+const navigate = (step: number) => {
+  if (processing.value) return
+  router.replace({ query: { ...router.currentRoute.value.query, step } })
+}
 
 const handleKeyPress = (event: KeyboardEvent) => {
   if (isTypingTarget(event.target)) return
+  if (!["ArrowLeft", "ArrowRight", " "].includes(event.key)) return
+  event.preventDefault()
+  if (event.repeat) return
   if (event.key === "ArrowLeft") goBack()
   if (event.key === "ArrowRight") goForward()
-  if (event.key === " ") play.value = !play.value
+  if (event.key === " " && ready.value && !loadError.value && currentStep.value < totalSteps.value) play.value = !play.value
 }
 
 const goBack = () => {
   if (currentStep.value > 0) {
-    router.push({ query: { step: currentStep.value - 1 } })
+    navigate(currentStep.value - 1)
   }
 }
 
 const restart = () => {
-  router.push({ query: { step: 0 } })
+  play.value = false
+  navigate(0)
 }
 
 const goForward = () => {
   if (currentStep.value < totalSteps.value) {
-    router.push({ query: { step: currentStep.value + 1 } })
+    navigate(currentStep.value + 1)
   }
 }
 
@@ -88,7 +113,7 @@ watch (play, (newPlay) => {
     interval.value = setInterval(() => {
       if(!processing.value) {
         if (currentStep.value < totalSteps.value) {
-          router.push({ query: { step: currentStep.value + 1 } })
+          navigate(currentStep.value + 1)
         } else {
           clearInterval(interval.value)
           play.value = false
@@ -104,6 +129,9 @@ onUnmounted(() => clearInterval(interval.value))
 </script>
 
 <template>
+  <div v-if="loadError" role="alert" class="replay-error">
+    Could not load this replay step. <button @click="router.go(0)">Retry</button>
+  </div>
   <div id="game" v-if="ready && game && playerId">
     <div v-if="processing" class="processing">
       <LottieAnimation 
@@ -128,13 +156,13 @@ onUnmounted(() => clearInterval(interval.value))
       />
       <div class="sidebar">
         <CardOverlay />
-        <GameLog :entries="gameLog" />
-        <div class="controls">
-          <button v-tooltip="t('replay.restart')" :disabled="processing" @click="restart"><BackspaceIcon size="25" /></button>
-          <button v-tooltip="t('replay.stepBack')" :disabled="processing" @click="goBack"><BackwardIcon size="25" /></button>
-          <button v-tooltip="t('replay.play')" v-if="!play" @click="play = true"><PlayIcon size="25" /></button>
-          <button v-tooltip="t('replay.stop')" v-else @click="play = false"><StopIcon size="25" /></button>
-          <button v-tooltip="t('replay.stepForward')" :disabled="processing" @click="goForward"><ForwardIcon size="25" /></button>
+        <GameLog :entries="gameLog" :player-id="playerId" />
+        <div class="controls" role="group" aria-label="Replay controls">
+          <button v-tooltip="t('replay.restart')" :aria-label="t('replay.restart')" :disabled="processing || currentStep === 0" @click="restart"><BackspaceIcon aria-hidden="true" /></button>
+          <button v-tooltip="t('replay.stepBack')" :aria-label="t('replay.stepBack')" :disabled="processing || currentStep === 0" @click="goBack"><BackwardIcon aria-hidden="true" /></button>
+          <button v-tooltip="t('replay.play')" :aria-label="t('replay.play')" class="play-control" v-if="!play" :disabled="processing || loadError || currentStep >= totalSteps" @click="play = true"><PlayIcon aria-hidden="true" /></button>
+          <button v-tooltip="t('replay.stop')" :aria-label="t('replay.stop')" class="play-control" v-else @click="play = false"><StopIcon aria-hidden="true" /></button>
+          <button v-tooltip="t('replay.stepForward')" :aria-label="t('replay.stepForward')" :disabled="processing || currentStep >= totalSteps" @click="goForward"><ForwardIcon aria-hidden="true" /></button>
         </div>
         <div class="steps">
           <p>{{currentStep}} / {{totalSteps}}</p>
@@ -190,10 +218,13 @@ onUnmounted(() => clearInterval(interval.value))
 .sidebar {
   height: 100%;
   width: 25vw;
+  min-width: 200px;
+  flex-shrink: 0;
+  min-height: 0;
   max-width: 500px;
   display: flex;
   flex-direction: column;
-  background: #d0d9dc;
+  background: var(--background);
 }
 
 .processing {
@@ -208,20 +239,54 @@ onUnmounted(() => clearInterval(interval.value))
 
 .controls {
   display: flex;
-  gap: 2px;
-  button {
-    flex: 1;
-    width: 30px;
-    height: 30px;
-    :deep(svg) {
-      width: 25px;
-    }
-  }
-  height: 30px;
-  margin-inline: 10px;
+  justify-content: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  padding: 14px 10px 8px;
+  border-top: 1px solid var(--box-border);
 }
+.controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  min-height: 0;
+  padding: 0;
+  border: 1px solid var(--box-border);
+  border-radius: 4px;
+  color: #cfd6e2;
+  background: rgba(255, 255, 255, 0.07);
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+.controls button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.13);
+  color: #fff;
+}
+.controls button:focus-visible {
+  outline: 2px solid var(--spooky-green);
+  outline-offset: 3px;
+}
+.controls .play-control {
+  background: var(--spooky-green);
+  color: #fff;
+  border-color: transparent;
+}
+.controls .play-control:hover:not(:disabled) {
+  background: var(--spooky-green-dark);
+}
+.controls button:disabled { opacity: 0.4; cursor: default; }
+.controls button svg { width: 20px; height: 20px; flex: none; }
+.replay-error { padding: 12px; }
 
 .steps {
+  flex: none;
+  padding-bottom: 12px;
+  color: #cfd6e2;
+  font-size: 0.8em;
+  font-variant-numeric: tabular-nums;
   display: flex;
   justify-content: center;
   p {

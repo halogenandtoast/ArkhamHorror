@@ -1,4 +1,4 @@
-import { reactive } from 'vue'
+import { hasInjectionContext, inject, reactive, type InjectionKey } from 'vue'
 import { updateGameRaw } from '@/arkham/api'
 import type { Scenario } from '@/arkham/types/Scenario'
 import { readTokenBag } from '@/arkham/types/TokenBag'
@@ -66,6 +66,15 @@ const debug = reactive({
     })
 })
 
+export const replayModeKey: InjectionKey<boolean> = Symbol('replayMode')
+
+const replayDebug: typeof debug = {
+  active: false,
+  toggle: () => {},
+  send: async () => {},
+  skillTestModifier: async () => {},
+}
+
 export function useDebug() {
-  return debug
+  return hasInjectionContext() && inject(replayModeKey, false) ? replayDebug : debug
 }

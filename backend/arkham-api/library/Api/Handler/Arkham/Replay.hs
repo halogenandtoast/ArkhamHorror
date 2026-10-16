@@ -3,8 +3,9 @@ module Api.Handler.Arkham.Replay (getApiV1ArkhamGameReplayR) where
 import Api.Arkham.Helpers
 import Arkham.Game
 import Database.Esqueleto.Experimental
+import Entity.Arkham.LogEntry
 import Entity.Arkham.Step
-import Import hiding (delete, on, (==.))
+import Import hiding (delete, on, (<.), (==.))
 
 data GetReplayJson = GetReplayJson
   { totalSteps :: Int
@@ -29,6 +30,17 @@ getApiV1ArkhamGameReplayR gameId step = runDB do
   let choices = map (arkhamStepChoice . entityVal) $ reverse $ drop step allChoices
   let gameJson' = replayChoices gameJson [mconcat $ map choicePatchDown choices]
 
+  -- Logs are stamped with the pre-action step. Only show actions already
+  -- included in this replay snapshot, using stored step IDs rather than indices.
+  let replayStep = maybe 0 (arkhamStepStep . entityVal) $ headMay $ reverse $ take step allChoices
+  gameLog <-
+    GameLog . map (toLogRow . entityVal) <$> select do
+      entries <- from $ table @ArkhamLogEntry
+      where_ $ entries.arkhamGameId ==. val gameId
+      where_ $ entries.step <. val replayStep
+      orderBy [asc entries.step, asc entries.id]
+      pure entries
+
   pure
     $ GetReplayJson (length allChoices)
     $ toPublicGame
@@ -41,4 +53,4 @@ getApiV1ArkhamGameReplayR gameId step = runDB do
             (arkhamGameCreatedAt ge)
             (arkhamGameUpdatedAt ge)
       )
-      mempty
+      gameLog

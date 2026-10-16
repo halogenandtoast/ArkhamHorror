@@ -282,19 +282,17 @@ instance RunMessage TheWitchingHour where
         Skull | isEasyStandard attrs -> discardTopOfEncounterDeck iid Skull n
         Tablet -> afterSkillTestQuiet $ forTarget attrs msg
         ElderThing -> do
-          enemies <-
-            select
-              $ enemy_
-              $ withTrait Witch
-              <> #exhausted
-              <> at_ (orConnected NotForMovement $ locationWithInvestigator iid)
+          let
+            witches =
+              enemy_ $ withTrait Witch <> at_ (orConnected NotForMovement $ locationWithInvestigator iid)
+            readyAndHeal enemy = do
+              readyThis enemy
+              healAllDamage ElderThing enemy
           if isEasyStandard attrs
-            then chooseTargetM iid enemies \enemy -> do
-              readyThis enemy
-              healAllDamage ElderThing enemy
-            else for_ enemies \enemy -> do
-              readyThis enemy
-              healAllDamage ElderThing enemy
+            then do
+              enemies <- select $ witches <> oneOf [#exhausted, EnemyWithDamage (atLeast 1)]
+              chooseTargetM iid enemies readyAndHeal
+            else select witches >>= traverse_ readyAndHeal
         _ -> pure ()
       pure s
     ForTarget (isTarget attrs -> True) (FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _) -> do

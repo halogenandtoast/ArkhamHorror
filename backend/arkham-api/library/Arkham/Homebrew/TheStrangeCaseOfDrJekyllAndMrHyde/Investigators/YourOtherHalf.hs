@@ -4,10 +4,11 @@ own card aside and puts this one into play in its place.
 The swap is the engine's 'TransfiguredForm', which routes abilities, modifiers,
 chaos token values, health, sanity and all four skills through this card, so the
 1/1 and the 4/4/4/4 come from the builder below and are stated nowhere else.
-What it does not move is the tokens, which Duplicitous Drug stashes on the way
-in; the reversion here puts that stash back, discarding whatever Your Other Half
-accumulated -- "with all tokens on it" names the tokens the card was set aside
-with, in both directions.
+What it does not move is the damage and horror, which Duplicitous Drug stashes
+on the way in; the reversion here puts that stash back, discarding whatever Your
+Other Half accumulated -- "with all tokens on it" names the damage and horror the
+card was set aside with, in both directions. Resources and clues are never
+stashed, so they simply carry across both ways.
 -}
 module Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Investigators.YourOtherHalf (
   yourOtherHalf,
@@ -29,6 +30,7 @@ import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Types (Field (..), InvestigatorForm (..))
 import Arkham.Matcher
 import Arkham.Projection
+import Arkham.Token qualified as Token
 
 newtype YourOtherHalf = YourOtherHalf InvestigatorAttrs
   deriving anyclass IsInvestigator
@@ -100,11 +102,15 @@ instance RunMessage YourOtherHalf where
       let weaknesses = filterCards WeaknessCard attrs.cardsUnderneath
       pushAll $ concatMap (\card -> drawThisCardFrom iid card Nothing) weaknesses
 
-      tokens <- setAsideTokens iid
+      wounds <- setAsideTokens iid
       pure
         . YourOtherHalf
         $ attrs
-          { investigatorTokens = tokens
+          { investigatorTokens =
+              foldr
+                (\t -> Token.setTokens t (Token.countTokens t wounds))
+                (investigatorTokens attrs)
+                [Token.Damage, Token.Horror]
           , investigatorAssignedHealthDamage = 0
           , investigatorAssignedSanityDamage = 0
           , investigatorCardsUnderneath = filter (`notElem` weaknesses) attrs.cardsUnderneath

@@ -2,18 +2,20 @@
 transformation displaces.
 
 "Set your investigator card aside with all tokens on it" has no engine
-equivalent: 'TransfiguredForm' only changes whose card front is read, while
-damage, horror, clues and resources all live on the outer investigator attrs and
-a form change leaves them untouched. So the tokens are taken off the
-investigator here and kept in this asset's meta ('setAsideTokens') until Your
-Other Half's reversion puts them back -- an investigator who transformed on 2
-damage would otherwise be defeated instantly by Your Other Half's 1 health.
+equivalent: 'TransfiguredForm' only changes whose card front is read, and damage
+and horror live on the outer investigator attrs, so a form change leaves them
+untouched. They are taken off the investigator here and kept in this asset's
+meta ('setAsideTokens') until Your Other Half's reversion puts them back -- an
+investigator who transformed on 2 damage would otherwise be defeated instantly
+by Your Other Half's 1 health. Resources and clues share that same token map but
+stay where they are: they are yours rather than the card's, and you go on
+spending them while transformed.
 
 The drug is the stash's home because it is unique, it is the only route into the
 form, and it stays in play for the whole transformation, whereas
 'investigatorFormMeta' starts uninitialized every time a form is entered. The
 cost: if the drug somehow leaves play while you are transformed, the stash goes
-with it and you revert to an empty card.
+with it and you revert undamaged.
 -}
 module Arkham.Homebrew.TheStrangeCaseOfDrJekyllAndMrHyde.Assets.DuplicitousDrug (
   duplicitousDrug,
@@ -41,7 +43,7 @@ newtype DuplicitousDrug = DuplicitousDrug AssetAttrs
 duplicitousDrug :: AssetCard DuplicitousDrug
 duplicitousDrug = asset DuplicitousDrug Cards.duplicitousDrug
 
--- | The tokens that were on the investigator card when it was set aside.
+-- | The damage and horror that were on the investigator card when it was set aside.
 setAsideTokens :: HasGame m => InvestigatorId -> m Token.Tokens
 setAsideTokens iid = do
   mDrug <- selectOne $ assetIs Cards.duplicitousDrug <> assetControlledBy iid
@@ -79,11 +81,12 @@ instance RunMessage DuplicitousDrug where
         Nothing -> pure a
         Just card -> do
           tokens <- field InvestigatorTokens iid
-          -- the tokens travel with the card being set aside, so they come off
-          -- the investigator rather than being healed or spent
-          for_ (mapToList tokens) $ uncurry (removeTokens (attrs.ability 1) iid)
+          let wounds = foldr (\t -> Token.setTokens t (Token.countTokens t tokens)) mempty [Token.Damage, Token.Horror]
+          -- the damage and horror travel with the card being set aside, so they
+          -- come off the investigator rather than being healed
+          for_ (mapToList wounds) $ uncurry (removeTokens (attrs.ability 1) iid)
           push $ SetInvestigatorForm iid $ TransfiguredForm card.cardCode
-          pure . DuplicitousDrug $ attrs & setMeta tokens
+          pure . DuplicitousDrug $ attrs & setMeta wounds
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 2
       chooseOneM iid $ scenarioI18n $ scope "duplicitousDrug" do

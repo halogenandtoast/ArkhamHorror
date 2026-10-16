@@ -2500,7 +2500,14 @@ provide(CARD_FLIGHT_STATE, { previewed: previewedCardIds, flying: flyingCardIds 
 provide('skipAllTriggers', skipAllTriggers)
 provide('skipAllAvailable', skipAllAvailable)
 provide('skipAllInProgress', skipAllInProgress)
-provide('showOtherPlayersHands', showOtherPlayersHands)
+/* A spectator sees every hand. The setting is a player's, about how much of the
+ * table they want on screen while playing their own seat; somebody watching has
+ * no seat to keep anything secret from, and the settings panel it is toggled in
+ * is not rendered for them to reach it in the first place. */
+provide(
+  'showOtherPlayersHands',
+  computed(() => props.spectate || showOtherPlayersHands.value),
+)
 
 function updateFocusLight() {
   if (!realityAcidLightActive.value) return

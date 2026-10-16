@@ -25,6 +25,8 @@ const props = defineProps<Props>()
 const { t } = useI18n()
 provide(replayModeKey, true)
 provide('spectate', ref(true))
+// Watching a game back is spectating it, hands included.
+provide('showOtherPlayersHands', ref(true))
 const ready = ref(false)
 const game = ref<Arkham.Game | null>(null)
 

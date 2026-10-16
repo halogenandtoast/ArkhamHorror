@@ -392,3 +392,26 @@ export function renderMissingCard(code: string): string {
   </svg>`
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
 }
+
+/* Every kind of card the builder can make, in the order the type picker offers
+ * them. The long label is what the picker asks with -- it has to say which back
+ * a card has -- and the short one is what a chip or a filter says, where the
+ * column it sits in is a few characters wide. */
+export const CARD_TYPES = [
+  { value: 'AssetType', label: 'Asset (player back)', short: 'Asset' },
+  { value: 'EventType', label: 'Event', short: 'Event' },
+  { value: 'SkillType', label: 'Skill', short: 'Skill' },
+  { value: 'PlayerTreacheryType', label: 'Treachery (weakness)', short: 'Weakness' },
+  { value: 'PlayerEnemyType', label: 'Enemy (weakness)', short: 'Enemy weakness' },
+  { value: 'EnemyType', label: 'Enemy (encounter)', short: 'Enemy' },
+  { value: 'TreacheryType', label: 'Treachery (encounter)', short: 'Treachery' },
+  { value: 'EncounterAssetType', label: 'Asset (encounter back)', short: 'Encounter asset' },
+  { value: 'LocationType', label: 'Location', short: 'Location' },
+  { value: 'StoryType', label: 'Story', short: 'Story' },
+  { value: 'InvestigatorType', label: 'Investigator', short: 'Investigator' },
+] as const
+
+/* A card type as a chip says it. A type the list does not know -- one written
+ * through the raw block -- keeps its own name without the suffix. */
+export const cardTypeLabel = (cardType: string): string =>
+  CARD_TYPES.find((t) => t.value === cardType)?.short ?? cardType.replace(/Type$/, '')

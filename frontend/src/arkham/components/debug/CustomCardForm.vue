@@ -8,6 +8,7 @@ import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import * as Api from '@/arkham/api'
 import {
   ARKHAM_BUILD_ID_KEY,
+  CARD_TYPES,
   PLAYER_CARD_TYPES,
   cardArtReference,
   isArkhamBuildCardId,
@@ -53,20 +54,6 @@ const QUERY_KINDS: Record<string, string> = {
   agenda: 'AgendaMatcher',
   card: 'ExtendedCardMatcher',
 }
-
-const CARD_TYPES = [
-  { value: 'AssetType', label: 'Asset (player back)' },
-  { value: 'EventType', label: 'Event' },
-  { value: 'SkillType', label: 'Skill' },
-  { value: 'PlayerTreacheryType', label: 'Treachery (weakness)' },
-  { value: 'PlayerEnemyType', label: 'Enemy (weakness)' },
-  { value: 'EnemyType', label: 'Enemy (encounter)' },
-  { value: 'TreacheryType', label: 'Treachery (encounter)' },
-  { value: 'EncounterAssetType', label: 'Asset (encounter back)' },
-  { value: 'LocationType', label: 'Location' },
-  { value: 'StoryType', label: 'Story' },
-  { value: 'InvestigatorType', label: 'Investigator' },
-] as const
 
 // The types that are a weakness by their nature, rather than by choice.
 const ALWAYS_WEAKNESS = ['PlayerTreacheryType', 'PlayerEnemyType']

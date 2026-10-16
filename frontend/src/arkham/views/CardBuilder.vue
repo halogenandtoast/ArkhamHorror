@@ -4,7 +4,7 @@
  *
  * In a game you only pick from this library; building and editing happen here,
  * where there is room for it. */
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import CustomCardForm from '@/arkham/components/debug/CustomCardForm.vue'
@@ -23,7 +23,14 @@ import {
 import { isBadLink, setLinkLabel } from '@/arkham/setLink'
 import * as Api from '@/arkham/api'
 import CustomCardsPage from '@/arkham/components/CustomCardsPage.vue'
-import FilterBar from '@/arkham/components/FilterBar.vue'
+import CardFilters from '@/arkham/components/CardFilters.vue'
+import {
+  chosenFacetCount,
+  clearFilter,
+  emptyCardFilter,
+  filterCards,
+  filterIsEmpty,
+} from '@/arkham/customCardFilters'
 import MetaChip from '@/arkham/components/MetaChip.vue'
 import SetPreview from '@/arkham/components/SetPreview.vue'
 import { useUserStore } from '@/stores/user'
@@ -524,6 +531,11 @@ const activeCards = computed(() =>
   activeSetId.value ? inPrintedOrder(activeSetId.value) : [],
 )
 
+/* What the panel actually lists. Everything that acts on "the cards" -- the
+ * count, selecting them all, exporting the selection -- acts on these, so a
+ * filtered panel never quietly picks up a card it is not showing. */
+const visibleCards = computed(() => filterCards(activeCards.value, filter))
+
 /* Two pages, not one: your sets, or the editor for the set you opened. The
  * editor is a card at a time, so browsing sets there meant the panel and the
  * main area were showing different things. On its own page a set has room to
@@ -577,7 +589,11 @@ function ensureActiveSet() {
 
 // ---------------------------------------------------------- browse & sort ---
 
-const setQuery = ref('')
+/* One filter for both halves of the builder: the list of sets, and the panel
+ * inside a set. Searching for a card on the sets page and then opening the set
+ * it is in should not throw away what you typed to find it. */
+const filter = reactive(emptyCardFilter())
+const filtering = computed(() => !filterIsEmpty(filter))
 const setOrder = ref<'name' | 'recent'>('name')
 const setOrderOptions = computed(() => [
   { value: 'name' as const, label: t(`${K}orderAlphabetical`) },
@@ -589,23 +605,25 @@ const setOrderOptions = computed(() => [
 const lastTouched = (set: LibrarySet) =>
   setCards(set.id).reduce((newest, c) => (c.updatedAt > newest ? c.updatedAt : newest), set.updatedAt)
 
-const matches = (text: string | null | undefined, query: string) =>
-  !!text && text.toLowerCase().includes(query)
-
 /* The cards in a set that answer the filter; all of them when there is none. */
 function matchingCards(setId: string) {
-  const query = setQuery.value.trim().toLowerCase()
-  const cards = inPrintedOrder(setId)
-  if (!query) return cards
-  return cards.filter((c) => matches(c.def.name.title, query) || matches(c.def.name.subtitle, query))
+  return filterCards(inPrintedOrder(setId), filter)
+}
+
+/* A set's name only answers for the typed words. Once a chip is lit the
+ * question is about cards -- "the locations" is not answered by a set called
+ * Locations with none in it -- so the name stops standing in for them. */
+function matchesSetName(set: LibrarySet) {
+  const query = filter.query.trim().toLowerCase()
+  if (!query || chosenFacetCount(filter) > 0) return false
+  return set.name.toLowerCase().includes(query)
 }
 
 /* A set stays in the list when its own name matches or one of its cards does,
  * so searching for a card finds the set holding it. */
 const visibleSets = computed(() => {
-  const query = setQuery.value.trim().toLowerCase()
-  const shown = query
-    ? sets.value.filter((s) => matches(s.name, query) || matchingCards(s.id).length > 0)
+  const shown = filtering.value
+    ? sets.value.filter((s) => matchesSetName(s) || matchingCards(s.id).length > 0)
     : [...sets.value]
   // `sets` is already alphabetical, so only the other order has to be applied.
   if (setOrder.value === 'recent') {
@@ -623,7 +641,7 @@ function toggleSelected(code: string) {
   else selected.value.splice(index, 1)
 }
 
-const selectAll = () => (selected.value = activeCards.value.map((c) => c.def.cardCode))
+const selectAll = () => (selected.value = visibleCards.value.map((c) => c.def.cardCode))
 const clearSelection = () => (selected.value = [])
 
 // -------------------------------------------------------------------- sets ---
@@ -1261,21 +1279,28 @@ async function onImport(event: Event) {
     </section>
 
     <template v-else>
-      <FilterBar
-        v-model="setQuery"
+      <CardFilters
+        v-model="filter"
+        :cards="cards"
         :placeholder="t(`${K}filterPlaceholder`)"
-        :clear-label="t(`${K}clearFilter`)"
       >
         <SegmentedToggle
           v-model="setOrder"
           :options="setOrderOptions"
           :label="t(`${K}orderLabel`)"
         />
-      </FilterBar>
+      </CardFilters>
 
       <p v-if="!visibleSets.length" class="no-matches">
         <font-awesome-icon icon="search" />
-        <span>{{ t(`${K}noMatches`, { query: setQuery.trim() }) }}</span>
+        <span>
+          {{ filter.query.trim()
+            ? t(`${K}noMatches`, { query: filter.query.trim() })
+            : t(`${K}noFilterMatches`) }}
+        </span>
+        <button type="button" class="link" @click="clearFilter(filter)">
+          {{ t(`${K}clearFilter`) }}
+        </button>
       </p>
 
       <ul v-else class="set-cards">
@@ -1698,7 +1723,7 @@ async function onImport(event: Event) {
           :data-set-id="set.id"
           :cards="matchingCards(set.id)"
           :total="set.cardCount"
-          :empty-label="setQuery.trim() ? t(`${K}noCardMatches`) : t(`${K}emptySet`)"
+          :empty-label="filtering ? t(`${K}noCardMatches`) : t(`${K}emptySet`)"
           @pick="edit"
           @view-all="openSet(set.id)"
         />
@@ -1746,13 +1771,17 @@ async function onImport(event: Event) {
       </button>
 
       <div class="group-head">
-        <h3>{{ t(`${K}cardCount`, activeCards.length) }}</h3>
+        <h3>
+          {{ filtering && visibleCards.length !== activeCards.length
+            ? t(`${K}cardCountFiltered`, { shown: visibleCards.length, total: activeCards.length })
+            : t(`${K}cardCount`, activeCards.length) }}
+        </h3>
         <!-- Selecting cards is only ever for exporting them, so a set with no
              export has no selection either. -->
         <div v-if="activeSetExportable" class="row-actions">
           <button
             type="button"
-            :disabled="!activeCards.length"
+            :disabled="!visibleCards.length"
             v-tooltip="t(`${K}selectAll`)"
             :aria-label="t(`${K}selectAll`)"
             @click="selectAll"
@@ -1812,9 +1841,28 @@ async function onImport(event: Event) {
       <button v-else type="button" class="new-card" @click="startNew">+ {{ t(`${K}newCard`) }}</button>
 
       <p v-if="!activeCards.length" class="muted">{{ t(`${K}emptySetPanel`) }}</p>
-      <ul v-else class="library-list">
+      <template v-else>
+        <!-- A set runs to a few hundred cards once it is a box rather than a
+             handful, and the panel is the only way to reach any of them. -->
+        <CardFilters
+          v-model="filter"
+          compact
+          class="panel-filters"
+          :cards="activeCards"
+          :placeholder="t(`${K}panelFilterPlaceholder`)"
+        />
+
+        <p v-if="!visibleCards.length" class="no-matches panel-no-matches">
+          <font-awesome-icon icon="search" />
+          <span>{{ t(`${K}noCardMatches`) }}</span>
+          <button type="button" class="link" @click="clearFilter(filter)">
+            {{ t(`${K}clearFilter`) }}
+          </button>
+        </p>
+
+        <ul v-else class="library-list">
         <li
-          v-for="card in activeCards"
+          v-for="card in visibleCards"
           :key="card.def.cardCode"
           :class="{ editing: editingCode === card.def.cardCode }"
         >
@@ -1842,7 +1890,8 @@ async function onImport(event: Event) {
             </button>
           </div>
         </li>
-      </ul>
+        </ul>
+      </template>
       </div>
     </aside>
 
@@ -2041,6 +2090,34 @@ async function onImport(event: Event) {
     font-size: 1.6rem;
     opacity: 0.4;
   }
+
+  /* The way out of a filter that found nothing, not a second thing to try. */
+  .link {
+    background: none;
+    border: none;
+    color: var(--spooky-green);
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 0.2rem 0;
+  }
+}
+
+/* The same sentence in the 268px panel, where three rems of padding above and
+   below it is most of what you can see. */
+.panel-no-matches {
+  font-size: 0.8rem;
+  gap: 0.4rem;
+  padding: 1.2rem 0.5rem;
+
+  svg {
+    font-size: 1.1rem;
+  }
+}
+
+/* The panel's own filters sit between the new-card button and the list, with
+   the list's gap above them rather than their own below. */
+.panel-filters {
+  margin-top: 0.6rem;
 }
 
 .set-cards {

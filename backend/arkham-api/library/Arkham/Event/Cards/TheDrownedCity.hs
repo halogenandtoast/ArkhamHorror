@@ -92,6 +92,7 @@ workingAHunch2 =
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria = Just $ Criteria.canDiscoverCluesAt RevealedLocation
     , cdLevel = Just 2
+    , cdTags = [discoversCluesTag]
     }
 
 wheresTheParty :: CardDef
@@ -316,6 +317,7 @@ trueAwakening2 =
             , exists $ YourLocation <> LocationWithDiscoverableCluesBy You
             ]
     , cdLevel = Just 2
+    , cdTags = [discoversCluesTag]
     }
 
 bloodOfKnYan3 :: CardDef

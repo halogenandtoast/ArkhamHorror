@@ -219,6 +219,30 @@ looking for the card in the controller's used abilities.
 hideWhenUsedTag :: Text
 hideWhenUsedTag = "hide-when-used"
 
+{- | 'cdTags' marker for a card whose own resolution discovers one or more clues by
+some means OTHER than an Investigate action of its own.
+
+It is the second half of 'Arkham.Matcher.CardWithAction' @#investigate@, not a
+replacement for it: a card that performs an Investigate action already says so on
+its def, and whatever that investigation discovers (including an "additional clue"
+or "instead of discovering, discover ..." rider it prints) is found there. So "every
+card that finds clues" is @oneOf [CardWithAction #investigate, CardTaggedWith
+discoversCluesTag]@, and nothing is recorded twice.
+
+Qualifies: playing the card discovers clues as part of resolving it --- Working a
+Hunch, Evidence!, Drawn to the Flame, Scene of the Crime, Connect the Dots,
+Extensive Research, and the parley cards that discover on a successful test.
+
+Does NOT qualify: a card that only permits, increases or reacts to a discovery
+someone else makes (Crack the Case); one that moves or places clues already
+discovered; one that explicitly replaces its discovery with something else (Map
+the Area, Unearth the Ancients); or one whose discovery comes from an ability on
+the attachment it puts into play rather than from playing it (Under Surveillance,
+Transmogrify).
+-}
+discoversCluesTag :: Text
+discoversCluesTag = "discovers-clues"
+
 {- | 'cdTags' marker for the back of a double-sided card that always starts a game
 on its other side. A flip is persisted with the campaign's story cards, so without
 this the card would come back flipped in the next scenario; setup swaps it for

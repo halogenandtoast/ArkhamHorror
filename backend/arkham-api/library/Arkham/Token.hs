@@ -178,6 +178,9 @@ instance IsLabel "chance" Token where
 instance IsLabel "obsession" Token where
   fromLabel = Obsession
 
+instance IsLabel "offering" Token where
+  fromLabel = Offering
+
 instance IsLabel "sign" Token where
   fromLabel = Sign
 

@@ -137,6 +137,7 @@ stirringUpTrouble1 =
     , cdAdditionalCost = Just AddCurseTokensEqualToShroudCost
     , cdCriteria = Just canDiscoverCluesAtYourLocation
     , cdLevel = Just 1
+    , cdTags = [discoversCluesTag]
     }
 
 breakingAndEntering :: CardDef

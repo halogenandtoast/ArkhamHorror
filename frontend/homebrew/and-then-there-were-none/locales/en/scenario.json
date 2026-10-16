@@ -1,0 +1,164 @@
+{
+  "scenario": {
+    "label": "And Then There Were None",
+    "fullLabel": "And Then There Were None",
+    "intro": {
+      "title": "Ten Little Soldiers",
+      "body": "<p>Fred Narracott the boatman wasted no time in spreading word about the horrors on Soldier Island. He ferried ten people over to the island for the weekend, and ten corpses were waiting for him on Monday morning. With nowhere to hide on such a small island and no other ways on or off, it was nothing short of a gruesome mystery.</p><p>The police investigation was brief, finding a chain of events too complex to be true, and no clear indication of who the final victim was. They left it a cold case, abandoning the island and the corpses as a malicious atmosphere set about the lonely mansion. Mr. Narracott swore that he saw spectral figures as he ferried the police back to land.</p><p>There is no doubt in your mind that there is something otherworldly involved in the Soldier Island murders. Whether it is the cause, the objective, or a byproduct of the murders remains to be seen, but if anyone can discover the truth of the ten corpses, it's you and your allies.</p>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the *And Then There Were None* encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{imgPath}/homebrew/and-then-there-were-none/sets/and-then-there-were-none.png' /></section>",
+      "placeLocations": "Put each location into play according to the suggested placement. Each investigator begins play at Terrace.",
+      "victims": "Randomly put two *Victim* story assets into play at each non-*Central* location.",
+      "methods": "Take each of the *Method* cards, separate them by skill icons, and make five piles so that you do not know which is which. Choose two piles and remove two cards in each pile from the game. Choose one of the other three piles and remove one card in that pile from the game. Shuffle the remaining *Method* cards together and place two facedown beneath each non-*Central* location. _Do not look at the revealed side of any of these cards while performing this step._",
+      "setAside": "Set Spectral Conduit and each copy of Antediluvian Sigils aside, out of play."
+    },
+    "xp": {
+      "bonus": "Method cards attached to Victim cards"
+    },
+    "resolutions": {
+      "label": {
+        "addToDeck": "An investigator may add this card to their deck",
+        "declineReward": "Do not add it to any deck"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Resolution 1_: With great effort, you throw yourself into the boat, and Mr. Narracott speeds you back to the mainland, not daring to look back over his shoulder. By the time you reach land, a dense and unnatural fog has enveloped the island. You hope that the purpose of these ten murders will not have longer-reaching effects.</p><ul><li>In your Campaign Log, record *Soldier Island was abandoned*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator gains 1 bonus experience for every 3 *Method* cards attached to *Victim* cards at the end of the scenario.<ul><li>_Experience_: {xp}</li></ul></li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>_Resolution 2_: The atmosphere of gloom has not fully lifted, but seems lighter as you trudge down toward the dock. Mr. Narracott peers up at you with a mix of curiosity and fear. “Did you… find everything?” he stammers. You certainly have, in more ways than you imagined. The murderer's identity, the dark power behind the deaths, and with the residual power of the sigils, you have learned that death holds more things than humans were ever meant to know.</p><ul><li>In your Campaign Log, record *the Soldier Island murders were solved*.</li><li>An investigator may choose to add Spectral Conduit to their deck. This card does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator gains 1 bonus experience for every 3 *Method* cards attached to *Victim* cards at the end of the scenario.<ul><li>_Experience_: {xp}</li></ul></li></ul>"
+      }
+    },
+    "tooltips": {
+      "antediluvianSigils": {
+        "test": "{'{'}action{'}'}: Test {'{'}willpower{'}'} (3). If you succeed, add 1 or remove 1 offering from Antediluvian Sigils. This action does not provoke attacks of opportunity.",
+        "spend": "{'{'}fast{'}'} During your turn, spend 1 clue: Add or remove 1 offering from Antediluvian Sigils."
+      },
+      "anthonyMarstonDelusionsOfGrandeur": {
+        "offering": "_Forced_ - After 1 or more damage is dealt to Anthony Marston: Add 1 offering to a copy of Antediluvian Sigils *(without investigators at its location, if possible)*."
+      },
+      "beach": {
+        "cost": "{'{'}reaction{'}'} When you would play an event that investigates or discovers clues: That event gets -1 cost."
+      },
+      "bedrooms": {
+        "clue": "{'{'}reaction{'}'} After you discover 1 or more clues from Bedrooms, if there are 6 or more cards in your hand: Discover 1 additional clue. *(Limit once per round.)*"
+      },
+      "bestLaidPlans": {
+        "additionalDamage": "{'{'}reaction{'}'} When you would deal 1 or more damage to the _Culprit_ enemy, if there are no clues on its location: You deal 1 additional damage.",
+        "objective": "_Objective_ - If the _Culprit_ enemy is defeated, advance."
+      },
+      "causeUNOwen": {
+        "reveal": "{'{'}fast{'}'} Investigators at your location spend 1{'{'}perPlayer{'}'} clues as a group: Reveal a facedown encounter card beneath your location and attach it to a _Victim_ card at that location without a _Method_ card attached.",
+        "objective": "_Objective_ - At the end of the round, the investigators may name the killer and advance."
+      },
+      "crypticMessage": {
+        "decipher": "_Forced_ - At the end of the round, each investigator chooses and discards X cards from their hand, where X is the number of clues they control. Discard Cryptic Message."
+      },
+      "darkPresence": {
+        "dispel": "{'{'}action{'}'}{'{'}action{'}'}: Discard Dark Presence. If there are 1 or fewer cards in your hand, reduce the cost of this ability by 1 action."
+      },
+      "diningRoom": {
+        "clue": "{'{'}reaction{'}'} After you discover 1 or more clues from Dining Room, if there is 4 or more horror on your investigator card: Discover 1 additional clue. *(Limit once per round.)*"
+      },
+      "edwardArmstrongDreamingDeeply": {
+        "dreaming": "_Forced_ - At the end of the enemy phase, the investigators as a group must choose and discard X cards from their hands, where X is the total amount of offerings among all copies of Antediluvian Sigils. Then, add 1 offering to each copy."
+      },
+      "emilyBrentInATangledWeb": {
+        "web": "_Forced_ - At the start of the enemy phase: In player order, each investigator must either move directly to Emily Brent's location or remove 1 offering from a copy of Antediluvian Sigils that has not been chosen this round. Then, if there are 1{'{'}perPlayer{'}'} or fewer offerings among all copies, ready Emily Brent."
+      },
+      "ethelRogersMaidenNameMarsh": {
+        "offerings": "_Forced_ - At the end of the enemy phase: Add 1 offering to each copy of Antediluvian Sigils."
+      },
+      "grimImplications": {
+        "doom": "_Forced_ - At the end of the round, if there is 1 or more doom on this card, place 1 doom on the current agenda. Otherwise, place 1 doom on this card.",
+        "solved": "{'{'}reaction{'}'} After a _Method_ card is revealed at the attached asset's location: Discard Grim Implications."
+      },
+      "johnMacArthurAmountedToNothing": {
+        "drain": "_Forced_ - At the end of the enemy phase, remove 1 offering from each copy of Antediluvian Sigils. Then, if there are no offerings on a copy of Antediluvian Sigils, each investigator is defeated and takes a physical trauma.",
+        "offerings": "{'{'}reaction{'}'} After you successfully evade John MacArthur: Add 2 offerings to any copy of Antediluvian Sigils."
+      },
+      "lawrenceWargraveManOfManyFaces": {
+        "offering": "_Forced_ - After an investigator draws 1 or more cards during their turn: Add 1 offering to a copy of Antediluvian Sigils *(without investigators at its location, if possible)*."
+      },
+      "lingeringHatred": {
+        "spent": "_Forced_ - After a _Geist_ enemy is evaded: Discard Lingering Hatred."
+      },
+      "philipLombardSnakeInTheGrass": {
+        "blunt": "{'{'}fast{'}'} Spend 1 offering from each copy of Antediluvian Sigils: Philip Lombard gets -2 fight and loses retaliate until the end of the round."
+      },
+      "restlessSpirit_040": {
+        "tokens": "_Forced_ - When you reveal a {'{'}cultist{'}'}, {'{'}tablet{'}'}, or {'{'}elderThing{'}'} token at Restless Spirit's location: Resolve the additional token effects of all three tokens (but not their modifiers)."
+      },
+      "restlessSpirit_041": {
+        "lash": "_Forced_ - When Restless Spirit would take any amount of damage, if it is ready: It attacks you."
+      },
+      "spectralConduit": {
+        "offering": "{'{'}reaction{'}'} After a non-swarm enemy, investigator, or _Ally_ asset at your location is defeated: Add 1 offering to Spectral Conduit.",
+        "conceal": "{'{'}reaction{'}'} When you initiate a skill test, spend X offerings, where X is the difficulty of the test: Do not reveal chaos tokens for this test."
+      },
+      "sunroom": {
+        "clue": "{'{'}reaction{'}'} When you initiate an investigation attempt, if you do not control any clues: If this investigation is successful, discover an additional clue. *(Group limit once per round.)*"
+      },
+      "terrace": {
+        "hunter": "{'{'}action{'}'}: Resolve the hunter keyword on an enemy at any other location. Then, if an enemy entered Terrace, gain 1 clue from the token bank.",
+        "resign": "{'{'}action{'}'} If each undefeated investigator is at Terrace: _Resign._ You flee this cursed island back to the mainland. Each investigator resigns."
+      },
+      "thanatophobia": {
+        "dread": "_Forced_ - At the end of the round, if you are not at a _Central_ location, take 1 horror. Otherwise, discard Thanatophobia."
+      },
+      "thomasRogersColdAndDistant": {
+        "cold": "_Forced_ - At the start of the investigation phase: In player order, each investigator must either exhaust each of their assets or remove 1 offering from a copy of Antediluvian Sigils that has not been chosen this round."
+      },
+      "veraClaythorneDiscipliningTheYoung": {
+        "offerings": "_Forced_ - At the end of the enemy phase: Add 1 offering to each copy of Antediluvian Sigils."
+      },
+      "williamBloreInTheBusinessOfSecrets": {
+        "secrets": "_Forced_ - After you deal 1 or more damage to William Blore: You must either move directly to the furthest location from you or spend 1 offering from a copy of Antediluvian Sigils. Then, if any copy of Antediluvian Sigils has 2 or more offerings than any other copy, take 1 horror."
+      }
+    },
+    "causeUNOwen": {
+      "label": {
+        "attachMethod": "Attach the revealed _Method_ to a _Victim_ at your location",
+        "nameTheKiller": "Name the killer",
+        "sigilLocation": "Choose a location to attach a copy of Antediluvian Sigils to"
+      }
+    },
+    "antediluvianSigils": {
+      "label": {
+        "addOffering": "Add 1 offering to Antediluvian Sigils",
+        "removeOffering": "Remove 1 offering from Antediluvian Sigils"
+      }
+    },
+    "phantomHands": {
+      "label": {
+        "discardAsset": "Discard an asset you control",
+        "loseResources": "Lose 3 resources"
+      }
+    },
+    "theLoomingDead": {
+      "label": {
+        "loseActions": "Lose 2 actions",
+        "discardCards": "Discard 2 cards from your hand at random"
+      }
+    },
+    "emilyBrentInATangledWeb": {
+      "label": {
+        "moveToEmilyBrent": "Move directly to Emily Brent's location",
+        "removeOffering": "Remove 1 offering from a copy of Antediluvian Sigils that has not been chosen this round"
+      }
+    },
+    "thomasRogersColdAndDistant": {
+      "label": {
+        "exhaustAssets": "Exhaust each of your assets",
+        "removeOffering": "Remove 1 offering from a copy of Antediluvian Sigils that has not been chosen this round"
+      }
+    },
+    "williamBloreInTheBusinessOfSecrets": {
+      "label": {
+        "moveToFurthest": "Move directly to the furthest location from you",
+        "spendOffering": "Spend 1 offering from a copy of Antediluvian Sigils"
+      }
+    }
+  }
+}

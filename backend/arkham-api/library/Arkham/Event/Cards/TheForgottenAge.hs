@@ -48,6 +48,7 @@ eavesdrop =
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Insight, Trick]
     , cdCriteria = Just $ exists $ UnengagedEnemy <> EnemyAt YourLocation <> EnemyWithEvade
+    , cdTags = [discoversCluesTag]
     }
 
 youHandleThisOne :: CardDef
@@ -109,6 +110,7 @@ sceneOfTheCrime =
     , cdCriteria =
         Just $ Criteria.Criteria [Criteria.FirstAction, canDiscoverCluesAtYourLocation]
     , cdAlternateCardCodes = ["12024"]
+    , cdTags = [discoversCluesTag]
     }
 
 marksmanship1 :: CardDef

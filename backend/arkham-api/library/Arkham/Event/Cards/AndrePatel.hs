@@ -20,6 +20,7 @@ payYourDues =
     , cdActions = #parley
     , cdCost =
         Just (MatchingEnemyFieldCost (NonEliteEnemy <> EnemyAt YourLocation) EnemyRemainingHealthField)
+    , cdTags = [discoversCluesTag]
     }
 
 quickExit :: CardDef
@@ -54,6 +55,7 @@ rightUnderTheirNoses =
     , cdSkills = [#intellect, #willpower]
     , cdCriteria = Just rightUnderTheirNosesCriteria
     , cdFastWindow = Just $ EnemyEvadedSuccessfully #after You AnySource AnyEnemy
+    , cdTags = [discoversCluesTag]
     }
 
 cleanSweep2 :: CardDef
@@ -91,4 +93,5 @@ rightUnderTheirNoses3 =
     , cdCriteria = Just rightUnderTheirNosesCriteria
     , cdFastWindow = Just $ EnemyEvadedSuccessfully #after You AnySource AnyEnemy
     , cdLevel = Just 3
+    , cdTags = [discoversCluesTag]
     }

@@ -10,6 +10,7 @@ makeEmSing =
     , cdSkills = [#combat, #intellect]
     , cdActions = #parley
     , cdCriteria = Just $ exists $ EnemyAt YourLocation <> CanParleyEnemy You
+    , cdTags = [discoversCluesTag]
     }
 
 bounty :: CardDef

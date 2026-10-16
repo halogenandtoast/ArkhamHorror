@@ -12,4 +12,5 @@ mysteriesRemain =
       , cdKeywords = setFromList [Keyword.Replacement]
       , cdFastWindow = Just $ DuringTurn You
       , cdCriteria = Just $ youExist (at_ Anywhere)
+      , cdTags = [discoversCluesTag]
       }

@@ -79,6 +79,8 @@ data GameCalculation
   | AssetTokenCountCalculation AssetId Token
   | MaxAlarmLevelCalculation -- getMaxAlarmLevel
   | VengeanceCalculation -- getVengeanceInVictoryDisplay
+  | -- | The difficulty of the skill test under way, or 0 outside one.
+    SkillTestDifficultyCalculation
   | DifferentClassAmong InvestigatorMatcher ExtendedCardMatcher
   | EnemyTargetFieldCalculation (Field Enemy Int)
   | CountChaosTokens ChaosTokenMatcher

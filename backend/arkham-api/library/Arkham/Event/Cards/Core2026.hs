@@ -43,6 +43,7 @@ lessonLearned =
     , cdSkills = [#intellect, #combat]
     , cdFastWindow = Just $ EnemyAttacks #after You AnyEnemyAttack AnyEnemy
     , cdCriteria = Just canDiscoverCluesAtYourLocation
+    , cdTags = [discoversCluesTag]
     }
 
 rightToolForTheJob :: CardDef
@@ -125,7 +126,8 @@ prestidigitation =
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Trick]
     , cdFastWindow = Just $ DuringTurn You
-    , cdCriteria = Just $ Criteria.PlayableCardExistsWithCostReduction (Reduce 2) $ InHandOf ForPlay You <> #item
+    , cdCriteria =
+        Just $ Criteria.PlayableCardExistsWithCostReduction (Reduce 2) $ InHandOf ForPlay You <> #item
     }
 
 decisiveStrike2 :: CardDef
@@ -141,6 +143,7 @@ willOfTheCosmos =
   (event "12066" "Will of the Cosmos" 0 Mystic)
     { cdSkills = [#intellect]
     , cdCardTraits = setFromList [Insight, Augury]
+    , cdTags = [discoversCluesTag]
     }
 
 augurOfElokoss3 :: CardDef
@@ -165,7 +168,9 @@ scrapeBy1 =
   (event "12082" "Scrape By" 1 Survivor)
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Fortune]
-    , cdFastWindow = Just $ WouldHaveSkillTestResult #when You (SkillTestWithRevealedChaosToken $ not_ #autofail) #failure
+    , cdFastWindow =
+        Just
+          $ WouldHaveSkillTestResult #when You (SkillTestWithRevealedChaosToken $ not_ #autofail) #failure
     , cdLevel = Just 1
     , cdErrata = Just "This card’s ability should read “You succeed at that skill test by 0 instead.”"
     }

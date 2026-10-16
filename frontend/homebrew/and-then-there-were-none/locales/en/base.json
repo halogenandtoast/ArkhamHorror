@@ -1,0 +1,26 @@
+{
+  "name": "And Then There Were None",
+  "about": {
+    "sections": [
+      {
+        "rows": [
+          {
+            "role": "Design",
+            "names": "The Beard"
+          }
+        ],
+        "text": [
+          "And Then There Were None is a scenario for Arkham Horror: The Card Game based on the classic story by Agatha Christie. This scenario can be played as a standalone scenario, or as a side-story during any campaign.",
+          "This scenario would not have been possible without the amazing design framework created by Matt Newman, Nate French and everyone involved in Arkham Horror: The Card Game at FFG."
+        ]
+      }
+    ],
+    "notes": [
+      "This scenario is an unofficial fan creation and in no way endorsed by Fantasy Flight Games. All rights to artwork belong to the relevant artists."
+    ]
+  },
+  "key": {
+    "soldierIslandWasAbandoned": "Soldier Island was abandoned.",
+    "theSoldierIslandMurdersWereSolved": "The Soldier Island murders were solved."
+  }
+}

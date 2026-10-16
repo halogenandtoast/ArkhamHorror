@@ -86,6 +86,7 @@ evidence1 =
     , cdFastWindow = Just (IfEnemyDefeated #after You ByAny AnyEnemy)
     , cdCriteria = Just canDiscoverCluesAtYourLocation
     , cdLevel = Just 1
+    , cdTags = [discoversCluesTag]
     }
 
 galvanize1 :: CardDef
@@ -137,6 +138,7 @@ lessonLearned2 =
     , cdFastWindow = Just $ DealtDamage #after (SourceIsEnemyAttack AnyEnemy) You
     , cdCriteria = Just canDiscoverCluesAtYourLocation
     , cdLevel = Just 2
+    , cdTags = [discoversCluesTag]
     }
 
 manoAMano2 :: CardDef
@@ -204,6 +206,7 @@ extensiveResearch =
     , cdCardTraits = singleton Insight
     , cdOutOfPlayEffects = [InHandEffect]
     , cdCriteria = Just canDiscoverCluesAtYourLocation
+    , cdTags = [discoversCluesTag]
     }
 
 occultInvocation :: CardDef
@@ -439,6 +442,7 @@ lookWhatIFound2 =
             [Criteria.canDiscoverCluesAt $ LocationMatchAny [YourLocation, ConnectedLocation NotForMovement]]
     , cdFastWindow =
         Just $ SkillTestResult #after You (WhileInvestigating Anywhere) $ FailureResult $ lessThan 4
+    , cdTags = [discoversCluesTag]
     }
 
 dumbLuck2 :: CardDef

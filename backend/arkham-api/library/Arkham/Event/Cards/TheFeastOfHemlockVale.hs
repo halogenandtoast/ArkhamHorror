@@ -117,6 +117,7 @@ taskForce =
                 $ YourLocation
                 <> LocationWithDiscoverableCluesBy (affectsOthers $ InvestigatorAt YourLocation)
             ]
+    , cdTags = [discoversCluesTag]
     }
 
 tinker :: CardDef
@@ -218,6 +219,7 @@ controlVariable =
           $ Criteria.DuringSkillTest SkillTestAtYourLocation
           <> canDiscoverCluesAtYourLocation
     , cdFastWindow = Just $ RevealChaosToken #after Anyone #curse
+    , cdTags = [discoversCluesTag]
     }
 
 testingSprint :: CardDef
@@ -288,6 +290,7 @@ confound3 =
     , cdActions = #parley
     , cdCriteria = Just $ exists $ EnemyAt YourLocation <> EnemyWithEvade
     , cdLevel = Just 3
+    , cdTags = [discoversCluesTag]
     }
 
 bankJob :: CardDef
@@ -346,6 +349,7 @@ vamp =
     , cdCardTraits = setFromList [Trick]
     , cdActions = #parley
     , cdCriteria = Just $ exists (EnemyAt YourLocation <> CanParleyEnemy You)
+    , cdTags = [discoversCluesTag]
     }
 
 snitch2 :: CardDef
@@ -359,7 +363,7 @@ snitch2 =
           $ exists
           $ LocationWithDiscoverableCluesBy You
           <> oneOf [YourLocation, ConnectedFrom NotForMovement YourLocation]
-    , cdTags = ["parley"]
+    , cdTags = ["parley", discoversCluesTag]
     , cdLevel = Just 2
     }
 
@@ -382,6 +386,7 @@ vamp3 =
     , cdActions = #parley
     , cdCriteria = Just $ exists (EnemyAt YourLocation <> CanParleyEnemy You)
     , cdLevel = Just 3
+    , cdTags = [discoversCluesTag]
     }
 
 stirThePot5 :: CardDef

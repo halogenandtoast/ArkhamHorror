@@ -80,6 +80,7 @@ interrogate =
             (exists $ NonEliteEnemy <> EnemyAt YourLocation <> CanParleyEnemy You)
             (exists $ EnemyWithTrait Humanoid <> EnemyAt YourLocation <> CanParleyEnemy You)
     , cdActions = #parley
+    , cdTags = [discoversCluesTag]
     }
 
 delayTheInevitable :: CardDef
@@ -101,6 +102,7 @@ connectTheDots =
           $ exists
           $ LocationWithLowerPrintedShroudThan YourLocation
           <> LocationWithDiscoverableCluesBy You
+    , cdTags = [discoversCluesTag]
     }
 
 moneyTalks :: CardDef
@@ -177,6 +179,7 @@ intelReport =
                   (LocationMatchAny [LocationWithDistanceFrom n YourLocation Anywhere | n <- [0 .. 2]])
             ]
     , cdOutOfPlayEffects = [InHandEffect]
+    , cdTags = [discoversCluesTag]
     }
 
 banish1 :: CardDef
@@ -224,6 +227,7 @@ bellyOfTheBeast =
           $ SuccessResult
           $ atLeast 2
     , cdCriteria = Just $ exists $ YourLocation <> LocationWithDiscoverableCluesBy You
+    , cdTags = [discoversCluesTag]
     }
 
 warningShot :: CardDef
@@ -310,6 +314,7 @@ ghastlyRevelation =
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = singleton Spirit
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+    , cdTags = [discoversCluesTag]
     }
 
 smallFavor :: CardDef

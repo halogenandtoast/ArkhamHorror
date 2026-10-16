@@ -32,6 +32,7 @@ evidence =
     , cdFastWindow = Just $ IfEnemyDefeated #after You ByAny AnyEnemy
     , cdCriteria = Just canDiscoverCluesAtYourLocation
     , cdAlternateCardCodes = ["01522"]
+    , cdTags = [discoversCluesTag]
     }
 
 dodge :: CardDef
@@ -89,6 +90,7 @@ workingAHunch =
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria = Just canDiscoverCluesAtYourLocation
     , cdAlternateCardCodes = ["01537", "12038"]
+    , cdTags = [discoversCluesTag]
     }
 
 barricade :: CardDef
@@ -172,6 +174,7 @@ drawnToTheFlame =
     , cdCardTraits = setFromList [Insight]
     , cdAlternateCardCodes = ["01564"]
     , cdCriteria = Just $ exists $ You <> can.target.encounterDeck
+    , cdTags = [discoversCluesTag]
     }
 
 wardOfProtection :: CardDef
@@ -234,6 +237,7 @@ lookWhatIFound =
         Just $ SkillTestResult #after You (WhileInvestigating Anywhere) $ FailureResult $ lessThan 3
     , cdCriteria = Just canDiscoverCluesAtYourLocation
     , cdAlternateCardCodes = ["01579", "60517", "12078"]
+    , cdTags = [discoversCluesTag]
     }
 
 lucky :: CardDef

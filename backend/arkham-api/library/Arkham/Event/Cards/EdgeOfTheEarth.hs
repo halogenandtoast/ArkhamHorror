@@ -266,6 +266,7 @@ burnAfterReading1 =
             , canDiscoverCluesAtYourLocation
             ]
     , cdLevel = Just 1
+    , cdTags = [discoversCluesTag]
     }
 
 bloodWillHaveBlood2 :: CardDef
@@ -306,6 +307,7 @@ onTheTrail1 =
                 (LocationWithEnemy AnyEnemy)
                 (EmptyLocation <> LocationWithDiscoverableCluesBy You)
             ]
+    , cdTags = [discoversCluesTag]
     }
 
 onTheTrail3 :: CardDef
@@ -316,6 +318,7 @@ onTheTrail3 =
     , cdLevel = Just 3
     , cdCriteria =
         Just $ exists (CanMoveCloserToLocation ThisCard You (LocationWithEnemy AnyEnemy))
+    , cdTags = [discoversCluesTag]
     }
 
 snipe1 :: CardDef
@@ -401,6 +404,7 @@ callForBackup2 =
                 , control Mystic <> healableCardExists #horror
                 , control Survivor <> healableCardExists #damage
                 ]
+    , cdTags = [discoversCluesTag]
     }
 
 dyersSketches :: CardDef

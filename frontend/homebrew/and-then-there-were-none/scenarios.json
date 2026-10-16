@@ -1,0 +1,26 @@
+[
+  {
+    "id": ":and-then-there-were-none:001",
+    "name": "And Then There Were None",
+    "campaign": ":and-then-there-were-none",
+    "designer": "The Beard",
+    "i18n": "scenario",
+    "sideStory": true,
+    "beta": true,
+    "xp": 2,
+    "standalone": true,
+    "standaloneDifficulties": ["Standard", "Hard"],
+    "difficultyLevels": {
+      "Standard": [
+        "PlusOne", "Zero", "MinusOne", "MinusOne", "MinusTwo",
+        "MinusThree", "MinusThree", "MinusFour",
+        "Skull", "Skull", "Cultist", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+      ],
+      "Hard": [
+        "Zero", "MinusOne", "MinusTwo", "MinusThree", "MinusFour",
+        "MinusFour", "MinusFive", "MinusSix",
+        "Skull", "Skull", "Cultist", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+      ]
+    }
+  }
+]

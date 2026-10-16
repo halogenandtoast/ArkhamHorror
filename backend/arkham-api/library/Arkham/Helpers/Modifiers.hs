@@ -96,17 +96,61 @@ getModifiers' (toTarget -> BothTarget t1 t2) = do
 getModifiers' (toTarget -> target) = do
   allMods <- getAllModifiers
   let rawMods = findWithDefault [] ThisTarget allMods <> findWithDefault [] target allMods
-  if CannotReceiveModifiersFromPlayerSources `notElem` map modifierType rawMods
-    then pure rawMods
-    else
-      pure
-        $ filter
-          ( \m ->
-              modifierType m
-                == CannotReceiveModifiersFromPlayerSources
-                || not (isPlayerCardSource (modifierSource m))
-          )
-          rawMods
+  pure $ case scanSuppressions rawMods of
+    (False, False) -> rawMods
+    (noPlayerSources, noAssetSkillBonuses) ->
+      filter
+        ( \m ->
+            (not noPlayerSources || keepUnderNoPlayerSources m)
+              && (not noAssetSkillBonuses || not (isAssetPrintedSkillBonus m))
+        )
+        rawMods
+ where
+  keepUnderNoPlayerSources m =
+    modifierType m
+      == CannotReceiveModifiersFromPlayerSources
+      || not (isPlayerCardSource (modifierSource m))
+
+{- | One pass over a target's raw modifiers for the two source-scoped suppressions
+'getModifiers'' honours, as @(CannotReceiveModifiersFromPlayerSources,
+IgnoreSkillBonusesFromAssets)@.
+
+'getModifiers'' is the hottest read in the engine and the overwhelmingly common
+answer is @(False, False)@, where it hands the list straight back. So this is one
+strict traversal with nothing allocated per modifier and no second pass -- the
+filters below are only ever built when a marker is actually present.
+-}
+scanSuppressions :: [Modifier] -> (Bool, Bool)
+scanSuppressions = go False False
+ where
+  go !noPlayerSources !noAssetSkillBonuses = \case
+    [] -> (noPlayerSources, noAssetSkillBonuses)
+    m : ms -> case modifierType m of
+      CannotReceiveModifiersFromPlayerSources -> go True noAssetSkillBonuses ms
+      IgnoreSkillBonusesFromAssets -> go noPlayerSources True ms
+      _ -> go noPlayerSources noAssetSkillBonuses ms
+
+{- | A bonus to a skill /printed on an asset/: one the asset entity publishes onto
+its controller itself (@controllerGets@ and friends).
+
+Both halves are deliberately narrow; see 'IgnoreSkillBonusesFromAssets' for the
+full reading. The source must be exactly an @AssetSource@ -- no recursion, so
+@AbilitySource (AssetSource _) _@ does not match, and no 'SourceMatcher', which
+would re-enter 'getModifiers' from inside it -- and the modifier must carry no
+'modifierEffect', which is what separates an always-on printed bonus from one a
+window-modifier effect adds during an action. Only a POSITIVE value counts: a
+penalty is not a bonus.
+-}
+isAssetPrintedSkillBonus :: Modifier -> Bool
+isAssetPrintedSkillBonus m = case modifierSource m of
+  AssetSource _ | isNothing (modifierEffect m) -> isSkillBonus (modifierType m)
+  _ -> False
+ where
+  isSkillBonus = \case
+    SkillModifier _ n -> n > 0
+    ActionSkillModifier _ _ n -> n > 0
+    AnySkillValue n -> n > 0
+    _ -> False
 
 hasModifier
   :: (HasGame m, Targetable a) => a -> ModifierType -> m Bool

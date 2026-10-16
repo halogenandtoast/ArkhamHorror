@@ -439,6 +439,34 @@ data ModifierType
   | IgnorePlayableModifierContexts
   | IgnoreRetaliate
   | IgnoreRevelation
+  | {- | On an INVESTIGATOR: drop the always-on skill bonuses their assets publish
+    onto them. Read at collection time in 'Arkham.Helpers.Modifiers.getModifiers'',
+    beside 'CannotReceiveModifiersFromPlayerSources', which is far broader --- that one
+    takes every modifier from every player card (health, sanity, slots, actions), while
+    this one takes only skill bonuses, and only from assets.
+
+    "A bonus to a skill" is read narrowly and only at the top level: a positive
+    'SkillModifier', 'ActionSkillModifier' or 'AnySkillValue'. A NEGATIVE value is a
+    penalty, not a bonus, and is left alone --- the wording this exists for is "lose all
+    bonuses", which never improves a skill. The calculated forms
+    ('CalculatedSkillModifier', 'AnySkillValueCalculated') are also left alone, since
+    their sign is not knowable without evaluating a 'GameCalculation', which this filter
+    cannot do without re-entering modifier collection. Skill /substitution/
+    ('AddSkillValue', 'AddSkillToOtherSkill', 'UseSkillInPlaceOf'), base-value
+    ('BaseSkill', 'SetSkillValue', 'DoubleBaseSkillValue') and commit-icon
+    ('AddSkillIcons') modifiers are not bonuses and are untouched.
+
+    A bonus counts as "printed on the asset" only when the asset entity publishes it
+    itself --- @controllerGets@ and friends, source exactly @AssetSource@ (an
+    @AbilitySource (AssetSource _) _@ does NOT match) and no 'modifierEffect' stamp. A
+    bonus a card ADDS DURING AN ACTION arrives through a window-modifier effect
+    instead ('skillTestModifier', 'modifySkill'), which 'Arkham.Effect.Types' stamps
+    with its effect id, so those survive. That split is what lets the clause carry its
+    usual parenthetical: Holy Rosary's +1 [willpower] and Boxing Gloves' +1 [combat]
+    while fighting go away, while .45 Automatic's and Machete's +1 [combat] from
+    activating them do not.
+    -}
+    IgnoreSkillBonusesFromAssets
   | RevelationModifier Source ModifierType
   | IgnoreText
   | IgnoreTextOnLocation LocationMatcher

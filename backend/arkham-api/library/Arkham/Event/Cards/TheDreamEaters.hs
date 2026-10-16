@@ -178,6 +178,7 @@ extensiveResearch1 =
     , cdOutOfPlayEffects = [InHandEffect]
     , cdCriteria = Just canDiscoverCluesAtYourLocation
     , cdLevel = Just 1
+    , cdTags = [discoversCluesTag]
     }
 
 spectralRazor :: CardDef

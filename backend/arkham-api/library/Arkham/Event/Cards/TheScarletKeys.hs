@@ -301,6 +301,7 @@ kickingTheHornetsNest =
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = setFromList [Gambit, Tactic]
     , cdCriteria = can.target.encounterDeck
+    , cdTags = [discoversCluesTag]
     }
 
 quickGetaway :: CardDef
@@ -339,6 +340,7 @@ cleanSneak4 =
             , exists (YourLocation <> LocationWithDiscoverableCluesBy You)
             ]
     , cdLevel = Just 4
+    , cdTags = [discoversCluesTag]
     }
 
 powerWord :: CardDef
@@ -393,6 +395,7 @@ stringOfCurses =
           $ NonEliteEnemy
           <> EnemyAt YourLocation
           <> oneOf [EnemyCanBeEvadedBy ThisCard, EnemyWithAnyDoom <> EnemyCanBeDefeatedBy ThisCard]
+    , cdTags = [discoversCluesTag]
     }
 
 moonlightRitual2 :: CardDef
@@ -495,6 +498,7 @@ shedALight =
           $ Criteria.DuringSkillTest
           $ WhileInvestigating Anywhere
           <> SkillTestWithDifficulty (static 0)
+    , cdTags = [discoversCluesTag]
     }
 
 atACrossroads1 :: CardDef

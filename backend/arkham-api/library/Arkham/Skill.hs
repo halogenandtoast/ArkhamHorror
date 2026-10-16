@@ -6,6 +6,7 @@ import Arkham.Card
 import Arkham.Card.PlayerCard (tabooMutated)
 import Arkham.Classes
 import Arkham.Custom.Skill (customSkill)
+import Arkham.Helpers.Modifiers
 import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Id
 import Arkham.Placement
@@ -52,7 +53,17 @@ instance RunMessage Skill where
           if isInPlayPlacement $ attr (.placement) a
             then pure $ Skill a
             else Skill <$> runMessage msg a
-        _ -> Skill <$> runMessage msg a
+        _ -> do
+          {- A blanked committed skill loses its handler text too, not only the
+          modifiers 'Arkham.Game.applyBlank' strips and the abilities
+          'unblanked' hides -- Deduction's extra clue and Overpower's draw are
+          plain 'RunMessage' cases. 'Arkham.Enemy', 'Arkham.Location' and
+          'Arkham.Investigator.Runner' all wrap the same way; this was the only
+          entity that did not. The lifecycle case above is left unwrapped: it is
+          the skill leaving the test, not its printed text. -}
+          modifiers' <- getModifiers (toTarget x)
+          let msg' = if Blank `elem` modifiers' then Blanked msg else msg
+          Skill <$> runMessage msg' a
 
 lookupSkill :: CardCode -> InvestigatorId -> SkillId -> CardId -> Skill
 lookupSkill cardCode = case lookup cardCode allSkills of

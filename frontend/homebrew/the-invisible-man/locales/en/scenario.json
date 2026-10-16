@@ -1,0 +1,163 @@
+{
+  "scenario": {
+    "label": "The Invisible Man",
+    "fullLabel": "The Invisible Man",
+    "intro": {
+      "title": "The Reign of Terror",
+      "body": "<p>An urgent letter arrived to you by courier this morning. Dr. Arthur Kemp – a private medical practitioner – writes to you with portents of terror.</p><p>My learned friend –</p><p>I have heard of your talents in dealing with matters beyond the scope of humanity, and I find myself embroiled in one such problem. A former acquaintance of mine – a chemist by the name of Griffin – has through some formula turned himself utterly and completely invisible. Astonishing as this discovery is, more astonishing still is the change in his sanity. Griffin approached me last night with an offer to be his confederate in a wild and murderous plot. He intends to use his invisibility to dominate, the city at first, but his plot has no upper limit. I rebuked Griffin, and he fled, swearing revenge and murder. From what little he shared with me, I know that he has a small base of operations south of Arkham where he has begun to terrify the locals. If he is not stopped soon – today! – then he may escape and begin a rampage of terrible scale. The police are quite helpless in this matter, but your experience in the arcane may match Griffin's intellect. Will you lend me your help?</p><p>– Arthur Kemp</p>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the *Invisible Man* encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{imgPath}/homebrew/the-invisible-man/sets/the-invisible-man.png' /></section>",
+      "placeLocations": "Put all locations into play according to the suggested location placement. Investigators begin play at Country Road.",
+      "setAside": "Set the following cards aside, out of play: Subtle Signs, Got His Number, Sharp Ear Out, Invisibility Serum, Griffin's Notes.",
+      "griffin": "Put Griffin into play at Run-Down Cabin.",
+      "invisibleDecks": "Build the Invisible Combat and Invisible Escape Decks. This is done by taking each story card with a matching trait that has not been set aside and shuffling them together. *You will have to take some risks to quickly fight Griffin.*",
+      "actDecks": "Put the ‘c’ and ‘e’ acts into play below the ‘a’ act. During this scenario, each act deck is active at the same time."
+    },
+    "elderThing": {
+      "label": {
+        "worsenToken": "Make this token -{count} instead"
+      }
+    },
+    "resolutions": {
+      "label": {
+        "addToDeck": "Any one investigator may add this card to their deck",
+        "declineReward": "Do not add it to any deck"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Resolution 1_: You look to your own defense for several tense minutes, but there is only stale silence around you. The Invisible Man has moved on, and will no doubt be more cautious from here on out. Chagrined as you are to say it, but Griffin is no longer a problem you are able to deal with. You only hope that his reign of terror is short.</p><ul><li>In your Campaign Log, record that *the Invisible Man escaped justice*.</li><li>If an investigator “found Griffin's notes,” any one investigator may choose to add Griffin's Notes to their deck. This card does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>_Resolution 2_: Seconds tick by after Griffin's death, and to your astonishment, his body slowly begins to fade back into view. You find it difficult to pity the cruel man, but to see him lying naked and visible in death is pitiable in itself. Your eye is drawn to Griffin's clenched fist, and you uncurl his rigid fingers to find a syringe clutched inside. Could this be the serum that turned him invisible? Using it for yourself would be risky, but you have much stronger morals than Griffin ever had. Surely…</p><ul><li>In your Campaign Log, record that *the Invisible Man met his end*.</li><li>Any one investigator may choose to add Invisibility Serum to their deck. If an investigator “found Griffin's notes,” any one investigator may choose to add Griffin's Notes to their deck. These cards do not count toward those investigators' deck sizes.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul>"
+      }
+    },
+    "tooltips": {
+      "seenByTheUnseen": {
+        "combat": "_Forced_ – When you initiate an attack against Griffin or you would automatically deal damage to Griffin: Draw the top card of the Invisible Combat deck.",
+        "escape": "_Forced_ – When you initiate an evasion against Griffin or you would automatically evade Griffin: Draw the top card of the Invisible Escape deck."
+      },
+      "theQuestionOfFighting": {
+        "resolved": "_Forced_ – After you resolve a card from the Invisible Combat deck, add 1 clue to this act (from the token bank).",
+        "commit": "{'{'}fast{'}'} If you are at Griffin's location: Move any number of clues you control to this act."
+      },
+      "theQuestionOfFleeing": {
+        "resolved": "_Forced_ – After you resolve a card from the Invisible Escape deck, add 1 clue to this act (from the token bank).",
+        "commit": "{'{'}fast{'}'} If you are at Griffin's location: Move any number of clues you control to this act."
+      },
+      "cleverSabotage": {
+        "sabotage": "_Forced_ – After you fail a test by 2 or more: Discard the attached asset.",
+        "discard": "{'{'}action{'}'}{'{'}action{'}'}: Discard Clever Sabotage."
+      },
+      "doublingBack": {
+        "discard": "_Forced_ – At the end of the round, discard Doubling Back."
+      },
+      "maliciousLaughter": {
+        "laughter": "_Forced_ – After you enter Griffin's location or vice versa: Take 1 horror and remove 1 resource from Malicious Laughter. If it has no resources on it, discard it."
+      },
+      "obviousSigns": {
+        "tracked": "_Forced_ – After you discover 2 or more total clues from the attached location in the same round: Take 1 damage and 1 horror. Discard Obvious Signs."
+      },
+      "outOfNowhere": {
+        "ambush": "_Forced_ – After you enter Griffin's location or vice versa: Take 1 damage and remove 1 resource from Out of Nowhere. If it has no resources on it, discard it."
+      },
+      "senselessMurder": {
+        "discard": "{'{'}action{'}'}{'{'}action{'}'}: Discard Senseless Murder."
+      },
+      "subtleInterference": {
+        "interfere": "_Forced_ – After you play an event: Remove that card from the game.",
+        "discard": "_Forced_ – At the end of the round, discard Subtle Interference."
+      },
+      "unseenMovements": {
+        "discard": "_Forced_ – At the end of the round, discard Unseen Movements."
+      },
+      "countryRoad": {
+        "resign": "{'{'}action{'}'}: _Resign._ You flee before the Invisible Man decides to pursue you further."
+      },
+      "serviceStation": {
+        "parley": "{'{'}fast{'}'} Investigators at Service Station pay 3 resources as a group: _Parley._ Place 1 horror on this location, as a lead. (Group limit once per game.)"
+      },
+      "runDownCabin": {
+        "notes": "{'{'}fast{'}'} If there are 3 leads among all locations and there are no clues on Run-Down Cabin: Remember that you “found Griffin's notes.” (Group limit once per game.)"
+      },
+      "moonshinersShack": {
+        "interrogate": "{'{'}action{'}'}: _Parley._ You interrogate the moonshiners. Test {'{'}willpower{'}'} or {'{'}combat{'}'} (2). This test gets +1 difficulty. If you succeed, place 1 horror on this location, as a lead. If you fail, take 1 damage. (Group limit 1 success per game.)"
+      },
+      "sparseWoodlands": {
+        "lead": "{'{'}fast{'}'} If there is an exhausted _Creature_ enemy at Sparse Woodlands: Place 1 horror on this location, as a lead. (Group limit once per game.)",
+        "forced": "_Forced_ – After you succeed by 3 or more while investigating at Sparse Woodlands: Search the encounter deck and discard pile for a _Creature_ enemy and spawn it at Sparse Woodlands. Shuffle the encounter deck if it was searched. (Max once per turn.)"
+      },
+      "meltwaterStream": {
+        "redraw": "{'{'}reaction{'}'} After you draw a card from the Invisible Combat or Invisible Escape deck: Cancel that card's effects, shuffle it back into its deck and draw another card. (Group limit once per round.)"
+      },
+      "lonelyFarmstead": {
+        "shelter": "{'{'}action{'}'}: _Parley._ You seek shelter from Griffin with the local farmers. Disengage from each enemy engaged with you. Enemies cannot engage you until the end of the round. You cannot target enemies with attacks or card effects, move or be moved until the end of the round."
+      },
+      "griffin": {
+        "prowl": "_Forced_ – At the start of the enemy phase: Replenish up to 1{'{'}perPlayer{'}'} clues on Griffin's location. Then if Griffin is ready, Griffin attacks each engaged investigator and moves to a connecting location (without investigators, if possible)."
+      },
+      "maddenedBeast": {
+        "frenzy": "_Forced_ – After the “hunter enemies move” step of the enemy phase, if Maddened Beast did not move: It gets +1 damage until the end of the round."
+      },
+      "sentientSolution": {
+        "adapt": "_Forced_ – After Sentient Solution is damaged by a _Melee_, _Ranged_, _Firearm_ or _Spell_ asset: It cannot be damaged by assets that share that _Trait_ until the end of the round."
+      },
+      "sheldonSupplier": {
+        "resupply": "_Forced_ – After Griffin enters Sheldon Supplier's location: Place 1 doom on Griffin."
+      },
+      "invisibilitySerum": {
+        "vanish": "{'{'}reaction{'}'} When you initiate an attack or evasion attempt, spend 1 supply and choose two different options."
+      },
+      "griffinsNotes": {
+        "study": "{'{'}reaction{'}'} When you initiate an investigation, spend 1 secret and choose two different options."
+      }
+    },
+    "theQuestionOfFighting": {
+      "label": {
+        "cluesToMove": "Move up to {count} clues to this act"
+      }
+    },
+    "theQuestionOfFleeing": {
+      "label": {
+        "cluesToMove": "Move up to {count} clues to this act"
+      }
+    },
+    "fightingChance": {
+      "label": {
+        "removeEverywhereAndNowhere": "Search the Invisible Combat deck for Everywhere and Nowhere and remove it from the game",
+        "removeGraspingAtStraws": "Search the Invisible Combat deck for Grasping at Straws and remove it from the game",
+        "shuffleInSubtleSigns": "Shuffle the set-aside Subtle Signs into the Invisible Combat deck",
+        "shuffleInGotHisNumber": "Shuffle the set-aside Got His Number into the Invisible Combat deck"
+      }
+    },
+    "runningInterference": {
+      "label": {
+        "removeNowhereToRun": "Search the Invisible Escape deck for Nowhere to Run and remove it from the game",
+        "removePanickedFlight": "Search the Invisible Escape deck for Panicked Flight and remove it from the game",
+        "shuffleInSharpEarOut": "Shuffle the set-aside Sharp Ear Out into the Invisible Escape deck"
+      }
+    },
+    "senselessMurder": {
+      "label": {
+        "attach": "Attach Senseless Murder to your location"
+      }
+    },
+    "invisibilitySerum": {
+      "label": {
+        "weakenFight": "The targeted enemy gets -2 fight and loses retaliate",
+        "weakenEvade": "The targeted enemy gets -2 evade and loses alert",
+        "damage": "If this test is successful, deal 1 damage to the target enemy",
+        "move": "If this test is successful, move to a connecting location"
+      }
+    },
+    "griffinsNotes": {
+      "label": {
+        "noAttacksOfOpportunity": "This action does not provoke attacks of opportunity",
+        "shroud": "Your location gets -2 shroud value for this test",
+        "additionalClue": "If this test is successful, discover 1 additional clue",
+        "lookAtTopCard": "If this test is successful, look at the top card of any deck"
+      }
+    }
+  }
+}

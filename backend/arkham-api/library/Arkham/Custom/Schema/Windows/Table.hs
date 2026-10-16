@@ -196,6 +196,7 @@ windowTable =
   , ("RemovedBreach", ["RemovedBreach"])
   , ("RemovedBreaches", ["RemovedBreaches"])
   , ("ResolvesChaosToken", ["ResolvesChaosToken"])
+  , ("ResolvesStory", ["ResolvesStory"])
   , ("ResolvesTreachery", ["ResolvesTreachery"])
   , ("ResolvingRevelation", ["ResolvingRevelation"])
   , ("RevealChaosToken", ["RevealChaosToken"])

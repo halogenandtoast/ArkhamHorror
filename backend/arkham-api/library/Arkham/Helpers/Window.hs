@@ -1931,6 +1931,10 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       Window.ResolvesTreachery who treacheryId ->
         andM [matchWho iid who whoMatcher, treacheryId <=~> IncludeOutOfPlayTreachery treacheryMatcher]
       _ -> noMatch
+    Matcher.ResolvesStory timing whoMatcher storyMatcher -> guardTiming timing $ \case
+      Window.ResolvesStory who storyId ->
+        andM [matchWho iid who whoMatcher, storyId <=~> storyMatcher]
+      _ -> noMatch
     Matcher.ResolvesChaosToken timing whoMatcher tokenMatcher -> guardTiming timing $ \case
       Window.ResolvesChaosToken who token ->
         andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]

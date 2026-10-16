@@ -5409,6 +5409,64 @@ library
       Arkham.Homebrew.TheFallOfTheHouseOfUsher.Treacheries.MorbidAcuteness
       Arkham.Homebrew.TheFallOfTheHouseOfUsher.Treacheries.NervousAffliction
       Arkham.Homebrew.TheFallOfTheHouseOfUsher.Treacheries.PestilentVapor
+      Arkham.Homebrew.TheInvisibleMan.Acts.FightingChance
+      Arkham.Homebrew.TheInvisibleMan.Acts.RunningInterference
+      Arkham.Homebrew.TheInvisibleMan.Acts.SeeThroughToTheEnd
+      Arkham.Homebrew.TheInvisibleMan.Acts.TheQuestionOfFighting
+      Arkham.Homebrew.TheInvisibleMan.Acts.TheQuestionOfFleeing
+      Arkham.Homebrew.TheInvisibleMan.Acts.ZeroVisibility
+      Arkham.Homebrew.TheInvisibleMan.Agendas.SeenByTheUnseen
+      Arkham.Homebrew.TheInvisibleMan.Assets.GriffinsNotes
+      Arkham.Homebrew.TheInvisibleMan.Assets.InvisibilitySerum
+      Arkham.Homebrew.TheInvisibleMan.CardDefEntries
+      Arkham.Homebrew.TheInvisibleMan.CardDefs.Acts
+      Arkham.Homebrew.TheInvisibleMan.CardDefs.Agendas
+      Arkham.Homebrew.TheInvisibleMan.CardDefs.Assets
+      Arkham.Homebrew.TheInvisibleMan.CardDefs.Enemies
+      Arkham.Homebrew.TheInvisibleMan.CardDefs.Locations
+      Arkham.Homebrew.TheInvisibleMan.CardDefs.Stories
+      Arkham.Homebrew.TheInvisibleMan.CardDefs.Treacheries
+      Arkham.Homebrew.TheInvisibleMan.CardEntries
+      Arkham.Homebrew.TheInvisibleMan.Content
+      Arkham.Homebrew.TheInvisibleMan.Defs
+      Arkham.Homebrew.TheInvisibleMan.Enemies.Griffin
+      Arkham.Homebrew.TheInvisibleMan.Enemies.MaddenedBeast
+      Arkham.Homebrew.TheInvisibleMan.Enemies.SentientSolution
+      Arkham.Homebrew.TheInvisibleMan.Enemies.SheldonSupplier
+      Arkham.Homebrew.TheInvisibleMan.Enemies.TranslucentExperiment
+      Arkham.Homebrew.TheInvisibleMan.Helpers
+      Arkham.Homebrew.TheInvisibleMan.Import
+      Arkham.Homebrew.TheInvisibleMan.Key
+      Arkham.Homebrew.TheInvisibleMan.Locations.CountryRoad
+      Arkham.Homebrew.TheInvisibleMan.Locations.LonelyFarmstead
+      Arkham.Homebrew.TheInvisibleMan.Locations.MeltwaterStream
+      Arkham.Homebrew.TheInvisibleMan.Locations.MoonshinersShack
+      Arkham.Homebrew.TheInvisibleMan.Locations.RunDownCabin
+      Arkham.Homebrew.TheInvisibleMan.Locations.ServiceStation
+      Arkham.Homebrew.TheInvisibleMan.Locations.SparseWoodlands
+      Arkham.Homebrew.TheInvisibleMan.ScenarioDeckKeys
+      Arkham.Homebrew.TheInvisibleMan.Scenarios.TheInvisibleMan
+      Arkham.Homebrew.TheInvisibleMan.Sets
+      Arkham.Homebrew.TheInvisibleMan.SideStoryDefs
+      Arkham.Homebrew.TheInvisibleMan.Stories.EverywhereAndNowhere
+      Arkham.Homebrew.TheInvisibleMan.Stories.GotHisNumber
+      Arkham.Homebrew.TheInvisibleMan.Stories.GraspingAtStraws
+      Arkham.Homebrew.TheInvisibleMan.Stories.NowhereToRun
+      Arkham.Homebrew.TheInvisibleMan.Stories.PanickedFlight
+      Arkham.Homebrew.TheInvisibleMan.Stories.PatternRecognition
+      Arkham.Homebrew.TheInvisibleMan.Stories.ShadowedEscape
+      Arkham.Homebrew.TheInvisibleMan.Stories.SharpEarOut
+      Arkham.Homebrew.TheInvisibleMan.Stories.ShotInTheDark
+      Arkham.Homebrew.TheInvisibleMan.Stories.SubtleSigns
+      Arkham.Homebrew.TheInvisibleMan.Traits
+      Arkham.Homebrew.TheInvisibleMan.Treacheries.CleverSabotage
+      Arkham.Homebrew.TheInvisibleMan.Treacheries.DoublingBack
+      Arkham.Homebrew.TheInvisibleMan.Treacheries.MaliciousLaughter
+      Arkham.Homebrew.TheInvisibleMan.Treacheries.ObviousSigns
+      Arkham.Homebrew.TheInvisibleMan.Treacheries.OutOfNowhere
+      Arkham.Homebrew.TheInvisibleMan.Treacheries.SenselessMurder
+      Arkham.Homebrew.TheInvisibleMan.Treacheries.SubtleInterference
+      Arkham.Homebrew.TheInvisibleMan.Treacheries.UnseenMovements
       Arkham.Homebrew.TheLegendOfSleepyHollow.Acts.BanishingTheSpectre
       Arkham.Homebrew.TheLegendOfSleepyHollow.Acts.TheHessianHorseman
       Arkham.Homebrew.TheLegendOfSleepyHollow.Acts.TheTaleOfIchabodCrane

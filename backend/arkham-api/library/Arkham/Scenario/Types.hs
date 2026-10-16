@@ -319,6 +319,17 @@ sideStory f cardCode name difficulty layout =
  where
   setSideStory attrs = attrs {scenarioIsSideStory = True}
 
+sideStoryWith
+  :: (ScenarioAttrs -> a)
+  -> CardCode
+  -> Name
+  -> Difficulty
+  -> [GridTemplateRow]
+  -> (ScenarioAttrs -> ScenarioAttrs)
+  -> a
+sideStoryWith f cardCode name difficulty layout g =
+  sideStory (f . g) cardCode name difficulty layout
+
 sideStory_ :: (ScenarioAttrs -> a) -> CardCode -> Name -> Difficulty -> a
 sideStory_ f cardCode name difficulty = sideStory f cardCode name difficulty []
 

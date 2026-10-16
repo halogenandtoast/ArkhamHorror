@@ -2572,9 +2572,15 @@ mconcat
             "ResolveStory" -> do
               (a, b, c) <- o .: "contents"
               pure $ StoryMessage $ ResolveStory a b c
+            -- Used to carry only the mode and the story; the resolving investigator
+            -- was added so the story resolution window can name a "you". A message
+            -- queued before that has no one to name, and no card of that era could
+            -- have been watching the window, so the placeholder id is inert.
             "ResolvedStory" -> do
-              (a, b) <- o .: "contents"
-              pure $ StoryMessage $ ResolvedStory a b
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              case contents of
+                Right (a, b, c) -> pure $ StoryMessage $ ResolvedStory a b c
+                Left (b, c) -> pure $ StoryMessage $ ResolvedStory (InvestigatorId "00000") b c
             "PlaceStory" -> do
               (a, b) <- o .: "contents"
               pure $ StoryMessage $ PlaceStory a b

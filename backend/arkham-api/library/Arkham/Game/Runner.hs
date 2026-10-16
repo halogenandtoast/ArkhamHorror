@@ -3420,7 +3420,7 @@ runGameMessage msg g = case msg of
                     -- test is active, the new test is relocated to after the current
                     -- one. ResolvedStory (which removes the story) must travel with
                     -- it, or the story is removed before its own test resolves.
-                    MoveWithSkillTest (StoryMessage (ResolvedStory storyMode storyId))
+                    MoveWithSkillTest (StoryMessage (ResolvedStory iid storyMode storyId))
                   ]
               ]
           ]
@@ -3431,7 +3431,7 @@ runGameMessage msg g = case msg of
             [ targetLabel
                 (toTarget storyId)
                 [ StoryMessage (ResolveStory iid storyMode storyId)
-                , MoveWithSkillTest (StoryMessage (ResolvedStory storyMode storyId))
+                , MoveWithSkillTest (StoryMessage (ResolvedStory iid storyMode storyId))
                 ]
             ]
     pure $ g & entitiesL . storiesL . at storyId ?~ story'
@@ -3446,9 +3446,26 @@ runGameMessage msg g = case msg of
       ?~ story'
       & entryTicksL
       %~ insertMap card.id (gameWindowTick g)
-  StoryMessage (ResolveStory _ _ sid) -> do
+  StoryMessage (ResolveStory iid mode sid) -> do
     card <- field StoryCard sid
+    {- The when-half of the resolution window. This runs after the story entity has
+    already queued its own resolution, and 'push' prepends, so the window still
+    resolves in front of the story's effects. -}
+    when (mode == ResolveIt) do
+      whenResolve <- checkWhen $ Window.ResolvesStory iid sid
+      push whenResolve
     pure $ g & focusedCardsL %~ map (filter (/= card))
+  {- The after-half. Raised here rather than at the push sites so that every path
+  that ends a story read gets it: both of 'ReadStoryWithPlacement''s prompts
+  (where it travels with the story's skill test, since 'ResolvedStory' does), and
+  anything that queues 'ResolvedStory' itself. Because this runs after the
+  entities -- which is where 'RemoveStory' is pushed -- and 'push' prepends, the
+  window always resolves while the story is still in play. -}
+  StoryMessage (ResolvedStory iid mode sid) -> do
+    when (mode == ResolveIt) do
+      afterResolve <- checkAfter $ Window.ResolvesStory iid sid
+      push afterResolve
+    pure g
   StoryMessage (RemoveStory storyId) -> do
     pure $ g & entitiesL . storiesL %~ deleteMap storyId
   CreateSkill skillId card investigatorId placement -> do

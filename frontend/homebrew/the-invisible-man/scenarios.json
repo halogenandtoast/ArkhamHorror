@@ -1,0 +1,29 @@
+[
+  {
+    "id": ":the-invisible-man:001",
+    "name": "The Invisible Man",
+    "campaign": ":the-invisible-man",
+    "designer": "The Beard",
+    "i18n": "scenario",
+    "sideStory": true,
+    "beta": true,
+    "xp": 2,
+    "standalone": true,
+    "allowCurvedPaths": true,
+    "standaloneDifficulties": ["Standard", "Hard"],
+    "difficultyLevels": {
+      "Standard": [
+        "PlusOne", "PlusOne", "Zero", "Zero", "Zero",
+        "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo",
+        "MinusThree", "MinusThree", "MinusFour", "MinusFour", "MinusFive", "MinusSix",
+        "Skull", "Skull", "Skull", "Cultist", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+      ],
+      "Hard": [
+        "PlusOne", "Zero", "Zero", "Zero",
+        "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo",
+        "MinusThree", "MinusThree", "MinusFour", "MinusFour", "MinusFive", "MinusSix", "MinusEight",
+        "Skull", "Skull", "Skull", "Cultist", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+      ]
+    }
+  }
+]

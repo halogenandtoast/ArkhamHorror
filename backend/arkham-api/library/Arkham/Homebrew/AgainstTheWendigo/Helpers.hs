@@ -418,7 +418,7 @@ readStoryAndChoose iid def = do
   obtainCard card
   push $ StoryMessage $ PlaceStory card Unplaced
   push $ StoryMessage $ ResolveStory iid ResolveIt sid
-  push $ MoveWithSkillTest $ StoryMessage $ ResolvedStory ResolveIt sid
+  push $ MoveWithSkillTest $ StoryMessage $ ResolvedStory iid ResolveIt sid
 
 -- | A fate card that has been put aside by its first part.
 asideFate :: HasCardCode a => a -> StoryMatcher

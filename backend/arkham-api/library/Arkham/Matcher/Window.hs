@@ -27,6 +27,7 @@ import Arkham.Matcher.Placement
 import Arkham.Matcher.SkillTest
 import Arkham.Matcher.SkillType
 import Arkham.Matcher.Source
+import Arkham.Matcher.Story
 import Arkham.Matcher.Target
 import Arkham.Matcher.Treachery
 import Arkham.Matcher.Value
@@ -163,6 +164,7 @@ data WindowMatcher
   | MythosStep WindowMythosStepMatcher
   | LocationEntersPlay Timing LocationMatcher
   | ResolvesTreachery Timing Who TreacheryMatcher
+  | ResolvesStory Timing Who StoryMatcher
   | TreacheryEntersPlay Timing TreacheryMatcher
   | AgendaEntersPlay Timing AgendaMatcher
   | AssetEntersPlay Timing AssetMatcher

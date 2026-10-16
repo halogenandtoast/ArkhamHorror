@@ -32,10 +32,10 @@ afterStoryResolution :: HasQueue Message m => StoryAttrs -> [Message] -> m ()
 afterStoryResolution (toId -> storyId) = traverse_ (pushAfter isResolution) . reverse
  where
   isResolution = \case
-    StoryMessage (ResolvedStory _ story') -> story' == storyId
+    StoryMessage (ResolvedStory _ _ story') -> story' == storyId
     -- ReadStoryWithPlacement queues the ResolvedStory wrapped in MoveWithSkillTest,
     -- so match that form too or pushAfter silently drops the follow-up messages.
-    MoveWithSkillTest (StoryMessage (ResolvedStory _ story')) -> story' == storyId
+    MoveWithSkillTest (StoryMessage (ResolvedStory _ _ story')) -> story' == storyId
     _ -> False
 
 getAlreadyResolved :: HasGame m => StoryAttrs -> m Bool
@@ -52,7 +52,7 @@ instance RunMessage StoryAttrs where
       updated <- editTokenBag choice (storyMeta attrs)
       pure $ maybe attrs (\meta -> attrs & metaL .~ meta) updated
     StoryMessage smsg -> case smsg of
-      ResolvedStory _ story' | story' == toId attrs -> do
+      ResolvedStory _ _ story' | story' == toId attrs -> do
         pushWhen (storyRemoveAfterResolution attrs) $ RemoveStory (toId attrs)
         pure attrs
       ResolveStory iid DoNotResolveIt story' | story' == toId attrs -> do

@@ -446,6 +446,14 @@ data WindowType
   | RevealChaosTokensDuringSkillTest InvestigatorId SkillTest [ChaosToken]
   | TokensWouldBeRemovedFromChaosBag [ChaosToken]
   | ResolvesTreachery InvestigatorId TreacheryId
+  | {- | A story card being resolved by the investigator who read it. Raised at
+    both timings around the story's own resolution: @#when@ before its effects,
+    @#after@ once they have resolved -- and after its skill test, if resolving it
+    started one. Both fire while the story is still in play, so a
+    'Arkham.Matcher.StoryMatcher' can still read its traits. Declining to resolve
+    a story (@DoNotResolveIt@) raises neither.
+    -}
+    ResolvesStory InvestigatorId StoryId
   | ResolvesChaosToken InvestigatorId ChaosToken
   | ChaosTokenSealed InvestigatorId ChaosToken
   | {- | Raised on the investigator the token is sealed ON, whoever sealed it.

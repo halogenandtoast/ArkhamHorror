@@ -55,6 +55,13 @@ instance RunMessage Parlor where
       pure l
     BeginRound -> do
       began <- select $ investigatorAt attrs.id
+      {- Automatic engagement is only ever re-evaluated when something asks for
+      it, and the modifier above has just changed answer for everyone here: last
+      round's latecomer began this round at Parlor, so the enemies that were held
+      off him now engage. Without this he walks the whole round unengaged. The
+      checks resolve after this handler, against the meta written below. -}
+      enemies <- select $ UnengagedEnemy <> EnemyAt (be attrs)
+      for_ enemies enemyCheckEngagement
       attrs' <- liftRunMessage msg attrs
       pure $ Parlor $ attrs' & metaL .~ toJSON began
     _ -> Parlor <$> liftRunMessage msg attrs

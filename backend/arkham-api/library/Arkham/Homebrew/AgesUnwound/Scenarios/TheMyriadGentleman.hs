@@ -94,8 +94,9 @@ instance RunMessage TheMyriadGentleman where
     Both continue to Intro 3. -}
     PreScenarioSetup -> scope "intro" do
       accepted <- getHasRecord TheInvestigatorsAcceptedAnOfferOfHelp
-      flavor $ setTitle "title" >> p (if accepted then "intro1" else "intro2")
-      flavor $ setTitle "title" >> p "intro3"
+      flavor $ h "title" >> p "checkCampaignLog"
+      flavor $ h "title" >> p (if accepted then "intro1" else "intro2")
+      flavor $ h "title" >> p "intro3"
       pure s
     Setup -> runScenarioSetup TheMyriadGentleman attrs do
       setup $ ul do
@@ -103,9 +104,10 @@ instance RunMessage TheMyriadGentleman where
         li "placeLocations"
         li "setAsideLocations"
         li "setAsideCards"
-        li "copiesOfEnemies"
         unscoped $ li "shuffleRemainder"
         unscoped $ li "readyToBegin"
+
+      additionalRules "copiesOfEnemies"
 
       {- "Gather all cards from the following encounter sets: The Myriad Gentleman,
       Shifting Reality, Unravelling Years, Agents of Yog-Sothoth, Locked Doors." -}

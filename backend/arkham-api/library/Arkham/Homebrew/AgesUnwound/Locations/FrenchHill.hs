@@ -11,26 +11,9 @@ newtype FrenchHill = FrenchHill LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-{- | Shroud 6, Victory 1 (the victory is on the card def): the one street worth
-stopping in, and only if you got here this turn.
--}
 frenchHill :: LocationCard FrenchHill
 frenchHill = symbolLabel $ location FrenchHill Cards.frenchHill 6 (PerPlayer 1)
 
-{- | "While investigating French Hill during your turn, if you did not start your
-turn here, it gets -3 shroud."
-
-Two engine-only hooks, neither of them printed as an ability:
-
-* 1 marks the investigators who /did/ start their turn here, because nothing in
-  the engine records where a turn began. A turn-scoped 'ScenarioModifier' is the
-  established way to leave such a mark (Cthulhu's patrol marker), and it is read
-  back through a matcher rather than @getModifiers@ so this instance does not
-  have to query another entity's modifiers.
-* 2 applies the shroud reduction to the investigation itself, the way a "while
-  investigating this location" shroud change always is -- a plain
-  'ShroudModifier' is global and could not be scoped to one investigator.
--}
 startedTurnHere :: ModifierType
 startedTurnHere = ScenarioModifier "startedTurnAtFrenchHill"
 

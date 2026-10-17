@@ -16,19 +16,13 @@ newtype LostInTheDark = LostInTheDark TreacheryAttrs
 lostInTheDark :: TreacheryCard LostInTheDark
 lostInTheDark = treachery LostInTheDark Cards.lostInTheDark
 
-{- | "As an additional cost to move, test [willpower] or [agility] (3)."
-
-The cost rides on the investigator rather than on a location, so it is
-'AdditionalCostToEnterMatching' (the only additional movement cost read off the
-investigator's own modifiers) with 'Anywhere' as the destination.
--}
 instance HasModifiersFor LostInTheDark where
   getModifiersFor (LostInTheDark a) = case a.placement of
     InThreatArea iid ->
       modified_
         a
         iid
-        [ AdditionalCostToEnterMatching Anywhere
+        [ AdditionalCostToMove
             $ OrCost
               [ SkillTestCost (toSource a) #willpower (Fixed 3)
               , SkillTestCost (toSource a) #agility (Fixed 3)
@@ -36,7 +30,6 @@ instance HasModifiersFor LostInTheDark where
         ]
     _ -> pure mempty
 
--- | "Forced - At the end the round: Discard Lost in the Dark."
 instance HasAbilities LostInTheDark where
   getAbilities (LostInTheDark a) = [mkAbility a 1 $ forced $ RoundEnds #when]
 
@@ -45,7 +38,6 @@ instance RunMessage LostInTheDark where
     Revelation iid (isSource attrs -> True) -> do
       placeInThreatArea attrs iid
       pure t
-    -- "If you fail, either take 2 horror or cancel the effects of the move."
     FailedThisSkillTest iid (isSource attrs -> True) -> withI18n do
       chooseOneM iid do
         chooseTakeHorror iid attrs 2

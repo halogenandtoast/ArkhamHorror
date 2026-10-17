@@ -91,6 +91,13 @@ selectMapM
   -> m [b]
 selectMapM f = traverse f <=< select
 
+selectForM
+  :: (HasCallStack, Query a, HasGame m)
+  => a
+  -> (QueryElement a -> m b)
+  -> m [b]
+selectForM = flip selectMapM
+
 selectJust
   :: (HasCallStack, Show a, Query a, HasGame m)
   => a

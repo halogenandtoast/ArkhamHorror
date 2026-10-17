@@ -137,6 +137,34 @@ const withMultipliedCount = (cost: Cost, multiplier: number): Cost | undefined =
   }
 }
 
+const skillName = (skillType: unknown): string | undefined => {
+  if (typeof skillType !== 'string' || !skillType.startsWith('Skill')) return undefined
+  return skillType.replace(/^Skill/, '').toLowerCase()
+}
+
+/* The skill a cost tests, when the whole cost tests exactly one.
+ *
+ * A compound cost that pairs a test with, say, an action cost still answers
+ * that skill; two different skills answer nothing, because there is no single
+ * color to paint the choice with.
+ */
+export function costSkill(cost: Cost | undefined): string | undefined {
+  if (!cost) return undefined
+
+  switch (cost.tag) {
+    case 'SkillTestCost':
+      return skillName(get<unknown[]>(cost, 'contents')?.[1])
+    case 'Costs':
+    case 'OrCost': {
+      const inner = get<Cost[]>(cost, 'contents') ?? []
+      const skills = new Set(inner.map(costSkill).filter((s): s is string => Boolean(s)))
+      return skills.size === 1 ? [...skills][0] : undefined
+    }
+    default:
+      return undefined
+  }
+}
+
 export function formatCost(cost: Cost, t: Translate): string {
   const tag = cost.tag
 
@@ -272,9 +300,9 @@ export function formatCost(cost: Cost, t: Translate): string {
       const contents = get<unknown[]>(cost, 'contents') ?? []
       const skillType = contents[1] as string | undefined
       const gameValue = contents[2] as { tag: string; contents?: unknown } | undefined
-      const skill = skillType?.replace(/^Skill/, '').toLowerCase() ?? ''
+      const skill = skillName(skillType) ?? ''
       const count = gameValue?.tag === 'Fixed' ? Number(gameValue.contents) : 0
-      return t('label.test', { skill: `{${skill}}`, count })
+      return t('label.test', { skill, count })
     }
     case 'UnlessFastActionCost': {
       const n = num(cost, 'contents')

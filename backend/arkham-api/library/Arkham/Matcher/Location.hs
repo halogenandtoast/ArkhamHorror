@@ -206,6 +206,9 @@ data LocationMatcher
 location_ :: LocationMatcher -> LocationMatcher
 location_ = id
 
+instance IsLabel "empty" LocationMatcher where
+  fromLabel = EmptyLocation
+
 instance IsLabel "revealed" LocationMatcher where
   fromLabel = RevealedLocation
 

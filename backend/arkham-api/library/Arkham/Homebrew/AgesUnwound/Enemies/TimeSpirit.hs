@@ -12,12 +12,6 @@ newtype TimeSpirit = TimeSpirit EnemyAttrs
 timeSpirit :: EnemyCard TimeSpirit
 timeSpirit = enemy TimeSpirit Cards.timeSpirit
 
-{- | "Forced - After you defeat Time Spirit: Gain an action."
-
-@You@ is in the window on purpose: the action goes to whoever defeated it, and a
-'Who' that does not name the performer offers the Forced trigger to every seat
-(see @project_forced_window_who_must_be_you@).
--}
 instance HasAbilities TimeSpirit where
   getAbilities (TimeSpirit a) =
     extend1 a $ mkAbility a 1 $ forced $ EnemyDefeated #after You ByAny (be a)

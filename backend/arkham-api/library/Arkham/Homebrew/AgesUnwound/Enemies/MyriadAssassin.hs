@@ -11,9 +11,6 @@ newtype MyriadAssassin = MyriadAssassin EnemyAttrs
 myriadAssassin :: EnemyCard MyriadAssassin
 myriadAssassin = enemy MyriadAssassin Cards.myriadAssassin
 
-{- | "Revelation - Test [agility] (3). If you fail, Myriad Assassin makes an
-immediate attack against you."
--}
 instance RunMessage MyriadAssassin where
   runMessage msg e@(MyriadAssassin attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do

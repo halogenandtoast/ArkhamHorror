@@ -2677,10 +2677,13 @@ getLocationsMatching lmatcher = do
 
           imods <- getModifiers investigator
           let
+            -- an additional cost to move is paid once per step, so it rides along
+            -- with the enter half of each step's cost
+            moveCost = mconcat [c | AdditionalCostToMove c <- imods]
             getEnterCost loc = do
               mods <- getModifiers loc
               pcosts <- filterM ((loc <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
-              pure $ concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods]
+              pure $ moveCost <> concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods]
             getLeaveCost loc = do
               mods <- getModifiers loc
               pure $ mconcat [c | AdditionalCostToLeave c <- mods]
@@ -2748,10 +2751,11 @@ getLocationsMatching lmatcher = do
 
               imods <- getModifiers investigator
               let
+                moveCost = mconcat [c | AdditionalCostToMove c <- imods]
                 getEnterCost loc = do
                   mods <- getModifiers loc
                   pcosts <- filterM ((loc <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
-                  pure $ concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods]
+                  pure $ moveCost <> concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods]
                 getLeaveCost loc = do
                   mods <- getModifiers loc
                   pure $ mconcat [c | AdditionalCostToLeave c <- mods]

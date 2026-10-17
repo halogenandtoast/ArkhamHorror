@@ -306,6 +306,7 @@ getCanMoveToLocations_ iid source ls = cached (CanMoveToLocationsKey_ iid (toSou
           imods <- getModifiers iid
           mods <- getModifiers lid
           let extraCostsToLeave = mconcat [c | AdditionalCostToLeave c <- mods]
+          let extraCostsToMove = mconcat [c | AdditionalCostToMove c <- imods]
           let barricaded = if CanIgnoreBarriers `elem` imods then [] else concat [xs | Barricades xs <- mods]
           -- "You cannot enter X except by <source>". This is the only move query that
           -- knows the moving effect's source, so it is where CannotEnterExcept is honored.
@@ -318,7 +319,7 @@ getCanMoveToLocations_ iid source ls = cached (CanMoveToLocationsKey_ iid (toSou
             let extraCostsToEnter = baseEnter <> concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods']
             andM
               [ allM (sourceMatches (toSource source)) [sm | (l', sm) <- entryExceptions, l' == l]
-              , getCanAffordCost iid source [#move] [] (extraCostsToLeave <> extraCostsToEnter)
+              , getCanAffordCost iid source [#move] [] (extraCostsToMove <> extraCostsToLeave <> extraCostsToEnter)
               ]
     else pure []
 

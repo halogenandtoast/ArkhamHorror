@@ -293,6 +293,11 @@ handleMove a@InvestigatorAttrs {..} movement = do
                     pure $ mconcat [c | AdditionalCostToLeave c <- mods']
                   else pure mempty
 
+            let moveCosts =
+                  if movePayAdditionalCosts movement
+                    then mconcat [c | AdditionalCostToMove c <- imods]
+                    else mempty
+
             enterCosts <- do
               if movePayAdditionalCosts movement
                 then do
@@ -370,12 +375,22 @@ handleMove a@InvestigatorAttrs {..} movement = do
                     else postEnterMsgs
               whenCanMoveMsg = WhenCanMove iid innerMsgs
               wrapLeave = if hasSkillTestCost leaveCosts then MoveWithSkillTest else id
-            pushBatched batchId
-              $ maybeToList mRunWouldMove
-              <> maybeToList mRunWhenLeaving
-              <> maybeToList mRunAtIfLeaving
-              <> [PayAdditionalCost iid batchId leaveCosts]
-            push (wrapLeave whenCanMoveMsg)
+              wrapMove = if hasSkillTestCost moveCosts then MoveWithSkillTest else id
+              moveBatch =
+                Would batchId
+                  $ maybeToList mRunWouldMove
+                  <> maybeToList mRunWhenLeaving
+                  <> maybeToList mRunAtIfLeaving
+                  <> [PayAdditionalCost iid batchId leaveCosts]
+            -- An additional cost to move is a cost of the move itself, so it is paid
+            -- before the would-move and leaving windows; cancelling the move while
+            -- paying it keeps those windows from firing at all.
+            if moveCosts == Cost.Free
+              then push moveBatch
+              else do
+                push $ PayAdditionalCost iid batchId moveCosts
+                push $ wrapMove $ WhenCanMove iid [moveBatch]
+            push $ wrapMove (wrapLeave whenCanMoveMsg)
           Place -> do
             -- like Direct, but no moves windows and no costs
 
@@ -462,15 +477,18 @@ handleResolvedMovement a@InvestigatorAttrs {..} iid movementId = do
           %~ filter (\ab -> ab.limitType /= Just PerMove && ab.limitType /= Just (PerMovement movementId))
       )
 
+-- An uncancelable move is the same exemption `handleMove` and
+-- `handleWhenCanMove` already honor; checking only `forced` here let a move
+-- that passed both of those silently drop its placement (Winchmore House).
 handleResolveMovement a@InvestigatorAttrs {..} iid msg = do
   mods <- getModifiers iid
   let
-    isForcedMove = maybe False (.forced) investigatorMovement
+    isExemptMove = maybe False (\movement -> movement.forced || not movement.cancelable) investigatorMovement
     canMove =
       none
         (`elem` mods)
         (CannotMove : [CancelMovement movement.id | movement <- maybeToList investigatorMovement])
-  when (canMove || isForcedMove) $ push $ Do msg
+  when (canMove || isExemptMove) $ push $ Do msg
   pure a
 
 handleDoResolveMovement a@InvestigatorAttrs {..} iid = do

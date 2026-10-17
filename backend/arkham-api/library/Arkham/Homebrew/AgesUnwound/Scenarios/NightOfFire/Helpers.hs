@@ -20,10 +20,12 @@ module Arkham.Homebrew.AgesUnwound.Scenarios.NightOfFire.Helpers where
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (HasQueue, push)
+import Arkham.Classes.Query (select, selectAny)
 import Arkham.ForMovement
 import Arkham.Helpers.Investigator (getJustLocation)
 import Arkham.Helpers.Movement (replaceMovement)
 import Arkham.Helpers.Scenario (getScenarioDeck)
+import Arkham.Homebrew.AgesUnwound.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.AgesUnwound.Helpers (scenarioI18n)
 import Arkham.Homebrew.AgesUnwound.ScenarioDeckKeys (pattern ArkhamStreetsDeck)
 import Arkham.I18n
@@ -31,6 +33,7 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message (Message (Move, RemoveCardFromScenarioDeck))
 import Arkham.Message.Lifted
+import Arkham.Message.Lifted.Choose (chooseTargetM)
 import Arkham.Message.Lifted.Move (moveTo)
 import Arkham.Movement (Destination (ToLocation), Movement (moveDestination))
 import Arkham.Movement qualified as Movement
@@ -98,19 +101,64 @@ connectingDestination :: LocationMatcher
 connectingDestination = ConnectedLocation ForMovement <> RevealedLocation
 
 {- | The window the acts' "Instead, move to a new Arkham Streets location"
-reactions listen on: a move to a connecting location, or the self-move that the
-act's own move permission seeds when nothing is connected.
+reactions listen on: a move to a connecting location, or a self-move seeded
+because nothing is connected.
 
-The second entry is scoped to that permission's source rather than to any
-same-location move, so the reaction still cannot re-enter on the facedown street
-it just dealt.
+The self-move entry takes any source, not just the act's own move permission:
+every card that offers a move to a connecting location needs it, and
+'moveToConnecting' seeds one from the card's own source (Rigged to Blow). It
+cannot re-enter on the facedown street it just dealt -- 'replaceMovement'
+rewrites the move in place rather than re-raising the window, and after the
+redirect the destination is the new street, which is neither revealed nor your
+location.
 -}
-redirectableMove :: Source -> WindowMatcher
-redirectableMove permission =
+redirectableMove :: WindowMatcher
+redirectableMove =
   OrWindowMatcher
     [ WouldMove #when You #any Anywhere connectingDestination
-    , WouldMove #when You (SourceIs permission) Anywhere YourLocation
+    , WouldMove #when You #any Anywhere YourLocation
     ]
+
+-- | The act matcher for one specific act card; an 'ActId' /is/ the act's card code.
+theAct :: CardDef -> ActMatcher
+theAct = ActWithId . ActId . toCardCode
+
+{- | The acts that print "Instead, move to a new Arkham Streets location", and so
+can satisfy an effect offering a move to a connecting location when nothing is
+connected. Act 3 /Slipping the Net/ prints no such reaction.
+-}
+redirectingAct :: ActMatcher
+redirectingAct = ActOneOf $ map theAct [Acts.onTheLam, Acts.gettingYourBearings]
+
+{- | Whether "move ... to a connecting location" has anything to offer: a
+connected location, or an act whose reaction turns the move into a new Arkham
+Streets location. The Arkham Streets deck has to still hold one, or the redirect
+could only cancel the move it was offered for.
+-}
+canMoveToConnecting :: HasGame m => InvestigatorId -> m Bool
+canMoveToConnecting iid =
+  orM
+    [ selectAny $ ConnectedTo ForMovement (locationWithInvestigator iid)
+    , andM [selectAny redirectingAct, notNull <$> getArkhamStreetsDeck]
+    ]
+
+{- | "move ... to a connecting location", for a card that is not the act.
+
+With connected locations in play this is an ordinary choose-a-destination move.
+With none, the acts' redirect is the only thing that can satisfy the effect, so
+the move is seeded on the mover's own location for that reaction to retarget --
+the same self-move the acts' own move permission uses. Guard the offer with
+'canMoveToConnecting': without a redirecting act the seeded move would resolve
+as a real move to the location you already stand on.
+-}
+moveToConnecting
+  :: (ReverseQueue m, Sourceable source)
+  => source -> InvestigatorId -> InvestigatorId -> m ()
+moveToConnecting source chooser mover = do
+  connecting <- select $ ConnectedTo ForMovement (locationWithInvestigator mover)
+  if null connecting
+    then seedRedirectableMove source mover
+    else chooseTargetM chooser connecting (moveTo source mover)
 
 {- | The move an act's "(You may initiate a move even if there are no connecting
 locations in play.)" permission initiates: onto the location you already stand

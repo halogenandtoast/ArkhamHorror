@@ -6,7 +6,7 @@ import FormattedEntry from '@/arkham/components/FormattedEntry.vue'
 import { MessageType, Message } from '@/arkham/types/Message';
 import { formatContent } from '@/arkham/helpers';
 import { handleEmbeddedI18n } from '@/arkham/i18n';
-import { formatCost } from '@/arkham/cost';
+import { costSkill, formatCost } from '@/arkham/cost';
 import { useI18n } from 'vue-i18n';
 import type { Game } from '@/arkham/types/Game';
 
@@ -28,6 +28,13 @@ const connectionImage = (connection: string) => {
 const { t } = useI18n()
 const label = function(body: string) {
   return formatContent(handleEmbeddedI18n(body, t))
+}
+
+// A cost that tests a skill wears that skill's color, so the choice reads as
+// the test it is before the text is read.
+const skillCostClass = (cost: Parameters<typeof formatCost>[0]) => {
+  const skill = costSkill(cost)
+  return skill ? ['skill-cost', `skill-cost-${skill}`] : []
 }
 
 const drownedCityTaskCards: Record<string, string> = {
@@ -139,7 +146,11 @@ const drownedCityTaskRecommendation = (body: string) => {
         <button v-else @click="choose(index)" v-html="label(choice.label)"></button>
       </div>
       <div v-else-if="choice.tag === MessageType.COST_LABEL" class="message-label">
-        <button @click="choose(index)" v-html="label(formatCost(choice.cost, t))"></button>
+        <button
+          :class="skillCostClass(choice.cost)"
+          @click="choose(index)"
+          v-html="label(formatCost(choice.cost, t))"
+        ></button>
       </div>
       <div
         v-else-if="choice.tag === MessageType.INVALID_LABEL"
@@ -212,22 +223,17 @@ a.button {
   align-items: center;
   line-height: 1.2em;
 
-  &:has(i.iconSkillCombat) {
-    background-color: #8b0000;
+  &:has(i.iconSkillCombat) { --skill-button: var(--combat-dark); }
+  &:has(i.iconSkillAgility) { --skill-button: var(--agility-dark); }
+  &:has(i.iconSkillWillpower) { --skill-button: var(--willpower-dark); }
+  &:has(i.iconSkillIntellect) { --skill-button: var(--intellect-dark); }
+
+  &:has(i[class^="iconSkill"]) {
+    background-color: var(--skill-button);
+
     &:hover {
-      background-color: #5a0000;
-    }
-  }
-  &:has(i.iconSkillAgility) {
-    background-color: #004d00;
-    &:hover {
-      background-color: #003300;
-    }
-  }
-  &:has(i.iconSkillWillpower) {
-    background-color: #00008b;
-    &:hover {
-      background-color: #00005a;
+      background-color: var(--skill-button);
+      filter: brightness(0.7);
     }
   }
 }
@@ -316,6 +322,20 @@ button, a.button {
 .choice-subtext :deep(.rogue-icon)::before { content: "\0054"; }
 .choice-subtext :deep(.mystic-icon)::before { content: "\0057"; }
 .choice-subtext :deep(.survivor-icon)::before { content: "\0052"; }
+
+button.skill-cost {
+  background-color: var(--skill-cost);
+
+  &:hover {
+    background-color: var(--skill-cost);
+    filter: brightness(0.7);
+  }
+}
+
+button.skill-cost-willpower { --skill-cost: var(--willpower-dark); }
+button.skill-cost-intellect { --skill-cost: var(--intellect-dark); }
+button.skill-cost-combat { --skill-cost: var(--combat-dark); }
+button.skill-cost-agility { --skill-cost: var(--agility-dark); }
 
   button:hover, a.button:hover {
   background-color: #311b3e;

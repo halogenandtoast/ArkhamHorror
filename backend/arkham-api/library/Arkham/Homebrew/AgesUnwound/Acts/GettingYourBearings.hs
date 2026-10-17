@@ -3,7 +3,6 @@ module Arkham.Homebrew.AgesUnwound.Acts.GettingYourBearings (gettingYourBearings
 import Arkham.Ability
 import Arkham.Act.Import.Lifted
 import Arkham.Card
-import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types (Field (EnemyPlacement))
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..))
@@ -14,12 +13,10 @@ import Arkham.Homebrew.AgesUnwound.Helpers (campaignI18n)
 import Arkham.Homebrew.AgesUnwound.ScenarioDeckKeys (pattern ArkhamStreetsDeck)
 import Arkham.Homebrew.AgesUnwound.Scenarios.NightOfFire.Helpers
 import Arkham.Keyword qualified as Keyword
-import Arkham.Location.Types qualified as Field
 import Arkham.Matcher
 import Arkham.Message (ReplaceStrategy (Swap))
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Token qualified as Token
 import Arkham.Trait (Trait (Arkham))
 
 newtype GettingYourBearings = GettingYourBearings ActAttrs
@@ -29,27 +26,14 @@ newtype GettingYourBearings = GettingYourBearings ActAttrs
 gettingYourBearings :: ActCard GettingYourBearings
 gettingYourBearings = act (2, A) GettingYourBearings Cards.gettingYourBearings Nothing
 
-{- | Ability 5 is On the Lam's move permission again. This act's own Forced
-sweeps away every location that is both empty /and/ resourceless, so it can
-strand the table exactly as act 1 can -- and a move action is published by each
-accessible destination, so with nothing connected there is no move to redirect.
-It is numbered last to leave the printed abilities' indices alone; act 3 does
-not get it.
--}
 instance HasAbilities GettingYourBearings where
   getAbilities = actAbilities \a ->
-    [ mkAbility a 1 $ triggered (redirectableMove $ a.ability 5) Free
-    , restricted a 2 (exists $ EmptyLocation <> LocationWithResources (atMost 0))
-        $ forced
-        $ RoundEnds #when
+    [ mkAbility a 1 $ triggered_ redirectableMove
+    , restricted a 2 (exists $ #empty <> LocationWithResources (atMost 0)) $ forced $ RoundEnds #when
     , restricted a 3 (exists $ You <> at_ Anywhere)
-        $ FastAbility (GroupClueCost (PerPlayer 1) YourLocation)
-    , restricted
-        a
-        4
-        ( LocationCount 8 (LocationWithTrait Arkham)
-            <> notExists (Anywhere <> LocationWithResources (atMost 0))
-        )
+        $ freeTrigger (GroupClueCost (PerPlayer 1) YourLocation)
+    , onlyOnce
+        $ restricted a 4 (LocationCount 8 (withTrait Arkham) <> notExists (LocationWithResources $ atMost 0))
         $ Objective
         $ forced AnyWindow
     , campaignI18n
@@ -63,61 +47,36 @@ instance HasAbilities GettingYourBearings where
 
 instance RunMessage GettingYourBearings where
   runMessage msg a@(GettingYourBearings attrs) = runQueueT $ case msg of
-    -- "[reaction] When an effect would allow you to move to a connecting
-    -- location: Instead, move to a new Arkham Streets location."
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       redirectToNewArkhamStreetsLocation (attrs.ability 1) iid
       pure a
-    -- "Forced - At the end of the round: Shuffle each empty location without a
-    -- resource on into the Arkham Streets deck."
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      selectEach (EmptyLocation <> LocationWithResources (atMost 0)) \lid -> do
-        card <- field Field.LocationCard lid
-        -- Not `removeLocation`: that diverts a clueless Victory X location into
-        -- the victory display instead of removing it, and French Hill is
-        -- Victory 1. Shuffling a location back is not overcoming it.
+      cards <- selectForM (#empty <> LocationWithResources (atMost 0)) \lid -> do
         removeLocationWithoutVictory lid
-        shuffleCardsIntoDeck (Deck.ScenarioDeckByKey ArkhamStreetsDeck) [card]
+        fetchCard lid
+      shuffleCardsIntoDeck ArkhamStreetsDeck cards
       pure a
-    {- "[free] Investigators at your location spend 1[per_investigator] clues, as
-    a group: Place a resource on your location (from the token pool)." -}
     UseThisAbility iid (isSource attrs -> True) 3 -> do
-      selectForMaybeM (locationWithInvestigator iid) \lid ->
-        placeTokens (attrs.ability 3) lid Token.Resource 1
+      withMatch (locationWithInvestigator iid) $ placeTokensOn (attrs.ability 3) #resource 1
       pure a
     UseThisAbility _ (isSource attrs -> True) 4 -> do
       advanceVia #other attrs attrs
       pure a
-    -- "(You may initiate a move even if there are no connecting locations in
-    -- play.)" Seeds a move on your own location for ability 1 to retarget.
     UseThisAbility iid (isProxySource attrs -> True) 5 -> do
       seedRedirectableMove (attrs.ability 5) iid
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      -- "Place 1[per_investigator] clues on each of A Place to Hide, Winchmore
-      -- House and Cramped Passage."
       n <- perPlayer 1
       selectEach
         ( mapOneOf
             locationIs
             [Locations.aPlaceToHide, Locations.winchmoreHouse, Locations.crampedPassage]
         )
-        \lid -> placeTokens attrs lid Token.Clue n
+        $ placeTokensOn attrs #clue n
 
-      -- "Search the encounter deck and discard pile for a copy of Hired Thugs
-      -- and spawn them at Winchmore House."
       lead <- getLead
       findEncounterCard lead attrs (cardIs Enemies.hiredThugs)
 
-      {- "If Eternity's Sentinel (Scourge in the Shadows) is in play, replace it
-      with the set-aside Eternity's Sentinel (Watcher of the Ages) (it keeps all
-      tokens and attachments). Then, if it is in play but at no location, spawn
-      it at Rivertown."
-
-      'Swap' is the right strategy and does the parenthetical for free: it keeps
-      the enemy id and copies the tokens, placement, attachments and exhausted
-      state over to the new card. Because the id survives, the "at no location"
-      check below reads the same enemy either way. -}
       selectEach
         (mapOneOf enemyIs [Enemies.eternitysSentinel_016, Enemies.eternitysSentinel_017])
         \sentinel -> do
@@ -132,8 +91,6 @@ instance RunMessage GettingYourBearings where
 
       advanceActDeck attrs
       pure a
-    {- "For the remainder of the scenario, this enemy gets +1[per_investigator]
-    health and loses hunter." -}
     FoundEncounterCard _ (isTarget attrs -> True) (toCard -> card) -> do
       selectForMaybeM (locationIs Locations.winchmoreHouse) \winchmoreHouse -> do
         eid <- createEnemy card winchmoreHouse

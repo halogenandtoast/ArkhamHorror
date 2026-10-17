@@ -66,6 +66,9 @@ healthPerInvestigator = Just . Health . PerPlayer
 healthX :: Maybe Health
 healthX = Just (Health ValueX)
 
+healthUnknown :: Maybe Health
+healthUnknown = Just (Health ValueUnknown)
+
 healthStar :: Maybe Health
 healthStar = Just (Health ValueStar)
 

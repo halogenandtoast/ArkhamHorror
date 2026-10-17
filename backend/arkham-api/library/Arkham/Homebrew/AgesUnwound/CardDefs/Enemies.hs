@@ -440,6 +440,7 @@ myriadAssassin =
     , cdCardTraits = setFromList [Humanoid, Criminal]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Alert]
     , cdVictoryPoints = Just 1
+    , cdRevelation = IsRevelation
     }
 
 irregulars :: CardDef

@@ -590,3 +590,7 @@ toEnumMaybe :: forall a. (Enum a, Bounded a) => Int -> Maybe a
 toEnumMaybe n
   | n >= fromEnum (minBound @a), n <= fromEnum (maxBound @a) = Just (toEnum n)
   | otherwise = Nothing
+
+(|?) :: Maybe a -> a -> a
+mx |? def = fromMaybe def mx
+infixl 3 |?

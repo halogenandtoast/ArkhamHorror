@@ -15,12 +15,6 @@ newtype IndependenceSquare = IndependenceSquare LocationAttrs
 independenceSquare :: LocationCard IndependenceSquare
 independenceSquare = symbolLabel $ location IndependenceSquare Cards.independenceSquare 2 (PerPlayer 2)
 
-{- | "Forced - When an investigator at this location initiates a skill test
-printed on an act/agenda card: Increase the difficulty of this skill test by 2."
-
-Every act/agenda test in this scenario comes from an ability on the card, and an
-ability source reports the card's own type, so @SourceIsType@ catches it.
--}
 instance HasAbilities IndependenceSquare where
   getAbilities (IndependenceSquare a) =
     extendRevealed1 a

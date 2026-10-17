@@ -17,25 +17,12 @@ newtype WinchmoreHouse = WinchmoreHouse LocationAttrs
 winchmoreHouse :: LocationCard WinchmoreHouse
 winchmoreHouse = symbolLabel $ location WinchmoreHouse Cards.winchmoreHouse 2 (PerPlayer 1)
 
-{- | "While there is a ready enemy at Winchmore House, investigators here cannot
-move except by the below ability." / "Enemies at this location get +1 fight and
-+1 evade."
--}
 instance HasModifiersFor WinchmoreHouse where
   getModifiersFor (WinchmoreHouse a) = do
     modifySelect a (enemyAt a.id) [EnemyFight 1, EnemyEvade 1]
     readyEnemyHere <- selectAny $ ReadyEnemy <> enemyAt a.id
     modifySelectWhen a readyEnemyHere (investigatorAt a.id) [CannotMove]
 
-{- | "[action] Choose and discard 2 cards from your hand: Disengage from each
-enemy engaged with you and move to a connecting location."
-
-The move is made uncancelable, which is what carries the "except by the below
-ability" exemption: the movement runner lets an uncancelable move through even
-while the mover has 'CannotMove'. Only cancelability is cleared -- a full
-'forcedMove' would also waive additional costs to enter, which this ability
-never says it does.
--}
 instance HasAbilities WinchmoreHouse where
   getAbilities (WinchmoreHouse a) =
     extendRevealed1 a
@@ -46,11 +33,6 @@ instance RunMessage WinchmoreHouse where
   runMessage msg l@(WinchmoreHouse attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       selectEach (enemyEngagedWith iid) (disengageEnemy iid)
-      -- The same matcher the criterion uses, deliberately NOT
-      -- `getAccessibleLocations`: that gates on `InvestigatorCanMove`, which is
-      -- false under this card's own `CannotMove`, so it returns [] and the ask
-      -- is silently skipped -- killing the one escape the card prints. The move
-      -- below is uncancelable, which is what carries the exemption.
       connected <- select $ ConnectedFrom ForMovement (be attrs)
       chooseTargetM iid connected \lid ->
         moveToEdit (attrs.ability 1) iid lid \m -> m {moveCancelable = False}

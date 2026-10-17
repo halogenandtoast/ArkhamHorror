@@ -440,6 +440,7 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
             pure $ [m | not doDelayAdditionalCosts, AdditionalCostToLeave m <- mods]
           _ -> pure []
       else pure []
+  let moveCosts = [m | #move `elem` abilityActions a, not doDelayAdditionalCosts, AdditionalCostToMove m <- imods]
   performActionCosts <- do
     -- riders can sit on the investigator (a treachery in their threat area) or
     -- on their location, so both are consulted
@@ -466,17 +467,18 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
     fixEnemy =
       (maybe id Matcher.replaceThatInvestigator $ getThatInvestigator ws)
         . (maybe id Matcher.replaceThatEnemy mThatEnemy)
+    actionCosts =
+      investigateCosts
+        <> exploreCosts
+        <> resignCosts
+        <> enterCosts
+        <> leaveCosts
+        <> moveCosts
+        <> performActionCosts
     costF =
       case find isSetCost modifiers of
-        Just (SetAbilityCost c) ->
-          fixEnemy
-            . fold
-            . (: investigateCosts <> exploreCosts <> resignCosts <> enterCosts <> leaveCosts <> performActionCosts)
-            . const c
-        _ ->
-          fixEnemy
-            . fold
-            . (: investigateCosts <> exploreCosts <> resignCosts <> enterCosts <> leaveCosts <> performActionCosts)
+        Just (SetAbilityCost c) -> fixEnemy . fold . (: actionCosts) . const c
+        _ -> fixEnemy . fold . (: actionCosts)
     isSetCost = \case
       SetAbilityCost _ -> True
       _ -> False

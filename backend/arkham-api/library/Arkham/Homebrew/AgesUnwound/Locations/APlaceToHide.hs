@@ -12,19 +12,9 @@ newtype APlaceToHide = APlaceToHide LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-{- | @clues_fixed@ 0: it never holds clues of its own, and act 2b is what puts
-1[per_investigator] on it.
--}
 aPlaceToHide :: LocationCard APlaceToHide
 aPlaceToHide = symbolLabel $ location APlaceToHide Cards.aPlaceToHide 4 (Static 0)
 
-{- | "Forced - When an investigator at this location initiates a skill test
-printed on an agenda card: That investigator automatically succeeds."
-
-Agendas only -- unlike Independence Square, which reads act /and/ agenda. All
-three agendas print the same end-of-turn [agility] test, so sitting here is how
-you stop paying for standing still.
--}
 instance HasAbilities APlaceToHide where
   getAbilities (APlaceToHide a) =
     extendRevealed1 a

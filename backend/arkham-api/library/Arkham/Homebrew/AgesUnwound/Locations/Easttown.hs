@@ -14,9 +14,6 @@ newtype Easttown = Easttown LocationAttrs
 easttown :: LocationCard Easttown
 easttown = symbolLabel $ location Easttown Cards.easttown 3 (PerPlayer 1)
 
-{- | "While you are in Easttown, reduce the cost of each [[Ally]] asset you play
-by 2 and increase the cost of each other asset you play by 1."
--}
 instance HasModifiersFor Easttown where
   getModifiersFor (Easttown a) =
     modifySelect
@@ -26,9 +23,6 @@ instance HasModifiersFor Easttown where
       , IncreaseCostOf (basic $ #asset <> NotCard (CardWithTrait Ally)) 1
       ]
 
-{- | "[action] Discard an asset you control: Gain 2 clues (from the token pool).
-(Group limit once per round.)"
--}
 instance HasAbilities Easttown where
   getAbilities (Easttown a) =
     extendRevealed1 a

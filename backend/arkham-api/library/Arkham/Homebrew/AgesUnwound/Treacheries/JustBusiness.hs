@@ -13,8 +13,6 @@ justBusiness = treachery JustBusiness Cards.justBusiness
 
 instance RunMessage JustBusiness where
   runMessage msg t@(JustBusiness attrs) = runQueueT $ case msg of
-    -- "Revelation - Test [willpower] (3). If you fail, take 2 horror and move to
-    -- a new Arkham Streets location."
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
       revelationSkillTest sid iid attrs #willpower (Fixed 3)

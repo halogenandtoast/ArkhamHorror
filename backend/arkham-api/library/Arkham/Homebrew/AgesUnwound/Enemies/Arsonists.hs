@@ -12,13 +12,6 @@ newtype Arsonists = Arsonists EnemyAttrs
 arsonists :: EnemyCard Arsonists
 arsonists = enemy Arsonists Cards.arsonists
 
-{- | "Forced - At the end of the enemy phase, if Arsonists are ready and
-unengaged: Each investigator at Arsonists' location takes 1 damage and 1
-horror."
-
-Aloof, so they do not engage on their own; leaving them standing at your
-location is what costs you.
--}
 instance HasAbilities Arsonists where
   getAbilities (Arsonists a) =
     extend1 a

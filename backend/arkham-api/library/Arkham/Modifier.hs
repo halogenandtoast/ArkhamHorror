@@ -86,6 +86,11 @@ data ModifierType
   | AdditionalCostToExplore Cost
   | AdditionalCostToInvestigate Cost
   | AdditionalCostToLeave Cost
+  | {- | An extra cost to move, carried by the moving investigator rather than by a
+    location. It is a cost of the move itself, so it is paid before the would-move
+    and leaving windows instead of on entering (Lost in the Dark).
+    -}
+    AdditionalCostToMove Cost
   | AdditionalCostToResign Cost
   | AdditionalResources Int
   | {- | "Resolve its revelation effect an additional time." Adds N extra copies

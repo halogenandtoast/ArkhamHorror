@@ -8,6 +8,14 @@
   --combat: #ae4236;
   --agility: #14854d;
 
+  /* Dark fills for a button that IS a skill: the base token is too bright to
+     sit behind the light button text. The first three are what the skill-test
+     buttons already used; the intellect is its base token at the same depth. */
+  --willpower-dark: #00008b;
+  --intellect-dark: #3e1e43;
+  --combat-dark: #8b0000;
+  --agility-dark: #004d00;
+
   --willpower-light: #C5DEF2;
   --intellect-light: #EAD5EC;
   --combat-light: #F1D3D0;

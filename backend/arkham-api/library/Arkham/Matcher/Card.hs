@@ -599,7 +599,13 @@ instance FromJSON ExtendedCardMatcher where
               Success imatcher -> pure $ CanCancelAllEffects imatcher matcher
               Error err -> fail err
           Right (imatcher, matcher) -> pure $ CanCancelAllEffects imatcher matcher
-      _ -> $(mkParseJSON defaultOptions ''ExtendedCardMatcher) (Object o)
+      {- A bare 'CardMatcher' decodes as the 'BasicCardMatch' it means. Saved
+      games hold matchers written when a field took the plain type -- a window's
+      payload, say -- and the two share no tag names, so trying the extended
+      constructors first keeps those exact. -}
+      _ ->
+        $(mkParseJSON defaultOptions ''ExtendedCardMatcher) (Object o)
+          <|> (BasicCardMatch <$> parseJSON (Object o))
 
 -- ** Card Helpers **
 

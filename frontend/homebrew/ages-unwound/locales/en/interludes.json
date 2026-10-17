@@ -1,5 +1,12 @@
 {
   "anUnknownBenefactor": {
-    "title": "An Unknown Benefactor"
+    "title": "Interlude I: An Unknown Benefactor",
+    "body": "<p>Blessedly, the morning has come. Tiredness weighs you down like lead, and you want nothing more than to sink into your bed, but your bed perished in flames and sleep is a distant dream. Not to mention that with armed thugs still potentially after your head, you&rsquo;re not sure you&rsquo;d sleep a wink.</p><p>You decide to settle for a hot breakfast and a pot of strong coffee at Velma&rsquo;s. While you wait for your food, a confused-looking waitress approaches your table, depositing on it a brown paper package with an envelope taped to the top. &ldquo;This is for you,&rdquo; she adds unnecessarily.</p><p>The letter in the envelope is short and to the point:</p><p>They wish to see you dead. I do not. This may help.</p><p>God knows, you could use an ally, and certainly somebody out there seems to be aiding you from afar. But you hesitate&mdash;it could be a trap, and if someone does want to help you, why not show their face?</p><p class='basic'>The investigators must decide (choose one):</p><ul><li>*I don&rsquo;t know what this is, and I don&rsquo;t trust it.* Proceed to _Going It Alone_.</li><li>*We&rsquo;re out of our depth, here. We need all the help we can get.* Proceed to _Leap of Faith_.</li></ul>",
+    "goingItAlone": "<p>_Going It Alone:_ You shovel toast and eggs into your mouth, studiously ignoring the package before you. On your way out, you toss it into the trash.</p><ul class='basic'><li>In your Campaign Log, record that *the investigators declined an offer of help*.</li><li>Remove each {cultist} token from the chaos bag. Add 1 {tablet} token to the chaos bag.</li></ul>",
+    "leapOfFaith": "<p>_Leap of Faith:_ If someone wants to help prevent your untimely death, you have no objections. You carefully unwrap the package before you&hellip;</p><ul class='basic'><li>In your Campaign Log, mark 1 _Strange Assistance_ and record that *the investigators accepted an offer of help*.</li><li>Remove each {tablet} token from the chaos bag. Add 1 {cultist} token to the chaos bag.</li></ul>",
+    "label": {
+      "goingItAlone": "I don't know what this is, and I don't trust it.",
+      "leapOfFaith": "We're out of our depth, here. We need all the help we can get."
+    }
   }
 }

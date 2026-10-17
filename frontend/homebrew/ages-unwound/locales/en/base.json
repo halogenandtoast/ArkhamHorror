@@ -35,17 +35,6 @@
     "title": "Prologue",
     "body": "<p>The night&rsquo;s chill has reached your bones, soaking through your layers of warm clothing and settling on your soul. Your eyes, by now accustomed to the dim moonlight, spot no movement on the abandoned street. It&rsquo;s long past midnight. It must be past 1am by now.</p><p>The call had been rather questionable—a muffled, distorted voice, entreating you to meet it at midnight, that the fate of the world depended on it. Outlandish, yes, but the caller knew things, things that almost noone knows about you. It wasn't quite blackmail, but rather a promise of trustworthiness. A promise that everything would be explained soon.</p><p>You feel a little foolish as you trudge home. Like some cruel trick has been played upon you. Probably you shouldn&rsquo;t have gone, but something made you want to believe the voice on the other end of the phone. Foolish.</p><p>Bright, flickering light almost blinds you. You blink rapidly, and as your eyes adjust the blinding hues resolve into an image of fire and fury. Your home is ablaze, an inferno so fierce and hot that it couldn&rsquo;t <i>not</i> be deliberate. Somebody trying to kill you? But why?</p><p>And if this is an attempt on your life, what does that make the peculiar call you received earlier this evening?</p><p class='basic'>Mark 1 _Strange Assistance_ in your Campaign Log. Someone just saved your life.</p><p class='basic right'>Proceed to _Scenario I: Night of Fire_.</p>"
   },
-  "anUnknownBenefactor": {
-    "title": "An Unknown Benefactor",
-    "body": "<p>TODO(ages-unwound): Interlude I flavour (guide p5).</p>",
-    "theChoice": "<p>TODO(ages-unwound): the text that frames the choice.</p>",
-    "goingItAlone": "<p>TODO(ages-unwound): the Going It Alone branch.</p>",
-    "leapOfFaith": "<p>TODO(ages-unwound): the Leap of Faith branch.</p>",
-    "label": {
-      "goingItAlone": "Going It Alone",
-      "leapOfFaith": "Leap of Faith"
-    }
-  },
   "epilogue": {
     "title": "Epilogue",
     "bound": "<p>TODO(ages-unwound): the epilogue read when the investigators bound Aforgomon (guide p19).</p>",

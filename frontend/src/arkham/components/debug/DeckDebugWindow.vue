@@ -40,7 +40,9 @@ const draw = () => debug.send(props.game.id, drawCardsMessage(iid.value, drawCou
 // Only one search at a time: a second would clobber the first's found cards.
 const canSelectDraw = computed(() => Object.keys(props.investigator.foundCards).length === 0)
 
-const selectDraw = () =>
+// The search puts a card picker in front of the player, so get out of its way.
+const selectDraw = () => {
+  emit('close')
   debug.send(props.game.id, {
     tag: 'SearchMessage',
     contents: {
@@ -56,6 +58,7 @@ const selectDraw = () =>
       ],
     },
   })
+}
 
 const shuffle = () => debug.send(props.game.id, { tag: 'ShuffleDeck', contents: deckSignifier.value })
 

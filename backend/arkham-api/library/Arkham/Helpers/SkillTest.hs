@@ -689,7 +689,9 @@ getIsCommittable a c = runValidT do
       let
         committedCardTitles = map toTitle allCommittedCards
         passesCommitRestriction = \case
-          OnlySkillTestSource matcher -> sourceMatches skillTest.source matcher
+          -- "you control" on a commit restriction is the committing investigator, not
+          -- the active one; every player is asked at once during the commit step (#5862)
+          OnlySkillTestSource matcher -> sourceMatches skillTest.source (replaceYouMatcher a matcher)
           OnlySkillTest matcher -> skillTestMatches iid skillTest.source skillTest (replaceYouMatcher iid matcher)
           CommittableTreachery -> error "unhandled"
           AnyCommitRestriction cs -> anyM passesCommitRestriction cs

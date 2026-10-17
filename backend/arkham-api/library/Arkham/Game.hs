@@ -5885,7 +5885,8 @@ instance Query ExtendedCardMatcher where
             CanCommitAfterRevealingTokens -> pure True
             OnlySkillTestSource smatcher ->
               getSkillTestSource >>= \case
-                Just source -> sourceMatches source smatcher
+                Just source ->
+                  sourceMatches source $ maybe smatcher (`replaceYouMatcher` smatcher) card.owner
                 Nothing -> pure False
             OnlySkillTest smatcher ->
               getSkillTest >>= \case

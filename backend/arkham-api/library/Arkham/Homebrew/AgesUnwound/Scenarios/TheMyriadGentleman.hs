@@ -1,11 +1,13 @@
 {- | Scenario II. Baxter's manor; the introduction branches on Interlude I's
 choice (guide p5-6).
 
-Besides setup and the two resolutions, this module owns the two halves of the
+Besides setup and the two resolutions, this module owns the halves of the
 scenario's "Copies of Enemies" mechanic that have to live somewhere central --
 see "Arkham.Homebrew.AgesUnwound.Scenarios.TheMyriadGentleman.Helpers" for why
 the copies are ordinary enemies rather than swarm cards:
 
+* @ScenarioSpecific@ minting, so each copy's card is taken off the deck one
+  request at a time rather than while messages are still being built.
 * @ScenarioSpecific@ registration, so two spawns in one handler cannot clobber
   each other the way a @SetScenarioMeta@ read-modify-write would.
 * @RemoveEnemy@ / @Discarded@: return the card to the bottom of its owner's deck
@@ -164,8 +166,13 @@ instance RunMessage TheMyriadGentleman where
       withSkillTest \sid -> afterThisTestResolves sid do
         whenM onActTwoOrThree $ spawnMyriadCopiesEngagedWith iid 1
       pure s
-    -- "Copies of Enemies": the scenario is the one place that remembers which
-    -- player card each copy was made from.
+    {- "Copies of Enemies": the cards are picked here, while the request is
+    running, so that each pick sees the deck the one before it left behind. -}
+    ScenarioSpecific key v | key == spawnMyriadCopiesKey -> do
+      mintMyriadCopies (toResult @MyriadSpawnRequest v)
+      pure s
+    -- The scenario is also the one place that remembers which player card each
+    -- copy was made from.
     ScenarioSpecific key v | key == registerMyriadCopyKey -> do
       let copy = toResult @MyriadCopy v
       let meta = toResultDefault emptyMyriadMeta attrs.meta
@@ -202,13 +209,13 @@ instance RunMessage TheMyriadGentleman where
         NoResolution -> push R2
         Resolution 1 -> do
           record TheInvestigatorsLearntOfTheMyriadsRitual
-          offerAforgomonsBlade
           resolutionWithXp "resolution1" $ allGainXp' attrs
+          offerAforgomonsBlade
           endOfScenario
         Resolution 2 -> do
           record TheInvestigatorsFledTheGentlemansManor
-          offerAforgomonsBlade
           resolutionWithXp "resolution2" $ allGainXp' attrs
+          offerAforgomonsBlade
           endOfScenario
         _ -> error "invalid resolution"
       pure s
@@ -230,5 +237,5 @@ offerAforgomonsBlade = do
   when defeated do
     iids <- allInvestigators
     gaze <- fetchCard Treacheries.gazeOfAforgomon
-    addCampaignCardToDeckChoiceWith iids DoNotShuffleIn Assets.aforgomonsBlade \iid ->
+    addCampaignCardToDeckChoiceAlsoShowing iids DoNotShuffleIn Assets.aforgomonsBlade [gaze] \iid ->
       [Msg.AddCampaignCardToDeck iid DoNotShuffleIn gaze]

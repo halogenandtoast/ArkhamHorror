@@ -35,7 +35,7 @@ import Arkham.Card.EncounterCard (lookupEncounterCard)
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query (selectAny)
-import Arkham.Enemy.Creation (IsEnemyCreationMethod)
+import Arkham.Enemy.Creation (EnemyCreationMethod, IsEnemyCreationMethod (..))
 import Arkham.Helpers.Message (createEnemyWith)
 import Arkham.Helpers.Scenario (scenarioField)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Enemies qualified as Enemies
@@ -104,6 +104,28 @@ registerMyriadCopyKey = "theMyriadGentleman.registerCopy"
 returnedMyriadCopyKey :: Text
 returnedMyriadCopyKey = "theMyriadGentleman.returnedCopy"
 
+-- | ... and the one that asks for copies to be minted.
+spawnMyriadCopiesKey :: Text
+spawnMyriadCopiesKey = "theMyriadGentleman.spawnCopies"
+
+-- | One deferred "spawn @count@ copies" instruction.
+data MyriadSpawnRequest = MyriadSpawnRequest
+  { myriadSpawnOwner :: InvestigatorId
+  , myriadSpawnCount :: Int
+  , myriadSpawnMethod :: EnemyCreationMethod
+  }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+instance HasField "owner" MyriadSpawnRequest InvestigatorId where
+  getField = myriadSpawnOwner
+
+instance HasField "count" MyriadSpawnRequest Int where
+  getField = myriadSpawnCount
+
+instance HasField "method" MyriadSpawnRequest EnemyCreationMethod where
+  getField = myriadSpawnMethod
+
 {- | Agenda 1b and the scenario reference's @[tablet]@ both gate on "it is act 2
 or 3".
 -}
@@ -120,21 +142,40 @@ heIsReadyForYou = HomebrewScenarioLogKey "agesUnwound.HeIsReadyForYou"
 @iid@'s deck. @method@ is where they spawn: pass an 'InvestigatorId' for
 "engaged with them" and a 'LocationId' for "at that location".
 
-Fewer than @n@ copies appear when the deck runs out — a card you do not have is
-a card you cannot place.
+This only /asks/ for the copies; the scenario mints them with
+'mintMyriadCopies' when the request message resolves. Choosing the cards has to
+wait that long, because the card is taken off the deck by an @ObtainCard@ that
+is itself only queued: anything that picks cards while still building messages
+reads a deck the earlier picks have not left yet, and two copies end up made
+from the same card. That is not hypothetical — 'Arkham.Message.Lifted.capture'
+(behind @atEndOfRound@) runs its body at /registration/ time, so the Entrance
+Hall's end-of-round spawn used to claim the card that was on top when the
+location was revealed, which anything spawning in between claimed as well.
 -}
 spawnMyriadCopies
   :: (ReverseQueue m, IsEnemyCreationMethod method)
   => InvestigatorId -> Int -> method -> m ()
-spawnMyriadCopies iid n method = do
-  cards <- take n <$> fieldMap InvestigatorDeck (.cards) iid
+spawnMyriadCopies iid n method =
+  when (n > 0)
+    $ scenarioSpecific spawnMyriadCopiesKey
+    $ MyriadSpawnRequest iid n (toEnemyCreationMethod method)
+
+{- | Mint the copies a 'MyriadSpawnRequest' asked for. Only the scenario calls
+this, and only while running the request.
+
+Fewer than @count@ copies appear when the deck runs out — a card you do not have
+is a card you cannot place.
+-}
+mintMyriadCopies :: ReverseQueue m => MyriadSpawnRequest -> m ()
+mintMyriadCopies req = do
+  cards <- take req.count <$> fieldMap InvestigatorDeck (.cards) req.owner
   for_ cards \pc -> do
     let
       copyCard =
         EncounterCard
-          $ (lookupEncounterCard Enemies.theMyriadGentleman_042 pc.id) {ecOwner = Just iid}
-    (eid, create) <- createEnemyWith copyCard method id
-    scenarioSpecific registerMyriadCopyKey (MyriadCopy eid iid (PlayerCard pc) False)
+          $ (lookupEncounterCard Enemies.theMyriadGentleman_042 pc.id) {ecOwner = Just req.owner}
+    (eid, create) <- createEnemyWith copyCard req.method id
+    scenarioSpecific registerMyriadCopyKey (MyriadCopy eid req.owner (PlayerCard pc) False)
     push $ ObtainCard pc.id
     push create
 

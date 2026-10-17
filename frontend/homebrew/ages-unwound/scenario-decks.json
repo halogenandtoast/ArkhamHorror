@@ -1,5 +1,8 @@
 {
   "ArkhamStreetsDeck": {
     "back": ":ages-unwound:009b"
+  },
+  "DummyDeck": {
+    "image": "player-back"
   }
 }

@@ -63,6 +63,10 @@ const homebrewBack = computed(() => {
 })
 
 const deckImage = computed(() => {
+  if (homebrewDisplay.value?.image === 'player-back') {
+    return imgsrc("backs/back_player.jpg")
+  }
+
   if (homebrewDisplay.value?.image === 'top-card-back') {
     const topCard = props.deck[1][0]
     if (topCard) {

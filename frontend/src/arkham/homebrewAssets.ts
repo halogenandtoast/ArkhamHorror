@@ -20,7 +20,10 @@
 import.meta.glob('@homebrew/*/*.css', { eager: true })
 
 export type HomebrewScenarioDeckDisplay = {
-  image?: 'top-card-back'
+  // 'top-card-back' stacks the deck on its own top card, held facedown;
+  // 'player-back' on the standard player card back, for a deck built out of
+  // player cards (Ages Unwound's true-solo dummy deck).
+  image?: 'top-card-back' | 'player-back'
   // The art the deck is stacked on, as a card code (`:campaign:009b`) rather
   // than an image path, so a deck of locations held unrevealed-side-up shows
   // that side even while it is empty. Also the fallback for `top-card-back`.

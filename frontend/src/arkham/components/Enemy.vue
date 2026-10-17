@@ -127,6 +127,17 @@ const swarmBackImage = imgsrc('backs/back_player.jpg')
 const swarmEnemyDamage = (enemy: typeof props.enemy) => (enemy.tokens[TokenType.Damage] || 0) + enemy.assignedDamage
 
 const isSwarm = computed(() => props.enemy.placement.tag === 'AsSwarm')
+/* An enemy standing on a card out of someone's deck: its entity sits on that
+ * card's id while being a different card, so game.cards answers with the deck
+ * card. A swarm card and The Myriad Gentleman's copies both work this way, and
+ * both show a player back on the table. A weakness enemy IS its player card --
+ * the codes match -- so its own art still shows. */
+const standsOnDeckCard = computed(() => {
+  const physical = props.game.cards[props.enemy.cardId]
+  if (!physical) return false
+  return physical.tag === 'PlayerCard' && toCardContents(physical).cardCode !== props.enemy.cardCode
+})
+const showsPlayerBack = computed(() => isSwarm.value || standsOnDeckCard.value)
 
 const referenceCards = computed(() => props.enemy.referenceCards)
 const hasSpiritAura = computed(() => isManifestedSpiritEnemy(props.enemy, props.game))
@@ -421,7 +432,7 @@ function onDrop(event: DragEvent) {
             <img v-else
               :draggable="debug.active"
               @dragstart="startDrag($event, enemy)"
-              :src="isSwarm ? imgsrc('backs/back_player.jpg') : displayedImage"
+              :src="showsPlayerBack ? imgsrc('backs/back_player.jpg') : displayedImage"
               class="card enemy"
               v-tooltip="sourceTooltip"
               :class="{ 'enemy--can-interact': canInteract && !hasObjective, 'enemy--can-interact-cursor': canInteract, attached, 'source-highlight': isHighlighted || isAttacking, 'card--flipping': flipping }"

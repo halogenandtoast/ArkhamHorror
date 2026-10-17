@@ -225,6 +225,33 @@ const swarmHost = computed(() => {
   return props.game.cards[props.game.enemies[swarmEnemy.value.placement.swarmHost].cardId]
 })
 
+/* The enemy being tested stands on a card from someone's deck (The Myriad
+ * Gentleman's copies), so its entity id is that deck card's and `targetCard`
+ * resolves to the deck card rather than to the enemy. Read it off the entity
+ * instead and draw it the way a swarm card is drawn: a player back beside the
+ * enemy's own card. A weakness enemy IS its player card, so its codes match and
+ * this leaves it alone. */
+const deckCardEnemy = computed(() => {
+  if (!targetCardId.value || swarmEnemy.value) return null
+  const physical = targetCard.value
+  if (!physical || physical.tag !== 'PlayerCard') return null
+  const code = Cards.toCardContents(physical).cardCode
+  return (
+    Object.values(props.game.enemies).find(
+      (e) => e.cardId === targetCardId.value && e.cardCode !== code,
+    ) ?? null
+  )
+})
+
+const deckCardEnemyCard = computed<Cards.Card | null>(() => {
+  const enemy = deckCardEnemy.value
+  if (!enemy || !targetCard.value) return null
+  return {
+    tag: 'EncounterCard',
+    contents: { ...Cards.toCardContents(targetCard.value), cardCode: enemy.cardCode },
+  }
+})
+
 const sourceCard = computed(() => {
   if (!props.skillTest.sourceCard) return null
   if (props.skillTest.sourceCard === props.skillTest.targetCard) return null
@@ -359,12 +386,12 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
         <button type="button" class="skip-triggers-notice__button" @click="openSettings">{{ $t('skillTest.skipTriggersAdjust') }}</button>
       </div>
       <div class="skill-test-contents">
-        <div v-if="swarmEnemy" class="target-card swarming">
+        <div v-if="swarmEnemy || deckCardEnemy" class="target-card swarming">
           <div class="swarm">
             <img :src="imgsrc('backs/back_player.jpg')" class="card" />
           </div>
-          <div v-if="swarmHost" class="host">
-            <Card :game="game" :card="swarmHost" :revealed="true" playerId="" />
+          <div v-if="swarmHost ?? deckCardEnemyCard" class="host">
+            <Card :game="game" :card="(swarmHost ?? deckCardEnemyCard)!" :revealed="true" playerId="" />
           </div>
         </div>
         <Card

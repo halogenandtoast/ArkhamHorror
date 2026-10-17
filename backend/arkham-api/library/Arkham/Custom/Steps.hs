@@ -49,7 +49,7 @@ import Arkham.Helpers.Investigator (getCanDiscoverClues)
 import Arkham.Helpers.Location (Locateable, getLocationOf)
 import Arkham.Helpers.Message (drawCards)
 import Arkham.Helpers.Modifiers (
-  ModifierType (ReduceCostOf),
+  ModifierType (IgnoreAloof, ReduceCostOf),
   toModifiers,
   withModifiers,
  )
@@ -114,6 +114,12 @@ that instead, granted so that "immediately" does not cost an action.
 Modifiers given here go on the attack's skill test, which is what "for this
 attack" means. They have no home on a basic fight action, which makes its own
 test.
+
+@ignoreAloof@ is the explicit "ignore the aloof keyword for this attack" wording
+(Longbow (3), British Bull Dog (2)). It wraps @matcher@ in the override that
+/replaces/ the standard fight criteria, because an unengaged aloof enemy is
+otherwise never a legal target. It has no effect on a @basic@ fight action, which
+goes through the enemy's own ability and never sees this matcher.
 -}
 runFight :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m Env
 runFight env spec = do
@@ -123,11 +129,37 @@ runFight env spec = do
     source = stepSource env
     matcher = KeyMap.lookup "matcher" o >>= decodeWith env
     isBasic = KeyMap.lookup "basic" o == Just (Bool True)
+    ignoresAloof = KeyMap.lookup "ignoreAloof" o == Just (Bool True)
   if isBasic
     then env <$ runBasicFight source iid matcher
-    else beginTest env spec \sid _ _ ->
+    else beginTest env spec \sid _ _ -> do
+      when ignoresAloof $ skillTestModifiers sid source iid [IgnoreAloof]
       chooseFightEnemyEdit sid iid source \cf ->
-        cf {chooseFightEnemyMatcher = fromMaybe (chooseFightEnemyMatcher cf) matcher}
+        let m = fightMatcherFor ignoresAloof (chooseFightEnemyMatcher cf) matcher
+         in cf {chooseFightEnemyMatcher = m, chooseFightOverride = isFightOverride m}
+
+{- | The enemy matcher a @fight@ step chooses with, and whether it overrides.
+
+@ChooseFightEnemy@ only stops applying the standard fight criteria when the
+message says the matcher overrides them; 'mkChooseFightMatch' sets that flag for
+printed cards, and a custom card's matcher reaches the same message by a
+different road, so it has to be set here too. Without it the override is ANDed
+with the criteria it was meant to replace and silently does nothing.
+
+An author who writes the override constructor by hand keeps it as written --
+wrapping one override in another would be nonsense.
+-}
+fightMatcherFor :: Bool -> EnemyMatcher -> Maybe EnemyMatcher -> EnemyMatcher
+fightMatcherFor ignoresAloof dflt = \case
+  Just m | ignoresAloof && not (isFightOverride m) -> ignoreAloofFightOverride m
+  Just m -> m
+  Nothing | ignoresAloof -> ignoreAloofFightOverride AnyEnemy
+  Nothing -> dflt
+
+isFightOverride :: EnemyMatcher -> Bool
+isFightOverride = \case
+  CanFightEnemyWithOverride {} -> True
+  _ -> False
 
 {- | The scaffolding every step that starts a skill test shares.
 

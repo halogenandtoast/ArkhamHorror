@@ -1679,6 +1679,17 @@ const removeOption = (step: any, index: number, at: number) =>
           :modelValue="step.fight?.matcher"
           @update:modelValue="set(index, { ...step, fight: { ...step.fight, matcher: $event } })"
         />
+        <BoolField
+          v-if="!step.fight?.basic"
+          label="ignore the aloof keyword for this attack"
+          :modelValue="!!step.fight?.ignoreAloof"
+          @update:modelValue="set(index, { ...step, fight: { ...step.fight, ignoreAloof: $event } })"
+        />
+        <p v-if="step.fight?.ignoreAloof" class="hint">
+          Only for a card that prints that wording. An unengaged aloof enemy cannot otherwise be
+          attacked, so this replaces the standard fight criteria rather than narrowing them — the
+          matcher above becomes a restriction inside the override.
+        </p>
         <ValueEditor
           :bindings="scopeFor(index)"
           v-if="!step.fight?.basic"

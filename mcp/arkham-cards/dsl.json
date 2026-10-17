@@ -439,6 +439,7 @@
       "payloadKeys": [
         "matcher",
         "basic",
+        "ignoreAloof",
         "modifiers",
         "onReveal",
         "onSuccess",
@@ -453,10 +454,12 @@
         "target"
       ],
       "valueShape": null,
-      "doc": "Fight an enemy.\n\nTwo different things wear the word \"fight\". A card with the Fight action on it\n/is/ a fight action when you play it, and the attack it then makes is just an\nattack -- that is this step, and its source is the card. A /basic/ fight action\nis the enemy's own attack ability, which no card can ever be; @basic@ offers\nthat instead, granted so that \"immediately\" does not cost an action.\n\nModifiers given here go on the attack's skill test, which is what \"for this\nattack\" means. They have no home on a basic fight action, which makes its own\ntest.",
+      "doc": "Fight an enemy.\n\nTwo different things wear the word \"fight\". A card with the Fight action on it\n/is/ a fight action when you play it, and the attack it then makes is just an\nattack -- that is this step, and its source is the card. A /basic/ fight action\nis the enemy's own attack ability, which no card can ever be; @basic@ offers\nthat instead, granted so that \"immediately\" does not cost an action.\n\nModifiers given here go on the attack's skill test, which is what \"for this\nattack\" means. They have no home on a basic fight action, which makes its own\ntest.\n\n@ignoreAloof@ is the explicit \"ignore the aloof keyword for this attack\" wording\n(Longbow (3), British Bull Dog (2)). It wraps @matcher@ in the override that\n/replaces/ the standard fight criteria, because an unengaged aloof enemy is\notherwise never a legal target. It has no effect on a @basic@ fight action, which\ngoes through the enemy's own ability and never sees this matcher.",
       "via": [
         "runBasicFight",
         "beginTest",
+        "fightMatcherFor",
+        "isFightOverride",
         "runOnReveal",
         "runOutcomes"
       ]
@@ -1788,6 +1791,7 @@
         "spawnAt",
         "asSelfLocation",
         "bearer",
+        "physicalPlayerCard",
         "spawnedBy",
         "discardedBy",
         "attacking",
@@ -2552,14 +2556,6 @@
       "holds": "a list of modifier specs",
       "readIn": "arkham-api/library/Arkham/Custom/Ability.hs"
     },
-    "_onRevelation": {
-      "holds": "a list of steps",
-      "readIn": "arkham-api/library/Arkham/Custom/Ability.hs"
-    },
-    "_revelationPlacement": {
-      "holds": "threatArea or playArea",
-      "readIn": "arkham-api/library/Arkham/Custom/Ability.hs"
-    },
     "_onPlay": {
       "holds": "a list of steps",
       "readIn": "arkham-api/library/Arkham/Custom/Event.hs"
@@ -2595,6 +2591,14 @@
     "_keywords": {
       "holds": "card data, not steps",
       "readIn": "arkham-api/library/Arkham/Custom/SetDefs.hs"
+    },
+    "_onRevelation": {
+      "holds": "a list of steps",
+      "readIn": "arkham-api/library/Arkham/Card/CustomCard.hs"
+    },
+    "_revelationPlacement": {
+      "holds": "threatArea or playArea",
+      "readIn": "arkham-api/library/Arkham/Card/CustomCard.hs"
     }
   },
   "arrayTolerantDecoders": [
@@ -2688,6 +2692,7 @@
       "movedFromHunterKeyword",
       "damageStrategy",
       "bearer",
+      "physicalPlayerCard",
       "sealedChaosTokens",
       "keys",
       "spawnedBy",

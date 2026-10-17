@@ -369,7 +369,7 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
       </div>
       <img
         v-for="(card, idx) in cardsNextTo"
-        class="card card--sideways"
+        class="card card--next-to"
         :key="idx"
         :src="imgsrc(cardImage(card))"
       />
@@ -464,6 +464,16 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
 
 .card--agenda {
   z-index: var(--z-index-100);
+}
+
+/* A card placed next to the agenda need not be an agenda: The Myriad Gentleman's
+   display card is portrait. The sideways rules force a landscape aspect-ratio,
+   which squashes it, so match the agenda's height and let the image keep its own
+   proportions — a sideways card lands exactly where it did before. */
+.card--next-to {
+  width: auto;
+  height: var(--card-width);
+  max-width: max-content;
 }
 
 .agenda-container {

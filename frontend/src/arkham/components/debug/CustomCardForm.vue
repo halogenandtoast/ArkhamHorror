@@ -63,6 +63,17 @@ const ALWAYS_WEAKNESS = ['PlayerTreacheryType', 'PlayerEnemyType']
 // The actions a card can be played as; an event is the usual case.
 const ACTIONS = ['Fight', 'Evade', 'Investigate', 'Move', 'Parley', 'Resign', 'Draw', 'Play', 'Activate']
 
+/* The form writes a bare array, but the server stores the tagged Actions it
+ * decoded, so a card read back is never the shape it was written as. */
+const actionList = (v: any): string[] =>
+  Array.isArray(v)
+    ? v.flatMap(actionList)
+    : typeof v === 'string'
+      ? [v]
+      : v && typeof v === 'object'
+        ? actionList(v.contents)
+        : []
+
 const CLASSES = ['Guardian', 'Seeker', 'Rogue', 'Mystic', 'Survivor', 'Neutral']
 const SLOTS = ['HandSlot', 'BodySlot', 'AllySlot', 'AccessorySlot', 'ArcaneSlot', 'TarotSlot', 'HeadSlot']
 const USE_TYPES = ['Ammo', 'Charge', 'Secret', 'Supply', 'Offering', 'Resource', 'Key', 'Evidence']
@@ -151,6 +162,8 @@ const blankForm = () => ({
   revelationPlacement: '',
   revelationSteps: [] as any[],
   actions: [] as string[],
+  // Actions are all required unless the card says to pick one of them.
+  actionsOr: false,
   // grouping, so a set of cards made together can be found together
   cardNumber: '',
   arkhamBuildId: '',
@@ -533,8 +546,13 @@ function buildDef(cardCode: string): Record<string, any> {
   }
 
   if (hasClass.value) def.classSymbols = [form.classSymbol]
-  // Actions decode from a bare array; each entry is a bare string.
-  if (form.actions.length) def.actions = form.actions
+  if (form.actions.length) {
+    // A bare array decodes as AndActions; OrActions has to stay tagged.
+    def.actions =
+      form.actionsOr && form.actions.length > 1
+        ? { tag: 'OrActions', contents: form.actions.map((a) => ({ tag: 'SingleAction', contents: a })) }
+        : form.actions
+  }
 
   if (isWeakness.value) def.cardSubType = form.weaknessKind
 
@@ -742,7 +760,8 @@ async function loadCard(card: CustomCard) {
   form.revelation = !!def.revelation && def.revelation !== 'NoRevelation'
   form.revelationPlacement = meta._revelationPlacement ?? ''
   form.revelationSteps = meta._onRevelation ?? []
-  form.actions = Array.isArray(def.actions) ? def.actions : []
+  form.actions = actionList(def.actions)
+  form.actionsOr = def.actions?.tag === 'OrActions'
   form.traits = (def.cardTraits ?? []).map((t: string) => traitDisplay.value.get(t) ?? t).join('. ')
   form.icons = (def.skills ?? []).map((s: any) => (s.tag === 'SkillIcon' ? s.contents : 'Wild'))
   form.keywords = (def.keywords ?? []).map((k: any) => k.tag).filter((k: string) => KEYWORDS.includes(k))
@@ -1129,6 +1148,11 @@ defineExpose({ loadCard, reset, buildCustomCard, snapshot, cardType: computed(()
                 {{ action }}
               </button>
             </div>
+            <BoolField
+              v-if="form.actions.length > 1"
+              label="Any one of them, rather than all of them"
+              v-model="form.actionsOr"
+            />
             <p class="hint">What happens when it is played:</p>
             <StepsEditor
               :queryKinds="QUERY_KINDS"

@@ -493,7 +493,11 @@ oneShot = \case
             ]
   Msg.PlaceTreachery tid placement -> renderAttaches (treacheryRefFor tid) placement
   Msg.PlaceAsset aid placement -> renderAttaches (assetRefFor aid) placement
-  HuntMessage (EnemyMove_ eid lid) -> Just do
+  {- 'Do (EnemyMove ...)', not the bare constructor: the bare one is the request,
+  and the handler drops it when the enemy cannot enter that location (The Myriad
+  Gentleman (Master of the House), who "cannot leave Study"). Narrating the
+  request claimed a move that never happened. -}
+  Do (HuntMessage (EnemyMove_ eid lid)) -> Just do
     enemy <- enemyRefFor eid
     loc <- locationRefFor lid
     pure $ Just $ mechanic [ikeyPart "log.enemyMovesTo" ["enemy" ~> enemy, "location" ~> loc]]

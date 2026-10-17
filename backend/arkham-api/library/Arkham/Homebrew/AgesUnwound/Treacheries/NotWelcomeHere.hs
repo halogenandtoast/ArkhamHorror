@@ -1,5 +1,6 @@
 module Arkham.Homebrew.AgesUnwound.Treacheries.NotWelcomeHere (notWelcomeHere) where
 
+import Arkham.Helpers.Modifiers (ModifierType (CannotMove))
 import Arkham.Homebrew.AgesUnwound.CardDefs.Treacheries qualified as Cards
 import Arkham.Homebrew.AgesUnwound.Scenarios.TheMyriadGentleman.Helpers
 import Arkham.Homebrew.AgesUnwound.Traits (pattern Myriad)
@@ -32,7 +33,10 @@ instance RunMessage NotWelcomeHere where
     Revelation iid (isSource attrs -> True) -> do
       iids <- allInvestigators
       chooseOrRunOneM iid $ targets iids \chosen -> do
-        myriad <- select $ EnemyWithTrait Myriad <> not_ IsSwarm
+        {- An enemy that cannot move is left where it is. Without the guard the
+        move machinery still offers the lead a path to choose for it, and then
+        refuses the move. -}
+        myriad <- select $ EnemyWithTrait Myriad <> not_ IsSwarm <> not_ (EnemyWithModifier CannotMove)
         for_ myriad \eid ->
           moveTowardsMatching attrs eid (locationWithInvestigator chosen)
         push $ Msg.ForInvestigator chosen (Msg.Do msg)

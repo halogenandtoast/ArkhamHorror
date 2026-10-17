@@ -136,19 +136,18 @@ instance RunMessage AWorldTornDown where
   runMessage msg s@(AWorldTornDown attrs) = runQueueT $ scenarioI18n $ case msg of
     {- "Check Campaign Log. If the investigators fled the Gentleman's manor:
     Proceed to Intro 1. If the investigators learnt of the Myriad's ritual: Skip
-    to Intro 2." -}
+    to Intro 2." Both proceed to Setup. -}
     PreScenarioSetup -> scope "intro" do
       fled <- getHasRecord TheInvestigatorsFledTheGentlemansManor
-      flavor $ setTitle "title" >> p (if fled then "intro1" else "intro2")
+      flavor $ h "title" >> p "checkCampaignLog"
+      flavor $ h "title" >> p (if fled then "intro1" else "intro2")
       pure s
     Setup -> runScenarioSetup AWorldTornDown attrs do
       setup $ ul do
         li "gatherSets"
-        li.nested "placeLocations" do
-          li "startAt"
+        li "placeLocations"
         li "setAside"
         unscoped $ li "shuffleRemainder"
-        unscoped $ li "readyToBegin"
 
       {- "Gather all the cards from the following encounter sets: A World Torn
       Down, Night of the Ritual, Agents of Aforgomon, Myriad, Nyctophobia, Thugs,

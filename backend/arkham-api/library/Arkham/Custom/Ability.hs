@@ -141,12 +141,6 @@ handlersMetaKey = "_handlers"
 modifiersMetaKey :: Text
 modifiersMetaKey = "_modifiers"
 
-revelationMetaKey :: Text
-revelationMetaKey = "_onRevelation"
-
-revelationPlacementMetaKey :: Text
-revelationPlacementMetaKey = "_revelationPlacement"
-
 data AbilitySpec = AbilitySpec
   { specType :: Value
   , specCriteria :: Maybe Value

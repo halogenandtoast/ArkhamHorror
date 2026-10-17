@@ -193,7 +193,7 @@ it is next saved.
 lookupCustomCardDef :: HasCardCode a => a -> Maybe CardDef
 lookupCustomCardDef =
   fmap
-    ( withHiddenRevelation
+    ( withRevelationAbility
         . withAbilityZones
         . withSignatureRestriction
         -- Before the zones are derived, because a keyword's result may grant an
@@ -216,17 +216,38 @@ isHiddenCustomCard def = printsHidden && canBeHidden
   canBeHidden =
     cdCardType def `elem` [EnemyType, PlayerEnemyType, TreacheryType, PlayerTreacheryType]
 
-{- | The hidden keyword /is/ a revelation: "an encounter card or weakness with the
-hidden keyword has a revelation ability that secretly adds that card to your
-hand". A treachery is drawn with one either way, but an enemy is not, so without
-this a hidden enemy would spawn nothing and sit in limbo. Derived rather than
-asked for, so the keyword alone is enough to say what the card does -- and so an
-author who writes the def by hand cannot print the keyword without it.
+-- | The meta key holding what a card's revelation does.
+revelationMetaKey :: Text
+revelationMetaKey = "_onRevelation"
+
+-- | The meta key holding where a card's revelation leaves it.
+revelationPlacementMetaKey :: Text
+revelationPlacementMetaKey = "_revelationPlacement"
+
+{- | A card that was given a revelation ability has one.
+
+Read off what the def says rather than off its card type: steps under
+@_onRevelation@, a @_revelationPlacement@ that puts the card somewhere, and the
+hidden keyword -- which "secretly adds that card to your hand", and is the whole
+of what a hidden card's revelation does -- each are a revelation ability. Any
+card type can be given one, so an asset or an event with revelation steps counts
+exactly as a treachery does.
+
+Derived rather than asked for, because a def that reaches the engine by a path
+other than the builder -- a set import, an export from another library, a def
+written by hand or by the MCP -- has nothing to set the flag beside the ability,
+and the two disagreeing is silent: 'hasRevelation' gates the draw, so the card
+is drawn, the ability never runs, and the card stays in hand.
 -}
-withHiddenRevelation :: CardDef -> CardDef
-withHiddenRevelation def
-  | isHiddenCustomCard def, cdRevelation def == NoRevelation = def {cdRevelation = IsRevelation}
+withRevelationAbility :: CardDef -> CardDef
+withRevelationAbility def
+  | hasRevelationAbility, cdRevelation def == NoRevelation = def {cdRevelation = IsRevelation}
   | otherwise = def
+ where
+  hasRevelationAbility = isHiddenCustomCard def || placesItself || notNull steps
+  steps = fromMaybe [] (rawMetaMaybe revelationMetaKey def) :: [Value]
+  -- "none" is the builder's way of saying the steps place it, or nothing does.
+  placesItself = maybe False (/= ("none" :: Text)) (customMetaMaybe revelationPlacementMetaKey def)
 
 withSignatureRestriction :: CardDef -> CardDef
 withSignatureRestriction def

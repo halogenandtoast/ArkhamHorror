@@ -63,6 +63,7 @@ import Arkham.Helpers.Ability (
   getCanAffordAbility,
   getCanAffordUseWith,
   isForcedAbility,
+  meetsActionRestrictions,
  )
 import Arkham.Helpers.Action (getActions)
 import Arkham.Helpers.Campaign (getCampaignStoryCards)
@@ -295,11 +296,24 @@ withoutAsIfFor iid msgs = do
       then [SetAsIfAtIgnored iid True] <> msgs <> [SetAsIfAtIgnored iid False]
       else msgs
 
--- There are a few conditions that can occur that mean we must need to use an ability.
--- No valid targets. For example Marksmanship
--- Can't afford card. For example On Your Own
-getAllAbilitiesSkippable :: HasGame m => InvestigatorAttrs -> [Window] -> m Bool
-getAllAbilitiesSkippable attrs windows = allM (getWindowSkippable attrs windows) windows
+{- | Whether the seat may skip this batch of windows outright.
+
+There are a few conditions that mean an ability MUST be used: no valid targets
+(Marksmanship), or a card cost only something in the window can pay (On Your
+Own).
+
+@pending@ is the sources that are offering something here and have not resolved
+yet. Skipping drops whatever they were contributing, so an activated ability
+that is only legal because of one of them has nowhere to go -- the window is
+then not skippable. Scoping the question to those sources is what keeps a
+permission granted outright by some other card (Longbow (3) and British Bull
+Dog (2) both spell "ignore aloof" as a @CanModify@ fight override, and resolve
+it on the @ChooseFight@ they push themselves) from being mistaken for one that
+still needs a reaction to complete it.
+-}
+getAllAbilitiesSkippable :: HasGame m => InvestigatorAttrs -> [Source] -> [Window] -> m Bool
+getAllAbilitiesSkippable attrs pending windows =
+  allM (getWindowSkippable attrs pending windows) windows
 
 {- | The PlayCard/PlayEvent reaction window only carries the play itself. The
 windows the play was *initiated* in (e.g. the successful investigation a fast
@@ -313,9 +327,10 @@ getInitiationWindows ws = do
   stack <- concat <$> getWindowStack
   pure $ if null stack then ws else nub (ws <> stack)
 
-getWindowSkippable :: HasGame m => InvestigatorAttrs -> [Window] -> Window -> m Bool
+getWindowSkippable :: HasGame m => InvestigatorAttrs -> [Source] -> [Window] -> Window -> m Bool
 getWindowSkippable
   _attrs
+  _pending
   ws
   ( windowTiming &&& windowType ->
       (Timing.When, Window.PlayCard iid (Window.CardPlay card@(PlayerCard pc) asAction))
@@ -367,6 +382,7 @@ getWindowSkippable
         $ getIsPlayableAfterInitiation iid iid Cost.PaidCost initiationWindows card
 getWindowSkippable
   attrs
+  _pending
   ws
   ( windowTiming &&& windowType ->
       (Timing.When, Window.PlayEvent iid eid)
@@ -380,7 +396,7 @@ getWindowSkippable
     initiationWindows <- getInitiationWindows ws
     withAlteredGame withoutCanModifiers
       $ getIsPlayableAfterInitiation iid iid Cost.PaidCost initiationWindows card
-getWindowSkippable _ _ w@(windowTiming &&& windowType -> (Timing.When, Window.ActivateAbility iid _ ab)) = do
+getWindowSkippable _ pending _ w@(windowTiming &&& windowType -> (Timing.When, Window.ActivateAbility iid _ ab)) = do
   let
     excludeOne [] = []
     excludeOne (uab : xs) | ab == usedAbility uab = do
@@ -392,6 +408,17 @@ getWindowSkippable _ _ w@(windowTiming &&& windowType -> (Timing.When, Window.Ac
     [ getCanAffordUseWith excludeOne CanNotIgnoreAbilityLimit iid ab [w]
     , withAlteredGame withoutCanModifiers
         $ passesCriteria iid Nothing ab.source ab.requestor [w] (abilityCriteria ab)
+    , -- The activated ability must still have somewhere to go once the things
+      -- offered here are taken away, because skipping is exactly what stops them
+      -- resolving. Ages Unwound's Landing and Telescopic Sight (3) both supply
+      -- the fight override that puts the ability on the table AND the reaction
+      -- that completes it, so with an out-of-reach enemy the only target is the
+      -- one the reaction is about to grant: skipping would strand the action.
+      -- With a second enemy in ordinary reach the action survives the removal
+      -- and the window stays skippable, which is the point of scoping this to
+      -- @pending@ rather than dropping every @CanModify@.
+      withoutModifiersOfAny pending
+        $ meetsActionRestrictions iid [w] ab
     ]
 -- A move onto the location you already stand on is not a legal move: it exists
 -- only so that something in the would-move window can retarget it (On the Lam's
@@ -401,10 +428,10 @@ getWindowSkippable _ _ w@(windowTiming &&& windowType -> (Timing.When, Window.Ac
 -- investigator being moved -- another seat can do nothing about it and keeps its
 -- skip -- and it cannot deadlock, because the ask is only pushed at all when
 -- some ability or playable card is on offer.
-getWindowSkippable attrs _ (windowType -> Window.WouldMove iid _ fromLid toLid)
+getWindowSkippable attrs _ _ (windowType -> Window.WouldMove iid _ fromLid toLid)
   | iid == toId attrs =
       pure $ fromLid /= toLid
-getWindowSkippable attrs ws (windowType -> Window.WouldPayCardCost iid _ _ card@(PlayerCard pc)) | iid == toId attrs = do
+getWindowSkippable attrs _ ws (windowType -> Window.WouldPayCardCost iid _ _ card@(PlayerCard pc)) | iid == toId attrs = do
   allModifiers <- getModifiers card
   mCost <- getModifiedCardCost iid card
   let isFast = isJust $ cdFastWindow (toCardDef card) <|> listToMaybe [w | BecomesFast w <- allModifiers]
@@ -418,7 +445,7 @@ getWindowSkippable attrs ws (windowType -> Window.WouldPayCardCost iid _ _ card@
         then pure True
         else getCanAffordCost (toId attrs) pc [#play] ws (ActionCost 1)
     ]
-getWindowSkippable _ _ _ = pure True
+getWindowSkippable _ _ _ _ = pure True
 
 {- | Abilities the investigator has silenced from the hidden-cards stack. Only
 non-forced triggers are dropped -- a forced ability on a silenced card still
@@ -571,7 +598,12 @@ runWindow attrs windows allActions playableCards = do
           for actions' $ \ability@Ability {..} ->
             (ability,)
               <$> filterM (\w -> windowMatches iid abilitySource w (abilityWindowFor ability)) windows
-        skippable <- getAllAbilitiesSkippable attrs windows
+        -- Only the abilities on offer here: a playable card in this window can hold
+        -- the same kind of provisional permission (Marksmanship (1)), but its
+        -- modifiers hang off the in-hand entity rather than the card, so folding
+        -- those in is a separate change with its own behaviour to agree on.
+        let pending = nub $ map (abilitySource . fst) actionsWithMatchingWindows
+        skippable <- getAllAbilitiesSkippable attrs pending windows
         -- A non-blocking reaction is offered here like any other, including when it is the
         -- only thing on offer. Whether that ask actually reaches a player is decided in the
         -- `WindowAsk` handler, once every seat's ask for these windows is in hand -- this

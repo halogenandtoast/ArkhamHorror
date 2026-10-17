@@ -154,7 +154,7 @@ choose iid msg = Arkham.Message.Lifted.Prompt.chooseOne iid [msg]
 questionLabel :: ReverseQueue m => Text -> InvestigatorId -> Question Message -> m ()
 questionLabel lbl iid q = do
   pid <- getPlayer iid
-  push $ Ask pid (QuestionLabel lbl Nothing q)
+  push $ Ask pid (QuestionLabel lbl [] q)
 
 questionLabel' :: ReverseQueue m => Text -> InvestigatorId -> Question Message -> m ()
 questionLabel' lbl = Arkham.Message.Lifted.Prompt.questionLabel ("$" <> lbl)

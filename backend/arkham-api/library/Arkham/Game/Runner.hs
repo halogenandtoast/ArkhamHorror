@@ -2668,7 +2668,7 @@ runGameMessage msg g = case msg of
           then pushAll msgs'
           else do
             askMap <-
-              fmap (QuestionLabel "$label.chooseAfterSkillTestEffect" Nothing . ChooseOneAtATime) . Map.unionsWith (<>) <$> forMaybeM (msg : options) \case
+              fmap (QuestionLabel "$label.chooseAfterSkillTestEffect" [] . ChooseOneAtATime) . Map.unionsWith (<>) <$> forMaybeM (msg : options) \case
                 AfterSkillTestOption iid lbl xs -> do
                   playerId <- getPlayer iid
                   pure $ Just $ singletonMap playerId [Label lbl xs]

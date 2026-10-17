@@ -112,10 +112,10 @@ const labelChoices = computed<[StoryLabelChoice, number][]>(() => {
   return []
 })
 
-const questionImage = computed(() => {
+const questionImages = computed(() => {
   const q = question.value
-  if (!q || q.tag !== QuestionType.QUESTION_LABEL) return null
-  return q.card ? cardLabelImage(q.card) : null
+  if (!q || q.tag !== QuestionType.QUESTION_LABEL) return []
+  return q.cards.map(cardLabelImage)
 })
 
 const choose = (idx: number) => {
@@ -198,8 +198,8 @@ const isBuildSpiritDeckQuestion = (q: Question): q is Question & { tag: Question
       />
     </template>
     <div class="question-label" v-else-if="question && question.tag === QuestionType.QUESTION_LABEL">
-      <div v-if="questionImage" class="question-image">
-        <img :src="questionImage" class="card" />
+      <div v-if="questionImages.length > 0" class="question-image">
+        <img v-for="src in questionImages" :key="src" :src="src" class="card" />
       </div>
       <div class="question-content">
         <h2 v-html="label(question.label)"></h2>

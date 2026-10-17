@@ -701,7 +701,7 @@ const traumaIconStyle = (text: string) => {
 }
 
 const hasInnerContent = computed(() => {
-  return questionImage.value
+  return hasQuestionImage.value
     || (focusedCardGroups.value.length > 0 && choices.value.length > 0)
     || (searchedCards.value.length > 0 && choices.value.length > 0)
     || paymentAmountsLabel.value
@@ -759,31 +759,20 @@ const submitAmounts = async () => {
 
 const cardLabelImage = (cardCode: string) => cardCodeImage(cardCode)
 
-const questionImage = computed(() => {
-  if (!question.value) {
-    return null
-  }
-
-  if (question.value.tag !== 'QuestionLabel') {
-    return null
-  }
-
-  if(question.value.card) {
-    return cardLabelImage(question.value.card)
-  }
-
-  return null
-})
-
-// The same card as a def, so it can be rendered flippably. A prompt about a
+// The cards as defs, so they can be rendered flippably. A prompt about a
 // double-sided card (Ravenous Brood's two faces) is unanswerable until the player
 // can read the side they are not being shown. CardImage drops its own flip button
 // when the back art 404s, so a single-sided card here is unchanged.
-const questionCard = computed(() => {
+//
+// A prompt can be about more than one card: taking Aforgomon's Blade means taking
+// the Gaze of Aforgomon with it, and the player cannot weigh that from one image.
+const questionCards = computed(() => {
   const q = question.value
-  if (q?.tag !== 'QuestionLabel' || !q.card) return null
-  return flippableCard(q.card)
+  if (q?.tag !== 'QuestionLabel') return []
+  return q.cards.map(flippableCard)
 })
+
+const hasQuestionImage = computed(() => questionCards.value.length > 0)
 
 const cardIdImage = (cardId: string) => {
   const card = props.game.cards[cardId]
@@ -954,8 +943,8 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
 
 
     <div class="question-label dropdown" v-if="question && question.tag === 'DropDown'">
-      <div class="question-image" v-if="questionImage">
-        <CardImage v-if="questionCard" :card="questionCard" class="card" />
+      <div class="question-image" v-if="hasQuestionImage" :style="{ '--question-card-count': questionCards.length }">
+        <CardImage v-for="c in questionCards" :key="c.cardCode" :card="c" class="card" />
       </div>
 
       <DropDown @choose="choose" :options="question.options" />
@@ -974,16 +963,16 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
     </template>
 
     <div class="question-label dropdown" v-if="question && question.tag === 'QuestionLabel' && question.question.tag === 'DropDown'">
-      <div class="question-image" v-if="questionImage">
-        <CardImage v-if="questionCard" :card="questionCard" class="card" />
+      <div class="question-image" v-if="hasQuestionImage" :style="{ '--question-card-count': questionCards.length }">
+        <CardImage v-for="c in questionCards" :key="c.cardCode" :card="c" class="card" />
       </div>
 
       <DropDown @choose="choose" :options="question.question.options" />
     </div>
 
     <div class="question-label dropdown" v-if="question && question.tag === 'PayCostQuestion' && question.question.tag === 'DropDown'">
-      <div class="question-image" v-if="questionImage">
-        <CardImage v-if="questionCard" :card="questionCard" class="card" />
+      <div class="question-image" v-if="hasQuestionImage" :style="{ '--question-card-count': questionCards.length }">
+        <CardImage v-for="c in questionCards" :key="c.cardCode" :card="c" class="card" />
       </div>
 
       <legend>{{ payCostLabel(question.cost) }}</legend>
@@ -991,8 +980,8 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
     </div>
 
     <div v-if="!isSkillTest && !inSkillTest && focusedChaosTokens.length > 0" class="tokens">
-      <div class="question-image" v-if="questionImage">
-        <CardImage v-if="questionCard" :card="questionCard" class="card" />
+      <div class="question-image" v-if="hasQuestionImage" :style="{ '--question-card-count': questionCards.length }">
+        <CardImage v-for="c in questionCards" :key="c.cardCode" :card="c" class="card" />
       </div>
 
       <Token
@@ -1008,8 +997,8 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
 
     <div v-if="showChoices && (hasInnerContent || questionChoices.length > 0)" class="choices">
       <div v-if="hasInnerContent" class="question-label">
-        <div class="question-image" v-if="questionImage">
-          <CardImage v-if="questionCard" :card="questionCard" class="card" />
+        <div class="question-image" v-if="hasQuestionImage" :style="{ '--question-card-count': questionCards.length }">
+          <CardImage v-for="c in questionCards" :key="c.cardCode" :card="c" class="card" />
         </div>
 
         <div class='question-content'>
@@ -1179,16 +1168,16 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
             </template>
           </div>
 
-          <div v-if="questionImage && questionChoices.length > 0" class="choices-wrapper">
+          <div v-if="hasQuestionImage && questionChoices.length > 0" class="choices-wrapper">
             <QuestionChoices :choices="questionChoices" :game="game" :playerId="playerId" @choose="choose" />
           </div>
         </div>
       </div>
-      <QuestionChoices v-if="!questionImage" :choices="questionChoices" :game="game" :playerId="playerId" @choose="choose" />
+      <QuestionChoices v-if="!hasQuestionImage" :choices="questionChoices" :game="game" :playerId="playerId" @choose="choose" />
     </div>
     <template v-else-if="question && question.tag === 'QuestionLabel' && question.question.tag !== 'DropDown'">
-      <div v-if="questionImage" class="question-image">
-        <CardImage v-if="questionCard" :card="questionCard" class="card" />
+      <div v-if="hasQuestionImage" class="question-image" :style="{ '--question-card-count': questionCards.length }">
+        <CardImage v-for="c in questionCards" :key="c.cardCode" :card="c" class="card" />
       </div>
     </template>
     <div v-if="doneLabel && doneIsFooter" class="done-choice">
@@ -2171,6 +2160,7 @@ h2 {
 .question-image {
   display: flex;
   justify-content: center;
+  gap: 10px;
 }
 
 .card {
@@ -2330,7 +2320,7 @@ h2 {
 }
 
 .question-wrapper:has(> .question-image) .question-image{
-  width: var(--card-width);
+  width: calc(var(--card-width) * var(--question-card-count, 1));
   align-self: center;
   justify-self: center;
   img {
@@ -2340,10 +2330,11 @@ h2 {
   }
 }
 
-/* CardImage sizes itself for a grid of cards; here it is the one card the prompt
-   is about, so let it fill the wrapper the plain <img> used to. */
+/* CardImage sizes itself for a grid of cards; here they are the cards the prompt
+   is about, so let them share the wrapper the plain <img> used to fill. */
 .question-image :deep(.card-container) {
-  width: 100%;
+  flex: 1 1 0;
+  min-width: 0;
   max-width: none;
   margin: 0;
 }

@@ -220,7 +220,12 @@ data Question msg
   | -- Deck selection for a seat joining a campaign already in progress. Carries the
     -- investigators already used this campaign, which the new player may not pick.
     ChooseJoinDeck {usedInvestigators :: [InvestigatorId]}
-  | QuestionLabel {label :: Text, card :: Maybe CardCode, question :: Question msg}
+  | {- | A header above any Question, optionally with the cards the prompt is
+    about shown beside it. A choice can turn on more than one card -- taking
+    Aforgomon's Blade means taking the Gaze of Aforgomon with it -- and the
+    player cannot make it from one image.
+    -}
+    QuestionLabel {label :: Text, labelCards :: [CardCode], question :: Question msg}
   | {- | Wraps any Question with a header that the frontend renders as
     "Pay <cost>", using its own Cost rendering.
     -}
@@ -365,6 +370,15 @@ concat
         parseJSON = withObject "Question" \o -> do
           tag :: Text <- o .: "tag"
           case tag of
+            -- 'labelCards' was a single 'card'; saved games hold that spelling.
+            "QuestionLabel" -> do
+              label <- o .: "label"
+              labelCards <-
+                o .:? "labelCards" >>= \case
+                  Just cs -> pure cs
+                  Nothing -> maybeToList <$> o .:? "card"
+              question <- o .: "question"
+              pure $ QuestionLabel {..}
             "PickSupplies" -> do
               pointsRemaining <- o .: "pointsRemaining"
               chosenSupplies <- o .: "chosenSupplies"

@@ -1056,7 +1056,7 @@ assignDamageDivided a@InvestigatorAttrs {..} iid source strategy matcher health 
   -- (yellow source-highlight), and with the totals label for the token counts.
   push
     $ questionWithSource source player
-    $ QuestionLabel (assignDamageTotalsLabel health sanity) Nothing
+    $ QuestionLabel (assignDamageTotalsLabel health sanity) []
     $ ChooseOne
     $ healthDamageMessages'
     <> sanityDamageMessages'

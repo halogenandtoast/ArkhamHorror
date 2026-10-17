@@ -389,6 +389,23 @@ addCampaignCardToDeckChoiceWith choices shouldShuffleIn card f = do
   card' <- fetchCard card
   push $ Msg.addCampaignCardToDeckChoiceWith lead choices shouldShuffleIn card' f
 
+{- | Like 'addCampaignCardToDeckChoiceWith', but the prompt shows @alsoShow@
+beside the offered card.
+-}
+addCampaignCardToDeckChoiceAlsoShowing
+  :: (FetchCard card, FetchCard shown, ReverseQueue m)
+  => [InvestigatorId]
+  -> ShuffleIn
+  -> card
+  -> [shown]
+  -> (InvestigatorId -> [Message])
+  -> m ()
+addCampaignCardToDeckChoiceAlsoShowing choices shouldShuffleIn card alsoShow f = do
+  lead <- getLeadPlayer
+  card' <- fetchCard card
+  alsoShow' <- fetchCards alsoShow
+  push $ Msg.addCampaignCardToDeckChoiceAlsoShowing lead choices shouldShuffleIn card' alsoShow' f
+
 {- | Like 'addCampaignCardToDeckChoice', with a continuation for the players
 DECLINING the card (e.g. the "I Don't Trust Her" achievement).
 -}
@@ -944,9 +961,13 @@ aspect iid source a action = Msg.aspect iid source a action >>= pushAll . Msg.le
 
 questionLabelWithCard
   :: ReverseQueue m => Text -> CardCode -> InvestigatorId -> Question Message -> m ()
-questionLabelWithCard lbl cCode iid q = do
+questionLabelWithCard lbl cCode iid q = Arkham.Message.Lifted.questionLabelWithCards lbl [cCode] iid q
+
+questionLabelWithCards
+  :: ReverseQueue m => Text -> [CardCode] -> InvestigatorId -> Question Message -> m ()
+questionLabelWithCards lbl cCodes iid q = do
   pid <- getPlayer iid
-  push $ Ask pid (QuestionLabel lbl (Just cCode) q)
+  push $ Ask pid (QuestionLabel lbl cCodes q)
 
 selectOneToHandle
   :: (HasCallStack, ReverseQueue m, Targetable (QueryElement matcher), Query matcher, Sourceable source)

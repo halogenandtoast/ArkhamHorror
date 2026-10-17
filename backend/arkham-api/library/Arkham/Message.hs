@@ -2994,10 +2994,13 @@ chooseOrRunOne _ [x] = uiToRun x
 chooseOrRunOne pid msgs = chooseOne pid msgs
 
 questionLabel :: Text -> PlayerId -> Question Message -> Message
-questionLabel lbl pid q = Ask pid (QuestionLabel lbl Nothing q)
+questionLabel lbl pid q = Ask pid (QuestionLabel lbl [] q)
 
 questionLabelWithCard :: Text -> CardCode -> PlayerId -> Question Message -> Message
-questionLabelWithCard lbl cCode pid q = Ask pid (QuestionLabel lbl (Just cCode) q)
+questionLabelWithCard lbl cCode pid q = questionLabelWithCards lbl [cCode] pid q
+
+questionLabelWithCards :: Text -> [CardCode] -> PlayerId -> Question Message -> Message
+questionLabelWithCards lbl cCodes pid q = Ask pid (QuestionLabel lbl cCodes q)
 
 questionWithSource :: Source -> PlayerId -> Question Message -> Message
 questionWithSource s pid q = Ask pid (QuestionWithSource s Nothing q)
@@ -3034,7 +3037,7 @@ chooseOrRunOneAtATime pid msgs = Ask pid (ChooseOneAtATime msgs)
 chooseOrRunOneAtATimeWithLabel :: Text -> PlayerId -> [UI Message] -> Message
 chooseOrRunOneAtATimeWithLabel _ _ [] = throw $ InvalidState "No messages for chooseOneAtATime"
 chooseOrRunOneAtATimeWithLabel _ _ [x] = uiToRun x
-chooseOrRunOneAtATimeWithLabel lbl pid msgs = Ask pid (QuestionLabel lbl Nothing $ ChooseOneAtATime msgs)
+chooseOrRunOneAtATimeWithLabel lbl pid msgs = Ask pid (QuestionLabel lbl [] $ ChooseOneAtATime msgs)
 
 {- | 'chooseOrRunOneAtATimeWithLabel' plus a single "resolve everything still
 listed, in the order shown" choice rendered with @autoLbl@.
@@ -3051,7 +3054,7 @@ chooseOrRunOneAtATimeWithAutoLabel :: Text -> Text -> PlayerId -> [UI Message] -
 chooseOrRunOneAtATimeWithAutoLabel _ _ _ [] = throw $ InvalidState "No messages for chooseOneAtATime"
 chooseOrRunOneAtATimeWithAutoLabel _ _ _ [x] = uiToRun x
 chooseOrRunOneAtATimeWithAutoLabel lbl autoLbl pid msgs =
-  Ask pid (QuestionLabel lbl Nothing $ ChooseOneAtATimeWithAuto autoLbl msgs)
+  Ask pid (QuestionLabel lbl [] $ ChooseOneAtATimeWithAuto autoLbl msgs)
 
 chooseSome :: PlayerId -> Text -> [UI Message] -> Message
 chooseSome _ _ [] = throw $ InvalidState "No messages for chooseSome"
@@ -3101,7 +3104,7 @@ chooseAmountsLabeled
   -> m Message
 chooseAmountsLabeled pid title label total choiceMap (toTarget -> target) = do
   rs <- getRandoms
-  pure $ Ask pid (QuestionLabel title Nothing $ ChooseAmounts label total (amountChoices rs) target)
+  pure $ Ask pid (QuestionLabel title [] $ ChooseAmounts label total (amountChoices rs) target)
  where
   amountChoices rs = zipWith (curry toAmountChoice) rs choiceMap
   toAmountChoice (choiceId, (l, (m, n))) = AmountChoice choiceId l m n

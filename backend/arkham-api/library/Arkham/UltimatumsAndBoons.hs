@@ -644,7 +644,7 @@ morriganWeaknessMessages iid drawWeakness = do
       Just remaining -> sample remaining
     pure $ CardLabel (toCardCode returned) False [AddCampaignCardToDeck iid ShuffleIn kept]
   pure
-    [Ask player $ QuestionLabel "$label.ultimatumsAndBoons.returnWeakness" Nothing $ ChooseOne choices]
+    [Ask player $ QuestionLabel "$label.ultimatumsAndBoons.returnWeakness" [] $ ChooseOne choices]
  where
   -- The basic weakness pool is far larger than 3; the fuel only guards
   -- against a pathological sampler.

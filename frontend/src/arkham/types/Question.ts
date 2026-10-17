@@ -117,7 +117,7 @@ export type ChooseOneFromEach = {
 
 export type QuestionLabel = {
   tag: QuestionType.QUESTION_LABEL
-  card: string | null
+  cards: string[]
   label: string
   question: Question
 }
@@ -416,13 +416,29 @@ export const pickCampaignSettingsDecoder = JsonDecoder.object<PickCampaignSettin
   'PickCampaignSettings',
 );
 
-export const questionLabelDecoder: JsonDecoder.Decoder<QuestionLabel> = JsonDecoder.object<QuestionLabel>(
-  {
-    tag: JsonDecoder.literal(QuestionType.QUESTION_LABEL),
-    label: JsonDecoder.string(),
-    card: JsonDecoder.nullable(JsonDecoder.string()),
-    question: JsonDecoder.lazy(() => questionDecoder)
-  },
+// `labelCards` was a single `card`, and a question asked before that change is
+// still sitting in the game record spelled the old way.
+export const questionLabelDecoder: JsonDecoder.Decoder<QuestionLabel> = JsonDecoder.oneOf<QuestionLabel>(
+  [
+    JsonDecoder.object(
+      {
+        tag: JsonDecoder.literal(QuestionType.QUESTION_LABEL),
+        label: JsonDecoder.string(),
+        labelCards: JsonDecoder.array(JsonDecoder.string(), 'CardCode[]'),
+        question: JsonDecoder.lazy(() => questionDecoder)
+      },
+      'QuestionLabel',
+    ).map<QuestionLabel>(({ tag, label, labelCards, question }) => ({ tag, label, cards: labelCards, question })),
+    JsonDecoder.object(
+      {
+        tag: JsonDecoder.literal(QuestionType.QUESTION_LABEL),
+        label: JsonDecoder.string(),
+        card: JsonDecoder.nullable(JsonDecoder.string()),
+        question: JsonDecoder.lazy(() => questionDecoder)
+      },
+      'QuestionLabelWithCard',
+    ).map<QuestionLabel>(({ tag, label, card, question }) => ({ tag, label, cards: card ? [card] : [], question })),
+  ],
   'QuestionLabel',
 );
 

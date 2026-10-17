@@ -514,7 +514,7 @@ questionSourced a = modify $ \s -> s {Arkham.Message.Lifted.Choose.source = Just
 
 labelWrap :: Maybe Text -> Maybe CardCode -> Question Message -> Question Message
 labelWrap Nothing Nothing q = q
-labelWrap mlabel mcard q = QuestionLabel (fromMaybe "@none" mlabel) mcard q
+labelWrap mlabel mcard q = QuestionLabel (fromMaybe "@none" mlabel) (maybeToList mcard) q
 
 storyWithContinue :: (HasI18n, ReverseQueue m) => FlavorTextBuilder () -> m ()
 storyWithContinue builder = storyWithChooseOneM builder $ unscoped $ labeled "continue" nothing

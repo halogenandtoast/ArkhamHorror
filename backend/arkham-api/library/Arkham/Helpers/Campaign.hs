@@ -212,6 +212,22 @@ addCampaignCardToDeckChoiceWith
 addCampaignCardToDeckChoiceWith leadPlayer investigators shouldShuffleIn card f =
   addCampaignCardToDeckChoiceWhenDeclined leadPlayer investigators shouldShuffleIn card f []
 
+{- | Like 'addCampaignCardToDeckChoiceWith', but the prompt also shows
+@alsoShow@. A card that drags another along -- Aforgomon's Blade, which may only
+be taken together with the Gaze of Aforgomon -- is not a choice the player can
+make from the offered card's image alone.
+-}
+addCampaignCardToDeckChoiceAlsoShowing
+  :: PlayerId
+  -> [InvestigatorId]
+  -> ShuffleIn
+  -> Card
+  -> [Card]
+  -> (InvestigatorId -> [Message])
+  -> Message
+addCampaignCardToDeckChoiceAlsoShowing leadPlayer investigators shouldShuffleIn card alsoShow f =
+  addCampaignCardToDeckChoiceFull leadPlayer investigators shouldShuffleIn card alsoShow f []
+
 {- | Like 'addCampaignCardToDeckChoiceWith', but with messages to run when the
 players decline the card (e.g. the "I Don't Trust Her" achievement).
 -}
@@ -223,8 +239,23 @@ addCampaignCardToDeckChoiceWhenDeclined
   -> (InvestigatorId -> [Message])
   -> [Message]
   -> Message
-addCampaignCardToDeckChoiceWhenDeclined leadPlayer investigators shouldShuffleIn card f declined = withI18n do
-  questionLabelWithCard (cardNameVar card $ ikey' "label.addCardToDeck") card.cardCode leadPlayer
+addCampaignCardToDeckChoiceWhenDeclined leadPlayer investigators shouldShuffleIn card f declined =
+  addCampaignCardToDeckChoiceFull leadPlayer investigators shouldShuffleIn card [] f declined
+
+addCampaignCardToDeckChoiceFull
+  :: PlayerId
+  -> [InvestigatorId]
+  -> ShuffleIn
+  -> Card
+  -> [Card]
+  -> (InvestigatorId -> [Message])
+  -> [Message]
+  -> Message
+addCampaignCardToDeckChoiceFull leadPlayer investigators shouldShuffleIn card alsoShow f declined = withI18n do
+  questionLabelWithCards
+    (cardNameVar card $ ikey' "label.addCardToDeck")
+    (card.cardCode : map (.cardCode) alsoShow)
+    leadPlayer
     $ ChooseOne
     $ [ PortraitLabel investigator $ AddCampaignCardToDeck investigator shouldShuffleIn card
           : f investigator

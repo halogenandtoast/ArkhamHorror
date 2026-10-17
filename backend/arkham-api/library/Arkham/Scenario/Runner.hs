@@ -241,7 +241,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
                   Nothing -> do
                     pid <- getPlayer iid
                     let cards = nub $ map toCardCode $ filterCards (card_ $ #asset <> #spell) (unDeck deck)
-                    pure $ Just $ Ask pid $ QuestionLabel "$cards.label.eldritchBrand5.chooseCard" Nothing $ ChooseOne $ flip map cards \c ->
+                    pure $ Just $ Ask pid $ QuestionLabel "$cards.label.eldritchBrand5.chooseCard" [] $ ChooseOne $ flip map cards \c ->
                       CardLabel c False [UpdateCardSetting iid "11080" (SetCardSetting CardAttachments [c])]
                   Just _ -> pure Nothing
               else pure Nothing

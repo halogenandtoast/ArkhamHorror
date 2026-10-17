@@ -37,6 +37,10 @@
       }
     },
     "resolutions": {
+      "noResolution": {
+        "title": "No Resolution",
+        "body": "<p class='basic'>*If no resolution was reached (each investigator was defeated)*: Read _Resolution 2_.</p>"
+      },
       "resolution1": {
         "title": "Resolution 1",
         "body": "<p>_Resolution 1:_ Joseph Baxter, the man whose house you've invaded, is part of a cult dedicated to an entity known as Aforgomon. Quite a large part of it, judging by the quantity of him you've encountered today. They're still coming for you though, endless waves of an impossible man, and you have no choice but to make your escape.</p><p>You've found very little of why he wants you dead &mdash; a scrawled note linking you to an event in Cairo, and a letter from the Sheldon gang promising you'll soon be dealt with.</p><p>You've never even been to Cairo. Perhaps he's mad. Then again, considering what you've seen today, perhaps you are.</p><p>As the sun dips below the horizon, you consider your options. You could go to the police, but there's no chance they'd believe you. You could walk away, just disappear into the night... but you've seen what this cult can do, and you can't stand back and let them carry out their plan. And besides, insane or not, they still want you dead. Taking the fight to them seems more appealing than simply being hunted down.</p><p>You have a location, and no time to lose. Better get to it.</p><ul><li>In your Campaign Log, record that *the investigators learnt of the Myriad's ritual*.</li><li>If the Myriad Gentleman (*Master of the House*) is in the victory display, any one investigator may choose to add Aforgomon's Blade to their deck. If an investigator chooses to include Aforgomon's Blade in their deck, they must also add the Gaze of Aforgomon weakness to their deck. These cards do not count towards that investigator's deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li></ul>"

@@ -144,7 +144,9 @@ instance RunMessage TheMyriadGentleman where
         else TheMyriadGentleman <$> liftRunMessage msg attrs
     ScenarioResolution res -> scope "resolutions" do
       case res of
-        NoResolution -> push R2
+        NoResolution -> do
+          resolution "noResolution"
+          push R2
         Resolution 1 -> do
           record TheInvestigatorsLearntOfTheMyriadsRitual
           resolutionWithXp "resolution1" $ allGainXp' attrs

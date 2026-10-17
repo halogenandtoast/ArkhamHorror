@@ -275,7 +275,17 @@ effect (Locked Door) on the location you happen to be standing in. See #5333.
 investigateAbilityAt
   :: (Sourceable a, HasCardCode a) => a -> LocationMatcher -> Int -> Cost -> Criterion -> Ability
 investigateAbilityAt entity matcher idx cost criteria =
-  (mkAbility entity idx (investigateAction cost))
+  investigateAbilityAtWith entity matcher #intellect idx cost criteria
+
+{- | Like 'investigateAbilityAt', but the ability names the skill the location is
+investigated with rather than [intellect], so the button reads with the skill the
+test will actually use (Arkham Woods Cliffside, Stables).
+-}
+investigateAbilityAtWith
+  :: (Sourceable a, HasCardCode a)
+  => a -> LocationMatcher -> SkillType -> Int -> Cost -> Criterion -> Ability
+investigateAbilityAtWith entity matcher stype idx cost criteria =
+  (mkAbility entity idx (investigateActionWith stype cost))
     { abilityCriteria = criteria <> exists (matcher <> InvestigatableLocation)
     }
 

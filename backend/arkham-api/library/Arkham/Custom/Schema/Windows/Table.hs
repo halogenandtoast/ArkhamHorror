@@ -260,6 +260,7 @@ windowTable =
   , ("WouldDrawCardFrom", ["WouldDrawCard"])
   , ("WouldDrawEncounterCard", ["WouldDrawEncounterCard"])
   , ("WouldDrawExactlyOneCard", ["WouldDrawExactlyOneCard"])
+  , ("WouldFindEncounterCard", ["WouldFindEncounterCard"])
   , ("WouldHaveSkillTestResult", ["WouldFailSkillTest", "WouldPassSkillTest"])
   , ("WouldLookAtDeck", ["WouldLookAtDeck"])
   , ("WouldMove", ["WouldMove"])

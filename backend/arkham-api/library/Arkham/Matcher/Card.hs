@@ -275,6 +275,99 @@ data CardMatcher
     CardWithCostAtLeast Int
   deriving stock (Show, Eq, Ord, Data)
 
+{- | A matcher over a /search/ rather than over a card: it reads the matcher a
+search was handed and answers what that search is looking for.
+
+An ability worded "when a card would search the encounter deck to find an
+enemy" asks about the search's intent, not about what it turns up -- it has to
+answer the same way when the deck holds no enemy at all -- and that intent is
+the 'CardMatcher' the search was given.
+
+Only positive positions count: a search that explicitly excludes enemies does
+not answer 'SearchingFor' @EnemyType@, and a disjunction answers yes only when
+every branch does, because otherwise the search could find something else.
+-}
+data SearchMatcher
+  = AnySearch
+  | -- | The search can only find cards of this type.
+    SearchingFor CardType
+  | -- | The search can only find cards with this trait.
+    SearchingForTrait Trait
+  | -- | The search's matcher demands this constraint of everything it can find.
+    SearchingForMatching CardMatcher
+  | SearchMatches [SearchMatcher]
+  | SearchMatchesAny [SearchMatcher]
+  | NotSearch SearchMatcher
+  deriving stock (Show, Eq, Ord, Data)
+
+{- | Answer a 'SearchMatcher' against the card matcher a search was given. Pure:
+it reads the matcher, never the game.
+-}
+searchMatches :: SearchMatcher -> CardMatcher -> Bool
+searchMatches = \case
+  AnySearch -> const True
+  SearchingFor ty -> cardMatcherRequires (CardWithType ty)
+  SearchingForTrait t -> cardMatcherRequires (CardWithTrait t)
+  SearchingForMatching needle -> cardMatcherRequires needle
+  SearchMatches xs -> \m -> all (`searchMatches` m) xs
+  SearchMatchesAny xs -> \m -> any (`searchMatches` m) xs
+  NotSearch x -> not . searchMatches x
+
+{- | Does this card matcher demand @needle@ of every card it can match? A
+conjunction demands it when any conjunct does, a disjunction only when every
+branch does, and a negation never does.
+-}
+cardMatcherRequires :: CardMatcher -> CardMatcher -> Bool
+cardMatcherRequires needle = go
+ where
+  go m
+    | m == needle = True
+    | otherwise = case m of
+        CardMatches xs -> any go xs
+        CardWithOneOf xs -> not (null xs) && all go xs
+        _ -> False
+
+{- | Answer a 'SearchMatcher' against an extended matcher. The extended
+constructors ask about game state, so they carry no intent a 'SearchMatcher' can
+read; the basic constraints inside do.
+-}
+searchMatchesExtended :: SearchMatcher -> ExtendedCardMatcher -> Bool
+searchMatchesExtended sm = searchMatches sm . basicConstraints
+ where
+  basicConstraints = \case
+    BasicCardMatch m -> m
+    ExtendedCardMatches xs -> fold (map basicConstraints xs)
+    ExtendedCardWithOneOf xs -> case map basicConstraints xs of
+      [] -> AnyCard
+      ys -> CardWithOneOf ys
+    _ -> AnyCard
+
+instance Not SearchMatcher where
+  not_ = NotSearch
+
+instance Semigroup SearchMatcher where
+  AnySearch <> a = a
+  a <> AnySearch = a
+  SearchMatches xs <> SearchMatches ys = SearchMatches $ xs <> ys
+  SearchMatches xs <> x = SearchMatches (xs <> [x])
+  x <> SearchMatches xs = SearchMatches (x : xs)
+  x <> y = SearchMatches [x, y]
+
+instance Monoid SearchMatcher where
+  mempty = AnySearch
+
+instance IsLabel "enemy" SearchMatcher where
+  fromLabel = SearchingFor EnemyType
+
+instance IsLabel "treachery" SearchMatcher where
+  fromLabel = SearchingFor TreacheryType
+
+instance IsLabel "location" SearchMatcher where
+  fromLabel = SearchingFor LocationType
+
+instance IsLabel "any" SearchMatcher where
+  fromLabel = AnySearch
+
 instance Not CardMatcher where
   not_ = NotCard
 
@@ -469,6 +562,7 @@ data DeckMatcher
 
 mconcat
   [ deriveJSON defaultOptions ''CardMatcher
+  , deriveJSON defaultOptions ''SearchMatcher
   , deriveJSON defaultOptions ''CardListMatcher
   , deriveJSON defaultOptions ''DeckMatcher
   , deriveJSON defaultOptions ''ForPlay

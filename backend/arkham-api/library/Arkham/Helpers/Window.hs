@@ -196,10 +196,35 @@ pushBatched :: HasQueue Message m => BatchId -> [Message] -> m ()
 pushBatched batchId msgs = push $ Would batchId msgs
 
 wouldDo :: (MonadRandom m, HasQueue Message m) => Message -> WindowType -> WindowType -> m ()
-wouldDo msg wouldWindow window = do
-  (batchId, wouldWindowsMsgs) <- wouldWindows wouldWindow
-  let framed = doBatch batchId msg window
-  push $ Would batchId $ wouldWindowsMsgs <> framed
+wouldDo msg wouldWindow window = wouldDoAny msg [wouldWindow] window
+
+{- | 'wouldDo' for a message that answers to more than one "would" trigger at
+once -- searching the encounter deck is both a search of a deck and a dig
+through the encounter deck for a card. The windows share the batch, so
+cancelling from either one cancels the message.
+-}
+wouldDoAny
+  :: (MonadRandom m, HasQueue Message m) => Message -> [WindowType] -> WindowType -> m ()
+wouldDoAny msg wouldWindows' window = do
+  batchId <- getRandom
+  push $ Would batchId $ wouldChecks batchId wouldWindows' <> doBatch batchId msg window
+
+{- | Frame a message in a cancellable batch with would-windows but no window
+after it, for a message whose completion raises nothing of its own. An empty
+list is still a batch, just one nothing can trigger off.
+-}
+wouldOnly :: (MonadRandom m, HasQueue Message m) => Message -> [WindowType] -> m ()
+wouldOnly msg wouldWindows' = do
+  batchId <- getRandom
+  push $ Would batchId $ wouldChecks batchId wouldWindows' <> [DoBatch batchId msg]
+
+-- | The @when@/@atIf@/@after@ checks that open a would-batch, all sharing it.
+wouldChecks :: BatchId -> [WindowType] -> [Message]
+wouldChecks batchId ws =
+  [ CheckWindows [Window timing w (Just batchId) Nothing | w <- ws]
+  | not (null ws)
+  , timing <- [Timing.When, Timing.AtIf, Timing.After]
+  ]
 
 {- | Take a message which would operate on some value n and instead expand the
 windows to add a single one at a time
@@ -699,6 +724,15 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
               $ Matcher.replaceThatInvestigator who deckMatcher
           ]
       _ -> noMatch
+    Matcher.WouldFindEncounterCard timing whoMatcher targetMatcher searchMatcher ->
+      guardTiming timing $ \case
+        Window.WouldFindEncounterCard who target cardMatcher ->
+          andM
+            [ matchWho iid who whoMatcher
+            , targetMatches target targetMatcher
+            , pure $ searchMatchesExtended searchMatcher cardMatcher
+            ]
+        _ -> noMatch
     Matcher.SearchedDeck timing whoMatcher deckMatcher -> guardTiming timing $ \case
       Window.SearchedDeck who deck -> do
         andM

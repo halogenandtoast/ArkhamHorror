@@ -9,6 +9,7 @@ import {-# SOURCE #-} Arkham.Matcher.Asset
 import Arkham.Matcher.Enemy
 import {-# SOURCE #-} Arkham.Matcher.Investigator
 import Arkham.Matcher.Location
+import Arkham.Matcher.Treachery
 import Arkham.Prelude
 import Arkham.Target
 import Arkham.Trait (Trait)
@@ -25,6 +26,7 @@ data TargetMatcher
   | AgendaTargetMatches AgendaMatcher
   | AssetTargetMatches AssetMatcher
   | EnemyTargetMatches EnemyMatcher
+  | TreacheryTargetMatches TreacheryMatcher
   | ScenarioCardTarget
   | TargetWithDoom
   | TargetAtLocation LocationMatcher
@@ -42,6 +44,9 @@ instance IsLabel "any" TargetMatcher where
 
 instance IsLabel "enemy" TargetMatcher where
   fromLabel = EnemyTargetMatches AnyEnemy
+
+instance IsLabel "treachery" TargetMatcher where
+  fromLabel = TreacheryTargetMatches AnyTreachery
 
 instance Not TargetMatcher where
   not_ = NotTarget

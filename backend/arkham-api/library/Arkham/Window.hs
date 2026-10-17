@@ -18,7 +18,7 @@ import Arkham.DefeatedBy
 import Arkham.Id
 import Arkham.Key
 import Arkham.Location.FloodLevel
-import Arkham.Matcher (LocationMatcher, MovesVia)
+import Arkham.Matcher (ExtendedCardMatcher, LocationMatcher, MovesVia)
 import Arkham.Phase (Phase)
 import Arkham.Placement
 import Arkham.ScenarioLogKey
@@ -410,6 +410,12 @@ data WindowType
   | WouldAddChaosTokensToChaosBag (Maybe InvestigatorId) [ChaosTokenFace]
   | DeckWouldRunOutOfCards InvestigatorId
   | WouldSearchDeck InvestigatorId DeckSignifier
+  | {- | A search, reveal or discard that digs through the encounter deck for a
+    card is about to resolve: who is doing it, the card that sent it, and the
+    matcher it was given, which is what it is looking for. Raised inside a
+    batch, so an ability worded "instead" can cancel it.
+    -}
+    WouldFindEncounterCard InvestigatorId Target ExtendedCardMatcher
   | WouldLookAtDeck InvestigatorId DeckSignifier
   | SearchedDeck InvestigatorId DeckSignifier
   | LookedAtDeck InvestigatorId DeckSignifier

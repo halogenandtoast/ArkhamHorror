@@ -116,6 +116,8 @@ data WindowMatcher
     -}
     EnemyWouldTakeDamageWithAmount Timing SourceMatcher EnemyMatcher ValueMatcher
   | WouldSearchDeck Timing Who DeckMatcher
+  | -- | "When a card would search the encounter deck to find an enemy".
+    WouldFindEncounterCard Timing Who TargetMatcher SearchMatcher
   | WouldLookAtDeck Timing Who DeckMatcher
   | LookedAtDeck Timing Who DeckMatcher
   | SearchedDeck Timing Who DeckMatcher

@@ -243,6 +243,15 @@ targetMatches s = \case
         , targetMatches right (EnemyTargetMatches enemyMatcher)
         ]
     _ -> pure False
+  TreacheryTargetMatches treacheryMatcher -> case s of
+    TreacheryTarget tid -> tid <=~> treacheryMatcher
+    ProxyTarget proxyTarget _ -> targetMatches proxyTarget (TreacheryTargetMatches treacheryMatcher)
+    BothTarget left right ->
+      orM
+        [ targetMatches left (TreacheryTargetMatches treacheryMatcher)
+        , targetMatches right (TreacheryTargetMatches treacheryMatcher)
+        ]
+    _ -> pure False
   ScenarioCardTarget -> case s of
     EnemyTarget _ -> pure True
     TreacheryTarget _ -> pure True

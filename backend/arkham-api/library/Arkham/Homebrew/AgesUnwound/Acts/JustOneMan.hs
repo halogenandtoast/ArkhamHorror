@@ -2,12 +2,15 @@ module Arkham.Homebrew.AgesUnwound.Acts.JustOneMan (justOneMan) where
 
 import Arkham.Ability
 import Arkham.Act.Import.Lifted
+import Arkham.Card.CardType
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.AgesUnwound.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.AgesUnwound.Scenarios.TheMyriadGentleman.Helpers
 import Arkham.Matcher
+import Arkham.Window (Window (..))
+import Arkham.Window qualified as Window
 
 newtype JustOneMan = JustOneMan ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -19,10 +22,14 @@ justOneMan = act (2, A) JustOneMan Cards.justOneMan Nothing
 {- | "Objective - At the end of the round, investigators at the Landing may spend
 the requisite number of clues to advance."
 
-The act's other printed ability -- "Forced - When a treachery card would search,
-reveal or discard from the encounter deck to find an enemy: Instead spawn a copy
-of The Myriad Gentleman, treating it as having been found by that treachery" --
-has no window to hang on; see the @TODO(ages-unwound)@ in 'RunMessage'.
+"Forced - When a treachery card would search, reveal or discard from the
+encounter deck to find an enemy: Instead spawn a copy of The Myriad Gentleman,
+treating it as having been found by that treachery."
+
+The trigger is about what the search is /for/, which lives in the matcher the
+search was handed rather than in whatever it turns up -- it has to fire when the
+deck holds no enemy at all. 'SearchingFor' reads that matcher; see
+'Arkham.Matcher.Card.SearchMatcher'.
 -}
 instance HasAbilities JustOneMan where
   getAbilities (JustOneMan x) =
@@ -30,24 +37,26 @@ instance HasAbilities JustOneMan where
         $ Objective
         $ triggered (RoundEnds #when)
         $ GroupClueCost (PerPlayer 4) (locationIs Locations.landing)
+    , mkAbility x 2
+        $ forced
+        $ WouldFindEncounterCard #when Anyone #treachery (SearchingFor EnemyType)
     ]
 
-{- TODO(ages-unwound): "Forced - When a treachery card would search, reveal or
-discard from the encounter deck to find an enemy: Instead spawn a copy of The
-Myriad Gentleman, treating it as having been found by that treachery."
-
-There is no window for "a treachery would search the encounter deck for an
-enemy", and the find is pushed by the treachery itself (@FindEncounterCard@ /
-@search@, whichever that card chose), so an act cannot intercept it without
-either a new timing point or a modifier the drawing card consults. The only card
-in the sets this scenario gathers that triggers it is /Out of Phase/
-(@shifting_reality@), which is owned by another module. Needs a shared seam --
-reported to the orchestrator rather than hand-rolled as a brittle queue scan
-that would silently cover nothing. -}
 instance RunMessage JustOneMan where
   runMessage msg a@(JustOneMan attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       advanceVia #clues attrs (attrs.ability 1)
+      pure a
+    {- "Instead spawn a copy of The Myriad Gentleman, treating it as having been
+    found by that treachery." Cancelling the batch drops the search, and the copy
+    spawns engaged with the searching investigator -- which is where the only card
+    that triggers this, /Out of Phase/, puts what it finds, and it keeps the
+    copy's bookkeeping in 'spawnMyriadCopiesEngagedWith' rather than handing a
+    minted card back with no owner recorded. -}
+    UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
+      cancelBatch (Window.getBatchId ws)
+      for_ [iid | (windowType -> Window.WouldFindEncounterCard iid _ _) <- ws] \iid ->
+        spawnMyriadCopiesEngagedWith iid 1
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       -- "Reveal the Study."

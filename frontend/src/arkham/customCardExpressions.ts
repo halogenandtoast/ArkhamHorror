@@ -62,6 +62,7 @@ export const FETCHABLE: Record<string, string> = {
 export const PROP_KINDS: Record<string, string> = {
   card: 'Card',
   skillTest: 'SkillTestId',
+  target: 'Target',
 }
 
 /* Which `get property` kind reads a value of this type, mirroring the dispatch in
@@ -75,6 +76,7 @@ export const PROP_KINDS: Record<string, string> = {
 export const PROP_KIND_FOR: Record<string, string> = {
   Card: 'card',
   SkillTestId: 'skillTest',
+  Target: 'target',
   EnemyId: 'enemy',
   LocationId: 'location',
   InvestigatorId: 'investigator',
@@ -121,10 +123,39 @@ export const setEntityProps = (lookup: (kind: string) => Record<string, string> 
 export const propOptionsFor = (kind: string | undefined): Record<string, string> | undefined => {
   if (kind === 'skillTest') return SKILL_TEST_PROPS
   if (kind === 'card') return CARD_PROPS
+  if (kind === 'target') return TARGET_PROPS
   return kind ? entityProps(kind) : undefined
 }
 
-const DEFAULT_PROP: Record<string, string> = { card: 'name', skillTest: 'difficulty' }
+const DEFAULT_PROP: Record<string, string> = {
+  card: 'name',
+  skillTest: 'difficulty',
+  target: 'keywords',
+}
+
+/* What a target can be asked, whatever it turns out to name.
+ *
+ * `keywords` is read off the thing itself, so a granted one counts and a blanked
+ * one does not; the rest are readings of its card, which is the one thing every
+ * target has. Which entity it is does not have to be known in advance, which is
+ * the point -- the target of a skill test is an enemy, a location or a treachery
+ * depending on the test. */
+export const TARGET_PROPS: Record<string, string> = {
+  keywords: '[Keyword]',
+  name: 'Text',
+  traits: '[Trait]',
+  cardCode: 'CardCode',
+  cardType: 'CardType',
+  class: '[ClassSymbol]',
+  icons: '[SkillIcon]',
+  skills: '[SkillIcon]',
+  level: 'Int',
+  cost: 'CardCost',
+  printedCost: 'Int',
+  subType: 'CardSubType',
+  id: 'CardId',
+  owner: 'InvestigatorId',
+}
 
 export const CARD_PROPS: Record<string, string> = {
   icons: '[SkillIcon]',
@@ -143,10 +174,18 @@ export const CARD_PROPS: Record<string, string> = {
 
 export const SKILL_TEST_PROPS: Record<string, string> = {
   matchingIcons: '[SkillIcon]',
+  // By how much it went: positive for a success, negative for a failure.
+  margin: 'Int',
   difficulty: 'Int',
   action: 'Action',
   investigator: 'InvestigatorId',
   committedCards: '[Card]',
+  // What the test is ABOUT -- the enemy fought, the location investigated.
+  target: 'Target',
+  // And what it is being made with, which is a different question.
+  source: 'Source',
+  skills: '[SkillType]',
+  revealedTokens: '[ChaosToken]',
   id: 'SkillTestId',
 }
 

@@ -52,7 +52,7 @@ const emit = defineEmits<{ 'update:modelValue': [v: any] }>()
 
 /* Entity kinds name a Field on that entity, whose type the schema knows but
  * this editor does not. `card` is the one we can type. */
-const KINDS = ['card', 'enemy', 'location', 'investigator', 'asset', 'act']
+const KINDS = ['card', 'target', 'enemy', 'location', 'investigator', 'asset', 'act']
 
 /* An example Field, for the box that is only reached before the schema has loaded
  * -- the names are the engine's own, so there is nothing to guess from. */

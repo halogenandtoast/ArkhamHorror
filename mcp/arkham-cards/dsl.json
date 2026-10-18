@@ -992,6 +992,7 @@
     ],
     "propertyKinds": [
       "skillTest",
+      "target",
       "enemy",
       "location",
       "investigator",
@@ -1024,9 +1025,26 @@
       "investigator",
       "committedCards",
       "target",
+      "source",
       "skills",
       "revealedTokens",
       "id"
+    ],
+    "targetProperties": [
+      "keywords",
+      "icons",
+      "skills",
+      "traits",
+      "class",
+      "name",
+      "cardCode",
+      "cardType",
+      "level",
+      "cost",
+      "printedCost",
+      "id",
+      "subType",
+      "owner"
     ],
     "transforms": [
       "fetchCard",

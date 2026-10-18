@@ -44,11 +44,13 @@ import Arkham.Cost (
   totalUsesPayment,
  )
 import Arkham.Custom.Env (Env, decodeWith)
-import Arkham.Enemy.Types (Enemy)
+import Arkham.Enemy.Types (Enemy, Field (EnemyKeywords))
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers.Card (getModifiedCardCost)
 import Arkham.Helpers.FetchCard (FetchCard (fetchCardMaybe_))
 import Arkham.Helpers.Log (getRecordCount, getRecordSet)
+import Arkham.Helpers.Modifiers (getModifiers)
+import Arkham.Helpers.Ref (targetToMaybeCard)
 import Arkham.Helpers.SkillTest (
   getSkillTest,
   getSkillTestAction,
@@ -61,13 +63,16 @@ import Arkham.Helpers.SkillTest.Target (getSkillTestTarget)
 import Arkham.Homebrew.Defs (allTraits)
 import Arkham.Id
 import Arkham.Investigator.Types (Investigator)
-import Arkham.Location.Types (Location)
+import Arkham.Location.Types (Field (LocationKeywords), Location)
 import Arkham.Matcher
+import Arkham.Modifier (ModifierType (AddKeyword, Blank, RemoveKeyword))
 import Arkham.Name (toTitle)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Query (QueryElement)
 import Arkham.Skill.Types (Skill)
+import Arkham.Target
+import Arkham.Treachery.Types (Field (TreacheryKeywords))
 import Arkham.SkillTest.Base (
   skillTestAdditionalRevealedChaosTokens,
   skillTestCommittedCards,
@@ -75,6 +80,7 @@ import Arkham.SkillTest.Base (
   skillTestId,
   skillTestResult,
   skillTestRevealedChaosTokens,
+  skillTestSource,
  )
 import Arkham.SkillTestResult
 import Data.Aeson.Key qualified as Key
@@ -408,6 +414,10 @@ skillTestProp prop = case prop of
   it is testing against ("draw 1 card for each keyword on the target card") has
   no other way to name it. -}
   "target" -> maybe Null toJSON <$> getSkillTestTarget
+  {- And what is DOING the testing -- the card the test was initiated from. The
+  target says what the test is about; this says what it is being made with, which
+  is what a card that answers "the source of that test" has to read. -}
+  "source" -> maybe Null (toJSON . skillTestSource) <$> getSkillTest
   {- Which skills the test uses. A card that says "the same skill" -- the next
   test another investigator takes using it -- has to read one off the test it
   is talking about; a test may use more than one, so this is a list. -}
@@ -438,6 +448,12 @@ getProp kind prop v = case kind of
     case (parseMaybe parseJSON v, current) of
       (Just sid, Just st) | sid == skillTestId st -> skillTestProp prop
       _ -> pure Null
+  {- Whatever the target names, worked out when the reading is made.
+  Every other kind has to be written down in advance, and the thing a skill test
+  is about cannot be: it is an enemy for a fight, a location for an investigate,
+  a treachery for the test a treachery makes you take. A 'Target' says which it
+  is, so nothing has to be declared. -}
+  "target" -> targetProp prop v
   "enemy" -> entityProp @Enemy prop v
   "location" -> entityProp @Location prop v
   "investigator" -> entityProp @Investigator prop v
@@ -454,6 +470,57 @@ getProp kind prop v = case kind of
   "card" -> pure $ cardProp prop v
   _ -> pure Null
 
+{- | A reading off whatever a 'Target' names.
+
+@keywords@ is asked of the thing itself -- an enemy that was granted Retaliate
+has Retaliate, and a blanked one has none of what it printed -- and falls back
+to the card when the thing has gone, which is the ordinary case for a card that
+reads the enemy a successful fight has just defeated. Every other reading is a
+reading of the card, which is the one thing every target has.
+-}
+targetProp :: HasGame m => Text -> Value -> m Value
+targetProp prop v = case parseMaybe parseJSON v :: Maybe Target of
+  Nothing -> pure Null
+  Just target -> go target
+ where
+  go = \case
+    ProxyTarget t _ -> go t
+    -- Two things in one target (an enemy and its location, say). The first that
+    -- answers is the answer, which is how 'targetToMaybeCard' reads one too.
+    BothTarget a b ->
+      go a >>= \case
+        Null -> go b
+        answered -> pure answered
+    target -> case prop of
+      -- The three that keep their keywords as a field of their own are asked
+      -- for it, since each has rules the others do not (an enemy's are gone
+      -- when it is blanked, a location's are read through its revealed side).
+      "keywords" -> case target of
+        EnemyTarget eid -> orComputed target . fmap toJSON =<< fieldMay EnemyKeywords eid
+        LocationTarget lid -> orComputed target . fmap toJSON =<< fieldMay LocationKeywords lid
+        TreacheryTarget tid -> orComputed target . fmap toJSON =<< fieldMay TreacheryKeywords tid
+        _ -> orComputed target Nothing
+      _ -> maybe Null (cardProp prop . toJSON) <$> targetToMaybeCard target
+
+  {- Everything else has keywords too -- an asset is Permanent or Bonded, a
+  player card is Myriad or Exceptional -- they are simply not a field of its
+  own, and neither is anything's once it has left play. The same reading the
+  three fields do, done here from the card and the modifiers standing on it:
+  what it prints, dropped if it is blanked, plus what it has been granted and
+  less what has been taken away. -}
+  orComputed target = \case
+    Just answered -> pure answered
+    Nothing ->
+      targetToMaybeCard target >>= \case
+        Nothing -> pure Null
+        Just card -> do
+          modifiers' <- foldMapM getModifiers [target, CardIdTarget (toCardId card)]
+          let
+            printed = if Blank `elem` modifiers' then [] else toList (cdKeywords (toCardDef card))
+            granted = [k | AddKeyword k <- modifiers']
+            taken = [k | RemoveKeyword k <- modifiers']
+          pure $ toJSON $ List.nub [k | k <- printed <> granted, k `notElem` taken]
+
 entityProp
   :: forall a m
    . (HasGame m, Projection a, FromJSON (SomeField a), FromJSON (EntityId a))
@@ -461,7 +528,14 @@ entityProp
   -> Value
   -> m Value
 entityProp prop v = case (parseMaybe parseJSON (String prop) :: Maybe (SomeField a), parseMaybe parseJSON v) of
-  (Just (SomeField fld), Just eid) -> toJSON <$> field fld (eid :: EntityId a)
+  {- Asked of whatever id it is handed, which is not always a thing that is
+  there: ids are UUIDs, so a location's reads as an enemy's just as well, and
+  a card that counts the keywords on the skill test's target meets one the
+  moment that test is an investigate -- or the moment the enemy it was about
+  is defeated before the window it reads in. @field@ on a thing that has gone
+  is an error that takes the whole game with it, so the reading is Null, the
+  same as every other property nothing answers. -}
+  (Just (SomeField fld), Just eid) -> maybe Null toJSON <$> fieldMay fld (eid :: EntityId a)
   _ -> pure Null
 
 {- | A reading off a card.

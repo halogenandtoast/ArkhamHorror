@@ -110,6 +110,7 @@ GENERIC = {"specObject", "subSteps", "runSteps", "reportBadPayload", "stepInvest
 EXPRESSION_LAYER = {
     "evalExpr", "exprInt", "runQuery", "runQueryStep", "substituteExpr", "valueList",
     "getProp", "entityProp", "applyFn", "paymentFn", "cardProp", "skillTestProp",
+    "targetProp",
     "jsonField", "matches", "evalPredicate", "fetchCardOf", "asCard", "pickRandomly",
 }
 
@@ -640,6 +641,12 @@ def main() -> int:
             + re.findall(r'prop\s*==\s*"([^"]+)"', expr_blocks.get("getProp", ""))
         ),
         "skillTestProperties": string_cases(expr_blocks.get("skillTestProp", "")),
+        # A target answers `keywords` itself and every card reading through its
+        # card, so the list is both arms rather than the cases written there.
+        "targetProperties": dedup(
+            string_cases(expr_blocks.get("targetProp", ""))
+            + string_cases(expr_blocks.get("cardProp", ""))
+        ),
         "transforms": dedup(
             string_cases(expr_blocks.get("applyFn", "")) + string_cases(expr_blocks.get("paymentFn", ""))
         ),

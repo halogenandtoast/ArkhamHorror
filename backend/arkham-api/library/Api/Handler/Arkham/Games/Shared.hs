@@ -94,6 +94,7 @@ import Database.Esqueleto.Experimental hiding (update, (=.))
 import Database.Redis (Connection, RedisChannel, publish, runRedis)
 import Entity.Answer
 import Entity.Arkham.GameRaw
+import GHC.Clock (getMonotonicTimeNSec)
 
 import Data.Aeson qualified as Aeson
 import Entity.Arkham.LogEntry
@@ -101,6 +102,7 @@ import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.), (>=.))
 import Import qualified as P
 import Json
+import Text.Printf (printf)
 
 -- ConnectionOptions, connectionCompressionOptions and defaultConnectionOptions
 -- come in via the Yesod.WebSockets re-export below.
@@ -264,9 +266,35 @@ gameStreamAs role gameId = catchingConnectionException $ withKeepAlive do
         over the live library on every action -- a card-builder save was invisible
         in an open tab until it reconnected, which is the opposite of what the
         overlay in 'updateGame' is for. -}
-        customCards <- userCustomCards userId
+        customCards <- readLibraryTimed userId
         updateGame customCards answer gameId (Just room) `catch` \(e :: SomeException) -> do
           liftIO $ broadcast $ encode $ GameError $ tshow e
+
+{- | 'userCustomCards', saying so when it was slow.
+
+The read sits outside 'updateGame' and so outside its timing line, but it is on
+the same per-answer path: a library whose stamp query or re-read is costing a
+player real time would otherwise be invisible between the two.
+-}
+readLibraryTimed :: UserId -> Handler (Map CardCode CustomCard)
+readLibraryTimed userId = do
+  started <- liftIO getMonotonicTimeNSec
+  cards <- userCustomCards userId
+  finished <- liftIO getMonotonicTimeNSec
+  when (finished - started >= slowLibraryReadThresholdNs)
+    $ $(logWarn)
+    $ "slow custom card library read user="
+    <> toPathPiece userId
+    <> " cards="
+    <> tshow (Map.size cards)
+    <> " took="
+    <> T.pack (printf "%.0f" (fromIntegral (finished - started) / 1e6 :: Double))
+    <> "ms"
+  pure cards
+
+-- | See 'readLibraryTimed'.
+slowLibraryReadThresholdNs :: Word64
+slowLibraryReadThresholdNs = 100_000_000
 
 {- | Why a subscriber's sender loop ended.
 
@@ -440,8 +468,27 @@ phaseTransitions oldPhase newPhase entered = go oldPhase (entered <> [newPhase])
     | p == prev = go prev ps
     | otherwise = p : go p ps
 
+{- | How long an action may take before its timing is worth a warning.
+
+The split below is logged at 'LevelInfo' for every action, which production
+does not keep (see 'shouldLogIO'), and escalated past this point -- so a server
+log carries the actions that were actually slow, broken down far enough to say
+which part of answering was.
+-}
+slowAnswerThresholdNs :: Word64
+slowAnswerThresholdNs = 500_000_000
+
 updateGame :: Map CardCode CustomCard -> Answer -> ArkhamGameId -> Maybe Room -> Handler ()
 updateGame customCards response gameId mRoom = do
+  answerStarted <- liftIO getMonotonicTimeNSec
+  phasesRef <- newIORef []
+  let
+    -- Each mark closes the phase that led up to it, so the labels read as the
+    -- work done to reach them rather than the instant they were taken at.
+    mark :: MonadIO m => Text -> m ()
+    mark label = liftIO do
+      now <- getMonotonicTimeNSec
+      modifyIORef' phasesRef ((label, now) :)
   let broadcast :: Broadcast
       broadcast = case mRoom of
         Nothing -> \_ -> pure ()
@@ -477,6 +524,8 @@ updateGame customCards response gameId mRoom = do
     registerCustomCards customCards
 
     activePlayer <- runReaderT getActivePlayer gameJson
+    -- The row is read, its 379KB of JSON parsed, and the libraries registered.
+    mark "load"
 
     let playerId = fromMaybe activePlayer (answerPlayer response)
 
@@ -554,6 +603,8 @@ updateGame customCards response gameId mRoom = do
         case mResult of
           Just () -> pure ()
           Nothing -> liftIO $ throwIO $ RunMessagesTimeout gameId runMessagesTimeoutMicros
+
+        mark "engine"
 
         ge <- readIORef gameRef
         let diffDown = diff ge arkhamGameCurrentData
@@ -709,6 +760,8 @@ updateGame customCards response gameId mRoom = do
                 pure [achievement | or completions]
               pure $ ordNub $ directEarns <> soloEarns <> progressEarns <> soloProgressEarns
 
+        mark "persist"
+
         pure
           ( g'
           , publishLog
@@ -756,6 +809,24 @@ updateGame customCards response gameId mRoom = do
   -- step so it can't be locally undone (the other groups follow on their own turns
   -- via 'ActAdvanceGen'). 'arkhamGameStep' here is the post-commit (new) step.
   when actAdvanced $ setGameUndoFloor gameId arkhamGameStep
+
+  mark "publish"
+  phases <- reverse <$> readIORef phasesRef
+  finished <- liftIO getMonotonicTimeNSec
+  let
+    elapsed since until' = T.pack (printf "%.0f" (fromIntegral (until' - since) / 1e6 :: Double)) <> "ms"
+    split _ [] = []
+    split previous ((label, at) : rest) = (label <> "=" <> elapsed previous at) : split at rest
+    timing =
+      T.intercalate
+        " "
+        ( ("game=" <> gameIdToText gameId)
+            : ("total=" <> elapsed answerStarted finished)
+            : split answerStarted phases
+        )
+  if finished - answerStarted >= slowAnswerThresholdNs
+    then $(logWarn) $ "slow answer " <> timing
+    else $(logInfo) $ "answer " <> timing
 
 {- | Merge reported checklist items into the user's progress row for a
 cross-playthrough achievement (see 'achievementChecklist'); the row's

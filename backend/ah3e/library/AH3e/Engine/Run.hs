@@ -1368,7 +1368,8 @@ dispatch msg = case msg of
       board <- use #board
       let spaces = neighborhoodSpaces e.neighborhood board
           expanded = any (\s -> maybe False ((== MysterySpace) . (.kind)) (Map.lookup s board.spaces)) spaces
-      logText ("Gate burst in " <> coerce e.neighborhood)
+      name <- neighborhoodName e.neighborhood
+      logText ("Gate burst in " <> name)
       pushAll
         [ if expanded then ChooseGateBurstSpaces [] spaces else PlaceDoomInOrder SourceMythos spaces
         , ClearActiveCard cid
@@ -2506,8 +2507,14 @@ spawnOneClue onTop = withEventDeck \case
     nd <- use (#decks . #neighborhoods . at e.neighborhood . non [])
     nd' <- if onTop then pure (cid : nd) else shuffleIntoTopTwo cid nd
     #decks . #neighborhoods . at e.neighborhood ?= nd'
-    logText ("A clue spawns in " <> coerce e.neighborhood)
-    push (ClearActiveCard cid)
+    name <- neighborhoodName e.neighborhood
+    logText ("A clue spawns in " <> name)
+    {- The table draws the card and reads the neighborhood off it before shuffling
+    it away, so the spawn needs a stop of its own: without one the card is made
+    active and cleared inside the same drain, and no view ever carries it. -}
+    askLeader
+      ("A clue spawns in " <> name)
+      [Choice (DoneLabel "Continue") [ClearActiveCard cid]]
 
 withEventDeck :: ([CardId] -> GameM ()) -> GameM ()
 withEventDeck f = do

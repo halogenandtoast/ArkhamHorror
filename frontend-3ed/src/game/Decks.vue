@@ -63,7 +63,7 @@ const terrorBack = (cid: CardId) => img(`backs/${ctx.cardCode(cid).replace(/-\d+
       v-for="nid in shows('decks') ? hoods : []"
       :key="nid"
       :back="nid"
-      :class="{ 'has-terror': terrorOn(nid).length }"
+      :class="{ 'has-terror': terrorOn(nid).length, riffling: ctx.riffling.value === nid }"
       :name="g.board.neighborhoods[nid]?.name ?? nid"
       :count="(d.neighborhoods[nid] ?? []).length"
       :deck-key="`neighborhood:${nid}`"

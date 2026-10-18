@@ -44,7 +44,8 @@ discardTerror n ctx = do
     let taken = min n before
     when (taken > 0) do
       neighborhoodL nid . #terror -= taken
-      logText ("Terror in " <> coerce nid <> " falls by " <> tshow taken)
+      name <- neighborhoodName nid
+      logText ("Terror in " <> name <> " falls by " <> tshow taken)
 
 {- | Draw from the bottom of the monster deck until one that is not Human turns
 up, shuffling the humans passed over back in (the shape of rule 491.3b, inverted).

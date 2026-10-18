@@ -249,9 +249,33 @@ export function createGameContext(tableId: string, catalog: Catalog) {
   // while an event card is flying to the discard, the unstable space it names stays hidden until it lands
   const unstableHeld = ref(false)
   const unstableReveal = ref(false)
+  // the neighborhood deck a card has just been shuffled into, which riffles as it lands
+  const riffling = ref<string | null>(null)
+  let riffleTimer: ReturnType<typeof setTimeout> | undefined
+  function riffle(nid: string) {
+    clearTimeout(riffleTimer)
+    riffling.value = nid
+    riffleTimer = setTimeout(() => (riffling.value = null), 350)
+  }
+
+  /* A card sitting in a neighborhood deck is hidden: it was shuffled in among the top
+  cards, so only its neighborhood back may ever be shown. Which neighborhood is not a
+  secret -- every card in that deck shares the back -- but which card is. */
+  const neighborhoodHolding = (cid: CardId | null | undefined, v = view.value) => {
+    if (cid == null) return null
+    for (const [nid, cards] of Object.entries(v?.game?.decks?.neighborhoods ?? {}))
+      if (cards.includes(cid)) return nid
+    return null
+  }
+  const faceDownBack = (cid: CardId | null | undefined, v = view.value) => {
+    const nid = neighborhoodHolding(cid, v)
+    return nid ? img(`backs/${nid}.webp`) : null
+  }
 
   // ---- applying table views -------------------------------------------------
   let lastEvents: { discard: CardId[]; revealed: CardId | null | undefined } | null = null
+  // the face-down active card of the view on screen, so its flight can start where it sat
+  let lastHidden: CardId | null = null
   let lastDrawGame: Game | null = null
   let undoPending = false
 
@@ -292,6 +316,23 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     return cid
   }
 
+  /* The Continue on a clue spawn is where the card goes away: it sat face down in the
+  active slot, and the neighborhood deck it was shuffled into is where it lands. It stays
+  face down the whole way -- which of the top cards it became is the one thing not to
+  show -- and the deck riffles once it arrives. */
+  function flyShuffledIntoDeck(g: Game, before: EventRects, fly: boolean) {
+    const was = lastHidden
+    lastHidden = g.activeCard != null && neighborhoodHolding(g.activeCard) ? g.activeCard : null
+    if (!fly || was == null || g.activeCard === was || !before.hidden) return
+    // the deck it is now in says where it went, which an event card's own neighborhood only echoes
+    const nid = neighborhoodHolding(was) ?? view.value?.eventNeighborhoods?.[was]
+    const back = nid ? img(`backs/${nid}.webp`) : null
+    const target = document.querySelector<HTMLElement>(`[data-deck="${NEIGHBOURHOOD_KEY}${nid}"] .deck-stack > img`)
+    if (!back || !nid || !target) return
+    // the face it flies is the back, and no `back` argument, so it never flips over
+    void flyCard(before.hidden, target, back, null, 0, back).finally(() => riffle(nid))
+  }
+
   // Cards drawn from a deck fly out of it: anything newly on screen that sat in a
   // deck a moment ago starts on that deck's top card and turns over on the way.
   function flyDrawnCards(g: Game, before: DrawRects, skip: CardId | null) {
@@ -308,7 +349,10 @@ export function createGameContext(tableId: string, catalog: Catalog) {
       const deck = holder ? before.decks[holder] : undefined
       const im = el.tagName === 'IMG' ? el : el.querySelector('img')
       if (!deck || !im || !im.getBoundingClientRect().width) return
-      void flyCard(deck.rect, im, im.getAttribute('src') ?? '', deck.back ?? im.getAttribute('src'), 120 * n++)
+      const face = im.getAttribute('src') ?? ''
+      // a card that arrives still face down shows the same picture either way, so it does not turn over
+      const turns = (deck.back ?? face) === face ? null : (deck.back ?? face)
+      void flyCard(deck.rect, im, face, turns, 120 * n++)
     })
   }
 
@@ -322,8 +366,9 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     const g = next.view?.game
     const coming = g?.encounter?.card ?? g?.activeCard
     const wanted = [
-      // the card about to land in the active slot, which the transition tweens into place
-      coming == null ? null : activeCardImage(coming, next.view),
+      /* the card about to land in the active slot, which the transition tweens into place
+      -- its back when it is one of the face-down ones, since that is all that is drawn */
+      coming == null ? null : (faceDownBack(coming, next.view) ?? activeCardImage(coming, next.view)),
       /* and the event the discard pile is showing now, since the card flying onto it
       uncovers that one for the length of the flight */
       eventImage(view.value?.game?.decks?.eventDiscard?.[0]),
@@ -360,9 +405,11 @@ export function createGameContext(tableId: string, catalog: Catalog) {
       const g = next.view?.game
       if (!g) {
         lastEvents = null
+        lastHidden = null
         lastDrawGame = null
         return
       }
+      flyShuffledIntoDeck(g, eventBefore, live)
       const discarded = flyDiscardedEvent(g, eventBefore, live, unstableBefore)
       if (animate) flyDrawnCards(g, drawBefore, discarded)
       else lastDrawGame = g
@@ -576,6 +623,9 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     scenarioName,
     eventImage,
     activeCardImage,
+    neighborhoodHolding,
+    faceDownBack,
+    riffling,
     inPlayerArea,
     sourceLabelText,
     labelTarget,

@@ -54,13 +54,23 @@ const card = computed(() => {
       src,
       name,
       isEvent,
+      faceDown: false,
       top: readArrowTop(g.value, e, where),
       iid: e.investigator,
       title: `${ctx.invName(e.investigator)} — ${where ? ctx.spaceName(where) : ''} · ${name}`,
     }
   }
+  /* A card already shuffled into a neighborhood deck is only ever shown back-side-out.
+  The back names the neighborhood, which is public -- every card in that deck shares it --
+  while which card it is stays hidden, so nothing here may carry the card's own name. */
+  const hood = ctx.neighborhoodHolding(cid)
+  const back = hood && ctx.faceDownBack(cid)
+  if (hood && back) {
+    const where = g.value.board.neighborhoods[hood]?.name ?? hood
+    return { cid, src: back, name: where, isEvent: false, faceDown: true, top: null, iid: null, title: `Face down · ${where}` }
+  }
   const kind = cid === g.value.revealedEvent ? 'Event' : 'Headline'
-  return { cid, src, name, isEvent, top: null, iid: null, title: `${kind} · ${name}` }
+  return { cid, src, name, isEvent, faceDown: false, top: null, iid: null, title: `${kind} · ${name}` }
 })
 function open() {
   const c = card.value
@@ -104,6 +114,7 @@ function open() {
             v-if="!isBroken(card.src)"
             :src="card.src"
             :data-event="card.isEvent ? '' : undefined"
+            :data-face-down="card.faceDown ? '' : undefined"
             :alt="card.name"
             @error="markBroken(card.src)"
           /><span class="asset-name">{{ card.name }}</span>

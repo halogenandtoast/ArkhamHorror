@@ -280,21 +280,24 @@ clairvoyancePeek ctx = for_ [cid | SourceCard cid <- [ctx.source]] \cid -> do
         assetL cid . #tokens . at ("read-" <> coerce nid) ?= 1
         for_ (take 1 deck) \top -> do
           name <- (.name) <$> getCardDef top
-          logText ("Clairvoyance: the top of the " <> coerce nid <> " deck is " <> name)
+          hood <- neighborhoodName nid
+          logText ("Clairvoyance: the top of the " <> hood <> " deck is " <> name)
     if left <= 0 || null unseen
       then clairvoyanceOfferDiscard ctx cid
-      else
+      else do
+        -- the buttons name the neighborhoods, so each one is looked up first
+        named <- for unseen \(nid, _) -> (nid,) <$> neighborhoodName nid
         chooseFor ctx.investigator "Look at the top card of a neighborhood deck"
           $ Choice
             (DoneLabel "Stop looking")
             [NoteOnCard cid "left" 0, ResolveEffect ctx (Custom "clairvoyance-peek")]
           : [ Choice
-                (TextLabel (coerce nid))
+                (TextLabel hood)
                 [ NoteOnCard cid ("seen-" <> coerce nid) 1
                 , NoteOnCard cid "left" (left - 1)
                 , ResolveEffect ctx (Custom "clairvoyance-peek")
                 ]
-            | (nid, _) <- unseen
+            | (nid, hood) <- named
             ]
 
 {- | One of the cards looked at may go, so long as it is not an event; an event

@@ -56,6 +56,12 @@ getNeighborhood :: HasCallStack => NeighborhoodId -> GameM Neighborhood
 getNeighborhood nid =
   uses (#board . #neighborhoods) (fromJustNote ("unknown neighborhood " <> show nid) . Map.lookup nid)
 
+{- | What a neighborhood is called in anything a player reads. Falls back to the
+id so a neighborhood that is not on this board still prints something.
+-}
+neighborhoodName :: NeighborhoodId -> GameM Text
+neighborhoodName nid = uses (#board . #neighborhoods) (maybe (coerce nid) (.name) . Map.lookup nid)
+
 spaceL :: SpaceId -> Lens' Game Space
 spaceL sid = singular (#board . #spaces . ix sid)
 

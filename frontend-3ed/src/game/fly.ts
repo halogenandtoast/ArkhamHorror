@@ -9,11 +9,14 @@ const rect = (el: Element | null | undefined) => {
 export interface EventRects {
   deck: DOMRect | null
   shown: DOMRect | null
+  // a card shown back-side-out, which flies on to the deck it was shuffled into
+  hidden: DOMRect | null
 }
 export function eventRects(): EventRects {
   return {
     deck: rect(document.querySelector('[data-deck="event"] .deck-stack > img')),
     shown: rect(document.querySelector('#activeCard img[data-event]')),
+    hidden: rect(document.querySelector('#activeCard img[data-face-down]')),
   }
 }
 

@@ -553,6 +553,15 @@ ul.tabs__header > li.inactive { filter:grayscale(100%); opacity:.6; }
 .deck-empty { width:84px; height:132px; border:2px dashed var(--line); border-radius:6px; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:12px; }
 .deck-count { position:absolute; right:-6px; bottom:-6px; min-width:24px; height:24px; padding:0 6px; border-radius:12px; background:#111; color:#fff; font-size:13px; line-height:24px; text-align:center; box-shadow:0 0 0 1px rgba(255,255,255,.5); }
 .deck-clue { position:absolute; left:-8px; top:-8px; }
+/* a card has just been shuffled in among the top cards: the stack settles twice as it goes in */
+@keyframes deckRiffle {
+  0% { transform:translate(0,0); }
+  30% { transform:translate(3px,-3px); }
+  65% { transform:translate(-2px,2px); }
+  100% { transform:translate(0,0); }
+}
+.deck.riffling .deck-stack > img { animation:deckRiffle .3s ease-in-out; }
+@media (prefers-reduced-motion:reduce) { .deck.riffling .deck-stack > img { animation:none; } }
 /* A terror card is attached to a neighborhood and lies across its encounter deck, turned
 side on as it is on the table; the column widens to take its corners. */
 .deck.has-terror { width:150px; }

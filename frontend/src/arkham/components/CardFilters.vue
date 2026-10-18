@@ -326,6 +326,19 @@ const classKey = (value: string) =>
 /* The panel inside a set: one group per row, and the whole thing capped so a
    set with two hundred traits does not push the card list off the screen. */
 .card-filters.compact {
+  /* The search and the button that narrows it are one control, so they share a
+     row. The bar wraps by default, which in a panel this width put the toggle
+     on a line of its own -- a second row of chrome above a list that is the
+     whole point of the panel. */
+  :deep(.filter-bar) {
+    flex-wrap: nowrap;
+    gap: 0.4rem;
+  }
+
+  :deep(.field) {
+    flex: 1 1 6rem;
+  }
+
   .facets {
     flex-direction: column;
     /* Column + wrap + a capped height is a multi-column layout, which in a

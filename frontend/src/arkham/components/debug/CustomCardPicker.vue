@@ -8,6 +8,7 @@ import { useDebug } from '@/arkham/debug'
 import { useCardStore } from '@/stores/cards'
 import {
   PLAYER_CARD_TYPES,
+  cardKind,
   customCards,
   registerCustomCards,
   renderCardPlaceholder,
@@ -128,7 +129,7 @@ async function add(placement: Placement) {
         >
           <img :src="cardArt(card)" :data-image-id="card.def.cardCode" alt="" />
           <span class="name">{{ card.def.name.title }}</span>
-          <small>{{ card.def.cardType.replace(/Type$/, '') }}</small>
+          <small>{{ cardKind(card.def.cardType) }}</small>
         </div>
       </div>
 

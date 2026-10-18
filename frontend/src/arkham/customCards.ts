@@ -416,6 +416,26 @@ export const CARD_TYPES = [
   { value: 'InvestigatorType', label: 'Investigator', short: 'Investigator' },
 ] as const
 
+/* What a card carries but does not own.
+ *
+ * The set stamps its name and its declarations onto every card it holds
+ * (`stampSet`), and the server derives `art` from the card code as the card
+ * comes in (`normalizeCard`). Written by hand they are not errors, they are
+ * silently overwritten -- the set corrects its own copies on its next save, and
+ * the code decides the art -- so an editor that shows the whole def should
+ * leave these out of it and put them back unchanged.
+ */
+export const DERIVED_CARD_KEYS = ['art'] as const
+export const SET_STAMPED_META_KEYS = ['set', 'setTokens', 'setKeywords'] as const
+
+/* What kind of card this is, with the deck it comes from left out: a
+ * PlayerTreachery and a TreacheryType are both treacheries, and a row that is
+ * already inside one set is not where the difference between their backs gets
+ * decided. `cardTypeLabel` is the one to reach for where it does -- a filter
+ * offering both at once has to tell them apart. */
+export const cardKind = (cardType: string): string =>
+  cardType.replace(/Type$/, '').replace(/^Player/, '')
+
 /* A card type as a chip says it. A type the list does not know -- one written
  * through the raw block -- keeps its own name without the suffix. */
 export const cardTypeLabel = (cardType: string): string =>

@@ -12,7 +12,7 @@ import CardOverlay from '@/arkham/components/CardOverlay.vue'
 import CardSetStrip from '@/arkham/components/CardSetStrip.vue'
 import SegmentedToggle from '@/components/SegmentedToggle.vue'
 import Prompt from '@/components/Prompt.vue'
-import { stripCardCodePrefix } from '@/arkham/customCards'
+import { cardKind, stripCardCodePrefix } from '@/arkham/customCards'
 import {
   mintCustomCardCode,
   renderCardPlaceholder,
@@ -105,6 +105,16 @@ function confirmDiscard(): Promise<boolean> {
   })
 }
 const selected = ref<string[]>([])
+
+/* Whether the panel is picking cards rather than opening them. A checkbox on
+ * every row is a column of chrome for something done rarely -- selecting is
+ * only ever for exporting -- so the rows stay cards until you ask. */
+const selecting = ref(false)
+
+function toggleSelecting() {
+  selecting.value = !selecting.value
+  if (!selecting.value) selected.value = []
+}
 const busy = ref(false)
 const libraryCollapsed = ref(false)
 const status = ref<string | null>(null)
@@ -747,6 +757,23 @@ const deletingCard = ref<CustomCard | null>(null)
 /* The card whose def is open as JSON. Held as the library row rather than the
  * def, since saving one needs the set it belongs to and the art it keeps. */
 const rawCard = ref<LibraryCard | null>(null)
+
+/* The number printed on a card, which is what the panel is sorted by and so
+ * the thing to read down the left edge of it. Written by hand, so it is a
+ * string: "134", but also "12a" and "R3". */
+const printedNumber = (card: LibraryCard) => {
+  const number = card.def.meta?.number
+  return typeof number === 'string' ? number.trim() : typeof number === 'number' ? String(number) : ''
+}
+
+/* Only a set that numbers its cards gets the column. A box does; a handful of
+ * cards made one afternoon does not, and an empty gutter down the side of it
+ * would be a column of nothing. */
+const numbered = computed(() => visibleCards.value.some((card) => printedNumber(card)))
+
+/* The row behind the open form, which is what the raw editor edits. A card
+ * being written for the first time has no stored def to read. */
+const editingRaw = computed(() => (editingCode.value ? (libraryCard(editingCode.value) ?? null) : null))
 const rawBusy = ref(false)
 
 async function saveRaw(def: Record<string, any>) {
@@ -928,9 +955,16 @@ const exportOne = (card: CustomCard) => download([card], `${slug(card.def.name.t
 const exportSet = (set: LibrarySet) =>
   download(inPrintedOrder(set.id), `${slug(set.name)}.arkhamcard.json`, set)
 
+/* With cards picked, the picked ones; with none, the whole set -- which is the
+ * answer to "export" when nothing has been singled out, and the file somebody
+ * syncing another library actually wants. A set export carries the set itself,
+ * so it lands as that set rather than as loose cards needing somewhere to go. */
 async function exportSelected() {
   const chosen = activeCards.value.filter((c) => isSelected(c.def.cardCode))
-  if (!chosen.length) return
+  if (!chosen.length) {
+    if (activeSet.value) await exportSet(activeSet.value)
+    return
+  }
   await download(
     chosen,
     chosen.length === 1 ? `${slug(chosen[0].def.name.title)}.arkhamcard.json` : `custom-cards-${chosen.length}.json`,
@@ -1873,24 +1907,43 @@ async function onImport(event: Event) {
         <div v-if="activeSetExportable" class="row-actions">
           <button
             type="button"
+            class="select-toggle"
+            :class="{ on: selecting }"
+            :aria-pressed="selecting"
+            :disabled="!visibleCards.length"
+            v-tooltip="t(`${K}selectCards`)"
+            :aria-label="t(`${K}selectCards`)"
+            @click="toggleSelecting"
+          >
+            <font-awesome-icon icon="check-double" />
+          </button>
+          <button
+            v-if="selecting"
+            type="button"
             :disabled="!visibleCards.length"
             v-tooltip="t(`${K}selectAll`)"
             :aria-label="t(`${K}selectAll`)"
             @click="selectAll"
           >
-            <font-awesome-icon icon="check-double" />
+            <font-awesome-icon icon="list" />
           </button>
+          <!-- Offered whether or not anything is picked: with a selection it
+               takes that, and without one it takes the set. -->
           <button
-            v-if="activeSetExportable"
             type="button"
-            :disabled="!selected.length"
-            v-tooltip="t(`${K}exportSelected`, { count: selected.length })"
-            :aria-label="t(`${K}exportSelected`, { count: selected.length })"
+            :disabled="!activeCards.length"
+            v-tooltip="selected.length
+              ? t(`${K}exportSelected`, { count: selected.length })
+              : t(`${K}exportSet`, { name: activeSet?.name })"
+            :aria-label="selected.length
+              ? t(`${K}exportSelected`, { count: selected.length })
+              : t(`${K}exportSet`, { name: activeSet?.name })"
             @click="exportSelected"
           >
             <font-awesome-icon icon="download" />
           </button>
           <button
+            v-if="selecting"
             type="button"
             :disabled="!selected.length"
             v-tooltip="t(`${K}clearSelection`)"
@@ -1952,21 +2005,30 @@ async function onImport(event: Event) {
           </button>
         </p>
 
-        <ul v-else class="library-list">
+        <ul v-else class="library-list" :class="{ selecting: selecting && activeSetExportable }">
         <li
           v-for="card in visibleCards"
           :key="card.def.cardCode"
           :class="{ editing: editingCode === card.def.cardCode }"
         >
           <input
-            v-if="activeSetExportable"
+            v-if="selecting && activeSetExportable"
             type="checkbox"
             :checked="isSelected(card.def.cardCode)"
             @change="toggleSelected(card.def.cardCode)"
           />
           <!-- Titles are wider than the panel more often than not, so the
                whole name is a hover away rather than only the half that fits. -->
-          <button type="button" class="library-card" :title="card.def.name.title" @click="edit(card)">
+          <button
+            type="button"
+            class="library-card"
+            :class="{ numbered }"
+            :title="card.def.name.title"
+            @click="edit(card)"
+          >
+            <!-- Kept even when this card has none, so the pictures beside it
+                 line up with the ones above and below. -->
+            <span v-if="numbered" class="number">{{ printedNumber(card) }}</span>
             <img :src="cardArt(card)" :data-image-id="card.def.cardCode" alt="" />
             <span class="text">
               <!-- Two cards in a set can share a title and differ only in
@@ -1982,22 +2044,9 @@ async function onImport(event: Event) {
                   ({{ card.def.level }})
                 </span>
               </span>
-              <small>{{ card.def.cardType.replace(/Type$/, '') }}</small>
+              <small>{{ cardKind(card.def.cardType) }}</small>
             </span>
           </button>
-          <!-- Nothing to do to a card in a set that follows somebody else's, so
-               no box to do it in: an empty one reads as a control that failed. -->
-          <div class="row-actions">
-            <button type="button" v-tooltip="t(`${K}rawCard`)" :aria-label="t(`${K}rawCard`)" @click="rawCard = card">
-              <font-awesome-icon icon="code" />
-            </button>
-            <button v-if="activeSetExportable" type="button" v-tooltip="t(`${K}exportCard`)" :aria-label="t(`${K}exportCard`)" @click="exportOne(card)">
-              <font-awesome-icon icon="download" />
-            </button>
-            <button v-if="!activeSetLocked" type="button" class="delete" v-tooltip="t(`${K}deleteCard`)" :aria-label="t(`${K}deleteCard`)" @click="deletingCard = card">
-              <font-awesome-icon icon="trash" />
-            </button>
-          </div>
         </li>
         </ul>
       </template>
@@ -2080,6 +2129,41 @@ async function onImport(event: Event) {
           >
             {{ editingCode ? t(`${K}saveChanges`) : t(`${K}createCard`) }}
           </button>
+          <!-- The def behind the form, for the card the form is showing. Here
+               rather than on every row in the panel: reading a card's JSON is
+               part of editing that card, not something done to a list. -->
+          <button
+            v-if="editingRaw"
+            type="button"
+            class="secondary"
+            :class="{ on: !!rawCard }"
+            :aria-pressed="!!rawCard"
+            v-tooltip="t(`${K}rawCard`)"
+            :aria-label="t(`${K}rawCard`)"
+            @click="rawCard = rawCard ? null : editingRaw"
+          >
+            <font-awesome-icon icon="code" />
+          </button>
+          <button
+            v-if="editingRaw && activeSetExportable"
+            type="button"
+            class="secondary"
+            v-tooltip="t(`${K}exportCard`)"
+            :aria-label="t(`${K}exportCard`)"
+            @click="exportOne(editingRaw)"
+          >
+            <font-awesome-icon icon="download" />
+          </button>
+          <button
+            v-if="editingRaw && !activeSetLocked"
+            type="button"
+            class="secondary delete"
+            v-tooltip="t(`${K}deleteCard`)"
+            :aria-label="t(`${K}deleteCard`)"
+            @click="deletingCard = editingRaw"
+          >
+            <font-awesome-icon icon="trash" />
+          </button>
           <!-- Only worth a slot up here while the panel's own "+ New card" is out
                of reach. -->
           <button
@@ -2106,11 +2190,25 @@ async function onImport(event: Event) {
       </p>
 
       <template v-else>
-        <p v-if="editingCode" class="muted">{{ t(`${K}saveNote`) }}</p>
+        <p v-if="editingCode && !rawCard" class="muted">{{ t(`${K}saveNote`) }}</p>
+
+        <!-- The same card, as the server holds it. It takes the editing area
+             rather than floating over it, since it is the editor for that card
+             and not a dialog about it. The form stays mounted underneath, so
+             anything typed into it is still there on the way back. -->
+        <RawCardEditor
+          v-if="rawCard"
+          :def="rawCard.def as unknown as Record<string, unknown>"
+          :title="rawCard.def.name.title"
+          :readonly="activeSetLocked"
+          :busy="rawBusy"
+          @save="saveRaw"
+          @close="rawCard = null"
+        />
 
         <!-- A native disabled fieldset, which disables every control inside it:
              the card reads as it is rather than as a form that will not take. -->
-        <fieldset class="card-form" :disabled="activeSetLocked">
+        <fieldset v-show="!rawCard" class="card-form" :disabled="activeSetLocked">
           <CustomCardForm
             ref="form"
             :setKeywords="openSetDeclaration.keywords"
@@ -2136,16 +2234,6 @@ async function onImport(event: Event) {
     :prompt="t(`${K}confirmDeleteCard`, { name: deletingCard.def.name.title })"
     :yes="() => remove(deletingCard!)"
     :no="() => (deletingCard = null)"
-  />
-
-  <RawCardEditor
-    v-if="rawCard"
-    :def="rawCard.def as unknown as Record<string, unknown>"
-    :title="rawCard.def.name.title"
-    :readonly="activeSetLocked"
-    :busy="rawBusy"
-    @save="saveRaw"
-    @close="rawCard = null"
   />
 
   <Prompt
@@ -2222,7 +2310,7 @@ async function onImport(event: Event) {
   }
 }
 
-/* The same sentence in the 268px panel, where three rems of padding above and
+/* The same sentence in the narrow panel, where three rems of padding above and
    below it is most of what you can see. */
 .panel-no-matches {
   font-size: 0.8rem;
@@ -2879,7 +2967,7 @@ async function onImport(event: Event) {
   background: var(--background-dark);
   border: 1px solid var(--box-border);
   border-radius: 8px;
-  flex: 0 0 300px;
+  flex: 0 0 380px;
   overflow: hidden;
   padding: 1rem;
   position: sticky;
@@ -2918,9 +3006,9 @@ async function onImport(event: Event) {
 .library-content {
   max-height: calc(100vh - var(--nav-height) - 5rem);
   overflow: auto;
-  /* The panel's 300px less its padding. Fixed, so the text does not re-wrap
+  /* The panel's 380px less its padding. Fixed, so the text does not re-wrap
      while the panel is sliding shut. */
-  width: 268px;
+  width: 348px;
 
   @media (max-width: 900px) {
     max-height: none;
@@ -3313,6 +3401,10 @@ async function onImport(event: Event) {
   white-space: nowrap;
 }
 
+.library-list.selecting li {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
 .library-list {
   display: flex;
   flex-direction: column;
@@ -3331,16 +3423,16 @@ async function onImport(event: Event) {
   overflow-y: auto;
   overscroll-behavior: contain;
 
-  /* Checkbox, card, actions: a fixed grid so the type never collides with the
-   * buttons and the row never wraps to two lines. Two tracks for three children
-   * put the actions on a second row of their own. */
+  /* The card, and a checkbox in front of it while picking. What you do to a
+   * card is done in the editor, where the card you are doing it to is open, so
+   * the row has nothing in it but the card. */
   li {
     align-items: center;
     border: 1px solid transparent;
     border-radius: 6px;
     display: grid;
     gap: 0.5rem;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr);
     padding: 0.3rem 0.35rem;
 
     &:hover {
@@ -3366,16 +3458,37 @@ async function onImport(event: Event) {
   cursor: pointer;
   display: grid;
   gap: 0.55rem;
-  grid-template-columns: 34px minmax(0, 1fr);
+  grid-template-columns: 52px minmax(0, 1fr);
   min-width: 0;
   padding: 0;
   text-align: left;
 
+  &.numbered {
+    gap: 0.4rem 0.45rem;
+    grid-template-columns: 2.1rem 52px minmax(0, 1fr);
+  }
+
+  /* One width for every row, so the numbers read as a column of the panel
+     rather than as a label stuck on the front of each card. */
+  .number {
+    color: #9ca3af;
+    flex: none;
+    font-size: 0.72rem;
+    font-variant-numeric: tabular-nums;
+    overflow: hidden;
+    text-align: left;
+    text-overflow: ellipsis;
+  }
+
+  /* A box wide enough for the wider shape, filled by whichever shape the card
+     is. An investigator is landscape, and cropped to a portrait thumbnail it
+     was a slice out of the middle of its own art -- the one card in the panel
+     whose picture said nothing about which card it was. */
   img {
     border-radius: 3px;
     height: 46px;
-    object-fit: cover;
-    width: 34px;
+    object-fit: contain;
+    width: 52px;
   }
 
   /* Name over type rather than beside it: the name gets the whole width to
@@ -3788,6 +3901,13 @@ button.change-head:hover {
 
 /* Pushed right on its own, so the title stays hard left whether or not the
    expand button is in front of it — `space-between` shoved it to the middle. */
+/* The one button up here that cannot be undone. It wears what the panel's own
+   delete wore, since it is the same act moved rather than a new one. */
+.builder-actions .delete:hover {
+  border-color: var(--delete);
+  color: var(--delete);
+}
+
 .builder-actions {
   align-items: center;
   display: flex;

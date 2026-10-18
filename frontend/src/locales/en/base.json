@@ -1241,6 +1241,7 @@
     "emptySetPanel": "Nothing in this set yet. Build a card and it lands here.",
     "exportCard": "Export this card",
     "rawCard": "Open this card's JSON",
+    "selectCards": "Select cards",
     "rawSaved": "Saved {name}",
     "rawFailed": "That def could not be saved",
     "deleteCard": "Delete this card",

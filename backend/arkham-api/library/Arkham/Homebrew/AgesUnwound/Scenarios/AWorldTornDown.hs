@@ -255,19 +255,27 @@ instance RunMessage AWorldTornDown where
               li.validate (step == 1) "noResolution.proceedToResolution1"
               li.validate (step /= 1) "noResolution.proceedToResolution2"
           push $ if step == 1 then R1 else R2
-        {- Resolution 1: "Check Campaign Log: If the timeline was weakened,
-        proceed to Resolution 4. Otherwise, proceed to Resolution 5." -}
-        Resolution 1 -> do
-          resolution "resolution1"
+        {- "Check Campaign Log: If the timeline was weakened, proceed to
+        Resolution 4. Otherwise, proceed to Resolution 5." -- the printed check is
+        two bullets, so it is listed as two and the branch not taken is crossed
+        out, as the no-resolution check above is. -}
+        Resolution 1 -> scope "resolution1" do
           weakened <- getHasRecord TheTimelineWasWeakened
+          resolutionFlavor do
+            setTitle "title"
+            p "body"
+            p "checkCampaignLog"
+            ul do
+              li.validate weakened "proceedToResolution4"
+              li.validate (not weakened) "proceedToResolution5"
           push $ if weakened then R4 else R5
-        Resolution 2 -> do
+        Resolution 2 -> scope "resolution2" do
           {- "record that the investigators fell to the Myriad. Next to this,
           record the time. If there was no agenda in play, record the time as
           (3,4)." -- which is what 'getTheTime' falls back to. -}
           record TheInvestigatorsFellToTheMyriad
           recordTheTimeFor TheInvestigatorsFellToTheMyriad
-          recordHighPriestEliminated
+          eliminated <- recordHighPriestEliminated
 
           -- "Remove all [cultist] and [tablet] tokens from the chaos bag. Then,
           -- add 1 [cultist], 1 [tablet] and 2 [elder thing] tokens."
@@ -277,9 +285,17 @@ instance RunMessage AWorldTornDown where
           addChaosToken Tablet
           twice $ addChaosToken ElderThing
 
-          resolutionWithXp "resolution2" $ allGainXp' attrs
+          void $ allGainXp' attrs
+          resolutionFlavor do
+            setTitle "title"
+            p "body"
+            ul do
+              li "fellToTheMyriad"
+              li.validate eliminated "eliminatedTheHighPriest"
+              li "chaosTokens"
+              li "victoryXp"
           endOfScenario
-        Resolution 3 -> do
+        Resolution 3 -> scope "resolution3" do
           {- "If Ritual Circle (Gateway to the Past) is in play: ... stepped into
           the past ... add 2 [tablet] and 1 [elder thing]. /
           If Ritual Circle (A Harnessed Future) is in play: ... stepped into the
@@ -300,26 +316,51 @@ instance RunMessage AWorldTornDown where
               twice $ addChaosToken Cultist
           addChaosToken ElderThing
 
-          recordHighPriestEliminated
-          resolutionWithXp "resolution3" $ allGainXp' attrs
+          eliminated <- recordHighPriestEliminated
+          void $ allGainXp' attrs
+          resolutionFlavor do
+            setTitle "title"
+            p "body"
+            ul do
+              li.nested.validate gateway "gatewayToThePast" do
+                li "steppedIntoThePast"
+                li "pastChaosTokens"
+              li.nested.validate (not gateway) "aHarnessedFuture" do
+                li "steppedIntoTheFuture"
+                li "futureChaosTokens"
+              li.validate eliminated "eliminatedTheHighPriest"
+              li "victoryXp"
           endOfScenario
-        Resolution 4 -> do
+        Resolution 4 -> scope "resolution4" do
           -- "record that all times are one. Each investigator is driven insane.
           -- The investigators lose the campaign."
           record AllTimesAreOne
-          resolution "resolution4"
+          resolutionFlavor do
+            setTitle "title"
+            p "body"
+            ul do
+              li "allTimesAreOne"
+              li "drivenInsane"
+              li "loseTheCampaign"
           eachInvestigator drivenInsane
           gameOverLost
-        Resolution 5 -> do
+        Resolution 5 -> scope "resolution5" do
           {- "record that the timeline was weakened. Add 2 [elder thing] tokens to
           the chaos bag. The investigators must replay Scenario III ... No
-          experience points are earned from your previous game." -- hence
-          'resolution' rather than 'resolutionWithXp', and the campaign's
-          'continueNoUpgrade' back-edge. -}
+          experience points are earned from your previous game." -- hence no
+          'allGainXp'' here, and the campaign's 'continueNoUpgrade' back-edge. -}
           record TheTimelineWasWeakened
           twice $ addChaosToken ElderThing
           record MustReplayAWorldTornDown
-          resolution "resolution5"
+          resolutionFlavor do
+            setTitle "title"
+            p "body"
+            ul do
+              li "timelineWasWeakened"
+              li "chaosTokens"
+              li "replayScenario"
+            -- The guide's page-9 epigraph, printed under this resolution.
+            p "quote"
           endOfScenario
         _ -> error $ "Unknown resolution: " <> show res
       pure s
@@ -327,10 +368,11 @@ instance RunMessage AWorldTornDown where
 
 {- | "If The Myriad Gentleman (The High Priest) is in the victory display, record
 in your Campaign Log that the investigators eliminated the high priest."
-Resolutions 2 and 3 both do it.
+Resolutions 2 and 3 both print it, and both tick the bullet off with the answer.
 -}
-recordHighPriestEliminated :: ReverseQueue m => m ()
+recordHighPriestEliminated :: ReverseQueue m => m Bool
 recordHighPriestEliminated = do
   eliminated <-
     selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Enemies.theMyriadGentleman_233
   when eliminated $ record TheInvestigatorsEliminatedTheHighPriest
+  pure eliminated

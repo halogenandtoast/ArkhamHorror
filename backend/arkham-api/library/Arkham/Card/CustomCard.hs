@@ -163,13 +163,56 @@ customCardCodes card =
  where
   def = customCardDef card
 
+{- | The registry, with the one thing that can only be known from all of it.
+
+'registrySignatureOwners' maps a signature card's code to the investigator that
+lists it. Derived here, where the registry changes, rather than by searching for
+it where it is asked: the question is asked of every custom def the engine
+reads, thousands of times a turn, and answering each by walking the registry
+made a game's cost grow with the number of custom cards the whole /process/ had
+ever loaded -- every def of every game deserialized and every card of every
+library registered since the last restart.
+-}
+data CustomCardRegistry = CustomCardRegistry
+  { registryCards :: Map CardCode CustomCard
+  , registrySignatureOwners :: Map CardCode CardCode
+  }
+
 {-# NOINLINE customCardRegistry #-}
-customCardRegistry :: IORef (Map CardCode CustomCard)
-customCardRegistry = unsafePerformIO (newIORef mempty)
+customCardRegistry :: IORef CustomCardRegistry
+customCardRegistry = unsafePerformIO (newIORef (CustomCardRegistry mempty mempty))
+
+{- | Who claims each signature card, keyed by the code the card answers to.
+
+Keyed and queried through 'sanitizeCustomCardCode' so the map's 'Ord' lookup
+decides exactly what the 'elem' it replaced decided. 'Eq CardCode' treats a
+trailing a/b/c/d as a side designator, which 'Ord' knows nothing about; a
+sanitized code ends in a digit, has no side, and so compares structurally.
+
+The registry key rather than the def's own code, and the earliest of them on a
+tie, because that is the order a scan of the map would have found them in.
+-}
+signatureOwners :: Map CardCode CustomCard -> Map CardCode CardCode
+signatureOwners cards =
+  Map.fromListWith (\_later earlier -> earlier)
+    $ [ (sigCode, ownerCode)
+      | (ownerCode, card) <- Map.toList cards
+      , let def = customCardDef card
+      , cdCardType def == InvestigatorType
+      , sigCode <- signatureCodes def
+      ]
+ where
+  -- Raw: substitution asks who the owner is, which is what this answers.
+  signatureCodes def = maybe [] (map sanitizeCustomCardCode) (rawMetaMaybe "_signatures" def)
 
 registerCustomCards :: MonadIO m => Map CardCode CustomCard -> m ()
-registerCustomCards cards =
-  unless (null cards) $ atomicModifyIORef' customCardRegistry \existing -> (cards <> existing, ())
+registerCustomCards cards = unless (null cards) do
+  atomicModifyIORef' customCardRegistry \existing ->
+    let !merged = cards <> registryCards existing
+     in (CustomCardRegistry merged (signatureOwners merged), ())
+  -- A derived def carries the signature restriction the rest of the registry
+  -- implies, so any change to any card invalidates every one of them.
+  atomicModifyIORef' customCardDefCache (const (mempty, ()))
 
 {- | Registration as a pure side effect, for the 'FromJSON Game' path where the
 defs must be live before the entities that reference them are parsed.
@@ -180,7 +223,7 @@ registerCustomCardsPure = unsafePerformIO . registerCustomCards
 lookupCustomCard :: HasCardCode a => a -> Maybe CustomCard
 lookupCustomCard (toCardCode -> cardCode)
   | not (isCustomCardCode cardCode) = Nothing
-  | otherwise = unsafePerformIO $ Map.lookup cardCode <$> readIORef customCardRegistry
+  | otherwise = unsafePerformIO $ Map.lookup cardCode . registryCards <$> readIORef customCardRegistry
 
 {- | The def as the engine should see it, with the signature restriction the
 investigator implies.
@@ -191,17 +234,39 @@ added to an investigator's signatures is theirs at once, instead of only after
 it is next saved.
 -}
 lookupCustomCardDef :: HasCardCode a => a -> Maybe CardDef
-lookupCustomCardDef =
-  fmap
-    ( withRevelationAbility
-        . withAbilityZones
-        . withSignatureRestriction
-        -- Before the zones are derived, because a keyword's result may grant an
-        -- ability with a zone of its own.
-        . withKeywordEffects
-        . customCardDef
-    )
-    . lookupCustomCard
+lookupCustomCardDef (toCardCode -> cardCode)
+  | not (isCustomCardCode cardCode) = Nothing
+  | otherwise = unsafePerformIO do
+      cached <- Map.lookup cardCode <$> readIORef customCardDefCache
+      case cached of
+        Just def -> pure (Just def)
+        Nothing -> case deriveCustomCardDef <$> lookupCustomCard cardCode of
+          Nothing -> pure Nothing
+          Just def -> do
+            atomicModifyIORef' customCardDefCache \m -> (Map.insert cardCode def m, ())
+            pure (Just def)
+
+{- | Derived defs, held until the registry they were derived from changes.
+
+Deriving one parses and rebuilds the whole of a card's meta -- kilobytes of
+ability DSL for an ordinary card -- and 'toCardDef' is a lookup as far as every
+caller is concerned, so it is called freely and the derivation was being redone
+on each of them. Caching the record is enough: its fields stay thunks, so a
+caller still pays only for what it reads, and pays it once.
+-}
+{-# NOINLINE customCardDefCache #-}
+customCardDefCache :: IORef (Map CardCode CardDef)
+customCardDefCache = unsafePerformIO (newIORef mempty)
+
+deriveCustomCardDef :: CustomCard -> CardDef
+deriveCustomCardDef =
+  withRevelationAbility
+    . withAbilityZones
+    . withSignatureRestriction
+    -- Before the zones are derived, because a keyword's result may grant an
+    -- ability with a zone of its own.
+    . withKeywordEffects
+    . customCardDef
 
 {- | Whether the def prints the hidden keyword.
 
@@ -325,16 +390,6 @@ card's own abilities.
 -}
 customSignatureOwner :: HasCardCode a => a -> Maybe CardCode
 customSignatureOwner (toCardCode -> cardCode) = unsafePerformIO do
-  registry <- readIORef customCardRegistry
-  pure
-    $ listToMaybe
-      [ ownerCode
-      | (ownerCode, card) <- Map.toList registry
-      , let def = customCardDef card
-      , cdCardType def == InvestigatorType
-      , cardCode `elem` signatureCodes def
-      ]
- where
-  -- Raw: substitution asks who the owner is, which is what this answers.
-  signatureCodes def =
-    maybe [] (map sanitizeCustomCardCode) (rawMetaMaybe "_signatures" def)
+  Map.lookup (sanitizeCustomCardCode cardCode)
+    . registrySignatureOwners
+    <$> readIORef customCardRegistry

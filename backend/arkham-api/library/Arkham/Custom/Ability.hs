@@ -288,6 +288,7 @@ type CustomEntity a = (HasCardDef a, Sourceable a, Targetable a, HasCardCode a, 
 source and target it is addressed by (which are not fields of the attrs) and, for
 a signature card, the investigator it belongs to as @$investigator@.
 -}
+
 {- | What a card's own abilities, modifiers and steps can name.
 
 The entity's serialized fields, plus the handful the engine supplies, plus
@@ -545,6 +546,7 @@ entity -- by its target, its source, or its id. Without that check a handler
 would fire for every copy of the card and for messages aimed at other entities
 entirely.
 -}
+
 {- | Pick up a @search@ block where its ask left off.
 
 The two answers a search can give -- these cards, or none -- are the two
@@ -588,13 +590,21 @@ runCustomHandlers a msg = do
   resumeDistribute a msg
   resumeSearch a msg
   resumeCustomSteps a msg
-  case toJSON msg of
+  {- Nothing below can fire for a card that listens for nothing, and deciding
+  that costs a map lookup. Serializing the message and searching it for a
+  mention of this card costs a great deal more, and was being done for every
+  message the game ran against every custom entity on the table. -}
+  unless (null handlerSpecs && null blocks) $ case toJSON msg of
     Object o -> handlers o
     _ -> pure ()
  where
+  def = toCardDef a
+  handlerSpecs = metaSpecs @HandlerSpec handlersMetaKey def
+  blocks = requestBlocks (toJSON (cdMeta def))
+
   handlers o = do
     let mentioned = any (`isSubValue` Object o) [toJSON (toTarget a), toJSON (toSource a)]
-    for_ (metaSpecs @HandlerSpec handlersMetaKey (toCardDef a)) \handler ->
+    for_ handlerSpecs \handler ->
       when (mentioned || handlerGlobal handler) $ for_ (matched (handlerOn handler) o) \fields -> do
         let env = messageBindings o fields <> bindings a
             {- Both sides are worked out, not merely substituted. A pair that
@@ -609,7 +619,7 @@ runCustomHandlers a msg = do
        the message that asked rather than in a section of their own. Every pair
        in the engine routes its answer by source or by target -- both of which
        are this card -- so the mention check is the whole of the matching. -}
-    when mentioned $ for_ (requestBlocks (toJSON (cdMeta (toCardDef a)))) \block -> do
+    when mentioned $ for_ blocks \block -> do
       let b = specObject block
       for_ (KeyMap.lookup "on" b >>= parseMaybe parseJSON) \(name :: Text) ->
         for_ (matched name o) \fields ->

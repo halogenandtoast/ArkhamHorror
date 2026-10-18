@@ -68,6 +68,8 @@ actsOnTestInProgress = \case
   RerollDie _ _ -> True
   RerollUpTo _ _ -> True
   RerollUpToNow _ _ -> True
+  RerollASuccess _ -> True
+  RerollASuccessNow _ -> True
   RerollOneOf {} -> True
   RerollAll _ -> True
   RaiseInsteadOfReroll {} -> True
@@ -1709,6 +1711,8 @@ dispatch msg = case msg of
   RerollDie cost idx -> rerollDie cost idx
   RerollUpTo src n -> rerollUpToPaying src n
   RerollUpToNow src n -> rerollUpTo src n
+  RerollASuccess src -> rerollASuccessPaying src
+  RerollASuccessNow src -> rerollASuccess src
   RerollOneOf src n idx -> rerollOneOf src n idx
   RerollAll src -> rerollAll src
   RollAdditionalDice src n -> rollAdditionalDice src n

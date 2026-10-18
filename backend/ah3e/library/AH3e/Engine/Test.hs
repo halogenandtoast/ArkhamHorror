@@ -9,6 +9,8 @@ module AH3e.Engine.Test (
   rerollDie,
   rerollUpTo,
   rerollUpToPaying,
+  rerollASuccess,
+  rerollASuccessPaying,
   rerollOneOf,
   rerollAll,
   chooseDieToRaise,
@@ -162,7 +164,10 @@ testPrompt = do
           $ if b.freeRerollPerRound
             then Just (Choice (CardLabel c) [MarkAssetUsed iid c, SpendForReroll (FreeReroll (SourceCard c))])
             else Nothing
-      fromCards <- testOptionsFor ts
+      -- what a die must show to be a success, for a card that tells them apart
+      need <- successThreshold ts
+      #test . _Just . #successNeeded ?= need
+      fromCards <- testOptionsFor (ts & #successNeeded ?~ need)
       chooseFor
         iid
         "Modify your dice"
@@ -332,6 +337,28 @@ rerollUpTo src n = do
       chooseFor ts.investigator ("Choose a die to reroll (" <> tshow n <> " left)")
         $ Choice (DoneLabel "Done rerolling") [ContinueTest]
         : [Choice (DieLabel idx d.value) [RerollOneOf src n idx] | (idx, d) <- live]
+
+{- | The reroll a card restricts to a success already on the table, which it charges
+for that success (Ominous Dreams). What counts as one moves with blessings and cards,
+so the dice are sorted here rather than on the card that asks.
+-}
+rerollASuccessPaying :: Source -> GameM ()
+rerollASuccessPaying src = do
+  ts <- currentTest
+  surcharge <- rerollSurcharge ts.investigator
+  if null surcharge
+    then rerollASuccess src
+    else pushAll (surcharge <> [RerollASuccessNow src])
+
+rerollASuccess :: Source -> GameM ()
+rerollASuccess src = do
+  ts <- currentTest
+  need <- successThreshold ts
+  case [(idx, d) | (idx, d) <- liveDice ts, d.value >= need] of
+    [] -> testPrompt
+    successes ->
+      chooseFor ts.investigator "Choose a success to reroll"
+        $ [Choice (DieLabel idx d.value) [RerollOneOf src 1 idx] | (idx, d) <- successes]
 
 rerollOneOf :: Source -> Int -> Int -> GameM ()
 rerollOneOf src n idx = do

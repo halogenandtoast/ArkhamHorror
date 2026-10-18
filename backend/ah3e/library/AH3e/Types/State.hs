@@ -264,6 +264,11 @@ data TestState = TestState
   -}
   , chosenAssets :: [CardId]
   , dice :: [Die]
+  , successNeeded :: Maybe Int
+  {- ^ what a die must show to be a success as the dice stand, filled in before the
+  cards that read the pool are asked (Ominous Dreams). Blessings and cards move it, so
+  only the engine can say.
+  -}
   , addedSuccesses :: Int
   , after :: AfterTest
   , casting :: Maybe CardId

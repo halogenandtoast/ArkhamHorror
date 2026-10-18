@@ -257,6 +257,7 @@ newTest iid skill modifier kind after =
     , fixedPool = Nothing
     , chosenAssets = []
     , dice = []
+    , successNeeded = Nothing
     , addedSuccesses = 0
     , after = after
     , casting = Nothing

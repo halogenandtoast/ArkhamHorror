@@ -104,6 +104,12 @@ data Message
     RerollUpTo Source Int
   | -- | the staged rerolls themselves, once any surcharge on rerolling is paid
     RerollUpToNow Source Int
+  | {- | reroll one die that is a success, which only the engine can tell apart
+    (Ominous Dreams)
+    -}
+    RerollASuccess Source
+  | -- | the staged success reroll itself, once any surcharge on rerolling is paid
+    RerollASuccessNow Source
   | RerollOneOf Source Int Int
   | RerollAll Source
   | -- | add one to the result of a die of their choice

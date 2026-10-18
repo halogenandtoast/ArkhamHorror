@@ -173,6 +173,12 @@ leave play — a spent Laudanum, a destroyed Diving Suit — and the next reshuf
 deals them back out of the encounter deck as if they were mythos cards, #5711.
 A player card with no owner is simply obtained instead, which is what leaving the
 expedition behind should look like.
+
+Generating them this way is only half of it: an asset's 'toCard' re-derives the
+card through 'lookupCard', which decides player-vs-encounter by which card map
+holds the def. The Expedition Items therefore also have to sit in
+@allPlayerAssetCards@ rather than @allEncounterAssetCards@, or the discard routes
+to the encounter pile whatever generated them, #5869.
 -}
 expeditionAssetCard :: CardGen m => CardDef -> m Card
 expeditionAssetCard = genCard

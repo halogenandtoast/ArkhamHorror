@@ -15,4 +15,25 @@ Contrast: the *tracked* residents (Judith/Mother Rachel/Bertie etc.) legitimatel
 
 `allEncounterAssetCards` in `Asset/Cards.hs` is literally commented "-- with encounter backs" — the invariant is double-sided only. Single-sided story-asset **deck rewards** (Mi-Go Incursion: Universal Solvent 85029, Pet Oozeling 85030, Mi-Go Weapon 85031, Lt. Wilson Stewart 85032) crash deck load with `Unknown card "…"` because `lookupPlayerCardDef` (Decklist load) only sees `allPlayerCards`; move them to `allPlayerAssetCards` (issue #5095).
 
+**Generating the card as a player card does NOT fix it — the pool is the only lever.**
+`1b56dd5047` tried to fix the Drowned City Expedition Items (#5711) by routing all eight
+grant sites through `expeditionAssetCard = genCard`, which does mint a `PlayerCard`
+because `cdCardType` is `AssetType`. It changed nothing, because an asset's `toCard`
+(`Asset/Types.hs:451`) throws the generated card away and re-derives it from the card
+code through `lookupCard` — so the def's pool, not `cdCardType` and not whatever
+generated it, decides the discard pile. The export shows the split plainly: the card
+registry said `{"tag":"PlayerCard"}` while the same card id sat in
+`gameMode.That.discard` as an `EncounterCard` record. Diving Suit 11764 came back as a
+mythos card twice over (#5711, then #5869) before the pool moved; Expedition Gear
+11761, Laudanum 11762, Alien Tablet 11763 moved with it 2026-10-19.
+
+Also note `encounterAsset` / `encounterAsset_` (`Asset/Cards/Base.hs:35`), which set
+`cdCardType = EncounterAssetType`, have **zero** call sites — every def in
+`allEncounterAssetCards` is built with `storyAsset*` and is therefore declared a player
+type. So fixing `lookupCard` to honour `cdCardType` is NOT available: it would flip all
+~130 encounter assets at once. Only the treachery and enemy maps derive membership from
+the def (`filter (isJust . cdCardSubType)`, `Treachery/Cards.hs:22`, `Enemy/Cards.hs:15`),
+which is why player-back weaknesses like Hunting Parasite 11535 and Parasitic
+Transformation 11583 never hit this.
+
 **Gather coupling:** if a scenario set-asides such a card via `gatherAndSetAside <Set>` (which calls `gatherEncounterSet`, filtering `allEncounterCards`), moving the card OUT of the encounter pool drops it from that gather → the stories' `getSetAsideCard`/`selectJust` fail. Compensate with an explicit `setAside [Assets.foo, …]` right after the gather (setAside's `notFoundInDeck = genCard` builds the now-player card into `setAsideCardsL`). Did both in TheBlobThatAteEverything setup.

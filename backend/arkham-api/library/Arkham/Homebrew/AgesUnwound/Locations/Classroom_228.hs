@@ -2,10 +2,11 @@ module Arkham.Homebrew.AgesUnwound.Locations.Classroom_228 (classroom_228) where
 
 import Arkham.Ability
 import Arkham.GameValue
+import Arkham.Helpers.Action (getStandardActions)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isInvestigating)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Cards
-import Arkham.Homebrew.AgesUnwound.Helpers (campaignI18n, getStandardActions)
+import Arkham.Homebrew.AgesUnwound.Helpers (campaignI18n)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Trait (Trait (Criminal))

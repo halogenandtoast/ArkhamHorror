@@ -100,7 +100,9 @@ instance RunMessage NightOfFire where
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of
-        NoResolution -> push R1
+        NoResolution -> do
+          resolution "noResolution"
+          push R1
         Resolution 1 -> do
           record YourHuntersFoundANewQuarry
           resolutionWithXp "resolution1" $ allGainXp' attrs

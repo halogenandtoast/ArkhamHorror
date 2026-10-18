@@ -7,7 +7,6 @@ III and VI write and compare. Nothing calls 'recordTheTime' / 'isAtOrPast' yet
 -}
 module Arkham.Homebrew.AgesUnwound.Helpers where
 
-import Arkham.Action.Additional (isStandardAdditionalAction)
 import Arkham.Agenda.Types (Field (AgendaDoom))
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query (selectOne)
@@ -15,10 +14,6 @@ import Arkham.Helpers.Agenda (getAgendaStep)
 import Arkham.Helpers.Log (getSomeRecordSetJSON)
 import Arkham.Homebrew.AgesUnwound.Key
 import Arkham.I18n
-import Arkham.Id (InvestigatorId)
-import Arkham.Investigator.Types (
-  Field (InvestigatorAdditionalActions, InvestigatorRemainingActions),
- )
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log (recordSetInsert)
 import Arkham.Message.Lifted.Queue (ReverseQueue)
@@ -80,20 +75,3 @@ recordTheTimeFor = recordTheTime . tshow
 -- | 'isAtOrPast' for a campaign-log key recorded with 'recordTheTimeFor'.
 isAtOrPastFor :: HasGame m => AgesUnwoundKey -> m Bool
 isAtOrPastFor = isAtOrPast . tshow
-
-{- | The campaign's /standard actions/: an investigator's remaining actions plus
-every additional action without a limitation on its use.
-
-> A standard action is any action that does not have a limitation on its use,
-> regardless of its source.
-
-The read-side counterpart of 'Arkham.Message.LoseStandardActions', which is how
-this campaign's cards take one away. Several cards in the @night_of_the_ritual@
-set count them ("for each standard action you have remaining", "where X is the
-number of standard actions you have").
--}
-getStandardActions :: HasGame m => InvestigatorId -> m Int
-getStandardActions iid = do
-  remaining <- field InvestigatorRemainingActions iid
-  additional <- count isStandardAdditionalAction <$> field InvestigatorAdditionalActions iid
-  pure $ remaining + additional

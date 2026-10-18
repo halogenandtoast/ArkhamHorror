@@ -263,7 +263,9 @@ instance RunMessage AYearToPlan where
         {- "If no resolution was reached (each investigator resigned or was
         defeated): Read Resolution 1." Summer's back and The Long Game's
         objective both also point at R1, so it is the only ending. -}
-        NoResolution -> push R1
+        NoResolution -> do
+          resolution "noResolution"
+          push R1
         Resolution 1 -> do
           resolutionWithXp "resolution1" $ allGainXp' attrs
           record TheRitualIsNigh

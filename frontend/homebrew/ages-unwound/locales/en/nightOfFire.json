@@ -25,6 +25,10 @@
       }
     },
     "resolutions": {
+      "noResolution": {
+        "title": "No Resolution",
+        "body": "<p class='basic'>*If no resolution was reached (each investigator was defeated)*: Read _Resolution 1_.</p>"
+      },
       "xp": {
         "desperateFlight": "their desperate flight"
       },

@@ -136,6 +136,12 @@ data InvestigatorMatcher
   | InvestigatorEngagedWith EnemyMatcher
   | InvestigatorCanBeEngagedBy EnemyId
   | InvestigatorWithActionsRemaining ValueMatcher
+  | {- | Remaining actions plus unspent additional actions that carry no
+    limitation on their use -- Ages Unwound's "standard actions". The plain
+    'InvestigatorWithActionsRemaining' reads only the action counter, so it
+    misses an untaken Leo De Luca action.
+    -}
+    InvestigatorWithStandardActionsRemaining ValueMatcher
   | InvestigatorWithActionsPerformed ValueMatcher
   | InvestigatorWithClues ValueMatcher
   | InvestigatorWithCluesInPool ValueMatcher

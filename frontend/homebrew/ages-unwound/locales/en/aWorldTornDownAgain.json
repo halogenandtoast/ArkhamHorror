@@ -33,6 +33,10 @@
       "additionalActions": "Rage Against The End"
     },
     "resolutions": {
+      "noResolution": {
+        "title": "No Resolution",
+        "body": "<p class='basic'>*If no resolution was reached (each investigator was defeated)*: Read _Resolution 2_.</p>"
+      },
       "resolution1": {
         "title": "Resolution 1",
         "body": "<p>_Resolution 1_: Minutes and eons rush past you, ancient secrets and terrible futures. A force tugs on you, urging you to fall, to be lost in the timestream once more.</p><p>This time, however, you are not so easily taken. You stand, holding firm against the pull of entropy, and step. One step, then another, dragging yourself through time. You can control this, forge your own path, straight towards Aforgomon. Pushing towards an ending, one way or another.</p><p class='basic'>Each investigator earns experience equal to the Victory X value of each card in the victory display.</p>"

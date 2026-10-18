@@ -16,6 +16,10 @@
       "setAside": "Set the remainder of the Missions encounter set aside, out of play, along with each copy of Curse of a Thousand Winters."
     },
     "resolutions": {
+      "noResolution": {
+        "title": "No Resolution",
+        "body": "<p class='basic'>*If no resolution was reached (each investigator resigned or was defeated)*: Read _Resolution 1_.</p>"
+      },
       "label": {
         "raisedAPowerfulWarding": "The Myriad raised a powerful warding",
         "recruitedACruelSorcerer": "The Myriad recruited a cruel sorcerer",

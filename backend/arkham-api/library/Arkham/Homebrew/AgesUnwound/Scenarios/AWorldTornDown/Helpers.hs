@@ -14,11 +14,13 @@ module Arkham.Homebrew.AgesUnwound.Scenarios.AWorldTornDown.Helpers where
 
 import Arkham.Ability
 import Arkham.Agenda.Types (AgendaAttrs)
+import Arkham.Classes.HasQueue (push)
 import Arkham.Helpers.Query (getSetAsideCard)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Stories qualified as Stories
 import Arkham.Homebrew.AgesUnwound.Helpers qualified as AgesUnwound
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Message (Message (SetCardAside))
 import Arkham.Message.Lifted.Queue (ReverseQueue)
 import Arkham.Message.Lifted.Story (resolveStory)
 import Arkham.Prelude
@@ -82,9 +84,17 @@ grantedAidFromAfarAbility a n =
 
 {- | "Draw the set-aside Aid From Afar story card and resolve its text."
 
-The card is read straight out of the set-aside pool and deliberately /not/
-obtained: the story's own text ends "set this card aside, out of play", so
-leaving it where it is makes it drawable again next time the action is taken.
+The story's own text ends "set this card aside, out of play", and that has to be
+done by hand: reading a story takes its card out of the set-aside pool
+(@ReadStoryWithPlacement@ in "Arkham.Scenario.Runner"), so without the trailing
+'SetCardAside' the second use of the action finds nothing to draw.
+
+'SetCardAside' is queued behind 'resolveStory', and everything the read spawns
+-- the prompt, the resolution, the removal of the story entity -- is pushed in
+front of it, so the card only returns once the resolution is over.
 -}
 drawAidFromAfar :: ReverseQueue m => InvestigatorId -> m ()
-drawAidFromAfar iid = resolveStory iid =<< getSetAsideCard Stories.aidFromAfar
+drawAidFromAfar iid = do
+  card <- getSetAsideCard Stories.aidFromAfar
+  resolveStory iid card
+  push $ SetCardAside card

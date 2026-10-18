@@ -31,10 +31,10 @@ not yet chosen this scenario, then set this card aside, out of play."
 the effects are not interchangeable, so which ones are spent has to be
 remembered individually.
 
-Setting the card aside needs no message. The agenda reads it out of the
-set-aside pool without obtaining it, and the story entity is removed once its
-resolution finishes ('storyRemoveAfterResolution'), so the card never leaves
-where it started and the action can be taken again.
+Setting the card aside is done by the agenda's 'drawAidFromAfar', because
+reading a story is what removes its card from the set-aside pool; the story
+entity itself is removed once its resolution finishes
+('storyRemoveAfterResolution').
 -}
 instance RunMessage AidFromAfar where
   runMessage msg s@(AidFromAfar attrs) = runQueueT $ scenarioI18n $ case msg of

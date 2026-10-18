@@ -162,6 +162,23 @@ getAdditionalActions attrs = do
     then pure []
     else pure $ filter (`notElem` investigatorUsedAdditionalActions attrs) additionalActions
 
+{- | An investigator's /standard actions/: their remaining actions plus every
+unspent additional action without a limitation on its use.
+
+> A standard action is any action that does not have a limitation on its use,
+> regardless of its source.
+
+The read-side counterpart of 'Arkham.Message.LoseStandardActions'. Ages Unwound
+is what introduces the term, and several of its cards count them ("for each
+standard action you have remaining"); 'getAdditionalActions' is what makes the
+count exclude the ones already spent.
+-}
+getStandardActions :: HasGame m => InvestigatorId -> m Int
+getStandardActions iid = do
+  remaining <- field InvestigatorRemainingActions iid
+  additional <- count isStandardAdditionalAction <$> field InvestigatorAdditionalActions iid
+  pure $ remaining + additional
+
 getActionCost :: HasGame m => InvestigatorAttrs -> [Action] -> m Int
 getActionCost attrs as = do
   modifiers <- getModifiers (toTarget attrs)

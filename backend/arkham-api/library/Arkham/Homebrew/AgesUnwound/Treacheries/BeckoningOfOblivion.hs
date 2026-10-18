@@ -1,8 +1,8 @@
 module Arkham.Homebrew.AgesUnwound.Treacheries.BeckoningOfOblivion (beckoningOfOblivion) where
 
 import Arkham.Calculation
+import Arkham.Helpers.Action (getStandardActions)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Treacheries qualified as Cards
-import Arkham.Homebrew.AgesUnwound.Helpers (getStandardActions)
 import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Import.Lifted

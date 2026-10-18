@@ -469,7 +469,9 @@ instance RunMessage AWorldTornDownAgain where
       case res of
         -- "If no resolution was reached (each investigator was defeated): Read
         -- Resolution 2."
-        NoResolution -> push R2
+        NoResolution -> do
+          resolution "noResolution"
+          push R2
         -- "Each investigator earns experience equal to the Victory X value of each
         -- card in the victory display."
         Resolution 1 -> do

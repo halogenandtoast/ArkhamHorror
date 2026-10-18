@@ -15,6 +15,10 @@
       "setAside": "Set The Past, The Present, The Future, and Yourself aside, out of play."
     },
     "resolutions": {
+      "noResolution": {
+        "title": "No Resolution",
+        "body": "<p class='basic'>*If no resolution was reached (each investigator was defeated)*: Read _Resolution 1_.</p>"
+      },
       "resolution1": {
         "title": "Resolution 1",
         "body": "<p>_Resolution 1_: The end of time is an experience unlike any other. Everything will be still; any sense of movement or causality was gone. Everything that was or could be or never was will be happening now, inasmuch as &lsquo;now&rsquo; would have any meaning here.</p><p>All times are one. Everything will be now. And here is where you were stuck, where you would have been made part of an unchanging tapestry of reality, where you could be, would be, were, are, will be trapped forever. That is, if forever still existed.</p>"

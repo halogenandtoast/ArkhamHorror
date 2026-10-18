@@ -4,9 +4,9 @@ import Arkham.Ability
 import Arkham.Agenda.Import.Lifted
 import Arkham.Effect.Builder
 import Arkham.Effect.Window
+import Arkham.Helpers.Action (getStandardActions)
 import Arkham.Helpers.Modifiers (ModifierType (AdditionalActions))
 import Arkham.Homebrew.AgesUnwound.CardDefs.Agendas qualified as Cards
-import Arkham.Homebrew.AgesUnwound.Helpers (getStandardActions)
 import Arkham.Homebrew.AgesUnwound.Scenarios.AWorldTornDownAgain.Helpers
 import Arkham.I18n
 import Arkham.Matcher
@@ -36,7 +36,9 @@ anyway, and nothing between the two points changes the doom count.
 instance HasAbilities RageAgainstTheEnd where
   getAbilities (RageAgainstTheEnd a) =
     [ restricted a 1 (DoomCountIs $ atLeast 4) $ forced $ MythosStep AfterCheckDoomThreshold
-    , forcedAbility a 2 $ TurnEnds #when You
+    , restricted a 2 (youExist $ InvestigatorWithStandardActionsRemaining (atLeast 1))
+        $ forced
+        $ TurnEnds #when You
     ]
 
 instance RunMessage RageAgainstTheEnd where
@@ -45,15 +47,13 @@ instance RunMessage RageAgainstTheEnd where
       eachInvestigator \iid -> loseStandardActions iid (attrs.ability 1) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      standard <- getStandardActions iid
-      let gained = min 3 standard
-      when (gained > 0) do
-        -- Same shape as agenda 2a's: see
-        -- 'Arkham.Homebrew.AgesUnwound.Agendas.TimeRunningShort'.
-        effectWithSource (attrs.ability 2) iid do
-          removeOn $ EffectEndOfNextTurnWindow iid
-          apply
-            $ AdditionalActions (ikey' "rageAgainstTheEnd.additionalActions") (attrs.ability 2) gained
+      gained <- min 3 <$> getStandardActions iid
+      -- Same shape as agenda 2a's: see
+      -- 'Arkham.Homebrew.AgesUnwound.Agendas.TimeRunningShort'.
+      effectWithSource (attrs.ability 2) iid do
+        removeOn $ EffectEndOfNextTurnWindow iid
+        apply
+          $ AdditionalActions (ikey' "rageAgainstTheEnd.additionalActions") (attrs.ability 2) gained
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       -- "Each remaining investigator is defeated."

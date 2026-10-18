@@ -13,6 +13,20 @@
       "placeLocations": "Put Front Gates, Side Building, Children's Playground, Sports Field, Front Hallway and Rear Corridors into play. Each investigator begins play at the Front Gates.",
       "setAside": "Set each other location aside, out of play, along with Hound of Unmaking, Unstable Warding, each copy of Unleashed Chaos and Stirring Titan, Unstable Energies, Aid from Afar and The Myriad Gentleman _(The High Priest)_."
     },
+    "rules": {
+      "recordingTheTime": {
+        "title": "Recording the Time",
+        "body": "<p class='basic'>At various points during this scenario, you will be asked to record *the time* next to entries in your Campaign Log. To do this, simply record, in brackets, the current agenda number and the number of doom on the current agenda. For example: If there is 4 doom on agenda 1a, you would record the time as (1,4).</p>"
+      },
+      "gainingAndLosingActions": {
+        "title": "Gaining and Losing Actions",
+        "body": "<p class='basic'>As time becomes increasingly unstable, the number of actions you may take on a turn may also change.</p><ul><li>Several effects refer to *standard actions*. A standard action is any action that does not have a limitation on its use, regardless of its source. For example, *Finn Edwards* has a copy of *Leo De Luca* in play. He has four standard actions on his turns &mdash; the default three and an additional action from Leo &mdash; as well as an additional, non-standard action from his investigator ability that can only be used to evade.</li><li>Each investigator is considered to gain their actions for the next round in step 4.2 of the upkeep phase. Effects that grant you additional actions on each of your turns are also considered to grant you actions at this point. This means that effects after an investigator's turn cannot make them lose actions for the next round, unless they happen after the upkeep phase. For example, *Finn Edwards* is attacked by a *Chronophage* in the enemy phase. This would cause him to lose an action, but as his turn has ended he has no actions remaining. During the upkeep phase of the same round, he draws the weakness *Overzealous*; if an encounter card drawn from this effect would cause him to lose actions, this happens as normal.</li><li>If a player card effect (such as the *Gold Pocket Watch*) causes the investigator phase to repeat, investigators are considered to gain their actions for their turns at the start of the phase. If a player card effect allows an investigator to take an additional turn, they are considered to gain their actions at the start of that turn.</li></ul>"
+      },
+      "haunted": {
+        "title": "Haunted",
+        "body": "<p class='basic'>Haunted is an ability that appears on some locations. Each time an investigator fails a skill test while investigating a location, after applying all results for that skill test, that investigator must resolve all “Haunted –” abilities on that location.</p><p class='basic'>A location is “haunted” for the purposes of other card effects if it has at least one “Haunted –” ability (printed or otherwise).</p>"
+      }
+    },
     "aidFromAfar": {
       "label": {
         "searchYourDecks": "“One of your companions calls out — they've found something!” Each investigator may search the top 9 cards of their deck for a card and draw it",
@@ -27,6 +41,12 @@
       "additionalActions": "End of the Line"
     },
     "resolutions": {
+      "noResolution": {
+        "title": "No Resolution",
+        "body": "<p class='basic'>*If no resolution was reached (each investigator was defeated)*:</p>",
+        "proceedToResolution1": "*If it was act 1 when the scenario ended*: Read _Resolution 1_.",
+        "proceedToResolution2": "*If it was act 2 or 3 when the scenario ended*: Read _Resolution 2_."
+      },
       "resolution1": {
         "title": "Resolution 1",
         "body": "<p>_Resolution 1_: Try as you might, the Myriad's fortress is virtually impenetrable. As the ritual inside builds towards its terrible conclusion, you throw yourself at it in desperation, seeking any way to break&mdash;</p>"

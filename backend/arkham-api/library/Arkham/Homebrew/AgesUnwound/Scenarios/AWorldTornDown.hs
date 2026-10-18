@@ -149,6 +149,10 @@ instance RunMessage AWorldTornDown where
         li "setAside"
         unscoped $ li "shuffleRemainder"
 
+      additionalRules "recordingTheTime"
+      additionalRules "gainingAndLosingActions"
+      additionalRules "haunted"
+
       {- "Gather all the cards from the following encounter sets: A World Torn
       Down, Night of the Ritual, Agents of Aforgomon, Myriad, Nyctophobia, Thugs,
       Time Spirits, Unleashed Chaos."
@@ -244,6 +248,12 @@ instance RunMessage AWorldTornDown where
         or 3 ...: Read Resolution 2." -}
         NoResolution -> do
           step <- fromMaybe 1 <$> (traverse getActStep =<< selectOne AnyAct)
+          resolutionFlavor do
+            setTitle "noResolution.title"
+            p "noResolution.body"
+            ul do
+              li.validate (step == 1) "noResolution.proceedToResolution1"
+              li.validate (step /= 1) "noResolution.proceedToResolution2"
           push $ if step == 1 then R1 else R2
         {- Resolution 1: "Check Campaign Log: If the timeline was weakened,
         proceed to Resolution 4. Otherwise, proceed to Resolution 5." -}

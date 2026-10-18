@@ -244,7 +244,9 @@ instance RunMessage TimeRunsOut where
       case res of
         -- "If no resolution was reached (each investigator was defeated): Read
         -- Resolution 1."
-        NoResolution -> push R1
+        NoResolution -> do
+          resolution "noResolution"
+          push R1
         Resolution 1 -> do
           -- "record that all times are one. Each investigator is driven insane.
           -- The investigators lose the campaign."

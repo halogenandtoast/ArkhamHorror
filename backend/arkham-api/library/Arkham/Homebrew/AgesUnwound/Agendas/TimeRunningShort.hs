@@ -7,7 +7,6 @@ import Arkham.Effect.Builder
 import Arkham.Effect.Window
 import Arkham.Helpers.Modifiers (ModifierType (AdditionalActions, AnySkillValue))
 import Arkham.Homebrew.AgesUnwound.CardDefs.Agendas qualified as Cards
-import Arkham.Homebrew.AgesUnwound.Helpers (getStandardActions)
 import Arkham.Homebrew.AgesUnwound.Scenarios.AWorldTornDownAgain.Helpers
 import Arkham.I18n
 import Arkham.Matcher
@@ -23,28 +22,30 @@ timeRunningShort = agenda (2, A) TimeRunningShort Cards.timeRunningShort (Static
 {- | "Forced - At the end of your turn, if you have any standard actions
 remaining: You gain 1 action for the next round."
 
-"Any standard actions remaining" is checked in the handler, not as a criterion:
-'Arkham.Matcher.InvestigatorWithActionsRemaining' reads only
-@InvestigatorRemainingActions@, so it would miss an unspent Leo De Luca action --
-exactly the case this campaign's "standard action" rule exists to cover.
+"Any standard actions remaining" gates the trigger, so the ability does not fire
+at all on a turn that ends with none -- see
+'Arkham.Homebrew.AgesUnwound.Agendas.TimeRunningOut' for why the plain
+'Arkham.Matcher.InvestigatorWithActionsRemaining' will not do.
 -}
 instance HasAbilities TimeRunningShort where
-  getAbilities (TimeRunningShort a) = [forcedAbility a 1 $ TurnEnds #when You]
+  getAbilities (TimeRunningShort a) =
+    [ restricted a 1 (youExist $ InvestigatorWithStandardActionsRemaining (atLeast 1))
+        $ forced
+        $ TurnEnds #when You
+    ]
 
 instance RunMessage TimeRunningShort where
   runMessage msg a@(TimeRunningShort attrs) = runQueueT $ scenarioI18n $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      standard <- getStandardActions iid
-      when (standard > 0) do
-        {- "for the next round": an 'AdditionalActions' modifier that survives into
-        the next turn, rather than 'GainActions' -- @Do BeginRound@ re-derives
-        @remainingActions@ from scratch and there is no positive counterpart to
-        'FewerActions'. 'EffectEndOfNextTurnWindow' is the one window that spans
-        "from now until the end of your next turn"; 'nextTurnModifier' would be
-        disabled *at* @BeginTurn@, before the action could be spent. -}
-        effectWithSource (attrs.ability 1) iid do
-          removeOn $ EffectEndOfNextTurnWindow iid
-          apply $ AdditionalActions (ikey' "timeRunningShort.additionalAction") (attrs.ability 1) 1
+      {- "for the next round": an 'AdditionalActions' modifier that survives into
+      the next turn, rather than 'GainActions' -- @Do BeginRound@ re-derives
+      @remainingActions@ from scratch and there is no positive counterpart to
+      'FewerActions'. 'EffectEndOfNextTurnWindow' is the one window that spans
+      "from now until the end of your next turn"; 'nextTurnModifier' would be
+      disabled *at* @BeginTurn@, before the action could be spent. -}
+      effectWithSource (attrs.ability 1) iid do
+        removeOn $ EffectEndOfNextTurnWindow iid
+        apply $ AdditionalActions (ikey' "timeRunningShort.additionalAction") (attrs.ability 1) 1
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       -- "Each investigator reveals a random token from the chaos bag."

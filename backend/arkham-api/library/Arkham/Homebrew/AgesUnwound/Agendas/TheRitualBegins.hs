@@ -1,6 +1,7 @@
 module Arkham.Homebrew.AgesUnwound.Agendas.TheRitualBegins (theRitualBegins) where
 
 import Arkham.Agenda.Import.Lifted
+import Arkham.Card
 import Arkham.Enemy.Types (Field (EnemyCardCode))
 import Arkham.Helpers.Query (getLead)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Agendas qualified as Cards
@@ -61,11 +62,12 @@ instance RunMessage TheRitualBegins where
       Aid From Afar ...'. Place this card next to the agenda deck as a reminder,
       then advance to agenda 2a."
 
-      The reminder is carried as scenario memory and read by agendas 2a and 3a,
-      which is what makes "the /current/ agenda" true after the deck advances; a
-      card placed next to the agenda deck is a 'Card', not an entity, so it could
-      not offer the ability itself. -}
+      The ability itself is carried as scenario memory and read by agendas 2a
+      and 3a, which is what makes "the /current/ agenda" true after the deck
+      advances; the card next to the agenda deck is a 'Card', not an entity, so
+      it is only the reminder and could not offer the ability itself. -}
       remember theCurrentAgendaCallsForAid
+      push $ PlaceNextTo AgendaDeckTarget [flipCard $ toCard attrs]
 
       advanceAgendaDeck attrs
       pure a

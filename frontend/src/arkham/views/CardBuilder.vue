@@ -483,6 +483,16 @@ const activeSetLocked = computed(() => !!activeSet.value && isLocked(activeSet.v
 const activeSetUnlockable = computed(() => !!activeSet.value && canUnlock(activeSet.value))
 const activeSetExportable = computed(() => !!activeSet.value && canExport(activeSet.value))
 
+/* An expansion leaves as an expansion or not at all.
+ *
+ * Its cards carry a copy of what the set declares -- the tokens they place on
+ * themselves, the keywords they print -- because that copy is the only form
+ * those declarations reach a running game in. A card taken out on its own
+ * would have to carry the whole box with it to say what its keyword means, so
+ * it does not go out on its own: the set is the unit, and the file carries the
+ * declarations once at the top instead of on every card in it. */
+const wholeSetOnly = computed(() => !!activeSet.value?.investigatorExpansion)
+
 /* What the open set declares, for the card form: the keywords a card here can
  * print, and the tokens one of them can be marked with. Empty for a set that is
  * not an investigator expansion, which is what keeps the form from offering a
@@ -960,7 +970,7 @@ const exportSet = (set: LibrarySet) =>
  * syncing another library actually wants. A set export carries the set itself,
  * so it lands as that set rather than as loose cards needing somewhere to go. */
 async function exportSelected() {
-  const chosen = activeCards.value.filter((c) => isSelected(c.def.cardCode))
+  const chosen = wholeSetOnly.value ? [] : activeCards.value.filter((c) => isSelected(c.def.cardCode))
   if (!chosen.length) {
     if (activeSet.value) await exportSet(activeSet.value)
     return
@@ -1906,6 +1916,7 @@ async function onImport(event: Event) {
              export has no selection either. -->
         <div v-if="activeSetExportable" class="row-actions">
           <button
+            v-if="!wholeSetOnly"
             type="button"
             class="select-toggle"
             :class="{ on: selecting }"
@@ -2145,7 +2156,7 @@ async function onImport(event: Event) {
             <font-awesome-icon icon="code" />
           </button>
           <button
-            v-if="editingRaw && activeSetExportable"
+            v-if="editingRaw && activeSetExportable && !wholeSetOnly"
             type="button"
             class="secondary"
             v-tooltip="t(`${K}exportCard`)"

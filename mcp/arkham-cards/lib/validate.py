@@ -536,7 +536,10 @@ def _check_record(
 def _walk_expression(expr: Any, path: str, bound: set[str], problems: list[Problem]) -> None:
     """Check one expression, and collect the `$names` it reads."""
     if isinstance(expr, str):
-        if expr.startswith("$"):
+        # `$.again` is the card's own text, not a binding: the engine turns it
+        # into the address the client looks the words up by, and nothing binds
+        # a name for it.
+        if expr.startswith("$") and not expr.startswith("$."):
             name = expr[1:]
             if name and name not in bound and not name.isdigit() and not _is_positional(name):
                 problems.append(

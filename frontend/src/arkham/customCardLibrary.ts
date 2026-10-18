@@ -471,7 +471,7 @@ export async function exportCards(cards: CustomCard[], set?: LibrarySet): Promis
   const inline = artInliner()
   const inlined = await Promise.all(
     cards.map(async (c) => ({
-      def: await inlineDefArt(c.def, inline),
+      def: withoutSetStamp(await inlineDefArt(c.def, inline), set),
       art: (await inline(c.art)) ?? c.art,
     })),
   )
@@ -503,6 +503,23 @@ export async function exportCards(cards: CustomCard[], set?: LibrarySet): Promis
       : {}),
     cards: inlined,
   }
+}
+
+/* A set's declarations, said once rather than on every card in it.
+ *
+ * Each card carries a copy of the tokens and keywords its set declares, which
+ * is what answers for the set where there is no set row to read. A file that
+ * carries the set itself is not such a place: the declarations are at the top
+ * of it, the import stamps them back onto every card as it writes them, and a
+ * box of two hundred cards is otherwise half the same keyword two hundred
+ * times. A loose card -- exported with no set — keeps its copy, which is the
+ * whole reason it has one.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function withoutSetStamp(def: any, set?: LibrarySet): any {
+  if (!set || !def?.meta) return def
+  const { setTokens, setKeywords, ...meta } = def.meta
+  return setTokens || setKeywords ? { ...def, meta } : def
 }
 
 /* An investigator has more images than its face — a card back and two portraits

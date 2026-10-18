@@ -128,6 +128,7 @@ async function take() {
     :experimental="false"
     :status="status"
     :error="error"
+    wide
   >
     <template #actions>
       <router-link class="back" :to="{ name: 'CardBuilder' }">
@@ -257,7 +258,7 @@ async function take() {
           <font-awesome-icon icon="search" />
           <span>{{ t(`${K}noCardMatches`) }}</span>
         </p>
-        <CardSetStrip v-else wrap :cards="shown" class="all-cards" />
+        <CardSetStrip v-else gallery :cards="shown" class="all-cards" />
       </template>
     </template>
 

@@ -4,6 +4,10 @@
  * One row clipped to what fits, which is what a set's own line on a list wants,
  * or every card wrapped, which is what looking at the whole set wants. Shared so
  * a set looks the same in your own library and in the marketplace.
+ *
+ * `gallery` is the third shape: the card browser's listing, where a page that
+ * is nothing but a set's cards shows them at a size you can read rather than as
+ * thumbnails with their names printed underneath.
  */
 import { renderCardPlaceholder, type CustomCard } from '@/arkham/customCards'
 
@@ -11,6 +15,8 @@ const props = defineProps<{
   cards: CustomCard[]
   /** Wrap to as many rows as it takes, rather than clipping to one. */
   wrap?: boolean
+  /** The card browser's listing: big cards, read off the card itself. Wraps. */
+  gallery?: boolean
   /** Whether a card can be clicked. A picture that does nothing is not a button. */
   interactive?: boolean
 }>()
@@ -21,7 +27,7 @@ const cardArt = (card: CustomCard) => card.art ?? renderCardPlaceholder(card.def
 </script>
 
 <template>
-  <div class="card-strip" :class="{ wrap: props.wrap }">
+  <div class="card-strip" :class="{ wrap: props.wrap || props.gallery, gallery: props.gallery }">
     <component
       v-for="card in props.cards"
       :is="props.interactive ? 'button' : 'span'"
@@ -38,8 +44,14 @@ const cardArt = (card: CustomCard) => card.art ?? renderCardPlaceholder(card.def
            No tooltip on top of it: the name is printed under the card and the
            overlay is showing the card itself, so a third copy of the title just
            covers the art you came to look at. -->
-      <img :src="cardArt(card)" :data-image="cardArt(card)" alt="" />
-      <span class="name">{{ card.def.name.title }}</span>
+      <img
+        :src="cardArt(card)"
+        :data-image="cardArt(card)"
+        :alt="props.gallery ? card.def.name.title : ''"
+      />
+      <!-- A gallery card is big enough to read its own title off, which is why
+           the card browser prints no caption either. -->
+      <span v-if="!props.gallery" class="name">{{ card.def.name.title }}</span>
     </component>
   </div>
 </template>
@@ -81,6 +93,35 @@ const cardArt = (card: CustomCard) => card.art ?? renderCardPlaceholder(card.def
     --strip-card: 96px;
     --strip-image: 136px;
     --strip-card-height: 166px;
+  }
+
+  /* The card browser's listing, to the pixel: columns that fill the width from
+     a 200px minimum, and a cell that is only as tall as the card in it. Nothing
+     is letterboxed here -- a landscape card simply makes a shorter cell, and
+     `align-self: start` lets its row neighbours keep their own height instead
+     of stretching to the tallest. */
+  &.gallery {
+    --strip-card: 200px;
+
+    gap: 12px;
+    grid-auto-rows: auto;
+    grid-template-columns: repeat(auto-fill, minmax(min(var(--strip-card), 100%), 1fr));
+
+    @media (max-width: 560px) {
+      --strip-card: 140px;
+    }
+  }
+}
+
+.gallery .strip-card {
+  align-self: start;
+  gap: 0;
+  height: auto;
+  padding: 0;
+
+  img {
+    border-radius: 10px;
+    height: auto;
   }
 }
 

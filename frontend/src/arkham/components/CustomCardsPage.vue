@@ -27,14 +27,18 @@ withDefaults(
      * Two nested `height: 100%; overflow-y: auto` boxes is a scroll container
      * inside a scroll container, which on iOS traps the page's own scroll. */
     inline?: boolean
+    /* A page that is a wall of cards rather than a column of text, and so wants
+     * the width the card browser takes. The prose inside caps itself, so only
+     * the card grid actually grows. */
+    wide?: boolean
   }>(),
-  { experimental: true, inline: false },
+  { experimental: true, inline: false, wide: false },
 )
 </script>
 
 <template>
   <div :class="inline ? 'contents' : 'page-container'">
-    <section class="cc-page" :class="{ inline }">
+    <section class="cc-page" :class="{ inline, wide }">
       <header class="cc-head">
         <div class="cc-titles">
           <h1>
@@ -104,6 +108,10 @@ withDefaults(
 
   &.inline {
     padding-bottom: 0;
+  }
+
+  &.wide {
+    max-width: 1800px;
   }
 }
 

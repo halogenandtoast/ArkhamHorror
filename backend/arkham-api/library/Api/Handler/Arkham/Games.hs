@@ -10,6 +10,7 @@ module Api.Handler.Arkham.Games (
   getApiV1ArkhamGameStepR,
   getApiV1ArkhamGamesR,
   getApiV1ArkhamSpectatableGamesR,
+  getApiV1ArkhamSpectatableGamesDigestR,
   postApiV1ArkhamGamesR,
   putApiV1ArkhamGameR,
   deleteApiV1ArkhamGameR,
@@ -55,10 +56,11 @@ import Data.Coerce
 import Data.Map.Strict qualified as Map
 import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding (update, (=.))
+import Database.Esqueleto.Internal.Internal (unsafeSqlBinOp, unsafeSqlValue)
 import Entity.Answer
 import Entity.Arkham.GameRaw
 import Entity.Arkham.Step
-import Import hiding (delete, exists, on, (==.))
+import Import hiding (Value, delete, exists, on, (==.))
 import Yesod.WebSockets
 
 {- | Step counter only: one indexed Int column, no game JSON touched, no lock.
@@ -185,37 +187,63 @@ game to watch wants.
 spectatableGamesLimit :: Int64
 spectatableGamesLimit = 50
 
-{- | Games whose players have opened them up to be watched.
+{- | The rows the watch list is built from: games whose players have opened them
+up to be watched.
 
 Deliberately not every game this user *could* reach: @allowSpectators@ is what
-puts a game here. Three things are left out --
+puts a game here, and it is decided when the game is created and never changed.
+Three things are left out --
 
-  * games this user already has a seat in, which the home page lists above
-    this one under "Your Games";
+  * games this user already has a seat in, which "Your Games" lists;
   * Epic Multiplayer group games, which are reached through their event the
     same way they are kept out of 'getApiV1ArkhamGamesR';
   * anything not actually in play, so a watcher never opens a game that is
     waiting on its decks or already over.
 
-The last of those is decided after decoding, because the state lives inside
-@current_data@ and nothing outside it records play having stopped.
+Shared by the list and its digest so the two cannot drift: a digest that
+answers "has the list changed?" is only useful while it is the same question.
+-}
+spectatableGames :: UserId -> SqlQuery (SqlExpr (Entity ArkhamGameRaw))
+spectatableGames userId = do
+  games <- from $ table @ArkhamGameRaw
+  where_ games.allowSpectators
+  where_ $ isActiveGame games
+  where_ $ notExists do
+    players <- from $ table @ArkhamPlayer
+    where_ $ players.arkhamGameId ==. toBaseId games.id
+    where_ $ players.userId ==. val userId
+  where_ $ notExists do
+    grp <- from $ table @ArkhamEpicGroup
+    where_ $ grp.arkhamGameId ==. just (toBaseId games.id)
+  orderBy [desc games.updatedAt]
+  limit spectatableGamesLimit
+  pure games
+
+{- | @current_data #>> '{gameGameState,tag}' = 'IsActive'@.
+
+Whether play has stopped lives inside @current_data@ and nowhere else, so the
+alternative is decoding every candidate game to find out -- 28kB of jsonb each.
+Postgres reads the one path instead, at about 0.7ms a row, which is what makes
+the digest cheap enough to poll. Same path the @arkham_game_stats@ view reads.
+
+Only ever paid for a row @allowSpectators@ already let through: Postgres orders
+the cheap boolean qual ahead of this one in the same scan.
+-}
+isActiveGame :: SqlExpr (Entity ArkhamGameRaw) -> SqlExpr (Value Bool)
+isActiveGame games =
+  unsafeSqlBinOp "#>>" games.currentData (unsafeSqlValue "'{gameGameState,tag}'")
+    ==. val (Just ("IsActive" :: Text))
+
+{- | Games whose players have opened them up to be watched.
+
+Expensive: every row decodes a whole game to name its scenario and
+investigators, which is why it is bounded by 'spectatableGamesLimit' and why
+the watch page polls 'getApiV1ArkhamSpectatableGamesDigestR' rather than this.
 -}
 getApiV1ArkhamSpectatableGamesR :: Handler [GameDetailsEntry]
 getApiV1ArkhamSpectatableGamesR = do
   userId <- getRequestUserId
-  games <- runDB $ select do
-    games <- from $ table @ArkhamGameRaw
-    where_ games.allowSpectators
-    where_ $ notExists do
-      players <- from $ table @ArkhamPlayer
-      where_ $ players.arkhamGameId ==. toBaseId games.id
-      where_ $ players.userId ==. val userId
-    where_ $ notExists do
-      grp <- from $ table @ArkhamEpicGroup
-      where_ $ grp.arkhamGameId ==. just (toBaseId games.id)
-    orderBy [desc games.updatedAt]
-    limit spectatableGamesLimit
-    pure games
+  games <- runDB $ select $ spectatableGames userId
   let gameIds = map (coerce . entityKey) games :: [ArkhamGameId]
   playerCounts <- runDB $ select do
     p <- from $ table @ArkhamPlayer
@@ -229,9 +257,36 @@ getApiV1ArkhamSpectatableGamesR = do
       games
   pure $ filter inPlay entries
  where
+  -- The query already asked Postgres for games in play; this drops the rows
+  -- that failed to decode, which have no state to go on either way.
   inPlay = \case
     SuccessGameDetails gd -> gd.gameState == IsActive
     FailedGameDetails {} -> False
+
+{- | Which games the watch list would show.
+
+The list itself is too expensive to sit on a timer, so the watch page asks this
+instead and pays for the list only when the answer changes -- the same bargain
+'getApiV1ArkhamGameStepR' strikes for a game. Nothing here reads a game: it is
+the membership query returning keys, so it stays a handful of uuids however
+many games are open.
+
+Sorted, so the answer is membership and nothing else. The list is ordered by
+@updatedAt@, which every action in a watched game moves, and a digest carrying
+that order would report a change -- and buy the whole list again -- every time
+anybody took a turn. A game appearing or ending is what a watcher waiting for a
+table needs to see; two of them trading places in the list is not.
+
+Ids rather than a hash, because the client only needs to know *that* the set
+moved and a hash of 50 uuids is not meaningfully smaller than the uuids.
+-}
+getApiV1ArkhamSpectatableGamesDigestR :: Handler [ArkhamGameId]
+getApiV1ArkhamSpectatableGamesDigestR = do
+  userId <- getRequestUserId
+  ids <- runDB $ select do
+    games <- spectatableGames userId
+    pure games.id
+  pure $ sort $ map (coerce . unValue) ids
 
 data CreateGamePost = CreateGamePost
   { deckIds :: [Maybe ArkhamDeckId]

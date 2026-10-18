@@ -85,6 +85,7 @@
         !/reload ApiV1ArkhamGamesReloadR GET
         !/old ApiV1ArkhamGamesOldR GET
         !/spectatable ApiV1ArkhamSpectatableGamesR GET
+        !/spectatable/digest ApiV1ArkhamSpectatableGamesDigestR GET
         /#ArkhamGameId ApiV1ArkhamGameP:
           / ApiV1ArkhamGameR GET PUT DELETE
           /raw ApiV1ArkhamGameRawR PUT

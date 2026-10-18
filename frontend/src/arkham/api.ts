@@ -203,6 +203,14 @@ export const fetchSpectatableGames = async (): Promise<GameDetails[]> => {
   return entries.filter((entry) => entry.tag === 'game') as GameDetails[]
 }
 
+/* The "has the list changed?" probe, for the same reason fetchGameStep exists:
+ * the list above decodes a whole game per row, so the watch page asks for the
+ * ids first and pays for the list only when the set of them moves. */
+export const fetchSpectatableGameIds = async (): Promise<string[]> => {
+  const { data } = await api.get('arkham/games/spectatable/digest', { params: { _: Date.now() } })
+  return JsonDecoder.array(JsonDecoder.string(), 'ArkhamGameId[]').decodePromise(data)
+}
+
 
 export const fetchDecks = async (): Promise<Deck[]> => {
   const { data } = await api.get('arkham/decks')

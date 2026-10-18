@@ -1,21 +1,14 @@
 <script lang="ts" setup>
-import { ref, Ref } from 'vue';
-import { fetchSpectatableGames } from '@/arkham/api';
-import type { GameDetails } from '@/arkham/types/Game';
+import { useSpectatableGames } from '@/arkham/composables/useSpectatableGames';
 import GameRow from '@/arkham/components/GameRow.vue';
 
 /* Other people's games, whose hosts have put them on the watch list. Nothing
  * here is yours, and the only thing to do with one is open it read-only, which
- * is why this is a page of its own rather than a tab of Your Games. */
-const games: Ref<GameDetails[]> = ref([])
-const loading = ref(true)
-
-/* A quiet failure: the page says nobody is hosting, which is what a failed
- * fetch looks like from the outside anyway. */
-fetchSpectatableGames()
-  .then((result) => (games.value = result))
-  .catch(() => (games.value = []))
-  .finally(() => (loading.value = false))
+ * is why this is a page of its own rather than a tab of Your Games.
+ *
+ * Kept current while the page is open: this is where somebody waits for a table
+ * to open up, so a game appearing or ending shows up without a reload. */
+const { games, loading } = useSpectatableGames()
 </script>
 
 <template>

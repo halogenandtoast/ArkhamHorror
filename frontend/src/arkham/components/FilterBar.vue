@@ -115,6 +115,7 @@ defineProps<{ placeholder: string; clearLabel: string }>()
 }
 
 .toggles {
+  align-items: center;
   display: flex;
   flex: 0 1 auto;
   gap: 0.5rem;

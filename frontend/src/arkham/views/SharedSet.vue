@@ -15,12 +15,14 @@ import { useI18n } from 'vue-i18n'
 import * as Api from '@/arkham/api'
 import { subscribeToSharedSet } from '@/arkham/customCardLibrary'
 import { setLinkLabel } from '@/arkham/setLink'
-import type { CustomCard } from '@/arkham/customCards'
+import { normalizeCardDef, type CustomCard } from '@/arkham/customCards'
+import CardListView from '@/arkham/components/CardListView.vue'
 import CardOverlay from '@/arkham/components/CardOverlay.vue'
 import CardSetStrip from '@/arkham/components/CardSetStrip.vue'
 import CustomCardsPage from '@/arkham/components/CustomCardsPage.vue'
 import FilterBar from '@/arkham/components/FilterBar.vue'
 import MetaChip from '@/arkham/components/MetaChip.vue'
+import SegmentedToggle from '@/components/SegmentedToggle.vue'
 
 const props = defineProps<{ token: string }>()
 
@@ -80,6 +82,25 @@ const shown = computed(() => {
       (c.def.cardTraits ?? []).some((trait: string) => matches(trait, needle)),
   )
 })
+
+/* Pictures or a table, the way the card browser offers both: the pictures are
+ * how a set is browsed, the table is how 200 of them are read. Remembered,
+ * because whichever one you want you want it every time. */
+type CardView = 'images' | 'list'
+const VIEW_KEY = 'arkham:card-builder:card-view'
+
+const view = ref<CardView>(localStorage.getItem(VIEW_KEY) === 'list' ? 'list' : 'images')
+watch(view, (value) => localStorage.setItem(VIEW_KEY, value))
+
+const viewOptions = computed(() => [
+  { value: 'images' as CardView, label: t(`${K}viewImages`) },
+  { value: 'list' as CardView, label: t(`${K}viewList`) },
+])
+
+/* The table reads fields a hand-written def may simply not carry -- a card with
+ * no skill icons has no `skills` key -- and this payload has not been through
+ * the decoder that fills them in. */
+const shownDefs = computed(() => shown.value.map((card) => normalizeCardDef(card.def)))
 
 const have = computed(() => !!set.value?.setId)
 
@@ -252,12 +273,19 @@ async function take() {
           :clear-label="t(`${K}clearFilter`)"
         >
           <span v-if="query" class="shown-count">{{ t(`${K}cardCount`, shown.length) }}</span>
+          <SegmentedToggle v-model="view" :options="viewOptions" :label="t(`${K}viewLabel`)" />
         </FilterBar>
 
         <p v-if="!shown.length" class="empty-state">
           <font-awesome-icon icon="search" />
           <span>{{ t(`${K}noCardMatches`) }}</span>
         </p>
+        <CardListView
+          v-else-if="view === 'list'"
+          :cards="shownDefs"
+          :show-counts="false"
+          class="all-cards"
+        />
         <CardSetStrip v-else gallery :cards="shown" class="all-cards" />
       </template>
     </template>

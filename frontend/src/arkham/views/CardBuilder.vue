@@ -63,10 +63,13 @@ import {
   updateSet,
   saveToLibrary,
   setCards,
+  type LibraryCard,
   type LibrarySet,
 } from '@/arkham/customCardLibrary'
 import ExpansionDetails, { type ExpansionDraft } from '@/arkham/components/debug/ExpansionDetails.vue'
 import SetTextEditor from '@/arkham/components/debug/SetTextEditor.vue'
+import RawCardEditor from '@/arkham/components/debug/RawCardEditor.vue'
+import { importChanges, type CardChange } from '@/arkham/customCardDiff'
 
 const { t, te } = useI18n()
 const K = 'customCardSets.'
@@ -741,6 +744,30 @@ function sameDeclaration(set: LibrarySet, draft: ExpansionDraft): boolean {
 const deletingSet = ref<LibrarySet | null>(null)
 const deletingCard = ref<CustomCard | null>(null)
 
+/* The card whose def is open as JSON. Held as the library row rather than the
+ * def, since saving one needs the set it belongs to and the art it keeps. */
+const rawCard = ref<LibraryCard | null>(null)
+const rawBusy = ref(false)
+
+async function saveRaw(def: Record<string, any>) {
+  const card = rawCard.value
+  if (!card) return
+  rawBusy.value = true
+  error.value = null
+  try {
+    const saved = await saveToLibrary({ def: def as CustomCard['def'], art: card.art }, card.setId)
+    rawCard.value = null
+    // The form may be showing the card that just changed underneath it.
+    if (editingCode.value === saved.def.cardCode) form.value?.loadCard(saved)
+    status.value = t(`${K}rawSaved`, { name: saved.def.name.title })
+  } catch (e) {
+    console.error(e)
+    error.value = t(`${K}rawFailed`)
+  } finally {
+    rawBusy.value = false
+  }
+}
+
 const deleteSetPrompt = computed(() => {
   const set = deletingSet.value
   if (!set) return ''
@@ -1002,6 +1029,27 @@ const importDiff = computed(() => {
   }
 })
 
+/* What the file would do to the cards that are already there, card by card and
+ * key by key. The counts above say how much lands; this says what it lands on,
+ * which is the question when two libraries have drifted apart. */
+const importReview = computed(() => {
+  const incoming = pendingImport.value
+  if (!incoming) return null
+  const target = incoming.into ?? incoming.replacing
+  if (!target) return null
+  const existing = setCards(target.id).map((c) => c.def as any)
+  const review = importChanges(existing, incoming.cards.map((c) => c.def as any))
+  // Adding to a set takes nothing out of it, whatever the file leaves unsaid.
+  return incoming.into ? { ...review, removed: [] } : review
+})
+
+// One card's keys open at a time: a def is long, and two are longer.
+const openChange = ref<string | null>(null)
+const toggleChange = (code: string) => (openChange.value = openChange.value === code ? null : code)
+
+const changeLabel = (change: CardChange) =>
+  change.changes.map((c) => c.key).join(', ')
+
 /* Everything imported arrives as a set, replacing one of the same name rather
  * than merging into it. A file that names no set falls back to what the cards
  * claim, and failing that to the file's own name. */
@@ -1020,6 +1068,7 @@ async function reviewImport(
   status.value = null
   pendingImport.value = null
   importExpanded.value = false
+  openChange.value = null
   portraitsCut.value = 0
   try {
     const { name, description, url, sourceCode, cards } = await parse(await file.text())
@@ -1218,7 +1267,9 @@ async function onImport(event: Event) {
         {{ t(`${K}cardCount`, pendingImport.cards.length) }}
         <span v-if="importDiff" class="split">
           <span class="added">{{ t(`${K}reviewAdded`, { n: importDiff.added }) }}</span>
-          <span>{{ t(`${K}reviewUpdated`, { n: importDiff.updated }) }}</span>
+          <!-- Counted by what differs, not by what is present in both: a file
+               that brings a card back unchanged updates nothing. -->
+          <span>{{ t(`${K}reviewUpdated`, { n: importReview ? importReview.updated.length : importDiff.updated }) }}</span>
           <span v-if="!pendingImport.into" :class="{ dropped: importDiff.removed > 0 }">
             {{ t(`${K}reviewDropped`, { n: importDiff.removed }) }}
           </span>
@@ -1243,6 +1294,46 @@ async function onImport(event: Event) {
         <font-awesome-icon icon="triangle-exclamation" />
         {{ t(`${K}reviewSubscribed`, { name: pendingImport.replacing.name }) }}
       </p>
+
+      <!-- Which cards change, and in what. The counts say how big the import
+           is; this says what it is, which is the only form of it you can agree
+           to when the two libraries have drifted. -->
+      <div v-if="importReview && (importReview.updated.length || importReview.added.length || importReview.removed.length)" class="review-changes">
+        <p v-if="importReview.identical" class="note">
+          {{ importReview.identical }} unchanged
+        </p>
+
+        <ul class="changed">
+          <li v-for="card in importReview.updated" :key="card.cardCode" class="changed-card">
+            <button type="button" class="change-head" @click="toggleChange(card.cardCode)">
+              <span class="mark changed">changed</span>
+              <span class="who">{{ card.title }}</span>
+              <span class="keys">{{ changeLabel(card) }}</span>
+            </button>
+            <div v-if="openChange === card.cardCode" class="change-body">
+              <div v-for="field in card.changes" :key="field.key" class="field">
+                <code class="field-key">{{ field.key }}</code>
+                <div class="sides">
+                  <pre class="was">{{ field.before }}</pre>
+                  <pre class="now">{{ field.after }}</pre>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li v-for="card in importReview.added" :key="card.cardCode" class="changed-card">
+            <span class="change-head plain">
+              <span class="mark added">new</span>
+              <span class="who">{{ card.title }}</span>
+            </span>
+          </li>
+          <li v-for="card in importReview.removed" :key="card.cardCode" class="changed-card">
+            <span class="change-head plain">
+              <span class="mark removed">dropped</span>
+              <span class="who">{{ card.title }}</span>
+            </span>
+          </li>
+        </ul>
+      </div>
 
       <!-- Clipped to one row by default: a pool export can run to hundreds of
            cards, and the whole wrapped grid is taller than the page. -->
@@ -1882,7 +1973,10 @@ async function onImport(event: Event) {
           </button>
           <!-- Nothing to do to a card in a set that follows somebody else's, so
                no box to do it in: an empty one reads as a control that failed. -->
-          <div v-if="activeSetExportable || !activeSetLocked" class="row-actions">
+          <div class="row-actions">
+            <button type="button" v-tooltip="t(`${K}rawCard`)" :aria-label="t(`${K}rawCard`)" @click="rawCard = card">
+              <font-awesome-icon icon="code" />
+            </button>
             <button v-if="activeSetExportable" type="button" v-tooltip="t(`${K}exportCard`)" :aria-label="t(`${K}exportCard`)" @click="exportOne(card)">
               <font-awesome-icon icon="download" />
             </button>
@@ -2028,6 +2122,16 @@ async function onImport(event: Event) {
     :prompt="t(`${K}confirmDeleteCard`, { name: deletingCard.def.name.title })"
     :yes="() => remove(deletingCard!)"
     :no="() => (deletingCard = null)"
+  />
+
+  <RawCardEditor
+    v-if="rawCard"
+    :def="rawCard.def as unknown as Record<string, unknown>"
+    :title="rawCard.def.name.title"
+    :readonly="activeSetLocked"
+    :busy="rawBusy"
+    @save="saveRaw"
+    @close="rawCard = null"
   />
 
   <Prompt
@@ -3386,6 +3490,117 @@ async function onImport(event: Event) {
 
 /* The import review. Sits between the page head and the sets it is about to
    change, and reads top-down: what lands, what it costs, what it looks like. */
+/* The card-by-card half of a review: a list that stays a list until one row is
+   opened, since the whole of a set's defs is longer than the page by far. */
+.review-changes {
+  margin-top: 0.6rem;
+  max-height: 22rem;
+  overflow-y: auto;
+
+  .changed {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    list-style: none;
+    margin: 0.3rem 0 0;
+    padding: 0;
+  }
+}
+
+.change-head {
+  align-items: baseline;
+  background: none;
+  border: none;
+  color: inherit;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.2rem 0.3rem;
+  text-align: left;
+  width: 100%;
+
+  &.plain {
+    cursor: default;
+  }
+}
+
+button.change-head:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+}
+
+.mark {
+  flex: none;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  min-width: 4.5rem;
+  text-transform: uppercase;
+
+  &.changed {
+    color: #fcd34d;
+  }
+
+  &.added {
+    color: #bef264;
+  }
+
+  &.removed {
+    color: #fca5a5;
+  }
+}
+
+.who {
+  flex: none;
+}
+
+.keys {
+  color: #9ca3af;
+  font-family: monospace;
+  font-size: 0.72rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.change-body {
+  padding: 0.2rem 0.3rem 0.5rem 5rem;
+
+  .field + .field {
+    margin-top: 0.4rem;
+  }
+}
+
+.field-key {
+  color: #9ca3af;
+  font-size: 0.72rem;
+}
+
+.sides {
+  display: grid;
+  gap: 0.4rem;
+  grid-template-columns: 1fr 1fr;
+
+  pre {
+    background: #0b1220;
+    border: 1px solid #374151;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    margin: 0.2rem 0 0;
+    max-height: 12rem;
+    overflow: auto;
+    padding: 0.35rem 0.5rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .was {
+    border-color: #7a2020;
+  }
+
+  .now {
+    border-color: #2f5d3a;
+  }
+}
+
 .import-review {
   background: var(--background-dark);
   border: 1px solid var(--spooky-green);

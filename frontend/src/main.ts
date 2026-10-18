@@ -11,14 +11,14 @@ import { useUserStore } from '@/stores/user'
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faExpeditedssl } from "@fortawesome/free-brands-svg-icons";
-import { faFilter, faGear, faLayerGroup, faBan, faCircleExclamation, faGhost, faLocationDot, faSearch, faList, faImage, faAngleDown, faUndo, faTrash, faEye, faCopy, faExternalLink, faRefresh, faBook, faChevronRight, faBars, faTimes, faShieldHeart, faWrench, faPaperclip, faArrowLeft, faArrowUp, faStore, faTriangleExclamation, faShuffle, faTrophy, faDownload, faUpload, faCheckDouble, faFlask, faBug, faPen, faThumbsUp, faHourglassHalf, faCircleXmark, faCircleCheck, faClipboardCheck, faChartSimple, faRectangleList, faCircleQuestion, faBullhorn, faBoxArchive, faUserGear, faPlus, faLink, faLinkSlash, faUsers, faLock, faUnlock } from '@fortawesome/free-solid-svg-icons'
+import { faCode, faFilter, faGear, faLayerGroup, faBan, faCircleExclamation, faGhost, faLocationDot, faSearch, faList, faImage, faAngleDown, faUndo, faTrash, faEye, faCopy, faExternalLink, faRefresh, faBook, faChevronRight, faBars, faTimes, faShieldHeart, faWrench, faPaperclip, faArrowLeft, faArrowUp, faStore, faTriangleExclamation, faShuffle, faTrophy, faDownload, faUpload, faCheckDouble, faFlask, faBug, faPen, faThumbsUp, faHourglassHalf, faCircleXmark, faCircleCheck, faClipboardCheck, faChartSimple, faRectangleList, faCircleQuestion, faBullhorn, faBoxArchive, faUserGear, faPlus, faLink, faLinkSlash, faUsers, faLock, faUnlock } from '@fortawesome/free-solid-svg-icons'
 import * as VueI18n from 'vue-i18n'
 import { loadLocaleMessages, normalizeLocale } from '@/locales/messages'
 import { setI18n } from '@/locales/i18n'
 import { preferredLanguage } from '@/locales/language'
 import mitt from 'mitt';
 
-library.add(faFilter, faBan, faLocationDot, faCircleExclamation, faGhost, faSearch, faList, faImage, faAngleDown, faExpeditedssl, faUndo, faTrash, faEye, faCopy, faExternalLink, faRefresh, faBook, faChevronRight, faBars, faTimes, faShieldHeart, faWrench, faPaperclip, faArrowLeft, faArrowUp, faStore, faTriangleExclamation, faShuffle, faTrophy, faGear, faLayerGroup, faDownload, faUpload, faCheckDouble, faFlask, faBug, faPen, faThumbsUp, faHourglassHalf, faCircleXmark, faCircleCheck, faClipboardCheck, faChartSimple, faRectangleList, faCircleQuestion, faBullhorn, faBoxArchive, faUserGear, faPlus, faLink, faLinkSlash, faUsers, faLock, faUnlock)
+library.add(faCode, faFilter, faBan, faLocationDot, faCircleExclamation, faGhost, faSearch, faList, faImage, faAngleDown, faExpeditedssl, faUndo, faTrash, faEye, faCopy, faExternalLink, faRefresh, faBook, faChevronRight, faBars, faTimes, faShieldHeart, faWrench, faPaperclip, faArrowLeft, faArrowUp, faStore, faTriangleExclamation, faShuffle, faTrophy, faGear, faLayerGroup, faDownload, faUpload, faCheckDouble, faFlask, faBug, faPen, faThumbsUp, faHourglassHalf, faCircleXmark, faCircleCheck, faClipboardCheck, faChartSimple, faRectangleList, faCircleQuestion, faBullhorn, faBoxArchive, faUserGear, faPlus, faLink, faLinkSlash, faUsers, faLock, faUnlock)
 
 async function bootstrap() {
   const language = localStorage.getItem('language')

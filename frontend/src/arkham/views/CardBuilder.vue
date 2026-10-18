@@ -1964,10 +1964,24 @@ async function onImport(event: Event) {
             :checked="isSelected(card.def.cardCode)"
             @change="toggleSelected(card.def.cardCode)"
           />
-          <button type="button" class="library-card" @click="edit(card)">
+          <!-- Titles are wider than the panel more often than not, so the
+               whole name is a hover away rather than only the half that fits. -->
+          <button type="button" class="library-card" :title="card.def.name.title" @click="edit(card)">
             <img :src="cardArt(card)" :data-image-id="card.def.cardCode" alt="" />
             <span class="text">
-              <span class="name">{{ card.def.name.title }}</span>
+              <!-- Two cards in a set can share a title and differ only in
+                   level, so the name says which one it is, the way the game
+                   writes it. It sits beside the name rather than under it with
+                   the type, where the panel's width would ellipsize away the
+                   one digit that tells the two rows apart. A card with no level
+                   says nothing rather than (0): an investigator is not a level
+                   0 card. -->
+              <span class="title">
+                <span class="name">{{ card.def.name.title }}</span>
+                <span v-if="card.def.level !== null && card.def.level !== undefined" class="level">
+                  ({{ card.def.level }})
+                </span>
+              </span>
               <small>{{ card.def.cardType.replace(/Type$/, '') }}</small>
             </span>
           </button>
@@ -3372,15 +3386,31 @@ async function onImport(event: Event) {
     min-width: 0;
   }
 
+  /* The name gives way first: the level is one character wide and is the whole
+     reason the row is distinguishable, so it keeps its width. */
+  .title {
+    display: flex;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
   .name {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
+  .level {
+    flex: none;
+    opacity: 0.55;
+  }
+
   small {
     font-size: 0.7rem;
     opacity: 0.55;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 

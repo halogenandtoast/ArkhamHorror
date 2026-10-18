@@ -2618,6 +2618,10 @@
       "holds": "a list of steps",
       "readIn": "arkham-api/library/Arkham/Custom/Investigator.hs"
     },
+    "_elderSignFailureSteps": {
+      "holds": "a list of steps",
+      "readIn": "arkham-api/library/Arkham/Custom/Investigator.hs"
+    },
     "_signatures": {
       "holds": "card data, not steps",
       "readIn": "arkham-api/library/Arkham/Custom/Overlay.hs"

@@ -1587,117 +1587,119 @@ const optionTitle = (step: any, option: any, oi: number): string => {
         <!-- One tab per option, named for what the option says. The panel below
              is the one option being written, so where it begins and ends is the
              edge of the panel rather than a reader's guess. -->
-        <div class="tabs" role="tablist">
-          <button
-            v-for="(option, oi) in optionsOf(step)"
-            :key="oi"
-            type="button"
-            class="tab"
-            role="tab"
-            :class="{ on: activeOption(step, index) === oi }"
-            :aria-selected="activeOption(step, index) === oi"
-            :title="optionTitle(step, option, oi)"
-            @click="showOption(index, oi)"
-          >
-            <span class="tab-name">{{ optionTitle(step, option, oi) }}</span>
-            <span
-              class="tab-remove"
-              title="Remove this option"
-              @click.stop="removeOption(step, oi, index)"
-              >&times;</span
+        <div class="tabbed">
+          <div class="tabs" role="tablist">
+            <button
+              v-for="(option, oi) in optionsOf(step)"
+              :key="oi"
+              type="button"
+              class="tab"
+              role="tab"
+              :class="{ on: activeOption(step, index) === oi }"
+              :aria-selected="activeOption(step, index) === oi"
+              :title="optionTitle(step, option, oi)"
+              @click="showOption(index, oi)"
             >
-          </button>
-          <button type="button" class="tab add-tab" title="Add an option" @click="addAndShowOption(step, index)">
-            +
-          </button>
-        </div>
-        <div
-          v-for="(option, oi) in optionsOf(step)"
-          v-show="activeOption(step, index) === oi"
-          :key="oi"
-          class="option"
-        >
-          <div class="row">
-            <label>
-              This option is
-              <select
-                :value="option.query ? 'query' : 'one'"
-                @change="setOptionSource(step, oi, index, ($event.target as HTMLSelectElement).value)"
+              <span class="tab-name">{{ optionTitle(step, option, oi) }}</span>
+              <span
+                class="tab-remove"
+                title="Remove this option"
+                @click.stop="removeOption(step, oi, index)"
+                >&times;</span
               >
-                <option value="one">one named option</option>
-                <option value="query">one per thing a matcher finds</option>
-              </select>
-            </label>
-            <LabelField
-              v-if="!option.query"
-              label="Option label"
-              :bindings="optionScope(index, option, oi)"
-              :modelValue="option.label"
-              @update:modelValue="setOption(step, oi, { ...option, label: $event }, index)"
-            />
-            <label v-if="option.query">
-              Kind
-              <select
-                :value="option.query?.kind"
-                @change="setOption(step, oi, { ...option, query: { kind: ($event.target as HTMLSelectElement).value, matcher: null } }, index)"
-              >
-                <option v-for="(_, kind) in queryKinds" :key="kind" :value="kind">{{ kind }}</option>
-              </select>
-            </label>
-            <label v-if="option.query">
-              Bind to
-              <input
-                :value="option.bind"
-                placeholder="chosen"
-                @input="setOption(step, oi, { ...option, bind: ($event.target as HTMLInputElement).value }, index)"
-                @keydown.stop
+            </button>
+            <button type="button" class="tab add-tab" title="Add an option" @click="addAndShowOption(step, index)">
+              +
+            </button>
+          </div>
+          <div
+            v-for="(option, oi) in optionsOf(step)"
+            v-show="activeOption(step, index) === oi"
+            :key="oi"
+            class="option tab-panel"
+          >
+            <div class="row">
+              <label>
+                This option is
+                <select
+                  :value="option.query ? 'query' : 'one'"
+                  @change="setOptionSource(step, oi, index, ($event.target as HTMLSelectElement).value)"
+                >
+                  <option value="one">one named option</option>
+                  <option value="query">one per thing a matcher finds</option>
+                </select>
+              </label>
+              <LabelField
+                v-if="!option.query"
+                label="Option label"
+                :bindings="optionScope(index, option, oi)"
+                :modelValue="option.label"
+                @update:modelValue="setOption(step, oi, { ...option, label: $event }, index)"
               />
-            </label>
-          </div>
+              <label v-if="option.query">
+                Kind
+                <select
+                  :value="option.query?.kind"
+                  @change="setOption(step, oi, { ...option, query: { kind: ($event.target as HTMLSelectElement).value, matcher: null } }, index)"
+                >
+                  <option v-for="(_, kind) in queryKinds" :key="kind" :value="kind">{{ kind }}</option>
+                </select>
+              </label>
+              <label v-if="option.query">
+                Bind to
+                <input
+                  :value="option.bind"
+                  placeholder="chosen"
+                  @input="setOption(step, oi, { ...option, bind: ($event.target as HTMLInputElement).value }, index)"
+                  @keydown.stop
+                />
+              </label>
+            </div>
 
-          <ValueEditor
-            v-if="option.query"
-            :bindings="innerScope(index)"
-            :type="matcherType(option.query?.kind)"
-            label="Matcher"
-            :modelValue="option.query?.matcher"
-            @update:modelValue="setOption(step, oi, { ...option, query: { ...option.query, matcher: $event } }, index)"
-          />
+            <ValueEditor
+              v-if="option.query"
+              :bindings="innerScope(index)"
+              :type="matcherType(option.query?.kind)"
+              label="Matcher"
+              :modelValue="option.query?.matcher"
+              @update:modelValue="setOption(step, oi, { ...option, query: { ...option.query, matcher: $event } }, index)"
+            />
 
-          <!-- Whether this option is on the table at all. Read before the query
-               runs, so it cannot name what the option binds. -->
-          <ValueEditor
-            optional
-            type="Criterion"
-            label="Only offered when (optional)"
-            :bindings="innerScope(index)"
-            :modelValue="option.criteria?.criteria ?? (option.criteria?.tag ? option.criteria : undefined)"
-            @update:modelValue="setOption(step, oi, { ...option, criteria: $event ? { criteria: $event } : undefined }, index)"
-          />
-          <!-- Said where it is created, the way every other binding in the
-               builder is: an option with a query stands for one option per thing
-               found, and that thing is what its steps are written against. -->
-          <div v-if="optionBinding(index, option, oi)" class="step-foot">
-            <span class="binds">
-              <span class="binds-label">binds</span>
-              <code class="binds-name"
-                >${{ optionBinding(index, option, oi)!.name
-                }}<span v-if="optionBinding(index, option, oi)!.type" class="binds-type">
-                  :: {{ optionBinding(index, option, oi)!.type }}</span
-                ></code
-              >
-              <span class="binds-scope">for this option's steps</span>
-            </span>
+            <!-- Whether this option is on the table at all. Read before the query
+                 runs, so it cannot name what the option binds. -->
+            <ValueEditor
+              optional
+              type="Criterion"
+              label="Only offered when (optional)"
+              :bindings="innerScope(index)"
+              :modelValue="option.criteria?.criteria ?? (option.criteria?.tag ? option.criteria : undefined)"
+              @update:modelValue="setOption(step, oi, { ...option, criteria: $event ? { criteria: $event } : undefined }, index)"
+            />
+            <!-- Said where it is created, the way every other binding in the
+                 builder is: an option with a query stands for one option per thing
+                 found, and that thing is what its steps are written against. -->
+            <div v-if="optionBinding(index, option, oi)" class="step-foot">
+              <span class="binds">
+                <span class="binds-label">binds</span>
+                <code class="binds-name"
+                  >${{ optionBinding(index, option, oi)!.name
+                  }}<span v-if="optionBinding(index, option, oi)!.type" class="binds-type">
+                    :: {{ optionBinding(index, option, oi)!.type }}</span
+                  ></code
+                >
+                <span class="binds-scope">for this option's steps</span>
+              </span>
+            </div>
+            <StepsEditor
+            :slotSteps="slotSteps"
+            :bindings="optionScope(index, option, oi)"
+            :path="innerPath(index, `option${oi}`)"
+            :announce="optionBinding(index, option, oi) ? [optionBinding(index, option, oi)!] : []"
+              :queryKinds="queryKinds"
+              :modelValue="option.steps ?? []"
+              @update:modelValue="setOption(step, oi, { ...option, steps: $event }, index)"
+            />
           </div>
-          <StepsEditor
-          :slotSteps="slotSteps"
-          :bindings="optionScope(index, option, oi)"
-          :path="innerPath(index, `option${oi}`)"
-          :announce="optionBinding(index, option, oi) ? [optionBinding(index, option, oi)!] : []"
-            :queryKinds="queryKinds"
-            :modelValue="option.steps ?? []"
-            @update:modelValue="setOption(step, oi, { ...option, steps: $event }, index)"
-          />
         </div>
       </template>
 
@@ -2909,77 +2911,9 @@ const optionTitle = (step: any, option: any, oi: number): string => {
   }
 }
 
-/* The options of a Choose, as tabs over the one being written.
- *
- * The strip sits a hair over the panel so the open tab and the panel share an
- * edge: the open option is the piece of the page the panel encloses, and the
- * others are a click away rather than a scroll away. */
-.tabs {
-  align-items: flex-end;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.15rem;
-  margin-bottom: calc(-0.35rem - 1px);
-}
+/* The panel under the strip is `.tab-panel`, in the stylesheet, since the
+   elder sign's parts are tabbed the same way. */
 
-.tab {
-  align-items: center;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid #374151;
-  border-bottom-color: transparent;
-  border-radius: 5px 5px 0 0;
-  color: #9ca3af;
-  display: flex;
-  font-size: 0.74rem;
-  gap: 0.35rem;
-  max-width: 16rem;
-  padding: 0.25rem 0.55rem;
-}
-
-.tab:hover {
-  color: #eee;
-}
-
-.tab.on {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: #4b5563;
-  color: #eee;
-}
-
-.tab-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Only the open tab offers to go: closing one that is not open would take away
-   something the author cannot see. */
-.tab-remove {
-  color: #6b7280;
-  visibility: hidden;
-
-  &:hover {
-    color: #f87171;
-  }
-}
-
-.tab.on .tab-remove {
-  visibility: visible;
-}
-
-.add-tab {
-  color: #6b7280;
-  padding: 0.25rem 0.5rem;
-}
-
-.option {
-  border: 1px solid #4b5563;
-  border-radius: 0 5px 5px 5px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  padding: 0.5rem 0.6rem;
-}
 
 /* What a step binds for the steps under it, said on the step that binds it --
    so a $name in scope can be traced back to where it came from. */

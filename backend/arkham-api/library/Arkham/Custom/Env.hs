@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (parseMaybe)
+import Data.Char (isAlphaNum)
 import Data.Text qualified as T
 
 type Env = KeyMap.KeyMap Value

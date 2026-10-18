@@ -170,6 +170,7 @@ const textUsed = computed(() => {
       _elderSignSteps: form.elderSignSteps,
       _elderSignRevealSteps: form.elderSignRevealSteps,
       _elderSignSuccessSteps: form.elderSignSuccessSteps,
+      _elderSignFailureSteps: form.elderSignFailureSteps,
     },
     raw: written,
   })
@@ -250,6 +251,7 @@ const blankForm = () => ({
   elderSignRevealSteps: [] as any[],
   elderSignSteps: [] as any[],
   elderSignSuccessSteps: [] as any[],
+  elderSignFailureSteps: [] as any[],
   prey: null as any,
   spawnAt: null as any,
   onPlaySteps: [] as any[],
@@ -677,6 +679,7 @@ function buildDef(cardCode: string): Record<string, any> {
       def.meta._elderSignRevealSteps = form.elderSignRevealSteps
     if (form.elderSignSteps.length) def.meta._elderSignSteps = form.elderSignSteps
     if (form.elderSignSuccessSteps.length) def.meta._elderSignSuccessSteps = form.elderSignSuccessSteps
+    if (form.elderSignFailureSteps.length) def.meta._elderSignFailureSteps = form.elderSignFailureSteps
     def.meta.health = num(form.investigatorHealth) ?? 0
     def.meta.sanity = num(form.investigatorSanity) ?? 0
     def.meta.willpower = num(form.willpower) ?? 0
@@ -736,8 +739,10 @@ function buildDef(cardCode: string): Record<string, any> {
   return def
 }
 
-/* The raw block wins over the form, so a field the form does not offer can
- * still be set (and one it does can be overridden). */
+/* Whatever the form does not model, kept as it was read and merged back over
+ * what the form builds. No longer typed in here -- the raw editor in the head
+ * opens the whole def -- but still carried, so a key this editor has never
+ * heard of survives a save. */
 function mergeRaw(def: Record<string, any>): Record<string, any> {
   const raw = form.rawJson.trim()
   if (!raw) return def
@@ -828,7 +833,8 @@ const FORM_META_KEYS = [
   // The card's own text, edited in its own fieldset.
   '_locale',
   '_abilities', '_handlers', '_modifiers', '_keywords', '_signatures', '_onRevelation', '_revelationPlacement',
-  '_elderSign', '_elderSignRevealSteps', '_elderSignSteps', '_elderSignSuccessSteps', '_onPlay',
+  '_elderSign', '_elderSignRevealSteps', '_elderSignSteps', '_elderSignSuccessSteps',
+  '_elderSignFailureSteps', '_onPlay',
 ]
 
 const gameValueNumber = (v: any) => (v && typeof v.contents === 'number' ? String(v.contents) : '')
@@ -899,6 +905,7 @@ async function loadCard(card: CustomCard) {
   form.elderSignRevealSteps = meta._elderSignRevealSteps ?? []
   form.elderSignSteps = meta._elderSignSteps ?? []
   form.elderSignSuccessSteps = meta._elderSignSuccessSteps ?? []
+  form.elderSignFailureSteps = meta._elderSignFailureSteps ?? []
 
   form.artUploaded = { art: card.art }
   form.artUrls = {}
@@ -1002,7 +1009,15 @@ function snapshot(): string {
   return JSON.stringify({ form, art: art.value })
 }
 
-defineExpose({ loadCard, reset, buildCustomCard, snapshot, cardType: computed(() => form.cardType) })
+defineExpose({
+  loadCard,
+  reset,
+  buildCustomCard,
+  snapshot,
+  cardType: computed(() => form.cardType),
+  // What the head says it is editing, as it is typed rather than as it was saved.
+  cardTitle: computed(() => form.title),
+})
 </script>
 <template>
   <div class="custom-card-body">
@@ -1434,7 +1449,6 @@ defineExpose({ loadCard, reset, buildCustomCard, snapshot, cardType: computed(()
           <fieldset>
             <legend>Abilities</legend>
             <AbilityEditor
-              section="abilities"
               :cardType="form.cardType"
               :extraBindings="remembered"
               :canRevelation="canHaveRevelation"
@@ -1452,24 +1466,7 @@ defineExpose({ loadCard, reset, buildCustomCard, snapshot, cardType: computed(()
               v-model:elderSignRevealSteps="form.elderSignRevealSteps"
               v-model:elderSignSteps="form.elderSignSteps"
               v-model:elderSignSuccessSteps="form.elderSignSuccessSteps"
-            />
-          </fieldset>
-
-          <!-- A listener is the card reacting to an engine message, not an
-               ability, so it gets a box of its own. -->
-          <fieldset>
-            <legend>Listens for</legend>
-            <p class="hint">
-              Engine messages this card reacts to directly, for effects that no ability window
-              covers.
-            </p>
-            <AbilityEditor
-              section="listeners"
-              :cardType="form.cardType"
-              :extraBindings="remembered"
-              :abilities="form.abilities"
-              :modifiers="form.modifiers"
-              v-model:handlers="form.handlers"
+              v-model:elderSignFailureSteps="form.elderSignFailureSteps"
             />
           </fieldset>
 
@@ -1495,19 +1492,6 @@ defineExpose({ loadCard, reset, buildCustomCard, snapshot, cardType: computed(()
               />
             </label>
           </fieldset>
-
-          <!-- A keyword the card's set prints, with this card's own condition
-               and result. Only offered once the set has declared one. -->
-          <details>
-            <summary>Raw CardDef JSON (merged over the form)</summary>
-            <textarea
-              v-model="form.rawJson"
-              rows="6"
-              spellcheck="false"
-              placeholder='{ "keywords": [{ "tag": "Swarming", "contents": { "tag": "Static", "contents": 2 } }] }'
-              @keydown.stop
-            />
-          </details>
           </template>
         </div>
   </div>

@@ -23,7 +23,7 @@ import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Import.Lifted (elderSignValue)
 import Arkham.Investigator.Runner
 import Arkham.Matcher (ValueMatcher (AnyValue))
-import Arkham.Message.Lifted (onSucceedByEffect, tokenSkillTestOption)
+import Arkham.Message.Lifted (onFailedByEffect, onSucceedByEffect, tokenSkillTestOption)
 import Arkham.Prelude
 
 newtype CustomInvestigator = CustomInvestigator InvestigatorAttrs
@@ -100,6 +100,13 @@ instance RunMessage CustomInvestigator where
           onSucceedByEffect sid AnyValue (ElderSignEffectSource iid) sid do
             tokenSkillTestOption ElderSign do
               runCustomSteps attrs iid "_elderSignSuccessSteps"
+      -- And the other half of the same thing, for an elder sign whose words
+      -- only come due when the test is lost.
+      unless (null $ customSteps attrs "_elderSignFailureSteps") do
+        withSkillTest \sid ->
+          onFailedByEffect sid AnyValue (ElderSignEffectSource iid) sid do
+            tokenSkillTestOption ElderSign do
+              runCustomSteps attrs iid "_elderSignFailureSteps"
       pure x
     _ -> do
       runCustomHandlers attrs msg

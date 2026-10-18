@@ -35,11 +35,6 @@ const props = defineProps<{
   modifiers: any[]
   /** So `$id` knows what kind of id it is. */
   cardType?: string
-  /* Which half to render. A listener is not an ability, so it belongs in a box of
-   * its own -- but it shares this component's bindings, steps and block styling,
-   * so it stays the same component rather than a copy of all of that. */
-  section: 'abilities' | 'listeners'
-  
   /* Revelation and the elder sign are two more things a card does, so they are
    * listed with the abilities rather than kept in fieldsets of their own. What
    * they are allowed to be is the form's business, which is why it is passed in
@@ -70,6 +65,7 @@ const elderSign = defineModel<string>('elderSign', { default: '' })
 const elderSignRevealSteps = defineModel<any[]>('elderSignRevealSteps', { default: () => [] })
 const elderSignSteps = defineModel<any[]>('elderSignSteps', { default: () => [] })
 const elderSignSuccessSteps = defineModel<any[]>('elderSignSuccessSteps', { default: () => [] })
+const elderSignFailureSteps = defineModel<any[]>('elderSignFailureSteps', { default: () => [] })
 
 onMounted(loadSchema)
 
@@ -259,14 +255,72 @@ const hasElderSign = computed(
     (elderSign.value !== '' ||
       elderSignRevealSteps.value.length > 0 ||
       elderSignSteps.value.length > 0 ||
-      elderSignSuccessSteps.value.length > 0),
+      elderSignSuccessSteps.value.length > 0 ||
+      elderSignFailureSteps.value.length > 0),
+)
+
+/* The elder sign, as the four moments it can speak at. Each is a different
+ * point of the same token: before anything can react to it, as it resolves,
+ * and the two ways the test it modified can end. */
+const ELDER_SIGN_PARTS = [
+  {
+    key: 'reveal',
+    label: 'Reveal',
+    path: 'elderSignReveal',
+    hint: "What happens the moment it is drawn, before anything can react to the reveal \u2014 where a flag this card's own abilities read has to be set.",
+  },
+  {
+    key: 'resolve',
+    label: 'Resolve',
+    path: 'elderSign',
+    hint: 'What it does when it resolves, beyond the modifier.',
+  },
+  {
+    key: 'success',
+    label: 'Success',
+    path: 'elderSignSuccess',
+    hint: 'What it does only if you then succeed \u2014 success is not known when the token resolves, so these run when the test is passed.',
+  },
+  {
+    key: 'failure',
+    label: 'Failure',
+    path: 'elderSignFailure',
+    hint: 'And what it does if that test is failed instead, offered the same way.',
+  },
+] as const
+
+type ElderSignPart = (typeof ELDER_SIGN_PARTS)[number]['key']
+
+/* Read through a computed rather than straight off the constant: a v-for over
+ * a literal compiles to a stable fragment, whose children are patched only
+ * where the compiler marked them dynamic -- and the `v-show` on each panel is
+ * not one of those marks, so the panels never changed when a tab was picked. */
+const elderSignParts = computed(() => ELDER_SIGN_PARTS)
+
+const elderSignStepsOf = (key: ElderSignPart) =>
+  ({
+    reveal: elderSignRevealSteps,
+    resolve: elderSignSteps,
+    success: elderSignSuccessSteps,
+    failure: elderSignFailureSteps,
+  })[key]
+
+/* Opens on what the card already says, so an elder sign written only for the
+ * reveal does not open on an empty Resolve. */
+const chosenElderSignPart = ref<ElderSignPart | null>(null)
+
+const elderSignPart = computed<ElderSignPart>(
+  () =>
+    chosenElderSignPart.value
+    ?? ELDER_SIGN_PARTS.find((part) => elderSignStepsOf(part.key).value.length)?.key
+    ?? 'resolve',
 )
 
 const hasRevelation = computed(
   () => !!props.canRevelation && (!!props.revelationImplied || revelation.value),
 )
 
-type EntryKind = 'ability' | 'constant' | 'revelation' | 'elderSign'
+type EntryKind = 'ability' | 'constant' | 'revelation' | 'elderSign' | 'listener'
 type Entry = {
   key: string
   label: string
@@ -319,6 +373,19 @@ const entries = computed<Entry[]>(() => {
       icon: 'elder-sign',
     })
   }
+
+  /* A listener is the card reacting to an engine message rather than an
+   * ability, but it is still one of the things the card does, so it is one of
+   * these tabs. Named for the message, since that is what tells them apart. */
+  handlers.value.forEach((handler, index) =>
+    out.push({
+      key: `listener:${index}`,
+      label: handler.on?.trim() || 'Listener',
+      kind: 'listener',
+      index,
+      fixed: false,
+    }),
+  )
 
   const seen = new Map<string, number>()
   const totals = new Map<string, number>()
@@ -400,6 +467,7 @@ const addable = computed(() => {
   if (props.canRevelation && !hasRevelation.value) out.push({ key: 'revelation', label: 'Revelation' })
   if (props.isInvestigator && !hasElderSign.value) out.push({ key: 'elderSign', label: 'Elder sign' })
   out.push({ key: 'constant', label: 'Constant' })
+  out.push({ key: 'listener', label: 'Listener' })
   return out
 })
 
@@ -413,6 +481,12 @@ function add(key: string) {
   if (key === 'elderSign') {
     elderSign.value = '1'
     openKey.value = 'elderSign'
+    return
+  }
+  if (key === 'listener') {
+    // Same as a constant: the list this reads is the one before the add.
+    openKey.value = `listener:${handlers.value.length}`
+    addHandler()
     return
   }
   if (key === 'constant') {
@@ -439,6 +513,7 @@ function removeEntry(entry: Entry) {
   openKey.value = ''
   if (entry.kind === 'ability') return removeAbility(entry.index)
   if (entry.kind === 'constant') return removeModifier(entry.index)
+  if (entry.kind === 'listener') return removeHandler(entry.index)
   if (entry.kind === 'revelation') {
     revelation.value = false
     revelationPlacement.value = ''
@@ -449,6 +524,7 @@ function removeEntry(entry: Entry) {
   elderSignRevealSteps.value = []
   elderSignSteps.value = []
   elderSignSuccessSteps.value = []
+  elderSignFailureSteps.value = []
 }
 
 // --- abilities ---
@@ -636,7 +712,6 @@ function handlerScope(handler: any, index: number): Binding[] {
     <p v-if="!schemaLoaded" class="loading">Loading type schema…</p>
 
     <template v-else>
-      <template v-if="props.section === 'abilities'">
       <!-- Sits on top of the open panel, joined to it: the active tab has no
            bottom edge, so the two read as one box with a tab row. -->
       <div class="entry-tabs" role="tablist" aria-label="What this card does">
@@ -968,50 +1043,51 @@ function handlerScope(handler: any, index: number): Binding[] {
           Modifier
           <input v-model="elderSign" type="number" @keydown.stop />
         </label>
-        <p class="hint">
-          What happens the moment it is drawn, before anything can react to the reveal — where a
-          flag this card's own abilities read has to be set:
-        </p>
-        <StepsEditor
-          :slotSteps="slotSteps"
-          :queryKinds="QUERY_KINDS"
-          :bindings="scopeWithExtras"
-          :path="'elderSignReveal'"
-          :modelValue="elderSignRevealSteps"
-          @update:modelValue="elderSignRevealSteps = $event"
-        />
-        <p class="hint">What it does when it resolves, beyond the modifier:</p>
-        <StepsEditor
-          :slotSteps="slotSteps"
-          :queryKinds="QUERY_KINDS"
-          :bindings="scopeWithExtras"
-          :path="'elderSign'"
-          :modelValue="elderSignSteps"
-          @update:modelValue="elderSignSteps = $event"
-        />
-        <p class="hint">
-          And what it does only if you then succeed — success is not known when the token resolves,
-          so these run when the test is passed:
-        </p>
-        <StepsEditor
-          :slotSteps="slotSteps"
-          :queryKinds="QUERY_KINDS"
-          :bindings="scopeWithExtras"
-          :path="'elderSignSuccess'"
-          :modelValue="elderSignSuccessSteps"
-          @update:modelValue="elderSignSuccessSteps = $event"
-        />
+        <!-- Four moments of the one token, each with steps of its own: a tab
+             per moment, and how much is written in the ones not open. -->
+        <div class="tabbed">
+          <div class="tabs" role="tablist">
+            <button
+              v-for="part in elderSignParts"
+              :key="part.key"
+              type="button"
+              class="tab"
+              role="tab"
+              :class="{ on: elderSignPart === part.key }"
+              :aria-selected="elderSignPart === part.key"
+              @click="chosenElderSignPart = part.key"
+            >
+              <span class="tab-name">{{ part.label }}</span>
+              <span v-if="elderSignStepsOf(part.key).value.length" class="tab-count">
+                {{ elderSignStepsOf(part.key).value.length }}
+              </span>
+            </button>
+          </div>
+          <div v-for="part in elderSignParts" v-show="elderSignPart === part.key" :key="part.key" class="tab-panel">
+            <p class="hint">{{ part.hint }}</p>
+            <StepsEditor
+              :slotSteps="slotSteps"
+              :queryKinds="QUERY_KINDS"
+              :bindings="scopeWithExtras"
+              :path="part.path"
+              :modelValue="elderSignStepsOf(part.key).value"
+              @update:modelValue="elderSignStepsOf(part.key).value = $event"
+            />
+          </div>
+        </div>
       </div>
 
-      </template>
-
-      <div v-else class="listeners">
         <datalist id="custom-message-tags">
           <option v-for="tag in messageTags" :key="tag" :value="tag" />
         </datalist>
-      <div v-for="(handler, index) in handlers" :key="`h${index}`" class="block">
+      <div
+        v-for="(handler, index) in handlers"
+        :key="`h${index}`"
+        v-show="isOpen('listener', index)"
+        class="block"
+      >
         <div class="block-head">
-          <strong>Listener {{ index + 1 }}</strong>
+          <strong>{{ handler.on?.trim() || `Listener ${index + 1}` }}</strong>
           <button type="button" @click="removeHandler(index)">Remove</button>
         </div>
         <ScopeBar :bindings="handlerScope(handler, index)" />
@@ -1099,9 +1175,6 @@ function handlerScope(handler: any, index: number): Binding[] {
           :modelValue="stepsOf(handler)"
           @update:modelValue="setHandler(index, { steps: $event })"
         />
-      </div>
-
-      <button type="button" class="add" @click="addHandler">+ Listener</button>
       </div>
     </template>
   </div>

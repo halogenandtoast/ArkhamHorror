@@ -1248,6 +1248,7 @@
     "hideLibrary": "Hide library",
     "showLibrary": "Show library",
     "editingCard": "Editing card",
+    "editingNamedCard": "Editing {name}",
     "inSet": "in {name}",
     "saveChanges": "Save changes",
     "createCard": "Create card",

@@ -464,6 +464,41 @@ function warnOnUnload(event: BeforeUnloadEvent) {
   event.returnValue = ''
 }
 
+/* The head is only separated from the card once it is over it. A line drawn
+ * while it is still at the top of the panel would be a line under a heading,
+ * which is a different thing to say. */
+const headEl = ref<HTMLElement | null>(null)
+const headStuck = ref(false)
+
+/* The page scrolls inside a box of its own rather than the window, so that box
+ * is what the head is measured against. */
+function scrollParent(el: HTMLElement): HTMLElement | null {
+  for (let at = el.parentElement; at; at = at.parentElement) {
+    if (/auto|scroll|overlay/.test(getComputedStyle(at).overflowY)) return at
+  }
+  return null
+}
+
+/* Watched rather than observed once at mount: the editor arrives with the set,
+ * which is fetched, so at mount there is no head to measure yet. */
+let headWatcher: IntersectionObserver | null = null
+
+watch(headEl, (el) => {
+  headWatcher?.disconnect()
+  headWatcher = null
+  headStuck.value = false
+  if (!el) return
+  // A pixel of the top is cut off what it is measured against, so the head
+  // stops fitting exactly when it comes to rest against that top.
+  headWatcher = new IntersectionObserver(
+    ([entry]) => (headStuck.value = entry.intersectionRatio < 1),
+    { root: scrollParent(el), rootMargin: '-1px 0px 0px 0px', threshold: 1 },
+  )
+  headWatcher.observe(el)
+})
+
+onUnmounted(() => headWatcher?.disconnect())
+
 onMounted(() => window.addEventListener('beforeunload', warnOnUnload))
 onUnmounted(() => window.removeEventListener('beforeunload', warnOnUnload))
 
@@ -784,6 +819,10 @@ const numbered = computed(() => visibleCards.value.some((card) => printedNumber(
 /* The row behind the open form, which is what the raw editor edits. A card
  * being written for the first time has no stored def to read. */
 const editingRaw = computed(() => (editingCode.value ? (libraryCard(editingCode.value) ?? null) : null))
+
+/* The card by name once it has one, since "Editing card" says the least of
+ * anything on the page. Read off the form, so renaming one renames the head. */
+const editingTitle = computed(() => (form.value?.cardTitle ?? '').trim())
 const rawBusy = ref(false)
 
 async function saveRaw(def: Record<string, any>) {
@@ -2105,7 +2144,7 @@ async function onImport(event: Event) {
     </div>
 
     <main class="builder">
-      <header class="builder-head">
+      <header ref="headEl" class="builder-head" :class="{ stuck: headStuck }">
         <!-- With the panel shut the seam is gone, so the way back in sits with
              the title of whatever you are editing. -->
         <button
@@ -2129,7 +2168,13 @@ async function onImport(event: Event) {
             {{ editingCode ? t(`${K}lockedReadingCard`) : t(`${K}lockedNothingPicked`) }}
           </template>
           <template v-else>
-            {{ editingCode ? t(`${K}editingCard`) : t(`${K}newCard`) }}
+            {{
+              editingCode
+                ? editingTitle
+                  ? t(`${K}editingNamedCard`, { name: editingTitle })
+                  : t(`${K}editingCard`)
+                : t(`${K}newCard`)
+            }}
             <span v-if="dirty" class="unsaved" :title="t(`${K}unsavedTitle`)">
               <span class="unsaved-dot" aria-hidden="true"></span>
               {{ t(`${K}unsaved`) }}
@@ -3921,12 +3966,28 @@ button.change-head:hover {
   }
 }
 
+/* Follows the card down. A def runs well past a screen, and the save button,
+   what is unsaved and which card this is are wanted from anywhere in it --
+   scrolling back to the top to save was the whole of the trip. Bled out to the
+   panel's edges so nothing passes between it and the border on the way by. */
 .builder-head {
   align-items: center;
+  background: var(--background-dark);
+  border-radius: 8px 8px 0 0;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 0.75rem;
+  margin: -1rem -1rem 0.75rem;
+  padding: 1rem 1rem 0.6rem;
+  position: sticky;
+  top: 0;
+  z-index: 4;
+
+  /* Drawn only once it has left its place, so the line means "there is more
+     above this" rather than decorating the heading. */
+  &.stuck {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
 
   h2 {
     font-family: teutonic, sans-serif;

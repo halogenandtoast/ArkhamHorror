@@ -42,7 +42,10 @@ test('an export names the set it came from', async (t) => {
   })
 
   assert.equal(file.version, EXPORT_VERSION)
-  assert.deepEqual(file.set, { name: 'Zealot', sourceCode: 'pack-1' })
+  // Only the naming is pinned here. The set carries its icon, tokens and
+  // keywords too, and what else it declares is not this test's business.
+  assert.equal(file.set.name, 'Zealot')
+  assert.equal(file.set.sourceCode, 'pack-1')
   assert.equal(file.cards.length, 1)
 })
 

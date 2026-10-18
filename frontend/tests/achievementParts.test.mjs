@@ -43,7 +43,11 @@ test('a partial campaign maps to the catalog part key it filters on', async (t) 
 
 test('campaigns sort with Return Tos first, then in release order', async (t) => {
   const { achievementCatalog, compareAchievementCampaignIds } = await loadAchievements(t)
+  // Homebrew campaigns register achievements too, and the comparator parks them
+  // after the official ones. Only the official order is shown as Return
+  // Tos-then-release, so a new homebrew achievements.json must not move this.
   const campaignIds = [...new Set(achievementCatalog.map((entry) => entry.campaignId))]
+    .filter((campaignId) => !campaignId.startsWith(':'))
 
   assert.deepEqual(
     campaignIds.sort(compareAchievementCampaignIds),

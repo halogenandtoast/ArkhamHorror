@@ -481,22 +481,42 @@ export function createFlameWrap(
   const rect = { cx: 0, cy: 0, hx: 1, hy: 1 }
   let dpr = 1
 
-  function syncCanvasSize() {
-    dpr = Math.min(window.devicePixelRatio || 1, 2)
+  /** Re-measures the burning rectangle. Returns whether anything moved. */
+  function syncCanvasSize(): boolean {
+    const before = { ...rect }
+    const outRect = output.getBoundingClientRect()
+    // The location grid is drawn under a user-controlled `transform: scale()`
+    // (Scenario.vue's zoom), so getBoundingClientRect reports screen pixels
+    // while clientWidth reports layout pixels. The shader works in the canvas's
+    // own buffer, which is sized from clientWidth, so every measurement below
+    // has to be divided back out of screen space -- otherwise at any zoom but
+    // 1 the burning rectangle is the wrong size and sits off the card.
+    const scale =
+      outRect.width > 0 && output.clientWidth > 0 ? outRect.width / output.clientWidth : 1
+    // Folding the zoom into the pixel ratio keeps a zoomed-out fire from
+    // rendering at a resolution nothing can see. Still clamped, so zooming in
+    // never explodes the buffer; the geometry stays correct either way, since
+    // the rect and uResolution are both scaled by this same number.
+    dpr = Math.min((window.devicePixelRatio || 1) * scale, 2)
     const width = Math.max(1, Math.round(output.clientWidth * dpr))
     const height = Math.max(1, Math.round(output.clientHeight * dpr))
     if (output.width !== width || output.height !== height) {
       output.width = width
       output.height = height
     }
-    const outRect = output.getBoundingClientRect()
     const boxRect = content.getBoundingClientRect()
     if (outRect.width > 0 && boxRect.width > 0) {
-      rect.cx = (boxRect.left + boxRect.right) / 2 - outRect.left
-      rect.cy = outRect.bottom - (boxRect.top + boxRect.bottom) / 2
-      rect.hx = boxRect.width / 2
-      rect.hy = boxRect.height / 2
+      rect.cx = ((boxRect.left + boxRect.right) / 2 - outRect.left) / scale
+      rect.cy = (outRect.bottom - (boxRect.top + boxRect.bottom) / 2) / scale
+      rect.hx = boxRect.width / 2 / scale
+      rect.hy = boxRect.height / 2 / scale
     }
+    return (
+      Math.abs(before.cx - rect.cx) > 0.01 ||
+      Math.abs(before.cy - rect.cy) > 0.01 ||
+      Math.abs(before.hx - rect.hx) > 0.01 ||
+      Math.abs(before.hy - rect.hy) > 0.01
+    )
   }
 
   syncCanvasSize()
@@ -543,6 +563,27 @@ export function createFlameWrap(
   let running = false
   let visible = true
 
+  /* A transform resizes nothing, so the ResizeObserver never hears about the
+   * map zoom moving, a location rotating as it exhausts, or the highlight
+   * scale -- and the rectangle we burn around would sit where the card used to
+   * be until something else happened to resize it. So re-measure from the
+   * render loop: every frame while the box is still moving, and at a slow idle
+   * rate otherwise, which is two getBoundingClientRects against clean layout. */
+  const IDLE_SYNC_MS = 250
+  /* Long enough to outlast the 0.2s transform transition on a card frame. The
+   * box moving is what actually keeps tracking alive past this, so an animation
+   * of any length is followed to its end. */
+  const TRACK_MS = 400
+  let lastSyncAt = performance.now()
+  let trackingUntil = 0
+
+  function syncFromFrame(now: number) {
+    const tracking = now < trackingUntil
+    if (!tracking && now - lastSyncAt < IDLE_SYNC_MS) return
+    lastSyncAt = now
+    if (syncCanvasSize()) trackingUntil = Math.max(trackingUntil, now + TRACK_MS)
+  }
+
   const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
   let reducedMotion = motionQuery.matches
 
@@ -554,6 +595,7 @@ export function createFlameWrap(
     }
     const delta = Math.min((now - lastTime) / 1000, 1 / 30)
     lastTime = now
+    syncFromFrame(now)
     if (!reducedMotion) time += delta * config.speed
     render()
     // Reduced motion gets a single still frame of fire rather than nothing, so
@@ -579,6 +621,27 @@ export function createFlameWrap(
     start()
   }
   motionQuery.addEventListener('change', onMotionChange)
+
+  /* The idle poll alone would notice a transform up to IDLE_SYNC_MS late, by
+   * which point a 0.2s rotation is over and the fire snaps to where the card
+   * landed. Starting to track the moment one begins keeps the flames travelling
+   * with it. Only the measured element's own transforms: a descendant's
+   * (a pulsing objective ring, a clue token) never moves the box we burn. */
+  function onTransform(event: Event) {
+    if (event.target !== content) return
+    if (event instanceof TransitionEvent && event.propertyName !== 'transform') return
+    trackingUntil = performance.now() + TRACK_MS
+    start()
+  }
+  const TRANSFORM_EVENTS = [
+    'transitionrun',
+    'transitionend',
+    'transitioncancel',
+    'animationstart',
+    'animationend',
+    'animationcancel',
+  ]
+  for (const type of TRANSFORM_EVENTS) content.addEventListener(type, onTransform)
 
   const observer = new ResizeObserver(() => {
     syncCanvasSize()
@@ -628,6 +691,7 @@ export function createFlameWrap(
       observer.disconnect()
       intersection.disconnect()
       motionQuery.removeEventListener('change', onMotionChange)
+      for (const type of TRANSFORM_EVENTS) content.removeEventListener(type, onTransform)
       gl!.deleteTexture(contentTexture)
       gl!.deleteProgram(program)
       gl!.deleteShader(vertexShader)

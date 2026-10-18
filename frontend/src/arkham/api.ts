@@ -1080,6 +1080,74 @@ export const denyCardSetSubmission = async (
   return data
 }
 
+/* ------------------------------------------------- everyone's card sets ---
+
+   Admin only. The other half of the review queue: every set on the instance,
+   not just the ones somebody chose to publish. Paginated, because this grows
+   with every account, and scoped, because most sets are copies -- a
+   subscription or a share link leaves a row per subscriber. */
+
+export type AdminCardSetScope = 'originals' | 'published' | 'copies' | 'all'
+
+/* What a copy follows. Absent on a set its owner actually made, which is what
+ * the `originals` scope selects. */
+export type AdminCardSetFollows = 'marketplace' | 'link'
+
+export type AdminCardSet = {
+  id: string
+  name: string
+  description: string | null
+  url: string | null
+  icon: string | null
+  investigatorExpansion: boolean
+  // Set when the set came from an arkham.build pack rather than being built here.
+  sourceCode: string | null
+  userId: string
+  author: string
+  // Shown because it is searched: a row that matched on email has to say so.
+  authorEmail: string
+  cardCount: number
+  createdAt: string
+  updatedAt: string
+  follows: AdminCardSetFollows | null
+  // This set's own marketplace listing, if its author has published it.
+  publishedCardSetId: string | null
+  approvedVersion: number | null
+  submissionVersion: number | null
+  submissionStatus: ReviewStatus | null
+  preview: { def: any; art: string | null }[]
+}
+
+export type AdminCardSetPage = {
+  sets: AdminCardSet[]
+  // Under the same filters as the rows, so the page count works out reachable.
+  total: number
+  page: number
+  perPage: number
+}
+
+export const fetchAdminCustomCardSets = async (params: {
+  page?: number
+  scope?: AdminCardSetScope
+  q?: string
+}): Promise<AdminCardSetPage> => {
+  const query = new URLSearchParams()
+  if (params.page !== undefined) query.set('page', String(params.page))
+  if (params.scope !== undefined) query.set('scope', params.scope)
+  if (params.q) query.set('q', params.q)
+  const suffix = query.size === 0 ? '' : `?${query}`
+  const { data } = await api.get(`admin/custom-card-sets${suffix}`)
+  return data
+}
+
+// One set with every card in it, which is what actually looking at one takes.
+export const fetchAdminCustomCardSet = async (
+  id: string,
+): Promise<{ set: AdminCardSet; cards: { def: any; art: string | null }[] }> => {
+  const { data } = await api.get(`admin/custom-card-sets/${id}`)
+  return data
+}
+
 /* A card row names its set the way the entity spells the field; `setId` is what
  * it is called here. */
 const toStoredCustomCard = (row: any): StoredCustomCard => ({

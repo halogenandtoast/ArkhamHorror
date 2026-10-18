@@ -1442,6 +1442,40 @@
     "decidedApproved": "Approved by {by} on {at}.",
     "decidedDenied": "Denied by {by} on {at}."
   },
+  "adminCardSets": {
+    "title": "All Card Sets",
+    "scopeLabel": "Which sets to show",
+    "scope": {
+      "originals": "Originals",
+      "published": "Published",
+      "copies": "Copies",
+      "all": "All"
+    },
+    "searchLabel": "Search card sets",
+    "searchPlaceholder": "Set name, author or email\u2026",
+    "loading": "Loading card sets\u2026",
+    "loadFailed": "Could not load the card sets.",
+    "empty": "No card sets here.",
+    "emptySearch": "Nothing matching \u201c{query}\u201d.",
+    "cardCount": "{n} card | {n} cards",
+    "edited": "edited {at}",
+    "expansion": "Expansion",
+    "live": "In marketplace v{version}",
+    "awaitingReview": "Awaiting review v{version}",
+    "deniedTag": "Not approved",
+    "follows": {
+      "marketplace": "Copy of a listing",
+      "link": "Copy from a link"
+    },
+    "imported": "Imported pack",
+    "viewCards": "View cards",
+    "hideCards": "Hide cards",
+    "loadingCards": "Loading cards\u2026",
+    "cardsFailed": "Could not load the cards in that set.",
+    "previous": "Previous",
+    "next": "Next",
+    "showing": "{first}\u2013{last} of {total}"
+  },
   "adminUsers": {
     "title": "Users",
     "note": "Find an account by name or email \u2014 granting a feature here is the only way into it",

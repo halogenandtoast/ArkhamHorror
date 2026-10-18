@@ -151,6 +151,9 @@
           / ApiV1AdminCardSetSubmissionR GET
           /approve ApiV1AdminCardSetSubmissionApproveR POST
           /deny ApiV1AdminCardSetSubmissionDenyR POST
+      /custom-card-sets ApiV1AdminCustomCardSetsP:
+        / ApiV1AdminCustomCardSetsR GET
+        /#ArkhamCustomCardSetId ApiV1AdminCustomCardSetR GET
       /users ApiV1AdminUsersP:
         / ApiV1AdminUsersR GET
         /#UserId/features ApiV1AdminUserFeaturesR PUT

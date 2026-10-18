@@ -1,5 +1,10 @@
 <script setup lang="ts">
-/* The card marketplace review queue.
+/* The card marketplace review queue, and under it every card set on the
+ * instance.
+ *
+ * The queue is the decision; the browser below it is the context. Only a set
+ * somebody chose to publish ever reaches the queue, so it cannot answer what is
+ * actually being built here -- which is the other thing this page is opened for.
  *
  * Publishing a set no longer lists it: it snapshots the set into a version and
  * queues that version here. Nothing is in the marketplace, and nothing can be
@@ -16,6 +21,7 @@ import * as Api from '@/arkham/api'
 import type { CustomCard } from '@/arkham/customCards'
 import CardOverlay from '@/arkham/components/CardOverlay.vue'
 import CardSetStrip from '@/arkham/components/CardSetStrip.vue'
+import CardSetBrowser from '@/arkham/components/Admin/CardSetBrowser.vue'
 import SegmentedToggle from '@/components/SegmentedToggle.vue'
 
 const { t } = useI18n()
@@ -291,9 +297,13 @@ const isUpdate = (row: Api.CardSetSubmission) =>
       </li>
     </ul>
 
-    <!-- Document-level: anything carrying `data-image` gets a hover preview. -->
+    <!-- Document-level: anything carrying `data-image` gets a hover preview.
+         Mounted once here, which is why the browser below does not mount its
+         own: there is only one overlay and it listens on the document. -->
     <CardOverlay />
   </section>
+
+  <CardSetBrowser />
 </template>
 
 <style scoped lang="scss">

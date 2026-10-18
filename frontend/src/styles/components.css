@@ -326,3 +326,63 @@ h2.title {
   pointer-events: auto !important;
   cursor: grab;
 }
+
+/* ------------------------------------------------- the builder's controls ---
+
+   One height for everything you can type in or pick from.
+
+   The builder's fields are dressed by a dozen components that each chose their
+   own padding, so a row could hold a 35px text box, a 33px select and a 30px
+   button that clears it -- three heights pretending to be one row. The height
+   is set here, once, rather than negotiated again in every component: the bare
+   controls take it directly, and the composite ones (a value and the toggle
+   beside it, a binding and its segments, a label and the two ways to fill it)
+   take it on the box while their parts stretch to fill it. */
+.card-builder {
+  --control-h: 36px;
+}
+
+/* A control that is one box. Checkboxes, radios and file inputs are their own
+   shape and are left alone, and a textarea grows on purpose. */
+.card-builder
+  :is(input:not([type='checkbox']):not([type='radio']):not([type='file']), select):not(
+    .field input,
+    .value-box input,
+    .binding input,
+    .filter-bar input
+  ) {
+  min-height: var(--control-h);
+}
+
+/* A control made of segments: the height belongs to the box, and the segments
+   stretch, so nothing inside it has to agree about padding. Set rather than
+   suggested -- these hold one line, and a part with a taller idea of itself is
+   exactly what made them stand a pixel or two off everything else. */
+.card-builder :is(.field, .binding) {
+  align-items: stretch;
+  height: var(--control-h);
+}
+
+/* The two that only usually hold one line. A picked value can be a whole
+   editor -- a matcher with a field of its own, a chip above a nested box --
+   and a set height cut the bottom off it, which is what put a number and its
+   spinners half out of view. They start at the common height and grow. */
+.card-builder :is(.value-box, .picked-row) {
+  align-items: stretch;
+  min-height: var(--control-h);
+}
+
+.card-builder :is(.field, .value-box, .binding, .picked-row) > * {
+  min-height: 0;
+}
+
+/* The buttons that stand BESIDE a field rather than inside one: the one that
+   clears a value, the one that takes a row out. They stood two thirds the
+   height of the box they sit against.
+
+   A segment inside a box is not one of these -- it stretches to the box, and
+   giving it a height of its own is what makes the box taller than the height
+   set above. */
+.card-builder :is(.clear-value, .pipe-remove, .remove) {
+  min-height: var(--control-h);
+}

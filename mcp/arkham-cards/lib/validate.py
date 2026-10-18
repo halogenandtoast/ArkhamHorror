@@ -742,6 +742,41 @@ LABEL_FIELDS = ("label", "declineLabel", "done", "tooltip")
 LOOKS_LIKE_A_KEY = re.compile(r"[a-z][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+\Z")
 
 
+#: `$label.addToHand name=s:"X"` -- a key out of the app's own vocabulary, and
+#: values for whatever the sentence leaves blank.
+SHARED_LABEL = re.compile(r'\A\$([A-Za-z][A-Za-z0-9_.]*\.[A-Za-z0-9_]+)((?:\s+\S+)*)\Z')
+SHARED_PARAM = re.compile(r'([^=\s]+)=([is]):("(?:[^"\\]|\\.)*"|\S+)')
+
+
+def _check_shared_label(value: str, path: str, problems: list) -> None:
+    """A label that names the app's own words rather than the card's.
+
+    Worth checking because the client answers a key it does not know with the
+    key itself: a misspelt one reads as `$label.addToHannd` at the player, which
+    is the same silence as a label that was never looked up at all.
+    """
+    catalogue = DSL.get("sharedText") or {}
+    if not catalogue:
+        return
+    match = SHARED_LABEL.match(value.strip())
+    if not match:
+        return
+    key, rest = match.group(1), match.group(2)
+    if key not in catalogue:
+        problems.append(
+            Problem("warning", path, f'"{key}" is not one of the shared prompts',
+                    fix="the builder's Shared text picker lists them")
+        )
+        return
+    given = {name for name, _, _ in SHARED_PARAM.findall(rest)}
+    for blank in catalogue[key]:
+        if blank not in given:
+            problems.append(
+                Problem("warning", path, f'"{key}" leaves {{{blank}}} blank and nothing fills it',
+                        fix=f'add {blank}=s:"..." (or {blank}=i:N for a number)')
+            )
+
+
 def _check_labels(value: Any, path: str, problems: list) -> None:
     """A label is shown to the player exactly as written, so one that reads as a
     key is a key nothing looks up: the player is shown `impalingSwords.again`.
@@ -751,6 +786,8 @@ def _check_labels(value: Any, path: str, problems: list) -> None:
     """
     if isinstance(value, dict):
         for key, inner in value.items():
+            if key in LABEL_FIELDS and isinstance(inner, str) and inner.startswith("$"):
+                _check_shared_label(inner, f"{path}.{key}", problems)
             if key in LABEL_FIELDS and isinstance(inner, str) and LOOKS_LIKE_A_KEY.match(inner):
                 name = inner.split(".")[-1]
                 problems.append(
@@ -1545,6 +1582,18 @@ def validate(card_def: dict) -> dict:
 
     problems = check_value(card_def, "CardDef", "")
     problems += lint(card_def)
+
+    # The same thing said once. A step inside another is walked twice -- as part
+    # of the step that holds it, and again as a step of its own -- so a problem
+    # on it is found twice and is still one problem.
+    seen, once = set(), []
+    for problem in problems:
+        mark = (problem["severity"], problem["path"], problem["message"])
+        if mark in seen:
+            continue
+        seen.add(mark)
+        once.append(problem)
+    problems = once
 
     errors = [p for p in problems if p["severity"] == "error"]
     warnings = [p for p in problems if p["severity"] == "warning"]

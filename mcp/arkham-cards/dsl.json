@@ -2643,6 +2643,1742 @@
       "readIn": "frontend/src/arkham/customText.ts"
     }
   },
+  "sharedText": {
+    "label.addCardToDeck": [
+      "name"
+    ],
+    "label.doNotAddCardToDeck": [
+      "name"
+    ],
+    "label.addCurseTokens": [
+      "count"
+    ],
+    "label.addSupply": [],
+    "label.addToHand": [
+      "name"
+    ],
+    "label.addToHandSimple": [],
+    "label.anyInvestigatorTests": [
+      "skill",
+      "count"
+    ],
+    "label.applyResults": [],
+    "label.assets": [],
+    "label.attacksYou": [
+      "name"
+    ],
+    "label.thisEnemyAttacksYou": [],
+    "label.automaticallyEvade": [
+      "name"
+    ],
+    "label.automaticallyEvadeAnotherEnemy": [],
+    "label.automaticallyEvadeThatEnemy": [],
+    "label.automaticallyFailToDraw": [
+      "count"
+    ],
+    "label.automaticallyHandleAll": [],
+    "label.automaticallySucceed": [],
+    "label.cancelDamage": [
+      "count"
+    ],
+    "label.cancelEffect": [],
+    "label.cancelHorror": [
+      "count"
+    ],
+    "label.cancelHorrorAndDamage": [],
+    "label.cancelRevelationEffect": [],
+    "label.cancelMove": [],
+    "label.changeSlot": [
+      "name",
+      "slot"
+    ],
+    "label.changeEmptySlot": [
+      "fromSlot",
+      "slot"
+    ],
+    "label.chaosTokenRemoveToPool": [],
+    "label.chaosTokenReturnToBag": [],
+    "label.chooseAfterSkillTestEffect": [],
+    "label.chooseAgility": [],
+    "label.chooseCommitOrder": [],
+    "label.chooseCombat": [],
+    "label.chooseCultist": [],
+    "label.chooseElderThing": [],
+    "label.chooseIntellect": [],
+    "label.chooseNextInTurnOrder": [],
+    "label.choosePlayerToTakeTurn": [],
+    "label.chooseSkull": [],
+    "label.chooseTablet": [],
+    "label.chooseTarotReadingType": [],
+    "label.chooseWillpower": [],
+    "label.chooseTrauma": [],
+    "label.chooseInvestigatorToTakeControlOf": [
+      "name"
+    ],
+    "label.chooseTwoCardsToRotate": [],
+    "label.clues": [],
+    "label.cluesToPlace": [],
+    "label.cluesToMove": [],
+    "label.commitToSkillTest": [],
+    "label.continue": [],
+    "label.continueHavingDiscarded": [
+      "count"
+    ],
+    "label.damageEnemy": [],
+    "label.dealDamage": [
+      "count"
+    ],
+    "label.dealDirectDamage": [
+      "count"
+    ],
+    "label.dealHorror": [
+      "count"
+    ],
+    "label.dealAdditionalDamage": [
+      "count"
+    ],
+    "label.dealDirectDamageAndHorror": [
+      "damage",
+      "horror"
+    ],
+    "label.discard": [],
+    "label.dontShuffle": [],
+    "label.discardAssets": [
+      "count"
+    ],
+    "label.discardAllyAssetFromPlay": [],
+    "label.discardAllyAssetsFromHand": [],
+    "label.discardATerror": [],
+    "label.addCardToHandQuestion": [],
+    "label.discardCardQuestion": [],
+    "label.discardName": [
+      "name"
+    ],
+    "label.discardThatAsset": [],
+    "label.discardCards": [
+      "count"
+    ],
+    "label.discardCardsWithMatchingIcons": [
+      "skillIcon",
+      "count"
+    ],
+    "label.discardFromHand": [],
+    "label.discardAllCardsFromHand": [],
+    "label.discardCardsFromHand": [
+      "count"
+    ],
+    "label.discardCardsFromHandUpTo": [
+      "count"
+    ],
+    "label.discardRandomCardsFromHand": [
+      "count"
+    ],
+    "label.discardFromPlay": [],
+    "label.discardTopOfYourDeck": [
+      "count"
+    ],
+    "label.discardTopOfEncounterDeck": [
+      "count"
+    ],
+    "label.discoverAdditionalClues": [
+      "count"
+    ],
+    "label.discoverAtYourLocation": [
+      "count"
+    ],
+    "label.discoverClueAt": [
+      "name"
+    ],
+    "label.discoverClueAtThisLocation": [],
+    "label.discoverCluesAtConnecting": [
+      "count"
+    ],
+    "label.discoverNormally": [],
+    "label.disengageAll": [],
+    "label.disengageAndMove": [],
+    "label.disengageOtherEnemies": [],
+    "label.doNothing": [],
+    "label.doNotAddCardsToHand": [],
+    "label.doNotAddStartingCard": [],
+    "label.doNotAddToHand": [],
+    "label.doNotApplyDamageToConcealed": [],
+    "label.doNotChooseOtherLocation": [],
+    "label.doNotChooseDifferentLocation": [],
+    "label.doNotCommitAnyCards": [],
+    "label.doNotDamageAnyEnemies": [],
+    "label.doNotDoubleSkillIcons": [],
+    "label.doNotDamageEnemy": [],
+    "label.doNotDealExcessDamage": [],
+    "label.doNotDiscard": [],
+    "label.doNotDiscoverClue": [],
+    "label.doNotDraw": [],
+    "label.doNotEngageEnemy": [],
+    "label.doNotEvadeAnotherEnemy": [],
+    "label.doNotExile": [],
+    "label.doNotHeal": [],
+    "label.doNotIgnore": [],
+    "label.doNotIgnoreEffect": [],
+    "label.doNotExposeConcealed": [],
+    "label.doNotModify": [],
+    "label.doNotMove": [],
+    "label.doNotMoveEnemy": [],
+    "label.doNotPlayAlly": [],
+    "label.doNotPlayUpgrade": [],
+    "label.doNotResolveAbility": [],
+    "label.doNotTriggerAbility": [],
+    "label.doNotUseAbility": [],
+    "label.doNotRemoveLeyline": [],
+    "label.exposeConcealed": [],
+    "label.removeLeyline": [],
+    "label.doNotMoveAnInsight": [],
+    "label.doNotMoveAnyDamageHorror": [],
+    "label.doNotMoveClue": [],
+    "label.doNotMoveToConnecting": [],
+    "label.doNotPay": [],
+    "label.doNotPlaceDoom": [],
+    "label.doNotPlaceDoomOn": [
+      "name"
+    ],
+    "label.doNotPlayAsset": [],
+    "label.doNotPlayCard": [],
+    "label.doNotPlayName": [
+      "name"
+    ],
+    "label.doNotRelease": [
+      "token"
+    ],
+    "label.doNotRemove": [],
+    "label.doNotFightAgain": [],
+    "label.doNotReturn": [],
+    "label.charge": [],
+    "label.doneChoosingOptions": [],
+    "label.doneMoving": [],
+    "label.donePlacingTokens": [],
+    "label.donePlayingItems": [],
+    "label.secret": [],
+    "label.fightAgain": [],
+    "label.doNotReturnCardToHand": [],
+    "label.doNotSpendUse": [],
+    "label.doNotUseElderSign": [],
+    "label.shuffleBottomOfDiscardBackIntoDeck": [
+      "count"
+    ],
+    "label.shuffleJewelOfSarnath": [],
+    "label.shuffleIn": [],
+    "label.skipAdditionalDamageName": [
+      "name"
+    ],
+    "label.doNotRemoveTrauma": [],
+    "label.doNotDisengage": [],
+    "label.doNotPlay": [],
+    "label.doNotSpendClues": [
+      "count"
+    ],
+    "label.doNotTakeDamage": [],
+    "label.doNotTakeResources": [],
+    "label.doneCommitting": [],
+    "label.doneDiscarding": [],
+    "label.done": [],
+    "label.doneMovingDamageHorror": [],
+    "label.doneMovingInvestigators": [],
+    "label.doneTrading": [],
+    "label.doneWithMulligan": [],
+    "label.doubleSkillIcons": [],
+    "label.drawAnotherToken": [],
+    "label.drawAsNormal": [],
+    "label.drawCards": [
+      "count"
+    ],
+    "label.drawIt": [],
+    "label.drawNormally": [],
+    "label.drawTheCard": [],
+    "label.drawTopCardOfEncounterDeck": [
+      "count"
+    ],
+    "label.evade": [],
+    "label.engageEnemyFirst": [],
+    "label.evadeAnotherEnemy": [],
+    "label.evadeEnemies": [
+      "count"
+    ],
+    "label.evadeEnemyAtThisLocation": [],
+    "label.evadeOtherEnemies": [],
+    "label.even": [],
+    "label.events": [],
+    "label.exile": [],
+    "label.exileNameToAutoSucceed": [
+      "name"
+    ],
+    "label.exposeConcealedCard": [],
+    "label.fight": [],
+    "label.flipThisOver": [],
+    "label.flipThisBackOver": [],
+    "label.gainClues": [
+      "count"
+    ],
+    "label.gainResources": [
+      "count"
+    ],
+    "label.resources": [],
+    "label.horror": [],
+    "label.gainSurge": [],
+    "label.putOnTopOfEncounterDeck": [],
+    "label.putOnBottomOfEncounterDeck": [],
+    "label.healDamageAndHorror": [
+      "damage",
+      "horror"
+    ],
+    "label.healDamageFromInvestigatorOrAlly": [
+      "count"
+    ],
+    "label.healHorror": [
+      "count"
+    ],
+    "label.healHorrorFromName": [
+      "name",
+      "count"
+    ],
+    "label.healDamage": [
+      "count"
+    ],
+    "label.healName": [
+      "name"
+    ],
+    "label.healMentalTrauma": [
+      "count"
+    ],
+    "label.healPhysicalTrauma": [
+      "count"
+    ],
+    "label.healRemainingDamageNormally": [],
+    "label.healRemainingHorrorNormally": [],
+    "label.ignoreAttackOfOpportunity": [],
+    "label.increaseFloodLevelOfYourLocation": [],
+    "label.chooseInvestigatorForKey": [
+      "color"
+    ],
+    "label.whoWillDrive": [
+      "name"
+    ],
+    "label.chooseNewDriverFor": [
+      "name"
+    ],
+    "label.takeKey": [
+      "key"
+    ],
+    "label.placeKey": [
+      "key"
+    ],
+    "label.chooseX": [],
+    "label.leaveCardOnTop": [],
+    "label.leaveVehicleNoReentry": [],
+    "label.lookAtBottom": [],
+    "label.lookAtTop": [],
+    "label.ignoreEffect": [],
+    "label.investigate": [],
+    "label.loseActions": [
+      "count"
+    ],
+    "label.loseResources": [
+      "count"
+    ],
+    "label.loseClues": [
+      "count"
+    ],
+    "label.loseAllResources": [],
+    "label.minusToYourNextSkillTestThisRound": [
+      "count"
+    ],
+    "label.move": [],
+    "label.moveDamage": [
+      "count"
+    ],
+    "label.moveDoom": [
+      "count"
+    ],
+    "label.moveHorror": [
+      "count"
+    ],
+    "label.moveTo": [
+      "name"
+    ],
+    "label.moveToConnecting": [],
+    "label.moveToEnemyLocation": [],
+    "label.moveToo": [],
+    "label.moveToThisLocation": [],
+    "label.name": [
+      "name"
+    ],
+    "label.nearestInsectEnemyAttacks": [],
+    "label.neither": [],
+    "label.noCardsFound": [],
+    "label.noEnemiesFound": [],
+    "label.noEvasion": [],
+    "label.noMatchesFound": [],
+    "label.noMatchingTokens": [],
+    "label.odd": [],
+    "label.placeAgendaDoom": [
+      "count"
+    ],
+    "label.placeAgendaDoomCanAdvance": [
+      "count"
+    ],
+    "label.eachInvestigatorDiscardsCardsFromHand": [
+      "count"
+    ],
+    "label.eachInvestigatorLosesActions": [
+      "count"
+    ],
+    "label.placeCluesOnNearestEnemy": [
+      "count"
+    ],
+    "label.placeCluesOnYourLocation": [
+      "count"
+    ],
+    "label.placeDamageOn": [
+      "name",
+      "count"
+    ],
+    "label.placeDoom": [
+      "count"
+    ],
+    "label.placeDoomOn": [
+      "name",
+      "count"
+    ],
+    "label.placeHorror": [
+      "count"
+    ],
+    "label.placeOnBottom": [],
+    "label.placeOnBottomOfDeck": [],
+    "label.placeOnBottomOfEncounterDeck": [],
+    "label.placeOnTop": [],
+    "label.placeOnTopOfDeck": [],
+    "label.placeOnTopOfEncounterDeck": [],
+    "label.placeToken": [
+      "token",
+      "count"
+    ],
+    "label.passOnAdditionalAction": [],
+    "label.payResourceToName": [
+      "name"
+    ],
+    "label.play": [],
+    "label.playAtConnectingLocation": [],
+    "label.playAtCurrentLocation": [],
+    "label.playCard": [],
+    "label.playName": [
+      "name"
+    ],
+    "label.putIntoPlay": [
+      "name"
+    ],
+    "label.playIt": [],
+    "label.placeUnderneath": [
+      "name"
+    ],
+    "label.playNoCards": [],
+    "label.proceedToSetup": [],
+    "label.raiseAlarmLevel": [
+      "count"
+    ],
+    "label.releaseToken": [
+      "token"
+    ],
+    "label.removeMentalTrauma": [],
+    "label.removePhysicalTrauma": [],
+    "label.resolveAdditionalTarget": [],
+    "label.resolveAsElderSign": [],
+    "label.resolveAnAdditionalTime": [],
+    "label.resolveAsSkull": [],
+    "label.resolveNormally": [],
+    "label.returnToHandSimple": [],
+    "label.returnNameToHand": [
+      "name"
+    ],
+    "label.ready": [
+      "name"
+    ],
+    "label.readyAsset": [],
+    "label.removeTokensFrom": [
+      "token",
+      "name",
+      "count"
+    ],
+    "label.removeAgendaDoom": [
+      "count"
+    ],
+    "label.removeDoom": [
+      "count"
+    ],
+    "label.removeDoomFromPlayerCard": [],
+    "label.removeTokenForRemainderOfCampaign": [],
+    "label.passByLess": [
+      "count"
+    ],
+    "label.passByMore": [
+      "count"
+    ],
+    "label.putBackInAnyOrder": [],
+    "label.putBackOnTopInAnyOrder": [],
+    "label.shuffleThemIn": [],
+    "label.search": [],
+    "label.shuffleBackIn": [],
+    "label.searchAdditionalCards": [
+      "count"
+    ],
+    "label.searchDeck": [],
+    "label.searchDiscard": [],
+    "label.secretlyAddToHand": [
+      "name"
+    ],
+    "label.skills": [],
+    "label.skip": [],
+    "label.spendActions": [
+      "count"
+    ],
+    "label.spendClues": [
+      "count"
+    ],
+    "label.spendCluesToSucceed": [],
+    "label.spendResources": [
+      "count"
+    ],
+    "label.spendUseToEmpower": [],
+    "label.spendX": [],
+    "label.startAsSlot": [
+      "slot"
+    ],
+    "label.stop": [],
+    "label.sufferPhysicalTrauma": [
+      "count"
+    ],
+    "label.sufferMentalTrauma": [
+      "count"
+    ],
+    "label.takeAdditionalAction": [],
+    "label.takeAdditionalActionThisTurn": [],
+    "label.takeResources": [
+      "count"
+    ],
+    "label.ultimatumsAndBoons.returnWeakness": [],
+    "label.useCharge": [],
+    "label.useNewLocationShroud": [],
+    "label.useOriginalLocationsShroud": [],
+    "label.useSecret": [],
+    "label.tarotBalance": [],
+    "label.tarotChaos": [],
+    "label.tarotChoice": [],
+    "label.yourDeckIsEmptyTakeHorror": [],
+    "label.takeControlOfKey": [],
+    "label.takeControlOfSpecificKey": [
+      "name"
+    ],
+    "label.takeControlOf": [
+      "name"
+    ],
+    "label.takeDamage": [
+      "count"
+    ],
+    "label.takeEvadeAction": [],
+    "label.addBloodToken": [],
+    "label.drawEncounterCard": [],
+    "label.searchEncounterDeckAndDiscard": [],
+    "label.takeFightAction": [],
+    "label.takeInvestigateAction": [],
+    "label.takeNoMoreActions": [],
+    "label.takeDamageAndHorror": [
+      "damage",
+      "horror"
+    ],
+    "label.takeDirectDamage": [
+      "count"
+    ],
+    "label.takeDirectDamageAndHorror": [
+      "damage",
+      "horror"
+    ],
+    "label.takeDirectHorror": [
+      "count"
+    ],
+    "label.takeHorrorAndDamage": [
+      "horror",
+      "damage"
+    ],
+    "label.takeHorror": [
+      "count"
+    ],
+    "label.takeHorrorForEachPointOfFailure": [
+      "count"
+    ],
+    "label.takeHorrorUpTo": [
+      "count"
+    ],
+    "label.test": [
+      "skill",
+      "count"
+    ],
+    "label.testX": [
+      "skill"
+    ],
+    "label.useSkill": [
+      "skill"
+    ],
+    "label.yes": [],
+    "label.no": [],
+    "label.cost.action": [
+      "count"
+    ],
+    "label.cost.additionalAction": [],
+    "label.cost.addCurseTokens": [
+      "count"
+    ],
+    "label.cost.addCurseTokensEqualToShroud": [],
+    "label.cost.addCurseTokensEqualToTestDifficulty": [],
+    "label.cost.addFrostTokens": [
+      "count"
+    ],
+    "label.cost.addToken": [
+      "count",
+      "token"
+    ],
+    "label.cost.atLeastOne": [
+      "inner"
+    ],
+    "label.cost.calculated": [],
+    "label.cost.calculatedHandDiscard": [],
+    "label.cost.calculatedResource": [],
+    "label.cost.chooseCard": [],
+    "label.cost.revealChosenCard": [],
+    "label.cost.chooseTrait": [],
+    "label.cost.chooseEnemy": [],
+    "label.cost.clue": [
+      "count"
+    ],
+    "label.cost.clueX": [],
+    "label.cost.concealedX": [],
+    "label.cost.costToEnterUnrevealed": [
+      "inner"
+    ],
+    "label.cost.damage": [
+      "count"
+    ],
+    "label.cost.directDamage": [
+      "count"
+    ],
+    "label.cost.directDamageAndHorror": [
+      "damage",
+      "horror"
+    ],
+    "label.cost.directHorror": [
+      "count"
+    ],
+    "label.cost.discard": [],
+    "label.cost.discardAsset": [],
+    "label.cost.discardCard": [],
+    "label.cost.discardCombined": [
+      "count"
+    ],
+    "label.cost.discardDrawnCard": [],
+    "label.cost.discardFrom": [
+      "count"
+    ],
+    "label.cost.discardHand": [],
+    "label.cost.discardHandCount": [
+      "count"
+    ],
+    "label.cost.discardHandAny": [],
+    "label.cost.discardRandomCard": [],
+    "label.cost.discardTopOfDeck": [
+      "count"
+    ],
+    "label.cost.discardUnderneath": [],
+    "label.cost.discardEncounterUntilFirst": [],
+    "label.cost.discoveredClues": [],
+    "label.cost.doom": [
+      "count"
+    ],
+    "label.cost.drawEncounterCards": [
+      "count"
+    ],
+    "label.cost.dynamicUses": [
+      "useType"
+    ],
+    "label.cost.enemyAttack": [],
+    "label.cost.assetDoom": [
+      "count"
+    ],
+    "label.cost.enemyDoom": [
+      "count"
+    ],
+    "label.cost.eventUses": [
+      "count",
+      "useType"
+    ],
+    "label.cost.exhaust": [],
+    "label.cost.exhaustAsset": [],
+    "label.cost.exhaustXAsset": [],
+    "label.cost.exile": [],
+    "label.cost.fieldResource": [],
+    "label.cost.flipScarletKey": [],
+    "label.cost.free": [],
+    "label.cost.groupClue": [
+      "count"
+    ],
+    "label.cost.groupCluePerPlayer": [
+      "count"
+    ],
+    "label.cost.groupClueX": [],
+    "label.cost.groupClueRange": [
+      "min",
+      "max"
+    ],
+    "label.cost.groupDiscard": [
+      "count"
+    ],
+    "label.cost.groupResource": [
+      "count"
+    ],
+    "label.cost.groupPlaceClueOnLocation": [
+      "count"
+    ],
+    "label.cost.groupPlaceClueOnLocationPerPlayer": [
+      "count"
+    ],
+    "label.cost.groupResourcePerPlayer": [
+      "count"
+    ],
+    "label.cost.groupSpendKey": [],
+    "label.cost.horror": [
+      "count"
+    ],
+    "label.cost.horrorX": [],
+    "label.cost.increaseCostOfThis": [
+      "count"
+    ],
+    "label.cost.or": [],
+    "label.cost.optional": [
+      "inner"
+    ],
+    "label.cost.pay": [
+      "cost"
+    ],
+    "label.cost.placeClueOnLocation": [
+      "count"
+    ],
+    "label.cost.cluePerPlayer": [
+      "count"
+    ],
+    "label.cost.placeClueOnLocationPerPlayer": [
+      "count"
+    ],
+    "label.cost.placeKey": [],
+    "label.cost.remove": [],
+    "label.cost.removeEnemyDamage": [],
+    "label.cost.resolveHaunted": [],
+    "label.cost.resource": [
+      "count"
+    ],
+    "label.cost.resourceFromCard": [
+      "count",
+      "name"
+    ],
+    "label.cost.resourceFromPool": [
+      "count"
+    ],
+    "label.cost.returnAssetToHand": [],
+    "label.cost.returnChaosTokenToPool": [],
+    "label.cost.returnChaosTokensToPool": [
+      "count"
+    ],
+    "label.cost.returnEventToHand": [],
+    "label.cost.reveal": [],
+    "label.cost.releaseChaosToken": [],
+    "label.cost.releaseChaosTokens": [
+      "count"
+    ],
+    "label.cost.sameLocationGroupClue": [
+      "count"
+    ],
+    "label.cost.sameLocationGroupCluePerPlayer": [
+      "count"
+    ],
+    "label.cost.sameSkillIcon": [
+      "count"
+    ],
+    "label.cost.scenarioResource": [
+      "count"
+    ],
+    "label.cost.seal": [],
+    "label.cost.sealToken": [],
+    "label.cost.sealMulti": [
+      "count"
+    ],
+    "label.cost.separator": [],
+    "label.cost.shuffleAttachedIntoDeck": [],
+    "label.cost.shuffleBonded": [
+      "count"
+    ],
+    "label.cost.shuffleDiscard": [
+      "count"
+    ],
+    "label.cost.shuffleIntoDeck": [],
+    "label.cost.shuffleTopOfScenarioDeck": [
+      "count"
+    ],
+    "label.cost.skillIcon": [
+      "count"
+    ],
+    "label.cost.spendKey": [],
+    "label.cost.spendToken": [],
+    "label.cost.spendTokenKey": [
+      "count"
+    ],
+    "label.cost.supply": [],
+    "label.cost.unpayable": [],
+    "label.cost.upTo": [
+      "inner"
+    ],
+    "label.cost.use": [
+      "count",
+      "useType"
+    ],
+    "label.cost.useAll": [
+      "useType"
+    ],
+    "label.cost.useUpTo": [
+      "min",
+      "max",
+      "useType"
+    ],
+    "label.cost.x": [
+      "inner"
+    ],
+    "label.core2.cosmicEvils.option": [],
+    "label.core2.mutated.option": [],
+    "label.doNotExhaust": [],
+    "label.doNotExhaustName": [
+      "name"
+    ],
+    "label.doNotDiscardCard": [],
+    "label.discardThis": [
+      "name"
+    ],
+    "label.exhaustName": [
+      "name"
+    ],
+    "label.exhaustThis": [
+      "name"
+    ],
+    "label.readyThis": [
+      "name"
+    ],
+    "label.getPlus": [
+      "count",
+      "skill"
+    ],
+    "label.chooseSkill": [
+      "skill"
+    ],
+    "label.discardToDealAdditionalDamage": [
+      "count"
+    ],
+    "label.discardCard": [],
+    "label.leaveCard": [],
+    "label.leaveOnTop": [],
+    "label.addAccessorySlot": [],
+    "label.addHandSlot": [],
+    "label.addToHandPlain": [],
+    "label.automaticallyEvadeEnemy": [],
+    "label.automaticallyEvadeAttackedEnemy": [],
+    "label.automaticallyFailTest": [],
+    "label.cancelDamageOnly": [],
+    "label.cancelHorrorOnly": [],
+    "label.dealDamageToEnemy": [],
+    "label.doNotDiscardAsset": [],
+    "label.doNotEngageAnEnemy": [],
+    "label.doNotEvadeAnother": [],
+    "label.doNotMoveDoom": [],
+    "label.doNotPlayAnotherEvent": [],
+    "label.doNotReturnToHand": [],
+    "label.doNotSwap": [],
+    "label.useElderSign": [],
+    "label.doNotResolveElderSign": [],
+    "label.doneChoosingCards": [],
+    "label.doneHealing": [],
+    "label.doneSwapping": [],
+    "label.drawCardOne": [],
+    "label.engageAnEnemyFirst": [],
+    "label.exhaust": [],
+    "label.doNotExposeConcealedCard": [],
+    "label.gainOneResource": [],
+    "label.gainTwoResources": [],
+    "label.gainResourcePlain": [],
+    "label.healOneDamage": [],
+    "label.healOneHorror": [],
+    "label.noOnePays": [],
+    "label.noPlayableCardsFound": [],
+    "label.placeOnTopOfDeckInAnyOrder": [],
+    "label.removeOneDoom": [],
+    "label.resolveAdditionalTime": [],
+    "label.resolveAsCurse": [],
+    "label.shuffleCardsBackIn": [],
+    "label.doNotShuffleBackIn": [],
+    "label.spendTwoResources": [],
+    "label.surge": [],
+    "label.symbol": [],
+    "label.switchRole": [],
+    "label.takeAdditionalActionPlain": [],
+    "label.doNotTakeFightAction": [],
+    "label.takeOneDamage": [],
+    "label.takeOneDirectDamage": [],
+    "label.takeOneDirectHorror": [],
+    "label.takeOneHorror": [],
+    "label.takeTwoDamage": [],
+    "label.takeTwoHorror": [],
+    "label.takeOneDamageAndOneHorror": [],
+    "label.discardRandomCard": [],
+    "label.discardOneTreachery": [],
+    "label.discardOneNonEliteEnemy": [],
+    "label.doneDiscarding2": [],
+    "label.doNotPerformHealing": [],
+    "label.doNotReplace": [],
+    "label.doNotReturnCard": [],
+    "label.doNotSpendKey": [],
+    "label.doNotTakeAKey": [],
+    "label.doNotTakeAny": [],
+    "label.doNotTakeAPartner": [],
+    "label.choosePartnerForScenario": [],
+    "label.chooseTokenToRemove": [],
+    "label.doNotTakeHealing": [],
+    "label.doNotTest": [],
+    "label.noLocationsFound": [],
+    "label.placeDoomOnAgenda": [
+      "count"
+    ],
+    "label.placeDoomOnThisLocation": [],
+    "label.putItIntoPlay": [],
+    "label.doNotPutItIntoPlay": [],
+    "label.putSetAsideLocationIntoPlay": [
+      "name"
+    ],
+    "label.spendCluesToTakeControl": [
+      "count"
+    ],
+    "label.spendCluesToActivate": [
+      "count"
+    ],
+    "label.addToHandLong": [],
+    "label.cancelDamage1": [],
+    "label.cancelHorror1": [],
+    "label.healDamage1": [],
+    "label.healMentalTrauma1": [],
+    "label.healPhysicalTrauma1": [],
+    "label.healOneOfEach": [],
+    "label.loseOneAction": [],
+    "label.loseAllRemainingActions": [],
+    "label.spendAdditionalAction": [],
+    "label.advanceCurrentAct": [],
+    "label.removeOneSecretFromAsset": [],
+    "label.drawTwoCards": [],
+    "label.doNotDrawTwoCards": [],
+    "label.increaseLocationFloodLevel": [],
+    "label.removeOneDoomFromAgenda": [],
+    "label.flipBackToASide": [],
+    "label.gainResourcesAmount": [
+      "count"
+    ],
+    "label.flipDisciplineToBroken": [],
+    "label.discardAllyAsset": [],
+    "label.discardEachFirearmAsset": [],
+    "label.dealDamageToGeistAtLocation": [
+      "count"
+    ],
+    "label.dealDamageToGeistAtAnyLocation": [
+      "count"
+    ],
+    "label.ignoreUseSkillTypeInsteadOf": [
+      "skill",
+      "replacedSkill"
+    ],
+    "label.eachInvestigatorTakesDamageOrHorror": [],
+    "label.chooseSkillIcon": [
+      "skillIcon"
+    ],
+    "label.chooseMinusWild": [],
+    "label.addBlessTokens": [
+      "count"
+    ],
+    "label.removeCurseTokens": [
+      "count"
+    ],
+    "label.moveKey": [
+      "key"
+    ],
+    "label.number": [
+      "count"
+    ],
+    "label.chooseNewDriver": [
+      "name"
+    ],
+    "label.setNamelessMadnessAside": [
+      "count"
+    ],
+    "label.chooseInvestigatorToTakeSeal": [
+      "seal"
+    ],
+    "label.lookAtAncientFacility": [],
+    "label.addCurseTokensUpTo": [
+      "count"
+    ],
+    "label.sealCurseTokensUpTo": [
+      "count"
+    ],
+    "label.resourcesToRemove": [],
+    "label.chooseNumberOfCardsToDiscard": [],
+    "label.evidence": [],
+    "label.addCurseTokensToChaosBag": [],
+    "label.doneMovingScientists": [],
+    "label.doneEngagingEnemies": [],
+    "label.doneDiscoveringClues": [],
+    "label.cards.abyssalTome2.placeDoom": [],
+    "label.cards.abyssalTome2.doNotPlaceDoom": [],
+    "label.cards.acridMiasma.hunter": [],
+    "label.cards.aethericCurrentYuggoth.exhaustEnemyAndMove": [],
+    "label.cards.aethericCurrentYuggoth.doNotExhaustEnemy": [],
+    "label.cards.agathaCrane.cancel": [],
+    "label.cards.agathaCrane.skip": [],
+    "label.cards.agnesBakerParallel.shuffle": [],
+    "label.cards.ajax.moveTwice": [],
+    "label.cards.ajax.moveToField": [],
+    "label.cards.alchemicalDistillation.doNotEmpower": [],
+    "label.cards.alchemicalDistillation.doNotResolveASecondOption": [],
+    "label.cards.alchemicalDistillation.doneMoving": [],
+    "label.cards.alchemicalDistillation.empowerIncreaseDifficultyBy2": [],
+    "label.cards.alchemicalDistillation.resolveASecondOption": [],
+    "label.cards.alchemicalDistillation.placeChargeOrSecret": [
+      "count"
+    ],
+    "label.cards.alchemicalDistillation.moveUpTo": [
+      "count"
+    ],
+    "label.cards.alienWhispers.damageAsset": [],
+    "label.cards.alienWhispers.horrorAsset": [],
+    "label.cards.alyssaGraham.addDoom": [],
+    "label.cards.alyssaGraham.add1DoomToAlyssaToMoveCardToBottom": [],
+    "label.cards.alyssaGraham.leaveCardOnTop": [],
+    "label.cards.amandaSharpe.double": [],
+    "label.cards.amandaSharpe.skip": [],
+    "label.cards.anchorChain.discardPrompt": [],
+    "label.cards.antediluvianHymn.doNotAddCurseToken": [],
+    "label.cards.anyuFaithfulCompanion.attemptToEvadeWithABaseAgilitySkillOf4": [],
+    "label.cards.anyuFaithfulCompanion.discardAnyuToChooseUpToThreeInAnyOrder": [],
+    "label.cards.anyuFaithfulCompanion.gain2SkillValue": [],
+    "label.cards.anyuFaithfulCompanion.doneChoosingOptions": [],
+    "label.cards.arcaneInitiate3.place1Doom": [],
+    "label.cards.arcaneInitiate3.place2Horror": [],
+    "label.cards.archaicGlyphsMarkingsOfIsis3.doNotPlayAsset": [],
+    "label.cards.ariadnesTwine3.moveSecretToResource": [],
+    "label.cards.ariadnesTwine3.moveResourceToSecret": [],
+    "label.cards.ariadnesTwine3.moveResourceToSecret2": [],
+    "label.cards.ariadnesTwine3.moveSecretToResource2": [],
+    "label.cards.armageddon.placeCharge": [],
+    "label.cards.armageddon.dealDamageToEnemy": [],
+    "label.cards.armageddon.deal1DamageToAnEnemyAtYourLocation": [],
+    "label.cards.armageddon.place1ChargeOnArmageddon": [],
+    "label.cards.armageddon4.placeCharge": [],
+    "label.cards.armageddon4.dealDamageToEnemy": [],
+    "label.cards.armageddon4.deal1DamageToAnEnemyAtYourLocation": [],
+    "label.cards.armageddon4.place1ChargeOnArmageddon4": [],
+    "label.cards.artisticInspiration.getPlus1": [],
+    "label.cards.artisticInspiration.getMinus1": [],
+    "label.cards.ashcanPeteParallel.skip": [],
+    "label.cards.atACrossroads.act": [],
+    "label.cards.atACrossroads.draw": [],
+    "label.cards.augur.putIntoPlayFromDiscard": [],
+    "label.cards.averyClaypoolAntarcticGuideResolute.revealANewChaosToken": [],
+    "label.cards.averyClaypoolAntarcticGuideResolute.spend1Supply": [],
+    "label.cards.backInjury.putBackInjuryIntoPlayInYourThreatArea": [],
+    "label.cards.backInjury.take1DamageAndShuffleItIntoYourDeck": [],
+    "label.cards.baitAndSwitch.evadeAndMove": [],
+    "label.cards.baitAndSwitch.evadeAndSwitch": [],
+    "label.cards.baseballBat2.returnToHand": [],
+    "label.cards.baseballBat2.extraDamage": [],
+    "label.cards.beguile.moveAttachedEnemy": [],
+    "label.cards.beguile.basicInvestigate": [],
+    "label.cards.beguile.basicEvade": [],
+    "label.cards.beloved.removeForAutoSuccess": [],
+    "label.cards.beloved.remove": [],
+    "label.cards.beloved.skip": [],
+    "label.cards.berettaM19184.dealAnAdditional1Damage": [],
+    "label.cards.berettaM19184.readyBerettaM1918": [],
+    "label.cards.bewitching3.draw1AttachedCard": [],
+    "label.cards.bewitching3.searchTopOfDeck": [],
+    "label.cards.bewitching3.chooseNoMoreTrickCards": [],
+    "label.cards.blackMarket.missingOwner": [],
+    "label.cards.blessedBlade.exhaustToAddBless": [],
+    "label.cards.blessedBlade.exhaustForBless": [],
+    "label.cards.blessedBlade.exhaust": [
+      "count"
+    ],
+    "label.cards.blessedBlade4.exhaustForBless": [
+      "count"
+    ],
+    "label.cards.bloodRite.gainResource": [],
+    "label.cards.bloodRite.spendDealDamage": [],
+    "label.cards.bloodRite.continueDiscarded": [
+      "count"
+    ],
+    "label.cards.bloodRite.spendDamage": [],
+    "label.cards.blur1.useAgility": [],
+    "label.cards.blur1.useWillpower": [],
+    "label.cards.blur4.useAgility": [],
+    "label.cards.blur4.useWillpower": [],
+    "label.cards.bonesaw.doNotTakeDamage": [],
+    "label.cards.bonesaw.take1DamageToDo1Damage": [],
+    "label.cards.bookOfLivingMythsChronicleOfWonders.resolveBlessToken": [],
+    "label.cards.bookOfLivingMythsChronicleOfWonders.resolveCurseToken": [],
+    "label.cards.brokenBottle.discardForDamage": [],
+    "label.cards.buriedSecrets.takeHorror": [],
+    "label.cards.butterflySwords2.doNotFightAgain": [],
+    "label.cards.butterflySwords2.fightAgain": [],
+    "label.cards.butterflySwords5.doNotFightAgain": [],
+    "label.cards.butterflySwords5.exhaustToDo1Damage": [],
+    "label.cards.butterflySwords5.fightAgain": [],
+    "label.cards.callForBackup.rogue": [],
+    "label.cards.callForBackup.guardian": [],
+    "label.cards.callForBackup.seeker": [],
+    "label.cards.callForBackup.mystic": [],
+    "label.cards.callForBackup.survivor": [],
+    "label.cards.callForBackup2.rogueOption": [],
+    "label.cards.callForBackup2.guardianOption": [],
+    "label.cards.callForBackup2.seekerOption": [],
+    "label.cards.callForBackup2.mysticOption": [],
+    "label.cards.callForBackup2.survivorOption": [],
+    "label.cards.callOfMadness.shuffleTekelili": [],
+    "label.cards.carolynFern.doNotHeal": [],
+    "label.cards.ceremonialSickle.exhaustForBoost": [],
+    "label.cards.ceremonialSickle.onDefeatEnemy": [],
+    "label.cards.ceremonialSickle4.exhaustForBoost": [],
+    "label.cards.ceremonialSickle4.onDefeatEnemy": [],
+    "label.cards.chainsaw4.deal1DamageToTheAttackedEnemy": [],
+    "label.cards.chainsaw4.place1SupplyOnChainsaw": [],
+    "label.cards.chuckFergus2.thatEventCosts2FewerResourcesToPlay": [],
+    "label.cards.chuckFergus2.thatEventGainsFast": [],
+    "label.cards.chuckFergus2.gain2SkillValue": [],
+    "label.cards.chuckFergus5.thatEventCosts2FewerResourcesToPlay": [],
+    "label.cards.chuckFergus5.thatEventGainsFast": [],
+    "label.cards.chuckFergus5.gain2SkillValue": [],
+    "label.cards.cleanSneak.damage": [],
+    "label.cards.cookiesCustom32.fightWithABaseCombatSkillOf5": [],
+    "label.cards.cookiesCustom32.get2CombatForThisAttack": [],
+    "label.cards.corrosiveSlime.devourResource": [],
+    "label.cards.corrosiveSlime.devourRandomCardFromHand": [],
+    "label.cards.cosmicFlame.spendChargeForDamage": [],
+    "label.cards.cosmicFlame5.spendChargeForDamage": [],
+    "label.cards.cosmicRevelation.draw": [],
+    "label.cards.cosmicRevelation.play": [],
+    "label.cards.cosmicRevelation1.even": [],
+    "label.cards.cosmicRevelation1.odd": [],
+    "label.cards.cosmicRevelation1.playRevealed": [],
+    "label.cards.crisisOfFaith.replaceBlessWithCurse": [],
+    "label.cards.crisisOfFaith.swap": [],
+    "label.cards.customGrip.doNotPlayFirearm": [],
+    "label.cards.cyclopeanHammer5.doNotMoveEnemy": [],
+    "label.cards.cyclopeanHammer5.exhaustForExtraDamage": [],
+    "label.cards.cyclopeanHammer5.moveEnemy": [],
+    "label.cards.cyclopeanHammer5.moveEnemyAway": [],
+    "label.cards.daisyWalkerParallel.skip": [],
+    "label.cards.damningTestimony.doNotSpendEvidence": [],
+    "label.cards.damningTestimony.investigateTheEnemysLocation": [],
+    "label.cards.damningTestimony.investigateYourLocation": [],
+    "label.cards.damningTestimony.spendEvidence": [],
+    "label.cards.damningTestimony.spendForClue": [],
+    "label.cards.darkRitual.discardDarkRitual": [],
+    "label.cards.darkRitual.spend1Resource": [],
+    "label.cards.davidRenfield.doNotPlaceDoomOnDavidRenfield": [],
+    "label.cards.davidRenfield.placeDoomOnDavidRenfield": [],
+    "label.cards.decoy.evadeOne": [],
+    "label.cards.decoy.evadeTwo": [],
+    "label.cards.decoyTrap.discardMove": [],
+    "label.cards.defiance.skull": [],
+    "label.cards.defiance.cultist": [],
+    "label.cards.defiance.tablet": [],
+    "label.cards.defiance.elderThing": [],
+    "label.cards.delayTheInevitable.discard": [],
+    "label.cards.denyExistence.cancelDiscardFromHand": [],
+    "label.cards.denyExistence.cancelLoseResources": [
+      "count"
+    ],
+    "label.cards.denyExistence.cancelLoseActions": [
+      "count"
+    ],
+    "label.cards.denyExistence5.drawInstead": [],
+    "label.cards.denyExistence5.gainResourcesInstead": [
+      "count"
+    ],
+    "label.cards.denyExistence5.gainActionsInstead": [
+      "count"
+    ],
+    "label.cards.denyExistence5.healDamageInstead": [
+      "count"
+    ],
+    "label.cards.denyExistence5.healHorrorInstead": [
+      "count"
+    ],
+    "label.cards.detectivesColt1911s.doNotMoveAnInsight": [],
+    "label.cards.devilFriendOrFoe2.damageConcealed": [],
+    "label.cards.devilFriendOrFoe2.doNotDamageConcealed": [],
+    "label.cards.dexterDrake.skip": [],
+    "label.cards.dialOfAncientsSignsOfCataclysm4.spend1Charge": [],
+    "label.cards.dialOfAncientsSignsOfCataclysm4.spend1ChargeOrReleaseThisToken": [],
+    "label.cards.dianaStanley.doNotAdd": [],
+    "label.cards.disciplineAlignmentOfSpirit.take1DirectDamageToHeal3Horror": [],
+    "label.cards.disciplineAlignmentOfSpirit.take1DirectHorrorToHeal3Damage": [],
+    "label.cards.divination1.useIntellect": [],
+    "label.cards.divination1.useWillpowerInsteadOfIntellect": [],
+    "label.cards.divination4.useIntellect": [],
+    "label.cards.divination4.useWillpowerInsteadOfIntellect": [],
+    "label.cards.doppelganger.moveToDoppelganger": [],
+    "label.cards.doppelganger.evadeEnemy": [],
+    "label.cards.doppelganger1.moveToLocationOfDoppelganger": [],
+    "label.cards.doppelganger1.evadeEnemy": [],
+    "label.cards.doubleDown2.spendResources": [],
+    "label.cards.dowsingRod.exhaustForBoost": [],
+    "label.cards.dowsingRod.onLastClue": [],
+    "label.cards.dowsingRod4.exhaustForBoost": [],
+    "label.cards.dowsingRod4.onLastClue": [],
+    "label.cards.drWilliamTMaleson2.chooseCardToResolve": [],
+    "label.cards.drawingThin.draw1Card": [],
+    "label.cards.drawingThin.take2Resources": [],
+    "label.cards.dreamersChronicle.takeHorror": [],
+    "label.cards.earthlySerenity1.doNotSpendAChargeToHeal": [],
+    "label.cards.earthlySerenity1.spendAChargeToHeal": [],
+    "label.cards.earthlySerenity4.doNotSpendAChargeToHeal": [],
+    "label.cards.earthlySerenity4.spendAChargeToHeal": [],
+    "label.cards.elaborateDistraction.evadeNonElite": [],
+    "label.cards.elaborateDistraction.dealDamage": [],
+    "label.cards.elaborateDistraction.evade": [],
+    "label.cards.eldritchBrand5.chooseCard": [],
+    "label.cards.eldritchSophist.moveCharge": [],
+    "label.cards.eldritchSophist.moveSecret": [],
+    "label.cards.elleRubashPurifyingPurpose2.attachWithoutSwapping": [],
+    "label.cards.emergencyCache.takeResource": [],
+    "label.cards.emergencyCache.addSupply": [],
+    "label.cards.empiricalHypothesis.failBy2": [],
+    "label.cards.empiricalHypothesis.succeedBy3": [],
+    "label.cards.empiricalHypothesis.runOutOfCards": [],
+    "label.cards.empiricalHypothesis.dealtDamageOrHorror": [],
+    "label.cards.empiricalHypothesis.discardTreacheryOrEnemy": [],
+    "label.cards.empiricalHypothesis.enterLocationWithShroud3": [],
+    "label.cards.encephalonSignal.damage": [],
+    "label.cards.enchantedBladeGuardian3.doNotSpendUse": [],
+    "label.cards.enchantedBladeGuardian3.spend1UseToEmpower": [],
+    "label.cards.enervation.discardHighestCost": [],
+    "label.cards.eonChart4.move": [],
+    "label.cards.everVigilant1.doNotPlayAsset": [],
+    "label.cards.extraRations1.heal1DamageFromYourself": [],
+    "label.cards.eyeOfChaos.placeCharge": [],
+    "label.cards.eyeOfChaos.discover1CluesAtAConnectingLocation": [],
+    "label.cards.eyeOfChaos.place1ChargeOnEyeOfChaos": [],
+    "label.cards.eyeOfChaos4.placeCharge": [],
+    "label.cards.eyeOfChaos4.discover1CluesAtAConnectingLocation": [],
+    "label.cards.eyeOfChaos4.place1ChargeOnEyeOfChaos4": [],
+    "label.cards.eyeOfTheDjinnVesselOfGoodAndEvil2.gainedAction": [],
+    "label.cards.fakeCredentials.discardFakeCredentials": [],
+    "label.cards.fakeCredentials.theChosenEnemyAttacksYou": [],
+    "label.cards.falseSurrender.fightAgainstEnemy": [],
+    "label.cards.falseSurrender.doNotFight": [],
+    "label.cards.fangOfTyrthrha.moveToEnemy": [],
+    "label.cards.fatherMateo.drawAndGain": [],
+    "label.cards.fey.return": [],
+    "label.cards.fickleFortune.place": [],
+    "label.cards.fickleFortune.remove": [],
+    "label.cards.finnEdwards.skip": [],
+    "label.cards.flamethrower5.standardDamage": [],
+    "label.cards.flamethrower5.assignAmongEngaged": [],
+    "label.cards.flamethrower5.assignUpTo4": [],
+    "label.cards.flamethrower5.doStandardDamage": [],
+    "label.cards.flare.searchAlly": [],
+    "label.cards.flare1.searchForAlly": [],
+    "label.cards.fleshWard.cancel1Damage": [],
+    "label.cards.fleshWard.cancel1Horror": [],
+    "label.cards.flurryOfBlows.repeat": [],
+    "label.cards.flurryOfBlows5.repeatEffect": [],
+    "label.cards.forbiddenTome.discardForbiddenTome": [],
+    "label.cards.forbiddenTome.doNotDiscardForbiddenTome": [],
+    "label.cards.fortyFiveThompsonRogue3.doNotDamageAnyEnemies": [],
+    "label.cards.friendsInLowPlaces.doNotSpend": [],
+    "label.cards.friendsInLowPlaces.swiftSkip": [],
+    "label.cards.friendsInLowPlaces.versatileSkip": [],
+    "label.cards.geas2.drawPromise": [],
+    "label.cards.geas2.playPromise": [],
+    "label.cards.geas2.commitPromise": [],
+    "label.cards.geas2.iShallNot": [],
+    "label.cards.geas2.iShallNotDrawAnyCardsDuringEachOfMyTurns": [],
+    "label.cards.geas2.iShallNotPlayAnyCardsDuringEachOfMyTurns": [],
+    "label.cards.geas2.broken": [],
+    "label.cards.geneBeauregard3.move1ClueFrom": [],
+    "label.cards.geneBeauregard3.move1ClueFrom2": [],
+    "label.cards.geneBeauregard3.moveAnEnemy": [],
+    "label.cards.geneBeauregard3.moveAnEnemy2": [],
+    "label.cards.georgeBarnaby.donePlacingCards": [],
+    "label.cards.ghastlyPossession.placeDoom": [],
+    "label.cards.ghastlyPossession.ifSuccess": [],
+    "label.cards.ghastlyPossession.removeDoom": [],
+    "label.cards.ghastlyPossession.replenish": [],
+    "label.cards.ghastlyPossession1.placeDoomGainIcons": [],
+    "label.cards.ghastlyPossession1.removeDoomOrReplenish": [],
+    "label.cards.ghastlyPossession1.removeDoomFromAsset": [],
+    "label.cards.ghastlyPossession1.replenishUses": [],
+    "label.cards.ghastlyRevelation.giveClues": [],
+    "label.cards.ghastlyRevelation.placeClues": [],
+    "label.cards.glassing.discard": [],
+    "label.cards.glassing.doNotDiscard": [],
+    "label.cards.gloriaGoldberg.discard": [],
+    "label.cards.gloriaGoldberg.putOnTop": [],
+    "label.cards.gloriaGoldberg.placeBeneath": [],
+    "label.cards.gloriaGoldberg.chooseDrawer": [],
+    "label.cards.grannyOrne.failBy1Less": [],
+    "label.cards.grannyOrne.failBy1More": [],
+    "label.cards.grannyOrne3.getPlus1SkillValue": [],
+    "label.cards.grannyOrne3.getMinus1SkillValue": [],
+    "label.cards.graysAnatomyTheDoctorsBible5.damagePlus": [],
+    "label.cards.graysAnatomyTheDoctorsBible5.healPlus": [],
+    "label.cards.grimMemoir.doNotDrawCard": [],
+    "label.cards.grimMemoir.draw1Card": [],
+    "label.cards.grimResolve.doneSwapping": [],
+    "label.cards.grimResolve.chooseHandToSwap": [],
+    "label.cards.grimResolve.chooseUnderneathToSwap": [],
+    "label.cards.grimResolve.chooseHandCard": [],
+    "label.cards.grimResolve.chooseUnderCard": [],
+    "label.cards.grizzled.attachToEnemy": [],
+    "label.cards.grizzled.doNotAttachToEnemy": [],
+    "label.cards.grizzled.addToVictory": [],
+    "label.cards.grizzled.doNotAddToVictory": [],
+    "label.cards.grizzled.attach": [],
+    "label.cards.grizzled.doNotAttach": [],
+    "label.cards.grizzled.addVictory": [],
+    "label.cards.grizzled.skipVictory": [],
+    "label.cards.guerrillaTactics.fight": [],
+    "label.cards.guerrillaTactics.evade": [],
+    "label.cards.guidedByTheUnseen3.doNotCommitAnyCards": [],
+    "label.cards.hallowedChalice.exhaustForBoost": [],
+    "label.cards.hallowedChalice.heal1Damage": [],
+    "label.cards.hallowedChalice.healFromThatInvestigator": [],
+    "label.cards.hallowedChalice.heal1Horror": [],
+    "label.cards.hallowedChalice.heal2Damage": [],
+    "label.cards.hallowedChalice.heal2Horror": [],
+    "label.cards.hallowedMirror3.changeEach": [],
+    "label.cards.hallowedMirror3.shuffleItInto": [],
+    "label.cards.handCrankFlashlight.discardForShroud": [],
+    "label.cards.handHook.discardForDamage": [],
+    "label.cards.henryWan.drawAnother": [],
+    "label.cards.henryWan.gain1Resources": [],
+    "label.cards.henryWan.stop": [],
+    "label.cards.hiredMuscle1.discardHiredMuscle": [],
+    "label.cards.hiredMuscle1.pay1ResourceToHiredMuscle": [],
+    "label.cards.holySpear5.releaseBless": [],
+    "label.cards.holySpear5.doNotReleaseBless": [],
+    "label.cards.holySpear5.doNotReleaseABlessToken": [],
+    "label.cards.holySpear5.releaseABlessToken": [],
+    "label.cards.honedInstinct.another": [],
+    "label.cards.honedInstinct.skip": [],
+    "label.cards.hope.putIntoPlayFromDiscard": [],
+    "label.cards.huntersArmor.doNoExhaust": [],
+    "label.cards.huntersArmor.exhaustHuntersArmorToDraw1Card": [],
+    "label.cards.hyperphysicalShotcasterTheoreticalDevice.matterweaver": [],
+    "label.cards.hyperphysicalShotcasterTheoreticalDevice.moveNothingAfter": [],
+    "label.cards.hyperphysicalShotcasterTheoreticalDevice.moveNothingBefore": [],
+    "label.cards.hyperphysicalShotcasterTheoreticalDevice.railshooter": [],
+    "label.cards.hyperphysicalShotcasterTheoreticalDevice.realitycollapser": [],
+    "label.cards.hyperphysicalShotcasterTheoreticalDevice.telescanner": [],
+    "label.cards.hyperphysicalShotcasterTheoreticalDevice.translocator": [],
+    "label.cards.hypnoticGaze.health": [],
+    "label.cards.hypnoticGaze.sanity": [],
+    "label.cards.icePick3.discardIcePick3": [],
+    "label.cards.icePick3.discardIcePick3ToDo1Damage": [],
+    "label.cards.icebreakerLanding.removeFrost": [],
+    "label.cards.icebreakerLanding.recordSmallRadio": [],
+    "label.cards.idolOfXanatosWatcherBeyondTime.cancel1Damage": [],
+    "label.cards.idolOfXanatosWatcherBeyondTime.cancel1Horror": [],
+    "label.cards.imDoneRunnin.skip": [],
+    "label.cards.imDoneRunnin.damage": [],
+    "label.cards.impromptuBarrier.evadeAnother": [],
+    "label.cards.impromptuBarrier.skip": [],
+    "label.cards.inquisitive.passByTwoMore": [],
+    "label.cards.inquisitive.passByOneMore": [],
+    "label.cards.inquisitive.doNotModify": [],
+    "label.cards.inquisitive.passByOneLess": [],
+    "label.cards.inquisitive.passByTwoLess": [],
+    "label.cards.isamaraOrdonezTheTorchSinger.ready": [],
+    "label.cards.jewelOfAureolus3.draw1Card": [],
+    "label.cards.jewelOfAureolus3.take2Resources": [],
+    "label.cards.joeDiamond.chooseHunchCards": [],
+    "label.cards.joeDiamond.chooseHunch": [],
+    "label.cards.joeDiamond.doNotMove": [],
+    "label.cards.katana.exhaustKatanaToDeal2DamageForThisAttack": [],
+    "label.cards.kateWinthrop.doNotMove": [],
+    "label.cards.kenslersLog.get2IntellectForThisInvestigation": [],
+    "label.cards.kenslersLog.investigateWithABaseIntellectSkillOf5": [],
+    "label.cards.knightOfSwords3.discardKnightOfSwordsToGet3Instead": [],
+    "label.cards.knowledgeIsPower.discardToDraw": [],
+    "label.cards.knowledgeIsPower.discard": [],
+    "label.cards.kohakuNarukami.addBless": [],
+    "label.cards.kohakuNarukami.addCurse": [],
+    "label.cards.kohakuNarukami.removeAction": [],
+    "label.cards.kukri.spendActionForDamage": [],
+    "label.cards.kukri.skipAdditionalKukriDamage": [],
+    "label.cards.kukri.spend1ActionToDeal1Damage": [],
+    "label.cards.leadingLadyEnchantress.removeDoom": [],
+    "label.cards.libraryPass5.pay1Resources": [],
+    "label.cards.libraryPass5.putOnBottomOfDeck": [],
+    "label.cards.lieInWait.skip": [],
+    "label.cards.lieInWait.discard": [],
+    "label.cards.livingInk.doNotCharge": [],
+    "label.cards.livingInk.remove1Charge": [],
+    "label.cards.localMap.exhaustAndMove": [],
+    "label.cards.logicalReasoning.discardTerror": [],
+    "label.cards.ltWilsonStewart.healDamage": [],
+    "label.cards.ltWilsonStewart.healHorror": [],
+    "label.cards.ltWilsonStewart.plus1SkillValue": [],
+    "label.cards.ltWilsonStewart.drawCard": [],
+    "label.cards.ltWilsonStewart.gainResource": [],
+    "label.cards.luckyCharm.move1Damage": [],
+    "label.cards.luckyCharm.move1Horror": [],
+    "label.cards.lukeRobinson.currentLocation": [],
+    "label.cards.lukeRobinson.connectingLocation": [],
+    "label.cards.machete.doNotExhaustMachete": [],
+    "label.cards.machete.exhaustMachete": [],
+    "label.cards.maimedHand.putMaimedHandIntoPlayInYourThreatArea": [],
+    "label.cards.maimedHand.take1DamageAndShuffleItIntoYourDeck": [],
+    "label.cards.mandyThompson.additionalCards": [],
+    "label.cards.mandyThompson.additionalTargets": [],
+    "label.cards.manifestationsOfEvil.addFrost": [],
+    "label.cards.manifestationsOfEvil.shuffleTekelili": [],
+    "label.cards.manipulateDestiny.damage": [],
+    "label.cards.manipulateDestiny.heal": [],
+    "label.cards.manipulateDestiny2.dealDamageToEnemy": [],
+    "label.cards.manipulateDestiny2.healDamageFromInvestigatorOrAlly": [],
+    "label.cards.mapTheArea.willpower": [],
+    "label.cards.mapTheArea.agility": [],
+    "label.cards.marieLambeau.addDoom": [],
+    "label.cards.mauserC96.readyMauserC96": [],
+    "label.cards.mauserC96.take1Resource": [],
+    "label.cards.mauserC962.readyMauserC962": [],
+    "label.cards.mauserC962.take1Resource": [],
+    "label.cards.medicalTexts2.exhaust": [],
+    "label.cards.medicalTexts2.dealDamage": [],
+    "label.cards.medicalTexts2.deal1DamageToThatInvestigator": [],
+    "label.cards.medicalTexts2.exhaustMedicalTexts": [],
+    "label.cards.medicoDellaPeste.heal1Damage": [],
+    "label.cards.medicoDellaPeste.heal1Horror": [],
+    "label.cards.memoriesOfAnotherLife.remove": [],
+    "label.cards.memoriesOfAnotherLife.skip": [],
+    "label.cards.memoriesOfAnotherLife5.removeFromGame": [],
+    "label.cards.memoriesOfAnotherLife5.doNotRemove": [],
+    "label.cards.miasmaticTorment.damage": [],
+    "label.cards.miasmaticTorment.horror": [],
+    "label.cards.michaelMcGlen.doNotAdd": [],
+    "label.cards.miguelsKnapsack.playThatEventAtAConnectingLocation": [],
+    "label.cards.minhThiPhan.doNotReturnSkill": [],
+    "label.cards.minhThiPhan.skip": [],
+    "label.cards.mk1Grenades4.applyToConcealed": [],
+    "label.cards.mk1Grenades4.applyDamageToConcealed": [],
+    "label.cards.mk1Grenades4.doNotApplyDamageToConcealed": [],
+    "label.cards.mrRook.top": [
+      "count"
+    ],
+    "label.cards.mysteriesRemain.placeClue": [],
+    "label.cards.nathanielCho.elderSign": [],
+    "label.cards.nauticalCharts.discard1CardFrom": [],
+    "label.cards.nauticalProwess.gainsWildIcons": [],
+    "label.cards.nauticalProwess.wild": [],
+    "label.cards.nephthysHuntressOfBast4.releaseBlessTokens": [],
+    "label.cards.nephthysHuntressOfBast4.returnBlessForDamage": [],
+    "label.cards.nephthysHuntressOfBast4.release3BlessTokens": [],
+    "label.cards.nephthysHuntressOfBast4.returnBlessForDamage2": [],
+    "label.cards.noseToTheGrindstone.replenishSupply": [],
+    "label.cards.occultLexicon3.changeEach": [],
+    "label.cards.occultLexicon3.shuffleItInto": [],
+    "label.cards.occultReliquary.choose": [],
+    "label.cards.oldBookOfLore3.doNotSpendSecrets": [],
+    "label.cards.oldBookOfLore3.doNotSpendAnySecretsToPlayAnyCards": [],
+    "label.cards.oldCompass.exhaustToRepeat": [],
+    "label.cards.onTheTrail.moveTowards": [],
+    "label.cards.onTheTrail.discoverBetween": [],
+    "label.cards.onTheTrail1.moveTwiceTowardsEnemy": [],
+    "label.cards.onTheTrail1.discoverClueBetween": [],
+    "label.cards.onTheirHeels5.discoverAClueAtYourLocation": [],
+    "label.cards.oneTwoPunch.again": [],
+    "label.cards.oneTwoPunch.skip": [],
+    "label.cards.onyxPentacle.exhaustToTarget": [],
+    "label.cards.onyxPentacle.succeedBy2": [],
+    "label.cards.onyxPentacle4.exhaustToTarget": [],
+    "label.cards.onyxPentacle4.succeedBy2": [],
+    "label.cards.outOfSight.disengageAndMove": [],
+    "label.cards.outOfSight.disengage": [],
+    "label.cards.outOfSight3.disengageAndMove2": [],
+    "label.cards.outerFieldsDesolateHills.doneDiscarding": [],
+    "label.cards.parlorHemlockHouse.testForAdditionalDamage": [],
+    "label.cards.patriceHathaway.shuffleDiscardKeepOne": [],
+    "label.cards.patriceHathaway.chooseOneCardToLeave": [],
+    "label.cards.patriceHathaway.shuffle": [],
+    "label.cards.patriceHathaway.leaveInDiscard": [],
+    "label.cards.patricesViolin.drawCard": [],
+    "label.cards.patricesViolin.gainResource": [],
+    "label.cards.pendantOfTheQueen.discoverAClueAtThisLocation": [],
+    "label.cards.pendantOfTheQueen.evadeAnEnemyAtThisLocation": [],
+    "label.cards.pendantOfTheQueen.moveToThisLocation": [],
+    "label.cards.petesGuitar.heal1Horror": [],
+    "label.cards.pocketknife.exhaustPocketknifeGain1Resource": [],
+    "label.cards.polishedCane.doNotEvade": [],
+    "label.cards.polishedCane.exhaust": [],
+    "label.cards.powerWord.go": [],
+    "label.cards.powerWord.cower": [],
+    "label.cards.powerWord.betray": [],
+    "label.cards.powerWord.mercy": [],
+    "label.cards.powerWord.confess": [],
+    "label.cards.powerWord.distract": [],
+    "label.cards.powerWord.tonguetwisterSkip": [],
+    "label.cards.predatorOrPrey.enemiesMove": [],
+    "label.cards.predatorOrPrey.investigatorsMove": [],
+    "label.cards.prescient.even": [],
+    "label.cards.prescient.odd": [],
+    "label.cards.prescient.symbol": [],
+    "label.cards.prescient.doNotReturn": [],
+    "label.cards.priestOfTwoFaiths1.discardName": [
+      "name"
+    ],
+    "label.cards.priestOfTwoFaiths1.add1CurseTokenToTheChaosBag": [],
+    "label.cards.priestOfTwoFaiths1.discardPriestOfTwoFaiths": [],
+    "label.cards.prismaticSpectaclesLensToTheOtherworld2.doNotExaust": [],
+    "label.cards.prismaticSpectaclesLensToTheOtherworld2.exhaustForClue": [],
+    "label.cards.professorWilliamWebbFinderOfHiddenConnections.discoverAClueAtAConnectingLocation": [],
+    "label.cards.professorWilliamWebbFinderOfHiddenConnections.returnItemToYourHand": [],
+    "label.cards.professorWilliamWebbFinderOfHiddenConnections2.discoverAClueAtAConnectingLocation": [],
+    "label.cards.professorWilliamWebbFinderOfHiddenConnections2.discoverClueAtYourLocation": [],
+    "label.cards.protectingTheAnirniq.return": [],
+    "label.cards.protectingTheAnirniq.draw": [],
+    "label.cards.protectiveIncantation1.discardProtectiveIncantation": [],
+    "label.cards.protectiveIncantation1.spend1Resource": [],
+    "label.cards.prudenceDouglas.doneDiscarding": [],
+    "label.cards.psychoanalysis.draw": [],
+    "label.cards.psychoanalysis.heal": [],
+    "label.cards.purifyingCorruption4.removeCorruption": [],
+    "label.cards.purifyingCorruption4.heal1DamageAnd1Horror": [],
+    "label.cards.purifyingCorruption4.remove1CorruptionFromThisCard": [],
+    "label.cards.quickWitted.shuffle": [],
+    "label.cards.quickWitted.skip": [],
+    "label.cards.quickWitted1.shuffleOthers": [],
+    "label.cards.quickWitted1.doNotShuffleAny": [],
+    "label.cards.randallCho.heal3Damage": [],
+    "label.cards.randallCho.searchDeck": [],
+    "label.cards.ravenousMyconidNurturingStrain4.heal": [],
+    "label.cards.ravenousMyconidNurturingStrain4.moveThatMuch": [],
+    "label.cards.rexMurphy.fail": [],
+    "label.cards.rexMurphyParallel.conversion": [],
+    "label.cards.rightUnderTheirNoses.discover": [],
+    "label.cards.rightUnderTheirNoses.skip": [],
+    "label.cards.ritaYoung.damage": [],
+    "label.cards.riteOfEquilibrium.add": [],
+    "label.cards.riteOfEquilibrium.remove": [],
+    "label.cards.riteOfEquilibrium5.addCurseToAddBless": [],
+    "label.cards.riteOfEquilibrium5.removeBlessAndCurseToHeal": [],
+    "label.cards.robertCastaigneStillHasYourBack4.discardTheRevealedAssetToDraw1Card": [],
+    "label.cards.robertCastaigneStillHasYourBack4.playCardPayingCost": [],
+    "label.cards.rodOfCarnamagosScepterOfTheMadSeer2.doneAttachingRots": [],
+    "label.cards.runicAxe.doNotSpendCharges": [],
+    "label.cards.runicAxe.doNotUseAdditionalImbueFromScriptweaver": [],
+    "label.cards.runicAxe.draw1Card": [],
+    "label.cards.runicAxe.heal1Damage": [],
+    "label.cards.runicAxe.heal1Horror": [],
+    "label.cards.runicAxe.inscription.Accuracy": [],
+    "label.cards.runicAxe.inscription.Power": [],
+    "label.cards.runicAxe.inscription.Glory": [],
+    "label.cards.runicAxe.inscription.Elders": [],
+    "label.cards.runicAxe.inscription.Hunt": [],
+    "label.cards.runicAxe.inscription.Fury": [],
+    "label.cards.runicAxe.doNotUseAdditionalImbue": [],
+    "label.cards.salvage.remove": [],
+    "label.cards.salvage.play": [],
+    "label.cards.scavenging2.addToHand": [],
+    "label.cards.scavenging2.play": [],
+    "label.cards.scrollOfSecretsMystic3.lookAtBottom": [],
+    "label.cards.scrollOfSecretsMystic3.lookAtTop": [],
+    "label.cards.scrollOfSecretsSeeker3.add1CardToHand": [],
+    "label.cards.scrollOfSecretsSeeker3.discard1Card": [],
+    "label.cards.scrollOfSecretsSeeker3.doNotAddToHand": [],
+    "label.cards.seaChangeHarpoon.returnToHand": [],
+    "label.cards.searchForTheTruthAdvanced.placeClueAndReturnCard": [],
+    "label.cards.searchForTheTruthAdvanced.doNothingFinish": [],
+    "label.cards.secondSight.spendChargeForClue": [],
+    "label.cards.secondSight5.doNotSpendCharge": [],
+    "label.cards.secondSight5.spendChargeForClue": [],
+    "label.cards.sefinaRousseau.doneChoosingEvents": [],
+    "label.cards.sergeantMonroe.dealDamage": [
+      "count"
+    ],
+    "label.cards.sergeantMonroe.dealHorror": [
+      "count"
+    ],
+    "label.cards.sharpshooter3.doBoth": [],
+    "label.cards.sharpshooter3.attackUsesAlt": [],
+    "label.cards.sharpshooter3.useEnemyEvadeForAttack": [],
+    "label.cards.shrineOfTheMoirai3.doneChoosingCards": [],
+    "label.cards.shroudOfShadows.placeCharge": [],
+    "label.cards.shroudOfShadows.place1ChargeOnShroudOfShadows": [],
+    "label.cards.shroudOfShadows4.placeCharge": [],
+    "label.cards.shroudOfShadows4.place1ChargeOnShroudOfShadows4": [],
+    "label.cards.signOfXelotaphSymbolOfProtection.discardSignOfXelotaph": [],
+    "label.cards.signOfXelotaphSymbolOfProtection.spend1Charge": [],
+    "label.cards.silasMarsh.doNotCommit": [],
+    "label.cards.silassNet.returnNetWithSkills": [],
+    "label.cards.silassNet.automaticallyEvadeAnotherEnemy": [],
+    "label.cards.silassNet.doNotEvadeAnotherEnemy": [],
+    "label.cards.silassNet.returnNet": [],
+    "label.cards.sinEater3.addCharge": [],
+    "label.cards.sinEater3.readyAsset": [],
+    "label.cards.sixthSense.doNotChooseOtherLocation": [],
+    "label.cards.sixthSense.useNewLocationsShroud": [],
+    "label.cards.sixthSense.useOriginalLocationsShroud": [],
+    "label.cards.sixthSense4.doNotChooseOtherLocation": [],
+    "label.cards.sixthSense4.useNewLocationsShroud": [],
+    "label.cards.sixthSense4.useOriginalLocationsShroud": [],
+    "label.cards.sledgehammer3.exhaustForDamage": [],
+    "label.cards.smuggledGoods.deck": [],
+    "label.cards.smuggledGoods.discard": [],
+    "label.cards.songOfTheMagahBird.resistTheCall": [],
+    "label.cards.songOfTheMagahBird.driveAwayTheBirds": [],
+    "label.cards.spiritSpeaker.moveChargesToResources": [],
+    "label.cards.spiritSpeaker.moveAllChargesToYourResourcePool": [],
+    "label.cards.spiritSpeaker.returnToHand": [],
+    "label.cards.stalkPrey.moveToward": [],
+    "label.cards.steadyHanded1.succeedBy1Less": [],
+    "label.cards.steadyHanded1.succeedBy1More": [],
+    "label.cards.stellaClark.resolve": [],
+    "label.cards.stellaClark.fail": [],
+    "label.cards.stickToThePlan3.chooseCards": [],
+    "label.cards.stickToThePlan3.chooseNoMoreEvents": [],
+    "label.cards.stormRuler.exhaust": [
+      "count"
+    ],
+    "label.cards.stouthearted.done": [],
+    "label.cards.stouthearted.doneMovingDamageHorror": [],
+    "label.cards.stringOfCurses.evadeAndPlaceDoom": [],
+    "label.cards.stringOfCurses.defeatForResources": [],
+    "label.cards.strokeOfLuck.exile": [],
+    "label.cards.strokeOfLuck.skip": [],
+    "label.cards.subject5U21.doNotReturnDevoured": [],
+    "label.cards.subject5U21.doNotRegurgitateAnyMoreCards": [],
+    "label.cards.summonedServitor.moveToLocation": [],
+    "label.cards.surgicalKit3.draw1CardAndHeal1Horror": [],
+    "label.cards.surgicalKit3.thatEffectHeals1AdditionalDamage": [],
+    "label.cards.survivalInstinct.disengage": [],
+    "label.cards.survivalInstinct.evadeOther": [],
+    "label.cards.swordCaneDesignedByTheCouncilOfPolls2.doNotDealDamage": [],
+    "label.cards.talismanOfProtection.doneCanceling": [],
+    "label.cards.taskForce.resolveAbilityNoCost": [],
+    "label.cards.taskForce.moveToConnecting": [],
+    "label.cards.taskForce.discoverClueAtTheirLocation": [],
+    "label.cards.teachingsOfTheOrder.defeatANon_elite_EnemyAtYourLocation": [],
+    "label.cards.teachingsOfTheOrder.removeAFlood": [],
+    "label.cards.teachingsOfTheOrder.removeAllCurseTokensFromTheChaosBag": [],
+    "label.cards.terribleSecret.keepRemainingCards": [],
+    "label.cards.tetsuoMori.searchDeck": [],
+    "label.cards.tetsuoMori.searchDiscard": [],
+    "label.cards.theBeyondBleakNetherworld.attachTheTop": [],
+    "label.cards.theBeyondBleakNetherworld.attachSpirit": [],
+    "label.cards.theBeyondBleakNetherworld.discardThisSpirit": [],
+    "label.cards.theBeyondBleakNetherworld.discardSpirit": [],
+    "label.cards.theBeyondBleakNetherworld.take1DirectDamage": [],
+    "label.cards.theBeyondBleakNetherworld.takeDirectDamage": [],
+    "label.cards.theBeyondBleakNetherworld.take1DirectHorror": [],
+    "label.cards.theBeyondBleakNetherworld.takeDirectHorror": [],
+    "label.cards.theBeyondBleakNetherworld.elderSignHealHorror": [],
+    "label.cards.theBeyondBleakNetherworld.elderSignAttachSpirit": [],
+    "label.cards.theBeyondBleakNetherworld.elderSignDoNothing": [],
+    "label.cards.theBeyondBleakNetherworld.autoFailTakeDirectDamage": [],
+    "label.cards.theBeyondBleakNetherworld.autoFailTakeDirectHorror": [],
+    "label.cards.theBeyondBleakNetherworld.skullDiscardSpiritHealHorror": [],
+    "label.cards.theBeyondBleakNetherworld.skullDiscardSpirit": [],
+    "label.cards.theBeyondBleakNetherworld.symbolDiscardSpirit": [],
+    "label.cards.theBeyondBleakNetherworld.symbolTakeDirectDamage": [],
+    "label.cards.theBeyondBleakNetherworld.otherDiscardSpirit": [],
+    "label.cards.theCouncilsCoffer2.searchDeck": [],
+    "label.cards.theCouncilsCoffer2.searchDiscard": [],
+    "label.cards.theKeyOfSolomonSecretsOfTheUnknown4.doneHealing": [],
+    "label.cards.theKeyOfSolomonSecretsOfTheUnknown4.healDamage": [],
+    "label.cards.theKeyOfSolomonSecretsOfTheUnknown4.healHorror": [],
+    "label.cards.theRavenQuill.search": [],
+    "label.cards.theRavenQuill.doNotSearch": [],
+    "label.cards.theRavenQuill.deckbuilding": [],
+    "label.cards.theRavenQuill.moveSecret": [],
+    "label.cards.theRavenQuill.moveCharge": [],
+    "label.cards.theRavenQuill.doNotReady": [],
+    "label.cards.theRedClockBrokenButReliable2.place1ChargeHere": [],
+    "label.cards.theRedClockBrokenButReliable2.takeAllChargesHereAsResources": [],
+    "label.cards.theRedClockBrokenButReliable5.leaveCharges": [],
+    "label.cards.theRedClockBrokenButReliable5.takeAllChargesHereAsResources": [],
+    "label.cards.theSilverMoth.putTheSilverMothIntoPlayInYourThreatArea": [],
+    "label.cards.theSilverMoth.take1HorrorAndShuffleItIntoYourDeck": [],
+    "label.cards.thievesKit.useAgility": [],
+    "label.cards.thievesKit.useIntellect": [],
+    "label.cards.thievesKit3.useAgility": [],
+    "label.cards.thievesKit3.useIntellect": [],
+    "label.cards.throughTheCracks.disengage": [],
+    "label.cards.throughTheCracks.move": [],
+    "label.cards.throughTheCracks.disengageAndMove": [],
+    "label.cards.throughTheCracks2.disengage": [],
+    "label.cards.throughTheCracks2.move": [],
+    "label.cards.throughTheCracks2.disengageAndMove": [],
+    "label.cards.throwTheBookAtThem.automaticallyEvade": [],
+    "label.cards.throwTheBookAtThem.resolveAbilityOnTome": [],
+    "label.cards.tinker.hand": [],
+    "label.cards.tinker.accessory": [],
+    "label.cards.tokenOfFaith3.attemptThatSkillTestAgain": [],
+    "label.cards.tokenOfFaith3.doNotAttemptAgain": [],
+    "label.cards.tommyMuldoon.moveFromTommyToAsset": [],
+    "label.cards.tommyMuldoon.moveFromAssetToTommy": [],
+    "label.cards.tommyMuldoon.moveToAsset": [],
+    "label.cards.tommyMuldoon.moveToTommy": [],
+    "label.cards.tommyMuldoon.doNotMove": [],
+    "label.cards.tommyMuldoon.done": [],
+    "label.cards.toolBelt.attachAToolAssetInYourPlayAreaToToolBelt": [],
+    "label.cards.toolBelt.detachAnAttachedAsset": [],
+    "label.cards.toolBelt.switchATool": [],
+    "label.cards.treasureHunter1.discardTreasureHunter": [],
+    "label.cards.treasureHunter1.pay1ResourceToTreasureHunter": [],
+    "label.cards.trialByFire.all": [],
+    "label.cards.trialByFire.one": [],
+    "label.cards.trishScarborough.discover": [],
+    "label.cards.trishScarborough.evade": [],
+    "label.cards.trishScarborough.doNotChooseLocation": [],
+    "label.cards.trustyBullwhipAdvanced.dealDamageAndEvade": [],
+    "label.cards.twentyOneOrBust.stopWith": [
+      "total"
+    ],
+    "label.cards.twentyOneOrBust.continue": [],
+    "label.cards.underworldMarket2.chooseMarketDeck": [],
+    "label.cards.underworldMarket2.placeTheRestOnTheBottomInAnyOrder": [],
+    "label.cards.underworldMarket2.spend1ResourceToDraw1OfThem": [],
+    "label.cards.unrelenting1.doneSealingTokens": [],
+    "label.cards.untimelyTransaction1.noOnePays": [],
+    "label.cards.untimelyTransaction1.playCard": [],
+    "label.cards.virgilGray.heal1HorrorFromVirgilGray": [],
+    "label.cards.virgilGrayTrulyInspired.heal1HorrorFromVirgilGray": [],
+    "label.cards.vowOfDrzytelech.putIntoPlay": [],
+    "label.cards.vowOfDrzytelech.take1HorrorAndShuffleItIntoYourDeck": [],
+    "label.cards.wendyAdamsParallel.sealOne": [],
+    "label.cards.wendyAdamsParallel.sealAny": [],
+    "label.cards.wendyAdamsParallel.doneSealingTokens": [],
+    "label.cards.wendyAdamsParallel.doNotChooseAnyMoreTokens": [],
+    "label.cards.woodenSledge.donePlacingCards": [],
+    "label.cards.wordOfWeal.shuffle": [],
+    "label.cards.wordOfWoe.shuffle": [],
+    "label.cards.wrongPlaceRightTime.done": [],
+    "label.cards.zeal.putIntoPlayFromDiscard": []
+  },
   "arrayTolerantDecoders": [
     "Actions",
     "GroupKey",

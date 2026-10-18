@@ -62,6 +62,15 @@ def shown(path: Path) -> str:
         return str(path.relative_to(ROOT))
     except ValueError:
         return str(path)
+# The words the app already has, which a card may ask for by name instead of
+# writing its own. Read from the frontend when it is there -- it is not, in the
+# image this server ships in, which is why the list is written into dsl.json.
+SHARED_TEXT = ROOT / "frontend/src/locales/en/label.json"
+# `en.ts` assembles the namespace as `{ ...label, cards: cards.label }`, so a
+# card's own prompts are reachable as `label.cards.<card>.<key>` and belong in
+# the same list.
+SHARED_TEXT_CARDS = ROOT / "frontend/src/locales/en/cards.json"
+
 STEPS = ARKHAM / "Custom/Steps.hs"
 EXPR = ARKHAM / "Custom/Expr.hs"
 ABILITY = ARKHAM / "Custom/Ability.hs"
@@ -357,6 +366,38 @@ def array_tolerant_decoders() -> list[str]:
     return tolerant
 
 
+def shared_text() -> dict[str, list[str]]:
+    """Every `label.*` key a card can name, and what each one leaves blank.
+
+    A custom card writing `$label.addToHand name=s:"X"` is asking for a sentence
+    the app already has in every language it has been translated into. The
+    checker needs the list to say when one is misspelt, and the blanks to say
+    when one is left unfilled.
+    """
+    if not SHARED_TEXT.exists():
+        return {}
+    import json as _json
+
+    flat: dict[str, list[str]] = {}
+
+    def walk(value, prefix: str) -> None:
+        if isinstance(value, str):
+            # vue-i18n's literal brace -- `{'{'}` -- is an escaped character,
+            # not something to fill in.
+            blanks = re.findall(r"(?<!')\{([A-Za-z_][A-Za-z0-9_]*)\}", value)
+            flat[prefix] = list(dict.fromkeys(blanks))
+        elif isinstance(value, dict):
+            for key, inner in value.items():
+                walk(inner, f"{prefix}.{key}" if prefix else key)
+
+    walk(_json.loads(SHARED_TEXT.read_text()), "label")
+    if SHARED_TEXT_CARDS.exists():
+        cards = _json.loads(SHARED_TEXT_CARDS.read_text()).get("label")
+        if cards:
+            walk(cards, "label.cards")
+    return flat
+
+
 def meta_keys() -> dict[str, dict[str, str]]:
     """The `_`-prefixed meta keys the engine reads, and what each one holds.
 
@@ -636,6 +677,7 @@ def main() -> int:
         "vocabulary": vocabulary,
         "handWrittenDecoders": hand_written_decoders(),
         "metaKeys": meta_keys(),
+        "sharedText": shared_text(),
         "arrayTolerantDecoders": array_tolerant_decoders(),
         "entityBindings": entity_bindings(),
         "specs": {

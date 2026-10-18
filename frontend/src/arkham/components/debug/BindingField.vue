@@ -305,6 +305,13 @@ function choose(name: string) {
 }
 
 .binding {
+  /* Square inside, rounded outside: a button carries a radius of its own, and
+     one inside this box leaves a notch where the two curves disagree. The box
+     keeps its corners and clips its segments'. */
+  > * {
+    border-radius: 0;
+  }
+
   align-items: stretch;
   background: rgba(170, 221, 255, 0.12);
   border: 1px solid #adf;

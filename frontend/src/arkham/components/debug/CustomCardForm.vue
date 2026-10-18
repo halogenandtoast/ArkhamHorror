@@ -148,16 +148,38 @@ provide(CARD_TEXT, {
 /* Every key the card names, and any left over from an earlier wording. A key
  * nothing names any more is still shown -- with its words, which are the part
  * worth keeping -- rather than quietly dropped while a label still reads it. */
-const textUsed = computed(() => textKeysUsed(buildDef(loadedCode.value ?? 'c*preview')))
-
-const textKeys = computed(() => {
-  const has = Object.keys(form.text[textLanguage.value] ?? {})
-  return [...textUsed.value, ...has.filter((key) => !textUsed.value.includes(key))]
+/* Which of its own keys the card names, read off the form rather than off a
+ * built def: the def is where the text ends up, so building one to decide what
+ * text to put in it would be a circle. */
+const textUsed = computed(() => {
+  const written = (() => {
+    try {
+      return form.rawJson.trim() ? JSON.parse(form.rawJson) : null
+    } catch {
+      return null
+    }
+  })()
+  return textKeysUsed({
+    meta: {
+      _onPlay: form.onPlaySteps,
+      _abilities: form.abilities,
+      _handlers: form.handlers,
+      _modifiers: form.modifiers,
+      _keywords: form.keywordEffects,
+      _onRevelation: form.revelationSteps,
+      _elderSignSteps: form.elderSignSteps,
+      _elderSignRevealSteps: form.elderSignRevealSteps,
+      _elderSignSuccessSteps: form.elderSignSuccessSteps,
+    },
+    raw: written,
+  })
 })
 
-const unusedText = computed(() =>
-  Object.keys(form.text[textLanguage.value] ?? {}).filter((key) => !textUsed.value.includes(key)),
-)
+/* The keys the card names, and only those. A label rewritten or taken away
+ * leaves its words behind, which would otherwise sit in the Text box forever
+ * as something nothing can show. They stay in the form while it is open, so
+ * putting the label back puts the words back, and go on the next save. */
+const textKeys = computed(() => textUsed.value)
 
 const textFor = (key: string) => form.text[textLanguage.value]?.[key] ?? ''
 
@@ -693,9 +715,13 @@ function buildDef(cardCode: string): Record<string, any> {
   /* Empty keys are dropped rather than saved blank: one with no words is a key
      nobody has written yet, and the editor offers it again from the labels. */
   const text: Record<string, Record<string, string>> = {}
+  const named = textUsed.value
   for (const [language, entries] of Object.entries(form.text)) {
     const written = Object.fromEntries(
-      Object.entries(entries ?? {}).filter(([, value]) => typeof value === 'string' && value.trim()),
+      Object.entries(entries ?? {})
+        // A key no label names any more is not this card's text.
+        .filter(([key]) => named.includes(key))
+        .filter(([, value]) => typeof value === 'string' && value.trim()),
     )
     if (Object.keys(written).length) text[language] = written
   }
@@ -1463,7 +1489,7 @@ defineExpose({ loadCard, reset, buildCustomCard, snapshot, cardType: computed(()
               <code>$.{{ key }}</code>
               <input
                 :value="textFor(key)"
-                :placeholder="unusedText.includes(key) ? 'Nothing names this key' : 'What it says'"
+                placeholder="What it says"
                 @input="writeText(key, ($event.target as HTMLInputElement).value)"
                 @keydown.stop
               />

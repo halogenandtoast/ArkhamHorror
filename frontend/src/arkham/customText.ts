@@ -7,7 +7,7 @@
  * this is what puts something at that address.
  */
 import { escapeIconPlaceholders } from '@/locales/messages'
-import { mergeMessages } from '@/locales/i18n'
+import { mergeMessages, messagesFor } from '@/locales/i18n'
 import type { CardDef } from '@/arkham/types/CardDef'
 
 export const LOCALE_META_KEY = '_locale'
@@ -33,6 +33,108 @@ export const TEXT_LANGUAGES: [string, string][] = [
   ['zh-cn', '简体中文/Simplified Chinese'],
   ['zh', '中文/Chinese'],
 ]
+
+/* ---------------------------------------------------------- shared text ---
+
+   The words the app already has.
+
+   A prompt like "Add {name} to hand" is written once in `label.json` and said
+   by a hundred printed cards; a custom card asking for it by name gets every
+   language it has been translated into, which no amount of writing its own
+   text would give it. `$label.addToHand name=s:"Impaling Swords"` is the whole
+   of it: the key, and values for whatever the sentence leaves blank.
+*/
+
+/** Where the shared prompts live. Engine labels have used this namespace all along. */
+export const SHARED_TEXT_ROOT = 'label'
+
+/* A key the card did not write: `$label.addToHand`, as against `$.again` for
+ * one it did. A bare `$name` with no dot is a binding, not a key. */
+export const isSharedTextKey = (value: unknown): value is string =>
+  typeof value === 'string' && value.startsWith('$') && !value.startsWith('$.') && value.includes('.')
+
+export type SharedText = { key: string; text: string; params: string[]; plural: boolean }
+
+/* What a message leaves blank. vue-i18n's literal form -- `{'{'}` -- is an
+ * escaped brace rather than a parameter, so it is not one of these. */
+const PLACEHOLDER = /(?<!')\{([A-Za-z_][A-Za-z0-9_]*)\}/g
+
+export function sharedTextCatalogue(language = PRIMARY_LANGUAGE): SharedText[] {
+  const root = messagesFor(language)[SHARED_TEXT_ROOT]
+  const found: SharedText[] = []
+  const walk = (value: unknown, prefix: string) => {
+    if (typeof value === 'string') {
+      const params = [...new Set([...value.matchAll(PLACEHOLDER)].map((m) => m[1]))]
+      /* A message written in more than one wording picks between them by the
+       * number in `count` -- which is what `countVar` sends -- so it needs one
+       * whether or not any branch prints it. */
+      const plural = value.includes('|')
+      if (plural && !params.includes('count')) params.push('count')
+      found.push({ key: `${SHARED_TEXT_ROOT}.${prefix}`, text: value, params, plural })
+    } else if (value && typeof value === 'object') {
+      for (const [k, v] of Object.entries(value)) walk(v, prefix ? `${prefix}.${k}` : k)
+    }
+  }
+  walk(root, '')
+  return found
+}
+
+/* A label and the values it carries: `$label.addToHand name=s:"X"`. The engine
+ * passes it through untouched and the client reads it with `parseInput`, so
+ * this is that format written rather than read. */
+export function parseSharedLabel(label: string): { key: string; params: Record<string, string> } {
+  const trimmed = label.trim().replace(/^\$/, '')
+  const space = trimmed.indexOf(' ')
+  if (space === -1) return { key: trimmed, params: {} }
+  const params: Record<string, string> = {}
+  const rest = trimmed.slice(space + 1)
+  for (const [, name, kind, value] of rest.matchAll(/([^=\s]+)=([is]):("(?:[^"\\]|\\.)*"|\S+)/g)) {
+    params[name] = kind === 's' ? value.replace(/^"|"$/g, '') : value
+  }
+  return { key: trimmed.slice(0, space), params }
+}
+
+/* The values as the client reads them rather than as they are typed.
+ *
+ * `count=i:3` arrives as a number at run time (`parseInput` parses it), and it
+ * has to be one here too: a message written in branches picks between them on
+ * a number, and a string that looks like one silently takes the first branch.
+ */
+export function readableParams(params: Record<string, string>): Record<string, unknown> {
+  const out: Record<string, unknown> = {}
+  for (const [name, value] of Object.entries(params)) {
+    out[name] = /^-?\d+$/.test(value) ? Number(value) : value
+  }
+  return out
+}
+
+/** A value that is nothing but a name in scope, which the engine fills in. */
+export const isBindingValue = (value: string) => /^\$[A-Za-z_][A-Za-z0-9_]*$/.test(value)
+
+/* `numeric` names the blanks that must travel as numbers rather than as text:
+ * the ones a plural message counts on. A binding is written bare after `i:` so
+ * that what the engine puts in its place is a number and not a quoted one. */
+export function formatSharedLabel(
+  key: string,
+  params: Record<string, string>,
+  numeric: string[] = [],
+): string {
+  const written = Object.entries(params)
+    .filter(([, value]) => value !== '' && value !== undefined)
+    .map(([name, value]) =>
+      numeric.includes(name) && isBindingValue(value)
+        ? `${name}=i:${value}`
+        :
+      /* A number goes as a number, which is what picks the wording of a
+       * message written with plural branches -- `countVar` on the engine side
+       * writes the same thing. Everything else is quoted, escaping the two
+       * characters the client's unquoting reads: the quote and the backslash. */
+      /^-?\d+$/.test(value)
+        ? `${name}=i:${value}`
+        : `${name}=s:"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`,
+    )
+  return `$${[key, ...written].join(' ')}`
+}
 
 /* How a field deep in the editor reaches the text of the card being edited,
  * without every editor between here and there carrying it as a prop. */

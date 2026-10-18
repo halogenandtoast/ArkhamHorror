@@ -4,7 +4,7 @@
  * Branches and choices carry their own steps, so this renders itself for those
  * — which is what lets an ability say "if it is ready, attack; otherwise ready
  * it" or "choose an event, then play it". */
-import { computed, ref } from 'vue'
+import { computed, inject, reactive, ref } from 'vue'
 import { vFocus } from '@/arkham/components/debug/vFocus'
 import { onClickOutside } from '@vueuse/core'
 import ExpressionEditor from '@/arkham/components/debug/ExpressionEditor.vue'
@@ -23,6 +23,16 @@ import {
   type Binding,
 } from '@/arkham/customCardBindings'
 import { QUERY_TYPES } from '@/arkham/customCardExpressions'
+import { useI18n } from 'vue-i18n'
+import {
+  isOwnTextKey,
+  isSharedTextKey,
+  ownTextKey,
+  parseSharedLabel,
+  readableParams,
+  type CardTextAccess,
+  CARD_TEXT,
+} from '@/arkham/customText'
 
 const props = defineProps<{
   modelValue: any[]
@@ -758,8 +768,66 @@ function setOptionSource(step: any, oi: number, at: number, kind: string) {
 const addOption = (step: any, at: number) =>
   set(at, { ...step, choose: { ...step.choose, options: [...optionsOf(step), { label: '', steps: [] }] } })
 
-const removeOption = (step: any, index: number, at: number) =>
+const removeOption = (step: any, index: number, at: number) => {
   set(at, { ...step, choose: { ...step.choose, options: optionsOf(step).filter((_, i) => i !== index) } })
+  showOption(at, Math.max(index - 1, 0))
+}
+
+/* One option at a time, under a strip of tabs.
+ *
+ * Every option carries steps of its own, and steps nest, so a Choose with
+ * three of them used to run down the page with nothing to say where one
+ * stopped and the next began. A tab is that line. */
+const shownOption = reactive<Record<string, number>>({})
+
+const activeOption = (step: any, at: number) => {
+  const held = shownOption[innerPath(at, 'choose')] ?? 0
+  return Math.min(held, Math.max(optionsOf(step).length - 1, 0))
+}
+
+const showOption = (at: number, oi: number) => {
+  shownOption[innerPath(at, 'choose')] = oi
+}
+
+const addAndShowOption = (step: any, at: number) => {
+  addOption(step, at)
+  showOption(at, optionsOf(step).length)
+}
+
+/* What to call an option without asking: what it says, or what it stands for.
+ * Written text is read as written, a key is read through whatever answers it,
+ * and an option that is one-per-thing is named for the thing. */
+const { t, te } = useI18n()
+const cardText = inject<CardTextAccess | null>(CARD_TEXT, null)
+
+const saidBy = (label: string): string => {
+  if (isOwnTextKey(label)) return cardText?.read(ownTextKey(label)) ?? ''
+  if (isSharedTextKey(label)) {
+    const held = parseSharedLabel(label)
+    return held && te(held.key) ? t(held.key, readableParams(held.params)) : ''
+  }
+  return label
+}
+
+const optionName = (option: any, oi: number): string => {
+  if (option?.query) return `each ${option.query.kind || 'thing'}`
+  const said = saidBy(option?.label ?? '')
+    .replace(/[*_]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+  return said || `Option ${oi + 1}`
+}
+
+/* Two options can say the same thing and differ only in a matcher further
+ * down, which is more than a tab can hold. They are counted off instead, so
+ * the strip still says which is which. */
+const optionTitle = (step: any, option: any, oi: number): string => {
+  const name = optionName(option, oi)
+  const alike = optionsOf(step).filter((o, i) => optionName(o, i) === name)
+  if (alike.length < 2) return name
+  const nth = optionsOf(step).filter((o, i) => i <= oi && optionName(o, i) === name).length
+  return `${name} (${nth})`
+}
 </script>
 
 <template>
@@ -1516,7 +1584,39 @@ const removeOption = (step: any, index: number, at: number) =>
           thing a matcher finds, bound for that option's steps — which is what lets a single prompt
           span several kinds of thing, where a Choose from can only span one.
         </p>
-        <div v-for="(option, oi) in optionsOf(step)" :key="oi" class="option">
+        <!-- One tab per option, named for what the option says. The panel below
+             is the one option being written, so where it begins and ends is the
+             edge of the panel rather than a reader's guess. -->
+        <div class="tabs" role="tablist">
+          <button
+            v-for="(option, oi) in optionsOf(step)"
+            :key="oi"
+            type="button"
+            class="tab"
+            role="tab"
+            :class="{ on: activeOption(step, index) === oi }"
+            :aria-selected="activeOption(step, index) === oi"
+            :title="optionTitle(step, option, oi)"
+            @click="showOption(index, oi)"
+          >
+            <span class="tab-name">{{ optionTitle(step, option, oi) }}</span>
+            <span
+              class="tab-remove"
+              title="Remove this option"
+              @click.stop="removeOption(step, oi, index)"
+              >&times;</span
+            >
+          </button>
+          <button type="button" class="tab add-tab" title="Add an option" @click="addAndShowOption(step, index)">
+            +
+          </button>
+        </div>
+        <div
+          v-for="(option, oi) in optionsOf(step)"
+          v-show="activeOption(step, index) === oi"
+          :key="oi"
+          class="option"
+        >
           <div class="row">
             <label>
               This option is
@@ -1531,6 +1631,7 @@ const removeOption = (step: any, index: number, at: number) =>
             <LabelField
               v-if="!option.query"
               label="Option label"
+              :bindings="optionScope(index, option, oi)"
               :modelValue="option.label"
               @update:modelValue="setOption(step, oi, { ...option, label: $event }, index)"
             />
@@ -1552,7 +1653,6 @@ const removeOption = (step: any, index: number, at: number) =>
                 @keydown.stop
               />
             </label>
-            <button type="button" @click="removeOption(step, oi, index)">×</button>
           </div>
 
           <ValueEditor
@@ -1599,7 +1699,6 @@ const removeOption = (step: any, index: number, at: number) =>
             @update:modelValue="setOption(step, oi, { ...option, steps: $event }, index)"
           />
         </div>
-        <button type="button" class="add" @click="addOption(step, index)">+ Option</button>
       </template>
 
       <p v-else-if="kindOf(step) === 'cancelBatch'" class="hint">
@@ -1637,6 +1736,7 @@ const removeOption = (step: any, index: number, at: number) =>
             v-if="step.useAbility?.optional"
             label="Decline label"
             placeholder="Do not"
+            :bindings="scopeFor(index)"
             :modelValue="step.useAbility?.declineLabel"
             @update:modelValue="set(index, { ...step, useAbility: { ...step.useAbility, declineLabel: $event } })"
           />
@@ -1692,6 +1792,7 @@ const removeOption = (step: any, index: number, at: number) =>
             v-if="step.playCard?.optional"
             label="Decline label"
             placeholder="Do not"
+            :bindings="scopeFor(index)"
             :modelValue="step.playCard?.declineLabel"
             @update:modelValue="set(index, { ...step, playCard: { ...step.playCard, declineLabel: $event } })"
           />
@@ -2256,6 +2357,7 @@ const removeOption = (step: any, index: number, at: number) =>
         <LabelField
           label="Label"
           placeholder="Resolve"
+          :bindings="scopeFor(index)"
           :modelValue="step.skillTestOption?.label"
           @update:modelValue="set(index, { ...step, skillTestOption: { ...step.skillTestOption, label: $event } })"
         />
@@ -2315,6 +2417,7 @@ const removeOption = (step: any, index: number, at: number) =>
             v-if="step.activateAbility?.optional"
             label="Decline label"
             placeholder="Do not"
+            :bindings="scopeFor(index)"
             :modelValue="step.activateAbility?.declineLabel"
             @update:modelValue="set(index, { ...step, activateAbility: { ...step.activateAbility, declineLabel: $event } })"
           />
@@ -2445,6 +2548,7 @@ const removeOption = (step: any, index: number, at: number) =>
             v-if="step.chooseFrom?.optional"
             label="Decline label"
             placeholder="Do not"
+            :bindings="scopeFor(index)"
             :modelValue="step.chooseFrom?.declineLabel"
             @update:modelValue="set(index, { ...step, chooseFrom: { ...step.chooseFrom, declineLabel: $event } })"
           />
@@ -2805,12 +2909,76 @@ const removeOption = (step: any, index: number, at: number) =>
   }
 }
 
+/* The options of a Choose, as tabs over the one being written.
+ *
+ * The strip sits a hair over the panel so the open tab and the panel share an
+ * edge: the open option is the piece of the page the panel encloses, and the
+ * others are a click away rather than a scroll away. */
+.tabs {
+  align-items: flex-end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem;
+  margin-bottom: calc(-0.35rem - 1px);
+}
+
+.tab {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid #374151;
+  border-bottom-color: transparent;
+  border-radius: 5px 5px 0 0;
+  color: #9ca3af;
+  display: flex;
+  font-size: 0.74rem;
+  gap: 0.35rem;
+  max-width: 16rem;
+  padding: 0.25rem 0.55rem;
+}
+
+.tab:hover {
+  color: #eee;
+}
+
+.tab.on {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #4b5563;
+  color: #eee;
+}
+
+.tab-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Only the open tab offers to go: closing one that is not open would take away
+   something the author cannot see. */
+.tab-remove {
+  color: #6b7280;
+  visibility: hidden;
+
+  &:hover {
+    color: #f87171;
+  }
+}
+
+.tab.on .tab-remove {
+  visibility: visible;
+}
+
+.add-tab {
+  color: #6b7280;
+  padding: 0.25rem 0.5rem;
+}
+
 .option {
-  border-left: 2px solid #374151;
+  border: 1px solid #4b5563;
+  border-radius: 0 5px 5px 5px;
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  padding-left: 0.5rem;
+  padding: 0.5rem 0.6rem;
 }
 
 /* What a step binds for the steps under it, said on the step that binds it --

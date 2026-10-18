@@ -8,8 +8,14 @@ export default [
   {
     path: '/new-game',
     name: 'NewGame',
-    component: () => import('@/views/Home.vue'),
-    meta: { requiresAuth: true, title: "Arkham Horror" },
+    component: () => import('@/views/NewGame.vue'),
+    meta: { requiresAuth: true, title: "Arkham Horror: New Game" },
+  },
+  {
+    path: '/watch',
+    name: 'Watch',
+    component: () => import('@/views/Watch.vue'),
+    meta: { requiresAuth: true, title: "Arkham Horror: Watch" },
   },
   {
     path: '/settings',

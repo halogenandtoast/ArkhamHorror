@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { ref, computed, Ref } from 'vue';
 import { useUserStore } from '@/stores/user';
-import { useRouter, useRoute } from 'vue-router';
-import { deleteEvent, deleteGame, fetchGames, fetchEvents, fetchNotifications, fetchSpectatableGames } from '@/arkham/api';
+import { useRouter } from 'vue-router';
+import { deleteEvent, deleteGame, fetchGames, fetchEvents, fetchNotifications } from '@/arkham/api';
 import { cullGameLocalStorage, removeGameLocalStorage } from '@/arkham/localStorage';
 import { isDevBuild } from '@/arkham/displayRules';
 import type { BrokenGameDetails, GameDetails } from '@/arkham/types/Game';
@@ -10,7 +10,6 @@ import type { EventListEntry } from '@/arkham/types/EpicEvent';
 import type { AppNotification } from '@/arkham/api';
 import GameRow from '@/arkham/components/GameRow.vue';
 import EventRow from '@/arkham/components/EventRow.vue';
-import NewGame from '@/arkham/views/NewCampaign.vue';
 import ImportGame from '@/arkham/components/ImportGame.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
 import SegmentedToggle from '@/components/SegmentedToggle.vue';
@@ -18,7 +17,6 @@ import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n()
-const route = useRoute()
 const router = useRouter()
 const store = useUserStore()
 const { currentUser } = storeToRefs(store)
@@ -26,17 +24,13 @@ const games: Ref<GameDetails[]> = ref([])
 const brokenGames: Ref<BrokenGameDetails[]> = ref([])
 const events: Ref<EventListEntry[]> = ref([])
 const notifications: Ref<AppNotification[]> = ref([])
-/* Other people's games, whose players have put them on the watch list. Fetched
- * separately from `games`: these are not yours, and there is nothing to do with
- * one but open it read-only. */
-const spectatableGames: Ref<GameDetails[]> = ref([])
 
 const dismissedNotifications = JSON.parse(localStorage.getItem('dismissedNotifications') ?? "[]")
 
 const activeGames = computed(() => games.value.filter(g => g.gameState.tag !== 'IsOver'))
 const finishedGames = computed(() => games.value.filter(g => g.gameState.tag === 'IsOver'))
 
-type Tab = 'active' | 'finished' | 'watch'
+type Tab = 'active' | 'finished'
 type OutcomeFilter = 'all' | 'won' | 'lost'
 
 /* Null until the player picks a tab, so that until they do we can land them on
@@ -63,13 +57,9 @@ const shownFinishedGames = computed(() => {
   }
 })
 
-/* The watch tab is shown even while empty. Hiding it would make the feature
- * undiscoverable in exactly the state it starts in: nobody sees that games can
- * be watched, so nobody opens one up, so the tab never appears. */
 const tabOptions = computed(() => [
   { value: 'active' as Tab, label: t('activeGames'), count: activeGames.value.length + events.value.length },
   { value: 'finished' as Tab, label: t('finishedGames'), count: finishedGames.value.length },
-  { value: 'watch' as Tab, label: t('home.watchGames'), count: spectatableGames.value.length },
 ])
 
 const outcomeOptions = computed(() => [
@@ -102,12 +92,6 @@ fetchEvents().then((result) => {
 
 fetchNotifications().then((result) => notifications.value = result.filter((n: AppNotification) => !dismissedNotifications.includes(n.id)))
 
-// A quiet failure: an empty watch list just hides the tab, and nothing else on
-// the page depends on it.
-fetchSpectatableGames()
-  .then((result) => (spectatableGames.value = result))
-  .catch(() => (spectatableGames.value = []))
-
 async function deleteGameEvent(game: GameDetails) {
   deleteGame(game.id).then(() => {
     removeGameLocalStorage(game.id)
@@ -128,7 +112,6 @@ async function deleteEpicEvent(event: EventListEntry) {
   })
 }
 
-const newGame = ref(route.path === "/new-game" || false)
 const showImportGame = ref(false)
 const importGameRef = ref<any>(null)
 const importGameSelected = computed(() => !!importGameRef.value?.selectedFile)
@@ -136,27 +119,7 @@ const importGameCanSubmit = computed(() => importGameRef.value?.canSubmit ?? fal
 const importGameLoading = computed(() => importGameRef.value?.loading ?? false)
 const submitImportGame = () => importGameRef.value?.submit()
 
-// View Transition helper
-function withViewTransition(fn: () => void) {
-  const d = document as any
-  if (typeof d.startViewTransition === 'function') {
-    d.startViewTransition(() => fn())
-  } else {
-    fn()
-  }
-}
-
-const toggleNewGame = () => {
-  withViewTransition(() => {
-    newGame.value = !newGame.value
-    showImportGame.value = false
-    if (newGame.value === true) {
-      router.push({ path: "/new-game" })
-    } else {
-      router.push({ path: "/" })
-    }
-  })
-}
+const goToNewGame = () => router.push({ path: '/new-game' })
 
 const toggleImportGame = () => {
   showImportGame.value = !showImportGame.value
@@ -170,15 +133,7 @@ const dismissNotification = (notification: AppNotification) => {
 
 <template>
   <div class="page-container">
-    <NewGame v-if="currentUser && newGame" @close="toggleNewGame">
-      <template #cancel>
-        <button @click="toggleNewGame" class="cancel-new-game-button">
-          <span>{{ $t('cancel') }}</span>
-        </button>
-      </template>
-    </NewGame>
-
-    <div v-if="!newGame" class="home page-content">
+    <div class="home page-content">
       <div class="notification" v-for="notification in notifications" :key="notification.id">
         <p v-html="notification.body"></p>
         <a @click.prevent="dismissNotification(notification)" href="#">{{ $t('home.dismiss') }}</a>
@@ -198,10 +153,16 @@ const dismissNotification = (notification: AppNotification) => {
               />
             </div>
             <div class="header-actions">
+              <!-- Other people's games are a page of their own: they are not
+                   yours, and the only thing to do with one is watch it. -->
+              <RouterLink class="secondary-cta watch-cta" to="/watch">
+                <font-awesome-icon icon="eye" />
+                {{ $t('home.watchGames') }}
+              </RouterLink>
               <button v-if="currentUser" class="secondary-cta" type="button" @click="toggleImportGame">
                 {{ $t('home.loadGame') }}
               </button>
-              <PrimaryButton :label="$t('newGame')" @click="toggleNewGame" />
+              <PrimaryButton :label="$t('newGame')" @click="goToNewGame" />
             </div>
           </header>
           <Transition name="slide">
@@ -246,14 +207,6 @@ const dismissNotification = (notification: AppNotification) => {
             <GameRow v-for="game in activeGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
           </template>
 
-          <template v-else-if="tab === 'watch'">
-            <p class="watch-blurb">{{ $t('home.watchBlurb') }}</p>
-            <div v-if="spectatableGames.length === 0" class="box">
-              <p>{{ $t('home.noSpectatableGames') }}</p>
-            </div>
-            <GameRow v-for="game in spectatableGames" :key="game.id" :game="game" spectate />
-          </template>
-
           <template v-else>
             <SegmentedToggle
               v-if="finishedGames.length > 0"
@@ -281,6 +234,13 @@ const dismissNotification = (notification: AppNotification) => {
 </template>
 
 <style scoped>
+/* Switching tabs changes how tall the page is, and a scrollbar that appears and
+   disappears with it shifts the whole column sideways under the pointer. Hold
+   the gutter open whether or not it is needed. */
+.page-container {
+  scrollbar-gutter: stable;
+}
+
 .broken-game {
   display: flex;
   gap: 10px;
@@ -379,18 +339,6 @@ h2 {
 
 button {
   transition: background-color 0.3s linear;
-}
-
-button.cancel-new-game-button {
-  height: fit-content;
-  align-self: center;
-  font-size: 1em;
-  font-weight: bolder;
-  width: fit-content;
-  background-color: var(--survivor);
-  &:hover {
-    background-color: var(--survivor-extra-dark);
-  }
 }
 
 button.new-game-button {
@@ -612,21 +560,11 @@ header {
   max-width: 360px;
 }
 
-/* One line of context, because this tab is the only place on the page showing
-   games that are not yours. */
-.watch-blurb {
-  color: var(--title);
-  opacity: 0.7;
-  margin-bottom: 10px;
-}
-
-header.main-header {
-  view-transition-name: main-header;
-  h2 {
-    view-transition-name: main-header-title;
-  }
-  .primary-btn {
-    view-transition-name: main-header-button;
-  }
+/* A link wearing a button's clothes, so it needs the centring a button has. */
+.watch-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
 }
 </style>

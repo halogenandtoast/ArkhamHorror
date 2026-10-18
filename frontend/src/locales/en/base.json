@@ -579,9 +579,14 @@
     "allOutcomes": "All",
     "noFinishedGames": "No finished games.",
     "noGamesForOutcome": "No finished games with that outcome.",
-    "watchGames": "Watch",
-    "watchBlurb": "Games other people are playing right now and have opened up to spectators. You are watching only \u2014 you cannot take any actions.",
-    "noSpectatableGames": "Nobody is hosting a game for spectators right now."
+    "watchGames": "Watch"
+  },
+  "watch": {
+    "title": "Games to Watch",
+    "blurb": "Games other people are playing right now and have opened up to spectators. You are watching only \u2014 you cannot take any actions.",
+    "empty": "Nobody is hosting a game for spectators right now.",
+    "back": "\u2190 Your Games",
+    "loading": "Loading\u2026"
   },
   "about": {
     "supportTitle": "Support",

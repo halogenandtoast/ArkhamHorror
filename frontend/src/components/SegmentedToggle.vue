@@ -32,7 +32,7 @@ function selectWithPointer(event: MouseEvent, value: T, disabled?: boolean) {
 
 <style scoped>
 .segmented-toggle { display: grid; grid-template-columns: repeat(var(--items), minmax(0, 1fr)); border-radius: 5px; background: var(--background-dark); border: 1px solid var(--box-border); padding: 2px; gap: 2px; position: relative; }
-.segmented-toggle::before { content: ''; background: var(--button-1); border-radius: 3px; position: absolute; top: 2px; bottom: 2px; left: 2px; width: calc((100% - 4px - (var(--items) - 1) * 2px) / var(--items)); transform: translateX(calc(var(--index) * (100% + 2px))); transition: transform 220ms cubic-bezier(.2, .8, .2, 1), background 150ms ease; pointer-events: none; }
+.segmented-toggle::before { content: ''; background: var(--segmented-accent, var(--button-1)); border-radius: 3px; position: absolute; top: 2px; bottom: 2px; left: 2px; width: calc((100% - 4px - (var(--items) - 1) * 2px) / var(--items)); transform: translateX(calc(var(--index) * (100% + 2px))); transition: transform 220ms cubic-bezier(.2, .8, .2, 1), background 150ms ease; pointer-events: none; }
 label { display: flex; align-items: center; justify-content: center; position: relative; margin: 0; padding: 6px 8px; border-radius: 3px; cursor: pointer; color: var(--background-light); font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; text-align: center; user-select: none; min-width: 0; }
 input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 span { overflow-wrap: anywhere; }
@@ -40,6 +40,6 @@ small { margin-left: 4px; font-size: inherit; font-variant-numeric: tabular-nums
 label:hover, label:has(input:checked) { color: var(--text); }
 label:has(input:focus-visible) { outline: 2px solid var(--spooky-green); outline-offset: 2px; }
 label.disabled { color: color-mix(in srgb, var(--background-light) 45%, transparent); cursor: not-allowed; }
-.segmented-toggle:hover::before { background: var(--button-1-highlight); }
+.segmented-toggle:hover::before { background: var(--segmented-accent-highlight, var(--button-1-highlight)); }
 @media (prefers-reduced-motion: reduce) { .segmented-toggle::before { transition: none; } }
 </style>

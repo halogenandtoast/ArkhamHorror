@@ -99,6 +99,11 @@
   --button-1: #6E8640;
   --button-1-highlight: #5a6e34;
 
+  /* The same green stepped back toward the background, for chrome that should
+     read as selected without competing with a primary button next to it. */
+  --button-1-muted: color-mix(in srgb, var(--button-1) 45%, var(--background-dark));
+  --button-1-muted-highlight: color-mix(in srgb, var(--button-1) 60%, var(--background-dark));
+
   --button-2: #532e61;
   --button-2-highlight: #4d2b61;
 

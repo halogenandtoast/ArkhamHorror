@@ -572,7 +572,13 @@
   "home": {
     "dismiss": "Dismiss",
     "noActiveGames": "No active games.",
-    "loadGame": "Load Game"
+    "loadGame": "Load Game",
+    "yourGames": "Your Games",
+    "tabsLabel": "Which games to show",
+    "outcomeFilterLabel": "Filter finished games by outcome",
+    "allOutcomes": "All",
+    "noFinishedGames": "No finished games.",
+    "noGamesForOutcome": "No finished games with that outcome."
   },
   "about": {
     "supportTitle": "Support",

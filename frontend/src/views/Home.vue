@@ -13,8 +13,11 @@ import EventRow from '@/arkham/components/EventRow.vue';
 import NewGame from '@/arkham/views/NewCampaign.vue';
 import ImportGame from '@/arkham/components/ImportGame.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
+import SegmentedToggle from '@/components/SegmentedToggle.vue';
 import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const store = useUserStore()
@@ -28,6 +31,44 @@ const dismissedNotifications = JSON.parse(localStorage.getItem('dismissedNotific
 
 const activeGames = computed(() => games.value.filter(g => g.gameState.tag !== 'IsOver'))
 const finishedGames = computed(() => games.value.filter(g => g.gameState.tag === 'IsOver'))
+
+type Tab = 'active' | 'finished'
+type OutcomeFilter = 'all' | 'won' | 'lost'
+
+/* Null until the player picks a tab, so that until they do we can land them on
+ * whichever tab actually has something in it -- someone whose games are all
+ * finished should not arrive at an empty page. */
+const chosenTab = ref<Tab | null>(null)
+const tab = computed<Tab>(() => {
+  if (chosenTab.value) return chosenTab.value
+  if (activeGames.value.length > 0 || events.value.length > 0 || brokenGames.value.length > 0) return 'active'
+  return finishedGames.value.length > 0 ? 'finished' : 'active'
+})
+
+const outcomeFilter = ref<OutcomeFilter>('all')
+const wonGames = computed(() => finishedGames.value.filter(g => g.outcome?.result === 'Won'))
+const lostGames = computed(() => finishedGames.value.filter(g => g.outcome?.result === 'Lost'))
+
+/* A finished game can still have no verdict -- a standalone, or a campaign that
+ * ended in a way we cannot read -- so Won and Lost need not add up to All. */
+const shownFinishedGames = computed(() => {
+  switch (outcomeFilter.value) {
+    case 'won': return wonGames.value
+    case 'lost': return lostGames.value
+    default: return finishedGames.value
+  }
+})
+
+const tabOptions = computed(() => [
+  { value: 'active' as Tab, label: t('activeGames'), count: activeGames.value.length + events.value.length },
+  { value: 'finished' as Tab, label: t('finishedGames'), count: finishedGames.value.length },
+])
+
+const outcomeOptions = computed(() => [
+  { value: 'all' as OutcomeFilter, label: t('home.allOutcomes'), count: finishedGames.value.length },
+  { value: 'won' as OutcomeFilter, label: t('gameRow.won'), count: wonGames.value.length },
+  { value: 'lost' as OutcomeFilter, label: t('gameRow.lost'), count: lostGames.value.length },
+])
 
 fetchGames().then((result) => {
   const availableGames = result.filter((g) => g.tag === 'game') as GameDetails[]
@@ -132,7 +173,16 @@ const dismissNotification = (notification: AppNotification) => {
       <div class="container">
         <section>
           <header class="main-header">
-            <h2>{{$t('activeGames')}}</h2>
+            <div class="title-group">
+              <h2>{{$t('home.yourGames')}}</h2>
+              <SegmentedToggle
+                class="tabs"
+                :model-value="tab"
+                :options="tabOptions"
+                :label="$t('home.tabsLabel')"
+                @update:model-value="chosenTab = $event as Tab"
+              />
+            </div>
             <div class="header-actions">
               <button v-if="currentUser" class="secondary-cta" type="button" @click="toggleImportGame">
                 {{ $t('home.loadGame') }}
@@ -160,31 +210,47 @@ const dismissNotification = (notification: AppNotification) => {
               <ImportGame ref="importGameRef" />
             </div>
           </Transition>
-          <div v-if="activeGames.length === 0 && events.length === 0 && brokenGames.length === 0" class="box">
-            <p>{{ $t('home.noActiveGames') }}</p>
-          </div>
-          <div v-for="game in brokenGames" :key="game.id" class="broken-game">
-            <div class="broken-game-details">
-              <span class="broken-game-title">{{ game.name }}</span>
-              <span class="broken-game-error">{{ game.error }}</span>
+          <template v-if="tab === 'active'">
+            <div v-if="activeGames.length === 0 && events.length === 0 && brokenGames.length === 0" class="box">
+              <p>{{ $t('home.noActiveGames') }}</p>
             </div>
-            <a href="#delete" class="broken-game-delete" @click.prevent="deleteBrokenGame(game)">
-              <font-awesome-icon icon="trash" />
-            </a>
-          </div>
-          <EventRow
-            v-for="event in events"
-            :key="event.id"
-            :event="event"
-            :deleteEvent="() => deleteEpicEvent(event)"
-          />
-          <GameRow v-for="game in activeGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
-        </section>
+            <div v-for="game in brokenGames" :key="game.id" class="broken-game">
+              <div class="broken-game-details">
+                <span class="broken-game-title">{{ game.name }}</span>
+                <span class="broken-game-error">{{ game.error }}</span>
+              </div>
+              <a href="#delete" class="broken-game-delete" @click.prevent="deleteBrokenGame(game)">
+                <font-awesome-icon icon="trash" />
+              </a>
+            </div>
+            <EventRow
+              v-for="event in events"
+              :key="event.id"
+              :event="event"
+              :deleteEvent="() => deleteEpicEvent(event)"
+            />
+            <GameRow v-for="game in activeGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
+          </template>
 
-        <section>
-          <header><h2 v-if="finishedGames.length > 0">{{$t('finishedGames')}}</h2></header>
-          <GameRow v-for="game in finishedGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
-
+          <template v-else>
+            <SegmentedToggle
+              v-if="finishedGames.length > 0"
+              class="outcome-filter"
+              :model-value="outcomeFilter"
+              :options="outcomeOptions"
+              :label="$t('home.outcomeFilterLabel')"
+              @update:model-value="outcomeFilter = $event as OutcomeFilter"
+            />
+            <div v-if="shownFinishedGames.length === 0" class="box">
+              <p>{{ finishedGames.length === 0 ? $t('home.noFinishedGames') : $t('home.noGamesForOutcome') }}</p>
+            </div>
+            <GameRow
+              v-for="game in shownFinishedGames"
+              :key="game.id"
+              :game="game"
+              :deleteGame="() => deleteGameEvent(game)"
+            />
+          </template>
         </section>
       </div>
     </div>
@@ -259,7 +325,10 @@ h2 {
   }
 }
 
+/* The toggles here are chrome: a muted pill, so the eye still goes to New Game. */
 .home {
+  --segmented-accent: var(--button-1-muted);
+  --segmented-accent-highlight: var(--button-1-muted-highlight);
   max-width: 98vw;
   min-width: 60vw;
   margin: 0 auto;
@@ -491,6 +560,34 @@ header {
     color: var(--seeker-dark);
     text-decoration: underline;
   }
+}
+
+/* The tabs belong to the title, not to the actions, so they travel with it and
+   the pair wraps together once the header stops fitting on one line. */
+.main-header {
+  flex-wrap: wrap;
+}
+
+.title-group {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+
+  h2 {
+    flex: none;
+  }
+}
+
+.tabs {
+  flex: none;
+  min-width: 220px;
+}
+
+.outcome-filter {
+  margin-bottom: 10px;
+  max-width: 360px;
 }
 
 header.main-header {

@@ -147,14 +147,18 @@ campaignHasEpilogue :: CampaignId -> Bool
 campaignHasEpilogue cid = cid `notElem` noEpilogueCampaigns
 
 {- | See 'campaignHasEpilogue'. Night of the Zealot and its Return to, plus the
-two-scenario side-story campaigns.
+side-story campaigns.
+
+The ids are the ones the campaigns construct themselves -- see the @campaign@
+call in each module under @Arkham.Campaign.Campaigns@ -- not their product
+codes, which differ.
 -}
 noEpilogueCampaigns :: [CampaignId]
 noEpilogueCampaigns =
   [ "01" -- Night of the Zealot
   , "50" -- Return to the Night of the Zealot
-  , "71" -- Guardians of the Abyss
-  , "72" -- Brethren of Ash
+  , "83" -- Guardians of the Abyss
+  , "12" -- Brethren of Ash
   ]
 
 {- | Endings that finish a campaign WITHOUT passing through an epilogue, and what
@@ -163,8 +167,11 @@ the Campaign Guide says each one is.
 These are the exceptions to the rule 'inferCampaignOutcome' leans on, which would
 otherwise read every one of them as a loss:
 
+* Shattered Aeons 1, 2 and 3 -- the three ways The Forgotten Age ends at the
+  scenario itself. Only resolution 5 walks on to the epilogue (and from there to
+  Turn Back Time), and only resolution 4 is the loss.
 * Turn Back Time 1 -- @TheInvestigatorsSealedTheRelicOfAgesForever@, how The
-  Forgotten Age is won.
+  Forgotten Age is won after that epilogue.
 * Where the Gods Dwell 3 and 4, Weaver of the Cosmos 3, 4 and 5 -- all reached
   from those scenarios' winning resolutions, and the end of a Dream-Quest or Web
   of Dreams played as a four-part campaign. Two of them win with a clause
@@ -172,16 +179,27 @@ otherwise read every one of them as a loss:
 * Into the Maelstrom 6 and 7 -- "The investigators win the campaign\8230?", hence
   'Uncertain'.
 
-A game that ends on one of these from now on records its own verdict and never
-consults this list. It exists for games that finished before outcomes were
-recorded, which cannot be fixed at the call site.
+Return to the Forgotten Age reaches the first two through its own scenario ids,
+so both printings are listed.
+
+Of these, only Into the Maelstrom and the Dream-Eaters endings record a verdict
+of their own; the rest reach 'Arkham.Message.GameOver' with nothing stated and
+are read off this list every time, not only for games that predate recorded
+outcomes.
 
 Deliberately NOT a catalogue of every ending: only the ones whose verdict is
 settled. An ending absent from here falls to the rule below.
 -}
 endingsWithoutEpilogue :: [(ScenarioId, Int, Verdict)]
 endingsWithoutEpilogue =
-  [ ("04344", 1, plainly Won) -- Turn Back Time
+  [ ("04314", 1, plainly Won) -- Shattered Aeons: the tear in time is mended
+  , ("04314", 2, plainly Won) -- ...the civilization of the Serpents is saved
+  , ("04314", 3, plainly Won) -- ...the civilization of the Yithians is saved
+  , ("53061", 1, plainly Won) -- Return to Shattered Aeons, the same three
+  , ("53061", 2, plainly Won)
+  , ("53061", 3, plainly Won)
+  , ("04344", 1, plainly Won) -- Turn Back Time
+  , ("53066", 1, plainly Won) -- Return to Turn Back Time
   , ("06286", 3, plainly Won) -- Where the Gods Dwell: the dreamers awoke
   , ("06286", 4, Verdict Won Certain (Just neverSeenInTheWakingWorld))
   , ("06333", 3, plainly Won) -- Weaver of the Cosmos: returned to reality

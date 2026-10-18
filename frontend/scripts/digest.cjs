@@ -1,7 +1,12 @@
-// read all images in the public/img/arkham/<lang>/cards and
-// public/img/arkham/<lang>/homebrew/*/cards directories and write to
-// src/digests/<lang>.json in the format "cards/{filename}" or
-// "homebrew/{campaign}/cards/{filename}"
+// read all images in the public/img/arkham/<lang>/cards,
+// public/img/arkham/<lang>/homebrew/*/cards, mini-cards and tarot directories
+// and write to src/digests/<lang>.json in the format "cards/{filename}",
+// "homebrew/{campaign}/cards/{filename}", "mini-cards/{filename}" or
+// "tarot/{filename}"
+//
+// The digest is what makes `imgsrc` reach for a localized image at all, so a
+// directory missing here is served from the English set however many
+// translated files sit next to it.
 
 const fs = require('fs');
 const path = require('path');
@@ -15,6 +20,7 @@ if (!lang) {
 }
 
 const cardsDir = path.join(__dirname, `../public/img/arkham/${lang}/cards`);
+const miniCardsDir = path.join(__dirname, `../public/img/arkham/${lang}/mini-cards`);
 const tarotDir = path.join(__dirname, `../public/img/arkham/${lang}/tarot`);
 const digest = path.join(__dirname, `../src/digests/${lang}.json`);
 
@@ -40,9 +46,11 @@ const homebrew = fs.existsSync(homebrewDir)
   })
   : [];
 
+const miniCards = fs.existsSync(miniCardsDir) ? fs.readdirSync(miniCardsDir).filter(f => f.endsWith('.jpg')).sort() : [];
+
 const tarot = fs.existsSync(tarotDir) ? fs.readdirSync(tarotDir).filter(f => f.endsWith('.jpg')).sort() : [];
 
-const digests = [...files.map(f => `cards/${f}`), ...homebrew, ...tarot.map(f => `tarot/${f}`)];
+const digests = [...files.map(f => `cards/${f}`), ...homebrew, ...miniCards.map(f => `mini-cards/${f}`), ...tarot.map(f => `tarot/${f}`)];
 
 fs.writeFileSync(digest, JSON.stringify(digests, null, 2));
 console.log(`Wrote ${digests.length} digests to ${digest}`);

@@ -974,8 +974,9 @@ runSteps env0 = void . foldM step env0
       | Just spec <- KeyMap.lookup "search" o -> do
           runSearch env spec
           pure env
-      | Just spec <- KeyMap.lookup "repeat" o -> do
-          runRepeat env spec
+      | Just spec <- KeyMap.lookup "repeat" o -> runRepeat env spec
+      | Just spec <- KeyMap.lookup "call" o -> do
+          runCall env spec
           pure env
       | Just spec <- KeyMap.lookup "modify" o -> do
           runModify env spec
@@ -1315,14 +1316,70 @@ searchBlocks = deferredBlocks "search"
 wish" is eight choices of who gets one, which is how the engine plays it. The
 count is an expression, so it can be counted rather than written down, and the
 turn number is bound for the steps in case they care which pass they are on.
+
+@as@ is the other reading of the same word. A repeat named that way does not run
+where it is written: it binds itself, and one pass runs each time a @call@ asks
+for one, up to @times@ in all. That is what "you may do it again" needs, because
+whether there is another pass is not known until the one before it has played
+out -- the test passed, and the player said yes. The name is in scope for the
+steps inside, so a pass can ask for the next, and for the steps after, which is
+where the first pass is asked for.
 -}
-runRepeat :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runRepeat :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m Env
 runRepeat env spec = case spec of
-  Object o -> do
+  Object o -> case KeyMap.lookup "as" o of
+    -- Named, so it is a thing that can be asked for rather than a thing that
+    -- happens: nothing runs here, and `call` runs one pass.
+    Just (String name) | notNull name -> pure $ KeyMap.insert (Key.fromText name) (repeatValue o 0) env
+    _ -> do
+      times <- maybe (pure 0) (exprInt env) (KeyMap.lookup "times" o)
+      let name = bindingName o "i"
+      for_ [1 .. times] \i -> runSteps (KeyMap.insert name (toJSON i) env) (subStepsOf o)
+      pure env
+  _ -> pure env
+
+{- | A named repeat, as the binding its steps call.
+
+The whole block travels in the binding, so the call site needs nothing but the
+name: a repeat written once can be asked for from anywhere it is in scope, and
+each pass hands on a count of the passes already taken. That count is the only
+mutable part, which is why it rides beside the block rather than inside it.
+-}
+repeatValue :: KeyMap.KeyMap Value -> Int -> Value
+repeatValue o taken = Object $ KeyMap.fromList [("repeat", Object o), ("taken", toJSON taken)]
+
+{- | "Do it again": one more pass of a repeat that named itself.
+
+The limit is kept here rather than at the call site, so a card says "you may do
+it again" once and the step simply has nothing to do once the passes are spent.
+That is what makes the prompt disappear on its own: an option whose steps come
+to nothing is an option that was never worth offering, and the ask that holds it
+is built from what the pass produced.
+
+The pass number is bound the way the counted form binds it, and the name is
+bound again with the new count, so a pass can ask for the next one.
+-}
+runCall :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runCall env spec = case substitute env spec of
+  Object v | Just (Object o) <- KeyMap.lookup "repeat" v -> do
+    let taken = fromMaybe 0 (KeyMap.lookup "taken" v >>= parseMaybe parseJSON)
     times <- maybe (pure 0) (exprInt env) (KeyMap.lookup "times" o)
-    let name = bindingName o "i"
-    for_ [1 .. times] \i -> runSteps (KeyMap.insert name (toJSON i) env) (subStepsOf o)
-  _ -> pure ()
+    let
+      pass = taken + 1
+      name = bindingName o "i"
+      env' = KeyMap.insert name (toJSON pass) env
+      env'' = case KeyMap.lookup "as" o of
+        Just (String as) | notNull as -> KeyMap.insert (Key.fromText as) (repeatValue o pass) env'
+        _ -> env'
+    when (pass <= times) $ runSteps env'' (subStepsOf o)
+  -- A name that is not a repeat, or one nothing bound: said once, where the
+  -- card tried to use it, rather than left to look like a card that chose to
+  -- do nothing.
+  other ->
+    sendCustomCardIssue
+      (fromMaybe "" (KeyMap.lookup "cardCode" env >>= parseMaybe parseJSON))
+      "call names something that is not a repeat"
+      other
 
 {- | Give something modifiers for as long as a window lasts.
 

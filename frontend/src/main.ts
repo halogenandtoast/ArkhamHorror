@@ -14,6 +14,7 @@ import { faExpeditedssl } from "@fortawesome/free-brands-svg-icons";
 import { faFilter, faGear, faLayerGroup, faBan, faCircleExclamation, faGhost, faLocationDot, faSearch, faList, faImage, faAngleDown, faUndo, faTrash, faEye, faCopy, faExternalLink, faRefresh, faBook, faChevronRight, faBars, faTimes, faShieldHeart, faWrench, faPaperclip, faArrowLeft, faArrowUp, faStore, faTriangleExclamation, faShuffle, faTrophy, faDownload, faUpload, faCheckDouble, faFlask, faBug, faPen, faThumbsUp, faHourglassHalf, faCircleXmark, faCircleCheck, faClipboardCheck, faChartSimple, faRectangleList, faCircleQuestion, faBullhorn, faBoxArchive, faUserGear, faPlus, faLink, faLinkSlash, faUsers, faLock, faUnlock } from '@fortawesome/free-solid-svg-icons'
 import * as VueI18n from 'vue-i18n'
 import { loadLocaleMessages, normalizeLocale } from '@/locales/messages'
+import { setI18n } from '@/locales/i18n'
 import { preferredLanguage } from '@/locales/language'
 import mitt from 'mitt';
 
@@ -42,6 +43,8 @@ async function bootstrap() {
     warnHtmlMessage: false,
     messages: loadedMessages
   })
+
+  setI18n(i18n)
 
   const pinia = createPinia()
   const vfm = createVfm()

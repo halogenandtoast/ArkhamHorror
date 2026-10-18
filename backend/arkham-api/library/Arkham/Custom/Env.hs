@@ -77,5 +77,26 @@ textField :: Env -> KeyMap.KeyMap Value -> Key.Key -> Text -> Text
 textField env o key fallback = case substitute env <$> KeyMap.lookup key o of
   -- An empty one is a field the editor left behind, not a label of no words:
   -- every caller here is a name or a prompt, and none of them means "blank".
-  Just (String t) | not (null t) -> t
+  Just (String t) | not (null t) -> ownText env t
   _ -> fallback
+
+{- | A card's own text, as the key the client looks it up by.
+
+@$.again@ is "the text this card calls @again@". Written out it would be
+@$custom.<the card's code>.again@, which is the same thing said in a way that
+breaks when the card is renamed and that nobody would type. The card code is
+what scopes it, so two sets may both have an @again@ and neither has to know.
+
+Anything else is left exactly as written: a label with no @$@ is words, and a
+@$@ key that names a scope of its own means that scope.
+-}
+ownText :: Env -> Text -> Text
+ownText env t = case T.stripPrefix "$." t of
+  Nothing -> t
+  Just rest -> case KeyMap.lookup "cardCode" env >>= parseMaybe parseJSON of
+    Just (code :: Text) -> "$" <> customTextScope <> "." <> code <> "." <> rest
+    Nothing -> t
+
+-- | Where a custom card's own text is merged into the client's messages.
+customTextScope :: Text
+customTextScope = "custom"

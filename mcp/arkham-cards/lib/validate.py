@@ -732,11 +732,52 @@ INSIDE_ONLY = {
 }
 
 
+#: The fields whose value a player reads as a prompt.
+LABEL_FIELDS = ("label", "declineLabel", "done", "tooltip")
+
+#: `prestidigitation.to` -- a key by the look of it, words by how it is read.
+LOOKS_LIKE_A_KEY = re.compile(r"[a-z][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+\Z")
+
+
+def _check_labels(value: Any, path: str, problems: list) -> None:
+    """A label is shown to the player exactly as written, so one that reads as a
+    key is a key nothing looks up: the player is shown `impalingSwords.again`.
+
+    The card's own text is `$.again`, which the engine turns into the address the
+    client looks up and the builder fills in beside the label.
+    """
+    if isinstance(value, dict):
+        for key, inner in value.items():
+            if key in LABEL_FIELDS and isinstance(inner, str) and LOOKS_LIKE_A_KEY.match(inner):
+                name = inner.split(".")[-1]
+                problems.append(
+                    Problem(
+                        "warning",
+                        f"{path}.{key}",
+                        f'"{inner}" is shown to the player as those words, not looked up',
+                        fix=f'write "$.{name}" and say what it means in the card\'s Text',
+                    )
+                )
+            _check_labels(inner, f"{path}.{key}", problems)
+    elif isinstance(value, list):
+        for index, inner in enumerate(value):
+            _check_labels(inner, f"{path}[{index}]", problems)
+
+
+def _repeat_name(step: dict) -> set[str]:
+    """What a repeat is called, when it is called at all. A named repeat runs a
+    pass at a time when something asks for one, so its name is in scope both
+    inside it -- a pass asks for the next -- and after it, which is where the
+    first pass is asked for."""
+    name = _fields(step, "repeat").get("as")
+    return {name} if isinstance(name, str) and name else set()
+
+
 def _binds(step: dict, which: str, *, inside: bool = True) -> set[str]:
     """What a step binds. `inside` asks for its nested steps' scope; without it,
     only what the steps AFTER this one can see."""
     if not inside and which in INSIDE_ONLY:
-        return set()
+        return _repeat_name(step) if which == "repeat" else set()
     fields = _fields(step, which)
     payload = step.get(which)
     added: set[str] = set()
@@ -763,6 +804,7 @@ def _binds(step: dict, which: str, *, inside: bool = True) -> set[str]:
     elif which == "repeat":
         index = fields.get("i")
         added.add(index if isinstance(index, str) and index else bound("i"))
+        added |= _repeat_name(step)
     elif which == "withSkillTest":
         # `bindingName o "skillTestId"` in `runWithSkillTest`, and the editor
         # announces the same. Named "skillTest" here, the checker reported every
@@ -885,6 +927,7 @@ def _walk_steps(steps: Any, path: str, bound: set[str], problems: list[Problem])
                     )
 
         _check_step(which, step, here, scope, problems)
+        _check_labels(step, here, problems)
         scope |= _binds(step, which, inside=False)
 
 

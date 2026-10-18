@@ -8,6 +8,7 @@
 import * as JsonDecoder from 'ts.data.json'
 import { reactive } from 'vue'
 import { cardDefDecoder, type CardDef } from '@/arkham/types/CardDef'
+import { publishCardText } from '@/arkham/customText'
 
 export type CustomCard = {
   def: CardDef
@@ -183,6 +184,10 @@ export function normalizeCardDef(def: any): CardDef {
 const registry = reactive(new Map<string, CustomCard>())
 
 export function registerCustomCards(cards: CustomCard[]) {
+  /* The text these cards carry, handed to vue-i18n as they arrive: a prompt
+   * reads as words for every player in the game, not only the one whose
+   * library the set is in. */
+  publishCardText(cards.map((card) => card.def))
   for (const card of cards) {
     const cardCode = stripCardCodePrefix(card.def.cardCode)
     const existing = registry.get(cardCode)

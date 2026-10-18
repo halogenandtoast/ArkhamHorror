@@ -113,6 +113,7 @@ VALUE_SHAPED = {
     "cancelBatch": "`true`; cancels the batch on the window in $window",
     "query": "an object with `kind` and `matcher`, plus `mode` and `bind` beside it in the step",
     "let": "the name to bind, as a string, with `be` holding the expression",
+    "call": "the `$name` a repeat was called as; runs one more of its passes",
 }
 
 # What a step whose payload is `{kind, matcher}` also takes in the step object.
@@ -189,7 +190,12 @@ def lookups(block: str) -> dict[str, list[str]]:
         elif text_key is not None:
             source, key = text_obj, text_key
         else:
+            # `bindingName r "repeat"` reads "bind" off that same object and
+            # falls back to the name given, so both are keys of it.
             source, key = bind_obj, bind_key
+            found.setdefault(source, [])
+            if "bind" not in found[source]:
+                found[source].append("bind")
         found.setdefault(source, [])
         if key not in found[source]:
             found[source].append(key)
@@ -393,6 +399,16 @@ def meta_keys() -> dict[str, dict[str, str]]:
         found.setdefault(key, {"holds": holds, "readIn": "library/Arkham/Custom/Ability.hs"})
         if not found[key]["holds"]:
             found[key]["holds"] = holds
+    # Read by the client rather than the engine, which is why no Haskell
+    # mentions them. A card carries its own text because a game is played by
+    # people who may not own the set it came from.
+    found.setdefault(
+        "_locale",
+        {
+            "holds": "what this card's own `$.name` labels say, by language",
+            "readIn": "frontend/src/arkham/customText.ts",
+        },
+    )
     for key, entry in found.items():
         if not entry["holds"]:
             entry["holds"] = "card data, not steps"

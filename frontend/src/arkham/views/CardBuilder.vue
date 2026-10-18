@@ -66,6 +66,7 @@ import {
   type LibrarySet,
 } from '@/arkham/customCardLibrary'
 import ExpansionDetails, { type ExpansionDraft } from '@/arkham/components/debug/ExpansionDetails.vue'
+import SetTextEditor from '@/arkham/components/debug/SetTextEditor.vue'
 
 const { t, te } = useI18n()
 const K = 'customCardSets.'
@@ -1986,6 +1987,7 @@ async function onImport(event: Event) {
 
       <template v-if="editingDeclaration">
         <ExpansionDetails v-model="expansionDraft" />
+        <SetTextEditor v-if="activeSetId" :setId="activeSetId" :disabled="activeSetLocked" />
       </template>
 
       <!-- Nothing picked, in a set whose cards can only be read. An empty form

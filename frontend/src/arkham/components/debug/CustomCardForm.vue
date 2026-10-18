@@ -26,6 +26,15 @@ import BoolField from '@/arkham/components/debug/BoolField.vue'
 import CardCodeField from '@/arkham/components/debug/CardCodeField.vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 import { loadSchema } from '@/arkham/schema'
+import { provide } from 'vue'
+import {
+  CARD_TEXT,
+  LOCALE_META_KEY,
+  PRIMARY_LANGUAGE,
+  TEXT_LANGUAGES,
+  textKeysUsed,
+  type CardTextAccess,
+} from '@/arkham/customText'
 import KeywordEffectEditor from '@/arkham/components/debug/KeywordEffectEditor.vue'
 import type { CustomSetKeyword, CustomSetToken } from '@/arkham/api'
 
@@ -120,6 +129,49 @@ const canPrintKeyword = (keyword: string, cardType: string) =>
   !KEYWORD_TYPES[keyword] || KEYWORD_TYPES[keyword].includes(cardType)
 
 
+/* The text this card says, reachable from any field in the editor. Writing one
+ * here is the same edit as writing it in the Text box below -- both are the
+ * card's own `_locale`, so a key filled in beside the label it belongs to
+ * appears there too. */
+/* Which language the Text box is written in. The previews beside each label
+ * follow it, so switching here is how the card is read back in French. */
+const textLanguage = ref(PRIMARY_LANGUAGE)
+
+provide(CARD_TEXT, {
+  read: (key: string) => form.text[textLanguage.value]?.[key] ?? '',
+  write: (key: string, value: string) => {
+    const language = (form.text[textLanguage.value] ??= {})
+    language[key] = value
+  },
+} satisfies CardTextAccess)
+
+/* Every key the card names, and any left over from an earlier wording. A key
+ * nothing names any more is still shown -- with its words, which are the part
+ * worth keeping -- rather than quietly dropped while a label still reads it. */
+const textUsed = computed(() => textKeysUsed(buildDef(loadedCode.value ?? 'c*preview')))
+
+const textKeys = computed(() => {
+  const has = Object.keys(form.text[textLanguage.value] ?? {})
+  return [...textUsed.value, ...has.filter((key) => !textUsed.value.includes(key))]
+})
+
+const unusedText = computed(() =>
+  Object.keys(form.text[textLanguage.value] ?? {}).filter((key) => !textUsed.value.includes(key)),
+)
+
+const textFor = (key: string) => form.text[textLanguage.value]?.[key] ?? ''
+
+const writeText = (key: string, value: string) => {
+  const language = (form.text[textLanguage.value] ??= {})
+  language[key] = value
+}
+
+/* Which languages this card already says something in, marked in the picker so
+ * a translation that exists is not written twice. Counted the way saving counts
+ * it: a key left blank is one nobody has written yet. */
+const written = (language: string) =>
+  Object.values(form.text[language] ?? {}).some((value) => typeof value === 'string' && value.trim())
+
 const blankForm = () => ({
   title: '',
   subtitle: '',
@@ -162,6 +214,10 @@ const blankForm = () => ({
   revelationPlacement: '',
   revelationSteps: [] as any[],
   actions: [] as string[],
+  /* What this card's own labels say, by language. The form edits the primary
+   * one; the rest ride along untouched so a translation is never dropped by
+   * someone editing in English. */
+  text: {} as Record<string, Record<string, string>>,
   // Actions are all required unless the card says to pick one of them.
   actionsOr: false,
   // grouping, so a set of cards made together can be found together
@@ -634,6 +690,17 @@ function buildDef(cardCode: string): Record<string, any> {
     if (bonded.length) def.bondedWith = bonded
   }
 
+  /* Empty keys are dropped rather than saved blank: one with no words is a key
+     nobody has written yet, and the editor offers it again from the labels. */
+  const text: Record<string, Record<string, string>> = {}
+  for (const [language, entries] of Object.entries(form.text)) {
+    const written = Object.fromEntries(
+      Object.entries(entries ?? {}).filter(([, value]) => typeof value === 'string' && value.trim()),
+    )
+    if (Object.keys(written).length) text[language] = written
+  }
+  if (Object.keys(text).length) def.meta[LOCALE_META_KEY] = text
+
   if (form.onPlaySteps.length) def.meta._onPlay = form.onPlaySteps
   if (form.abilities.length) def.meta._abilities = form.abilities
   if (form.handlers.length) def.meta._handlers = form.handlers
@@ -732,6 +799,8 @@ const FORM_META_KEYS = [
      does not put them in the raw block either, which would freeze a stale copy
      onto the card that the set could no longer correct. */
   'setTokens', 'setKeywords',
+  // The card's own text, edited in its own fieldset.
+  '_locale',
   '_abilities', '_handlers', '_modifiers', '_keywords', '_signatures', '_onRevelation', '_revelationPlacement',
   '_elderSign', '_elderSignRevealSteps', '_elderSignSteps', '_elderSignSuccessSteps', '_onPlay',
 ]
@@ -761,6 +830,10 @@ async function loadCard(card: CustomCard) {
   form.revelationPlacement = meta._revelationPlacement ?? ''
   form.revelationSteps = meta._onRevelation ?? []
   form.actions = actionList(def.actions)
+  form.text =
+    meta[LOCALE_META_KEY] && typeof meta[LOCALE_META_KEY] === 'object'
+      ? JSON.parse(JSON.stringify(meta[LOCALE_META_KEY]))
+      : {}
   form.actionsOr = def.actions?.tag === 'OrActions'
   form.traits = (def.cardTraits ?? []).map((t: string) => traitDisplay.value.get(t) ?? t).join('. ')
   form.icons = (def.skills ?? []).map((s: any) => (s.tag === 'SkillIcon' ? s.contents : 'Wild'))
@@ -1374,6 +1447,29 @@ defineExpose({ loadCard, reset, buildCustomCard, snapshot, cardType: computed(()
             />
           </fieldset>
 
+          <!-- What the card's own labels say. The keys come from the card:
+               every `$.name` it writes is a line here. -->
+          <fieldset v-if="textKeys.length" class="card-text">
+            <legend>Text</legend>
+            <label class="text-language">
+              Language
+              <select v-model="textLanguage">
+                <option v-for="[code, name] in TEXT_LANGUAGES" :key="code" :value="code">
+                  {{ name }}{{ written(code) ? ' •' : '' }}
+                </option>
+              </select>
+            </label>
+            <label v-for="key in textKeys" :key="key" class="text-line" :class="{ missing: !textFor(key) }">
+              <code>$.{{ key }}</code>
+              <input
+                :value="textFor(key)"
+                :placeholder="unusedText.includes(key) ? 'Nothing names this key' : 'What it says'"
+                @input="writeText(key, ($event.target as HTMLInputElement).value)"
+                @keydown.stop
+              />
+            </label>
+          </fieldset>
+
           <!-- A keyword the card's set prints, with this card's own condition
                and result. Only offered once the set has declared one. -->
           <details>
@@ -1962,6 +2058,56 @@ details summary {
   cursor: pointer;
   font-size: 0.85rem;
   opacity: 0.85;
+}
+
+/* The card's own words. Keyed the same fuchsia as a label that names one, so
+   the two halves of the same thing look like it. */
+.card-text {
+  border: 1px solid #f0abfc44;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.4rem 0.6rem;
+
+  legend {
+    color: #f0abfc;
+    font-size: 0.72rem;
+    padding: 0 0.3rem;
+  }
+}
+
+.text-language {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.text-line {
+  /* The surrounding form stacks its labels; a key and its words read as one
+     line, so this one does not. */
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  text-align: left;
+
+  code {
+    color: #f0abfc;
+    flex: none;
+    font-size: 0.72rem;
+    min-width: 9rem;
+  }
+
+  input {
+    flex: 1;
+  }
+
+  &.missing input {
+    border-color: #f0abfc66;
+  }
 }
 
 .custom-card-actions {

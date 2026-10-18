@@ -29,8 +29,8 @@
       "keysIn": "payload",
       "stepKeys": [],
       "payloadKeys": [
-        "from",
-        "bind"
+        "bind",
+        "from"
       ],
       "nestedKeys": {},
       "bindingsRead": [],
@@ -166,9 +166,9 @@
       "payloadKeys": [
         "over",
         "query",
+        "bind",
         "each",
-        "steps",
-        "bind"
+        "steps"
       ],
       "nestedKeys": {},
       "bindingsRead": [],
@@ -252,17 +252,43 @@
       "keysIn": "payload",
       "stepKeys": [],
       "payloadKeys": [
+        "as",
         "times",
-        "i",
         "bind",
+        "i",
         "steps"
       ],
       "nestedKeys": {},
       "bindingsRead": [],
       "valueShape": null,
-      "doc": "The steps inside, run a number of times worked out from the game.\n\n\"Investigators at your location gain a total of 8 resources, distributed as you\nwish\" is eight choices of who gets one, which is how the engine plays it. The\ncount is an expression, so it can be counted rather than written down, and the\nturn number is bound for the steps in case they care which pass they are on.",
+      "doc": "The steps inside, run a number of times worked out from the game.\n\n\"Investigators at your location gain a total of 8 resources, distributed as you\nwish\" is eight choices of who gets one, which is how the engine plays it. The\ncount is an expression, so it can be counted rather than written down, and the\nturn number is bound for the steps in case they care which pass they are on.\n\n@as@ is the other reading of the same word. A repeat named that way does not run\nwhere it is written: it binds itself, and one pass runs each time a @call@ asks\nfor one, up to @times@ in all. That is what \"you may do it again\" needs, because\nwhether there is another pass is not known until the one before it has played\nout -- the test passed, and the player said yes. The name is in scope for the\nsteps inside, so a pass can ask for the next, and for the steps after, which is\nwhere the first pass is asked for.",
+      "via": [
+        "repeatValue",
+        "bindingName",
+        "subStepsOf"
+      ]
+    },
+    {
+      "step": "call",
+      "handler": "runCall",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "times",
+        "bind",
+        "i",
+        "as",
+        "steps"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "cardCode"
+      ],
+      "valueShape": "the `$name` a repeat was called as; runs one more of its passes",
+      "doc": "\"Do it again\": one more pass of a repeat that named itself.\n\nThe limit is kept here rather than at the call site, so a card says \"you may do\nit again\" once and the step simply has nothing to do once the passes are spent.\nThat is what makes the prompt disappear on its own: an option whose steps come\nto nothing is an option that was never worth offering, and the ask that holds it\nis built from what the pass produced.\n\nThe pass number is bound the way the counted form binds it, and the name is\nbound again with the new count, so a pass can ask for the next one.",
       "via": [
         "bindingName",
+        "repeatValue",
         "subStepsOf"
       ]
     },
@@ -288,10 +314,10 @@
       "keysIn": "payload",
       "stepKeys": [],
       "payloadKeys": [
+        "bind",
         "skillTestId",
         "onSuccess",
         "onFailure",
-        "bind",
         "steps",
         "by"
       ],
@@ -315,9 +341,9 @@
       "stepKeys": [],
       "payloadKeys": [
         "of",
+        "bind",
         "location",
         "kind",
-        "bind",
         "steps"
       ],
       "nestedKeys": {},
@@ -1791,7 +1817,6 @@
         "spawnAt",
         "asSelfLocation",
         "bearer",
-        "physicalPlayerCard",
         "spawnedBy",
         "discardedBy",
         "attacking",
@@ -2019,6 +2044,8 @@
         "gameRetiredInvestigators",
         "gameCommittedEntities",
         "gameHighlightedCards",
+        "gameOutcome",
+        "gameLastResolution",
         "gameRetainedQuestion",
         "gameSimultaneousAsks",
         "gameScenarioSteps",
@@ -2029,6 +2056,17 @@
         "gameLocationOffsets",
         "gameCardPlayStack",
         "gameLogBlockStack"
+      ]
+    },
+    "GameOutcome": {
+      "required": [
+        "result",
+        "source"
+      ],
+      "optional": [
+        "certainty",
+        "note",
+        "ending"
       ]
     },
     "Settings": {
@@ -2599,6 +2637,10 @@
     "_revelationPlacement": {
       "holds": "threatArea or playArea",
       "readIn": "arkham-api/library/Arkham/Card/CustomCard.hs"
+    },
+    "_locale": {
+      "holds": "what this card's own `$.name` labels say, by language",
+      "readIn": "frontend/src/arkham/customText.ts"
     }
   },
   "arrayTolerantDecoders": [
@@ -2692,7 +2734,6 @@
       "movedFromHunterKeyword",
       "damageStrategy",
       "bearer",
-      "physicalPlayerCard",
       "sealedChaosTokens",
       "keys",
       "spawnedBy",

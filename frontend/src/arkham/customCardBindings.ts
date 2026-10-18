@@ -231,6 +231,7 @@ const stepKinds = [
   'case',
   'forEach',
   'repeat',
+  'call',
   'distribute',
   'search',
   'request',
@@ -403,14 +404,16 @@ export function stepBindings(
           at(named(step.distribute?.amount, 'amount'), 'how much they got', 'a Distribute step', 'Int'),
         ],
       }
-    // The pass number, in scope only for the steps it repeats.
-    case 'repeat':
-      return {
-        after: [],
-        inside: [
-          at(named(step.repeat?.bind, 'i'), 'which pass this is', 'a Repeat step', 'Int'),
-        ],
-      }
+    /* The pass number, in scope only for the steps it repeats -- and, when the
+       repeat is named, the repeat itself, which its own steps call to go round
+       again and later steps call to start it. */
+    case 'repeat': {
+      const pass = at(named(step.repeat?.bind, 'i'), 'which pass this is', 'a Repeat step', 'Int')
+      const name = named(step.repeat?.as, '')
+      if (!name) return { after: [], inside: [pass] }
+      const loop = at(name, 'this repeat, to run another pass of', 'a Repeat step', 'Repeat')
+      return { after: [loop], inside: [pass, loop] }
+    }
     case 'forEach':
       return {
         after: [],

@@ -336,7 +336,7 @@ customAbilities a =
           zoneCriterion (specZone spec)
             <> fromMaybe (abilityCriteria ab) (decodeWith env =<< specCriteria spec)
       , abilityLimit = fromMaybe (abilityLimit ab) (decodeWith env =<< specLimit spec)
-      , abilityTooltip = specTooltip spec <|> abilityTooltip ab
+      , abilityTooltip = ownText env <$> specTooltip spec <|> abilityTooltip ab
       , abilityDoesNotProvokeAttacksOfOpportunity = noAttacksOfOpportunity spec
       }
 

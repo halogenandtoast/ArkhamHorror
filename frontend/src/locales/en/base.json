@@ -578,7 +578,10 @@
     "outcomeFilterLabel": "Filter finished games by outcome",
     "allOutcomes": "All",
     "noFinishedGames": "No finished games.",
-    "noGamesForOutcome": "No finished games with that outcome."
+    "noGamesForOutcome": "No finished games with that outcome.",
+    "watchGames": "Watch",
+    "watchBlurb": "Games other people are playing right now and have opened up to spectators. You are watching only \u2014 you cannot take any actions.",
+    "noSpectatableGames": "Nobody is hosting a game for spectators right now."
   },
   "about": {
     "supportTitle": "Support",
@@ -594,6 +597,8 @@
     "languageHelp": "This will change the language of the cards and app, but will default to English if a card or text is not available in the selected language.",
     "phaseTransitionNotifications": "Phase transition notifications",
     "phaseTransitionNotificationsHelp": "Show a full-screen notification when the game enters a new phase.",
+    "spectators": "Allow spectators by default",
+    "spectatorsHelp": "When on, new games you start are listed on the home page for anyone to watch. You still choose per game when you start one, and that choice is fixed for the life of that game.",
     "enrollInBeta": "Enroll in beta",
     "betaWarning": "Beta features are likely very broken and games may be unrecoverable, please only enable this if you are willing to provide feedback.",
     "epicMultiplayer": "Epic Multiplayer (dev)",
@@ -674,7 +679,8 @@
     "won": "Won",
     "lost": "Lost",
     "wonUncertain": "Won?",
-    "outcomeUncertain": "The Campaign Guide prints this ending as \u201cThe investigators win the campaign\u2026?\u201d and does not say more."
+    "outcomeUncertain": "The Campaign Guide prints this ending as \u201cThe investigators win the campaign\u2026?\u201d and does not say more.",
+    "watch": "Watch"
   },
   "replay": {
     "restart": "Restart",

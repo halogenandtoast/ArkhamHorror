@@ -52,5 +52,6 @@ getApiV1ArkhamGameReplayR gameId step = runDB do
             (arkhamGameMultiplayerVariant ge)
             (arkhamGameCreatedAt ge)
             (arkhamGameUpdatedAt ge)
+            (arkhamGameAllowSpectators ge)
       )
       gameLog

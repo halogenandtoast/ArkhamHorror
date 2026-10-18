@@ -2,7 +2,7 @@
 import { ref, computed, Ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useRouter, useRoute } from 'vue-router';
-import { deleteEvent, deleteGame, fetchGames, fetchEvents, fetchNotifications } from '@/arkham/api';
+import { deleteEvent, deleteGame, fetchGames, fetchEvents, fetchNotifications, fetchSpectatableGames } from '@/arkham/api';
 import { cullGameLocalStorage, removeGameLocalStorage } from '@/arkham/localStorage';
 import { isDevBuild } from '@/arkham/displayRules';
 import type { BrokenGameDetails, GameDetails } from '@/arkham/types/Game';
@@ -26,13 +26,17 @@ const games: Ref<GameDetails[]> = ref([])
 const brokenGames: Ref<BrokenGameDetails[]> = ref([])
 const events: Ref<EventListEntry[]> = ref([])
 const notifications: Ref<AppNotification[]> = ref([])
+/* Other people's games, whose players have put them on the watch list. Fetched
+ * separately from `games`: these are not yours, and there is nothing to do with
+ * one but open it read-only. */
+const spectatableGames: Ref<GameDetails[]> = ref([])
 
 const dismissedNotifications = JSON.parse(localStorage.getItem('dismissedNotifications') ?? "[]")
 
 const activeGames = computed(() => games.value.filter(g => g.gameState.tag !== 'IsOver'))
 const finishedGames = computed(() => games.value.filter(g => g.gameState.tag === 'IsOver'))
 
-type Tab = 'active' | 'finished'
+type Tab = 'active' | 'finished' | 'watch'
 type OutcomeFilter = 'all' | 'won' | 'lost'
 
 /* Null until the player picks a tab, so that until they do we can land them on
@@ -59,9 +63,13 @@ const shownFinishedGames = computed(() => {
   }
 })
 
+/* The watch tab is shown even while empty. Hiding it would make the feature
+ * undiscoverable in exactly the state it starts in: nobody sees that games can
+ * be watched, so nobody opens one up, so the tab never appears. */
 const tabOptions = computed(() => [
   { value: 'active' as Tab, label: t('activeGames'), count: activeGames.value.length + events.value.length },
   { value: 'finished' as Tab, label: t('finishedGames'), count: finishedGames.value.length },
+  { value: 'watch' as Tab, label: t('home.watchGames'), count: spectatableGames.value.length },
 ])
 
 const outcomeOptions = computed(() => [
@@ -93,6 +101,12 @@ fetchEvents().then((result) => {
 })
 
 fetchNotifications().then((result) => notifications.value = result.filter((n: AppNotification) => !dismissedNotifications.includes(n.id)))
+
+// A quiet failure: an empty watch list just hides the tab, and nothing else on
+// the page depends on it.
+fetchSpectatableGames()
+  .then((result) => (spectatableGames.value = result))
+  .catch(() => (spectatableGames.value = []))
 
 async function deleteGameEvent(game: GameDetails) {
   deleteGame(game.id).then(() => {
@@ -230,6 +244,14 @@ const dismissNotification = (notification: AppNotification) => {
               :deleteEvent="() => deleteEpicEvent(event)"
             />
             <GameRow v-for="game in activeGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
+          </template>
+
+          <template v-else-if="tab === 'watch'">
+            <p class="watch-blurb">{{ $t('home.watchBlurb') }}</p>
+            <div v-if="spectatableGames.length === 0" class="box">
+              <p>{{ $t('home.noSpectatableGames') }}</p>
+            </div>
+            <GameRow v-for="game in spectatableGames" :key="game.id" :game="game" spectate />
           </template>
 
           <template v-else>
@@ -588,6 +610,14 @@ header {
 .outcome-filter {
   margin-bottom: 10px;
   max-width: 360px;
+}
+
+/* One line of context, because this tab is the only place on the page showing
+   games that are not yours. */
+.watch-blurb {
+  color: var(--title);
+  opacity: 0.7;
+  margin-bottom: 10px;
 }
 
 header.main-header {

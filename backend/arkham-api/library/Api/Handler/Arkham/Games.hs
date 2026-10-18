@@ -9,6 +9,7 @@ module Api.Handler.Arkham.Games (
   getApiV1ArkhamGameLogBeforeR,
   getApiV1ArkhamGameStepR,
   getApiV1ArkhamGamesR,
+  getApiV1ArkhamSpectatableGamesR,
   postApiV1ArkhamGamesR,
   putApiV1ArkhamGameR,
   deleteApiV1ArkhamGameR,
@@ -35,6 +36,7 @@ import Arkham.Game.Settings (
   settingsAsIfRuling,
   settingsUltimatumsAndBoons,
  )
+import Arkham.Game.State (GameState (IsActive))
 import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Playable (getPlayabilityChecks)
 import Arkham.Id
@@ -118,10 +120,19 @@ getApiV1ArkhamGameLogBeforeR gameId before = do
     void $ getBy404 (UniquePlayer userId gameId)
     (.entries) <$> getGameLogBefore gameId before gameLogTailSize
 
+{- | Watch a game without a seat in it.
+
+Reaching this needs only the game's id, as it always has -- a link somebody
+shared still works. @allowSpectators@ governs whether the game is *advertised*
+on the home page's watch list, not whether this read is allowed.
+
+The socket is 'spectatorStream', so a watcher cannot answer the game's
+questions.
+-}
 getApiV1ArkhamGameSpectateR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameSpectateR gameId = do
   wsOptions <- websocketConnectionOptions
-  webSocketsOptions wsOptions $ gameStream gameId
+  webSocketsOptions wsOptions $ spectatorStream gameId
   runDB do
     g <- get404 gameId
     let Game {..} = g.currentData
@@ -160,7 +171,67 @@ getApiV1ArkhamGamesR = do
     groupBy p.arkhamGameId
     pure (p.arkhamGameId, countRows @Int)
   let countMap = Map.fromList [(gid, n) | (Value gid, Value n) <- playerCounts]
-  traverse (\g -> tryGameDetailsEntry g (fromMaybe 0 $ Map.lookup (coerce $ entityKey g) countMap)) games
+  traverse
+    (\g -> tryGameDetailsEntry g (fromMaybe 0 $ Map.lookup (coerce $ entityKey g) countMap))
+    games
+
+{- | How many games the watch list will carry.
+
+The list reads the whole of @current_data@ for every row it returns -- tens of
+kilobytes each -- so it is bounded here rather than by however many tables have
+opted in. Newest activity first, which is also the order somebody picking a
+game to watch wants.
+-}
+spectatableGamesLimit :: Int64
+spectatableGamesLimit = 50
+
+{- | Games whose players have opened them up to be watched.
+
+Deliberately not every game this user *could* reach: @allowSpectators@ is what
+puts a game here. Three things are left out --
+
+  * games this user already has a seat in, which the home page lists above
+    this one under "Your Games";
+  * Epic Multiplayer group games, which are reached through their event the
+    same way they are kept out of 'getApiV1ArkhamGamesR';
+  * anything not actually in play, so a watcher never opens a game that is
+    waiting on its decks or already over.
+
+The last of those is decided after decoding, because the state lives inside
+@current_data@ and nothing outside it records play having stopped.
+-}
+getApiV1ArkhamSpectatableGamesR :: Handler [GameDetailsEntry]
+getApiV1ArkhamSpectatableGamesR = do
+  userId <- getRequestUserId
+  games <- runDB $ select do
+    games <- from $ table @ArkhamGameRaw
+    where_ games.allowSpectators
+    where_ $ notExists do
+      players <- from $ table @ArkhamPlayer
+      where_ $ players.arkhamGameId ==. toBaseId games.id
+      where_ $ players.userId ==. val userId
+    where_ $ notExists do
+      grp <- from $ table @ArkhamEpicGroup
+      where_ $ grp.arkhamGameId ==. just (toBaseId games.id)
+    orderBy [desc games.updatedAt]
+    limit spectatableGamesLimit
+    pure games
+  let gameIds = map (coerce . entityKey) games :: [ArkhamGameId]
+  playerCounts <- runDB $ select do
+    p <- from $ table @ArkhamPlayer
+    where_ $ p.arkhamGameId `in_` valList gameIds
+    groupBy p.arkhamGameId
+    pure (p.arkhamGameId, countRows @Int)
+  let countMap = Map.fromList [(gid, n) | (Value gid, Value n) <- playerCounts]
+  entries <-
+    traverse
+      (\g -> tryGameDetailsEntry g (fromMaybe 0 $ Map.lookup (coerce $ entityKey g) countMap))
+      games
+  pure $ filter inPlay entries
+ where
+  inPlay = \case
+    SuccessGameDetails gd -> gd.gameState == IsActive
+    FailedGameDetails {} -> False
 
 data CreateGamePost = CreateGamePost
   { deckIds :: [Maybe ArkhamDeckId]
@@ -176,6 +247,11 @@ data CreateGamePost = CreateGamePost
   , asIfRuling :: Maybe AsIfRuling
   , ultimatumsAndBoons :: Set UltimatumOrBoon
   , achievementsEnabled :: Bool
+  , allowSpectators :: Bool
+  {- ^ list this game on the home page for anyone to watch. Off unless asked
+  for, which is also what the account default starts as. Decided here and only
+  here: nothing changes it once the game exists.
+  -}
   }
   deriving stock (Show, Generic)
 
@@ -197,6 +273,7 @@ instance FromJSON CreateGamePost where
     asIfRuling <- o .:? "asIfRuling"
     ultimatumsAndBoons <- o .:? "ultimatumsAndBoons" .!= mempty
     achievementsEnabled <- o .:? "achievementsEnabled" .!= True
+    allowSpectators <- o .:? "allowSpectators" .!= False
     pure CreateGamePost {..}
 
 -- | New Game
@@ -228,7 +305,7 @@ postApiV1ArkhamGamesR = do
               , settingsAchievementsEnabled = achievementsEnabled
               }
         }
-    ag = ArkhamGame campaignName game 0 multiplayerVariant now now
+    ag = ArkhamGame campaignName game 0 multiplayerVariant now now allowSpectators
     repeatCount = if multiplayerVariant == WithFriends then 1 else playerCount
 
   runDB do

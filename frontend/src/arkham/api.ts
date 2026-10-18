@@ -1,6 +1,6 @@
 import api from '@/api';
 import { logRowDecoder, type LogRow } from '@/arkham/types/GameLog';
-import { Game, GameDetailsEntry, gameDecoder, gameDetailsEntryDecoder } from '@/arkham/types/Game';
+import { Game, GameDetails, GameDetailsEntry, gameDecoder, gameDetailsEntryDecoder } from '@/arkham/types/Game';
 import { ArkhamDbDecklist, Deck, deckDecoder } from '@/arkham/types/Deck';
 import { CardDef, cardDefDecoder } from '@/arkham/types/CardDef';
 import { CustomCard, customCardDecoder } from '@/arkham/customCards';
@@ -193,6 +193,16 @@ export const fetchGames = async (): Promise<GameDetailsEntry[]> => {
   const { data } = await api.get('arkham/games')
   return JsonDecoder.array(gameDetailsEntryDecoder, 'GameEntryDetails[]').decodePromise(data)
 }
+
+/* Games whose players have said they are happy to be watched. Already filtered
+ * server-side to games in play that you have no seat in, so the home page shows
+ * what comes back as-is. */
+export const fetchSpectatableGames = async (): Promise<GameDetails[]> => {
+  const { data } = await api.get('arkham/games/spectatable')
+  const entries = await JsonDecoder.array(gameDetailsEntryDecoder, 'GameEntryDetails[]').decodePromise(data)
+  return entries.filter((entry) => entry.tag === 'game') as GameDetails[]
+}
+
 
 export const fetchDecks = async (): Promise<Deck[]> => {
   const { data } = await api.get('arkham/decks')
@@ -1309,7 +1319,10 @@ export const newGame = async (
   ultimatumsAndBoons?: string[],
   // Achievement tracking (only meaningful for campaigns with an achievement
   // catalog); backend defaults to true when omitted.
-  achievementsEnabled = true
+  achievementsEnabled = true,
+  // List the game on the home page for anyone to watch. Backend defaults to
+  // false when omitted.
+  allowSpectators = false
 ): Promise<Game> => {
   const { data } = await api.post('arkham/games', {
     deckIds,
@@ -1324,7 +1337,8 @@ export const newGame = async (
     strictAsIfAt,
     asIfRuling: strictAsIfAt == null ? undefined : strictAsIfAt ? 'chapter2' : 'chapter1',
     ultimatumsAndBoons,
-    achievementsEnabled
+    achievementsEnabled,
+    allowSpectators
   })
   return gameDecoder.decodePromise(data)
 }

@@ -28,6 +28,7 @@ ArkhamGame sql=arkham_games
   multiplayerVariant MultiplayerVariant
   createdAt UTCTime
   updatedAt UTCTime
+  allowSpectators Bool default=False
   deriving Generic Show
 |]
 

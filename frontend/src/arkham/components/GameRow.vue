@@ -16,9 +16,13 @@ const props = withDefaults(
     game: GameDetails
     deleteGame?: () => void
     admin?: boolean
+    /* A game on the home page's watch list: the row is the same, but the title
+     * opens the read-only view and there is no seat to claim. */
+    spectate?: boolean
   }>(),
   {
     admin: false,
+    spectate: false,
   },
 )
 const campaign = computed<CampaignDetails | null>(() => props.game.campaign)
@@ -142,6 +146,9 @@ const scenarioIcon = computed(() => {
           <router-link v-if="admin" class="title" :to="`/admin/games/${game.id}`">{{
             game.name
           }}</router-link>
+          <router-link v-else-if="spectate" class="title" :to="`/games/${game.id}/spectate`">{{
+            game.name
+          }}</router-link>
           <router-link
             v-else-if="game.hasOpenSeats"
             class="title"
@@ -150,6 +157,10 @@ const scenarioIcon = computed(() => {
           >
           <router-link v-else class="title" :to="`/games/${game.id}`">{{ game.name }}</router-link>
           <div v-if="game.multiplayerVariant === 'Solo'" class="solo">{{ $t('gameRow.solo') }}</div>
+          <div v-if="spectate" class="watching">
+            <font-awesome-icon icon="eye" />
+            {{ $t('gameRow.watch') }}
+          </div>
           <div
             v-if="game.outcome"
             class="outcome"
@@ -554,6 +565,22 @@ h2 {
 .solo {
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
+}
+
+/* Says what clicking the title does, since on this list it is not the game you
+ * sit down at. Neutral chrome, the same weight as the Solo badge: the row is
+ * still about the campaign, not about you watching it. */
+.watching {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
 }
 
 /* A finished row is desaturated, which would eat any colour here, so the badge

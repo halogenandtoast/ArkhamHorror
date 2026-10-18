@@ -8,6 +8,7 @@ import Import hiding (update, (=.), (==.))
 data UserSettings = UserSettings
   { beta :: Maybe Bool
   , phaseTransitionNotifications :: Maybe Bool
+  , allowSpectatorsByDefault :: Maybe Bool
   }
   deriving stock Generic
   deriving anyclass FromJSON
@@ -17,6 +18,10 @@ data CurrentUser = CurrentUser
   , email :: Text
   , beta :: Bool
   , phaseTransitionNotifications :: Bool
+  , allowSpectatorsByDefault :: Bool
+  {- ^ what the "allow spectators" switch starts as on the new-game form. Only
+  a starting point: the form still sends the value it was left at.
+  -}
   }
   deriving stock Generic
   deriving anyclass ToJSON
@@ -46,11 +51,26 @@ putApiV1SettingsR = do
   userId <- getRequestUserId
   settings <- requireCheckJsonBody
   runDB do
-    let UserSettings mBeta mPhaseTransitionNotifications = settings
+    let UserSettings mBeta mPhaseTransitionNotifications mAllowSpectatorsByDefault = settings
     update \u -> do
       for_ mBeta \value -> set u [UserBeta =. val value]
       for_ mPhaseTransitionNotifications \value ->
         set u [UserPhaseTransitionNotifications =. val value]
+      for_ mAllowSpectatorsByDefault \value ->
+        set u [UserAllowSpectatorsByDefault =. val value]
       where_ $ u.id ==. val userId
-    User {userUsername, userEmail, userBeta, userPhaseTransitionNotifications} <- get404 userId
-    pure $ CurrentUser userUsername userEmail userBeta userPhaseTransitionNotifications
+    User
+      { userUsername
+      , userEmail
+      , userBeta
+      , userPhaseTransitionNotifications
+      , userAllowSpectatorsByDefault
+      } <-
+      get404 userId
+    pure
+      $ CurrentUser
+        userUsername
+        userEmail
+        userBeta
+        userPhaseTransitionNotifications
+        userAllowSpectatorsByDefault

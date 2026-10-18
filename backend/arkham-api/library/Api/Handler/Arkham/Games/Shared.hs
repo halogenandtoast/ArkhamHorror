@@ -203,9 +203,32 @@ withKeepAlive inner = do
   conn <- ask
   withRunInIO \run -> withPingThread conn keepAlivePingSeconds (pure ()) (run inner)
 
+{- | What a socket on a game room may do with it.
+
+Both roles are fed the same broadcasts; they differ only in what the server
+does with what comes back up the wire. 'Watching' is not a weaker 'Answering':
+nothing authenticates a spectator, so an inbound packet from one carries no
+seat it could be attributed to and is dropped unread.
+-}
+data StreamRole = Answering | Watching
+
+-- | The socket a seated player holds: receives updates and submits answers.
 gameStream :: ArkhamGameId -> WebSocketsT Handler ()
-gameStream gameId = catchingConnectionException $ withKeepAlive do
-  userId <- lift getRequestUserId
+gameStream = gameStreamAs Answering
+
+{- | The socket a spectator holds: receives the same updates and sends nothing.
+
+Spectating used to share 'gameStream', which meant a watcher's socket accepted
+answers and could play the game it was only meant to be watching.
+-}
+spectatorStream :: ArkhamGameId -> WebSocketsT Handler ()
+spectatorStream = gameStreamAs Watching
+
+gameStreamAs :: StreamRole -> ArkhamGameId -> WebSocketsT Handler ()
+gameStreamAs role gameId = catchingConnectionException $ withKeepAlive do
+  mUserId <- case role of
+    Answering -> Just <$> lift getRequestUserId
+    Watching -> pure Nothing
   let cleanup room subId = do
         unsubscribeFromRoom room subId
         lift $ decrRoomMember gameId
@@ -227,8 +250,11 @@ gameStream gameId = catchingConnectionException $ withKeepAlive do
     let broadcast = broadcastToRoom room
     race_
       (runSubscriberSender sub)
-      (runConduit $ sourceWS .| mapM_C (handleData userId room broadcast))
+      (runConduit $ sourceWS .| mapM_C (inbound mUserId room broadcast))
  where
+  inbound Nothing _ _ = \(_ :: ByteString) -> pure ()
+  inbound (Just userId) room broadcast = handleData userId room broadcast
+
   handleData userId room broadcast dataPacket = lift do
     case eitherDecodeStrict dataPacket of
       Left err -> $(logWarn) $ tshow err
@@ -567,6 +593,7 @@ updateGame customCards response gameId mRoom = do
                 variant'
                 arkhamGameCreatedAt
                 now
+                arkhamGameAllowSpectators
         replace gameId g'
         {- In order, one row at a time, NOT every insert then every retraction.
 
@@ -1132,6 +1159,7 @@ runMessagesInGroupCore p msgs gid = do
               arkhamGameMultiplayerVariant
               arkhamGameCreatedAt
               now
+              arkhamGameAllowSpectators
         replace gid game'
         insert_
           $ ArkhamStep

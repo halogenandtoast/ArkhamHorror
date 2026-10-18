@@ -149,7 +149,14 @@ stepBack isDebug userId gameId = do
           deleteKey stepId
           revertShared
         pure
-          ( ArkhamGame rawGame.name ge (n - 1) rawGame.multiplayerVariant rawGame.createdAt rawGame.updatedAt
+          ( ArkhamGame
+              rawGame.name
+              ge
+              (n - 1)
+              rawGame.multiplayerVariant
+              rawGame.createdAt
+              rawGame.updatedAt
+              rawGame.allowSpectators
           , plan
           )
       else do
@@ -180,6 +187,7 @@ stepBack isDebug userId gameId = do
                   rawGame.multiplayerVariant
                   rawGame.createdAt
                   now
+                  rawGame.allowSpectators
             lift do
               -- Store raw Value directly, avoiding toJSON :: Game -> Value
               replace (ArkhamGameRawKey gameId)
@@ -190,6 +198,7 @@ stepBack isDebug userId gameId = do
                   rawGame.multiplayerVariant
                   rawGame.createdAt
                   now
+                  rawGame.allowSpectators
               trimLogFrom gameId (n - 1)
               deleteKey stepId
               plan <- revertShared
@@ -360,6 +369,7 @@ multiStepUndoHandler runStepBack gameId = do
                 agame.multiplayerVariant
                 agame.createdAt
                 now
+                agame.allowSpectators
 
         replace gameId g
         pure (g, gameLog, mPropagate)
@@ -529,7 +539,16 @@ stepBackToRawStep userId gameId rawGame requestedStep = runExceptT do
         Error e -> throwError $ jsonError $ T.pack e
         Success g -> pure g
 
-      let arkhamGame = ArkhamGame rawGame.name ge toStep rawGame.multiplayerVariant rawGame.createdAt now
+      let
+        arkhamGame =
+          ArkhamGame
+            rawGame.name
+            ge
+            toStep
+            rawGame.multiplayerVariant
+            rawGame.createdAt
+            now
+            rawGame.allowSpectators
 
       lift do
         -- Store raw Value directly, avoiding toJSON :: Game -> Value
@@ -542,6 +561,7 @@ stepBackToRawStep userId gameId rawGame requestedStep = runExceptT do
             rawGame.multiplayerVariant
             rawGame.createdAt
             now
+            rawGame.allowSpectators
 
         case rawGame.multiplayerVariant of
           Solo ->

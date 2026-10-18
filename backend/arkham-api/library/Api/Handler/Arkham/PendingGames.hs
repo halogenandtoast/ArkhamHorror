@@ -97,6 +97,7 @@ putApiV1ArkhamPendingGameR gameId = do
                       arkhamGameMultiplayerVariant
                       arkhamGameCreatedAt
                       now
+                      arkhamGameAllowSpectators
 
                 replace gameId game'
                 insert_
@@ -179,6 +180,7 @@ putApiV1ArkhamPendingGameR gameId = do
                   arkhamGameMultiplayerVariant
                   arkhamGameCreatedAt
                   now
+                  arkhamGameAllowSpectators
 
             replace gameId game'
             insert_

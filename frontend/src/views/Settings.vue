@@ -10,7 +10,11 @@ const store = useUserStore()
 const { currentUser } = storeToRefs(store)
 const router = useRouter()
 
-const updateSettings = async (settings: { beta: boolean; phaseTransitionNotifications: boolean }) => {
+const updateSettings = async (settings: {
+  beta: boolean
+  phaseTransitionNotifications: boolean
+  allowSpectatorsByDefault: boolean
+}) => {
   await api.put<User>('settings', settings)
   await store.setCurrentUser()
 }

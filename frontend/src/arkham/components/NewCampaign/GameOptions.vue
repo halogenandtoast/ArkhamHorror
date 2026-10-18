@@ -10,6 +10,9 @@ import { ACHIEVEMENT_CAMPAIGN_IDS } from '@/arkham/achievements'
 import { ultimatumEntryScope } from '@/arkham/homebrewData'
 import { refractionTagsFor } from '@/arkham/refractions'
 import { useSettings } from '@/stores/settings'
+import { useUserStore } from '@/stores/user'
+import { storeToRefs } from 'pinia'
+import api from '@/api'
 import { narrativeBlurb, narrativeHost, narrativesFor, type NarrativeEntry } from '@/arkham/composables/useNarrative'
 import { filterDisplayable, type DisplayRuleOptions } from '@/arkham/displayRules'
 import { campaignIdToI18n } from '@/arkham/types/Scenario'
@@ -271,6 +274,38 @@ const effectiveCampaignId = computed<string | null>(() => {
 const supportsAchievements = computed(
   () => !!effectiveCampaignId.value && ACHIEVEMENT_CAMPAIGN_IDS.includes(effectiveCampaignId.value)
 )
+
+// --- Spectators ------------------------------------------------------------------
+// Whether the game is listed on the home page for anyone to watch. Starts from
+// the account preference in Settings; what is left here is what this game gets,
+// permanently -- there is no way to change it once the game exists.
+const allowSpectators = defineModel<boolean>('allowSpectators', { required: true })
+
+/* Someone who always wants the opposite of their saved default would otherwise
+ * have to flip this on every new game, or go to Settings to change it. The
+ * button appears only when the two actually disagree, so it says what it would
+ * do rather than sitting there inert. */
+const userStore = useUserStore()
+const { currentUser } = storeToRefs(userStore)
+const spectatorsAccountDefault = computed(() => currentUser.value?.allowSpectatorsByDefault === true)
+const spectatorsDifferFromDefault = computed(() => allowSpectators.value !== spectatorsAccountDefault.value)
+const savingSpectatorsDefault = ref(false)
+/* Cleared as soon as the choice moves again, so the confirmation always refers
+ * to the value currently selected. */
+const savedSpectatorsDefault = ref(false)
+watch(allowSpectators, () => (savedSpectatorsDefault.value = false))
+
+const makeSpectatorsDefault = async () => {
+  if (savingSpectatorsDefault.value) return
+  savingSpectatorsDefault.value = true
+  try {
+    await api.put('settings', { allowSpectatorsByDefault: allowSpectators.value })
+    await userStore.setCurrentUser()
+    savedSpectatorsDefault.value = true
+  } finally {
+    savingSpectatorsDefault.value = false
+  }
+}
 
 // --- Ultimatums and Boons variant selection ------------------------------------
 // Selected enum tags flow up to NewCampaign and into the create-game POST body.
@@ -652,6 +687,30 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
 
           <input type="radio" v-model="includeTarotReadings" :value="true" id="tarotYes" />
           <label for="tarotYes">{{ $t('Yes') }}</label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">{{ $t('create.allowSpectators') }}</div>
+        <div class="segmented segmented-2">
+          <input type="radio" v-model="allowSpectators" :value="false" id="spectatorsNo" />
+          <label for="spectatorsNo">{{ $t('No') }}</label>
+
+          <input type="radio" v-model="allowSpectators" :value="true" id="spectatorsYes" />
+          <label for="spectatorsYes">{{ $t('Yes') }}</label>
+        </div>
+        <div class="achievements-desc">{{ $t('create.allowSpectatorsDescription') }}</div>
+        <button
+          v-if="spectatorsDifferFromDefault"
+          type="button"
+          class="make-default"
+          :disabled="savingSpectatorsDefault"
+          @click="makeSpectatorsDefault"
+        >
+          {{ $t('create.allowSpectatorsMakeDefault') }}
+        </button>
+        <div v-else-if="savedSpectatorsDefault" class="make-default-saved">
+          {{ $t('create.allowSpectatorsDefaultSaved') }}
         </div>
       </div>
 
@@ -1272,6 +1331,39 @@ input[type='radio']:checked + label {
   font-size: 12px;
   line-height: 1.35;
   color: rgba(255, 255, 255, 0.6);
+}
+
+/* Quiet, and sized to its own text: this is an aside about a preference, not a
+ * second thing to decide before starting the game. */
+.make-default {
+  margin-top: 8px;
+  width: fit-content;
+  padding: 5px 10px;
+  font-size: 12px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 3px;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+/* Takes the button's place rather than sitting beside it, so the card does not
+   change height at the moment you press it. */
+.make-default-saved {
+  margin-top: 8px;
+  padding: 5px 0;
+  font-size: 12px;
+  color: var(--spooky-green);
 }
 
 /* The story-text chooser follows the "As If" At cards: each option is a

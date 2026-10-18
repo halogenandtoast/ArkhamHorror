@@ -214,7 +214,7 @@ postApiV1ArkhamGamesImportR = do
               ]
         campaignInvestigatorIds = map normalizeJsonInvestigatorId $ aeCampaignPlayers export
       key <- runDB $ do
-        gameId <- insert $ ArkhamGame agedName agedCurrentData agedStep variant now now
+        gameId <- insert $ ArkhamGame agedName agedCurrentData agedStep variant now now False
         case variant of
           -- A seat per investigator, as game creation does: the importing user
           -- holds them all, and a one-row solo import leaves every other
@@ -267,7 +267,7 @@ postApiV1ArkhamGamesImportR = do
         pure gameId
       pure
         $ toPublicGame
-          (Entity key $ ArkhamGame agedName agedCurrentData agedStep variant now now)
+          (Entity key $ ArkhamGame agedName agedCurrentData agedStep variant now now False)
           -- An import's rows come straight from the export, so hand them over
           -- the same way a live read would: structured where the row has a
           -- payload, legacy text otherwise.

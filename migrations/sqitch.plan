@@ -41,3 +41,4 @@ investigator_expansion_card_sets [add_urls_to_card_sets] 2026-10-13T01:00:00Z Cl
 arkham_third_edition_tables [users] 2026-10-14T00:00:00Z Claude <noreply@anthropic.com> # Third-edition tables in the database, where a game in progress belongs
 arkham_card_set_shares [arkham_custom_card_sets users] 2026-10-15T00:00:00Z Claude <noreply@anthropic.com> # A link that hands an unpublished set to a few people, and who has used it
 arkham_game_outcomes [arkham_game_stats] 2026-10-18T00:00:00Z Claude <noreply@anthropic.com> # How a finished game ended, for the admin stats panel
+allow_spectators [arkham_games users] 2026-10-18T01:00:00Z Claude <noreply@anthropic.com> # Games a host is happy to be watched, and the account default for new ones

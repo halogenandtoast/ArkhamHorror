@@ -75,6 +75,7 @@ runGameMessage gameUUID msg = do
         arkhamGameMultiplayerVariant
         arkhamGameCreatedAt
         now
+        arkhamGameAllowSpectators
 
 gameDB :: Game -> ReaderT Game IO a -> IO a
 gameDB = flip runReaderT
@@ -99,3 +100,4 @@ setTarot gameUUID cards = do
         arkhamGameMultiplayerVariant
         arkhamGameCreatedAt
         now
+        arkhamGameAllowSpectators

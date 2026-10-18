@@ -14,7 +14,11 @@ import ArkhamBuildConnection from '@/components/ArkhamBuildConnection.vue'
 
 const props = defineProps<{
   user: User
-  updateSettings: (settings: { beta: boolean; phaseTransitionNotifications: boolean }) => void
+  updateSettings: (settings: {
+    beta: boolean
+    phaseTransitionNotifications: boolean
+    allowSpectatorsByDefault: boolean
+  }) => void
   deleteAccount: () => void
 }>()
 
@@ -26,6 +30,9 @@ const { availableLocales, locale, setLocaleMessage } = useI18n({ useScope: 'glob
 const language = ref(localStorage.getItem('language') || locale.value)
 const beta = ref(props.user.beta ? 'On' : 'Off')
 const phaseTransitionNotifications = ref(props.user.phaseTransitionNotifications === true)
+/* What the new-game form's spectators switch starts as. Only the default: it is
+ * still per-game, and this changes nothing about games already running. */
+const allowSpectatorsByDefault = ref(props.user.allowSpectatorsByDefault === true)
 const showDeleteConfirm = ref(false)
 const ALL_TABS = ['account', 'connections', 'features', 'apiKeys'] as const
 type Tab = (typeof ALL_TABS)[number]
@@ -75,6 +82,7 @@ function navigateTabs(event: KeyboardEvent) {
 const updateAccountSettings = async () => props.updateSettings({
   beta: beta.value == 'On',
   phaseTransitionNotifications: phaseTransitionNotifications.value,
+  allowSpectatorsByDefault: allowSpectatorsByDefault.value,
 })
 
 // Dev-only Epic Multiplayer flag, bound to the persisted store value via On/Off.
@@ -160,6 +168,33 @@ const updateLanguage = async (a: Event) => {
             <option value="zh-cn">简体中文/Simplified Chinese</option>
             <option value="zh">中文/Chinese</option>
           </select>
+        </section>
+
+        <section class="box column">
+          <h3>{{ $t('settingsForm.spectators') }}</h3>
+          <p>{{ $t('settingsForm.spectatorsHelp') }}</p>
+          <div class="row">
+            <label class="radio-label">
+              <input
+                type="radio"
+                name="allowSpectatorsByDefault"
+                :value="true"
+                v-model="allowSpectatorsByDefault"
+                @change="updateAccountSettings"
+              />
+              {{ $t('On') }}
+            </label>
+            <label class="radio-label">
+              <input
+                type="radio"
+                name="allowSpectatorsByDefault"
+                :value="false"
+                v-model="allowSpectatorsByDefault"
+                @change="updateAccountSettings"
+              />
+              {{ $t('Off') }}
+            </label>
+          </div>
         </section>
 
         <section class="box column danger-zone">

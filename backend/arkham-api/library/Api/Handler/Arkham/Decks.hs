@@ -239,6 +239,7 @@ putApiV1ArkhamGameDecksR gameId = do
                           arkhamGameMultiplayerVariant
                           arkhamGameCreatedAt
                           now
+                          arkhamGameAllowSpectators
 
                   replace gameId g'
                   insert_

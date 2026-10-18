@@ -684,7 +684,7 @@ createGroupGame gameName scenarioId difficulty includeTarotReadings playWithBlob
         $ setInitialScenarioMeta "blobThatAteEverythingElse" playWithBlobElse
         $ setInitialScenarioMeta "epicMultiplayer" True
         $ newScenario scenarioId newGameSeed seats difficulty includeTarotReadings
-    ag = ArkhamGame gameName game 0 WithFriends now now
+    ag = ArkhamGame gameName game 0 WithFriends now now False
   runDB do
     gameId <- P.insert ag
     P.insert_ $ ArkhamStep gameId (Choice mempty []) 0 (ActionDiff [])

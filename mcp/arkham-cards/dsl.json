@@ -1030,6 +1030,104 @@
       "revealedTokens",
       "id"
     ],
+    "legacyArities": {
+      "AddCampaignCardToDeck": [
+        2
+      ],
+      "AddedToVictory": [
+        2
+      ],
+      "AttackEnemy": [
+        6
+      ],
+      "AttemptExplore": [
+        2
+      ],
+      "CancelEachNext": [
+        2
+      ],
+      "CheckAttackOfOpportunity": [
+        2
+      ],
+      "CommitToSkillTest": [
+        2
+      ],
+      "CommittedCard": [
+        3
+      ],
+      "DrawsCards": [
+        3
+      ],
+      "EnemyAttackedSuccessfully": [
+        3
+      ],
+      "EnemySpawn": [
+        3
+      ],
+      "EnemySpawns": [
+        3
+      ],
+      "EnemyWithTokens": [
+        2
+      ],
+      "EnemyWouldTakeDamage": [
+        2
+      ],
+      "ExcessHealDamage": [
+        2
+      ],
+      "ExcessHealHorror": [
+        2
+      ],
+      "FightEnemy": [
+        7
+      ],
+      "FindEncounterCard": [
+        4
+      ],
+      "HandleGroupTargets": [
+        2
+      ],
+      "InitDeck": [
+        3
+      ],
+      "LocationWithDistanceFrom": [
+        3
+      ],
+      "ObtainCard": [
+        1
+      ],
+      "PlayerWindow": [
+        3
+      ],
+      "PreSearchFound": [
+        4
+      ],
+      "RepeatSkillTest": [
+        2
+      ],
+      "ResolvedStory": [
+        2
+      ],
+      "ScenarioEvent": [
+        2
+      ],
+      "SealedChaosToken": [
+        2
+      ],
+      "SkillTestResultOption": [
+        2
+      ],
+      "StoryMessage": [
+        2
+      ],
+      "WouldAddChaosTokensToChaosBag": [
+        3
+      ],
+      "WouldDiscoverClues": [
+        4
+      ]
+    },
     "targetProperties": [
       "keywords",
       "icons",
@@ -1092,7 +1190,8 @@
     ],
     "revelationPlacements": [
       "threatArea",
-      "playArea"
+      "playArea",
+      "none"
     ],
     "queryModes": [
       "first",
@@ -4734,7 +4833,8 @@
     ],
     "_revelationPlacementValues": [
       "threatArea",
-      "playArea"
+      "playArea",
+      "none"
     ]
   }
 }

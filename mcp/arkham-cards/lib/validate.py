@@ -363,6 +363,11 @@ def _check_sum(value: Any, sum_schema: dict, written_as: str, path: str, depth: 
             )
         ]
     if len(contents) != len(fields):
+        # A constructor that gained a field often keeps a decoder for the older,
+        # shorter form beside the derived one, and a def written then still
+        # reads. The engine accepts it, so this does.
+        if len(contents) in VOCAB.get("legacyArities", {}).get(tag, []):
+            return []
         return [
             Problem(
                 "error",
@@ -536,10 +541,10 @@ def _check_record(
 def _walk_expression(expr: Any, path: str, bound: set[str], problems: list[Problem]) -> None:
     """Check one expression, and collect the `$names` it reads."""
     if isinstance(expr, str):
-        # `$.again` is the card's own text, not a binding: the engine turns it
-        # into the address the client looks the words up by, and nothing binds
-        # a name for it.
-        if expr.startswith("$") and not expr.startswith("$."):
+        # `$.again` is the card's own text and `$label.fight` is a prompt the app
+        # already says: both are addresses the client looks words up by, and
+        # nothing binds a name for either.
+        if expr.startswith("$") and not expr.startswith("$.") and not expr.startswith("$label."):
             name = expr[1:]
             if name and name not in bound and not name.isdigit() and not _is_positional(name):
                 problems.append(
@@ -1072,14 +1077,20 @@ def _check_step(which: str, step: dict, path: str, scope: set[str], problems: li
         # written without the fields it needs simply hid the option.
         if "criteria" in option:
             # The wrapped form the builder writes, or a bare criterion, which
-            # the engine also reads. Either way it is a Criterion underneath.
+            # the engine also reads. A condition is not only a criterion
+            # though -- `runReadCondition` reads a query ("something matches"),
+            # a source test and a comparison too -- so only the shapes that can
+            # be nothing else are checked as one.
             held = option["criteria"]
             if isinstance(held, dict) and "criteria" in held:
                 held = held["criteria"]
                 where = f"{option_path}.criteria.criteria"
             else:
                 where = f"{option_path}.criteria"
-            problems.extend(check_value(held, "Criterion", where))
+            if isinstance(held, dict) and "kind" in held and "matcher" in held:
+                _check_query(held, where, problems)
+            elif not (isinstance(held, dict) and ({"source", "matches"} <= held.keys() or "eq" in held)):
+                problems.extend(check_value(held, "Criterion", where))
         _walk_steps(option.get("steps") or [], f"{option_path}.steps", option_scope, problems)
 
     # Expressions, for their $bindings and their operators. The nested step lists

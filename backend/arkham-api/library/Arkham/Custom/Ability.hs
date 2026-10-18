@@ -509,6 +509,10 @@ customRevelationPlacement def iid
   | otherwise = case customMetaMaybe revelationPlacementMetaKey def of
       Just ("threatArea" :: Text) -> Just (InThreatArea iid)
       Just "playArea" -> Just (InPlayArea iid)
+      -- What the builder writes for a card its own steps place, and for a
+      -- treachery that is discarded once it resolves: no placement, said out
+      -- loud so it is one of the answers rather than the absence of one.
+      Just "none" -> Nothing
       _ -> Nothing
 
 {- | Pick up a @distribute@ block where its ask left off.

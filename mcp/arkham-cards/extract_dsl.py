@@ -496,6 +496,38 @@ def hand_written_decoders() -> dict[str, dict[str, list[str]]]:
 
 
 #: Where the editor keeps its own list of the steps it can show.
+# Where a type keeps a decoder written by hand beside the derived one, so a
+# constructor that gained a field still reads the older, shorter form.
+COMPAT_SOURCES = [
+    ARKHAM / "Message.hs",
+    ARKHAM / "ScenarioLogKey.hs",
+    *sorted((ARKHAM / "Matcher").glob("*.hs")),
+    *sorted((ARKHAM / "Message").glob("*.hs")),
+]
+
+# `Left (a, b, c) -> pure $ Con a b c AnySource` -- the tuple is what the older
+# form carried, and the constructor is what it is read as.
+COMPAT = re.compile(r"Left\s*\(([^()]*)\)\s*->\s*(?:\n\s*)?(?:pure\s*\$\s*)?([A-Z]\w*)")
+
+
+def legacy_arities() -> dict[str, list[int]]:
+    """The shorter shapes the engine still reads, by constructor.
+
+    A def written before a constructor gained a field is not wrong -- the engine
+    decodes it -- so the arity check has to know the same thing the decoder does,
+    or every card holding one is reported as broken.
+    """
+    out: dict[str, set[int]] = {}
+    for path in COMPAT_SOURCES:
+        if not path.exists():
+            continue
+        for fields, con in COMPAT.findall(path.read_text()):
+            count = len([f for f in fields.split(",") if f.strip()])
+            if count:
+                out.setdefault(con, set()).add(count)
+    return {con: sorted(counts) for con, counts in sorted(out.items())}
+
+
 EDITOR = ROOT / "frontend/src/arkham/components/debug/StepsEditor.vue"
 
 
@@ -641,6 +673,7 @@ def main() -> int:
             + re.findall(r'prop\s*==\s*"([^"]+)"', expr_blocks.get("getProp", ""))
         ),
         "skillTestProperties": string_cases(expr_blocks.get("skillTestProp", "")),
+        "legacyArities": legacy_arities(),
         # A target answers `keywords` itself and every card reading through its
         # card, so the list is both arms rather than the cases written there.
         "targetProperties": dedup(

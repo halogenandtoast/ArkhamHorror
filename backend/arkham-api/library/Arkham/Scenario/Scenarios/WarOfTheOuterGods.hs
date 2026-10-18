@@ -333,7 +333,7 @@ instance RunMessage WarOfTheOuterGods where
         killedAndLost key = do
           resolution key
           eachInvestigator (kill attrs)
-          gameOver
+          gameOverLost
         factionKey = \case
           GreenFaction -> "greenFactionInTheLead"
           BlueFaction -> "blueFactionInTheLead"

@@ -299,7 +299,7 @@ instance RunMessage ThousandToOne where
           record TheInvestigatorsWereDevouredByTheThousandYoung
           record ShubNiggurathReignsOverAnEclipsedWorld
           selectEach UneliminatedInvestigator $ push . InvestigatorKilled (toSource attrs)
-          gameOver
+          gameOverLost
           endOfScenario
         Resolution 2 -> do
           record TheInvestigatorsEndedTheRitual

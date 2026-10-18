@@ -49,6 +49,7 @@ import Arkham.Evade qualified as Evade
 import Arkham.Exhaust qualified as Exhaust
 import Arkham.Fight
 import Arkham.Fight qualified as Fight
+import Arkham.Game.Outcome
 import Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Act
@@ -137,6 +138,32 @@ gameOverIf t = when t gameOver
 
 gameOver :: ReverseQueue m => m ()
 gameOver = push GameOver
+
+{- | End the game on a verdict the printed ending states. 'gameOver' leaves the
+verdict to be inferred instead.
+-}
+gameOverWith :: ReverseQueue m => Verdict -> m ()
+gameOverWith = push . GameOverWith
+
+-- | "The investigators win the campaign!"
+gameOverWon :: ReverseQueue m => m ()
+gameOverWon = gameOverWith $ plainly Won
+
+-- | "The investigators lose the campaign."
+gameOverLost :: ReverseQueue m => m ()
+gameOverLost = gameOverWith $ plainly Lost
+
+{- | "The investigators win the campaign\8230?" -- a win the Campaign Guide will
+not commit to. Into the Maelstrom 6 and 7 are the only printings of it.
+-}
+gameOverWonUncertain :: ReverseQueue m => m ()
+gameOverWonUncertain = gameOverWith $ Verdict Won Uncertain Nothing
+
+{- | A win with the clause the guide attaches to it, as an i18n key:
+"\8230and are never seen or heard from in the waking world again".
+-}
+gameOverWonNoting :: ReverseQueue m => Text -> m ()
+gameOverWonNoting note = gameOverWith $ Verdict Won Certain (Just note)
 
 kill :: (Sourceable source, ReverseQueue m) => source -> InvestigatorId -> m ()
 kill (toSource -> source) iid = do

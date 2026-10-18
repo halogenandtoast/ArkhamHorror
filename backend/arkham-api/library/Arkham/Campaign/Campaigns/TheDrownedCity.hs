@@ -163,7 +163,7 @@ instance RunMessage TheDrownedCity where
         storyWithChooseOneM (setTitle "title" >> p "interlude2") do
           labeled "refuse" do
             flavor $ setTitle "title" >> p "interlude3"
-            gameOver
+            gameOverLost
           labeled "accept" do
             flavor $ setTitle "title" >> p "interlude4"
             nextCampaignStep
@@ -430,7 +430,7 @@ instance RunMessage TheDrownedCity where
             li.validate (epilogue == 4) "proceedToEpilogue4"
         when (epilogue > 0) do
           scope ("epilogue" <> tshow epilogue) $ flavor $ setTitle "title" >> p "body"
-        gameOver
+        gameOverWon
         pure c
       -- Glyph cards push @campaignSpecific "translateGlyph" ("rune_<letter>", "<word>")@
       -- when translated; record the rune letter into the DiscoveredGlyphs set so the

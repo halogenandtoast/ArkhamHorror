@@ -1018,7 +1018,7 @@ instance RunMessage CongressOfTheKeys where
         Resolution 2 -> do
           record TheCellWasHollowed
           resolution "resolution2"
-          gameOver
+          gameOverLost
         _ -> error "missing resolution"
       pure s
     _ -> CongressOfTheKeys <$> liftRunMessage msg attrs

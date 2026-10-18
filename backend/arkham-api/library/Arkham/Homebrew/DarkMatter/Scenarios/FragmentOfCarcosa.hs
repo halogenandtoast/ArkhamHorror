@@ -206,7 +206,7 @@ instance RunMessage FragmentOfCarcosa where
           resolution "resolution1"
           record TheInvestigatorsAreTrappedWithinCarcosa
           eachInvestigator drivenInsane
-          gameOver
+          gameOverLost
         Resolution 2 -> do
           earnXp attrs "resolution2"
           addImpendingDoom 2

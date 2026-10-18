@@ -213,7 +213,7 @@ instance RunMessage TheHeartOfMadnessPart1 where
           story $ i18nWithTitle "resolution3"
           record TheSealWasUsedImproperly
           eachInvestigator (kill attrs)
-          gameOver
+          gameOverLost
         _ -> throwIO $ UnknownResolution r
       pure s
     HandleOption option -> do

@@ -234,7 +234,7 @@ instance RunMessage BeforeTheBlackThrone where
           resolution "resolution1"
           record AzathothDevouredTheUniverse
           eachInvestigator (kill attrs)
-          gameOver
+          gameOverLost
         Resolution 2 -> do
           readInvestigatorDefeat
           resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs $ toBonus "resolution2" 5

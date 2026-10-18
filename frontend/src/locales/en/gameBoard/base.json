@@ -8,6 +8,16 @@
     "showInviteLink": "Invite them with this url:",
 
     "gameOver": "Game over",
+    "campaignWon": "The campaign is won",
+    "campaignLost": "The campaign is lost",
+    "scenarioWon": "The scenario is won",
+    "scenarioLost": "The scenario is lost",
+    "campaignWonUncertain": "The campaign is won\u2026?",
+    "outcomeUncertain": "The Campaign Guide prints this ending as \u201cThe investigators win the campaign\u2026?\u201d and does not say more.",
+    "outcomeNote": {
+        "neverSeenInTheWakingWorld": "\u2026and are never seen or heard from in the waking world again.",
+        "neverSeenOrHeardFromAgain": "\u2026but are never seen or heard from again."
+    },
     "watchReplay": "Watch Replay",
 
     "submit": "Submit",

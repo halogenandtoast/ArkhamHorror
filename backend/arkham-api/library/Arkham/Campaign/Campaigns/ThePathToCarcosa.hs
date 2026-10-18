@@ -145,7 +145,7 @@ instance RunMessage ThePathToCarcosa where
         unless (null investigators) $ storyOnlyBuild investigators do
           setTitle "title"
           p "body"
-        gameOver
+        gameOverWon
         pure c
       Defeated (EnemyTarget _) cardId _ _ -> do
         card <- getCard cardId

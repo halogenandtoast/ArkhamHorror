@@ -167,7 +167,7 @@ instance RunMessage TheDunwichLegacy where
                 p "intro"
                 p $ if warned then "epilogue2" else "epilogue1"
             )
-        gameOver
+        gameOverWon
         pure c
       HandleOption PlayersDoNotControlStoryAssetClues -> do
         pure $ TheDunwichLegacy $ c.attrs & logL . optionsL %~ insertSet PlayersDoNotControlStoryAssetClues

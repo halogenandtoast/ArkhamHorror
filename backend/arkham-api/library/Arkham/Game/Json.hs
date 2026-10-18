@@ -69,6 +69,8 @@ instance ToJSON Game where
       , "gameRemovedFromPlay" .= gameRemovedFromPlay g
       , "gameInSetup" .= gameInSetup g
       , "gameGameState" .= gameGameState g
+      , "gameOutcome" .= gameOutcome g
+      , "gameLastResolution" .= gameLastResolution g
       , "gameSkillTestResults" .= gameSkillTestResults g
       , "gameEnemyMoving" .= gameEnemyMoving g
       , "gameEnemyEvading" .= gameEnemyEvading g
@@ -145,6 +147,8 @@ instance ToJSON Game where
       <> ("gameRemovedFromPlay" .= gameRemovedFromPlay g)
       <> ("gameInSetup" .= gameInSetup g)
       <> ("gameGameState" .= gameGameState g)
+      <> ("gameOutcome" .= gameOutcome g)
+      <> ("gameLastResolution" .= gameLastResolution g)
       <> ("gameSkillTestResults" .= gameSkillTestResults g)
       <> ("gameEnemyMoving" .= gameEnemyMoving g)
       <> ("gameEnemyEvading" .= gameEnemyEvading g)
@@ -230,6 +234,9 @@ instance FromJSON Game where
     gameRemovedFromPlay <- o .: "gameRemovedFromPlay"
     gameInSetup <- o .: "gameInSetup"
     gameGameState <- o .: "gameGameState"
+    -- Games that finished before outcomes were recorded have none.
+    gameOutcome <- o .:? "gameOutcome" .!= Nothing
+    gameLastResolution <- o .:? "gameLastResolution" .!= Nothing
     gameSkillTestResults <- o .: "gameSkillTestResults"
     gameEnemyMoving <- o .: "gameEnemyMoving"
     gameEnemyEvading <- o .: "gameEnemyEvading"

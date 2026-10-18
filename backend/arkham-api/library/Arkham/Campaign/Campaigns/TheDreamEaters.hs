@@ -735,7 +735,7 @@ instance RunMessage TheDreamEaters where
         pure c
       CampaignStep EpilogueStep -> do
         case campaignMode meta of
-          PartialMode _ -> push GameOver
+          PartialMode _ -> gameOverWon
           FullMode -> do
             invasionHasBegun <- getHasRecord TheDreamQuest Nyarlathotep'sInvasionHasBegun
             awoke <- getHasRecord TheDreamQuest TheDreamersAwoke
@@ -828,7 +828,7 @@ instance RunMessage TheDreamEaters where
             $ buildFlavor
             $ campaignTitledGreenFlavorText "brokeTheLawOfUlthar"
           for_ iids $ push . InvestigatorKilled (toSource attrs)
-        push GameOver
+        gameOverWon
         pure c
       InTheDreamQuest msg' -> do
         case currentCampaignMode meta of

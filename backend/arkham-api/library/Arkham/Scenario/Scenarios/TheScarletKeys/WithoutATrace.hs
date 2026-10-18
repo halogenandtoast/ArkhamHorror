@@ -332,7 +332,7 @@ instance RunMessage WithoutATrace where
         NoResolution -> do
           record TheCellWasHollowed
           resolution "noResolution"
-          gameOver
+          gameOverLost
         Resolution 1 -> do
           record TheCellKnowsTheTrueNatureOfTheCoterie
           record AlikiIsOnYourSide

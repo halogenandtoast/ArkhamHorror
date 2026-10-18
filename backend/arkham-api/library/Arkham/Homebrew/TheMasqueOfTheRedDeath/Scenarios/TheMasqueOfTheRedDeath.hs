@@ -123,7 +123,7 @@ instance RunMessage TheMasqueOfTheRedDeath where
           record TheRedDeathRavagedArkham
           resolution "resolution1"
           eachInvestigator (kill attrs)
-          gameOver
+          gameOverLost
         Resolution 2 -> do
           record TheRedDeathWasEnded
           resolutionWithXp "resolution2" $ allGainXp' attrs

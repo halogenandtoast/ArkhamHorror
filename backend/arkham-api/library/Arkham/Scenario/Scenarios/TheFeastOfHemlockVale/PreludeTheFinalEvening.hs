@@ -234,7 +234,7 @@ instance RunMessage PreludeTheFinalEvening where
               endOfScenarioThen Steps.PreludeTheFinalEvening
             labeled "loseTheCampaign" do
               eachInvestigator (kill attrs)
-              gameOver
+              gameOverLost
         Resolution 4 -> do
           resolutionWithXp "resolution4" $ allGainXp' attrs
           endOfScenarioThen Steps.FateOfTheVale

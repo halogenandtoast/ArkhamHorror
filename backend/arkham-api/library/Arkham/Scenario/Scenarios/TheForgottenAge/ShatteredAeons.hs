@@ -323,7 +323,7 @@ instance RunMessage ShatteredAeons where
           resolution "resolution4"
           record TheFabricOfTimeIsUnwoven
           eachInvestigator drivenInsane
-          gameOver
+          gameOverLost
           pure s
         Resolution 5 -> do
           mrelic <- selectOne $ AssetWithTitle "Relic of Ages"

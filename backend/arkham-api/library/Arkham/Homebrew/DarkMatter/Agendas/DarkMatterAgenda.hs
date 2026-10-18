@@ -54,7 +54,7 @@ instance RunMessage DarkMatterAgenda where
     one that fires for every elimination path (the last investigator's own
     windows are skipped once nobody is left). -}
     HandleNoRemainingInvestigators (isTarget attrs -> True) -> do
-      if onSide D attrs then gameOver else advanceAgenda attrs
+      if onSide D attrs then gameOverLost else advanceAgenda attrs
       pure a
     {- Agenda 1d:
 
@@ -63,6 +63,6 @@ instance RunMessage DarkMatterAgenda where
     AdvanceAgenda (isSide D attrs -> True) -> do
       push $ SetNoRemainingInvestigatorsHandler (toTarget attrs)
       eachInvestigator $ kill attrs
-      gameOver
+      gameOverLost
       pure a
     _ -> DarkMatterAgenda <$> liftRunMessage msg attrs

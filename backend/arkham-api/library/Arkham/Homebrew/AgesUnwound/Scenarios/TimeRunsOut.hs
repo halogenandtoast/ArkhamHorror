@@ -251,7 +251,7 @@ instance RunMessage TimeRunsOut where
           record AllTimesAreOne
           resolution "resolution1"
           eachInvestigator drivenInsane
-          gameOver
+          gameOverLost
         Resolution 2 -> do
           {- "record that the investigators bound Aforgomon in a prison of time. /
           For each investigator who ended the game with at least 1 copy of the

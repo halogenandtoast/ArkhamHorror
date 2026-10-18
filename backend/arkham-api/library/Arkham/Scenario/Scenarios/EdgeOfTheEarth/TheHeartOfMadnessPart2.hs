@@ -261,7 +261,7 @@ instance RunMessage TheHeartOfMadnessPart2 where
           partners <- getRemainingPartners
           for_ partners (`setPartnerStatus` Eliminated)
           eachInvestigator drivenInsane
-          gameOver
+          gameOverLost
         Resolution 1 -> do
           xp <- allGainXpWithBonus' attrs $ toBonus "bonus.resolution1" 10
           story $ withVars ["xp" .= xp] $ i18nWithTitle "resolution1"

@@ -664,7 +664,11 @@
     "locationLocked": "This location is currently locked."
   },
   "gameRow": {
-    "solo": "Solo"
+    "solo": "Solo",
+    "won": "Won",
+    "lost": "Lost",
+    "wonUncertain": "Won?",
+    "outcomeUncertain": "The Campaign Guide prints this ending as \u201cThe investigators win the campaign\u2026?\u201d and does not say more."
   },
   "replay": {
     "restart": "Restart",
@@ -1536,6 +1540,10 @@
       "abandonedBeforeStart": "Never started",
       "scenariosPlayed": "Scenarios played",
       "scenarioSuccess": "Scenario success",
+      "campaignSuccess": "Campaign success",
+      "ending": "Ending",
+      "result": "Result",
+      "games": "Games",
       "playerMix": "Player mix",
       "difficultyMix": "Difficulty mix"
     },
@@ -1560,6 +1568,23 @@
     "achievementsSub": "Share of the {n} people who have earned at least one achievement. Rarest first.",
     "inProgressN": "{n} in progress",
     "noAchievements": "Nobody has earned an achievement yet.",
+    "won": "Won",
+    "lost": "Lost",
+    "outcomeUnknown": "Outcome unknown",
+    "outcomeUnknownSub": "Finished before the engine recorded how a game ended. Press Work out outcomes to reconstruct them from what each campaign left behind.",
+    "backfillOutcomes": "Work out outcomes",
+    "backfillingOutcomes": "Working out outcomes\u2026",
+    "backfillFailed": "Could not work out outcomes.",
+    "backfillResult": "Worked out {computed}; {remaining} still unknown.",
+    "backfillUndecided": "{undecided} could not be judged and were left alone.",
+    "backfillDone": "Every finished game has an outcome.",
+    "endingsHeading": "Campaign endings",
+    "endingsSub": "Which ending each campaign\u2019s runs actually stopped on, most common first. Only runs with a known outcome appear. \u201cNo resolution\u201d is a final scenario lost or resigned out of.",
+    "noEndings": "No campaign has recorded an ending yet.",
+    "noResolution": "No resolution",
+    "uncertain": "(stated as \u201cwin the campaign\u2026?\u201d)",
+    "ofWhichUncertain": "{n} stated as \u201c\u2026?\u201d",
+    "resolutionN": "Resolution {n}",
     "nPlayerPlus": "{n}+ players"
   }
 }

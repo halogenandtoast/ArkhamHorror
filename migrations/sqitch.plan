@@ -40,3 +40,4 @@ add_features_to_users [users] 2026-10-13T00:00:00Z Claude <noreply@anthropic.com
 investigator_expansion_card_sets [add_urls_to_card_sets] 2026-10-13T01:00:00Z Claude <noreply@anthropic.com> # Expansion icon, custom tokens and custom keywords on a card set
 arkham_third_edition_tables [users] 2026-10-14T00:00:00Z Claude <noreply@anthropic.com> # Third-edition tables in the database, where a game in progress belongs
 arkham_card_set_shares [arkham_custom_card_sets users] 2026-10-15T00:00:00Z Claude <noreply@anthropic.com> # A link that hands an unpublished set to a few people, and who has used it
+arkham_game_outcomes [arkham_game_stats] 2026-10-18T00:00:00Z Claude <noreply@anthropic.com> # How a finished game ended, for the admin stats panel

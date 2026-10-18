@@ -231,7 +231,7 @@ instance RunMessage WhereDoomAwaits where
           resolution "resolution2"
           record YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
           eachInvestigator drivenInsane
-          gameOver
+          gameOverLost
         other -> throwIO $ UnknownResolution other
       pure s
     PlacedLocation name _ lid -> do

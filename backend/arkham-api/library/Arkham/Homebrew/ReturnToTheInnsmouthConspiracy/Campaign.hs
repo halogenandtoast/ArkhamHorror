@@ -80,6 +80,6 @@ instance RunMessage ReturnToTheInnsmouthConspiracy where
                     recordTheHorribleTruth
                     story $ i18nWithTitle "flashback15"
                   else story $ i18nWithTitle "epilogue2"
-              gameOver
+              gameOverWon
               pure c
         _ -> ReturnToTheInnsmouthConspiracy <$> liftRunMessage msg innsmouthConspiracy'

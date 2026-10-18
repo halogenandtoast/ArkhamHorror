@@ -849,6 +849,14 @@ export type StatTotals = {
   // Never got past deck selection: games nobody actually sat down to.
   neverStarted: number
   players: number
+  // Finished games whose outcome is known, and those that ended before outcomes
+  // were tracked and have not been reconstructed yet.
+  won: number
+  // Of the wins, how many the Campaign Guide prints as "The investigators win
+  // the campaign…?" rather than stating outright.
+  wonUncertain: number
+  lost: number
+  outcomeUnknown: number
 }
 
 export type CampaignStat = {
@@ -861,6 +869,11 @@ export type CampaignStat = {
   // mean something for a campaign nobody has finished yet.
   scenariosPlayed: number
   scenariosWon: number
+  // Runs that reached a winning ending, a losing one, and ones that finished
+  // with no outcome on record.
+  won: number
+  lost: number
+  outcomeUnknown: number
   players1: number
   players2: number
   players3: number
@@ -875,6 +888,8 @@ export type StandaloneStat = {
   id: string
   games: number
   finished: number
+  won: number
+  lost: number
   isSideStory: boolean
 }
 
@@ -896,6 +911,20 @@ export type CampaignProgress = {
   games: number
 }
 
+/* Which ending a campaign's runs stopped on. `resolution` is null for a scenario
+ * lost or resigned out of, the one ending with no number. Only games with a known
+ * outcome appear. */
+export type CampaignEnding = {
+  campaignId: string
+  scenarioId: string
+  resolution: number | null
+  result: 'Won' | 'Lost'
+  certainty: 'Certain' | 'Uncertain'
+  /** i18n key for the clause the guide attaches to the verdict, if any. */
+  note: string | null
+  count: number
+}
+
 export type AchievementStat = { id: string; earned: number; inProgress: number }
 
 export type GameStats = {
@@ -911,6 +940,7 @@ export type GameStats = {
   sideStoriesInCampaigns: SideStoryInCampaign[]
   scenarioOutcomes: ScenarioOutcome[]
   campaignProgress: CampaignProgress[]
+  campaignEndings: CampaignEnding[]
   achievements: AchievementStat[]
   // Users who have earned at least one achievement: the denominator that does
   // not count people who never played as having failed to earn it.
@@ -929,6 +959,22 @@ export const fetchGameStats = async (): Promise<GameStats> => {
 // Rebuilds the view and returns the fresh numbers in the same response.
 export const refreshGameStats = async (): Promise<GameStats> => {
   const { data } = await api.post('admin/game-stats/refresh', {})
+  return data
+}
+
+/* One pass of the outcomes backfill, for games that finished before the engine
+ * recorded how they ended. Bounded per call, so the panel repeats it until
+ * `remaining` stops falling. `undecided` is games it looked at and would not
+ * guess about — a campaign abandoned between scenarios with nothing resolved. */
+export type OutcomesBackfill = {
+  computed: number
+  undecided: number
+  remaining: number
+  durationMs: number
+}
+
+export const backfillGameOutcomes = async (): Promise<OutcomesBackfill> => {
+  const { data } = await api.post('admin/game-stats/outcomes', {})
   return data
 }
 

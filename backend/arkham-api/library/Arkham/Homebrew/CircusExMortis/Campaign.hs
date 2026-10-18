@@ -393,7 +393,7 @@ instance RunMessage CircusExMortis where
         else do
           flavor $ setTitle "title" >> p "restAssured"
           record TheNewMoonCircusWasNeverSeenAgain
-      gameOver
+      gameOverWon
       pure c
     -- Moon tokens, end of round (guide p1): for each moon token sealed on
     -- your investigator card, you must choose to keep it sealed or take 1

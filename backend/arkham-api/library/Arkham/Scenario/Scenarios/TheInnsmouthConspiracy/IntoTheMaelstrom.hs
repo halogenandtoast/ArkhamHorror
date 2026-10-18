@@ -262,17 +262,17 @@ instance RunMessage IntoTheMaelstrom where
           resolution "resolution6"
           record AgentHarpersMissionIsCompleteButAtWhatCost
           eachInvestigator (`sufferMentalTrauma` 2)
-          gameOver
+          gameOverWonUncertain
         Resolution 7 -> do
           resolution "resolution7"
           record TheRichesOfTheDeepAreLostForeverButAtWhatCost
           eachInvestigator (`sufferMentalTrauma` 2)
-          gameOver
+          gameOverWonUncertain
         Resolution 8 -> do
           resolution "resolution8"
           record TheDeepOnesHaveFloodedTheEarth
           eachInvestigator (kill attrs)
-          gameOver
+          gameOverLost
         _ -> error "Unknown resolution"
       pure s
     _ -> IntoTheMaelstrom <$> liftRunMessage msg attrs

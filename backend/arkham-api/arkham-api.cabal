@@ -4061,6 +4061,7 @@ library
       Arkham.Game.Base
       Arkham.Game.Diff
       Arkham.Game.Json
+      Arkham.Game.Outcome
       Arkham.Game.Runner
       Arkham.Game.Settings
       Arkham.Game.State
@@ -9355,6 +9356,7 @@ library
       Entity.Arkham.Epic
       Entity.Arkham.Game
       Entity.Arkham.GameArchive
+      Entity.Arkham.GameOutcome
       Entity.Arkham.GameRaw
       Entity.Arkham.LogEntry
       Entity.Arkham.Player

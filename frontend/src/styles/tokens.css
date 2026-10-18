@@ -77,6 +77,16 @@
   --box-background: #353b49;
   --box-border: #434c5e;
 
+  /* How a finished game reads. The -finished pair is the grey a finished row
+     settles to; the outcome pair tints it by verdict, and the -dark variants are
+     the solid fills behind the game-over headline. */
+  --box-background-finished: #3b3b3b;
+  --box-border-finished: #4c4c4c;
+  --outcome-won: #4ade80;
+  --outcome-lost: #f87171;
+  --outcome-won-dark: #1c522c;
+  --outcome-lost-dark: #5e1818;
+
   --title: #cecece;
   --green-title: #38615F;
   --text: white;

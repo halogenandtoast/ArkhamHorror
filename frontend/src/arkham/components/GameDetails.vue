@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
 import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Difficulty } from '@/arkham/types/Difficulty';
@@ -37,6 +38,16 @@ const box = computed(() => {
 
   return null
 })
+const { t } = useI18n()
+
+/* The one thing worth saying about a badge: that the Campaign Guide itself
+ * hedged the ending. */
+const outcomeTooltip = computed(() => {
+  const o = props.game.outcome
+  if (o?.certainty !== 'Uncertain') return null
+  return t('gameRow.outcomeUncertain')
+})
+
 </script>
 
 <template>
@@ -55,6 +66,20 @@ const box = computed(() => {
           <span>{{scenario.name.title}}</span>
         </div>
         <div class="game-difficulty">{{difficulty}}</div>
+        <div
+          v-if="game.outcome"
+          class="outcome"
+          :class="game.outcome.result === 'Won' ? 'won' : 'lost'"
+          v-tooltip="outcomeTooltip"
+        >
+          {{
+              game.outcome.result === 'Lost'
+                ? $t('gameRow.lost')
+                : game.outcome.certainty === 'Uncertain'
+                  ? $t('gameRow.wonUncertain')
+                  : $t('gameRow.won')
+            }}
+        </div>
       </div>
       <div class="game-subdetails">
         <slot></slot>
@@ -64,6 +89,30 @@ const box = computed(() => {
 </template>
 
 <style scoped>
+/* A finished row is desaturated, so the badge stays neutral chrome and lets the
+ * word carry the verdict. */
+.outcome {
+  text-transform: uppercase;
+  font-size: 0.75em;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* Still the neutral chrome grey, tinted just enough to be read at a glance in a
+   list. The verdict's own color lives on the game-over screen. */
+.outcome.won {
+  background: color-mix(in srgb, var(--outcome-won) 16%, transparent);
+  border-color: color-mix(in srgb, var(--outcome-won) 30%, transparent);
+}
+
+.outcome.lost {
+  background: color-mix(in srgb, var(--outcome-lost) 16%, transparent);
+  border-color: color-mix(in srgb, var(--outcome-lost) 30%, transparent);
+}
+
 h2 {
   color: #6E8644;
   font-size: 2em;

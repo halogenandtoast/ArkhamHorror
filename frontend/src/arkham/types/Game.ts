@@ -30,6 +30,53 @@ import { History, historyDecoder } from '@/arkham/types/History';
 
 type GameState = { tag: 'IsPending', contents: string[] } | { tag: 'IsActive' } | { tag: 'IsOver' } | { tag: 'IsChooseDecks', contents: string[] };
 
+export type GameResult = 'Won' | 'Lost'
+
+/** Whether the ending declared the verdict or it was reconstructed afterwards. */
+export type OutcomeSource = 'Recorded' | 'Inferred'
+
+export type Resolution = { tag: 'NoResolution' } | { tag: 'Resolution', contents: number }
+
+/** The ending a finished game stopped on. */
+export type Ending = {
+  scenario: string
+  resolution: Resolution
+}
+
+/** 'Uncertain' is an ending the Campaign Guide prints as "The investigators win
+ * the campaign…?" — a win it will not commit to. */
+export type Certainty = 'Certain' | 'Uncertain'
+
+export type GameOutcome = {
+  result: GameResult
+  certainty: Certainty
+  /** i18n key for the clause the guide attaches to the verdict, if any. */
+  note: string | null
+  ending: Ending | null
+  source: OutcomeSource
+}
+
+const resolutionDecoder = JsonDecoder.oneOf<Resolution>(
+  [
+    JsonDecoder.object({ tag: JsonDecoder.literal('NoResolution') }, 'NoResolution'),
+    JsonDecoder.object({ tag: JsonDecoder.literal('Resolution'), contents: JsonDecoder.number() }, 'Resolution'),
+  ],
+  'Resolution'
+)
+
+const endingDecoder = JsonDecoder.object<Ending>({
+  scenario: JsonDecoder.string(),
+  resolution: resolutionDecoder,
+}, 'Ending')
+
+export const gameOutcomeDecoder = JsonDecoder.object<GameOutcome>({
+  result: JsonDecoder.oneOf<GameResult>([JsonDecoder.literal('Won'), JsonDecoder.literal('Lost')], 'GameResult'),
+  certainty: withDefault<Certainty>('Certain', JsonDecoder.oneOf<Certainty>([JsonDecoder.literal('Certain'), JsonDecoder.literal('Uncertain')], 'Certainty')),
+  note: withDefault<string | null>(null, JsonDecoder.nullable(JsonDecoder.string())),
+  ending: JsonDecoder.nullable(endingDecoder),
+  source: JsonDecoder.oneOf<OutcomeSource>([JsonDecoder.literal('Recorded'), JsonDecoder.literal('Inferred')], 'OutcomeSource'),
+}, 'GameOutcome')
+
 type AsIfRuling = 'chapter1' | 'chapter2'
 
 type GameSettings = {
@@ -76,6 +123,8 @@ export type GameDetails = {
   scenario: ScenarioDetails | null;
   campaign: CampaignDetails | null;
   gameState: GameState;
+  /** How it ended, for a finished game. */
+  outcome: GameOutcome | null;
   name: string;
   investigators: InvestigatorDetails[];
   otherInvestigators: InvestigatorDetails[];
@@ -111,6 +160,8 @@ export type Game = {
   enemies: Record<string, Enemy>;
   stories: Record<string, Story>;
   gameState: GameState;
+  /** How it ended, for a finished game. */
+  outcome: GameOutcome | null;
   /** False once EndSetup has run, i.e. the scenario is actually under way. */
   inSetup: boolean;
   investigators: Record<string, Investigator>;
@@ -333,6 +384,7 @@ export const gameDetailsDecoder = JsonDecoder.object<GameDetails>(
     scenario: JsonDecoder.nullable(scenarioDetailsDecoder),
     campaign: JsonDecoder.nullable(campaignDetailsDecoder),
     gameState: gameStateDecoder,
+    outcome: withDefault<GameOutcome | null>(null, JsonDecoder.nullable(gameOutcomeDecoder)),
     name: JsonDecoder.string(),
     investigators: JsonDecoder.array(investigatorDetailsDecoder, 'InvestigatorDetails[]'),
     otherInvestigators: JsonDecoder.array(investigatorDetailsDecoder, 'InvestigatorDetails[]'),
@@ -367,6 +419,7 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
     enemies: JsonDecoder.record<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
     stories: JsonDecoder.record<Story>(storyDecoder, 'Dict<UUID, Story>'),
     gameState: gameStateDecoder,
+    outcome: withDefault<GameOutcome | null>(null, JsonDecoder.nullable(gameOutcomeDecoder)),
     inSetup: withDefault(false, JsonDecoder.boolean()),
     investigators: JsonDecoder.record<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
     otherInvestigators: JsonDecoder.record<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),

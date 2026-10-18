@@ -97,7 +97,7 @@ instance RunMessage AgesUnwound where
       silverTwilight <- getHasRecord YouHaveAdvancedTheSchemesOfTheSilverTwilightLodge
       flavor $ setTitle "title" >> p (if bound then "bound" else "allTimesAreOne")
       when silverTwilight $ flavor $ setTitle "title" >> p "silverTwilight"
-      gameOver
+      gameOverWon
       pure c
     {- "When a card from the dummy deck would leave play, instead shuffle it back
     into the dummy deck." Every player card that leaves play funnels through

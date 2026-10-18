@@ -289,7 +289,7 @@ resolution1 attrs = do
       record YouHaveReturnedToThePalacesOfDimCarcosa
       for_ remaining (kill attrs)
       -- "The investigators lose the campaign." — The End 1 has no epilogue.
-      gameOver
+      gameOverLost
  where
   survivors key logKey iids = do
     resolutionOnly iids $ scope key $ setTitle "title" >> p "body"

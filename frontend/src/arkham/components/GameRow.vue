@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
 import { computed, onMounted, ref } from 'vue'
 import { customInvestigatorUsesCardPortrait, portraitImage } from '@/arkham/cardImages'
 import { fetchCustomCards } from '@/arkham/api'
@@ -23,6 +24,15 @@ const props = withDefaults(
 const campaign = computed<CampaignDetails | null>(() => props.game.campaign)
 const scenario = computed<ScenarioDetails | null>(() => props.game.scenario)
 const deleting = ref(false)
+const { t } = useI18n()
+
+/* The one thing worth saying about a badge: that the Campaign Guide itself
+ * hedged the ending. */
+const outcomeTooltip = computed(() => {
+  const o = props.game.outcome
+  if (o?.certainty !== 'Uncertain') return null
+  return t('gameRow.outcomeUncertain')
+})
 
 const difficulty = computed<Difficulty>(() => {
   if (campaign.value) {
@@ -112,7 +122,14 @@ const scenarioIcon = computed(() => {
 </script>
 
 <template>
-  <div class="game" :class="{ 'finished-game': game.gameState.tag == 'IsOver' }">
+  <div
+    class="game"
+    :class="{
+      'finished-game': game.gameState.tag == 'IsOver',
+      won: game.outcome?.result === 'Won',
+      lost: game.outcome?.result === 'Lost',
+    }"
+  >
     <div class="game-details">
       <div class="game-title">
         <div class="main-details">
@@ -133,6 +150,20 @@ const scenarioIcon = computed(() => {
           >
           <router-link v-else class="title" :to="`/games/${game.id}`">{{ game.name }}</router-link>
           <div v-if="game.multiplayerVariant === 'Solo'" class="solo">{{ $t('gameRow.solo') }}</div>
+          <div
+            v-if="game.outcome"
+            class="outcome"
+            :class="game.outcome.result === 'Won' ? 'won' : 'lost'"
+            v-tooltip="outcomeTooltip"
+          >
+            {{
+              game.outcome.result === 'Lost'
+                ? $t('gameRow.lost')
+                : game.outcome.certainty === 'Uncertain'
+                  ? $t('gameRow.wonUncertain')
+                  : $t('gameRow.won')
+            }}
+          </div>
         </div>
         <div v-if="campaign && scenario && scenarioIcon" class="scenario-details">
           <img class="scenario-icon" :src="scenarioIcon" />
@@ -462,11 +493,31 @@ h2 {
   }
 }
 
+/* A finished row is greyed out, but the grey is stated outright and the
+   desaturation moved onto the contents -- a filter on the row would flatten any
+   tint the row itself carries. */
 .finished-game {
-  filter: saturate(0);
+  background-color: var(--box-background-finished);
+  border-color: var(--box-border-finished);
+
+  > .game-details {
+    filter: saturate(0);
+  }
+
   svg:hover {
     filter: saturate(1);
   }
+}
+
+/* Just enough of the verdict to read down a list of finished games. */
+.finished-game.won {
+  background-color: color-mix(in srgb, var(--box-background-finished) 92%, var(--outcome-won));
+  border-color: color-mix(in srgb, var(--box-border-finished) 86%, var(--outcome-won));
+}
+
+.finished-game.lost {
+  background-color: color-mix(in srgb, var(--box-background-finished) 92%, var(--outcome-lost));
+  border-color: color-mix(in srgb, var(--box-border-finished) 86%, var(--outcome-lost));
 }
 
 .other-subdetails {
@@ -503,6 +554,18 @@ h2 {
 .solo {
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
+}
+
+/* A finished row is desaturated, which would eat any colour here, so the badge
+ * reads as neutral chrome and lets the word carry the verdict. */
+.outcome {
+  text-transform: uppercase;
+  font-size: 0.75em;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .claim-seat-link {

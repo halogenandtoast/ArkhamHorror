@@ -9,6 +9,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.TheDreamEaters.AgentsOfNyarlathotep qualified as Enemies
 import Arkham.Enemy.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Enemies
 import Arkham.Exception
+import Arkham.Game.Outcome (neverSeenInTheWakingWorld)
 import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
 import Arkham.Helpers.FlavorText (li, setup, ul)
@@ -166,7 +167,7 @@ instance RunMessage WhereTheGodsDwell where
         NoResolution -> do
           resolution "noResolution"
           record Nyarlathotep'sInvasionHasBegun
-          whenM getIsTheDreamQuest $ push GameOver
+          whenM getIsTheDreamQuest gameOverLost
           endOfScenario
         Resolution 1 -> do
           resolutionWithXp "resolution1" $ allGainXp' attrs
@@ -199,12 +200,12 @@ instance RunMessage WhereTheGodsDwell where
         Resolution 3 -> do
           resolution "resolution3"
           record TheDreamersAwoke
-          whenM getIsTheDreamQuest $ push GameOver
+          whenM getIsTheDreamQuest gameOverWon
           endOfScenario
         Resolution 4 -> do
           resolution "resolution4"
           record TheDreamersStayedInTheDreamlandsForever
-          whenM getIsTheDreamQuest $ push GameOver
+          whenM getIsTheDreamQuest $ gameOverWonNoting neverSeenInTheWakingWorld
           endOfScenario
         Resolution 5 -> do
           resolution "resolution5"

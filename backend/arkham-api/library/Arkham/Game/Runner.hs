@@ -52,6 +52,7 @@ import Arkham.Event.Types
 import Arkham.Game.Base
 import Arkham.Game.Diff
 import Arkham.Game.Json ()
+import Arkham.Game.Outcome
 import Arkham.Game.Settings (
   activeUltimatumsAndBoons,
   settingsAsIfRuling,
@@ -63,6 +64,7 @@ import Arkham.Game.Settings (
 import Arkham.Game.State
 import Arkham.Game.Utils
 import Arkham.GameEnv
+import Arkham.GameT (GameT)
 import Arkham.Helpers
 import Arkham.Helpers.Ability (abilityRidesAlong, isForcedAbility)
 import Arkham.Helpers.Action (getPreventedActions, getPreventedPlayerAbilities)
@@ -310,6 +312,41 @@ isPerTurnLimit :: CardLimit -> Bool
 isPerTurnLimit = \case
   MaxPerTurn _ -> True
   _ -> False
+
+{- | Stop the game, recording how it ended.
+
+@mverdict@ is what the ending declared, if it declared anything ('GameOverWith').
+Without one the outcome is inferred -- from the campaign's step and resolutions,
+or, for a standalone, from the resolution the scenario reached. The mode is
+collapsed to the campaign here, which drops the scenario, so the outcome is
+computed first.
+-}
+endGame :: Maybe Verdict -> Game -> GameT Game
+endGame mverdict g = do
+  clearQueue
+  pure $ g & (gameStateL .~ IsOver) & (modeL .~ newMode) & (outcomeL .~ outcome)
+ where
+  mode = g ^. modeL
+  newMode = case mode of
+    This c -> This c
+    That c -> That c
+    These c1 _ -> This c1
+  ending = g ^. lastResolutionL
+  outcome = case mverdict of
+    Just verdict -> Just $ GameOutcome verdict ending Recorded
+    Nothing -> case modeCampaign mode of
+      Just c ->
+        let attrs = toAttrs c
+         in withEnding
+              <$> inferCampaignOutcome
+                (campaignId attrs)
+                (campaignStep attrs)
+                (campaignCompletedSteps attrs)
+                (campaignResolutions attrs)
+      Nothing -> standaloneOutcome <$> ending
+  -- The resolution the game actually saw beats the one reconstructed from the
+  -- campaign's records, which cannot tell which scenario was last.
+  withEnding o = o {outcomeEnding = ending <|> outcomeEnding o}
 
 runGameMessage :: Runner Game
 runGameMessage msg g = case msg of
@@ -1225,7 +1262,9 @@ runGameMessage msg g = case msg of
         HistoryItem HistoryMoved 1
           : [HistoryItem HistoryMovedTo [lid] | lid <- maybeToList arrived]
       turn = isJust $ view turnPlayerInvestigatorIdL g
-      record item = (phaseHistoryL %~ insertHistory iid item) . (if turn then turnHistoryL %~ insertHistory iid item else id)
+      record item =
+        (phaseHistoryL %~ insertHistory iid item)
+          . (if turn then turnHistoryL %~ insertHistory iid item else id)
     pure $ foldr record g historyItems
   Arkham.Helpers.Message.Defeated (EnemyTarget eid) _ source _ -> do
     attrs <- toAttrs <$> getEnemy eid
@@ -1263,13 +1302,8 @@ runGameMessage msg g = case msg of
       $ g
       & (foundCardsL . each %~ deleteFirstMatch ((== cardId) . toCardId))
       . (focusedCardsL %~ map (filter ((/= cardId) . toCardId)))
-  GameOver -> do
-    clearQueue
-    let newMode = case g ^. modeL of
-          This c -> This c
-          That c -> That c
-          These c1 _ -> This c1
-    pure $ g & gameStateL .~ IsOver & modeL .~ newMode
+  GameOver -> endGame Nothing g
+  GameOverWith verdict -> endGame (Just verdict) g
   PlaceLocation lid card ->
     if isNothing $ g ^. entitiesL . locationsL . at lid
       then do
@@ -4615,7 +4649,10 @@ runPreGameMessage msg g = case msg of
             _ -> Just xs
           Just (x : xs) -> Just (x : xs)
     pure $ g & windowDepthL -~ 1 & windowStackL .~ windowStack & (windowTickStackL %~ drop 1)
-  ScenarioResolution _ -> do
+  ScenarioResolution r -> do
+    -- Remember which resolution this was, so the game can name its ending once
+    -- it is over; see 'gameLastResolution'.
+    let ending = (\s -> Ending (attr scenarioId s) r) <$> modeScenario (g ^. modeL)
     pure
       $ g
       & (skillTestL .~ Nothing)
@@ -4623,6 +4660,7 @@ runPreGameMessage msg g = case msg of
       & (windowStackL .~ mempty)
       & (windowDepthL .~ 0)
       & (windowTickStackL .~ [])
+      & (lastResolutionL %~ \old -> ending <|> old)
   ResetInvestigators -> do
     -- if we reset and there is no player order, set it to the current investigator keys
     pure

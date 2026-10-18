@@ -135,6 +135,7 @@
       /game-stats ApiV1AdminGameStatsP:
         / ApiV1AdminGameStatsR GET
         !/refresh ApiV1AdminGameStatsRefreshR POST
+        !/outcomes ApiV1AdminGameStatsOutcomesR POST
       /archives ApiV1AdminArchivesP:
         / ApiV1AdminArchivesR GET
         !/run ApiV1AdminArchivesRunR POST

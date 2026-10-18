@@ -481,7 +481,7 @@ instance RunMessage AWorldTornDownAgain where
           record AllTimesAreOne
           resolution "resolution2"
           eachInvestigator drivenInsane
-          gameOver
+          gameOverLost
         _ -> error $ "Unknown resolution: " <> show res
       pure s
     _ -> AWorldTornDownAgain <$> liftRunMessage msg attrs

@@ -1005,7 +1005,7 @@ instance RunMessage TheScarletKeys where
               else do
                 record TheCellWasDismantled
                 flavor $ setTitle "title" >> p "epilogue5"
-        gameOver
+        gameOverWon
         pure c
       CampaignStep step | ScenarioStep _ <- step.unwrapScenario -> do
         TheScarletKeys attrs' <- lift $ defaultCampaignRunner msg c

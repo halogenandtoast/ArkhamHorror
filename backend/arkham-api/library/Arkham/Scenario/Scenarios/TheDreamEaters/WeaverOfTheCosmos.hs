@@ -13,6 +13,7 @@ import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.TheDreamEaters.WeaverOfTheCosmos qualified as Enemies
 import Arkham.Exception
+import Arkham.Game.Outcome (neverSeenOrHeardFromAgain)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Scenario
@@ -196,7 +197,7 @@ instance RunMessage WeaverOfTheCosmos where
           resolution "noResolution"
           record TheBridgeWasCompleted
           eachInvestigator $ kill attrs
-          whenM getIsTheWebOfDreams $ push GameOver
+          whenM getIsTheWebOfDreams gameOverLost
           endOfScenario
         Resolution 1 -> do
           resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "resolution1" 5
@@ -211,25 +212,25 @@ instance RunMessage WeaverOfTheCosmos where
           resolution "resolution2"
           record TheBridgeWasCompleted
           eachInvestigator $ push . DrivenInsane
-          whenM getIsTheWebOfDreams $ push GameOver
+          whenM getIsTheWebOfDreams gameOverLost
           endOfScenario
         Resolution 3 -> do
           resolution "resolution3"
           record TheInvestigatorsReturnedToReality
           eachInvestigator (`sufferPhysicalTrauma` 2)
-          whenM getIsTheDreamQuest $ push GameOver
+          whenM getIsTheDreamQuest gameOverWon
           endOfScenario
         Resolution 4 -> do
           resolution "resolution4"
           record TheInvestigatorsNeverEscaped
           eachInvestigator $ push . DrivenInsane
-          whenM getIsTheDreamQuest $ push GameOver
+          whenM getIsTheDreamQuest $ gameOverWonNoting neverSeenOrHeardFromAgain
           endOfScenario
         Resolution 5 -> do
           resolution "resolution5"
           record TheInvestigatorsAreStillInTheDreamlands
           eachInvestigator (`sufferPhysicalTrauma` 2)
-          whenM getIsTheDreamQuest $ push GameOver
+          whenM getIsTheDreamQuest gameOverWon
           endOfScenario
         other -> throw $ UnknownResolution other
 

@@ -239,7 +239,7 @@ instance RunMessage TheInnsmouthConspiracy where
             recordTheHorribleTruth
             story $ i18nWithTitle "flashback15"
           else unless narrative.omitsEpilogue2 $ story $ i18nWithTitle "epilogue2"
-        gameOver
+        gameOverWon
 
         pure c
       -- There is no generic handler, so an option chosen at creation is dropped

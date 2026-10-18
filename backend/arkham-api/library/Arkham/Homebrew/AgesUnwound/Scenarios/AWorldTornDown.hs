@@ -299,7 +299,7 @@ instance RunMessage AWorldTornDown where
           record AllTimesAreOne
           resolution "resolution4"
           eachInvestigator drivenInsane
-          gameOver
+          gameOverLost
         Resolution 5 -> do
           {- "record that the timeline was weakened. Add 2 [elder thing] tokens to
           the chaos bag. The investigators must replay Scenario III ... No

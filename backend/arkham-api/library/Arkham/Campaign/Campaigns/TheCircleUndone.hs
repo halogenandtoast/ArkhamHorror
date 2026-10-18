@@ -322,7 +322,7 @@ instance RunMessage TheCircleUndone where
         flavor $ setTitle "title" >> p.green "signedTheBlackBook"
       whenHasRecord YouAreBeingHunted do
         flavor $ setTitle "title" >> p "youAreBeingHunted"
-      gameOver
+      gameOverWon
 
       pure c
     HandleOption option -> do

@@ -291,7 +291,7 @@ instance RunMessage BlackStarsRise where
           record TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
           eachInvestigator drivenInsane
           resolution "resolution3"
-          gameOver
+          gameOverLost
         _ -> error "Unknown resolution"
       pure s
     RequestedPlayerCard iid source mcard _ | isSource attrs source -> do

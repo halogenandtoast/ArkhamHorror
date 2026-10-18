@@ -82,6 +82,7 @@ import Arkham.Exception
 import Arkham.Exhaust
 import Arkham.Field
 import Arkham.Fight.Types
+import Arkham.Game.Outcome (Verdict)
 import Arkham.Game.Settings (AsIfRuling)
 import Arkham.Game.State
 import Arkham.Helpers
@@ -945,6 +946,11 @@ data Message
   | SetXP InvestigatorId Int
   | SpendXP InvestigatorId Int
   | GameOver
+  | {- | The game ends and the ending says what it was. Use this wherever the
+    printed ending states a verdict; bare 'GameOver' leaves the outcome to be
+    inferred (see "Arkham.Game.Outcome").
+    -}
+    GameOverWith Verdict
   | HandlePointOfFailure InvestigatorId Target Int -- Really do x n times, does not have to be failure
   | ApplyHealing Source
   | ReportXp XpBreakdown

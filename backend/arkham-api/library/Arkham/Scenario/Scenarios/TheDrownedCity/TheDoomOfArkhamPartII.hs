@@ -321,7 +321,7 @@ instance RunMessage TheDoomOfArkhamPartII where
           resolution "noResolution"
           -- "The investigators, along with everyone else in Arkham, are killed."
           eachInvestigator (kill attrs)
-          gameOver
+          gameOverLost
         _ -> error $ "Unknown resolution: " <> show res
       -- Every ending but the total loss carries on to the campaign's epilogue.
       unless (res == NoResolution) $ endOfScenarioThen EpilogueStep

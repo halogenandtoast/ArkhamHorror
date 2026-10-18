@@ -21,22 +21,27 @@ client renders real titles without loading the 2MB card catalogue.
 module Api.Handler.Arkham.Admin.GameStats (
   getApiV1AdminGameStatsR,
   postApiV1AdminGameStatsRefreshR,
+  postApiV1AdminGameStatsOutcomesR,
 ) where
 
 import Arkham.Campaign (allCampaigns, lookupCampaign)
 import Arkham.Campaign.Types (campaignName)
+import Arkham.CampaignStep (CampaignStep)
 import Arkham.Card.CardCode (CardCode (..))
 import Arkham.Card.CardDef (cdName)
 import Arkham.Classes.Entity (toAttrs)
 import Arkham.Difficulty (Difficulty (Easy))
+import Arkham.Game.Outcome
 import Arkham.Id (CampaignId (..), ScenarioId (..))
 import Arkham.Name (display)
+import Arkham.Resolution (Resolution (..))
 import Arkham.Scenario (allScenarioCards)
 import Arkham.SideStory (sideStoryIds)
 import Data.Aeson.Types (parseEither)
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Data.Time.Clock
+import Data.UUID (UUID)
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.Sql (Single (..), rawExecute, rawSql)
 import Import hiding ((==.))
@@ -57,6 +62,17 @@ data Totals = Totals
   these are games nobody actually sat down to.
   -}
   , totalsPlayers :: Int
+  , totalsWon :: Int
+  -- ^ Finished games whose outcome is a win. See "Arkham.Game.Outcome".
+  , totalsWonUncertain :: Int
+  {- ^ Of the wins, how many the Campaign Guide prints as "The investigators win
+  the campaign...?" rather than stating outright.
+  -}
+  , totalsLost :: Int
+  , totalsOutcomeUnknown :: Int
+  {- ^ Finished, but with no outcome recorded. Games that ended before outcomes
+  were tracked, until the outcomes backfill has run over them.
+  -}
   }
   deriving stock Generic
 
@@ -79,6 +95,12 @@ data CampaignStat = CampaignStat
   , campaignStatNeverStarted :: Int
   , campaignStatScenariosPlayed :: Int
   , campaignStatScenariosWon :: Int
+  , campaignStatWon :: Int
+  {- ^ Runs that reached a winning ending; @finished@ minus this and @lost@ is
+  how many finished without recording an outcome.
+  -}
+  , campaignStatLost :: Int
+  , campaignStatOutcomeUnknown :: Int
   , campaignStatPlayers1 :: Int
   , campaignStatPlayers2 :: Int
   , campaignStatPlayers3 :: Int
@@ -102,6 +124,8 @@ data StandaloneStat = StandaloneStat
   { standaloneStatId :: Text
   , standaloneStatGames :: Int
   , standaloneStatFinished :: Int
+  , standaloneStatWon :: Int
+  , standaloneStatLost :: Int
   , standaloneStatIsSideStory :: Bool
   }
   deriving stock Generic
@@ -155,6 +179,34 @@ instance ToJSON ScenarioOutcome where
 instance FromJSON ScenarioOutcome where
   parseJSON = genericParseJSON $ aesonOptions $ Just "scenarioOutcome"
 
+{- | Which ending a campaign's runs actually stopped on.
+
+The coarse won/lost split hides what Arkham spends most of its endings on: a
+campaign usually has several, and several of those are neither a clean win nor a
+wipe. @resolution@ is 'Nothing' for a scenario lost or resigned out of
+(@NoResolution@), which is the one ending that needs no number.
+-}
+data CampaignEnding = CampaignEnding
+  { campaignEndingCampaignId :: Text
+  , campaignEndingScenarioId :: Text
+  , campaignEndingResolution :: Maybe Int
+  , campaignEndingResult :: Text
+  -- ^ 'Won' or 'Lost', as the outcome recorded it.
+  , campaignEndingCertainty :: Text
+  -- ^ 'Certain', or 'Uncertain' for a win the guide will not commit to.
+  , campaignEndingNote :: Maybe Text
+  -- ^ i18n key for the clause the guide attaches to the verdict, if any.
+  , campaignEndingCount :: Int
+  }
+  deriving stock Generic
+
+instance ToJSON CampaignEnding where
+  toJSON = genericToJSON $ aesonOptions $ Just "campaignEnding"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "campaignEnding"
+
+instance FromJSON CampaignEnding where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "campaignEnding"
+
 {- | Where campaign runs get to before they stop: how many have completed exactly
 N scenarios. The drop-off from one N to the next is where people are giving up.
 -}
@@ -202,6 +254,7 @@ data GameStatsResponse = GameStatsResponse
   , gameStatsResponseSideStoriesInCampaigns :: [SideStoryInCampaign]
   , gameStatsResponseScenarioOutcomes :: [ScenarioOutcome]
   , gameStatsResponseCampaignProgress :: [CampaignProgress]
+  , gameStatsResponseCampaignEndings :: [CampaignEnding]
   , gameStatsResponseAchievements :: [AchievementStat]
   , gameStatsResponseAchievementUsers :: Int
   {- ^ Users who have earned at least one achievement: the honest denominator
@@ -296,7 +349,7 @@ getApiV1AdminGameStatsR = do
   lastRefresh <- runDB $ P.getBy (UniqueStatsRefreshName gameStatsRefreshName)
   let refreshedAt = arkhamStatsRefreshRefreshedAt . entityVal <$> lastRefresh
       durationMs = arkhamStatsRefreshDurationMs . entityVal <$> lastRefresh
-      emptyTotals = Totals 0 0 0 0 0 0 0
+      emptyTotals = Totals 0 0 0 0 0 0 0 0 0 0 0
 
   -- Achievements do not come off the view, so they are worth having even before
   -- it has been built for the first time.
@@ -318,6 +371,7 @@ getApiV1AdminGameStatsR = do
           , gameStatsResponseSideStoriesInCampaigns = []
           , gameStatsResponseScenarioOutcomes = []
           , gameStatsResponseCampaignProgress = []
+          , gameStatsResponseCampaignEndings = []
           , gameStatsResponseAchievements = achievements
           , gameStatsResponseAchievementUsers = achievementUsers
           , gameStatsResponseMonthly = []
@@ -333,6 +387,7 @@ getApiV1AdminGameStatsR = do
       sideStories <- readSideStoriesInCampaigns
       outcomes <- readScenarioOutcomes
       progress <- readCampaignProgress
+      endings <- readCampaignEndings
       monthly <- readMonthly
       pure
         GameStatsResponse
@@ -348,6 +403,7 @@ getApiV1AdminGameStatsR = do
           , gameStatsResponseSideStoriesInCampaigns = sideStories
           , gameStatsResponseScenarioOutcomes = outcomes
           , gameStatsResponseCampaignProgress = progress
+          , gameStatsResponseCampaignEndings = endings
           , gameStatsResponseAchievements = achievements
           , gameStatsResponseAchievementUsers = achievementUsers
           , gameStatsResponseMonthly = monthly
@@ -363,7 +419,13 @@ readTotals =
     \count(*) FILTER (WHERE state = 'IsOver')::int AS finished, \
     \count(*) FILTER (WHERE state = 'IsActive')::int AS \"inProgress\", \
     \count(*) FILTER (WHERE state IN ('IsPending', 'IsChooseDecks'))::int AS \"neverStarted\", \
-    \(SELECT count(DISTINCT user_id)::int FROM arkham_players) AS players \
+    \(SELECT count(DISTINCT user_id)::int FROM arkham_players) AS players, \
+    \count(*) FILTER (WHERE outcome_result = 'Won')::int AS won, \
+    \count(*) FILTER (WHERE outcome_result = 'Won' AND outcome_certainty = 'Uncertain')::int \
+    \  AS \"wonUncertain\", \
+    \count(*) FILTER (WHERE outcome_result = 'Lost')::int AS lost, \
+    \count(*) FILTER (WHERE state = 'IsOver' AND outcome_result IS NULL)::int \
+    \  AS \"outcomeUnknown\" \
     \FROM arkham_game_stats"
     []
 
@@ -377,6 +439,10 @@ readCampaigns =
     \count(*) FILTER (WHERE state IN ('IsPending', 'IsChooseDecks'))::int AS \"neverStarted\", \
     \COALESCE(sum(cardinality(completed_scenarios)), 0)::int AS \"scenariosPlayed\", \
     \COALESCE(sum(cardinality(resolved_scenarios)), 0)::int AS \"scenariosWon\", \
+    \count(*) FILTER (WHERE outcome_result = 'Won')::int AS won, \
+    \count(*) FILTER (WHERE outcome_result = 'Lost')::int AS lost, \
+    \count(*) FILTER (WHERE state = 'IsOver' AND outcome_result IS NULL)::int \
+    \  AS \"outcomeUnknown\", \
     \count(*) FILTER (WHERE player_count = 1)::int AS players1, \
     \count(*) FILTER (WHERE player_count = 2)::int AS players2, \
     \count(*) FILTER (WHERE player_count = 3)::int AS players3, \
@@ -395,6 +461,8 @@ readStandalones =
   queryJson
     "SELECT scenario_id AS id, count(*)::int AS games, \
     \count(*) FILTER (WHERE state = 'IsOver')::int AS finished, \
+    \count(*) FILTER (WHERE outcome_result = 'Won')::int AS won, \
+    \count(*) FILTER (WHERE outcome_result = 'Lost')::int AS lost, \
     \(scenario_id = ANY(string_to_array(?::text, ','))) AS \"isSideStory\" \
     \FROM arkham_game_stats \
     \WHERE NOT is_campaign AND scenario_id IS NOT NULL \
@@ -474,6 +542,28 @@ readCampaignProgress =
     \GROUP BY 1, 2 ORDER BY 1, 2"
     []
 
+{- | Which endings campaign runs actually stopped on, most common first.
+
+Only games with a recorded outcome appear: a run that ended before outcomes were
+tracked has no ending to attribute, and counting it under a guess would make this
+the least trustworthy table on the page rather than the most specific one.
+-}
+readCampaignEndings :: DB [CampaignEnding]
+readCampaignEndings =
+  queryJson
+    "SELECT campaign_id AS \"campaignId\", \
+    \outcome_scenario AS \"scenarioId\", \
+    \outcome_resolution AS resolution, \
+    \outcome_result AS result, \
+    \outcome_certainty AS certainty, \
+    \outcome_note AS note, \
+    \count(*)::int AS count \
+    \FROM arkham_game_stats \
+    \WHERE is_campaign AND campaign_id IS NOT NULL \
+    \  AND outcome_result IS NOT NULL AND outcome_scenario IS NOT NULL \
+    \GROUP BY 1, 2, 3, 4, 5, 6 ORDER BY count(*) DESC, 1, 2, 3"
+    []
+
 {- | Read live rather than off the view: the table is already relational and the
 partial index on earned rows makes this a cheap grouped scan, so these numbers may
 as well be current.
@@ -539,3 +629,171 @@ postApiV1AdminGameStatsRefreshR = do
           ]
       Nothing -> P.insert_ $ ArkhamStatsRefresh gameStatsRefreshName finished elapsed
   getApiV1AdminGameStatsR
+
+-- ------------------------------------------------------------------ backfill ---
+
+{- | What one pass of the outcomes backfill did.
+
+@remaining@ is what is left after this pass, so a panel can keep pressing until
+it reaches zero rather than guessing how many passes a database needs.
+-}
+data OutcomesResponse = OutcomesResponse
+  { outcomesResponseComputed :: Int
+  -- ^ Games this pass worked out a verdict for.
+  , outcomesResponseUndecided :: Int
+  {- ^ Games this pass looked at and could not judge -- a campaign abandoned
+  between scenarios with nothing resolved. They are left alone rather than
+  recorded as a loss, and will be looked at again on the next pass.
+  -}
+  , outcomesResponseRemaining :: Int
+  , outcomesResponseDurationMs :: Int
+  }
+  deriving stock Generic
+
+instance ToJSON OutcomesResponse where
+  toJSON = genericToJSON $ aesonOptions $ Just "outcomesResponse"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "outcomesResponse"
+
+{- | Just enough of a finished game to work out how it ended.
+
+Read as six narrow jsonb paths rather than by parsing the game: @fromJSON \@Game@
+reconstructs the entire engine state per row, and all that is wanted here is a
+campaign's step, its completed steps and its resolutions.
+-}
+data OutcomeCandidate = OutcomeCandidate
+  { candidateGameId :: UUID
+  , candidateCampaignId :: Maybe CampaignId
+  , candidateStep :: Maybe CampaignStep
+  , candidateCompletedSteps :: [CampaignStep]
+  , candidateResolutions :: Map ScenarioId Resolution
+  , candidateLastResolution :: Maybe Ending
+  }
+  deriving stock Generic
+
+instance FromJSON OutcomeCandidate where
+  parseJSON = withObject "OutcomeCandidate" \o ->
+    OutcomeCandidate
+      <$> o
+      .: "gameId"
+      <*> o
+      .:? "campaignId"
+      <*> o
+      .:? "step"
+      <*> o
+      .:? "completedSteps"
+      .!= []
+      <*> o
+      .:? "resolutions"
+      .!= mempty
+      <*> o
+      .:? "lastResolution"
+
+{- | How many games one pass looks at.
+
+Each row detoasts a ~28kB blob to read six paths out of it, so a pass is bounded
+and the panel repeats it. Big enough that a few presses clear a typical database,
+small enough that a pass cannot hold a request open long enough to be killed.
+-}
+outcomesBatchSize :: Int
+outcomesBatchSize = 500
+
+{- | Work out how finished games ended, for the ones the engine never recorded.
+
+Only games with no recorded outcome and no row of their own are considered, so a
+pass is idempotent and re-running it costs nothing but the scan. A game it cannot
+judge is skipped rather than guessed at, which means a pass can report fewer
+computed than it looked at and 'outcomesResponseRemaining' can stop falling; that
+is the honest end state, not a stall.
+-}
+postApiV1AdminGameStatsOutcomesR :: Handler OutcomesResponse
+postApiV1AdminGameStatsOutcomesR = do
+  started <- liftIO getCurrentTime
+  (computed, undecided) <- runDB do
+    candidates <- readOutcomeCandidates outcomesBatchSize
+    let judged = [(c, o) | c <- candidates, Just o <- [judge c]]
+    for_ judged \(c, o) -> insertOutcome started c o
+    pure (length judged, length candidates - length judged)
+  remaining <- runDB countOutcomeCandidates
+  finished <- liftIO getCurrentTime
+  pure
+    OutcomesResponse
+      { outcomesResponseComputed = computed
+      , outcomesResponseUndecided = undecided
+      , outcomesResponseRemaining = remaining
+      , outcomesResponseDurationMs =
+          round (realToFrac (diffUTCTime finished started) * 1000 :: Double)
+      }
+ where
+  judge c = case candidateCampaignId c of
+    Just cid -> do
+      step <- candidateStep c
+      o <- inferCampaignOutcome cid step (candidateCompletedSteps c) (candidateResolutions c)
+      -- The resolution the game itself last saw beats the one reconstructed from
+      -- the campaign's records, which cannot say which scenario was last.
+      pure o {outcomeEnding = candidateLastResolution c <|> outcomeEnding o}
+    -- No campaign: a standalone scenario, where the resolution IS the ending.
+    Nothing -> standaloneOutcome <$> candidateLastResolution c
+
+{- | Finished games with no outcome from either source.
+
+@jsonb_typeof(...) IS DISTINCT FROM 'object'@ rather than @IS NULL@: a game saved
+while it was still running carries @"gameOutcome": null@, which @->@ returns as
+JSON null and not as SQL NULL.
+-}
+outcomeCandidateFilter :: Text
+outcomeCandidateFilter =
+  "FROM arkham_games g \
+  \LEFT JOIN arkham_game_outcomes o ON o.arkham_game_id = g.id \
+  \WHERE g.current_data #>> '{gameGameState,tag}' = 'IsOver' \
+  \  AND o.id IS NULL \
+  \  AND jsonb_typeof(g.current_data -> 'gameOutcome') IS DISTINCT FROM 'object' "
+
+readOutcomeCandidates :: Int -> DB [OutcomeCandidate]
+readOutcomeCandidates limit =
+  queryJson
+    ( "SELECT g.id AS \"gameId\", \
+      \g.current_data #> '{gameMode,This,id}' AS \"campaignId\", \
+      \g.current_data #> '{gameMode,This,step}' AS step, \
+      \CASE WHEN jsonb_typeof(g.current_data #> '{gameMode,This,completedSteps}') = 'array' \
+      \     THEN g.current_data #> '{gameMode,This,completedSteps}' \
+      \     ELSE '[]'::jsonb END AS \"completedSteps\", \
+      \CASE WHEN jsonb_typeof(g.current_data #> '{gameMode,This,resolutions}') = 'object' \
+      \     THEN g.current_data #> '{gameMode,This,resolutions}' \
+      \     ELSE '{}'::jsonb END AS resolutions, \
+      \g.current_data #> '{gameLastResolution}' AS \"lastResolution\" "
+        <> outcomeCandidateFilter
+        <> "ORDER BY g.updated_at DESC LIMIT ?"
+    )
+    [toPersistValue limit]
+
+countOutcomeCandidates :: DB Int
+countOutcomeCandidates = do
+  rows :: [Single Int] <- rawSql ("SELECT count(*)::int " <> outcomeCandidateFilter) []
+  pure $ case rows of
+    Single n : _ -> n
+    [] -> 0
+
+insertOutcome :: UTCTime -> OutcomeCandidate -> GameOutcome -> DB ()
+insertOutcome now c o =
+  rawExecute
+    "INSERT INTO arkham_game_outcomes \
+    \(arkham_game_id, result, certainty, note, source, scenario_id, resolution_tag, \
+    \ resolution, computed_at) \
+    \VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (arkham_game_id) DO NOTHING"
+    [ toPersistValue (candidateGameId c)
+    , toPersistValue (tshow (verdictResult (outcomeVerdict o)))
+    , toPersistValue (tshow (verdictCertainty (outcomeVerdict o)))
+    , toPersistValue (verdictNote (outcomeVerdict o))
+    , toPersistValue (tshow (outcomeSource o))
+    , toPersistValue (unCardCode . unScenarioId . endingScenario <$> outcomeEnding o)
+    , toPersistValue (resolutionTag . endingResolution <$> outcomeEnding o)
+    , toPersistValue (resolutionNumber . endingResolution =<< outcomeEnding o)
+    , toPersistValue now
+    ]
+ where
+  resolutionTag = \case
+    NoResolution -> "NoResolution" :: Text
+    Resolution _ -> "Resolution"
+  resolutionNumber = \case
+    NoResolution -> Nothing
+    Resolution n -> Just n

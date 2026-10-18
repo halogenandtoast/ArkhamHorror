@@ -506,7 +506,7 @@ instance RunMessage FateOfTheVale where
           resolution "noResolution"
           record TheInvestigatorsBecameTheTrueFeastOfHemlockVale
           eachInvestigator $ kill attrs
-          gameOver
+          gameOverLost
         Resolution 1 -> do
           crossOutUncontrolledResidents
           record DrMarquezSacrificedHerselfForTheVale

@@ -492,7 +492,7 @@ watch(processing, (busy) => {
 const storyAnswerPending = ref(false)
 const oldQuestion = ref<Record<string, Question> | null>(null)
 const skipAllPending = ref<Set<string>>(new Set())
-const { t } = useI18n()
+const { t, te } = useI18n()
 const phaseNotification = ref<Phase | null>(null)
 const phaseNotificationQueue = ref<Phase[]>([])
 const phaseNotificationPlaying = ref(false)
@@ -855,6 +855,27 @@ const choices = computed(() => {
   return choicesByPlayer.value.get(playerId.value) ?? []
 })
 const gameOver = computed(() => game.value?.gameState.tag === 'IsOver')
+const outcome = computed(() => game.value?.outcome ?? null)
+// A standalone scenario has no campaign, so the verdict is about the scenario.
+const outcomeLabel = computed(() => {
+  const o = outcome.value
+  if (!o) return t('gameOver')
+  const subject = game.value?.campaign ? 'campaign' : 'scenario'
+  if (o.result === 'Lost') return t(`${subject}Lost`)
+  // "The investigators win the campaign…?" is printed that way; say so rather
+  // than flattening it to a plain win.
+  if (o.certainty === 'Uncertain' && subject === 'campaign') return t('campaignWonUncertain')
+  return t(`${subject}Won`)
+})
+
+/* The clause the Campaign Guide attaches to the verdict, as its own line — the
+ * verdict is the headline, the caveat is the printed small print. */
+const outcomeNote = computed(() => {
+  const o = outcome.value
+  if (o?.note && te(o.note)) return t(o.note)
+  if (o?.certainty === 'Uncertain') return t('outcomeUncertain')
+  return null
+})
 const questionPlayerId = computed(() => {
   const currentGame = game.value
   if (!currentGame) return playerId.value
@@ -3271,7 +3292,12 @@ onUnmounted(() => {
           />
         </div>
         <div class="game-over" v-if="gameOver">
-          <p>{{ $t('gameOver') }}</p>
+          <p
+            :class="outcome ? (outcome.result === 'Won' ? 'won' : 'lost') : null"
+          >
+            {{ outcomeLabel }}
+          </p>
+          <p v-if="outcomeNote" class="outcome-note">{{ outcomeNote }}</p>
           <button
             class="replay-button"
             @click="router.push({ name: 'ReplayGame', params: { gameId } })"
@@ -3875,6 +3901,21 @@ header {
     padding: 10px 20px;
     color: white;
     text-align: center;
+
+    &.won {
+      background: color-mix(in srgb, var(--outcome-won-dark) 75%, transparent);
+    }
+
+    &.lost {
+      background: color-mix(in srgb, var(--outcome-lost-dark) 75%, transparent);
+    }
+
+    &.outcome-note {
+      text-transform: none;
+      font-style: italic;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 6px 20px;
+    }
   }
 }
 

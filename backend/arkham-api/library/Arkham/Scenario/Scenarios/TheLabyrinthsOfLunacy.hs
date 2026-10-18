@@ -314,12 +314,12 @@ resolveGroup attrs outcome = do
   if miniCampaign meta' && not (miniCampaignComplete meta')
     then resolutionWithChooseOne (resolutionKey meta') do
       labeled "endScenario" do
-        when (null meta'.survivedGroups) $ push GameOver
+        when (null meta'.survivedGroups) gameOverLost
         endOfScenario
       labeled "playAnotherGroup" $ push $ ScenarioResolutionStep 10 (Resolution 1)
     else do
       resolution $ resolutionKey meta'
-      when (null meta'.survivedGroups) $ push GameOver
+      when (null meta'.survivedGroups) gameOverLost
       endOfScenario
 
 recordGroupOutcome :: ReverseQueue m => Group -> Log.GroupOutcome -> m ()

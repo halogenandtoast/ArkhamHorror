@@ -46,6 +46,16 @@ import Arkham.Evade qualified as Evade
 import Arkham.Exhaust qualified as Exhaust
 import Arkham.Fight
 import Arkham.Fight qualified as Fight
+
+{- The vocabulary an ending needs to state its verdict, re-exported so every
+scenario and campaign that can end a game has it alongside 'gameOverWith' and
+friends.
+
+Only the types and 'plainly'. The note constants stay out: they read like
+ordinary prose, and three Circle Undone scenarios already bind
+@neverSeenOrHeardFromAgain@ as a local, which @-Werror=name-shadowing@ makes
+fatal. A scenario that needs one imports "Arkham.Game.Outcome" for it. -}
+import Arkham.Game.Outcome as X (Certainty (..), GameResult (..), Verdict (..), plainly)
 import Arkham.GameEnv
 import Arkham.Helpers.Act
 import Arkham.Helpers.Agenda
@@ -348,7 +358,7 @@ killRemaining (toSource -> source) = do
   remaining <- select UneliminatedInvestigator
   resigned <- select ResignedInvestigator
   for_ remaining $ kill source
-  gameOverIf (null resigned)
+  when (null resigned) gameOverLost
   pure remaining
 
 addCampaignCardToDeck

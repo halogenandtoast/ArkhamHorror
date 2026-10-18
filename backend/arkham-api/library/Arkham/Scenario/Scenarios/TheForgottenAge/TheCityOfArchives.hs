@@ -208,7 +208,7 @@ instance RunMessage TheCityOfArchives where
           resolution "noResolution"
           record TheInvestigatorsHadTheirMemoriesExpunged
           eachInvestigator drivenInsane
-          gameOver
+          gameOverLost
         Resolution 1 -> do
           rememberedTasks <-
             countM

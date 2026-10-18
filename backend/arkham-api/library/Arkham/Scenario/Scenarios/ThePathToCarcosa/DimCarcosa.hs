@@ -314,12 +314,12 @@ instance RunMessage DimCarcosa where
           record TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
           eachInvestigator drivenInsane
           resolution "resolution4"
-          gameOver
+          gameOverLost
         Resolution 5 -> do
           record HasturHasYouInHisGrasp
           eachInvestigator drivenInsane
           resolution "resolution5"
-          gameOver
+          gameOverLost
         _ -> error "Unhandled resolution"
       pure s
     _ -> DimCarcosa <$> liftRunMessage msg attrs

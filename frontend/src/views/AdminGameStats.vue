@@ -57,7 +57,46 @@ async function rebuild() {
   }
 }
 
+/* Work out how finished games ended, for the ones that ended before the engine
+ * recorded it. Bounded per call, so this is pressed until `remaining` stops
+ * falling; the view is rebuilt afterwards because that is what the panel reads. */
+const backfilling = ref(false)
+const backfill = ref<Api.OutcomesBackfill | null>(null)
+
+async function workOutOutcomes() {
+  backfilling.value = true
+  error.value = null
+  try {
+    backfill.value = await Api.backfillGameOutcomes()
+    stats.value = await Api.refreshGameStats()
+  } catch (e) {
+    console.error(e)
+    error.value = t(`${K}backfillFailed`)
+  } finally {
+    backfilling.value = false
+  }
+}
+
 onMounted(load)
+
+/* Endings grouped by campaign, each campaign's own most-common first. The server
+ * already ordered them by count, so grouping preserves that within a campaign. */
+const endingsByCampaign = computed(() => {
+  const groups = new Map<string, Api.CampaignEnding[]>()
+  for (const e of stats.value?.campaignEndings ?? []) {
+    const group = groups.get(e.campaignId)
+    if (group) group.push(e)
+    else groups.set(e.campaignId, [e])
+  }
+  return [...groups.entries()].map(([id, endings]) => ({
+    id,
+    endings,
+    total: endings.reduce((acc, e) => acc + e.count, 0),
+  }))
+})
+
+const endingLabel = (e: Api.CampaignEnding) =>
+  e.resolution === null ? t(`${K}noResolution`) : t(`${K}resolutionN`, { n: e.resolution })
 
 // --------------------------------------------------------------- formatting ---
 
@@ -267,7 +306,27 @@ const progressHere = computed(() => {
       <button type="button" :disabled="refreshing" @click="rebuild">
         {{ refreshing ? t(`${K}rebuilding`) : t(`${K}rebuild`) }}
       </button>
+      <button
+        v-if="stats && stats.populated && stats.totals.outcomeUnknown > 0"
+        type="button"
+        :disabled="backfilling"
+        @click="workOutOutcomes"
+      >
+        {{ backfilling ? t(`${K}backfillingOutcomes`) : t(`${K}backfillOutcomes`) }}
+      </button>
     </header>
+
+    <p v-if="backfill" class="notice box">
+      <template v-if="backfill.remaining === 0 && backfill.undecided === 0">
+        {{ t(`${K}backfillDone`) }}
+      </template>
+      <template v-else>
+        {{ t(`${K}backfillResult`, { computed: num(backfill.computed), remaining: num(backfill.remaining) }) }}
+        <template v-if="backfill.undecided > 0">
+          {{ t(`${K}backfillUndecided`, { undecided: num(backfill.undecided) }) }}
+        </template>
+      </template>
+    </p>
 
     <p v-if="error" class="error">{{ error }}</p>
     <p v-if="loading" class="empty box">{{ t(`${K}loading`) }}</p>
@@ -293,6 +352,26 @@ const progressHere = computed(() => {
             <span class="tile-label">{{ t(`${K}standaloneGames`) }}</span>
             <strong>{{ num(stats.totals.standaloneGames) }}</strong>
             <small>{{ pctLabel(stats.totals.standaloneGames, stats.totals.games) }}</small>
+          </div>
+          <div class="tile">
+            <span class="tile-label">{{ t(`${K}won`) }}</span>
+            <strong>{{ num(stats.totals.won) }}</strong>
+            <small>
+              {{ pctLabel(stats.totals.won, stats.totals.won + stats.totals.lost) }}
+              <template v-if="stats.totals.wonUncertain > 0">
+                &middot; {{ t(`${K}ofWhichUncertain`, { n: num(stats.totals.wonUncertain) }) }}
+              </template>
+            </small>
+          </div>
+          <div class="tile">
+            <span class="tile-label">{{ t(`${K}lost`) }}</span>
+            <strong>{{ num(stats.totals.lost) }}</strong>
+            <small>{{ pctLabel(stats.totals.lost, stats.totals.won + stats.totals.lost) }}</small>
+          </div>
+          <div v-if="stats.totals.outcomeUnknown > 0" class="tile">
+            <span class="tile-label">{{ t(`${K}outcomeUnknown`) }}</span>
+            <strong>{{ num(stats.totals.outcomeUnknown) }}</strong>
+            <small>{{ pctLabel(stats.totals.outcomeUnknown, stats.totals.finished) }}</small>
           </div>
           <div class="tile">
             <span class="tile-label">{{ t(`${K}finished`) }}</span>
@@ -395,6 +474,7 @@ const progressHere = computed(() => {
                 <th class="n">{{ t(`${K}col.abandonedBeforeStart`) }}</th>
                 <th class="n">{{ t(`${K}col.scenariosPlayed`) }}</th>
                 <th class="n">{{ t(`${K}col.scenarioSuccess`) }}</th>
+                <th class="n">{{ t(`${K}col.campaignSuccess`) }}</th>
                 <th class="mixcol">{{ t(`${K}col.playerMix`) }}</th>
                 <th class="mixcol">{{ t(`${K}col.difficultyMix`) }}</th>
               </tr>
@@ -418,6 +498,16 @@ const progressHere = computed(() => {
                 <td class="n">
                   {{ pctLabel(c.scenariosWon, c.scenariosPlayed) }}
                   <small>{{ num(c.scenariosWon) }}/{{ num(c.scenariosPlayed) }}</small>
+                </td>
+                <!-- Out of runs with a known outcome, not out of every finished
+                     run: counting an unreconstructed one as a loss would read as
+                     a campaign nobody beats. -->
+                <td class="n">
+                  <template v-if="c.won + c.lost > 0">
+                    {{ pctLabel(c.won, c.won + c.lost) }}
+                    <small>{{ num(c.won) }}/{{ num(c.won + c.lost) }}</small>
+                  </template>
+                  <template v-else>&mdash;</template>
                 </td>
                 <td class="mixcol">
                   <div class="bar stacked small">
@@ -507,6 +597,49 @@ const progressHere = computed(() => {
             </ul>
             <p v-else class="muted">{{ t(`${K}noSideStories`) }}</p>
           </figure>
+        </div>
+      </template>
+
+      <!-- ----------------------------------------------- campaign endings --->
+      <template v-if="stats.populated">
+        <h3>{{ t(`${K}endingsHeading`) }}</h3>
+        <p class="sub">{{ t(`${K}endingsSub`) }}</p>
+        <p v-if="!endingsByCampaign.length" class="empty box">{{ t(`${K}noEndings`) }}</p>
+        <div v-else class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ t(`${K}col.campaign`) }}</th>
+                <th>{{ t(`${K}col.scenario`) }}</th>
+                <th>{{ t(`${K}col.ending`) }}</th>
+                <th>{{ t(`${K}col.result`) }}</th>
+                <th class="n">{{ t(`${K}col.games`) }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template v-for="g in endingsByCampaign" :key="g.id">
+                <tr v-for="(e, i) in g.endings" :key="`${e.scenarioId}-${e.resolution}-${e.result}`">
+                  <th scope="row">
+                    <template v-if="i === 0">
+                      <span class="name">{{ nameOf(g.id) }}</span>
+                      <code>{{ g.id }}</code>
+                    </template>
+                  </th>
+                  <td>{{ nameOf(e.scenarioId) }}</td>
+                  <td>{{ endingLabel(e) }}</td>
+                  <td>
+                    {{ e.result === 'Won' ? t(`${K}won`) : t(`${K}lost`) }}
+                    <small v-if="e.certainty === 'Uncertain'">{{ t(`${K}uncertain`) }}</small>
+                    <small v-if="e.note && te(e.note)">{{ t(e.note) }}</small>
+                  </td>
+                  <td class="n">
+                    {{ num(e.count) }}
+                    <small>{{ pctLabel(e.count, g.total) }}</small>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
         </div>
       </template>
 

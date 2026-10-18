@@ -248,7 +248,7 @@ instance RunMessage UnionAndDisillusion where
         Resolution 2 -> do
           resolution "resolution2"
           record TheTrueWorkOfTheSilverTwilightLodgeHasBegun
-          gameOver
+          gameOverLost
         Resolution 3 -> do
           resolution "resolution3"
           record CarlSanfordPossessesTheSecretsOfTheUniverse
@@ -325,7 +325,7 @@ instance RunMessage UnionAndDisillusion where
         Resolution 9 -> do
           resolution "resolution9"
           record TheCovenOfKeziahHoldsTheWorldInItsGrasp
-          gameOver
+          gameOverLost
         Resolution 10 -> do
           resolution "resolution10"
           record AnetteMasonIsPossessedByEvil

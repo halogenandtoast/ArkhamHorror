@@ -205,11 +205,11 @@ instance RunMessage TurnBackTime where
           resolution "noResolution"
           record TheFabricOfTimeIsUnwoven
           eachInvestigator drivenInsane
-          gameOver
+          gameOverLost
         Resolution 1 -> do
           resolutionWithXp "resolution1" $ allGainXp' attrs
           record TheInvestigatorsSealedTheRelicOfAgesForever
-          gameOver
+          gameOverWon
         _ -> error "Unknown Resolution"
       pure s
     Explore iid source _ -> do

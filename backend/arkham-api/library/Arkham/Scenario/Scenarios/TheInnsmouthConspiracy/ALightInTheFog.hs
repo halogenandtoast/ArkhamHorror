@@ -248,7 +248,7 @@ instance RunMessage ALightInTheFog where
         Resolution 3 -> do
           resolution "resolution3"
           eachInvestigator (kill attrs)
-          gameOver
+          gameOverLost
         Resolution 4 -> do
           resolution "resolution4"
           defaultResolution

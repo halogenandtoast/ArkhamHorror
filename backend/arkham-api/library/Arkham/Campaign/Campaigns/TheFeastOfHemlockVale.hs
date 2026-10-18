@@ -472,7 +472,7 @@ instance RunMessage TheFeastOfHemlockVale where
               | otherwise -> "epilogue3"
         when (anyAliveInvestigators && not investigatorsSacrificedThemselves) do
           push $ CampaignStep $ CampaignSpecificStep "epilogueCodex" Nothing
-        gameOver
+        gameOverWon
         pure $ TheFeastOfHemlockVale $ attrs & metaL .~ toJSON (meta {chosenCodexEntries = []})
       CampaignStep (CampaignSpecificStep "epilogueCodex" Nothing) -> scope "epilogue" do
         let meta = toResultDefault initMeta attrs.meta

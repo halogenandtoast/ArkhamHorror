@@ -21,6 +21,7 @@ import Entity.Arkham.Deck as X
 import Entity.Arkham.Epic as X
 import Entity.Arkham.Game as X
 import Entity.Arkham.GameArchive as X
+import Entity.Arkham.GameOutcome as X
 import Entity.Arkham.Player as X
 import Entity.Arkham.PublishedCardSet as X
 import Entity.Arkham.StatsRefresh as X

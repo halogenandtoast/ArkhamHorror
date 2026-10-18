@@ -19,6 +19,8 @@ import Arkham.EnemyLocation.Proxy (toEnemyLocationProxy)
 import Arkham.Entities
 import Arkham.Event.Types (Event)
 import Arkham.Game.Base
+import Arkham.Game.Outcome
+import Arkham.Game.State
 import Arkham.Helpers.Action (getActionCost)
 import Arkham.Helpers.Calculation
 import Arkham.Helpers.Card
@@ -505,6 +507,32 @@ getScenario = modeScenario . view modeL <$> getGame
 
 getCampaign :: HasGame m => m (Maybe Campaign)
 getCampaign = modeCampaign . view modeL <$> getGame
+
+{- | A finished game's outcome: the one it recorded, or, failing that, one
+reconstructed from what it left behind.
+
+Games that finished before outcomes were recorded have nothing stored, and there
+are a lot of them, so rather than rewrite the hottest column of the largest table
+to backfill a heuristic, the heuristic runs on read. An inferred outcome says so
+('Arkham.Game.Outcome.Inferred'), and a recorded one always wins.
+-}
+gameOutcomeOf :: Game -> Maybe GameOutcome
+gameOutcomeOf g
+  | gameGameState g /= IsOver = Nothing
+  | otherwise = gameOutcome g <|> inferred
+ where
+  ending = gameLastResolution g
+  withEnding o = o {outcomeEnding = ending <|> outcomeEnding o}
+  inferred = case modeCampaign (gameMode g) of
+    Just c ->
+      let attrs = toAttrs c
+       in withEnding
+            <$> inferCampaignOutcome
+              (campaignId attrs)
+              (campaignStep attrs)
+              (campaignCompletedSteps attrs)
+              (campaignResolutions attrs)
+    Nothing -> standaloneOutcome <$> ending
 
 setScenario :: Scenario -> GameMode -> GameMode
 setScenario c (This a) = These a c

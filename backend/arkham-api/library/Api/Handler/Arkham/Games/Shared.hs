@@ -53,7 +53,9 @@ import Arkham.Epic.Types (
 import Arkham.Event.Types (eventController)
 import Arkham.Game
 import Arkham.Game.Diff
+import Arkham.Game.Outcome (GameOutcome)
 import Arkham.Game.State
+import Arkham.Game.Utils (gameOutcomeOf)
 import Arkham.GameEnv
 import Arkham.Id
 import Arkham.Investigator (lookupInvestigator)
@@ -348,6 +350,8 @@ data GameDetails = GameDetails
   , scenario :: Maybe ScenarioDetails
   , campaign :: Maybe CampaignDetails
   , gameState :: GameState
+  , outcome :: Maybe GameOutcome
+  -- ^ How it ended, for a finished game; see "Arkham.Game.Outcome".
   , name :: Text
   , investigators :: [InvestigatorDetails]
   , otherInvestigators :: [InvestigatorDetails]
@@ -1569,6 +1573,7 @@ toGameDetailsEntry (Entity gameId game) playerCount =
                 That _ -> Nothing
                 These c _ -> Just $ CampaignDetails c.id c.difficulty c.currentCampaignMode
             , gameState = a.gameGameState
+            , outcome = gameOutcomeOf a
             , name = arkhamGameRawName game
             , investigators
             , otherInvestigators =

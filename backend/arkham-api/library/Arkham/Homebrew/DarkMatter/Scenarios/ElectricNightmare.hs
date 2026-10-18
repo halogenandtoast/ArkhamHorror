@@ -172,7 +172,7 @@ instance RunMessage ElectricNightmare where
           record YouAreTrappedInAVirtualNightmare
           eachInvestigator drivenInsane
           resolution "resolution1"
-          gameOver
+          gameOverLost
         Resolution 2 -> do
           record YouPartiallyRestoredTheSanityOfK2PS187
           addReminiscenceToken

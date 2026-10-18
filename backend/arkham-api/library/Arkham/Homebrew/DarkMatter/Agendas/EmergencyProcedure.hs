@@ -20,6 +20,6 @@ instance RunMessage EmergencyProcedure where
   runMessage msg a@(EmergencyProcedure attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
       eachInvestigator $ kill attrs
-      gameOver
+      gameOverLost
       pure a
     _ -> EmergencyProcedure <$> liftRunMessage msg attrs

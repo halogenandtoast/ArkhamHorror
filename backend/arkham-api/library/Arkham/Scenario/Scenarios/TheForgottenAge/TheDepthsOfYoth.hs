@@ -306,7 +306,7 @@ instance RunMessage TheDepthsOfYoth where
             case depth of
               1 -> do
                 eachInvestigator (kill attrs)
-                gameOver
+                gameOverLost
               2 -> do
                 eachInvestigator (`sufferPhysicalTrauma` 2)
                 push $ ScenarioResolutionStep 1 (Resolution 1)

@@ -322,6 +322,8 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gamePhaseStep = Nothing
         , gameSkillTest = Nothing
         , gameGameState = state
+        , gameOutcome = Nothing
+        , gameLastResolution = Nothing
         , gameFocusedCards = mempty
         , gameHighlightedCards = mempty
         , gameFocusedTarotCards = mempty
@@ -871,6 +873,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       <> ("activeCard" .= gameActiveCard)
       <> ("removedFromPlay" .= gameRemovedFromPlay)
       <> ("gameState" .= gameGameState)
+      <> ("outcome" .= gameOutcomeOf g)
       <> ("inSetup" .= gameInSetup)
       <> ("skillTestResults" .= gameSkillTestResults)
       <> ("question" .= gameQuestion)
@@ -975,6 +978,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "activeCard" .= toJSON gameActiveCard
         , "removedFromPlay" .= toJSON gameRemovedFromPlay
         , "gameState" .= toJSON gameGameState
+        , "outcome" .= toJSON (gameOutcomeOf g)
         , "inSetup" .= toJSON gameInSetup
         , "skillTestResults" .= toJSON gameSkillTestResults
         , "question" .= toJSON gameQuestion
@@ -1352,6 +1356,8 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         $ field InvestigatorRemainingActions
         . toId
         >=> (`gameValueMatches` gameValueMatcher)
+    InvestigatorWithStandardActionsRemaining gameValueMatcher ->
+      flip runMatchesM as $ getStandardActions . toId >=> (`gameValueMatches` gameValueMatcher)
     InvestigatorWithActionsPerformed gameValueMatcher ->
       flip runMatchesM as
         $ fieldMap InvestigatorActionsPerformed length

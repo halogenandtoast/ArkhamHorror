@@ -277,7 +277,7 @@ instance RunMessage RedSunrise where
           record TheInvestigatorsDidNotArriveInTime
           record ShubNiggurathReignsOverAnEclipsedWorld
           selectEach UneliminatedInvestigator $ push . InvestigatorKilled (toSource attrs)
-          gameOver
+          gameOverLost
           endOfScenario
         Resolution 2 -> do
           cultDefeated <- selectAny $ VictoryDisplayCardMatch $ basic $ CardWithTitle "The Cult En Masse"

@@ -11,6 +11,7 @@ import {-# SOURCE #-} Arkham.Card (Card, CardCode, CardId)
 import Arkham.Card.CustomCard (CustomCard)
 import Arkham.ChaosToken.Types
 import {-# SOURCE #-} Arkham.Entities
+import Arkham.Game.Outcome
 import Arkham.Game.Settings
 import Arkham.Game.State
 import Arkham.Git (GitSha)
@@ -127,6 +128,15 @@ data Game = Game
   , gameRemovedFromPlay :: [Card]
   , gameInSetup :: Bool
   , gameGameState :: GameState
+  , -- How a finished game ended. 'Nothing' while it is still running, and
+    -- also for every game that finished before outcomes were recorded; see
+    -- "Arkham.Game.Outcome" for why those are reconstructed on read rather
+    -- than written back.
+    gameOutcome :: Maybe GameOutcome
+  , -- The most recent scenario resolution the game saw, kept so a finished
+    -- game can name the ending it stopped on. The campaign keeps a resolution
+    -- per scenario but not which was last, and a standalone keeps none at all.
+    gameLastResolution :: Maybe Ending
   , gameSkillTestResults :: Maybe SkillTestResultsData
   , gameEnemyMoving :: Maybe EnemyId
   , gameEnemyEvading :: Maybe EnemyId

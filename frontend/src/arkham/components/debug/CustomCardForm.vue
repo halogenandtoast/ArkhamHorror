@@ -319,6 +319,10 @@ function chooseType(cardType: string) {
   form.weaknessKind = ALWAYS_WEAKNESS.includes(cardType) ? 'Weakness' : ''
   // Drop what the new type cannot print rather than keeping it where nothing shows it.
   form.keywords = form.keywords.filter((k) => canPrintKeyword(k, cardType))
+  if (cardType === 'InvestigatorType') {
+    form.keywords = []
+    form.keywordEffects = []
+  }
 }
 
 const artFor = (slot: string) => form.artUploaded[slot] || form.artUrls[slot]?.trim() || null
@@ -347,16 +351,19 @@ const isInvestigator = computed(() => form.cardType === 'InvestigatorType')
  * Where they differ is underneath. An engine keyword is a flag on the def; a
  * set's is an entry in `_keywords` that may have slots to fill, and a block for
  * those appears below once it is on. */
-const keywordChoices = computed(() => [
-  // An investigator prints none of the engine's keywords; a set's it might.
-  ...(isInvestigator.value
+const keywordChoices = computed(() =>
+  // An investigator prints no keywords at all -- not the engine's, and not its
+  // own set's: a keyword is printed above the text of a card that has text.
+  isInvestigator.value
     ? []
-    : KEYWORDS.filter((k) => canPrintKeyword(k, form.cardType)).map((name) => ({
-        name,
-        fromSet: false,
-      }))),
-  ...props.setKeywords.map((keyword) => ({ name: keyword.name, fromSet: true })),
-])
+    : [
+        ...KEYWORDS.filter((k) => canPrintKeyword(k, form.cardType)).map((name) => ({
+          name,
+          fromSet: false,
+        })),
+        ...props.setKeywords.map((keyword) => ({ name: keyword.name, fromSet: true })),
+      ],
+)
 
 const setKeywordNames = computed(() => props.setKeywords.map((k) => k.name))
 
@@ -369,7 +376,7 @@ const hasKeyword = (keyword: { name: string; fromSet: boolean }) =>
  * and no result of its own is said by the chip alone, and a block holding only
  * its own name would be noise. */
 const keywordsNeedingInput = computed(() =>
-  form.keywordEffects.filter((entry: any) => {
+  (isInvestigator.value ? [] : form.keywordEffects).filter((entry: any) => {
     const declared = props.setKeywords.find((k) => k.name === entry.keyword)
     // One this set no longer declares still gets a block: it is on the card, and
     // hiding it would leave no way to take it off.
@@ -618,7 +625,7 @@ function buildDef(cardCode: string): Record<string, any> {
     name: { title: form.title.trim() || 'Custom Card', subtitle: form.subtitle.trim() || null },
     cardTraits: parsedTraits.value.map((t) => t.name),
     skills: hasSkillIcons.value ? form.icons.map(iconJson) : [],
-    keywords: form.keywords.map((k) => ({ tag: k, contents: [] })),
+    keywords: isInvestigator.value ? [] : form.keywords.map((k) => ({ tag: k, contents: [] })),
     unique: form.unique,
     permanent: form.permanent,
     doubleSided: false,
@@ -734,7 +741,7 @@ function buildDef(cardCode: string): Record<string, any> {
   if (form.abilities.length) def.meta._abilities = form.abilities
   if (form.handlers.length) def.meta._handlers = form.handlers
   if (form.modifiers.length) def.meta._modifiers = form.modifiers
-  if (form.keywordEffects.length) def.meta._keywords = form.keywordEffects
+  if (form.keywordEffects.length && !isInvestigator.value) def.meta._keywords = form.keywordEffects
 
   return def
 }
@@ -1148,27 +1155,31 @@ defineExpose({
               Card number
               <input v-model="form.cardNumber" type="text" placeholder="1" @keydown.stop />
             </label>
-            <label v-if="canClaimArkhamBuildId">
-              arkham.build card id
-              <input
-                v-model="form.arkhamBuildId"
-                type="text"
-                placeholder="6afb2ea0-d5c6-434a-aea9-2b1beff8c74a"
-                spellcheck="false"
-                @keydown.stop
-              />
-            </label>
+            <!-- The note is about the id, so it stays in the id's column rather
+                 than running under the card number as well. -->
+            <div v-if="canClaimArkhamBuildId" class="with-note">
+              <label>
+                arkham.build card id
+                <input
+                  v-model="form.arkhamBuildId"
+                  type="text"
+                  placeholder="6afb2ea0-d5c6-434a-aea9-2b1beff8c74a"
+                  spellcheck="false"
+                  @keydown.stop
+                />
+              </label>
+              <p class="hint" :class="{ bad: badArkhamBuildId }">
+                <template v-if="badArkhamBuildId">
+                  Not an arkham.build id — a uuid, or the 32- or 8-character form a pack's cards
+                  come through with. Left out until it is one.
+                </template>
+                <template v-else>
+                  Optional. If this same card is published on arkham.build, paste its id and a deck
+                  built there will find this copy instead of failing as an unimplemented card.
+                </template>
+              </p>
+            </div>
           </div>
-          <p v-if="canClaimArkhamBuildId" class="hint" :class="{ bad: badArkhamBuildId }">
-            <template v-if="badArkhamBuildId">
-              Not an arkham.build id — a uuid, or the 32- or 8-character form a pack's cards
-              come through with. Left out until it is one.
-            </template>
-            <template v-else>
-              Optional. If this same card is published on arkham.build, paste its id and a deck
-              built there will find this copy instead of failing as an unimplemented card.
-            </template>
-          </p>
 
           <label>
             Traits
@@ -1641,6 +1652,16 @@ defineExpose({
 
   > label {
     flex: 1 1 90px;
+  }
+
+  /* A field that carries its own note: one column of the row, holding the
+     field and what is said about it. */
+  > .with-note {
+    display: flex;
+    flex: 1 1 90px;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
   }
 }
 

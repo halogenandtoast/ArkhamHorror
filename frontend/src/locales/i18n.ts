@@ -13,6 +13,14 @@ export const setI18n = (i18n: I18n) => {
   instance = i18n
 }
 
+/** The messages a locale holds, for the few places that have to read them. */
+export function messagesFor(locale: string): Record<string, unknown> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const global = instance?.global as any
+  const messages = global?.getLocaleMessage?.(locale)
+  return messages && typeof messages === 'object' ? messages : {}
+}
+
 /** Messages for one locale, merged over whatever is already there. */
 export function mergeMessages(locale: string, messages: Record<string, unknown>) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

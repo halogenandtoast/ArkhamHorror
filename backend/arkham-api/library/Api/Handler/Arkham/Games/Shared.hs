@@ -18,7 +18,7 @@ import Arkham.Asset.Types (Asset, assetController, assetOwner, assetPlacement)
 import Arkham.Campaign.Types (CampaignAttrs)
 import Arkham.Campaigns.TheDreamEaters.Meta qualified as TheDreamEaters
 import Arkham.Card.CardCode (CardCode (..), HasCardCode (toCardCode))
-import Arkham.Card.CustomCard (CustomCard, registerCustomCards)
+import Arkham.Card.CustomCard (CustomCard, customCardRegistryGeneration, registerCustomCards)
 import Arkham.ClassSymbol
 import Arkham.Classes.Entity (attr, overAttrs, toAttrs)
 import Arkham.Classes.GameLogger
@@ -481,6 +481,13 @@ slowAnswerThresholdNs = 500_000_000
 updateGame :: Map CardCode CustomCard -> Answer -> ArkhamGameId -> Maybe Room -> Handler ()
 updateGame customCards response gameId mRoom = do
   answerStarted <- liftIO getMonotonicTimeNSec
+  {- TEMPORARY. The registry is written twice per answer -- the row's frozen
+  snapshot as 'FromJSON Game' runs, then the owner's live library over it -- and
+  the two only agree while the library is untouched since the snapshot was taken.
+  A write that changes anything drops every compiled card, for every game on the
+  process, so what matters is how often that happened while this answer ran
+  rather than which request caused it. 0 means the caches survived. -}
+  generationBefore <- customCardRegistryGeneration
   phasesRef <- newIORef []
   let
     -- Each mark closes the phase that led up to it, so the labels read as the
@@ -813,6 +820,7 @@ updateGame customCards response gameId mRoom = do
   mark "publish"
   phases <- reverse <$> readIORef phasesRef
   finished <- liftIO getMonotonicTimeNSec
+  generationAfter <- customCardRegistryGeneration
   let
     elapsed since until' = T.pack (printf "%.0f" (fromIntegral (until' - since) / 1e6 :: Double)) <> "ms"
     split _ [] = []
@@ -822,6 +830,7 @@ updateGame customCards response gameId mRoom = do
         " "
         ( ("game=" <> gameIdToText gameId)
             : ("total=" <> elapsed answerStarted finished)
+            : ("cardgen=" <> tshow (generationAfter - generationBefore))
             : split answerStarted phases
         )
   if finished - answerStarted >= slowAnswerThresholdNs

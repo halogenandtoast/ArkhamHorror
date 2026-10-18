@@ -43,6 +43,14 @@ export function stripCardCodePrefix(code: string): string {
   return code.replace(/^c(?=\*)/, '')
 }
 
+/* `GET /arkham/card/:code` answers out of the engine's own card maps. A custom
+ * card's def lives in the database and a homebrew one inside its box, so asking
+ * for either by code is a guaranteed 404 -- don't ask. */
+export function hasEngineCardDef(code: string): boolean {
+  const bare = code.replace(/^c(?=[*:])/, '')
+  return !bare.startsWith(CUSTOM_CARD_PREFIX) && !bare.startsWith(':')
+}
+
 /* The engine's own convention, mirrored from `FromJSON CardCode`: a code on the
  * wire carries a leading `c` that is not part of the code. Both sides of a
  * comparison have to go through this, because a code minted locally is bare and

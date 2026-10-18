@@ -3,6 +3,7 @@ import * as Arkham from '@/arkham/types/Game'
 import { LogContents, LogKey, formatKey, homebrewScopeFromCampaignId, logContentsDecoder, logKeyTitle } from '@/arkham/types/Log'
 import { toCapitalizedWords, formatContent } from '@/arkham/helpers'
 import { cardArt } from '@/arkham/cardImages'
+import { hasEngineCardDef } from '@/arkham/customCards'
 import { computed, ref, onMounted, onUnmounted, watch, type Component } from 'vue'
 import { fetchAchievements, fetchCard, fetchGameAchievements } from '@/arkham/api'
 import type { Achievement } from '@/arkham/types/Achievement'
@@ -830,7 +831,7 @@ async function loadMissingCards() {
         const recordType = (val as any)?.recordType
         if (recordType && recordType !== 'RecordableCardCode') continue
         const code = (val as any).contents
-        if (code && typeof code === 'string' && !findCard(code)) missing.add(code)
+        if (code && typeof code === 'string' && hasEngineCardDef(code) && !findCard(code)) missing.add(code)
       }
     }
   }

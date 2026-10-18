@@ -56,6 +56,7 @@ import Database.Persist.Sql (SqlPersistT)
 import Import hiding ((==.))
 import Import qualified as P
 import System.Directory (createDirectoryIfMissing)
+import System.IO.Unsafe (unsafePerformIO)
 import UnliftIO.Exception (catch)
 
 {- | The requesting user's card library.
@@ -612,6 +613,43 @@ the registry first.
 -}
 userCustomCards :: UserId -> Handler (Map CardCode CustomCard)
 userCustomCards userId = do
+  stamp <- libraryStamp userId
+  remembered <- Map.lookup userId <$> readIORef userCustomCardsCache
+  case remembered of
+    Just (cachedStamp, cards) | cachedStamp == stamp -> pure cards
+    _ -> do
+      cards <- readUserCustomCards userId
+      atomicModifyIORef' userCustomCardsCache \m -> (Map.insert userId (stamp, cards) m, ())
+      pure cards
+
+{- | What a cached library is checked against before it is believed.
+
+The row count and the newest @updatedAt@ between them see every change a
+library can undergo: a save moves the timestamp, an addition moves both, a
+deletion lowers the count. A deletion paired with an addition holds the count
+still but cannot hold the timestamp, the new row's being the moment it was
+written.
+
+Two indexed aggregates, against reading and reparsing the whole library. That
+read was happening on every websocket answer -- the freshness it buys is the
+point (a card edited in the builder has to show at a table already using it),
+but the author's library is megabytes of defs and almost never differs from the
+answer before.
+-}
+type LibraryStamp = (Int, Maybe UTCTime)
+
+libraryStamp :: UserId -> Handler LibraryStamp
+libraryStamp userId = runDB do
+  n <- P.count [ArkhamCustomCardUserId P.==. userId]
+  newest <- P.selectFirst [ArkhamCustomCardUserId P.==. userId] [P.Desc ArkhamCustomCardUpdatedAt]
+  pure (n, arkhamCustomCardUpdatedAt . entityVal <$> newest)
+
+{-# NOINLINE userCustomCardsCache #-}
+userCustomCardsCache :: IORef (Map UserId (LibraryStamp, Map CardCode CustomCard))
+userCustomCardsCache = unsafePerformIO (newIORef mempty)
+
+readUserCustomCards :: UserId -> Handler (Map CardCode CustomCard)
+readUserCustomCards userId = do
   rows <- runDB $ P.selectList [ArkhamCustomCardUserId P.==. userId] []
   let cards = do
         Entity _ row <- rows

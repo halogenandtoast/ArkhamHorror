@@ -5,7 +5,7 @@
  * steps. A step either runs a query and binds the result, or pushes a message —
  * the two operations the runner supports. Anything a step binds is available to
  * later steps as $name, alongside $id, $source, $target and $iid. */
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import {
   encodeConstructor,
   loadSchema,
@@ -461,14 +461,28 @@ function onDrop(target: Entry) {
 
 const adding = ref(false)
 
-const addable = computed(() => {
-  const out = ABILITY_KINDS.map((k) => ({ key: `type:${k.label}`, label: k.label }))
+type Addable = { key: string; label: string; icon?: string }
+
+const addable = computed<Addable[]>(() => {
+  const out: Addable[] = ABILITY_KINDS.map((k) => ({ key: `type:${k.label}`, label: k.label, icon: k.icon }))
   out.push({ key: 'type:other', label: 'Other…' })
   if (props.canRevelation && !hasRevelation.value) out.push({ key: 'revelation', label: 'Revelation' })
-  if (props.isInvestigator && !hasElderSign.value) out.push({ key: 'elderSign', label: 'Elder sign' })
+  if (props.isInvestigator && !hasElderSign.value)
+    out.push({ key: 'elderSign', label: 'Elder sign', icon: 'elder-sign' })
   out.push({ key: 'constant', label: 'Constant' })
   out.push({ key: 'listener', label: 'Listener' })
   return out
+})
+
+/* Asked in a window of its own, which can be shut again: the list used to drop
+ * open under the strip, where picking the blank first line was the only way
+ * back out of it. */
+const addBox = ref<HTMLDialogElement | null>(null)
+
+watch(adding, async (on) => {
+  if (!on) return
+  await nextTick()
+  addBox.value?.showModal()
 })
 
 function add(key: string) {
@@ -747,12 +761,30 @@ function handlerScope(handler: any, index: number): Binding[] {
         </button>
       </div>
 
-      <select v-if="adding" class="entry-menu" @change="add(($event.target as HTMLSelectElement).value)">
-        <option value="">Ability type</option>
-        <option v-for="choice in addable" :key="choice.key" :value="choice.key">
-          {{ choice.label }}
-        </option>
-      </select>
+      <Teleport to="body">
+        <dialog
+          v-if="adding"
+          ref="addBox"
+          class="entry-picker"
+          @close="adding = false"
+          @click.self="adding = false"
+        >
+          <section @keydown.esc="adding = false">
+            <header>
+              <h2>Add</h2>
+              <span class="spacer" />
+              <button type="button" class="link" @click="adding = false">Close</button>
+            </header>
+            <ul>
+              <li v-for="choice in addable" :key="choice.key">
+                <button type="button" @click="add(choice.key)">
+                  <i v-if="choice.icon" :class="choice.icon" aria-hidden="true" />{{ choice.label }}
+                </button>
+              </li>
+            </ul>
+          </section>
+        </dialog>
+      </Teleport>
 
       <p v-if="!entries.length" class="hint muted">
         Nothing yet. A card with no abilities, no modifiers and no revelation just sits there.
@@ -1292,8 +1324,71 @@ function handlerScope(handler: any, index: number): Binding[] {
   }
 }
 
-.entry-menu {
-  align-self: flex-start;
+/* The same window the builder's other pickers are, in the strip's own colours
+   rather than the one that means text. */
+.entry-picker {
+  background: var(--background-dark);
+  border: 1px solid #4b5563;
+  border-radius: 8px;
+  color: var(--title);
+  inset: 0;
+  margin: auto;
+  max-height: 100%;
+  max-width: 100%;
+  padding: 0;
+  width: min(20rem, 92vw);
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  > section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 0.9rem 1rem;
+  }
+
+  header {
+    align-items: baseline;
+    display: flex;
+    gap: 0.6rem;
+  }
+
+  h2 {
+    font-family: teutonic, sans-serif;
+    font-size: 1.2em;
+    margin: 0;
+  }
+
+  .spacer {
+    flex: 1;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li button {
+    align-items: center;
+    background: none;
+    border: none;
+    color: inherit;
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.4rem 0.45rem;
+    text-align: left;
+    width: 100%;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+    }
+  }
 }
 
 .listeners {

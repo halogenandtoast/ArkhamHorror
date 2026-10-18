@@ -1639,17 +1639,24 @@ dispatch msg = case msg of
   ResolveReckonings [] -> pure ()
   -- askLeader, not chooseGroup: the last reckoning is asked for too, since the
   -- prompt is what points it out on the table
-  ResolveReckonings ss -> do
-    -- a card may ask to go last, which the leader's free choice of order would break
-    late <- filterM isLateReckoning ss
-    let offer = case filter (`notElem` late) ss of [] -> ss; early -> early
-    askLeader
-      "Choose the next reckoning to resolve"
-      [Choice (SourceLabel s) [ResolveReckoning s, ResolveReckonings (filter (/= s) ss)] | s <- offer]
+  ResolveReckonings ss0 -> do
+    -- the order was settled over every source at once, so an earlier reckoning may have
+    -- discarded a later one's card by now (a dark pact that devours its owner)
+    ss <- filterM reckoningStillInPlay ss0
+    unless (null ss) do
+      -- a card may ask to go last, which the leader's free choice of order would break
+      late <- filterM isLateReckoning ss
+      let offer = case filter (`notElem` late) ss of [] -> ss; early -> early
+      askLeader
+        "Choose the next reckoning to resolve"
+        [Choice (SourceLabel s) [ResolveReckoning s, ResolveReckonings (filter (/= s) ss)] | s <- offer]
   ResolveReckoning src -> do
+    inPlay <- reckoningStillInPlay src
     held <- uses #sheetTokens (Map.member (reckoningHeldKey src))
-    offers <- if held then pure [] else reckoningOffers src
+    offers <- if held || not inPlay then pure [] else reckoningOffers src
     if
+      -- the card left the table before its turn in the order came up: nothing to point at
+      | not inPlay -> pure ()
       | held -> logText "That reckoning does not resolve this mythos phase"
       | null offers -> push (ResolveReckoningNow src)
       | otherwise ->

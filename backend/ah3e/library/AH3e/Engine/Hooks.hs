@@ -659,6 +659,16 @@ isLateReckoning = \case
   SourceCodex n -> pure (codexBehavior n).reckoningLast
   _ -> pure False
 
+{- | Whether that reckoning still has a card on the table. The order of the mythos
+reckonings is settled before any of them resolves, so an earlier one can take a later
+one's card away first: a dark pact that devours its owner discards every other card they
+held, pacts included.
+-}
+reckoningStillInPlay :: Source -> GameM Bool
+reckoningStillInPlay = \case
+  SourceCard cid -> uses #assets (Map.member cid)
+  _ -> pure True
+
 -- | What the codex does about an investigator being defeated, in codex order.
 codexInvestigatorDefeated :: InvestigatorId -> GameM [Message]
 codexInvestigatorDefeated iid = do

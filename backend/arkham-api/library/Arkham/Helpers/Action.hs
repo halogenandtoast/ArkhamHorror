@@ -38,6 +38,7 @@ import Arkham.Matcher.Action
 import Arkham.Matcher.Card
 import Arkham.Matcher.Enemy
 import Arkham.Matcher.Window
+import Arkham.Metrics (timedPure)
 import Arkham.Modifier (Modifier (..))
 import Arkham.Prelude
 import Arkham.Projection
@@ -350,6 +351,10 @@ getActionsWith iid ws f = do
         _ -> Nothing
 
   unfilteredActions <- map f <$> getAllAbilities
+  {- TEMPORARY profiling instrumentation. Enumerating every ability in the game
+  is pure work, otherwise paid for piecemeal by whatever forces the list below;
+  forcing it here puts the whole of it in one span. -}
+  let !_enumerated = timedPure "actions/enumerate" (length unfilteredActions)
   actions' <-
     if null abilityFilters
       then pure unfilteredActions

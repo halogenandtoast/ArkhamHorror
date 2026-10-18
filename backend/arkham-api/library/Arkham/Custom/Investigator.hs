@@ -24,6 +24,7 @@ import Arkham.Investigator.Import.Lifted (elderSignValue)
 import Arkham.Investigator.Runner
 import Arkham.Matcher (ValueMatcher (AnyValue))
 import Arkham.Message.Lifted (onFailedByEffect, onSucceedByEffect, tokenSkillTestOption)
+import Arkham.Metrics (timedSpan)
 import Arkham.Prelude
 
 newtype CustomInvestigator = CustomInvestigator InvestigatorAttrs
@@ -109,5 +110,5 @@ instance RunMessage CustomInvestigator where
               runCustomSteps attrs iid "_elderSignFailureSteps"
       pure x
     _ -> do
-      runCustomHandlers attrs msg
-      CustomInvestigator <$> liftRunMessage msg attrs
+      timedSpan "custom/inv/handlers" $ runCustomHandlers attrs msg
+      CustomInvestigator <$> timedSpan "custom/inv/attrs" (liftRunMessage msg attrs)

@@ -131,6 +131,7 @@ import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (parseMaybe)
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
+import System.IO.Unsafe (unsafePerformIO)
 
 abilitiesMetaKey :: Text
 abilitiesMetaKey = "_abilities"
@@ -282,6 +283,56 @@ metaSpecs key def = fromMaybe [] do
   v <- Map.lookup key (cdMeta def)
   parseMaybe parseJSON v
 
+{- | Everything a card's meta has to be taken apart to answer, taken apart once.
+
+The three spec lists and the @request@ blocks are what the engine asks a custom
+card for, and it asks constantly: the abilities of every entity on every
+'Arkham.Helpers.Action.getActions', the modifiers of every entity on every
+preload, the handlers of every entity on every message. Each ask was a fresh
+parse of a meta key -- or, for the request blocks, a walk of the whole blob --
+of a def that had not changed since the last one.
+
+The fields are lazy, so a card still pays only for the lists something actually
+asks it for, and pays for each of them once.
+-}
+data CompiledCard = CompiledCard
+  { compiledAbilities :: ~[AbilitySpec]
+  , compiledModifiers :: ~[ModifierSpec]
+  , compiledHandlers :: ~[HandlerSpec]
+  , compiledRequests :: ~[Value]
+  }
+
+{- | Keyed by card code and stamped with the registry generation it was read
+under, so a card-builder save drops every compiled card at once rather than
+leaving one behaving the way it used to.
+-}
+{-# NOINLINE compiledCardCache #-}
+compiledCardCache :: IORef (Int, Map CardCode CompiledCard)
+compiledCardCache = unsafePerformIO (newIORef (-1, mempty))
+
+{-# NOINLINE compiledCard #-}
+compiledCard :: CardDef -> CompiledCard
+compiledCard def = unsafePerformIO do
+  generation <- customCardRegistryGeneration
+  (cachedGeneration, compiled) <- readIORef compiledCardCache
+  case Map.lookup code compiled of
+    Just c | cachedGeneration == generation -> pure c
+    _ -> do
+      let
+        c =
+          CompiledCard
+            { compiledAbilities = metaSpecs abilitiesMetaKey def
+            , compiledModifiers = metaSpecs modifiersMetaKey def
+            , compiledHandlers = metaSpecs handlersMetaKey def
+            , compiledRequests = requestBlocks (toJSON (cdMeta def))
+            }
+      atomicModifyIORef' compiledCardCache \(generation', compiled') ->
+        let kept = if generation' == generation then compiled' else mempty
+         in ((generation, Map.insert code c kept), ())
+      pure c
+ where
+  code = toCardCode def
+
 type CustomEntity a = (HasCardDef a, Sourceable a, Targetable a, HasCardCode a, ToJSON a)
 
 {- | The entity's own serialized fields, so @$id@ and friends resolve, plus the
@@ -326,7 +377,7 @@ bindings a = KeyMap.fromList (own <> signatureOf) <> fields <> remembered
 customAbilities :: CustomEntity a => a -> [Ability]
 customAbilities a =
   [ applySpec spec (mkAbility a idx abilityType)
-  | (idx, spec) <- zip [1 ..] (metaSpecs abilitiesMetaKey (toCardDef a))
+  | (idx, spec) <- zip [1 ..] (compiledAbilities (compiledCard (toCardDef a)))
   , Just abilityType <- [decodeWith env (specType spec)]
   ]
  where
@@ -598,9 +649,9 @@ runCustomHandlers a msg = do
     Object o -> handlers o
     _ -> pure ()
  where
-  def = toCardDef a
-  handlerSpecs = metaSpecs @HandlerSpec handlersMetaKey def
-  blocks = requestBlocks (toJSON (cdMeta def))
+  compiled = compiledCard (toCardDef a)
+  handlerSpecs = compiledHandlers compiled
+  blocks = compiledRequests compiled
 
   handlers o = do
     let mentioned = any (`isSubValue` Object o) [toJSON (toTarget a), toJSON (toSource a)]
@@ -654,7 +705,7 @@ selects. This is how a custom card reaches other cards -- giving an enemy a
 keyword, say -- rather than only acting on itself.
 -}
 customModifiers :: (CustomEntity a, HasModifiersM m) => a -> m ()
-customModifiers a = for_ (metaSpecs @ModifierSpec modifiersMetaKey (toCardDef a)) \spec -> do
+customModifiers a = for_ (compiledModifiers (compiledCard (toCardDef a))) \spec -> do
   let holds (l, r) = sameValue (substitute baseEnv l) (substitute baseEnv r)
   -- @requires@ first, because it is the one gate that asks the game nothing.
   when (all holds (modRequires spec)) do

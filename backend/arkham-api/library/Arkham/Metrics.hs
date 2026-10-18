@@ -7,6 +7,8 @@ module Arkham.Metrics (
   resetMetrics,
   recordSpan,
   withMetric,
+  timedSpan,
+  timedPure,
   formatMetrics,
   dumpMetricsTo,
   messageTag,
@@ -80,9 +82,10 @@ recordSpan name ns = do
     atomicModifyIORef' ref \m ->
       (Map.insertWith mergeEntry name (bumpEntry ns emptyEntry) m, ())
 
--- | Time `action` and record its duration under `name` in the global metrics
--- registry, *if* metrics are enabled. When disabled, this is a single IORef
--- read with no further overhead.
+{- | Time `action` and record its duration under `name` in the global metrics
+registry, *if* metrics are enabled. When disabled, this is a single IORef
+read with no further overhead.
+-}
 withMetric :: MonadUnliftIO m => Text -> m a -> m a
 withMetric name action = do
   mref <- liftIO (readIORef globalMetricsRef)
@@ -94,8 +97,43 @@ withMetric name action = do
         t1 <- liftIO getMonotonicTimeNSec
         liftIO $ recordSpan name (t1 - t0)
 
--- | Cheap constructor name extraction for `Message`. Uses Data.Data to avoid
--- forcing all fields the way `show` would.
+{- | 'withMetric' for a monad that is only 'MonadIO'.
+
+@QueueT Message GameT@ has no 'MonadUnliftIO' instance, and most of the engine's
+hot paths run inside one, so timing them needs a span that does not ask for the
+exception safety 'withMetric' provides. A throwing span is simply not recorded.
+-}
+timedSpan :: MonadIO m => Text -> m a -> m a
+timedSpan name action = do
+  liftIO isMetricsEnabled >>= \case
+    Nothing -> action
+    Just _ -> do
+      t0 <- liftIO getMonotonicTimeNSec
+      result <- action
+      t1 <- liftIO getMonotonicTimeNSec
+      liftIO $ recordSpan name (t1 - t0)
+      pure result
+
+{- | 'timedSpan' for a value whose cost is in forcing it rather than in running
+an action, so a pure stage of a query can be timed without the monad it runs in
+having to reach IO. Returns its argument; the span covers evaluating it to weak
+head normal form, which for a @length@ is the whole spine.
+-}
+{-# NOINLINE timedPure #-}
+timedPure :: Text -> a -> a
+timedPure name x = unsafePerformIO do
+  isMetricsEnabled >>= \case
+    Nothing -> pure x
+    Just _ -> do
+      t0 <- getMonotonicTimeNSec
+      v <- evaluate x
+      t1 <- getMonotonicTimeNSec
+      recordSpan name (t1 - t0)
+      pure v
+
+{- | Cheap constructor name extraction for `Message`. Uses Data.Data to avoid
+forcing all fields the way `show` would.
+-}
 messageTag :: Data a => a -> Text
 messageTag = T.pack . show . toConstr
 

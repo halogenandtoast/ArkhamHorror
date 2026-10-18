@@ -176,11 +176,23 @@ library registered since the last restart.
 data CustomCardRegistry = CustomCardRegistry
   { registryCards :: Map CardCode CustomCard
   , registrySignatureOwners :: Map CardCode CardCode
+  , registryGeneration :: Int
+  -- ^ Moves when, and only when, the cards above do. See 'customCardRegistryGeneration'.
   }
 
 {-# NOINLINE customCardRegistry #-}
 customCardRegistry :: IORef CustomCardRegistry
-customCardRegistry = unsafePerformIO (newIORef (CustomCardRegistry mempty mempty))
+customCardRegistry = unsafePerformIO (newIORef (CustomCardRegistry mempty mempty 0))
+
+{- | A counter that moves whenever the registry does.
+
+Everything derived from a def -- not only the def itself -- stays good for
+exactly as long as this stands still, so a cache anywhere in the engine can
+hold its own entries and drop all of them at once without this module having to
+know that it exists.
+-}
+customCardRegistryGeneration :: MonadIO m => m Int
+customCardRegistryGeneration = registryGeneration <$> readIORef customCardRegistry
 
 {- | Who claims each signature card, keyed by the code the card answers to.
 
@@ -205,14 +217,30 @@ signatureOwners cards =
   -- Raw: substitution asks who the owner is, which is what this answers.
   signatureCodes def = maybe [] (map sanitizeCustomCardCode) (rawMetaMaybe "_signatures" def)
 
+{- | Add these cards to the registry, if they are not already exactly in it.
+
+Registration happens twice per answer -- once for the game's own snapshot as it
+is deserialized, once for the library of whoever is playing -- and almost every
+time it is handed back precisely what it was handed last time. Noticing that is
+the whole point: a registration that changes nothing leaves the generation
+where it is, so every def and everything derived from one survives the answer
+instead of being rebuilt from meta on the next message that asks for it.
+-}
 registerCustomCards :: MonadIO m => Map CardCode CustomCard -> m ()
 registerCustomCards cards = unless (null cards) do
-  atomicModifyIORef' customCardRegistry \existing ->
-    let !merged = cards <> registryCards existing
-     in (CustomCardRegistry merged (signatureOwners merged), ())
+  changed <- atomicModifyIORef' customCardRegistry \existing ->
+    let
+      alreadyThere new old = if new == old then Nothing else Just new
+      incoming = Map.differenceWith alreadyThere cards (registryCards existing)
+     in
+      if null incoming
+        then (existing, False)
+        else
+          let !merged = incoming <> registryCards existing
+           in (CustomCardRegistry merged (signatureOwners merged) (registryGeneration existing + 1), True)
   -- A derived def carries the signature restriction the rest of the registry
   -- implies, so any change to any card invalidates every one of them.
-  atomicModifyIORef' customCardDefCache (const (mempty, ()))
+  when changed $ atomicModifyIORef' customCardDefCache (const (mempty, ()))
 
 {- | Registration as a pure side effect, for the 'FromJSON Game' path where the
 defs must be live before the entities that reference them are parsed.

@@ -146,9 +146,10 @@ import Arkham.Message.Lifted (takeControlOfAsset)
 import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Message.Lifted.Choose qualified as Choose
 import Arkham.Message.Lifted.Move (moveToEdit)
-import Arkham.Metrics (isMetricsEnabled, recordSpan)
+import Arkham.Metrics (timedSpan)
 import Arkham.Modifier
 import Arkham.Modifier qualified as Modifier
+import Arkham.Modifier.Builder (runCachedQueryT)
 import Arkham.Movement
 import Arkham.Phase
 import Arkham.Placement
@@ -181,7 +182,6 @@ import Data.List qualified as List
 import Data.Map.Strict qualified as Map
 import Data.Monoid
 import Data.Set qualified as Set
-import GHC.Clock (getMonotonicTimeNSec)
 
 instance RunMessage Investigator where
   runMessage msg i@(Investigator (a :: original)) =
@@ -619,21 +619,6 @@ runWindow attrs windows allActions playableCards = do
                | (ability, ws) <- actionsWithMatchingWindows
                ]
             <> [SkipTriggersButton iid | skippable]
-
-{- | TEMPORARY profiling instrumentation. 'Arkham.Metrics.withMetric' needs
-'MonadUnliftIO', which @QueueT Message GameT@ is not, so time the span by hand.
-No exception safety: a throwing span is simply not recorded.
--}
-timedSpan :: MonadIO m => Text -> m a -> m a
-timedSpan name action = do
-  liftIO isMetricsEnabled >>= \case
-    Nothing -> action
-    Just _ -> do
-      t0 <- liftIO getMonotonicTimeNSec
-      result <- action
-      t1 <- liftIO getMonotonicTimeNSec
-      liftIO $ recordSpan name (t1 - t0)
-      pure result
 
 withAssetStillInPlay
   :: HasGame m => AssetId -> InvestigatorAttrs -> m InvestigatorAttrs -> m InvestigatorAttrs
@@ -2664,7 +2649,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         && ( not (investigatorDefeated || investigatorResigned)
                || Window.hasOwnEliminatedWindow investigatorId windows
            ) -> do
-        actions <- timedSpan "window/getActions" $ getActions a.id windows
+        actions <- timedSpan "window/getActions" $ runCachedQueryT (getActions a.id windows)
         playableCards <-
           if not (investigatorDefeated || investigatorResigned)
             then timedSpan "window/getPlayableCards" $ do

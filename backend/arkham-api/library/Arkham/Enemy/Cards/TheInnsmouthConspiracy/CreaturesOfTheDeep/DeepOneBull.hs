@@ -24,7 +24,7 @@ instance HasAbilities DeepOneBull where
           $ IfEnemyDefeated #after investigator ByAny (not_ (be a) <> EnemyWithTrait DeepOne)
       ]
    where
-    investigator = if a.exhausted then Anyone else at_ (not_ $ locationWithEnemy a.id)
+    investigator = if a.exhausted then You else You <> at_ (not_ $ locationWithEnemy a.id)
 
 instance RunMessage DeepOneBull where
   runMessage msg e@(DeepOneBull attrs) = runQueueT $ case msg of

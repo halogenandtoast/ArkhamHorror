@@ -38,6 +38,7 @@ V2_DO_CLUSTER  ?= arkham-horror-doks
 V2_CACHE_DIR   ?= $(CURDIR)/.buildx-cache/v2
 V2_CACHE_NEXT  ?= $(V2_CACHE_DIR).new
 V2_CACHE_PREV  ?= $(V2_CACHE_DIR).prev
+V2_ASSET_BUCKET ?= arkham-horror-assets
 # A build that dies part-way leaves the .stack-work cache mounts half-written:
 # valid .hi files beside truncated .o files that GHC never notices are stale.
 # scripts/docker-build-api.sh repairs that on the next run, so one retry turns a
@@ -46,6 +47,13 @@ V2_CACHE_PREV  ?= $(V2_CACHE_DIR).prev
 V2_CACHE_POISON = ZCMain_main_closure|ld returned 1 exit status|failed in phase .Linker.|file format not recognized|truncated
 
 V2_CACHE_SETUP = CACHE_ARGS="--cache-to type=local,dest=$(V2_CACHE_NEXT),mode=max"; rm -rf "$(V2_CACHE_NEXT)"; if [ -d "$(V2_CACHE_DIR)" ]; then CACHE_ARGS="--cache-from type=local,src=$(V2_CACHE_DIR) $$CACHE_ARGS"; fi
+# Uploads this build's content-hashed bundles to the CDN bucket, which is what
+# lets any pod answer for any build's /assets/ (prod.nginxconf, @cdn_assets).
+# Deliberately BEFORE the rollout: for the length of the rollout the backend pool
+# holds both builds, so the old pods need the new bundles reachable before the
+# first new pod starts handing out an index.html that names them.
+V2_PUBLISH_ASSETS = ASSET_BUCKET="$(V2_ASSET_BUCKET)" V2_BUILDER="$(V2_BUILDER)" V2_CACHE_DIR="$(V2_CACHE_DIR)" BUILD_ARGS="$(V2_BUILD_ARGS)" ./scripts/publish-frontend-assets.sh
+
 V2_CACHE_PROMOTE = if [ -d "$(V2_CACHE_NEXT)" ]; then rm -rf "$(V2_CACHE_PREV)"; if [ -d "$(V2_CACHE_DIR)" ]; then mv "$(V2_CACHE_DIR)" "$(V2_CACHE_PREV)"; fi; if mv "$(V2_CACHE_NEXT)" "$(V2_CACHE_DIR)"; then rm -rf "$(V2_CACHE_PREV)"; else if [ -d "$(V2_CACHE_PREV)" ]; then mv "$(V2_CACHE_PREV)" "$(V2_CACHE_DIR)"; fi; exit 1; fi; fi
 
 ## Ensure a docker-container buildx builder exists (required for multi-platform builds)
@@ -78,6 +86,7 @@ v2-deploy: v2-buildx-setup v2-kubeconfig-ensure
 	    --tag $(V2_IMAGE):latest \
 	    --push . ; \
 	  $(V2_CACHE_PROMOTE); \
+	  $(V2_PUBLISH_ASSETS); \
 	  echo ">> rolling $(V2_DEPLOYMENT) (image stays :latest, restart forces pull)"; \
 	  KUBECONFIG=$(V2_KUBECONFIG) kubectl -n $(V2_NAMESPACE) \
 	    rollout restart deployment/$(V2_DEPLOYMENT); \
@@ -115,6 +124,7 @@ v2-deploy-committed: v2-buildx-setup v2-kubeconfig-ensure
 	    ATTEMPT=2; \
 	  done; \
 	  $(V2_CACHE_PROMOTE); \
+	  $(V2_PUBLISH_ASSETS) "$$REF"; \
 	  echo ">> rolling $(V2_DEPLOYMENT) (image stays :latest, restart forces pull)"; \
 	  KUBECONFIG=$(V2_KUBECONFIG) kubectl -n $(V2_NAMESPACE) \
 	    rollout restart deployment/$(V2_DEPLOYMENT); \
@@ -141,6 +151,11 @@ v2-push-multiarch: v2-buildx-setup
 	    --push . ; \
 	  $(V2_CACHE_PROMOTE)
 .PHONY: v2-push-multiarch
+
+## Upload the frontend's hashed bundles to the CDN bucket (no build, no rollout)
+v2-publish-assets: v2-buildx-setup
+	@$(V2_PUBLISH_ASSETS) $(V2_GIT_REF)
+.PHONY: v2-publish-assets
 
 ## Tail logs from the DigitalOcean k8s deployment
 v2-logs: v2-kubeconfig-ensure

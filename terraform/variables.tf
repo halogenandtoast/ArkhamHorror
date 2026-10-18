@@ -223,6 +223,22 @@ variable "database_url" {
   sensitive   = true
 }
 
+variable "lb_sticky_sessions_ttl" {
+  description = "Seconds the LB pins a browser to one pod, via a cookie. 0 disables affinity."
+  type        = number
+
+  # Long enough to cover a page load and the lazy route chunks that follow it,
+  # short enough that affinity never shapes load: a pod the HPA has just added
+  # starts taking work within two minutes rather than only seeing new visitors.
+  #
+  # See the comment on local.sticky_annotations in ingress.tf for what this is
+  # protecting against. Residual cases -- a chunk imported after the cookie has
+  # lapsed -- are handled on the two layers below it: nginx falls back to the
+  # CDN for a bundle its pod lacks, and the client reloads once on a chunk that
+  # has gone missing entirely.
+  default = 120
+}
+
 variable "asset_host" {
   description = "Public asset host"
   type        = string

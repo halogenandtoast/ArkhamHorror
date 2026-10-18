@@ -37,6 +37,21 @@ ENV VITE_AUTH_COOKIE_DOMAIN=${AUTH_COOKIE_DOMAIN}
 ENV VITE_MAIN_SITE_URL=${MAIN_SITE_URL}
 RUN npm run build
 
+# Both frontends' content-hashed bundles and nothing else, exported by
+# scripts/publish-frontend-assets.sh so a deploy can upload them to the CDN
+# bucket -- which is what lets a pod answer for a bundle from a build it was not
+# made from (prod.nginxconf, @cdn_assets).
+#
+# `FROM scratch` and the narrow COPYs are both the point: `--target
+# frontend-dist --output type=local` writes the whole filesystem of the target
+# stage, so exporting the `frontend` stage would mean a gigabyte of node_modules
+# on disk, and exporting all of `dist` would mean 270 MB of card JSON, to get at
+# 26 MB that matter. Nothing in the `app` stage depends on this, so an ordinary
+# build never materialises it.
+FROM scratch AS frontend-dist
+COPY --from=frontend /opt/arkham/src/frontend/dist/assets /frontend/assets
+COPY --from=frontend-3ed /opt/arkham/src/frontend-3ed/dist/assets /frontend-3ed/assets
+
 FROM ubuntu:22.04 AS base
 
 ARG DEBIAN_FRONTEND=noninteractive

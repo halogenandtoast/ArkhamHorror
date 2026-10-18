@@ -94,6 +94,10 @@ http {
       }
 
       add_header Cache-Control $cache_control always;
+
+      # A name that isn't in this image isn't necessarily wrong -- see
+      # @cdn_assets. Try the CDN before answering 404.
+      try_files $uri @cdn_assets;
     }
 
     location ~* ^/assets/.+\.css$ {
@@ -111,6 +115,10 @@ http {
       }
 
       add_header Cache-Control $cache_control always;
+
+      # A name that isn't in this image isn't necessarily wrong -- see
+      # @cdn_assets. Try the CDN before answering 404.
+      try_files $uri @cdn_assets;
     }
 
     # The slimmed card database, ~6 MB of JSON per locale and the single
@@ -131,6 +139,64 @@ http {
       }
 
       add_header Cache-Control $cache_control always;
+    }
+
+    # Everything else the build emits under /assets/ -- fonts, and any image
+    # small enough that vite emitted a file rather than a data: URI. A plain
+    # prefix, not `^~`, so the two regex locations above still get first refusal.
+    #
+    # This exists mostly so a miss can't reach `location /` below, where
+    # try_files would answer with index.html: a font or an image arriving as 200
+    # OK with a page of HTML in it fails in ways that look nothing like the 404
+    # it actually is.
+    location /assets/ {
+      add_header Cache-Control $cache_control always;
+      try_files $uri @cdn_assets;
+    }
+
+    # An /assets/ file this pod's image does not contain.
+    #
+    # Bundle names are content-hashed, so they differ between builds, and every
+    # pod serves /assets/ out of its own image. Two routine situations therefore
+    # ask a pod for a name it has never heard of: during a rolling update the
+    # load balancer's backend pool holds the old build and the new one at once,
+    # and a tab left open across a deploy goes on importing route chunks from the
+    # build it was loaded with. Without this, the first is a 404 on the entry
+    # chunk -- a blank page, with no JS left running to recover from it.
+    #
+    # Every deploy uploads its bundles to the CDN bucket and never deletes what
+    # is already there (scripts/publish-frontend-assets.sh), so the CDN holds the
+    # union of every build that has shipped and can answer for any pod.
+    #
+    # proxy_pass carries no URI part on purpose: that forwards the request URI
+    # unchanged, and keeps the host literal. A variable in proxy_pass would
+    # switch nginx to runtime resolution and need a `resolver`, which is one more
+    # thing to be wrong at 3am.
+    #
+    # Cache-Control is deliberately NOT overridden here. The uploads set
+    # `immutable` on the objects themselves, and letting the CDN's own headers
+    # through means a 404 from it stays short-lived instead of being cached for a
+    # year by a browser that asked a few seconds too early.
+    location @cdn_assets {
+      proxy_pass https://assets.arkhamhorror.app;
+      proxy_set_header Host assets.arkhamhorror.app;
+      # CloudFront requires SNI, and nginx does not send it unless told to.
+      proxy_ssl_server_name on;
+      proxy_http_version 1.1;
+      proxy_set_header Connection "";
+
+      # A public bundle has nothing to do with who is asking, and the LB's
+      # affinity cookie would only fragment the CDN cache.
+      proxy_set_header Cookie "";
+      proxy_set_header Authorization "";
+      proxy_hide_header Set-Cookie;
+
+      add_header X-Asset-Fallback "cdn" always;
+
+      # Short: this is already the slow path, and a hanging CDN must not hold a
+      # worker connection open behind a bundle the client could re-request.
+      proxy_connect_timeout 3s;
+      proxy_read_timeout 10s;
     }
 
     location / {
@@ -204,6 +270,23 @@ http {
 
     location ^~ /assets/ {
       add_header Cache-Control $cache_control always;
+      try_files $uri @cdn_assets;
+    }
+
+    # See the @cdn_assets in the server above; named locations are per-server, so
+    # 3ed needs its own copy of it.
+    location @cdn_assets {
+      proxy_pass https://assets.arkhamhorror.app;
+      proxy_set_header Host assets.arkhamhorror.app;
+      proxy_ssl_server_name on;
+      proxy_http_version 1.1;
+      proxy_set_header Connection "";
+      proxy_set_header Cookie "";
+      proxy_set_header Authorization "";
+      proxy_hide_header Set-Cookie;
+      add_header X-Asset-Fallback "cdn" always;
+      proxy_connect_timeout 3s;
+      proxy_read_timeout 10s;
     }
 
     # images come from the CDN unless docker-compose mounted them here; a

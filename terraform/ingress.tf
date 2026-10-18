@@ -12,6 +12,31 @@ locals {
     "service.beta.kubernetes.io/do-loadbalancer-redirect-http-to-https" = "true"
   } : {}
 
+  # Pin one browser to one pod for the length of a page load.
+  #
+  # Every pod serves /assets/ out of its own image, and vite's bundle names are
+  # content-hashed, so they differ between builds. The rollout is max_surge 1 /
+  # max_unavailable 0 (app.tf), which means that for the whole of a rollout the
+  # LB's backend pool holds the old build and the new one at the same time.
+  # Round-robining across that pool, a refresh fetches index.html from a new pod
+  # and then asks an old pod for a bundle name it has never heard of. On the
+  # entry chunk that is a blank page -- there is no JS left running to recover
+  # from it, which is what made this worth fixing at the load balancer rather
+  # than only in the client.
+  #
+  # Affinity is not the only layer (prod.nginxconf falls back to the CDN, and the
+  # client reloads on a chunk that is gone from both), but it is the one that
+  # makes a single page load internally consistent, which is the case that fails
+  # visibly.
+  #
+  # Requires TLS termination at the LB -- DO rejects sticky sessions alongside
+  # TLS passthrough -- which is what tls_enabled already gives us.
+  sticky_annotations = var.lb_sticky_sessions_ttl > 0 ? {
+    "service.beta.kubernetes.io/do-loadbalancer-sticky-sessions-type"        = "cookies"
+    "service.beta.kubernetes.io/do-loadbalancer-sticky-sessions-cookie-name" = "arkham_lb"
+    "service.beta.kubernetes.io/do-loadbalancer-sticky-sessions-cookie-ttl"  = tostring(var.lb_sticky_sessions_ttl)
+  } : {}
+
   # HTTP/3 is edge-only: the LB terminates QUIC on UDP 443 and still forwards
   # plain HTTP to the pod's nodePort, so nginx and Warp need no changes.
   #
@@ -79,6 +104,7 @@ resource "kubernetes_service" "app_lb" {
       },
       local.tls_annotations,
       local.http3_annotations,
+      local.sticky_annotations,
     )
   }
 

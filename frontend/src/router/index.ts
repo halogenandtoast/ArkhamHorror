@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { getToken } from '@/authToken'
+import { reloadIfStaleChunk } from '@/chunkRecovery'
 import baseRoutes from '@/routes';
 import arkhamRoutes from '@/arkham/routes';
 
@@ -46,5 +47,10 @@ router.beforeEach(async (to, _from, next) => {
     next();
   }
 });
+
+/* Navigating to a route whose chunk was removed by a deploy fails here. It is
+ * not an application error -- the route is fine, the bundle naming it is gone --
+ * so reload and let the fresh index.html point at one that exists. */
+router.onError((error) => { reloadIfStaleChunk(error) })
 
 export default router

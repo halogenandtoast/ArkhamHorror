@@ -29,7 +29,7 @@ import Amazonka.S3.PutObject (putObject_acl, putObject_contentType)
 import Control.Lens ((?~))
 
 import Arkham.Card.CardCode (CardCode (..))
-import Arkham.Card.CardDef (CardDef, cdArt, cdCardCode, cdMeta)
+import Arkham.Card.CardDef (CardDef, cdArt, cdCardCode, cdMeta, cdName)
 import Arkham.Card.CustomCard (
   CustomCard (..),
   customCardCodes,
@@ -38,6 +38,7 @@ import Arkham.Card.CustomCard (
   sanitizeCustomCardCode,
  )
 import Arkham.Custom.SetDefs qualified as SetDefs
+import Arkham.Name (toTitle)
 import Auth.ApiKey qualified as ApiKey
 import Crypto.Hash.SHA256 qualified as SHA256
 import Data.Aeson.KeyMap qualified as KeyMap
@@ -370,6 +371,21 @@ persistCard userId setId now (cardCode, card) = do
           now
           now
   P.getBy (UniqueUserCustomCard userId (unCardCode cardCode)) >>= \case
+    {- A card belongs to one set, and the row is keyed on its code alone, so
+    writing it into a second set does not copy it there -- it moves it, and
+    leaves the set it came from one card short without saying so. That is never
+    what an import means: a file whose cards are already somewhere else is a
+    file pointed at the wrong set. -}
+    Just (Entity _ existing)
+      | arkhamCustomCardCustomCardSetId existing /= setId -> do
+          -- `P` here is this project's prelude, whose `get` is MonadState's.
+          home <- P.getEntity (arkhamCustomCardCustomCardSetId existing)
+          invalidArgs
+            [ toTitle (cdName (customCardDef card))
+                <> " is already in "
+                <> maybe "another set" (arkhamCustomCardSetName . entityVal) home
+                <> ". A card belongs to one set, so importing it here would take it out of that one."
+            ]
     Just (Entity rowId existing) -> do
       P.update
         rowId

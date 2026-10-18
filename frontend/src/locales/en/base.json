@@ -1280,6 +1280,7 @@
     "reviewShowAll": "Show all {count}",
     "reviewShowLess": "Show fewer",
     "reviewConfirm": "Import",
+    "reviewElsewhere": "{name} is already in \"{set}\", and a card belongs to one set \u2014 importing it here would take it out of that one. | {count} of these cards are already in other sets, {name} among them. A card belongs to one set, so importing them here would take them out of those.",
     "reviewConfirmReplace": "Replace",
     "reviewCancel": "Cancel",
     "types": {

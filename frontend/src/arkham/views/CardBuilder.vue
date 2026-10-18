@@ -1047,6 +1047,26 @@ const importBreakdown = computed(() => {
     }))
 })
 
+/* Cards in the file that your library already holds somewhere else.
+ *
+ * A card belongs to one set and the row is keyed on its code, so writing it
+ * into a second set moves it rather than copying it -- the set it came from is
+ * left a card short, and nothing says so. The server refuses it; this is the
+ * same answer given before the yes rather than after it, where it can name
+ * every card at once and point at the set they are in. */
+const importElsewhere = computed(() => {
+  const incoming = pendingImport.value
+  if (!incoming) return []
+  const target = (incoming.into ?? incoming.replacing)?.id ?? null
+  const found: { title: string; set: string }[] = []
+  for (const card of incoming.cards) {
+    const held = libraryCard(card.def.cardCode)
+    if (!held || held.setId === target) continue
+    found.push({ title: card.def.name.title, set: librarySet(held.setId)?.name ?? '' })
+  }
+  return found
+})
+
 /* A replace swaps the set's cards outright, so anything the set holds that the
  * file does not is going away. That is the part worth knowing before the yes,
  * and the part a one-line confirm could never say. */
@@ -1395,8 +1415,13 @@ async function onImport(event: Event) {
           : t(`${K}reviewShowAll`, { count: pendingImport.cards.length }) }}
       </button>
 
+      <p v-if="importElsewhere.length" class="warn">
+        <font-awesome-icon icon="triangle-exclamation" />
+        {{ t(`${K}reviewElsewhere`, { count: importElsewhere.length, name: importElsewhere[0].title, set: importElsewhere[0].set }) }}
+      </p>
+
       <div class="review-actions">
-        <button type="button" class="confirm" :disabled="busy" @click="commitImport">
+        <button type="button" class="confirm" :disabled="busy || importElsewhere.length > 0" @click="commitImport">
           {{ pendingImport.replacing ? t(`${K}reviewConfirmReplace`) : t(`${K}reviewConfirm`) }}
         </button>
         <button type="button" class="cancel" @click="cancelImport">

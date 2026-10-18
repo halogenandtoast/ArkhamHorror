@@ -761,6 +761,11 @@ body.log-open { padding-right:min(360px, 90vw); }
 .log-label { color:var(--muted); font-size:12px; }
 .log-dice { display:flex; flex-wrap:wrap; gap:4px; }
 .log-die { width:22px; height:22px; border-radius:5px; background:var(--panel); border:1px solid var(--line); display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; }
+/* whose line it is: the same round token as the prompt and the map, at log size */
+.log-entry > .inv-tok { flex:none; width:24px; height:24px; box-shadow:0 0 0 1.5px rgba(255,255,255,.5), 0 1px 3px rgba(0,0,0,.7); }
+.log-entry > .chip.inv { flex:none; }
+.log-die.was { color:var(--muted); background:none; font-weight:600; }
+.log-arrow { color:var(--muted); font-size:11px; align-self:center; }
 .q-row { display:flex; align-items:flex-start; gap:14px; }
 .q-row > .q { flex:1; min-width:0; }
 .spawning { flex:none; width:96px; display:grid; justify-items:center; gap:2px; text-align:center; font-size:13px; }

@@ -304,7 +304,7 @@ cloverClubMember =
 gamble :: EffectCtx -> GameM ()
 gamble ctx = do
   n <- rollDie
-  logText ("Rolled " <> tshow n <> " and gains $" <> tshow n)
+  logFor ctx.investigator ("Rolled " <> tshow n <> " and gains $" <> tshow n)
   addMoney ctx.investigator n
 
 {- | "Action: Discard this card to recover all of your health and sanity and focus

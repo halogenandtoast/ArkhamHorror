@@ -99,7 +99,7 @@ cloverClubCraps ctx = do
   a <- rollDie
   b <- rollDie
   let total = a + b
-  logText ("Rolled " <> tshow a <> " and " <> tshow b <> " (" <> tshow total <> ")")
+  logFor ctx.investigator ("Rolled " <> tshow a <> " and " <> tshow b <> " (" <> tshow total <> ")")
   if
     | total `elem` [7, 11] -> addMoney ctx.investigator 5
     | total `elem` [2, 3, 12] -> addMoney ctx.investigator (-3)

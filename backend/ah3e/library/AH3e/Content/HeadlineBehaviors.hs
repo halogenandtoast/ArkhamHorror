@@ -61,7 +61,7 @@ eachTestsWill onFail ctx = do
 whyEvenGoOn :: EffectCtx -> GameM ()
 whyEvenGoOn ctx = do
   n <- rollDie
-  logText ("Rolled " <> tshow n)
+  logFor ctx.investigator ("Rolled " <> tshow n)
   chooseFor
     ctx.investigator
     ("Split " <> tshow n <> " between damage and horror")

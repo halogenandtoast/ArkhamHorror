@@ -1695,8 +1695,7 @@ dispatch msg = case msg of
     ts <- fromJustNote "no test" <$> use #test
     payRerollCost ts.investigator cost
     investigatorL ts.investigator . #usedAssets %= (<> [cid])
-    #test . _Just . #dice . ix idx . #value += 1
-    testPrompt
+    raiseDie idx
   ToggleTestAsset cid -> toggleTestAsset cid
   SetTestSkill skill -> do
     #test . _Just . #skill .= skill

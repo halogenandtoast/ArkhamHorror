@@ -32,7 +32,7 @@ behaviors =
 luckyCharm :: EffectCtx -> GameM ()
 luckyCharm ctx = do
   v <- rollDie
-  logText ("Rolled " <> tshow v)
+  logFor ctx.investigator ("Rolled " <> tshow v)
   addMoney ctx.investigator v
 
 researchOne :: EffectCtx -> GameM ()

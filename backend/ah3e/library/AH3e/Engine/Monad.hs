@@ -21,6 +21,13 @@ pushEnd m = #queue %= (<> [m])
 logText :: Text -> GameM ()
 logText t = #log %= (<> [t])
 
+{- | A log line that belongs to one investigator, so the client can show whose it
+was. The id rides in a marker ahead of the text and the line reads the same
+without it, which keeps the log a list of strings and leaves older lines valid.
+-}
+logFor :: InvestigatorId -> Text -> GameM ()
+logFor (InvestigatorId iid) t = logText ("@" <> iid <> " " <> t)
+
 ask :: PlayerId -> Text -> [Choice] -> GameM ()
 ask pid prompt choices = do
   #questions . at pid ?= Question prompt choices

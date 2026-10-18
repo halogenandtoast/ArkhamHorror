@@ -125,7 +125,7 @@ laBellaLunaDice :: EffectCtx -> GameM ()
 laBellaLunaDice ctx = do
   rolls <- replicateM 4 rollDie
   let won = length (filter odd rolls)
-  logText ("Rolled " <> tshow rolls <> " and gains $" <> tshow won)
+  logFor ctx.investigator ("Rolled " <> tshow rolls <> " and gains $" <> tshow won)
   addMoney ctx.investigator won
 
 {- | "Reveal the top three spells in the deck. You may buy one of them or become

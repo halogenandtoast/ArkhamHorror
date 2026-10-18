@@ -54,8 +54,30 @@ sh /opt/arkham/src/backend/scripts/drop-stale-generated.sh \
 # Mark the cache dirty for the duration of the build.
 rm -f "$STAMP"
 
+# Compiler parallelism and RTS tuning.
+#
+# These live here rather than on the Dockerfile's RUN line on purpose: BuildKit
+# keys the `api` stage's layer cache on that line's text, so changing flags
+# there re-runs the stage, while changing them here does not.
+#
+# -j: the Dockerfile used to hard-code -j4, which on the 20-core build host left
+# 80% of the machine idle for the whole ~9,400-module compile. nproc is read
+# inside the container, so it tracks whatever the builder is actually given.
+# Note that a multi-platform build runs both architectures concurrently and each
+# sees the full core count, so that case oversubscribes roughly 2x; GHC's
+# parallel --make plateaus well before 20 workers, so this is still far better
+# than -j4, but single-arch `v2-deploy` is the cheaper deploy path.
+#
+# -c: compacts the oldest generation in place instead of copying it. backend/
+# stack.yaml carries this for local builds and measured it at roughly half the
+# memory for ~1% of wall time; the Dockerfile's --ghc-options overrode the
+# stack.yaml block wholesale and silently dropped it, which matters most here,
+# where two emulated GHCs can be resident at once. -n4m matches stack.yaml too.
+JOBS="$(nproc 2>/dev/null || echo 4)"
+echo ">> compiling with -j$JOBS"
+
 stack build --no-terminal --system-ghc \
-  --ghc-options '-rtsopts -with-rtsopts=-V0 -j4 +RTS -V0 -A128m -n2m -RTS'
+  --ghc-options "-rtsopts -with-rtsopts=-V0 -j$JOBS +RTS -V0 -A128M -n4m -c -RTS"
 stack --no-terminal --local-bin-path /opt/arkham/bin install
 
 mkdir -p "$WORK"

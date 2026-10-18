@@ -1,4 +1,15 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -O0 #-}
+
+{- Build-time data only, so there is nothing for -O2 to pay off on.
+
+The TH splice below reifies most of the engine's type universe into one
+top-level constant, which at -O2 made this the second-largest object file in
+the project (7.2MB at -O0, behind only Arkham.Message) and one of the slowest
+modules in a deploy -- the simplifier has no good answer for a single Core
+expression that size. Nothing in the engine reads it at runtime; it is served
+to the card builder as JSON, so optimising it buys nothing.
+-}
 
 {- | A machine-readable description of the types a custom card's JSON is made of.
 

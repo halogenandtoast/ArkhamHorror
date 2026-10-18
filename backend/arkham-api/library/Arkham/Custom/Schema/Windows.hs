@@ -1,4 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
+-- Build-time data for the card builder; the engine never reads it, so -O2 has
+-- nothing to pay off on. See Arkham.Custom.Schema.
+{-# OPTIONS_GHC -O0 #-}
 
 {- | Which window each 'Arkham.Matcher.WindowMatcher' fires on, for the card
 builder.

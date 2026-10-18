@@ -148,7 +148,7 @@ WORKDIR /opt/arkham/src/backend/arkham-api
 # .stack-work cache left dirty by a cancelled build before compiling. Keep this
 # RUN a bare script invocation: BuildKit keys a cache mount's *contents* by the
 # text of the RUN that mounts it, so editing the command here throws away the
-# cached .stack-work and forces a cold rebuild of all ~6800 modules. Editing the
+# cached .stack-work and forces a cold rebuild of all ~9400 modules. Editing the
 # script does not.
 RUN --mount=type=cache,id=stack-home-${CACHE_ID},target=/root/.stack \
     --mount=type=cache,id=stack-work-shared-${CACHE_ID},target=/opt/arkham/src/backend/.stack-work \

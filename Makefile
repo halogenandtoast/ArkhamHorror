@@ -34,6 +34,8 @@ V2_PLATFORM    ?= linux/amd64
 # the sign-in cookie covers every subdomain, so 3ed.arkhamhorror.app shares it
 V2_BUILD_ARGS  ?= --build-arg AUTH_COOKIE_DOMAIN=.arkhamhorror.app
 V2_BUILDER     ?= arkham-multiarch
+V2_BUILDKITD_CONFIG ?= $(CURDIR)/infra/buildkitd.toml
+V2_BUILDKITD_FLAGS  ?= --allow-insecure-entitlement=network.host
 V2_DO_CLUSTER  ?= arkham-horror-doks
 V2_CACHE_DIR   ?= $(CURDIR)/.buildx-cache/v2
 V2_CACHE_NEXT  ?= $(V2_CACHE_DIR).new
@@ -56,11 +58,56 @@ V2_PUBLISH_ASSETS = ASSET_BUCKET="$(V2_ASSET_BUCKET)" V2_BUILDER="$(V2_BUILDER)"
 
 V2_CACHE_PROMOTE = if [ -d "$(V2_CACHE_NEXT)" ]; then rm -rf "$(V2_CACHE_PREV)"; if [ -d "$(V2_CACHE_DIR)" ]; then mv "$(V2_CACHE_DIR)" "$(V2_CACHE_PREV)"; fi; if mv "$(V2_CACHE_NEXT)" "$(V2_CACHE_DIR)"; then rm -rf "$(V2_CACHE_PREV)"; else if [ -d "$(V2_CACHE_PREV)" ]; then mv "$(V2_CACHE_PREV)" "$(V2_CACHE_DIR)"; fi; exit 1; fi; fi
 
-## Ensure a docker-container buildx builder exists (required for multi-platform builds)
+# The builder MUST carry infra/buildkitd.toml. Without it BuildKit's default GC
+# caps all `type==exec.cachemount` records at 512MB and chases an unreachable
+# free-space target, so it continuously prunes the .stack-work caches the
+# Dockerfile depends on and every deploy recompiles ~9,400 modules at -O2 from
+# scratch (53-63 min instead of ~10). A builder created before that config
+# existed keeps the defaults -- the config is only read at container creation --
+# so warn loudly rather than silently deploying onto a cache that cannot hold.
+## Ensure a docker-container buildx builder exists, with the right GC policy
 v2-buildx-setup:
-	@docker buildx inspect $(V2_BUILDER) >/dev/null 2>&1 || \
-	  docker buildx create --name $(V2_BUILDER) --driver docker-container >/dev/null
+	@if ! docker buildx inspect $(V2_BUILDER) >/dev/null 2>&1; then \
+	  echo ">> creating builder $(V2_BUILDER) with $(V2_BUILDKITD_CONFIG)"; \
+	  docker buildx create --name $(V2_BUILDER) --driver docker-container \
+	    --buildkitd-config $(V2_BUILDKITD_CONFIG) \
+	    --buildkitd-flags '$(V2_BUILDKITD_FLAGS)' >/dev/null; \
+	elif docker buildx inspect $(V2_BUILDER) 2>/dev/null | grep -q 'Max Used Space:[[:space:]]*488.3MiB'; then \
+	  echo "$(YELLOW)>> WARNING: builder $(V2_BUILDER) is running BuildKit's DEFAULT GC policy.$(RESET)"; \
+	  echo "$(YELLOW)>>   It caps the Haskell build caches at 512MB, so this deploy will$(RESET)"; \
+	  echo "$(YELLOW)>>   recompile every module from scratch (expect ~1 hour, not ~10 min).$(RESET)"; \
+	  echo "$(YELLOW)>>   Fix once with: make v2-buildx-recreate$(RESET)"; \
+	fi
 .PHONY: v2-buildx-setup
+
+# BuildKit reads its config when the container is created, so there is no way to
+# apply a changed GC policy to a running builder. This destroys the current
+# build cache: the next deploy is cold, and every deploy after it is warm.
+## Recreate the buildx builder so infra/buildkitd.toml takes effect (one cold build)
+v2-buildx-recreate:
+	@if docker buildx inspect $(V2_BUILDER) 2>/dev/null | grep -q 'Status:[[:space:]]*running' && \
+	    docker buildx history ls --builder $(V2_BUILDER) 2>/dev/null | grep -q 'Running'; then \
+	  echo "$(RED)>> a build is still running on $(V2_BUILDER) -- wait for it to finish$(RESET)"; exit 1; \
+	fi
+	@test -f $(V2_BUILDKITD_CONFIG) || { echo "$(RED)>> missing $(V2_BUILDKITD_CONFIG)$(RESET)"; exit 1; }
+	@echo ">> removing builder $(V2_BUILDER) (discards its build cache)"
+	@docker buildx rm $(V2_BUILDER) >/dev/null 2>&1 || true
+	@docker buildx create --name $(V2_BUILDER) --driver docker-container \
+	  --buildkitd-config $(V2_BUILDKITD_CONFIG) \
+	  --buildkitd-flags '$(V2_BUILDKITD_FLAGS)' >/dev/null
+	@docker buildx inspect --bootstrap $(V2_BUILDER) >/dev/null
+	@echo ">> builder recreated; GC policy now:"
+	@docker buildx inspect $(V2_BUILDER) | sed -n '/GC Policy/,$$p'
+.PHONY: v2-buildx-recreate
+
+## Show what the builder is keeping (cache mounts are the ones that matter)
+v2-buildx-du:
+	@docker buildx du --builder $(V2_BUILDER) --verbose 2>/dev/null | awk '\
+	  /^ID:/{id=$$2} /^Size:/{size=$$2} /^Usage count:/{uc=$$3} \
+	  /^Description:/{sub(/^Description:[ \t]*/,"");d=$$0} \
+	  /^Type:.*cachemount/{printf "  %-10s uses=%-3s %s\n", size, uc, substr(d,index(d,"with id")+8)}'
+	@docker buildx du --builder $(V2_BUILDER) 2>/dev/null | tail -2
+.PHONY: v2-buildx-du
 
 ## Ensure kubeconfig exists and its token is still valid (DO tokens expire ~7 days)
 v2-kubeconfig-ensure:

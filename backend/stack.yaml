@@ -7,7 +7,8 @@ resolver: nightly-2026-08-09
 compiler: ghc-9.14.1
 notify-if-nix-on-path: false
 
-# Build-memory notes (measured on a cold 6830-module arkham-api build):
+# Build-memory notes (measured on a cold 6830-module arkham-api build; the
+# library is ~9400 modules as of 2026-10, so treat these as a floor):
 #
 #   * -c in the RTS block below compacts the oldest generation in place instead
 #     of copying it. GHC's live set here is only ~1.5G, but a copying major GC

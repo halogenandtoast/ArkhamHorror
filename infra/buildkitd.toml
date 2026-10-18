@@ -1,0 +1,73 @@
+# BuildKit daemon config for the `arkham-multiarch` builder (see the Makefile's
+# v2-buildx-setup / v2-buildx-recreate targets).
+#
+# Why this file exists
+# --------------------
+# The Dockerfile keeps .stack-work and the stack root in `--mount=type=cache`
+# mounts, so a deploy only recompiles what changed. BuildKit's DEFAULT garbage
+# collector made that a lie in two separate ways:
+#
+#   1. Its first GC rule caps `type==exec.cachemount` at 512MB total. The
+#      arkham-api .stack-work alone is ~5GB per architecture, and with the
+#      stack root and the shared work dir it is ~11.6GB per architecture. The
+#      caches were therefore pruned continuously -- `docker buildx du` showed
+#      every amd64 cache mount at 0B with a usage count of 0, recreated hours
+#      earlier -- and every deploy recompiled all ~9,400 modules at -O2 from
+#      scratch. Deploys ran 53-63 minutes instead of ~10.
+#
+#   2. Its remaining rules are sized as percentages of the disk. On a 296GB
+#      builder volume that is a `minFreeSpace` of 196.5GiB, which the volume
+#      has never had free (114GB available). A GC policy whose free-space
+#      target is unreachable never stops reclaiming, so the daemon sat
+#      permanently in "prune everything down to the reserved floor" mode.
+#
+# Both numbers below are therefore absolute, not percentages, and sized against
+# the real volume rather than its capacity. Check them against
+# `docker exec buildx_buildkit_arkham-multiarch0 df -h /var/lib/buildkit`
+# before raising them; the Mac's data volume is the real ceiling.
+#
+# Editing this file does nothing to a builder that already exists -- the config
+# is read when the container is created. Run `make v2-buildx-recreate` to apply
+# it, which discards the current build cache and makes the next build cold.
+
+# Policies are evaluated in order and the sweep for each one prunes
+# least-recently-used records first, down to that policy's reservedSpace floor.
+# Two things follow, and both matter here:
+#
+#   * The floor is the real protection. The cache mounts are touched by every
+#     build, so they are always the most recently used records in the store --
+#     LRU keeps them as long as there is a floor big enough to hold them. The
+#     default's 488MB floor for cache mounts is what made them evictable.
+#   * reservedSpace on the catch-all is therefore sized to cover the cache
+#     mounts as well, so the second sweep cannot undo the first.
+#
+# Sizing, against `df` inside the builder (296GB volume, ~115GB free) rather
+# than against its capacity -- the Mac's data volume sits near full, so this is
+# deliberately not greedy:
+#
+#   cache mounts    ~11.6GB per architecture (.stack-work 4.9 + stack root 3.2
+#                   + shared work 3.0 + validate 0.4), and a multi-arch deploy
+#                   builds two, so ~23GB live -> 35GB floor leaves room to grow
+#   everything else ~19GB of layer cache and source snapshots today
+#   total floor     45GB, ceiling 75GB, leaving the volume ~40GB of headroom
+[worker.oci]
+  enabled = true
+  gc = true
+
+  # The Haskell build caches -- the whole point of this file.
+  [[worker.oci.gcpolicy]]
+    filters = ["type==exec.cachemount"]
+    keepDuration = "2160h"
+    reservedSpace = "35GB"
+    maxUsedSpace = "45GB"
+
+  # Everything else: layer cache, local source snapshots, git checkouts.
+  # minFreeSpace has to stay well under the volume's actual free space, or the
+  # daemon goes back to reclaiming continuously against a target it can never
+  # reach.
+  [[worker.oci.gcpolicy]]
+    all = true
+    keepDuration = "720h"
+    reservedSpace = "45GB"
+    maxUsedSpace = "75GB"
+    minFreeSpace = "15GB"

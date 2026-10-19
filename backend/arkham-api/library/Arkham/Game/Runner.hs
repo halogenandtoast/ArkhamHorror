@@ -4275,7 +4275,16 @@ runGameMessage msg g = case msg of
             VengeanceCard _ -> error "Vengeance card"
     pure g
   Discard miid source (TreacheryTarget tid) -> do
-    mcard <- fieldMay TreacheryCard tid
+    {- "Cannot be discarded from play, except by abilities printed on it." The
+    same rule the asset runner applies for 'CannotLeavePlay', and for the same
+    reason: a card that prints its own way off the table is the one thing
+    allowed to take it, so a discard the treachery sources itself goes through
+    and everything else is refused. -}
+    cannotLeavePlay <-
+      if source.treachery == Just tid
+        then pure False
+        else elem CannotLeavePlay <$> getModifiers (TreacheryTarget tid)
+    mcard <- if cannotLeavePlay then pure Nothing else fieldMay TreacheryCard tid
     for_ mcard \card -> do
       inVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ CardWithId $ toCardId card
       unless inVictory do

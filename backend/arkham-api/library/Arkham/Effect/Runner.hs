@@ -67,6 +67,12 @@ instance RunMessage EffectAttrs where
       pure $ advanceEffectWindow (EffectEndOfNextTurnWindow iid) (EffectTurnWindow iid) a
     BeginTurn iid | isEndOfWindow a (EffectNextTurnWindow iid) -> do
       a <$ push (DisableEffect effectId)
+    {- The draw itself ends the window, so whatever 'onDisable' carries resolves
+    after the drawn card rather than in front of it -- the encounter draw emits
+    only a @#when@ window, so an ability hung on that would go first. -}
+    InvestigatorDrewEncounterCard iid _
+      | isEndOfWindow a (EffectNextEncounterDrawWindow iid) -> do
+          a <$ push (DisableEffect effectId)
     EndTurn iid | isEndOfWindow a (EffectTurnWindow iid) -> do
       a <$ push (DisableEffect effectId)
     EndRound | isEndOfWindow a EffectUntilEndOfNextRoundWindow -> do

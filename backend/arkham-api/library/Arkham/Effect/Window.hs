@@ -60,6 +60,12 @@ data EffectWindow
   | EffectTurnWindow InvestigatorId
   | EffectEndOfNextTurnWindow InvestigatorId
   | EffectNextTurnWindow InvestigatorId
+  | {- | The next encounter card this investigator draws, and that draw alone.
+    The seam for "the next time X draws an encounter card, ..." -- a one-shot
+    that has to outlive the card that scheduled it, which an ability cannot do
+    once its own card is discarded (/Time's Ebb/).
+    -}
+    EffectNextEncounterDrawWindow InvestigatorId
   | EffectCardResolutionWindow CardId
   | {- | Lasts until that card reaches a discard pile. A card that accumulates
     something about itself while it is stuck in hand -- a cost reduction that

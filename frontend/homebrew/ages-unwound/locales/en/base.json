@@ -90,6 +90,9 @@
     "theInvestigatorsBrokeTheFirstCircle": "the investigators broke the first circle.",
     "damageOnTheHoundOfUnmaking": "Damage on the Hound of Unmaking"
   },
+  "recordedTimes": {
+    "tooltip": "Agenda {agenda}, with {doom} doom on it"
+  },
   "label": {
     "gainActions": "Gain 1 action | Gain {count} actions",
     "aspectsOfInfinity": {

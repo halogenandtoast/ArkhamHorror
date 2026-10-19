@@ -19,10 +19,15 @@ const props = withDefaults(
     /* A game on the home page's watch list: the row is the same, but the title
      * opens the read-only view and there is no seat to claim. */
     spectate?: boolean
+    /* Nobody at this table has done anything for a while. In play, but not
+     * being played -- which only the list that polls for it can know, so it is
+     * passed in rather than read off the game. */
+    inactive?: boolean
   }>(),
   {
     admin: false,
     spectate: false,
+    inactive: false,
   },
 )
 const campaign = computed<CampaignDetails | null>(() => props.game.campaign)
@@ -127,6 +132,7 @@ const scenarioIcon = computed(() => {
     class="game"
     :class="{
       'finished-game': game.gameState.tag == 'IsOver',
+      'inactive-game': inactive,
       won: game.outcome?.result === 'Won',
       lost: game.outcome?.result === 'Lost',
     }"
@@ -157,6 +163,10 @@ const scenarioIcon = computed(() => {
           <div v-if="spectate" class="watching">
             <font-awesome-icon icon="eye" />
             {{ $t('gameRow.watch') }}
+          </div>
+          <div v-if="inactive" class="inactive" v-tooltip="$t('gameRow.inactiveTooltip')">
+            <font-awesome-icon icon="hourglass-half" />
+            {{ $t('gameRow.inactive') }}
           </div>
           <div
             v-if="game.outcome"
@@ -577,6 +587,37 @@ h2 {
   border-radius: 3px;
   background: rgba(255, 255, 255, 0.14);
   color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+}
+
+/* In play, but nobody is playing it. Dimmed rather than greyed out: the game is
+ * still open and still worth clicking, so it recedes without reading as
+ * finished -- which is what the saturate(0) on a finished row says. Lifted back
+ * on hover, since the row somebody is pointing at is the one they want to read.
+ */
+.inactive-game > .game-details {
+  opacity: 0.72;
+  transition: opacity 0.2s;
+}
+
+.inactive-game:hover > .game-details {
+  opacity: 1;
+}
+
+/* Neutral chrome, like the badges beside it -- this is a row in a list, not
+ * board state, so it stays out of the highlight colours. Carried a little
+ * heavier than they are only to survive the dim it is explaining. */
+.inactive {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.9);
   white-space: nowrap;
 }
 

@@ -203,12 +203,30 @@ export const fetchSpectatableGames = async (): Promise<GameDetails[]> => {
   return entries.filter((entry) => entry.tag === 'game') as GameDetails[]
 }
 
+/* A game on the watch list, and how many seconds since anybody at that table
+ * did anything. Seconds since, rather than the timestamp, so nothing here
+ * depends on the watcher's clock agreeing with the server's. */
+export type SpectatableGameActivity = {
+  id: string;
+  idleSeconds: number;
+}
+
+const spectatableGameActivityDecoder = JsonDecoder.object<SpectatableGameActivity>(
+  {
+    id: JsonDecoder.string(),
+    idleSeconds: JsonDecoder.number(),
+  },
+  'SpectatableGameActivity',
+)
+
 /* The "has the list changed?" probe, for the same reason fetchGameStep exists:
  * the list above decodes a whole game per row, so the watch page asks for the
- * ids first and pays for the list only when the set of them moves. */
-export const fetchSpectatableGameIds = async (): Promise<string[]> => {
+ * ids first and pays for the list only when the set of them moves. The idle
+ * times ride along, because that is the one thing about a game on the list the
+ * watcher cannot get from the rows it already has. */
+export const fetchSpectatableGameActivity = async (): Promise<SpectatableGameActivity[]> => {
   const { data } = await api.get('arkham/games/spectatable/digest', { params: { _: Date.now() } })
-  return JsonDecoder.array(JsonDecoder.string(), 'ArkhamGameId[]').decodePromise(data)
+  return JsonDecoder.array(spectatableGameActivityDecoder, 'SpectatableGameActivity[]').decodePromise(data)
 }
 
 

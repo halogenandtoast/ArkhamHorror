@@ -1,5 +1,5 @@
 import { onUnmounted, ref, Ref } from 'vue'
-import { fetchSpectatableGames, fetchSpectatableGameIds } from '@/arkham/api'
+import { fetchSpectatableGames, fetchSpectatableGameActivity } from '@/arkham/api'
 import type { GameDetails } from '@/arkham/types/Game'
 
 /*
@@ -15,13 +15,28 @@ import type { GameDetails } from '@/arkham/types/Game'
  * interval grows while nothing opens or closes, so a page left open settles at
  * SLOW_MS, and a backgrounded tab stops entirely and resyncs when it is looked
  * at again.
+ *
+ * The probe also reports how long each game has been quiet, which is how the
+ * list tells a game being played from one whose players wandered off -- both
+ * are IsActive and otherwise look identical. Read off the probe rather than the
+ * rows, so noticing a table go quiet costs no extra request, and refreshed on
+ * every tick, so the mark appears within one interval of the game going idle.
  */
 const FAST_MS = 5000
 const SLOW_MS = 20000
 const GROWTH = 1.5
 
+/* How long without an action before a game is called inactive. Long enough
+ * that a player thinking through a turn does not trip it. */
+const INACTIVE_AFTER_SECONDS = 5 * 60
+
 export function useSpectatableGames() {
   const games: Ref<GameDetails[]> = ref([])
+  /* The games on the list that nobody has touched lately, by id. Keyed by id
+   * rather than folded into the rows, because the two are fetched on different
+   * schedules: the idle times refresh every tick, the rows only when the set of
+   * games moves. */
+  const inactiveIds: Ref<Set<string>> = ref(new Set())
   /* Only the first load, so the page says "looking" once rather than blinking
    * back to it on every refresh. */
   const loading = ref(true)
@@ -48,7 +63,13 @@ export function useSpectatableGames() {
     }
 
     try {
-      const ids = (await fetchSpectatableGameIds()).join(',')
+      const activity = await fetchSpectatableGameActivity()
+      inactiveIds.value = new Set(
+        activity.filter((a) => a.idleSeconds >= INACTIVE_AFTER_SECONDS).map((a) => a.id),
+      )
+      // The probe is sorted by id, so this is membership and nothing else: a
+      // game going quiet must not buy the whole list again.
+      const ids = activity.map((a) => a.id).join(',')
       if (ids !== lastIds) {
         games.value = await fetchSpectatableGames()
         // Only once the list we fetched for it is actually in hand, so a
@@ -88,5 +109,5 @@ export function useSpectatableGames() {
    * path as every refresh and nothing can open up in the gap between them. */
   schedule(0)
 
-  return { games, loading }
+  return { games, inactiveIds, loading }
 }

@@ -3,7 +3,7 @@ import { ref, computed, Ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useCardStore } from '@/stores/cards';
 import { useRouter } from 'vue-router';
-import { deleteEvent, deleteGame, fetchGames, fetchEvents, fetchNotifications, fetchSpectatableGameIds } from '@/arkham/api';
+import { deleteEvent, deleteGame, fetchGames, fetchEvents, fetchNotifications, fetchSpectatableGameActivity } from '@/arkham/api';
 import { cullGameLocalStorage, removeGameLocalStorage } from '@/arkham/localStorage';
 import { isDevBuild } from '@/arkham/displayRules';
 import type { BrokenGameDetails, GameDetails } from '@/arkham/types/Game';
@@ -109,8 +109,8 @@ fetchNotifications().then((result) => notifications.value = result.filter((n: Ap
  * behind the button is the one that keeps itself current. A failure just leaves
  * the button unbadged. */
 const liveGameCount = ref(0)
-fetchSpectatableGameIds()
-  .then((ids) => liveGameCount.value = ids.length)
+fetchSpectatableGameActivity()
+  .then((activity) => liveGameCount.value = activity.length)
   .catch(() => liveGameCount.value = 0)
 
 async function deleteGameEvent(game: GameDetails) {

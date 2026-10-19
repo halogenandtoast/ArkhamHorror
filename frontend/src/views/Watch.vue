@@ -8,7 +8,7 @@ import GameRow from '@/arkham/components/GameRow.vue';
  *
  * Kept current while the page is open: this is where somebody waits for a table
  * to open up, so a game appearing or ending shows up without a reload. */
-const { games, loading } = useSpectatableGames()
+const { games, inactiveIds, loading } = useSpectatableGames()
 </script>
 
 <template>
@@ -31,7 +31,13 @@ const { games, loading } = useSpectatableGames()
           <div v-else-if="games.length === 0" class="box">
             <p>{{ $t('watch.empty') }}</p>
           </div>
-          <GameRow v-for="game in games" :key="game.id" :game="game" spectate />
+          <GameRow
+            v-for="game in games"
+            :key="game.id"
+            :game="game"
+            :inactive="inactiveIds.has(game.id)"
+            spectate
+          />
         </section>
       </div>
     </div>

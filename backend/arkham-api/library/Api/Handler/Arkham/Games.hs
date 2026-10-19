@@ -11,6 +11,7 @@ module Api.Handler.Arkham.Games (
   getApiV1ArkhamGamesR,
   getApiV1ArkhamSpectatableGamesR,
   getApiV1ArkhamSpectatableGamesDigestR,
+  SpectatableGameActivity (..),
   postApiV1ArkhamGamesR,
   putApiV1ArkhamGameR,
   deleteApiV1ArkhamGameR,
@@ -240,22 +241,50 @@ instead and pays for the list only when the answer changes -- the same bargain
 the membership query returning keys, so it stays a handful of uuids however
 many games are open.
 
-Sorted, so the answer is membership and nothing else. The list is ordered by
-@updatedAt@, which every action in a watched game moves, and a digest carrying
-that order would report a change -- and buy the whole list again -- every time
-anybody took a turn. A game appearing or ending is what a watcher waiting for a
-table needs to see; two of them trading places in the list is not.
+Sorted by id, so membership is the whole of what the client compares. The list
+is ordered by @updatedAt@, which every action in a watched game moves, and a
+digest reporting that order would buy the whole list again every time anybody
+took a turn. A game appearing or ending is what a watcher waiting for a table
+needs to see; two of them trading places in the list is not.
 
 Ids rather than a hash, because the client only needs to know *that* the set
 moved and a hash of 50 uuids is not meaningfully smaller than the uuids.
+
+Each id carries 'idleSeconds' alongside it -- see 'SpectatableGameActivity' --
+which is the one thing besides membership a watcher cannot work out from the
+list it already has.
 -}
-getApiV1ArkhamSpectatableGamesDigestR :: Handler [ArkhamGameId]
+getApiV1ArkhamSpectatableGamesDigestR :: Handler [SpectatableGameActivity]
 getApiV1ArkhamSpectatableGamesDigestR = do
   userId <- getRequestUserId
-  ids <- runDB $ select do
+  rows <- runDB $ select do
     games <- spectatableGames userId
-    pure games.id
-  pure $ sort $ map (coerce . unValue) ids
+    pure (games.id, games.updatedAt)
+  now <- liftIO getCurrentTime
+  pure $ sortOn (.id) [activity now (unValue gid) (unValue updatedAt) | (gid, updatedAt) <- rows]
+ where
+  activity now gid updatedAt =
+    SpectatableGameActivity
+      { id = coerce gid
+      , idleSeconds = max 0 $ round $ nominalDiffTimeToSeconds $ diffUTCTime now updatedAt
+      }
+
+{- | A game on the watch list, and how long it has been quiet.
+
+@updatedAt@ moves on every action in a game, so the gap between it and now is
+how long nobody at that table has done anything -- which is how the watch page
+tells a game somebody is playing from one whose players wandered off, both of
+which are @IsActive@ and look identical in the list.
+
+Elapsed seconds rather than the timestamp itself, so the answer does not depend
+on the watcher's clock agreeing with the server's.
+-}
+data SpectatableGameActivity = SpectatableGameActivity
+  { id :: ArkhamGameId
+  , idleSeconds :: Int
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass ToJSON
 
 data CreateGamePost = CreateGamePost
   { deckIds :: [Maybe ArkhamDeckId]

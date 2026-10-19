@@ -225,6 +225,7 @@ const blankForm = () => ({
   assetSanity: '',
   useType: '',
   useCount: '',
+  useLimit: '',
   // abilities
   abilities: [] as any[],
   handlers: [] as any[],
@@ -601,6 +602,8 @@ const num = (v: string): number | null => {
   return Number.isFinite(n) ? n : null
 }
 
+const fixed = (n: number) => ({ tag: 'Fixed', contents: n })
+
 const gameValue = (v: string, perPlayer: boolean) => {
   const n = num(v)
   if (n === null) return null
@@ -667,8 +670,11 @@ function buildDef(cardCode: string): Record<string, any> {
     if (form.slots.length) def.slots = form.slots
     setIf(def.meta, 'health', num(form.assetHealth))
     setIf(def.meta, 'sanity', num(form.assetSanity))
-    if (form.useType && num(form.useCount) !== null) {
-      def.uses = { type: form.useType, amount: num(form.useCount) }
+    const useCount = num(form.useCount)
+    if (form.useType && useCount !== null) {
+      def.uses = { type: form.useType, amount: fixed(useCount) }
+      const useLimit = num(form.useLimit)
+      if (useLimit !== null) def.uses.limit = fixed(useLimit)
     }
   }
 
@@ -847,6 +853,15 @@ const FORM_META_KEYS = [
 const gameValueNumber = (v: any) => (v && typeof v.contents === 'number' ? String(v.contents) : '')
 const isPerPlayer = (v: any) => v?.tag === 'PerPlayer'
 
+/* A `uses` amount is a GameCalculation, which decodes from a bare number but always
+ * encodes back tagged -- so a card read from the server arrives as {tag:'Fixed'}, and
+ * reading it as a plain number is what used to blank the field on every reopen. */
+const fixedNumber = (v: any) => {
+  if (typeof v === 'number') return String(v)
+  if (v?.tag === 'Fixed' && typeof v.contents === 'number') return String(v.contents)
+  return ''
+}
+
 async function loadCard(card: CustomCard) {
   await loadTraits()
   clearArtPreviews()
@@ -896,7 +911,8 @@ async function loadCard(card: CustomCard) {
   form.assetHealth = meta.health === undefined ? '' : String(meta.health)
   form.assetSanity = meta.sanity === undefined ? '' : String(meta.sanity)
   form.useType = def.uses?.type ?? ''
-  form.useCount = def.uses?.amount === undefined ? '' : String(def.uses.amount)
+  form.useCount = fixedNumber(def.uses?.amount)
+  form.useLimit = fixedNumber(def.uses?.limit)
 
   form.willpower = meta.willpower === undefined ? '3' : String(meta.willpower)
   form.intellect = meta.intellect === undefined ? '3' : String(meta.intellect)
@@ -1406,6 +1422,10 @@ defineExpose({
               <label v-if="form.useType">
                 Amount
                 <input v-model="form.useCount" type="number" @keydown.stop />
+              </label>
+              <label v-if="form.useType">
+                Limit
+                <input v-model="form.useLimit" type="number" placeholder="—" @keydown.stop />
               </label>
             </div>
           </fieldset>

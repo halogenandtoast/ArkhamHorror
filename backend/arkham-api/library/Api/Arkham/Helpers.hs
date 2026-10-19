@@ -28,6 +28,7 @@ import Data.Aeson qualified as Aeson
 import Data.ByteString.Char8 qualified as BS8
 import Data.ByteString.Lazy qualified as BSL
 import Data.Map.Strict qualified as Map
+import Data.Set qualified as Set
 import Data.Time.Clock
 import Data.Time.Clock.POSIX (getPOSIXTime, posixSecondsToUTCTime)
 import Data.UUID qualified as UUID
@@ -636,6 +637,27 @@ getRedisRoomCounts = do
     uuid <- UUID.fromText (decodeUtf8 k)
     n <- readMaybe (BS8.unpack v)
     pure (coerce uuid :: ArkhamGameId, n)
+
+{- | The games somebody is actually connected to right now.
+
+Cross-pod through Redis when a broker is configured -- one @HGETALL@, already
+swept of entries left behind by crashed pods -- and this pod's own room map
+otherwise, which is the whole truth on a single pod and all a local dev setup
+has.
+
+A room with no clients does not count. A room outlives its last socket until
+its owner releases it, and the question here is whether anyone is there, not
+whether a room object exists.
+-}
+getLiveGameRooms :: (MonadIO m, HasApp m) => m (Set ArkhamGameId)
+getLiveGameRooms =
+  getRedisRoomCounts >>= \case
+    Just counts -> pure $ Map.keysSet $ Map.filter (> 0) counts
+    Nothing -> do
+      roomsVar <- getsApp appGameRooms
+      rooms <- liftIO $ MVar.readMVar roomsVar
+      occupied <- liftIO $ filterM (fmap (> 0) . roomClientCount . snd) (Map.assocs rooms)
+      pure $ Set.fromList (map fst occupied)
 
 {- | The whole spectator hash, for the admin rooms list.
 

@@ -59,6 +59,7 @@ import Control.Monad.Random (mkStdGen)
 import Control.Monad.Random.Class (getRandom)
 import Data.Aeson (withObject, (.!=), (.:?))
 import Data.Coerce
+import Data.Set qualified as Set
 import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding (update, (=.))
 import Database.Esqueleto.Internal.Internal (unsafeSqlBinOp, unsafeSqlValue)
@@ -179,6 +180,17 @@ The same four conditions the list itself applies, in
 'Api.Handler.Arkham.Games.Summary.spectatableGameSummaries'. They have to stay
 the same question: a digest answering "has the list changed?" about some other
 list is worse than no digest.
+
+What this query cannot answer is whether anybody is *there*. @IsActive@ is the
+game state -- not pending decks, not over -- and an abandoned game keeps it
+forever, so an advertised game nobody has opened in days still matched every
+condition above. Presence lives in the rooms (Redis, or this pod's map), which
+is a different store entirely, so both callers intersect these rows with
+'getLiveGameRooms'.
+
+The limit is applied before that intersection, which cannot lose a live game in
+practice: the order is @updatedAt@ descending and a game somebody is connected
+to is a game being played, so it sorts above the abandoned ones.
 -}
 spectatableGames :: UserId -> SqlQuery (SqlExpr (Entity ArkhamGameRaw))
 spectatableGames userId = do
@@ -222,12 +234,15 @@ getApiV1ArkhamSpectatableGamesR :: Handler [GameDetailsEntry]
 getApiV1ArkhamSpectatableGamesR = do
   userId <- getRequestUserId
   entries <- runDB $ spectatableGameSummaries userId
-  pure $ filter inPlay entries
+  live <- getLiveGameRooms
+  pure $ filter (beingPlayed live) entries
  where
-  -- The query already asked Postgres for games in play; this drops the rows
-  -- that failed to decode, which have no state to go on either way.
-  inPlay = \case
-    SuccessGameDetails gd -> gd.gameState == IsActive
+  {- The query already asked Postgres for games in play; this drops the rows
+  that failed to decode, which have no state to go on either way, and the ones
+  with nobody connected -- "in play" is a game state and says nothing about
+  whether anybody is at the table. -}
+  beingPlayed live = \case
+    SuccessGameDetails gd -> gd.gameState == IsActive && gd.id `Set.member` live
     FailedGameDetails {} -> False
 
 {- | Which games the watch list would show.
@@ -257,12 +272,21 @@ getApiV1ArkhamSpectatableGamesDigestR = do
   rows <- runDB $ select do
     games <- spectatableGames userId
     pure (games.id, games.updatedAt)
+  -- The same presence filter the list applies, for the same reason.
+  live <- getLiveGameRooms
   now <- liftIO getCurrentTime
-  pure $ sortOn (.id) [activity now (unValue gid) (unValue updatedAt) | (gid, updatedAt) <- rows]
+  pure
+    $ sortOn
+      (.id)
+      [ activity now gid (unValue updatedAt)
+      | (gameId, updatedAt) <- rows
+      , let gid = coerce (unValue gameId)
+      , gid `Set.member` live
+      ]
  where
   activity now gid updatedAt =
     SpectatableGameActivity
-      { id = coerce gid
+      { id = gid
       , idleSeconds = max 0 $ round $ nominalDiffTimeToSeconds $ diffUTCTime now updatedAt
       }
 

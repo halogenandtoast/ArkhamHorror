@@ -11,7 +11,8 @@ import AH3e.Game (Game)
 import AH3e.Types.Card (Expansion)
 import AH3e.Types.Ids (ScenarioCode)
 import AH3e.Types.State (GameMode)
-import Data.Aeson (FromJSON, ToJSON)
+import Data.Aeson (FromJSON (..), ToJSON (..), Value (..), object, withObject, (.!=), (.:?), (.=))
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Time (UTCTime)
 import Data.UUID (UUID)
 import Model (UserId)
@@ -41,6 +42,32 @@ data Table = Table
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
+
+{- | A table as an export carries it: the table itself, plus the earlier game
+states it can undo to.
+
+The history is store state rather than table state, so it is not a 'Table'
+field -- every live table's payload decodes with 'Table''s 'FromJSON', and a new
+field there would strand the ones already written. Instead this flattens to the
+very same object with one extra @history@ key, so @.game@ and the rest stay
+where any existing reader expects them, and an older export without the key
+still decodes.
+-}
+data TableExport = TableExport
+  { table :: Table
+  , history :: [Game]
+  -- ^ newest first, the order the store reads them back in
+  }
+  deriving stock (Show, Eq, Generic)
+
+instance ToJSON TableExport where
+  toJSON e = case toJSON e.table of
+    Object o -> Object (KeyMap.insert "history" (toJSON e.history) o)
+    -- unreachable: Table is a record, so its encoding is an object
+    v -> object ["table" .= v, "history" .= e.history]
+
+instance FromJSON TableExport where
+  parseJSON v = withObject "TableExport" (\o -> TableExport <$> parseJSON v <*> o .:? "history" .!= []) v
 
 seatedUsers :: Table -> [UserId]
 seatedUsers t = ordNub [u | Seat {user = Just u} <- t.seats]

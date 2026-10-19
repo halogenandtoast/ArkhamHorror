@@ -52,7 +52,12 @@ data HistoryChange = KeepHistory | PushHistory Game | PopHistory
 data Store = Store
   { getTable :: UUID -> IO (Maybe (Table, Int))
   -- ^ the table and how many earlier states it can undo to
-  , insertTable :: Table -> IO ()
+  , getHistory :: UUID -> IO [Game]
+  {- ^ every earlier state the table can undo to, newest first: what an export
+  carries so a filed bug can be rewound.
+  -}
+  , insertTable :: Table -> [Game] -> IO ()
+  -- ^ a new table and the history it starts with (newest first), in one write
   , updateTable
       :: UUID
       -> (Table -> Maybe Game -> Either Text (Table, HistoryChange))
@@ -96,7 +101,10 @@ newRedisStore conn =
           t <- ok (R.get (tableKey tid))
           n <- ok (R.llen (historyKey tid))
           pure $ (,fromInteger n) <$> (t >>= decodeJson)
-      , insertTable = \t -> void $ redis $ R.multiExec $ writeTable Nothing t []
+      , getHistory = \tid ->
+          redis $ mapMaybe decodeJson <$> ok (R.lrange (historyKey tid) 0 (toInteger historyLimit - 1))
+      , insertTable = \t hist ->
+          void $ redis $ R.multiExec $ writeTable Nothing t (seedOps t.id hist)
       , updateTable = \tid f -> retrying (10 :: Int) (redis (attempt tid f))
       , deleteTable = \tid -> redis do
           mt <- (>>= decodeJson) <$> ok (R.get (tableKey tid))
@@ -167,6 +175,13 @@ newRedisStore conn =
         ]
       PopHistory -> [void <$> R.lpop (historyKey tid)]
 
+  -- the history an imported table starts with: RPUSH in newest-first order
+  -- leaves the newest at index 0, where LINDEX 0 expects it
+  seedOps :: UUID -> [Game] -> [RedisTx (Queued ())]
+  seedOps tid hist = case nonEmpty (take historyLimit hist) of
+    Nothing -> []
+    Just gs -> [void <$> R.rpush (historyKey tid) (fmap (toStrict . encode) gs)]
+
   -- the table, its history's expiry, and the lobby and per-user indexes
   writeTable :: Maybe Table -> Table -> [RedisTx (Queued ())] -> RedisTx (Queued ())
   writeTable old t extra = do
@@ -206,9 +221,11 @@ newPostgresStore pool =
           case decodeRow =<< mrow of
             Nothing -> pure Nothing
             Just t -> Just . (t,) <$> historyDepth (key tid)
-      , insertTable = \t -> run do
+      , getHistory = run . allHistory . key
+      , insertTable = \t hist -> run do
           now <- liftIO getCurrentTime
           P.insertKey (key t.id) (rowFor t now)
+          seedHistory (key t.id) hist now
           -- A table nobody has touched in a month goes, history and all, as it did
           -- under Redis's two-week expiry. New tables are rare, so this rides along
           -- with one rather than wanting a scheduler of its own.
@@ -253,10 +270,20 @@ newPostgresStore pool =
 
   historyDepth k = P.count [ThirdEditionHistoryTableId P.==. k]
 
-  latestHistory k = do
+  latestHistory k = listToMaybe <$> historyRows k 1
+
+  allHistory k = historyRows k historyLimit
+
+  historyRows k n = do
     rows <-
-      P.selectList [ThirdEditionHistoryTableId P.==. k] [P.Desc ThirdEditionHistoryId, P.LimitTo 1]
-    pure (decodeJsonValue . (.game) . P.entityVal =<< listToMaybe rows)
+      P.selectList [ThirdEditionHistoryTableId P.==. k] [P.Desc ThirdEditionHistoryId, P.LimitTo n]
+    pure (mapMaybe (decodeJsonValue . (.game) . P.entityVal) rows)
+
+  -- ids ascend, and the reads above order by them descending, so the oldest
+  -- state of a newest-first history has to be inserted first
+  seedHistory k hist now =
+    P.insertMany_
+      [ThirdEditionHistory k (toJSON g) now | g <- reverse (take historyLimit hist)]
 
   applyHistory k = \case
     KeepHistory -> pure ()
@@ -319,5 +346,5 @@ importRedisTables conn store = do
       Just _ -> pure False
       Nothing ->
         R.runRedis conn (R.get ("ah3e:table:" <> UUID.toASCIIBytes tid)) >>= \case
-          Right (Just raw) | Just t <- decodeJson raw -> True <$ store.insertTable t
+          Right (Just raw) | Just t <- decodeJson raw -> True <$ store.insertTable t []
           _ -> pure False

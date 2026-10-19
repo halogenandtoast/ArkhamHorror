@@ -107,7 +107,7 @@ postApiV1ThirdEditionTablesR = do
           , createdAt = now
           }
   store <- getStore
-  liftIO (store.insertTable table)
+  liftIO (store.insertTable table [])
   pure (tableView Nothing table 0)
 
 {- | The table as it stands, or its live feed when the request is a websocket
@@ -229,13 +229,15 @@ postApiV1ThirdEditionBugR tid = do
   url <- uploadBugExport "ah3e-" (Aeson.encode table)
   pure (object ["url" .= url])
 
-exportTable :: UUID -> Handler Table
+exportTable :: UUID -> Handler TableExport
 exportTable tid = do
   _ <- getRequestUserId
   store <- getStore
   liftIO (store.getTable tid) >>= \case
     Nothing -> failWith status404 "No such table"
-    Just (t, _) -> pure t
+    -- the earlier states ride along, so a filed bug can be rewound rather than
+    -- only looked at: third edition has no replay runner
+    Just (t, _) -> TableExport t <$> liftIO (store.getHistory tid)
 
 {- | Load an exported table as a new one. The importer hosts it and holds every
 seat, so they can answer for each player on their own, as an imported Arkham
@@ -244,7 +246,7 @@ game does.
 postApiV1ThirdEditionImportR :: Handler Value
 postApiV1ThirdEditionImportR = do
   Entity userId user <- getRequestUser
-  imported <- (requireCheckJsonBody :: Handler Table)
+  TableExport imported history <- (requireCheckJsonBody :: Handler TableExport)
   tid <- liftIO nextRandom
   now <- liftIO getCurrentTime
   let
@@ -258,8 +260,8 @@ postApiV1ThirdEditionImportR = do
         , createdAt = now
         }
   store <- getStore
-  liftIO (store.insertTable table)
-  pure (tableView Nothing table 0)
+  liftIO (store.insertTable table history)
+  pure (tableView Nothing table (length history))
 
 -- | Run the engine on the table's game, keeping the state it replaces for undo.
 step :: Show e => Table -> (Game -> Either e Game) -> Either Text (Table, HistoryChange)

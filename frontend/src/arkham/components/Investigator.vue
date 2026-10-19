@@ -475,7 +475,7 @@ const spadeInjury = computed(() => {
   <div v-if="portrait" class="portrait-container" :data-id="investigator.id" v-bind="cardDrop">
     <span v-if="isMobile">
       <i class="action" v-for="n in investigator.remainingActions" :key="n"></i>
-      <template v-for="action in investigator.additionalActions" :key="action">
+      <template v-for="(action, actionIndex) in investigator.additionalActions" :key="actionIndex">
         <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigatorClass.toLowerCase()}ActionButton`]">
           <i class="action"></i>
         </button>
@@ -585,7 +585,7 @@ const spadeInjury = computed(() => {
               <i class="diamond" v-if="diamondInjury"></i>
               <i class="club" v-if="clubInjury"></i>
               <i class="action" v-for="n in investigator.remainingActions" :key="n"></i>
-              <template v-for="action in investigator.additionalActions" :key="action">
+              <template v-for="(action, actionIndex) in investigator.additionalActions" :key="actionIndex">
                 <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigatorClass.toLowerCase()}ActionButton`]">
                   <i class="action"></i>
                 </button>

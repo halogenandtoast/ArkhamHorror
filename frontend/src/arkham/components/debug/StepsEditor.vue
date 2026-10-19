@@ -446,6 +446,12 @@ const outcomes = (step: any, which: 'onSuccess' | 'onFailure'): any[] => {
   return held ? [held] : []
 }
 
+/* Both give v-for a definite array: iterating `step.x ?? []` off an `any`
+ * types the loop index `string | number`, which then will not do arithmetic. */
+const branches = (step: any): any[] => step.case ?? []
+
+const setAsideCards = (step: any): string[] => step.setAside?.cards ?? []
+
 const setOutcomes = (index: number, which: 'onSuccess' | 'onFailure', riders: any[]) => {
   const step = steps.value[index]
   const kind = kindOf(step)
@@ -1045,7 +1051,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'case'">
         <p class="hint">The first branch whose condition holds.</p>
-        <div v-for="(b, bi) in step.case ?? []" :key="bi" class="option">
+        <div v-for="(b, bi) in branches(step)" :key="bi" class="option">
           <div class="row">
             <span class="branch-label">Branch {{ bi + 1 }}</span>
             <button type="button" @click="set(index, { ...step, case: step.case.filter((_: any, i: number) => i !== bi) })">×</button>
@@ -2284,14 +2290,14 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           anywhere yet to be moved.
         </p>
         <label class="cap">Which cards</label>
-        <div v-for="(code, ci) in (step.setAside?.cards ?? [])" :key="ci" class="row">
+        <div v-for="(code, ci) in setAsideCards(step)" :key="ci" class="row">
           <CardCodeField
             :modelValue="code"
             @update:modelValue="setAsideCard(index, ci, $event)"
           />
           <button type="button" class="drop" @click="setAsideCard(index, ci, null)">remove</button>
         </div>
-        <button type="button" class="add-rider" @click="setAsideCard(index, (step.setAside?.cards ?? []).length, '')">
+        <button type="button" class="add-rider" @click="setAsideCard(index, setAsideCards(step).length, '')">
           + a card
         </button>
         <p class="hint">

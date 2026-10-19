@@ -949,8 +949,8 @@ ritualCircle_224 =
       ":ages-unwound:224"
       ("Ritual Circle" <:> "A Harnessed Future")
       [Interior, Ritual]
-      Hourglass
-      [Squiggle, Heart, Star]
+      Heart
+      [Diamond, Hourglass, Star]
       Set.NightOfTheRitual
 
 ritualCircle_225 :: CardDef
@@ -960,8 +960,8 @@ ritualCircle_225 =
       ":ages-unwound:225"
       ("Ritual Circle" <:> "Gateway to the Past")
       [Interior, Ritual]
-      Heart
-      [Diamond, Hourglass, Star]
+      Hourglass
+      [Squiggle, Heart, Star]
       Set.NightOfTheRitual
 
 cafeteria :: CardDef

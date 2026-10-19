@@ -12,27 +12,23 @@ newtype FrontHallway = FrontHallway LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-{- | Unrevealed: "As an additional cost to enter Front Hallway, investigators at
-Children's Playground must spend 3[per_investigator] clues as a group."
-
-Matched by title rather than by def: Scenario VI gathers its own Children's
-Playground (@:ages-unwound:171@), so @locationIs@ on Scenario III's copy would
-quietly make the cost free there.
--}
 frontHallway :: LocationCard FrontHallway
 frontHallway =
-  symbolLabel $ location FrontHallway Cards.frontHallway 3 (PerPlayer 2)
+  symbolLabel
+    $ location FrontHallway Cards.frontHallway 3 (PerPlayer 2)
     & setCostToEnterUnrevealed (GroupClueCost (PerPlayer 3) "Children's Playground")
 
--- | "Haunted - If the Hound of Unmaking is in play and undamaged, place 1 damage on it"
 instance HasAbilities FrontHallway where
   getAbilities (FrontHallway a) =
-    extendRevealed1 a $ campaignI18n $ hauntedI "frontHallway.haunted" a 1
+    extendRevealed1 a
+      $ campaignI18n
+      $ withI18nTooltip "frontHallway.haunted"
+      $ restricted a 1 (exists $ enemyIs Enemies.houndOfUnmaking <> EnemyWithoutDamage) Haunted
 
 instance RunMessage FrontHallway where
   runMessage msg l@(FrontHallway attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      hounds <- select $ enemyIs Enemies.houndOfUnmaking <> EnemyWithDamage (EqualTo $ Static 0)
-      for_ hounds \hound -> placeTokens (attrs.ability 1) hound #damage 1
+      withMatch (enemyIs Enemies.houndOfUnmaking <> EnemyWithoutDamage)
+        $ placeTokensOn (attrs.ability 1) #damage 1
       pure l
     _ -> FrontHallway <$> liftRunMessage msg attrs

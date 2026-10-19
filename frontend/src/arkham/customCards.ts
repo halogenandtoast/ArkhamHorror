@@ -298,12 +298,63 @@ export function cardArtReference(art: string | null | undefined): string | null 
   return /^\d{5}[a-z]?$/.test(code) ? code : null
 }
 
+/* ----------------------------------------------------------- portraits ---
+
+   A game row needs a custom investigator's portrait and nothing else, so it is
+   served and held on its own rather than as a def: see `fetchCustomCardPortraits`.
+
+   Four fields, against a def that can run to kilobytes of authoring script.
+
+   Kept beside the registry instead of registered as a stub def, because a stub
+   would overwrite the real def of a card the open game had already loaded, and
+   a portrait is not a card. Every reader below consults the registry first and
+   falls back here, so a full def always wins. */
+export type CardPortrait = {
+  cardCode: string
+  art: string | null
+  portrait: string | null
+  portraitBack: string | null
+}
+
+const portraits = reactive(new Map<string, CardPortrait>())
+
+export function registerCustomCardPortraits(entries: CardPortrait[]) {
+  for (const entry of entries) {
+    portraits.set(stripCardCodePrefix(entry.cardCode), entry)
+  }
+}
+
+/* Whether anything at all is known about this card's face -- a def or a
+ * portrait. A row waits on this before drawing, so it does not flash the
+ * "definition missing" image while the portraits are still in flight. */
+export function customCardFaceKnown(code: string): boolean {
+  const bare = stripCardCodePrefix(code)
+  return registry.has(bare) || portraits.has(bare)
+}
+
+/* The portrait a custom investigator carries, by side. `null` means the card
+ * names no portrait of its own, which is a different answer from "not loaded
+ * yet" -- `customCardFaceKnown` is that question. */
+export function customCardPortrait(code: string, suffix: string = ''): string | null {
+  const bare = stripCardCodePrefix(code)
+  const def = registry.get(bare)?.def
+  if (def) return (suffix === 'b' ? def.meta?.portraitBack : def.meta?.portrait) ?? null
+  const entry = portraits.get(bare)
+  if (!entry) return null
+  return (suffix === 'b' ? entry.portraitBack : entry.portrait) ?? null
+}
+
 // `art` arrives with a card-side suffix appended by the art helpers (`…b` for a
 // back). Custom cards are single-sided, so fall back to the bare code.
 export function customCardArt(art: string): string | null {
   const code = stripCardCodePrefix(art)
   const exact = registry.get(code)
   if (exact) return exact.art
+
+  // A portrait-only entry still knows where the card's own image lives, which
+  // is what a row falls back to for an investigator carrying no portrait.
+  const stub = portraits.get(code)
+  if (stub) return stub.art
 
   // A back is asked for as "<code>b". An investigator draws its own back; other
   // custom cards fall back to their face.

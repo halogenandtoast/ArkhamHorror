@@ -1,8 +1,11 @@
 module Api.Handler.Arkham.CustomCards (
   getApiV1ArkhamCustomCardsR,
+  getApiV1ArkhamCustomCardPortraitsR,
   postApiV1ArkhamCustomCardsR,
   postApiV1ArkhamCustomCardsArtR,
   deleteApiV1ArkhamCustomCardR,
+  forRendering,
+  setPayloadEtag,
   registerUserCustomCards,
   userCustomCards,
   ownedCardSet,
@@ -28,7 +31,7 @@ import Amazonka.S3
 import Amazonka.S3.PutObject (putObject_acl, putObject_contentType)
 import Control.Lens ((?~))
 
-import Arkham.Card.CardCode (CardCode (..))
+import Arkham.Card.CardCode (CardCode (..), unCardCode)
 import Arkham.Card.CardDef (CardDef, cdArt, cdCardCode, cdMeta, cdName)
 import Arkham.Card.CustomCard (
   CustomCard (..),
@@ -41,6 +44,7 @@ import Arkham.Custom.SetDefs qualified as SetDefs
 import Arkham.Name (toTitle)
 import Auth.ApiKey qualified as ApiKey
 import Crypto.Hash.SHA256 qualified as SHA256
+import Data.Aeson (encode)
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (parseMaybe, withObject)
 import Data.ByteString.Base16 qualified as B16
@@ -52,7 +56,7 @@ import Data.Text qualified as T
 import Data.Time.Clock
 import Data.Traversable (for)
 import Database.Persist qualified as DB
-import Database.Persist.Sql (SqlPersistT)
+import Database.Persist.Sql (Single (..), SqlPersistT, rawSql)
 import Import hiding ((==.))
 import Import qualified as P
 import System.Directory (createDirectoryIfMissing)
@@ -70,6 +74,66 @@ getApiV1ArkhamCustomCardsR :: Handler [Entity ArkhamCustomCard]
 getApiV1ArkhamCustomCardsR = do
   userId <- callerUserId <$> getScopedCaller [ApiKey.cardsRead]
   runDB $ P.selectList [ArkhamCustomCardUserId P.==. userId] [P.Desc ArkhamCustomCardUpdatedAt]
+
+{- | Portraits for the custom investigators named in @codes@.
+
+What a list of game rows needs, and the only thing it needs: a row draws a face
+and a name, and it was buying every card in the reader's library -- defs,
+script and all -- once per row to do it.
+
+Resolved from the reader's own library first, which is cached in process against
+'libraryStamp', so the ordinary case costs nothing but a hash. A code it does
+not hold belongs to somebody else's custom investigator sharing a game, and only
+then is the recorded copy on the games read.
+-}
+getApiV1ArkhamCustomCardPortraitsR :: Handler [CardPortrait]
+getApiV1ArkhamCustomCardPortraitsR = do
+  userId <- callerUserId <$> getScopedCaller [ApiKey.cardsRead]
+  codes <-
+    map (CardCode . bareCustomCode)
+      . filter (not . T.null)
+      . T.splitOn ","
+      . fromMaybe ""
+      <$> lookupGetParam "codes"
+  library <- userCustomCards userId
+  let
+    fromLibrary = [portraitOf code card | code <- codes, Just card <- [Map.lookup code library]]
+    missing = [code | code <- codes, isNothing (Map.lookup code library)]
+  fromGames <- if null missing then pure [] else recordedPortraits userId missing
+  let payload = fromLibrary <> fromGames
+  setPayloadEtag payload
+  pure payload
+
+{- | The portraits a reader's games have recorded, for cards that are not theirs.
+
+A custom card is written onto the game that uses it, which is what lets a table
+draw a card whose author is somebody else. Read through @gameCustomCards@ rather
+than by loading the games: that key is a few hundred bytes beside a column that
+averages 97kB, and decoding the games to reach it was the old cost of this whole
+request.
+
+@DISTINCT ON@ because the same card is recorded on every game it appears in, and
+any copy answers the question.
+-}
+recordedPortraits :: UserId -> [CardCode] -> Handler [CardPortrait]
+recordedPortraits userId codes = do
+  rows :: [(Single Text, Single Value)] <-
+    runDB
+      $ rawSql
+        "SELECT DISTINCT ON (e.key) e.key, e.value \
+        \FROM arkham_games g \
+        \CROSS JOIN LATERAL jsonb_each(g.current_data -> 'gameCustomCards') AS e(key, value) \
+        \WHERE EXISTS (SELECT 1 FROM arkham_players p WHERE p.arkham_game_id = g.id AND p.user_id = ?) \
+        \  AND e.key = ANY(string_to_array(?, ','))"
+        [ toPersistValue userId
+        , -- A jsonb map of 'CardCode' is keyed the way 'ToJSONKey' writes it,
+          -- which is with the same leading @c@ 'bareCustomCode' takes off.
+          toPersistValue (T.intercalate "," (map (T.cons 'c' . unCardCode) codes))
+        ]
+  pure do
+    (Single code, Single raw) <- rows
+    card <- maybeToList $ parseMaybe parseJSON raw
+    pure $ portraitOf (CardCode (bareCustomCode code)) card
 
 {- | Refuses anything that is not a custom card code, so this cannot be used to
 shadow a real card's def.
@@ -582,6 +646,111 @@ portraits still pointing at the exporter's library.
 -}
 artMetaKeys :: [Text]
 artMetaKeys = ["backArt", "portrait", "portraitBack"]
+
+-- ------------------------------------------------------- what a reader gets ---
+
+{- | The meta keys that say what a card /does/.
+
+These are the card builder's authoring surface, and the engine is the only thing
+that reads them: it interprets them server-side out of the library, so nothing
+outside the builder has ever needed them in a response. On a scripted card they
+are most of the def.
+
+@_locale@ and @_signatures@ are deliberately not here. The first carries the
+card's text, which every player at the table has to be able to read, and the
+second is how a deck resolves a signature card to its owner.
+-}
+dslMetaKeys :: [Text]
+dslMetaKeys =
+  [ "_abilities"
+  , "_handlers"
+  , "_modifiers"
+  , "_onPlay"
+  , "_onSetup"
+  , "_onRevelation"
+  , "_revelationPlacement"
+  , "_elderSign"
+  , "_elderSignSteps"
+  , "_elderSignRevealSteps"
+  , "_elderSignSuccessSteps"
+  , "_elderSignFailureSteps"
+  , "_setAside"
+  , "_keywords"
+  ]
+
+{- | A card as something other than the builder needs it: the printed face, its
+text and its signatures, and none of the script behind it.
+
+The registry this lands in is read to draw cards and to name them; the behaviour
+it used to carry was being sent to every player of every game on every page
+load, for nobody to read.
+-}
+forRendering :: CustomCard -> CustomCard
+forRendering card = card {customCardDef = def {cdMeta = foldr Map.delete (cdMeta def) dslMetaKeys}}
+ where
+  def = customCardDef card
+
+{- | What a game row needs of a custom investigator, which is its portrait and
+nothing else.
+
+'Api.Handler.Arkham.Games.Summary' names the investigators in a list of games
+but cannot draw their faces: a custom investigator's portrait lives on the def,
+in the author's library. This is that lookup, and it is the whole of it -- four
+fields against a def that can run to kilobytes of script.
+-}
+data CardPortrait = CardPortrait
+  { cardCode :: CardCode
+  , art :: Maybe Text
+  , portrait :: Maybe Text
+  , portraitBack :: Maybe Text
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass ToJSON
+
+{- | A custom card code as the library is keyed by it.
+
+@ToJSON CardCode@ prepends a @c@ so a code never serializes as a bare number, so
+an id a reader is asking about comes back as @c*…@ while the card is stored
+under @*…@. The frontend normalises the same way round (@stripCardCodePrefix@),
+and the two have to agree or every lookup here misses.
+-}
+bareCustomCode :: Text -> Text
+bareCustomCode raw = maybe stripped ("*" <>) (T.stripPrefix "c*" stripped)
+ where
+  stripped = T.strip raw
+
+portraitOf :: CardCode -> CustomCard -> CardPortrait
+portraitOf code card =
+  CardPortrait
+    { cardCode = code
+    , art = customCardArt card
+    , portrait = metaText "portrait"
+    , portraitBack = metaText "portraitBack"
+    }
+ where
+  metaText k = case Map.lookup k (cdMeta (customCardDef card)) of
+    Just (String t) -> Just t
+    _ -> Nothing
+
+{- | Tag a response so a reader that already has it is told so.
+
+Two things have to be true together for that to happen, which is why they are
+set in one place: an @ETag@ to compare, and a @Cache-Control@ that lets the
+browser keep the response long enough to compare it. The global CORS headers say
+@no-store@, which forbids keeping anything at all; 'addCORSHeaders' leaves
+'Cache-Control' alone when a handler has set its own, so this wins for these
+endpoints without changing what every other endpoint promises.
+
+@private@ because a library belongs to one account, and @no-cache@ rather than a
+lifetime because an edit in the builder has to show at the table immediately --
+revalidate every time, and pay for the body only when it actually changed.
+
+'setEtag' answers 304 itself when the reader's @If-None-Match@ matches.
+-}
+setPayloadEtag :: ToJSON a => a -> Handler ()
+setPayloadEtag payload = do
+  addHeader "Cache-Control" "private, no-cache"
+  setEtag . decodeUtf8 . B16.encode . SHA256.hashlazy $ encode payload
 
 hostDefArt :: UserId -> CardDef -> Handler CardDef
 hostDefArt userId def = do

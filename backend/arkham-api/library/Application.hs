@@ -60,10 +60,18 @@ import Database.Redis (
 import Import hiding (newMVar, sendResponse)
 import Language.Haskell.TH.Syntax (qLocation)
 import Network.HTTP.Client.TLS (getGlobalManager)
-import Network.HTTP.Types (ResponseHeaders, status200)
+import Network.HTTP.Types (ResponseHeaders, status200, status304)
 import Network.TLS (ClientParams (..), Shared (..), Supported (..), defaultParamsClient)
 import Network.TLS.Extra.Cipher (ciphersuite_strong)
-import Network.Wai (Middleware, requestHeaders, requestMethod, responseLBS)
+import Network.Wai (
+  Middleware,
+  mapResponseHeaders,
+  requestHeaders,
+  requestMethod,
+  responseHeaders,
+  responseLBS,
+  responseStatus,
+ )
 import Network.Wai.Handler.Warp (
   Settings,
   defaultSettings,
@@ -74,7 +82,6 @@ import Network.Wai.Handler.Warp (
   setOnException,
   setPort,
  )
-import Network.Wai.Middleware.AddHeaders (addHeaders)
 import Network.Wai.Middleware.Gzip (gzip)
 import Network.Wai.Middleware.RequestLogger (
   Destination (Logger),
@@ -288,11 +295,38 @@ handleOptions app req sendResponse =
   toHeaders :: [(ByteString, ByteString)] -> ResponseHeaders
   toHeaders = map (first mk)
 
+{- | CORS headers, and the no-caching default that rides with them.
+
+Appending, as this does, means a handler that has set its own 'Cache-Control' would end
+up with two -- and since the default here says @no-store@, the strictest of the
+pair is the one a browser keeps, which is the opposite of what the handler asked
+for. So the default is dropped for a response that already carries one.
+
+That is what lets an endpoint opt into revalidation (an @ETag@ plus
+@private, no-cache@, as 'Api.Handler.Arkham.CustomCards.setPayloadEtag' does)
+without changing what every other endpoint promises, which is still that nothing
+is stored anywhere.
+-}
 addCORSHeaders :: Middleware
 addCORSHeaders app req sendResponse =
   case lookup "Origin" (requestHeaders req) of
     Nothing -> app req sendResponse
-    Just origin -> addHeaders (corsResponseHeaders origin) app req sendResponse
+    Just origin -> app req \res ->
+      let
+        -- 'HeaderName' is case-insensitive in its own Eq, so this needs no folding.
+        setsOwnCacheControl = any ((== "cache-control") . fst) (responseHeaders res)
+        {- A 304 is the answer to a revalidation, and it carries no body to say
+        anything about. Telling the reader not to store it would be read as
+        applying to the entry it just revalidated, which is the copy the 304
+        exists to let them keep. -}
+        revalidated = responseStatus res == status304
+        headers =
+          [ (mk name, value)
+          | (name, value) <- corsResponseHeaders origin
+          , not ((setsOwnCacheControl || revalidated) && foldCase name == "cache-control")
+          ]
+       in
+        sendResponse $ mapResponseHeaders (headers <>) res
 
 makeLogWare :: App -> IO Middleware
 makeLogWare foundation =

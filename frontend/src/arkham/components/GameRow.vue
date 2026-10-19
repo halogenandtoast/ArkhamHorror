@@ -2,8 +2,8 @@
 import { useI18n } from 'vue-i18n'
 import { computed, onMounted, ref } from 'vue'
 import { customInvestigatorUsesCardPortrait, portraitImage } from '@/arkham/cardImages'
-import { fetchCustomCards } from '@/arkham/api'
-import { isCustomCardCode, registerCustomCards } from '@/arkham/customCards'
+import { customCardFaceKnown, isCustomCardCode } from '@/arkham/customCards'
+import { useCardStore } from '@/stores/cards'
 import type { GameDetails } from '@/arkham/types/Game'
 import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { CampaignDetails } from '@/arkham/types/Campaign'
@@ -29,6 +29,7 @@ const campaign = computed<CampaignDetails | null>(() => props.game.campaign)
 const scenario = computed<ScenarioDetails | null>(() => props.game.scenario)
 const deleting = ref(false)
 const { t } = useI18n()
+const store = useCardStore()
 
 /* The one thing worth saying about a badge: that the Campaign Guide itself
  * hedged the ending. */
@@ -74,28 +75,24 @@ const usesCardPortrait = (cardCode: string) => customInvestigatorUsesCardPortrai
 const cardPortraitStyle = (cardCode: string) => ({
   backgroundImage: `url(${JSON.stringify(portraitImage(cardCode))})`,
 })
-const customCardsLoaded = ref(false)
-const portraitReady = (cardCode: string) => !isCustomCardCode(cardCode) || customCardsLoaded.value
+/* Do not render a temporary "Card Definition Missing" image while a custom
+ * investigator's portrait is still in flight. Asked of the registry rather than
+ * tracked here: the portraits are fetched once for the whole page, so a row
+ * does not know when the request it is waiting on settles -- only whether the
+ * answer has arrived. */
+const portraitReady = (cardCode: string) =>
+  !isCustomCardCode(cardCode) || customCardFaceKnown(cardCode)
 
-onMounted(async () => {
+/* The row used to fetch the game's whole custom-card set itself, once per row,
+ * to read two portrait fields off it. The page preloads the portraits for every
+ * row it is about to draw instead -- see `ensureCustomCardPortraits`. A row
+ * mounted outside such a page still asks, so it is never left faceless. */
+onMounted(() => {
   const investigatorIds = [
     ...props.game.investigators.map((investigator) => investigator.id),
     ...Object.values(props.game.otherInvestigators).map((investigator) => investigator.id),
   ]
-  if (!investigatorIds.some(isCustomCardCode)) {
-    customCardsLoaded.value = true
-    return
-  }
-
-  try {
-    registerCustomCards(await fetchCustomCards(props.game.id))
-  } catch (error) {
-    console.error('Could not load custom card portraits', error)
-  } finally {
-    // Do not render a temporary "Card Definition Missing" image while the
-    // game-specific definitions are still in flight.
-    customCardsLoaded.value = true
-  }
+  store.ensureCustomCardPortraits(investigatorIds)
 })
 
 const campaignIcon = computed(() => {

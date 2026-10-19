@@ -334,14 +334,26 @@ useNarrative(game)
 /* A custom card someone else created shows up in the game payload before this
  * client has its def; refetch the game's custom cards when an unknown one
  * appears. */
+let refetchedFor = ''
 watch(game, (g) => {
   if (!g) return
   const missing = (code: string) => isCustomCardCode(code) && !customCardDef(code)
   // A custom investigator never appears in `cards`; it is only a seat.
-  const unknown =
-    Object.values(g.cards).some((c) => missing(asCardCode(c)))
-    || Object.values(g.investigators).some((i) => missing(i.cardCode))
-  if (unknown) store.fetchCustomCards(props.gameId)
+  const unknown = [
+    ...Object.values(g.cards).map(asCardCode),
+    ...Object.values(g.investigators).map((i) => i.cardCode),
+  ]
+    .filter(missing)
+    .sort()
+    .join(',')
+  /* `fetchCustomCards` remembers its answer for the session, so this has to say
+   * it wants a fresh one -- the whole point here is that the answer changed.
+   * Keyed on which cards are missing so a def that is genuinely gone does not
+   * buy another copy of the set on every update for the rest of the game. */
+  if (unknown && unknown !== refetchedFor) {
+    refetchedFor = unknown
+    store.fetchCustomCards(props.gameId, true)
+  }
 })
 
 // "Ready to play": the group has reached the first investigation phase of an

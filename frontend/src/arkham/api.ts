@@ -3,7 +3,7 @@ import { logRowDecoder, type LogRow } from '@/arkham/types/GameLog';
 import { Game, GameDetails, GameDetailsEntry, gameDecoder, gameDetailsEntryDecoder } from '@/arkham/types/Game';
 import { ArkhamDbDecklist, Deck, deckDecoder } from '@/arkham/types/Deck';
 import { CardDef, cardDefDecoder } from '@/arkham/types/CardDef';
-import { CustomCard, customCardDecoder } from '@/arkham/customCards';
+import { CardPortrait, CustomCard, customCardDecoder } from '@/arkham/customCards';
 import { Difficulty } from '@/arkham/types/Difficulty';
 import { Source } from '@/arkham/types/Source';
 import { Token } from '@/arkham/types/Token';
@@ -1193,6 +1193,25 @@ export const uploadCustomCardArt = async (file: File | Blob, filename = 'art.web
 export const fetchCustomCards = async (gameId: string): Promise<CustomCard[]> => {
   const { data } = await api.get(`arkham/games/${gameId}/custom-cards`)
   return JsonDecoder.array(customCardDecoder, 'ArkhamCustomCard[]').decodePromise(data)
+}
+
+/* What a game row needs of a custom investigator: its portrait, and nothing
+ * else. A row draws a face and a name, and it used to buy every card in your
+ * library -- script included -- once per row to do it. */
+const cardPortraitDecoder = JsonDecoder.object<CardPortrait>(
+  {
+    cardCode: JsonDecoder.string(),
+    art: JsonDecoder.nullable(JsonDecoder.string()),
+    portrait: JsonDecoder.nullable(JsonDecoder.string()),
+    portraitBack: JsonDecoder.nullable(JsonDecoder.string()),
+  },
+  'CardPortrait',
+)
+
+export const fetchCustomCardPortraits = async (codes: string[]): Promise<CardPortrait[]> => {
+  if (codes.length === 0) return []
+  const { data } = await api.get('arkham/custom-cards/portraits', { params: { codes: codes.join(',') } })
+  return JsonDecoder.array(cardPortraitDecoder, 'CardPortrait[]').decodePromise(data)
 }
 
 export const fetchCard = async (cardCode: string): Promise<CardDef> => {

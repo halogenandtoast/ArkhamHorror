@@ -1,5 +1,12 @@
 import { cardImg, imgsrc } from '@/arkham/helpers'
-import { cardArtReference, customCardDef, isCustomCardCode } from '@/arkham/customCards'
+import {
+  cardArtReference,
+  customCardArt,
+  customCardDef,
+  customCardFaceKnown,
+  customCardPortrait,
+  isCustomCardCode,
+} from '@/arkham/customCards'
 import type { CardDef } from '@/arkham/types/CardDef'
 import type { Game } from '@/arkham/types/Game'
 import type { Source } from '@/arkham/types/Source'
@@ -62,19 +69,25 @@ export function cardFaceImages(card: CardDef): { front: string; back: string | n
   return { front, back }
 }
 
+/* Both of these read the portrait through `customCardPortrait`, which answers
+ * from a full def when the registry holds one and from a portrait-only entry
+ * otherwise -- so a game row can draw a face without having bought the card. */
 export function customInvestigatorUsesCardPortrait(cardCode: string, suffix: string = ''): boolean {
   if (!isCustomCardCode(cardCode)) return false
-  const def = customCardDef(cardCode)
-  if (!def) return false
-  return !(suffix === 'b' ? def.meta?.portraitBack : def.meta?.portrait)
+  if (!customCardFaceKnown(cardCode)) return false
+  if (customCardPortrait(cardCode, suffix)) return false
+  /* No portrait of its own, so the row draws the card's face instead -- but
+   * only if there is a face to draw. A def that has been deleted has neither,
+   * and falls through to the placeholder the way it did when the answer to
+   * "is there a def" was simply no. */
+  return !!customCardArt(cardCode)
 }
 
 export function portraitImage(cardCode: string, suffix: string = ''): string {
   // A custom investigator carries its own portraits; there is nothing for it
   // under the portrait directory.
   if (isCustomCardCode(cardCode)) {
-    const def = customCardDef(cardCode)
-    const portrait = suffix === 'b' ? def?.meta?.portraitBack : def?.meta?.portrait
+    const portrait = customCardPortrait(cardCode, suffix)
     // A slot may name a printed investigator rather than carry its own image,
     // which here means that investigator's portrait, not their card.
     const reference = cardArtReference(portrait)

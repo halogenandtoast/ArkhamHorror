@@ -44,6 +44,7 @@
       /custom-cards ApiV1ArkhamCustomCardsP:
         / ApiV1ArkhamCustomCardsR GET POST
         !/art ApiV1ArkhamCustomCardsArtR POST
+        !/portraits ApiV1ArkhamCustomCardPortraitsR GET
         /#ArkhamCustomCardId ApiV1ArkhamCustomCardR DELETE
       /custom-card-sets ApiV1ArkhamCustomCardSetsP:
         / ApiV1ArkhamCustomCardSetsR GET POST

@@ -106,6 +106,25 @@ applyCriteriaOverride = \case
   SetAbilityCriteria (CriteriaOverride c) -> const c
   _ -> id
 
+{- | The haunted abilities on a location that @iid@ may actually resolve.
+
+Haunted abilities are collected by ability type and source, which skips the
+criteria check the normal ability path does in 'getCanPerformAbility', so a
+@restricted@ haunted ability resolved with its condition unmet. Only the
+criteria are tested here: a haunted ability is forced, free and matches any
+window, so the rest of 'getCanPerformAbility' has nothing to say about it, and
+a modifier that stops an investigator triggering abilities must not stop one.
+-}
+getResolvableHauntedAbilities :: HasGame m => InvestigatorId -> LocationId -> m [Ability]
+getResolvableHauntedAbilities iid lid = do
+  abilities <-
+    select $ Matcher.HauntedAbility <> Matcher.AbilityOnLocation (Matcher.LocationWithId lid)
+  flip filterM abilities \ability -> do
+    abilityModifiers <- getModifiers (AbilityTarget iid ability.ref)
+    let criteria = foldr applyCriteriaOverride (abilityCriteria ability) abilityModifiers
+    withActiveInvestigator iid
+      $ passesCriteria iid Nothing (toSource ability) ability.requestor [] criteria
+
 getCanPerformAbility
   :: (HasCallStack, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
 getCanPerformAbility !iid !ws !ability = do

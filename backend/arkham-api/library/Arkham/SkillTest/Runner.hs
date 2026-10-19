@@ -14,6 +14,7 @@ import Arkham.Classes hiding (matches)
 import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
 import Arkham.Game.Utils (maybeLocation)
+import Arkham.Helpers.Ability (getResolvableHauntedAbilities)
 import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
 import Arkham.Helpers.Cost (getCanAffordCost)
 import Arkham.Helpers.Enemy (ignoredKeywordWindowsForEnemy)
@@ -1067,7 +1068,7 @@ instance RunMessage SkillTest where
       targetMods <- getModifiers skillTestTarget
       let cancelled = CancelEffects `elem` modifiers' && EffectsCannotBeCanceled `notElem` targetMods
       unless cancelled do
-        hauntedAbilities <- select $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
+        hauntedAbilities <- getResolvableHauntedAbilities iid lid
         unless (null hauntedAbilities) do
           player <- getPlayer iid
           push $ chooseOneAtATime player [AbilityLabel iid ab [] [] [] | ab <- hauntedAbilities]

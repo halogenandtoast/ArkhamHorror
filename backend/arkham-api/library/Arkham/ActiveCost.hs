@@ -506,7 +506,7 @@ payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
       push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) bondedCards
       pure c
     ResolveEachHauntedAbility lid -> do
-      hauntedAbilities <- select $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
+      hauntedAbilities <- getResolvableHauntedAbilities iid lid
       pushIfAny hauntedAbilities
         $ chooseOneAtATime player [AbilityLabel iid ab [] [] [] | ab <- hauntedAbilities]
       -- No need to record payment... yet

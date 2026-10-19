@@ -579,7 +579,8 @@
     "allOutcomes": "All",
     "noFinishedGames": "No finished games.",
     "noGamesForOutcome": "No finished games with that outcome.",
-    "watchGames": "Watch"
+    "watchGames": "Watch",
+    "watchGamesAvailable": "{count} live game open to spectators | {count} live games open to spectators"
   },
   "watch": {
     "title": "Games to Watch",

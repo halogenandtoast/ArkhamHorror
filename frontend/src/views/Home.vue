@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { ref, computed, Ref } from 'vue';
 import { useUserStore } from '@/stores/user';
+import { useCardStore } from '@/stores/cards';
 import { useRouter } from 'vue-router';
-import { deleteEvent, deleteGame, fetchGames, fetchEvents, fetchNotifications } from '@/arkham/api';
+import { deleteEvent, deleteGame, fetchGames, fetchEvents, fetchNotifications, fetchSpectatableGameIds } from '@/arkham/api';
 import { cullGameLocalStorage, removeGameLocalStorage } from '@/arkham/localStorage';
 import { isDevBuild } from '@/arkham/displayRules';
 import type { BrokenGameDetails, GameDetails } from '@/arkham/types/Game';
@@ -19,6 +20,7 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n()
 const router = useRouter()
 const store = useUserStore()
+const cardStore = useCardStore()
 const { currentUser } = storeToRefs(store)
 const games: Ref<GameDetails[]> = ref([])
 const brokenGames: Ref<BrokenGameDetails[]> = ref([])
@@ -72,6 +74,14 @@ fetchGames().then((result) => {
   const availableGames = result.filter((g) => g.tag === 'game') as GameDetails[]
   cullGameLocalStorage(availableGames)
   games.value = availableGames
+  /* One request for every custom investigator on the page, rather than each row
+   * buying the whole of its game's card set to read a portrait off it. */
+  cardStore.ensureCustomCardPortraits(
+    availableGames.flatMap((game) => [
+      ...game.investigators.map((investigator) => investigator.id),
+      ...Object.values(game.otherInvestigators).map((investigator) => investigator.id),
+    ]),
+  )
   // Only dev builds get the broken-game rows: in production an unloadable game
   // is noise a player cannot act on beyond deleting it.
   brokenGames.value = isDevBuild() ? (result.filter((g) => g.tag === 'error') as BrokenGameDetails[]) : []
@@ -91,6 +101,17 @@ fetchEvents().then((result) => {
 })
 
 fetchNotifications().then((result) => notifications.value = result.filter((n: AppNotification) => !dismissedNotifications.includes(n.id)))
+
+/* How many games are open to spectators right now, for the badge on the Watch
+ * button. The digest is the ids-only probe the watch page polls, so this is a
+ * handful of uuids rather than a game apiece -- but it is read once on mount
+ * and left alone: the number is an invitation to click through, and the page
+ * behind the button is the one that keeps itself current. A failure just leaves
+ * the button unbadged. */
+const liveGameCount = ref(0)
+fetchSpectatableGameIds()
+  .then((ids) => liveGameCount.value = ids.length)
+  .catch(() => liveGameCount.value = 0)
 
 async function deleteGameEvent(game: GameDetails) {
   deleteGame(game.id).then(() => {
@@ -158,6 +179,11 @@ const dismissNotification = (notification: AppNotification) => {
               <RouterLink class="secondary-cta watch-cta" to="/watch">
                 <font-awesome-icon icon="eye" />
                 {{ $t('home.watchGames') }}
+                <span
+                  v-if="liveGameCount > 0"
+                  class="watch-count"
+                  :aria-label="$t('home.watchGamesAvailable', { count: liveGameCount }, { plural: liveGameCount })"
+                >{{ liveGameCount }}</span>
               </RouterLink>
               <button v-if="currentUser" class="secondary-cta" type="button" @click="toggleImportGame">
                 {{ $t('home.loadGame') }}
@@ -577,5 +603,17 @@ header {
   align-items: center;
   gap: 6px;
   text-decoration: none;
+}
+
+/* Reads as a count on the button rather than as a second word in its label, so
+   it keeps the pill shape at any number of digits. */
+.watch-count {
+  background: var(--background-dark);
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  min-width: 1.6em;
+  padding: 3px 6px;
+  text-align: center;
 }
 </style>

@@ -3090,7 +3090,7 @@ onUnmounted(() => {
           v-if="watcherCount > 0"
           class="watchers"
           role="status"
-          :title="$t('gameBar.watching', { count: watcherCount }, { plural: watcherCount })"
+          v-tooltip="$t('gameBar.spectators')"
           :aria-label="$t('gameBar.watching', { count: watcherCount }, { plural: watcherCount })"
         >
           <EyeIcon aria-hidden="true" />

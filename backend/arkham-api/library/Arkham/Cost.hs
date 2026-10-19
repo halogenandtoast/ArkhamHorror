@@ -164,6 +164,12 @@ data Cost
   | ChosenCardCost CardId
   | ChosenTraitCost Trait -- internal to track the chosen trait
   | DiscardAssetCost AssetMatcher
+  | {- | "Exile an asset you control" as a cost, the sibling of
+    'DiscardAssetCost'. 'ExileCost' names one fixed target, so it cannot stand
+    in for a cost that is paid by choosing from whatever matches -- which is
+    what an @AdditionalCostToEnter@ needs (/The End of All Things/).
+    -}
+    ExileAssetCost AssetMatcher
   | ExhaustAssetCost AssetMatcher
   | ExhaustXAssetCost AssetMatcher
   | RemoveCost Target

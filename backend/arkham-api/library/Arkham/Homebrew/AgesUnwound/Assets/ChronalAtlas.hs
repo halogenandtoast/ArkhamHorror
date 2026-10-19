@@ -14,16 +14,9 @@ newtype ChronalAtlas = ChronalAtlas AssetAttrs
   deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-{- | "Uses (3 secrets)."
-
-TODO(ages-unwound): this belongs on the def as @cdUses = Uses Secret (Static 3)@,
-but @CardDefs/Assets.hs@ is the orchestrator's. Setting 'printedUsesL' in the
-builder is the same thing at runtime -- uses are seeded from
-@assetPrintedUses@ when the asset enters play -- and is what Jenny's Twin .45s
-already does.
--}
+-- | "Uses (3 secrets)", which the def carries as @cdUses@.
 chronalAtlas :: AssetCard ChronalAtlas
-chronalAtlas = assetWith ChronalAtlas Cards.chronalAtlas (printedUsesL .~ Uses Secret (Fixed 3))
+chronalAtlas = asset ChronalAtlas Cards.chronalAtlas
 
 -- | "You get +1 [intellect]."
 instance HasModifiersFor ChronalAtlas where

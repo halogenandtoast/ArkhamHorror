@@ -29,13 +29,34 @@ instance HasModifiersFor TheMyriadGentleman_220 where
 
 {- | "Forced - After the host Myriad Gentleman is defeated: Discard 1 swarm card
 from each other [[Myriad]] host card in play."
+
+There is nothing to discard unless some other Myriad host still has a swarm
+card, so that is the ability's criterion rather than something the handler
+discovers and shrugs off -- otherwise defeating the last Gentleman announces a
+Forced ability that does nothing. A swarm card is a copy of its host, so a
+Myriad swarm card is by definition swarming a Myriad host; the last two terms
+drop this Gentleman's own swarm, which may not have been cleaned up yet when
+the window is raised. Both are needed: @SwarmOf@ does not match a defeated
+swarm card, so without the defeated guard his own swarm would pass the @not_@
+and answer for the hosts it was supposed to be asking about.
 -}
 instance HasAbilities TheMyriadGentleman_220 where
   getAbilities (TheMyriadGentleman_220 a) =
     -- host-ness goes in the window, not in an ability criterion: at #after the
     -- enemy is out of play, and only the window's DefeatedEnemy branch re-reads
     -- the placement it was defeated with
-    extend1 a $ mkAbility a 1 $ forced $ EnemyDefeated #after Anyone ByAny (be a <> IsHost)
+    extend1 a
+      $ restricted
+        a
+        1
+        ( exists
+            $ IsSwarm
+            <> EnemyWithTrait Myriad
+            <> not_ (DefeatedEnemy AnyEnemy)
+            <> not_ (SwarmOf a.id)
+        )
+      $ forced
+      $ EnemyDefeated #after Anyone ByAny (be a <> IsHost)
 
 instance RunMessage TheMyriadGentleman_220 where
   runMessage msg e@(TheMyriadGentleman_220 attrs) = runQueueT $ case msg of

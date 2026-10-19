@@ -10,6 +10,7 @@ import Arkham.Matcher.Enemy
 import Arkham.Matcher.Investigator
 import Arkham.Matcher.Location
 import Arkham.Matcher.Story
+import Arkham.Matcher.Treachery
 import Arkham.Matcher.Window
 import {-# SOURCE #-} Arkham.Modifier
 import Arkham.Prelude
@@ -22,6 +23,8 @@ data AbilityMatcher
   | AbilityWithIndex Int
   | AbilityOnAsset AssetMatcher
   | AbilityOnEnemy EnemyMatcher
+  | -- | The counterpart of 'AbilityOnEnemy' for a treachery's own abilities.
+    AbilityOnTreachery TreacheryMatcher
   | AbilityOnInvestigator InvestigatorMatcher
   | AbilityOnStory StoryMatcher
   | AbilityWindow WindowMatcher

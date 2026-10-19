@@ -234,6 +234,18 @@ data ModifierType
   | CannotDisengageEnemies
   | CannotDrawCards
   | CannotDrawCardsFromPlayerCardEffects
+  | {- | "Cannot willingly end their turn". Drops the end-turn button from the
+    player window, and nothing else: an effect that ends the turn for you is
+    not the investigator choosing to, so it still resolves.
+
+    Only while the window offers something else. A window with no other option
+    keeps the button, since there would otherwise be no way out of the turn at
+    all; see 'Arkham.Investigator.Runner.Action.handlePlayerWindow'. Whatever
+    condition the card attaches to -- /Ritual Circle: A Harnessed Future/ holds
+    you while you have actions remaining -- belongs in the matcher that applies
+    this, not here.
+    -}
+    CannotEndTurn
   | CannotEngage InvestigatorId
   | CannotEnter LocationId
   | {- | "You cannot enter X except by <source>". Unlike 'CannotEnter' this is
@@ -312,6 +324,11 @@ data ModifierType
     -}
     MovesAsIfConnectedTo LocationMatcher
   | ControlledAssetsCannotReady
+  | {- | "Your exhausted cards cannot ready", which is wider than
+    'ControlledAssetsCannotReady': an event in play can be exhausted too, and a
+    card that says /cards/ rather than /assets/ has to reach it.
+    -}
+    ControlledCardsCannotReady
   | CountAllDoomInPlay
   | CountsAsInvestigatorForHunterEnemies
   | CountsAsDifferentLocation

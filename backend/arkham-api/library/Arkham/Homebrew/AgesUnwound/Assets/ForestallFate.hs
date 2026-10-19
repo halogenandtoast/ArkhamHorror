@@ -12,15 +12,9 @@ newtype ForestallFate = ForestallFate AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-{- | "Uses (4 charges)."
-
-TODO(ages-unwound): two things belong on the def and @CardDefs/Assets.hs@ is the
-orchestrator's -- @cdUses = Uses Charge (Static 4)@ (set on the attrs here
-instead, which is equivalent at runtime) and @cdFastWindow@ for the printed
-__Fast__, which has no attrs equivalent, so the card still plays as an action.
--}
+-- | "Uses (4 charges)" and the printed __Fast__ both ride on the def.
 forestallFate :: AssetCard ForestallFate
-forestallFate = assetWith ForestallFate Cards.forestallFate (printedUsesL .~ Uses Charge (Fixed 4))
+forestallFate = asset ForestallFate Cards.forestallFate
 
 {- | "[free] Exhaust Forestall Fate and spend 1 charge: Test [willpower] (3). If
 you succeed, gain an action. If a [elder_thing] or [auto_fail] token is revealed

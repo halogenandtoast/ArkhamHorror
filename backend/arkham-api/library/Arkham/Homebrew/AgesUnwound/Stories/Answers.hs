@@ -4,9 +4,11 @@ import Arkham.Helpers.Investigator (getHandCount, getHandSize)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Stories qualified as Cards
 import Arkham.Homebrew.AgesUnwound.CardDefs.Treacheries qualified as Treacheries
 import Arkham.Homebrew.AgesUnwound.Helpers (campaignI18n)
+import Arkham.Homebrew.AgesUnwound.Key
 import Arkham.Homebrew.AgesUnwound.Missions.Helpers (completeTask)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log (record)
 import Arkham.Message.Lifted.Move (moveTo)
 import Arkham.Story.Import.Lifted
 import Arkham.Token (Token (Ammo, Charge, Secret, Supply))
@@ -49,10 +51,10 @@ instance RunMessage Answers where
           moveTo attrs iid lid
           enemies <- select $ enemyAt lid
           chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) attrs 3
-      -- TODO(ages-unwound): no campaign-log key exists for "you solved the
-      -- riddle of the sphinx" -- Key.hs carries only the Myriad's version of
-      -- the record ('TheMyriadSolvedTheRiddleOfTheSphinx'), and Key.hs belongs
-      -- to the orchestrator.
+      -- The investigators' own record, distinct from the Myriad's
+      -- ('TheMyriadSolvedTheRiddleOfTheSphinx'), which Scenario V writes when
+      -- the task is left incomplete.
+      record YouSolvedTheRiddleOfTheSphinx
       completeTask Treacheries.keeperOfKnowledge
       for_ (storyOtherSide attrs) (addToVictory iid)
       pure s

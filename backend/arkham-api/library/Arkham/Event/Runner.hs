@@ -25,7 +25,6 @@ import Arkham.Asset.Types (Field (AssetUses))
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.ChaosToken
-import Data.Aeson.KeyMap qualified as KeyMap
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types (Field (..))
@@ -43,6 +42,7 @@ import Arkham.Projection
 import Arkham.Window (mkAfter)
 import Arkham.Window qualified as Window
 import Control.Lens (non)
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.IntMap.Strict qualified as IntMap
 
 instance RunMessage EventAttrs where
@@ -152,7 +152,12 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
     push $ toDiscard GameSource a
     pure a
   ReadyExhausted -> pure $ a & exhaustedL .~ False
-  Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False
+  -- An event in play exhausts like an asset, so "your exhausted cards cannot
+  -- ready" has to stop it here too. Only the wider modifier: a card that says
+  -- /assets/ does not reach an event.
+  Ready (isTarget a -> True) -> do
+    modifiers <- getModifiers a.controller
+    pure $ if ControlledCardsCannotReady `elem` modifiers then a else a & exhaustedL .~ False
   Exhaust ea | a `isTarget` ea.target -> do
     unless eventExhausted $ pushAll ea.thenMsgs
     pure $ a & exhaustedL .~ True

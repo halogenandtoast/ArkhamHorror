@@ -2,9 +2,7 @@ module Arkham.Homebrew.AgesUnwound.Enemies.TheMyriadGentleman_233 (theMyriadGent
 
 import Arkham.Ability
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
-import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
-import Arkham.Helpers.Query (getLead)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Enemies qualified as Cards
 import Arkham.Homebrew.AgesUnwound.Traits (pattern Exterior)
 import Arkham.Matcher
@@ -34,9 +32,14 @@ instance HasModifiersFor TheMyriadGentleman_233 where
 {- | "Forced - After The Myriad Gentleman attacks you: Move once towards the
 nearest [[Exterior]] location."
 
-With the ban above in force this only ever steps onto another @[[Ritual]]@
-location on the way out; @getPaths@ drops every step he may not enter, so a
-Gentleman with no legal step simply stays put.
+/You/ move, not the Gentleman. The imperative names no subject, so it addresses
+the same "you" the window does -- the investigator he just attacked -- and he
+drives them out of the house a step at a time. Read the other way the ability
+could never do anything at all: the ban above keeps him off every
+non-@[[Ritual]]@ location, and the way out is Exterior.
+
+"The nearest" is therefore measured from the investigator, and a tie is theirs
+to break.
 -}
 instance HasAbilities TheMyriadGentleman_233 where
   getAbilities (TheMyriadGentleman_233 a) =
@@ -44,10 +47,8 @@ instance HasAbilities TheMyriadGentleman_233 where
 
 instance RunMessage TheMyriadGentleman_233 where
   runMessage msg e@(TheMyriadGentleman_233 attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      withLocationOf attrs \lid -> do
-        nearest <- select $ NearestLocationToLocation lid (LocationWithTrait Exterior)
-        lead <- getLead
-        chooseOrRunOneM lead $ targets nearest (moveTowards (attrs.ability 1) attrs)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      nearest <- select $ NearestLocationTo iid (LocationWithTrait Exterior)
+      chooseOrRunOneM iid $ targets nearest (moveTowards (attrs.ability 1) iid)
       pure e
     _ -> TheMyriadGentleman_233 <$> liftRunMessage msg attrs

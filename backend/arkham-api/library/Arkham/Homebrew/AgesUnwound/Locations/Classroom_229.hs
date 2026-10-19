@@ -7,6 +7,7 @@ import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.AgesUnwound.Helpers (campaignI18n)
 import Arkham.I18n
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
 newtype Classroom_229 = Classroom_229 LocationAttrs
@@ -19,10 +20,16 @@ classroom_229 = setLabel "classroom3" $ location Classroom_229 Cards.classroom_2
 
 {- | "Haunted - For each standard action you have remaining, either lose 1 action
 or take 1 direct damage."
+
+Restricted to an investigator who has one: with none remaining the "for each"
+counts to zero, so triggering would only put an empty resolution on screen.
 -}
 instance HasAbilities Classroom_229 where
   getAbilities (Classroom_229 a) =
-    extendRevealed1 a $ campaignI18n $ hauntedI "classroomEnergisedAndUnstable.haunted" a 1
+    extendRevealed1 a
+      $ campaignI18n
+      $ withI18nTooltip "classroomEnergisedAndUnstable.haunted"
+      $ restricted a 1 (youExist $ InvestigatorWithStandardActionsRemaining (atLeast 1)) Haunted
 
 instance RunMessage Classroom_229 where
   runMessage msg l@(Classroom_229 attrs) = runQueueT $ case msg of

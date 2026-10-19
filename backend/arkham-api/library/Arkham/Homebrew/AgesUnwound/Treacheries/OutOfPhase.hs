@@ -26,23 +26,34 @@ encounter cards in the threat area of any investigator at that location"
 reading that you may no longer fight or evade an enemy sitting in someone
 else's threat area.
 
-TODO(ages-unwound): the ability half only covers enemies. 'AbilityMatcher' has
-no treachery constructor, so an ability on a /treachery/ in another
-investigator's threat area is still offered.
+A threat area holds treacheries as well as enemies, so the ban covers both:
+'AbilityOnTreachery' is the counterpart of 'AbilityOnEnemy'. Out of Phase
+exempts itself -- it sits in a threat area too, and its own __Forced__ discard
+has to keep working.
 -}
 instance HasModifiersFor OutOfPhase where
   getModifiersFor (OutOfPhase a) = case a.placement of
     InThreatArea iid -> do
       let theirs = EnemyIsEngagedWith (not_ $ InvestigatorWithId iid)
       let ours = enemyInThreatAreaOf iid
+      let theirTreacheries = TreacheryInThreatAreaOf (not_ $ InvestigatorWithId iid) <> not_ (be a)
+      let ourTreacheries = TreacheryInThreatAreaOf (InvestigatorWithId iid) <> not_ (be a)
       modified_
         a
         iid
-        [CannotFight theirs, CannotEvade theirs, CannotTriggerAbilityMatching (AbilityOnEnemy theirs)]
+        [ CannotFight theirs
+        , CannotEvade theirs
+        , CannotTriggerAbilityMatching (AbilityOnEnemy theirs)
+        , CannotTriggerAbilityMatching (AbilityOnTreachery theirTreacheries)
+        ]
       modifySelect
         a
         (not_ $ InvestigatorWithId iid)
-        [CannotFight ours, CannotEvade ours, CannotTriggerAbilityMatching (AbilityOnEnemy ours)]
+        [ CannotFight ours
+        , CannotEvade ours
+        , CannotTriggerAbilityMatching (AbilityOnEnemy ours)
+        , CannotTriggerAbilityMatching (AbilityOnTreachery ourTreacheries)
+        ]
     _ -> pure mempty
 
 -- | "Forced - At the end of the round: Discard Out of Phase."

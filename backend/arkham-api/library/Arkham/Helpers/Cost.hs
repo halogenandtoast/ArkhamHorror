@@ -445,6 +445,9 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         selectAny $ Matcher.replaceYouMatcher iid matcher <> Matcher.AssetReady
       DiscardAssetCost matcher ->
         selectAny $ Matcher.replaceYouMatcher iid matcher <> Matcher.DiscardableAsset
+      -- No 'DiscardableAsset' counterpart: exiling is not leaving play by
+      -- discard, so what the matcher names is the whole of what can be paid.
+      ExileAssetCost matcher -> selectAny $ Matcher.replaceYouMatcher iid matcher
       UseCost assetMatcher uType n -> do
         assets <- select (Matcher.replaceYouMatcher iid assetMatcher)
         uses <- getSpendableUseCount assets uType

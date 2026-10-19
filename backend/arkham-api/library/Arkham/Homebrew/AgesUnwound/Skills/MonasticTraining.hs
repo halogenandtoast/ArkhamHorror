@@ -16,11 +16,10 @@ newtype MonasticTraining = MonasticTraining SkillAttrs
 {- | /Gratitude/ adds this to a hand mid-scenario; Scenario V's resolution lets a
 player add it to a deck.
 
-TODO(ages-unwound): the discard-pile ability needs @cdOutOfPlayEffects =
-[InDiscardEffect]@ on the def, or @preloadDiscardEntities@ never builds the
-entity and 'getAbilities' is never consulted while the card is in the discard
-pile. @CardDefs/Skills.hs@ is the orchestrator's, so the ability below is
-correct but dormant until that lands.
+The discard-pile ability below is live only because the def carries
+@cdOutOfPlayEffects = [InDiscardEffect]@: without it @preloadDiscardEntities@
+never builds the entity and 'getAbilities' is never consulted for a card in the
+discard pile.
 -}
 monasticTraining :: SkillCard MonasticTraining
 monasticTraining = skill MonasticTraining Cards.monasticTraining

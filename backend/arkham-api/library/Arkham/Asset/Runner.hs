@@ -309,6 +309,7 @@ instance RunMessage AssetAttrs where
         for_ a.controller \iid -> do
           modifiers <- getModifiers iid
           guard $ ControlledAssetsCannotReady `notElem` modifiers
+          guard $ ControlledCardsCannotReady `notElem` modifiers
         lift $ push $ Ready (toTarget a)
       pure a
     RemoveAllDoom _ target | isTarget a target -> pure $ a & tokensL %~ removeAllTokens Doom
@@ -342,15 +343,28 @@ instance RunMessage AssetAttrs where
               push $ PlaceTokens source (toTarget iid) tType n
               pure a
             _ -> do
-              when
-                ( source
-                    == GameSource
-                    && ( (tType == #damage && isJust assetHealth)
-                           || (tType == #horror && isJust assetSanity)
-                       )
-                )
-                $ push
-                $ CheckDefeated source (toTarget a)
+              {- Damage or horror placed on an asset that has the matching stat is
+              damage however it got there, so it has to be answered for. This ran
+              only for GameSource -- the debug tool, which is what it was added
+              for -- so a card that places the token itself (/Unstable Warding/,
+              and the act that seeds it with one) sat at no remaining sanity,
+              never defeated, and so never reached the flip hanging off its
+              defeat.
+
+              The damage-assignment path queues its own 'CheckDefeated' ahead of
+              the 'PlaceTokens' it pushes, so defer to that one: resolving the
+              defeat twice would raise the 'AssetDefeated' window twice, and a
+              card listening there would fire twice. Same guard 'ReassignHorror'
+              uses below. -}
+              let
+                damaging =
+                  (tType == #damage && isJust assetHealth)
+                    || (tType == #horror && isJust assetSanity)
+              when damaging do
+                alreadyChecked <- assertQueue \case
+                  CheckDefeated _ target' -> target' == toTarget a
+                  _ -> False
+                unless alreadyChecked $ push $ CheckDefeated source (toTarget a)
               pure $ a & tokensL %~ addTokens tType n
     InvestigatorDiscardAllClues s iid | a `ownedBy` iid -> do
       runMessage (RemoveAllClues s (toTarget a)) a
@@ -816,7 +830,7 @@ instance RunMessage AssetAttrs where
     Ready target | a `isTarget` target -> case a.controller of
       Just iid -> do
         modifiers <- getModifiers (InvestigatorTarget iid)
-        if ControlledAssetsCannotReady `elem` modifiers
+        if any (`elem` modifiers) [ControlledAssetsCannotReady, ControlledCardsCannotReady]
           then pure a
           else pure $ a & exhaustedL .~ False
       Nothing -> pure $ a & exhaustedL .~ False

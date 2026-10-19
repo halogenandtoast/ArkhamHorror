@@ -1606,15 +1606,22 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   FoundAndDrewEncounterCard iid cardSource card -> do
     let
       cardId = toCardId card
+      withoutCard = filter ((/= cardId) . toCardId)
       discard = case cardSource of
-        FromDiscard -> filter ((/= cardId) . toCardId) scenarioDiscard
+        FromDiscard -> withoutCard scenarioDiscard
         _ -> scenarioDiscard
       encounterDeck = case cardSource of
-        FromEncounterDeck ->
-          filter ((/= cardId) . toCardId) (unDeck scenarioEncounterDeck)
+        FromEncounterDeck -> withoutCard (unDeck scenarioEncounterDeck)
         _ -> unDeck scenarioEncounterDeck
       encounterDecksF = case cardSource of
-        FromEncounterDeck -> encounterDecksL . each . _1 %~ withDeck (filter ((/= cardId) . toCardId))
+        FromEncounterDeck -> encounterDecksL . each . _1 %~ withDeck withoutCard
+        {- A keyed deck (the spectral deck in /The Wages of Sin/) is the deck
+        the card actually came out of, so it is the one that loses it and, just
+        below, the one that gets shuffled. Both used to fall on the regular
+        deck, which left the drawn card sitting in the keyed deck -- now plain
+        to see, since the search shows that deck in full. -}
+        FromKeyedEncounterDeck key ->
+          deckLens (specificEncounterDeckHandler key) %~ withDeck withoutCard
         _ -> id
       signifier = case cardSource of
         FromEncounterDeck -> Just Deck.EncounterDeck
@@ -1622,7 +1629,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         FromDiscard -> Just Deck.EncounterDiscard
         _ -> Nothing
     shuffled <- shuffleM encounterDeck
-    push $ InvestigatorDrewEncounterCardFrom iid card signifier
+    pushAll
+      $ [ShuffleDeck (Deck.EncounterDeckByKey key) | FromKeyedEncounterDeck key <- [cardSource]]
+      <> [InvestigatorDrewEncounterCardFrom iid card signifier]
     pure $ a & (encounterDeckL .~ Deck shuffled) & (discardL .~ discard) & encounterDecksF
   FoundEncounterCardFrom iid target cardSource card -> do
     let
@@ -1731,9 +1740,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         RegularEncounterDeck -> FromEncounterDeck
         other -> FromKeyedEncounterDeck other
       handler = specificEncounterDeckHandler deckKey'
+      deckCards = unDeck $ a ^. deckLens handler
       matchingDiscards = filter (`cardMatch` matcher) (a ^. discardLens handler)
-      matchingDeckCards =
-        filter (`cardMatch` matcher) (unDeck $ a ^. deckLens handler)
+      matchingDeckCards = filter (`cardMatch` matcher) deckCards
 
     let
       matches =
@@ -1749,21 +1758,37 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
              | card <- matchingDeckCards
              ]
 
+    {- The whole deck, not only what matched: looking for a card means looking
+    at every card, so the search is also how a player learns what is left to
+    come. Only the matches are offered as choices and the rest draw
+    unselectable, the same reveal 'FindEncounterCard' already does. The discard
+    stays filtered to the matches, since a discard pile is face up and showing
+    all of it would reveal nothing. -}
+    let
+      deckEntry = [(Zone.FromDeck, map EncounterCard deckCards) | notNull deckCards]
+      discardEntry =
+        [ (Zone.FromDiscard, map EncounterCard matchingDiscards)
+        | includeDiscard == IncludeDiscard
+        , notNull matchingDiscards
+        ]
+    push $ FoundCards $ Map.fromList (deckEntry <> discardEntry)
+
     if null matches
-      then chooseOne iid [Label "$label.noMatchesFound" []]
-      else do
-        let
-          deckEntry =
-            [ (Zone.FromDeck, map EncounterCard matchingDeckCards)
-            | not (null matchingDeckCards)
-            ]
-          discardEntry =
-            [ (Zone.FromDiscard, map EncounterCard matchingDiscards)
-            | includeDiscard == IncludeDiscard
-            , not (null matchingDiscards)
-            ]
-        push $ FoundCards $ Map.fromList (deckEntry <> discardEntry)
-        chooseOne iid matches
+      then
+        {- The deck was read whether or not anything matched, so it is shuffled
+        either way; the branch that draws gets its shuffle from
+        'FoundAndDrewEncounterCard'. -}
+        chooseOne
+          iid
+          [ Label
+              "$label.noMatchesFound"
+              [ ClearFound Zone.FromDeck
+              , ShuffleDeck $ case deckKey' of
+                  RegularEncounterDeck -> Deck.EncounterDeck
+                  other -> Deck.EncounterDeckByKey other
+              ]
+          ]
+      else chooseOne iid matches
     pure a
   DrawEncounterCards target n -> do
     let (cards, encounterDeck) = draw n scenarioEncounterDeck

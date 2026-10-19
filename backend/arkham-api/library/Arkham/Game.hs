@@ -2000,6 +2000,9 @@ abilityMatches a@Ability {..} = \case
   AbilityOnEnemy enemyMatcher -> case abilitySource.enemy of
     Just eid -> elem eid <$> select enemyMatcher
     _ -> pure False
+  AbilityOnTreachery treacheryMatcher -> case abilitySource.treachery of
+    Just tid -> elem tid <$> select treacheryMatcher
+    _ -> pure False
   AbilityOnInvestigator investigatorMatcher -> case abilitySource.investigator of
     Just iid' -> elem iid' <$> select investigatorMatcher
     _ -> pure False
@@ -2105,6 +2108,9 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
       _ -> pure False
     AbilityOnEnemy enemyMatcher -> flip filterM as \a -> case a.source.enemy of
       Just eid -> elem eid <$> select enemyMatcher
+      _ -> pure False
+    AbilityOnTreachery treacheryMatcher -> flip filterM as \a -> case a.source.treachery of
+      Just tid -> elem tid <$> select treacheryMatcher
       _ -> pure False
     AbilityOnInvestigator investigatorMatcher -> flip filterM as \a -> case a.source.investigator of
       Just iid' -> elem iid' <$> select investigatorMatcher

@@ -19,7 +19,7 @@ import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
 import Arkham.Helpers.FlavorText (flavor, h, li, p, resolutionOnly, setup, ul, withTitle)
 import Arkham.Helpers.Query (allInvestigators, getSetAsideCardsMatching)
-import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.AgesUnwound.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.AgesUnwound.CardDefs.Enemies qualified as Enemies
@@ -233,17 +233,23 @@ instance RunMessage Unstuck where
       setMeta emptyUnstuckMeta
 
     {- [cultist]: "Reveal another token. If you fail, resolve the effects of the
-    failed test an additional time."
-
-    TODO(ages-unwound): only the reveal-another half is implemented. There is no
-    engine primitive for "resolve the effects of the failed test an additional
-    time" -- the failure effects of a test are whatever the test's own source
-    queued, and nothing records them as a re-runnable unit. Doing it properly
-    needs a general "repeat this test's failure resolution" seam (the closest
-    existing thing, 'RerunSkillTest', re-runs the whole test rather than its
-    effects), which is a core change and is reported rather than invented here. -}
+    failed test an additional time." -}
     ResolveChaosToken _ Cultist iid -> do
       drawAnotherChaosToken iid
+      pure s
+    {- The second half. A test's failure effects are its initiator's own
+    'FailedThisSkillTest' handler, not a queued unit that could be replayed, so
+    "an additional time" is a second /telling/: 'NotifyResultAgain' has the
+    runner say the result once more, to the initiator this time. It reads the
+    settled result itself, which is why the ask cannot carry it.
+
+    No loop: the re-told message targets the initiator, not this
+    'ChaosTokenTarget', so it does not come back through here. A second Cultist
+    revealed by the draw above is its own subscriber and repeats again, which is
+    what the card says. -}
+    FailedSkillTest _ _ _ (ChaosTokenTarget token) _ _ | token.face == Cultist -> do
+      mtarget <- getSkillTestTarget
+      for_ mtarget $ push . Msg.NotifyResultAgain . SkillTestInitiatorTarget
       pure s
     {- [tablet]: "If you fail, draw the topmost treachery in the encounter
     discard pile." -}

@@ -727,6 +727,10 @@ payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
       assets <- select (replaceYouMatcher iid matcher <> DiscardableAsset)
       push $ chooseOneSourced $ targetLabels assets $ only . pay . discardCost
       pure c
+    ExileAssetCost matcher -> do
+      assets <- select (replaceYouMatcher iid matcher)
+      push $ chooseOneSourced $ targetLabels assets $ only . pay . exileCost
+      pure c
     DiscardRandomCardCost -> do
       hand <- field InvestigatorHand iid
       candidates <- filterM (`matches` CardWithoutModifier CannotLeaveYourHand) hand

@@ -560,26 +560,35 @@ handlePlayerWindow a@InvestigatorAttrs {..} iid additionalActions isAdditional i
           then pure playableCards
           else playableCards & filterM (cardIsFast' promoteCanBecomeFast)
 
+      let
+        beforeEndTurn =
+          additionalActions
+            <> [ ResourceLabel iid [TakeResources iid 1 (ResourceSource iid) usesAction]
+               | canAffordTakeResources && canTakeResource
+               ]
+            <> [ ComponentLabel (InvestigatorDeckComponent iid) [drawing]
+               | canAffordDrawCards
+               , canDraw
+               , none (`elem` modifiers) [CannotDrawCards, CannotManipulateDeck]
+               ]
+            <> [ targetLabel (toCardId c) [InitiatePlayCardWithWindows iid c Nothing NoPayment windows usesAction]
+               | c <- playableCards'
+               ]
+        afterEndTurn = map ((\f -> f windows [] []) . AbilityLabel iid) actions' <> effectActions
+        {- 'CannotEndTurn' takes the button away only while there is something
+        else to do -- /Ritual Circle: A Harnessed Future/ holds you there while
+        you still have actions. With nothing else on offer the window would
+        carry no option at all and the turn could not go anywhere, so the
+        button comes back. -}
+        canEndTurn = CannotEndTurn `notElem` modifiers || null (beforeEndTurn <> afterEndTurn)
       push
         $ AskPlayer
         $ Ask player
         $ PlayerWindowChooseOne
         $ nub
-        $ additionalActions
-        <> [ ResourceLabel iid [TakeResources iid 1 (ResourceSource iid) usesAction]
-           | canAffordTakeResources && canTakeResource
-           ]
-        <> [ ComponentLabel (InvestigatorDeckComponent iid) [drawing]
-           | canAffordDrawCards
-           , canDraw
-           , none (`elem` modifiers) [CannotDrawCards, CannotManipulateDeck]
-           ]
-        <> [ targetLabel (toCardId c) [InitiatePlayCardWithWindows iid c Nothing NoPayment windows usesAction]
-           | c <- playableCards'
-           ]
-        <> [EndTurnButton iid [ChooseEndTurn iid]]
-        <> map ((\f -> f windows [] []) . AbilityLabel iid) actions'
-        <> effectActions
+        $ beforeEndTurn
+        <> [EndTurnButton iid [ChooseEndTurn iid] | canEndTurn]
+        <> afterEndTurn
   pure a
 
 handlePlayerWindowV2 a@InvestigatorAttrs {..} iid additionalActions isAdditional = do

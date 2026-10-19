@@ -1,7 +1,7 @@
 module Arkham.Homebrew.AgesUnwound.Locations.ArkhamMassachusetts_076 (arkhamMassachusetts_076) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (ControlledAssetsCannotReady))
+import Arkham.Helpers.Modifiers (ModifierType (ControlledCardsCannotReady))
 import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.AgesUnwound.Scenarios.Unstuck.Helpers
 import Arkham.Location.Import.Lifted
@@ -34,9 +34,8 @@ instance RunMessage ArkhamMassachusetts_076 where
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       {- 'nextPhaseModifier #upkeep' is exactly "during the next upkeep phase",
       and ST 4.3 (ready each exhausted card) is the only readying this reaches.
-      TODO(ages-unwound): 'ControlledAssetsCannotReady' covers assets, which is
-      every card an investigator can have exhausted in this scenario; an
-      exhausted *event* in play would still ready. -}
-      nextPhaseModifier #upkeep (attrs.ability 1) iid ControlledAssetsCannotReady
+      The card says /cards/, not /assets/, so it is the wider
+      'ControlledCardsCannotReady' -- which the event runner honours as well. -}
+      nextPhaseModifier #upkeep (attrs.ability 1) iid ControlledCardsCannotReady
       pure l
     _ -> ArkhamMassachusetts_076 <$> liftRunMessage msg attrs

@@ -8,13 +8,15 @@ import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.AgesUnwound.Helpers (campaignI18n)
 import Arkham.I18n
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
 
 newtype RitualCircle_173 = RitualCircle_173 LocationAttrs
   deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
--- | /The Present, Fractured/. Scenario VI's own Ritual Circle, set aside until
--- act 3a puts every circle into play.
+{- | /The Present, Fractured/. Scenario VI's own Ritual Circle, set aside until
+act 3a puts every circle into play.
+-}
 ritualCircle_173 :: LocationCard RitualCircle_173
 ritualCircle_173 = symbolLabel $ location RitualCircle_173 Cards.ritualCircle_173 4 (PerPlayer 2)
 
@@ -42,19 +44,17 @@ instance RunMessage RitualCircle_173 where
       -- The haunted resolves at the location the failed test happened at, which
       -- is this one, so "your location" and "Ritual Circle" are the same place.
       placeCluesOnLocation iid (attrs.ability 1) 1
-      {- TODO(ages-unwound): "which can only be used to investigate /Ritual
-      Circle/" is narrowed to "to investigate".
-      'Arkham.Action.Additional.AdditionalActionType' can restrict an extra
-      action to an action type but not to a location, and an Investigate is not
-      an ability, so 'AbilityMatchingAdditionalAction' cannot express it either.
-      The haunted fires on this investigator's own turn, so the action is granted
-      for the turn; spending it elsewhere costs a move they would have to pay for
-      out of their standard actions, which this one is not. -}
+      {- "which can only be used to investigate /Ritual Circle/" -- both halves,
+      not just the action type. A location's basic Investigate is an ability it
+      publishes from its own attrs (@Location.Runner@'s 'HasAbilities'), so the
+      pair is an 'AbilityMatcher' and 'AbilityMatchingAdditionalAction' carries
+      it. 'ActionRestrictedAdditionalAction' could only have said "to
+      investigate", leaving the action spendable at any location. -}
       turnModifier iid (attrs.ability 1) iid
         $ GiveAdditionalAction
         $ AdditionalAction
           (ikey' "ritualCircleThePresentFractured.additionalAction")
           (attrs.ability 1)
-          (ActionRestrictedAdditionalAction #investigate)
+          (AbilityMatchingAdditionalAction $ AbilityOnLocation (be attrs) <> AbilityIsAction #investigate)
       pure l
     _ -> RitualCircle_173 <$> liftRunMessage msg attrs

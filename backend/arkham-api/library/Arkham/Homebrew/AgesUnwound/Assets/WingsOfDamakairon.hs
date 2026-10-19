@@ -14,12 +14,7 @@ newtype WingsOfDamakairon = WingsOfDamakairon AssetAttrs
   deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-{- | Health 2, which the def cannot carry.
-
-TODO(ages-unwound): the card is __Fast__, which lives on the def as
-@cdFastWindow@. @CardDefs/Assets.hs@ is the orchestrator's, so it still plays as
-an action.
--}
+-- | Health 2, which the def cannot carry; the printed __Fast__ rides on the def.
 wingsOfDamakairon :: AssetCard WingsOfDamakairon
 wingsOfDamakairon = assetWith WingsOfDamakairon Cards.wingsOfDamakairon (healthL ?~ 2)
 

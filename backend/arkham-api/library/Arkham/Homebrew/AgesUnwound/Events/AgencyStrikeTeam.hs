@@ -9,10 +9,8 @@ newtype AgencyStrikeTeam = AgencyStrikeTeam EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-{- | TODO(ages-unwound): "This action does not provoke attacks of opportunity"
-lives on the def as @cdAttackOfOpportunityModifiers =
-[DoesNotProvokeAttacksOfOpportunity]@, and @CardDefs/Events.hs@ is the
-orchestrator's. Playing it currently provokes.
+{- | "This action does not provoke attacks of opportunity" rides on the def as
+@cdAttackOfOpportunityModifiers@, which is where the play action reads it.
 -}
 agencyStrikeTeam :: EventCard AgencyStrikeTeam
 agencyStrikeTeam = event AgencyStrikeTeam Cards.agencyStrikeTeam

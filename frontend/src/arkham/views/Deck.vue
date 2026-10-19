@@ -22,7 +22,7 @@ import * as DeckHelpers from '@/arkham/types/Deck';
 import Prompt from '@/components/Prompt.vue'
 import CardListView from '@/arkham/components/CardListView.vue'
 import CardImageView from '@/arkham/components/CardImageView.vue'
-import { useToast } from "vue-toastification";
+import { useToast } from '@/toasts'
 import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 import { displayTabooId } from '@/arkham/taboo'
 import { useI18n } from 'vue-i18n'

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-// Rendered inside vue-toastification's own app instance, which does not share
-// the main app's global components — import FontAwesomeIcon locally and pass
-// pre-translated strings as props (no i18n context in here).
+// Rendered by Toasts.vue inside the main app, so i18n and the app's global
+// components are both available here. It still takes pre-translated strings as
+// props, and imports FontAwesomeIcon explicitly, to stay a dumb presenter.
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 defineProps<{ title: string; name: string; text: string }>()
@@ -19,16 +19,15 @@ defineProps<{ title: string; name: string; text: string }>()
 </template>
 
 <style>
-/* Global: restyle the vue-toastification wrapper (toastClassName option). */
-.Vue-Toastification__toast.achievement-toast {
+/* Global: reskins the toast wrapper Toasts.vue draws around this component,
+   selected by the `className` passed to toast.custom(). Setting the accent is
+   enough for the progress bar -- a custom toast draws no variant strip. */
+.toasts .toast.achievement-toast {
+  --toast-accent: #b3922f;
   background: linear-gradient(135deg, #2c2413 0%, #1d1a10 100%);
   border: 1px solid #b3922f;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55), 0 0 12px rgba(179, 146, 47, 0.35);
   color: #f0e6c8;
-}
-
-.Vue-Toastification__toast.achievement-toast .Vue-Toastification__progress-bar {
-  background: #b3922f;
 }
 </style>
 
@@ -37,6 +36,9 @@ defineProps<{ title: string; name: string; text: string }>()
   display: flex;
   align-items: flex-start;
   gap: 12px;
+  /* A flex item of the toast wrapper: both are needed for the text to wrap. */
+  flex: 1;
+  min-width: 0;
 }
 
 .trophy {
@@ -51,6 +53,7 @@ defineProps<{ title: string; name: string; text: string }>()
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .unlock-title {

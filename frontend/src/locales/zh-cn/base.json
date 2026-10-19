@@ -535,5 +535,8 @@
       "modifiers": "修正",
       "close": "关闭"
     }
+  },
+  "toasts": {
+    "dismiss": "关闭"
   }
 }

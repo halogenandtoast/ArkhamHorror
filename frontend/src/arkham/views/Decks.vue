@@ -7,7 +7,7 @@ import NewDeck from '@/arkham/components/NewDeck.vue';
 import Deck from '@/arkham/components/DeckRow.vue';
 import DeckToolbar from '@/arkham/components/DeckToolbar.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
-import { useToast } from "vue-toastification";
+import { useToast } from '@/toasts'
 import { useI18n } from 'vue-i18n'
 import type { InvestigatorClass } from '@/arkham/helpers'
 import { storeToRefs } from 'pinia'

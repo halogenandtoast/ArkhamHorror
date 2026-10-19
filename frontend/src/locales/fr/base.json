@@ -133,5 +133,8 @@
   },
   "upgradeDecks": "Amélioration des decks",
   "addSideScenario": "Jouer aventure annexe",
-  "lead": "Investigateur principal"
+  "lead": "Investigateur principal",
+  "toasts": {
+    "dismiss": "Fermer"
+  }
 }

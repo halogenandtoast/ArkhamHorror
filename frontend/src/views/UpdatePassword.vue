@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { reactive } from 'vue'
-import { useToast } from "vue-toastification";
+import { useToast } from '@/toasts'
 import { useI18n } from 'vue-i18n';
 import api from '@/api';
 

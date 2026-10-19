@@ -1,4 +1,7 @@
 {
   "language": "Lingua",
-  "settings": "Impostazioni"
+  "settings": "Impostazioni",
+  "toasts": {
+    "dismiss": "Chiudi"
+  }
 }

@@ -133,5 +133,8 @@
   },
   "upgradeDecks": "Mejorar Mazos",
   "addSideScenario": "Añadir Escenario Secundario",
-  "lead": "Jefe"
+  "lead": "Jefe",
+  "toasts": {
+    "dismiss": "Cerrar"
+  }
 }

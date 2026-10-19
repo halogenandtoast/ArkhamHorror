@@ -128,5 +128,8 @@
     "deckCreation": "덱 생성"
   },
   "upgradeDecks": "덱 향상",
-  "addSideScenario": "외전 시나리오 추가"
+  "addSideScenario": "외전 시나리오 추가",
+  "toasts": {
+    "dismiss": "닫기"
+  }
 }

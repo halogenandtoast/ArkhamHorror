@@ -70,6 +70,9 @@
   --z-card-hover-overlay-over-popover: var(--z-index-30000);
   --z-modal-overlay: var(--z-index-30000);
   --z-tooltip-over-menus: var(--z-index-100000);
+  /* Above the modal overlay: a toast reports something that just happened and
+     must stay readable over whatever is open. */
+  --z-toasts: var(--z-index-100000);
 }
 
 /* Keep FloatingVue tooltips above the card hover preview overlay. */

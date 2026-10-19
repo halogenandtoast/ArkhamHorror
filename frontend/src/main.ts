@@ -2,7 +2,6 @@ import './styles/index.css'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import FloatingVue from 'floating-vue'
-import Toast from "vue-toastification";
 import { createVfm } from 'vue-final-modal'
 import App from './App.vue'
 import router from './router'
@@ -72,7 +71,6 @@ async function bootstrap() {
         },
       },
     }).
-    use(Toast, {}).
     use(vfm).
     use(i18n).
     component("font-awesome-icon", FontAwesomeIcon)

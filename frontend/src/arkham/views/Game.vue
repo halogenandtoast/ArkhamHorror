@@ -174,6 +174,10 @@ type ServerResult =
    * the wait is over and undo works again. */
   | { tag: 'GameUnarchived' }
   | { tag: 'GameUnarchiveFailed'; contents: string }
+  /* How many people are watching without a seat. Pushed by the server on every
+   * connect and disconnect -- including our own, so the first one arrives with
+   * the socket rather than being asked for. */
+  | { tag: 'GameWatcherCount'; contents: number }
   /* The room is gone -- the game was deleted, or an admin dropped it. The server
    * closes the socket right behind this, and `autoReconnect` would otherwise
    * recreate the very room that was just removed, so this leaves rather than
@@ -461,6 +465,9 @@ const ready = ref(false)
 const resultQueue = ref<any>([])
 const showLog = ref(false)
 const showExportLog = ref(false)
+/* Spectators on this game right now, as the server last said. Zero until the
+ * first push, which our own join brings. */
+const watcherCount = ref(0)
 const showShortcuts = ref(false)
 const isMobileViewport = () =>
   typeof window !== 'undefined' && window.matchMedia('(max-width: 800px)').matches
@@ -1478,6 +1485,14 @@ function sendAnswer(payload: string) {
 }
 
 const handleResult = (result: ServerResult) => {
+  /* Ahead of the reset below: every other tag is the table moving, and clearing
+   * `processing` is how the board stops waiting. Somebody opening or closing a
+   * spectator tab is not that, and must not take the spinner off an answer that
+   * is still in flight. */
+  if (result.tag === 'GameWatcherCount') {
+    watcherCount.value = result.contents
+    return
+  }
   processing.value = false
   switch (result.tag) {
     case 'RoomClosed':
@@ -3048,6 +3063,19 @@ onUnmounted(() => {
         </div>
       </template>
       <div v-if="isActualScenarioView" class="right">
+        <!-- Not a button: there is nothing behind the number to open, and the
+             count is read, not used. Hidden at zero so a table nobody is
+             watching carries no extra furniture. -->
+        <div
+          v-if="watcherCount > 0"
+          class="watchers"
+          role="status"
+          :title="$t('gameBar.watching', { count: watcherCount }, { plural: watcherCount })"
+          :aria-label="$t('gameBar.watching', { count: watcherCount }, { plural: watcherCount })"
+        >
+          <EyeIcon aria-hidden="true" />
+          <span class="watcher-count">{{ watcherCount }}</span>
+        </div>
         <!-- The log's own controls, with the log: exporting is only on offer
              while the panel it would export is open. A seat, like the scrollback
              endpoint it reads beside. -->
@@ -3523,6 +3551,32 @@ onUnmounted(() => {
    menus by a rule rather than by a chevron it would be wrong to draw. */
 .game-bar .screen-switch {
   border-right: 1px solid rgba(0, 0, 0, 0.35);
+}
+
+/* Reads on the bar the way the badge on the home page's Watch button reads: the
+   same pill, so the number means the same thing in both places. */
+.game-bar .watchers {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  color: rgba(255, 255, 255, 0.75);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.watcher-count {
+  background: var(--background-dark);
+  border-radius: 999px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  min-width: 1.6em;
+  padding: 3px 6px;
+  text-align: center;
 }
 
 .undo-jump-header {

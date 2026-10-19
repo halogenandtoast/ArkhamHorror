@@ -40,6 +40,7 @@ import Database.Redis (
   RedisChannel,
   addChannels,
   hdel,
+  hget,
   hgetall,
   hincrby,
   hset,
@@ -250,6 +251,14 @@ data ApiResponse
     GameUnarchived
   | -- | The restore could not be completed; the message says what happened.
     GameUnarchiveFailed Text
+  | {- | How many people are watching this game without a seat in it.
+
+    Pushed on every connect and disconnect rather than polled: the room already
+    knows, and a table of four asking "is anyone watching?" on a timer is four
+    requests a tick to usually hear "no". Sent to the whole room, watchers
+    included, so everyone sees the same number.
+    -}
+    GameWatcherCount Int
   | {- | The room this socket is attached to has been deleted -- the game was
     deleted, or an admin dropped the room. The socket is torn down right behind
     this message, so it is the last thing the client receives; reconnecting
@@ -468,6 +477,23 @@ roomsHashKey = "arkham:rooms"
 roomsSeenHashKey :: ByteString
 roomsSeenHashKey = "arkham:rooms:seen"
 
+{- | Cross-server spectator count: gameId -> sockets watching without a seat.
+
+A third hash beside 'roomsHashKey' rather than a breakdown inside it, because
+the two are counted on different events -- every socket moves the room count,
+only a spectator's moves this one -- and because an older pod writing only the
+room count then stays correct about what it does write. Shares
+'roomsSeenHashKey' for freshness, so a crashed pod's watchers are swept by the
+same pass that sweeps its rooms.
+
+Best-effort, exactly as the room count beside it is: a pod that dies with
+watchers attached leaves its share of the tally behind until that sweep, which
+cannot run while another pod is keeping the game fresh. The number on the bar
+is "who is watching", not a figure anything is decided on.
+-}
+watchersHashKey :: ByteString
+watchersHashKey = "arkham:watchers"
+
 -- A room without an updated seen timestamp for this many seconds is
 -- treated as stale. Sized to be 3x the heartbeat cadence so a single
 -- missed write doesn't drop a live game.
@@ -522,6 +548,41 @@ decrRoomMember gameId = withRedis \conn -> runRedis conn do
       now <- liftIO currentEpoch
       void $ hset roomsSeenHashKey ((roomField gameId, BS8.pack (show now)) :| [])
 
+{- | Increment the cross-server spectator count for a game. No-op without a
+Redis broker, where the room's own tally is the whole truth.
+-}
+incrRoomWatcher :: (MonadIO m, HasApp m) => ArkhamGameId -> m ()
+incrRoomWatcher gameId = withRedis \conn -> runRedis conn do
+  void $ hincrby watchersHashKey (roomField gameId) 1
+
+{- | Decrement the cross-server spectator count, dropping the field once the
+last watcher has gone so an empty game carries no entry at all.
+-}
+decrRoomWatcher :: (MonadIO m, HasApp m) => ArkhamGameId -> m ()
+decrRoomWatcher gameId = withRedis \conn -> runRedis conn do
+  result <- hincrby watchersHashKey (roomField gameId) (-1)
+  case result of
+    Right n | n <= 0 -> void $ hdel watchersHashKey (roomField gameId :| [])
+    _ -> pure ()
+
+{- | The cross-server spectator count for one game.
+
+'Nothing' when there is no Redis broker, or when the read failed -- in both
+cases the caller falls back to the room's own tally, which is the right answer
+on a single pod and a low one rather than a wrong one on several.
+-}
+getRedisWatcherCount :: (MonadIO m, HasApp m) => ArkhamGameId -> m (Maybe Int)
+getRedisWatcherCount gameId = do
+  broker <- getsApp appMessageBroker
+  case broker of
+    WebSocketBroker -> pure Nothing
+    RedisBroker conn _ -> do
+      result <- liftIO $ try @SomeException $ runRedis conn $ hget watchersHashKey (roomField gameId)
+      pure case result of
+        Right (Right (Just raw)) -> readMaybe (BS8.unpack raw)
+        Right (Right Nothing) -> Just 0
+        _ -> Nothing
+
 {- | Aggregate client counts across servers from Redis, filtering out
 entries whose 'seen' timestamp is older than 'roomStaleSeconds'. Stale
 entries are also HDEL'd from both hashes so cruft from crashed pods
@@ -563,6 +624,8 @@ sweepStaleRooms conn gameIds = for_ (nonEmpty $ map roomField gameIds) \fields -
   void $ runRedis conn do
     void $ hdel roomsHashKey fields
     void $ hdel roomsSeenHashKey fields
+    -- Counted on the same connects as the room itself, so it goes stale with it.
+    void $ hdel watchersHashKey fields
 
 {- | Background heartbeat: every 'roomHeartbeatSeconds' refresh the seen
 timestamp for every game this pod still has live subscribers for. This

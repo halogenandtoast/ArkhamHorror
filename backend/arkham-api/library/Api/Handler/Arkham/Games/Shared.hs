@@ -213,6 +213,7 @@ nothing authenticates a spectator, so an inbound packet from one carries no
 seat it could be attributed to and is dropped unread.
 -}
 data StreamRole = Answering | Watching
+  deriving stock Eq
 
 -- | The socket a seated player holds: receives updates and submits answers.
 gameStream :: ArkhamGameId -> WebSocketsT Handler ()
@@ -231,9 +232,17 @@ gameStreamAs role gameId = catchingConnectionException $ withKeepAlive do
   mUserId <- case role of
     Answering -> Just <$> lift getRequestUserId
     Watching -> pure Nothing
+  let watching = role == Watching
   let cleanup room subId = do
         unsubscribeFromRoom room subId
         lift $ decrRoomMember gameId
+        when watching do
+          void $ adjustRoomWatchers room (-1)
+          lift $ decrRoomWatcher gameId
+        -- Before the release below: once the room is dropped there is nobody
+        -- left on this pod to tell, and the sockets still on it are exactly
+        -- the ones the new number is for.
+        lift $ publishWatcherCount gameId room
         -- Drops the room AND its Redis subscription together, under the rooms
         -- lock, if this was the last subscriber. The room owns the one
         -- subscription for this channel on this pod; this connection has no
@@ -244,8 +253,16 @@ gameStreamAs role gameId = catchingConnectionException $ withKeepAlive do
   -- rooms lock that looks the room up, so a concurrently departing connection
   -- can't release the room before we are counted on it.
   let acquire = do
-        joined <- lift $ joinGameRoom gameId
+        joined@(room, _, _) <- lift $ joinGameRoom gameId
         lift $ incrRoomMember gameId
+        when watching do
+          void $ adjustRoomWatchers room 1
+          lift $ incrRoomWatcher gameId
+        -- Announced on a player's connect too, though it cannot have changed:
+        -- it is how a seat that opens the game mid-session learns the count
+        -- without a route of its own to ask. This socket is already subscribed,
+        -- so the answer comes back to whoever just arrived.
+        lift $ publishWatcherCount gameId room
         pure joined
 
   bracket acquire (\(room, subId, _) -> cleanup room subId) \(room, _subId, sub) -> do
@@ -1050,6 +1067,18 @@ handleMessageLog pendingLogRef broadcast msg = liftIO $ case msg of
     ClientShowUnder {} -> Nothing
     ClientPlayabilityReport {} -> Nothing
     ClientCustomCardIssue {} -> Nothing
+
+{- | Tell a game's room how many people are watching it.
+
+The cross-pod total when there is a Redis broker, and the room's own tally
+otherwise -- which is the same number on a single pod, and the only one a
+local dev setup has.
+-}
+publishWatcherCount :: ArkhamGameId -> Room -> Handler ()
+publishWatcherCount gameId room = do
+  shared <- getRedisWatcherCount gameId
+  local' <- roomWatcherCount room
+  publishToRoom gameId $ GameWatcherCount $ fromMaybe local' shared
 
 publishToRoom :: (MonadIO m, ToJSON a, HasApp m) => ArkhamGameId -> a -> m ()
 publishToRoom gameId a = do

@@ -101,6 +101,12 @@ data Room = Room
   and "channel is subscribed" can never disagree. 'pure ()' when no Redis
   broker is configured.
   -}
+  , roomWatchers :: TVar Int
+  {- ^ How many of this room's sockets are spectators rather than seated
+  players. Only this pod's share of them: with Redis the authoritative
+  number is the cross-pod total in @arkham:watchers@, and this is the
+  fallback for a single-pod deployment, which is every local dev setup.
+  -}
   }
 
 {- | Cache of one game's log entries. 'cacheStep' is the arkham_games.step
@@ -132,7 +138,8 @@ newRoom chn = atomically do
   next <- newTVar 0
   cache <- newTVar Nothing
   unsub <- newTVar (pure ())
-  pure $ Room subs next chn cache unsub
+  watchers <- newTVar 0
+  pure $ Room subs next chn cache unsub watchers
 
 {- | Register a new WebSocket subscriber on the room. Returns the
 subscription id (used to unsubscribe) and the bounded queue the
@@ -170,6 +177,21 @@ closeRoomSubscribers room = liftIO $ atomically do
 roomClientCount :: MonadIO m => Room -> m Int
 roomClientCount room = liftIO $ atomically do
   IntMap.size <$> readTVar (roomSubscribers room)
+
+{- | Move this pod's spectator tally for the room by @delta@ and read it back.
+
+Clamped at zero: the counter is adjusted from a bracket's release, which can
+run for a socket whose acquire never completed, and a table that claims -1
+watchers is worse than one that claims none.
+-}
+adjustRoomWatchers :: MonadIO m => Room -> Int -> m Int
+adjustRoomWatchers room delta = liftIO $ atomically do
+  modifyTVar' (roomWatchers room) (max 0 . (+ delta))
+  readTVar (roomWatchers room)
+
+-- | This pod's spectator tally for the room.
+roomWatcherCount :: MonadIO m => Room -> m Int
+roomWatcherCount room = readTVarIO (roomWatchers room)
 
 {- | Send a payload to every subscriber on the room. Subscribers whose
 queue is full are flagged as overflowed and skipped; the corresponding

@@ -141,6 +141,7 @@
     "bugSubmittingFail": "Unable to file bug",
 
     "toggleSidebar": "Toggle Sidebar",
+    "watching": "1 person is watching | {count} people are watching",
 
     "rotateLayout": "Rotate Location Layout"
 }

@@ -51,6 +51,7 @@ library
       Api.Handler.Arkham.Games
       Api.Handler.Arkham.Games.Admin
       Api.Handler.Arkham.Games.Shared
+      Api.Handler.Arkham.Games.Summary
       Api.Handler.Arkham.Investigators
       Api.Handler.Arkham.Maintenance
       Api.Handler.Arkham.Old

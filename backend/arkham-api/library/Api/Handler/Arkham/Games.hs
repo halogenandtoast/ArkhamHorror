@@ -23,6 +23,11 @@ import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Api.Handler.Arkham.CustomCards (userCustomCards)
 import Api.Handler.Arkham.Games.Shared
+import Api.Handler.Arkham.Games.Summary (
+  ownGameSummaries,
+  spectatableGameSummaries,
+  spectatableGamesLimit,
+ )
 import Arkham.Campaign.Option
 import Arkham.Card
 import Arkham.Classes.HasQueue
@@ -53,7 +58,6 @@ import Control.Monad.Random (mkStdGen)
 import Control.Monad.Random.Class (getRandom)
 import Data.Aeson (withObject, (.!=), (.:?))
 import Data.Coerce
-import Data.Map.Strict qualified as Map
 import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding (update, (=.))
 import Database.Esqueleto.Internal.Internal (unsafeSqlBinOp, unsafeSqlValue)
@@ -148,47 +152,20 @@ getApiV1ArkhamGameSpectateR gameId = do
         (PublicGame gameId g.name gameLog.entries g.currentData)
         (entityKey . fst <$> mEvt)
 
+{- | The home page's list.
+
+Reads a projection of each game rather than the game -- see
+"Api.Handler.Arkham.Games.Summary" for why, and for what it costs. Epic
+Multiplayer group games are surfaced through their event (one entry), not as
+standalone games here, which the query takes care of.
+-}
 getApiV1ArkhamGamesR :: Handler [GameDetailsEntry]
 getApiV1ArkhamGamesR = do
   userId <- getRequestUserId
-  games <- runDB $ select do
-    (players :& games) <-
-      distinct
-        $ from
-        $ table @ArkhamPlayer
-        `innerJoin` table @ArkhamGameRaw
-          `on` (\(players :& games) -> players.arkhamGameId ==. toBaseId games.id)
-    where_ $ players.userId ==. val userId
-    -- Epic Multiplayer group games are surfaced through their event (one
-    -- entry), not as standalone games in this list.
-    where_ $ notExists $ do
-      grp <- from $ table @ArkhamEpicGroup
-      where_ $ grp.arkhamGameId ==. just (toBaseId games.id)
-    orderBy [desc games.updatedAt]
-    pure games
-  let gameIds = map (coerce . entityKey) games :: [ArkhamGameId]
-  playerCounts <- runDB $ select do
-    p <- from $ table @ArkhamPlayer
-    where_ $ p.arkhamGameId `in_` valList gameIds
-    groupBy p.arkhamGameId
-    pure (p.arkhamGameId, countRows @Int)
-  let countMap = Map.fromList [(gid, n) | (Value gid, Value n) <- playerCounts]
-  traverse
-    (\g -> tryGameDetailsEntry g (fromMaybe 0 $ Map.lookup (coerce $ entityKey g) countMap))
-    games
+  runDB $ ownGameSummaries userId
 
-{- | How many games the watch list will carry.
-
-The list reads the whole of @current_data@ for every row it returns -- tens of
-kilobytes each -- so it is bounded here rather than by however many tables have
-opted in. Newest activity first, which is also the order somebody picking a
-game to watch wants.
--}
-spectatableGamesLimit :: Int64
-spectatableGamesLimit = 50
-
-{- | The rows the watch list is built from: games whose players have opened them
-up to be watched.
+{- | The rows the watch list's digest is built from: games whose players have
+opened them up to be watched.
 
 Deliberately not every game this user *could* reach: @allowSpectators@ is what
 puts a game here, and it is decided when the game is created and never changed.
@@ -200,8 +177,10 @@ Three things are left out --
   * anything not actually in play, so a watcher never opens a game that is
     waiting on its decks or already over.
 
-Shared by the list and its digest so the two cannot drift: a digest that
-answers "has the list changed?" is only useful while it is the same question.
+The same four conditions the list itself applies, in
+'Api.Handler.Arkham.Games.Summary.spectatableGameSummaries'. They have to stay
+the same question: a digest answering "has the list changed?" about some other
+list is worse than no digest.
 -}
 spectatableGames :: UserId -> SqlQuery (SqlExpr (Entity ArkhamGameRaw))
 spectatableGames userId = do
@@ -236,25 +215,15 @@ isActiveGame games =
 
 {- | Games whose players have opened them up to be watched.
 
-Expensive: every row decodes a whole game to name its scenario and
-investigators, which is why it is bounded by 'spectatableGamesLimit' and why
-the watch page polls 'getApiV1ArkhamSpectatableGamesDigestR' rather than this.
+A projection per row rather than a game apiece, so this is no longer the read
+that had to be kept off a timer; the watch page still polls
+'getApiV1ArkhamSpectatableGamesDigestR' and pays for the list only when the set
+of games moves, which is a smaller answer either way.
 -}
 getApiV1ArkhamSpectatableGamesR :: Handler [GameDetailsEntry]
 getApiV1ArkhamSpectatableGamesR = do
   userId <- getRequestUserId
-  games <- runDB $ select $ spectatableGames userId
-  let gameIds = map (coerce . entityKey) games :: [ArkhamGameId]
-  playerCounts <- runDB $ select do
-    p <- from $ table @ArkhamPlayer
-    where_ $ p.arkhamGameId `in_` valList gameIds
-    groupBy p.arkhamGameId
-    pure (p.arkhamGameId, countRows @Int)
-  let countMap = Map.fromList [(gid, n) | (Value gid, Value n) <- playerCounts]
-  entries <-
-    traverse
-      (\g -> tryGameDetailsEntry g (fromMaybe 0 $ Map.lookup (coerce $ entityKey g) countMap))
-      games
+  entries <- runDB $ spectatableGameSummaries userId
   pure $ filter inPlay entries
  where
   -- The query already asked Postgres for games in play; this drops the rows

@@ -36,7 +36,6 @@ import Entity.Arkham.Player
 import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.))
 import Json
-import Safe (fromJustNote)
 import UnliftIO.Exception (catch, try)
 
 normalizeJsonInvestigatorId :: Text -> Text
@@ -45,15 +44,22 @@ normalizeJsonInvestigatorId iid = if "c" `T.isPrefixOf` iid then iid else "c" <>
 isGzipped :: BS.ByteString -> Bool
 isGzipped bs = BS.take 2 bs == BS.pack [0x1f, 0x8b]
 
+-- Both halves report what actually went wrong: the import UI shows the string
+-- straight to the player, and "this export is from a newer engine" and "this
+-- file is not an export at all" are not the same problem.
 decodeExportBytes :: BS.ByteString -> Handler (Either String ArkhamExport)
 decodeExportBytes bytes
+  | BS.null bytes = pure $ Left "The uploaded file was empty."
   | isGzipped bytes = do
       eDecompressed <-
         liftIO $ try @_ @SomeException $ evaluate $ BSL.toStrict $ GZip.decompress $ BSL.fromStrict bytes
       pure $ case eDecompressed of
-        Left err -> Left $ displayException err
-        Right decompressed -> eitherDecodeStrict' decompressed
-  | otherwise = pure $ eitherDecodeStrict' bytes
+        Left err -> Left $ "The compressed export could not be unpacked: " <> displayException err
+        Right decompressed -> describeDecode $ eitherDecodeStrict' decompressed
+  | otherwise = pure $ describeDecode $ eitherDecodeStrict' bytes
+ where
+  describeDecode =
+    first ("The export does not match what this version of the game can read: " <>)
 
 -- Compress each emitted JSON chunk as its own gzip member. Gzip readers are
 -- required to handle concatenated members, and this guarantees we keep sending
@@ -186,14 +192,12 @@ postApiV1ArkhamGamesImportR = do
   (params, files) <- runRequestBody
   let
     mInvestigatorId = fmap normalizeJsonInvestigatorId $ snd <$> find ((== "investigatorId") . fst) params
-  eExportData :: Either String ArkhamExport <-
-    decodeExportBytes
-      =<< ( fileSourceByteString
-              . snd
-              . fromJustNote "No export file uploaded"
-              . headMay
-              $ files
-          )
+  -- An absent file is the caller's mistake, not a server fault: say so as a 400
+  -- with a reason rather than dying in `fromJust` as a 500.
+  fileInfo <- case headMay files of
+    Nothing -> invalidArgs ["No export file was uploaded."]
+    Just (_, fileInfo) -> pure fileInfo
+  eExportData :: Either String ArkhamExport <- decodeExportBytes =<< fileSourceByteString fileInfo
   now <- liftIO getCurrentTime
 
   case eExportData of

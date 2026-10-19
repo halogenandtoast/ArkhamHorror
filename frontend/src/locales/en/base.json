@@ -518,7 +518,23 @@
     "solo": "Solo",
     "multiplayer": "Multiplayer",
     "soloDescription": "You will control all investigators.",
-    "multiplayerDescription": "You will receive an invite link so others can join and claim their investigators."
+    "multiplayerDescription": "You will receive an invite link so others can join and claim their investigators.",
+    "chooseFile": "Click to choose export file\u2026",
+    "trimmed": "This export is too large to upload in full, so only the newest {kept} of its {total} saved steps will be imported. The game picks up exactly where it left off \u2014 only undo cannot reach further back than that.",
+    "trimmedAll": "This export is too large to upload in full, so all {total} of its saved steps will be dropped. The game picks up exactly where it left off \u2014 only undo will have nothing to go back to.",
+    "errors": {
+      "empty": "That file is empty \u2014 the export may not have finished downloading.",
+      "notJson": "That file could not be read as JSON, so it isn't an Arkham Horror export.",
+      "notAnExport": "That file is valid JSON but isn't an Arkham Horror game export \u2014 it has no campaign data in it.",
+      "badGzip": "That compressed file could not be unpacked. Re-download the export and try again.",
+      "noDecompression": "This browser can't unpack a compressed export. Upload the uncompressed .json export instead.",
+      "tooLarge": "The server refused the upload: at {size} the file is larger than it will accept. This game has too much saved history to import \u2014 please report it so the limit can be raised.",
+      "unreachable": "The connection dropped while uploading {size}. Check your connection \u2014 if it keeps failing, the file is larger than the server will accept.",
+      "notAuthorized": "You need to be signed in to import a game. Sign in and try again.",
+      "maintenance": "The server is down for maintenance. Try again in a few minutes.",
+      "rejected": "The server could not import that game: {reason}",
+      "statusOnly": "The server could not import that game (error {status}). Please try again."
+    }
   },
   "questionFilter": {
     "filter": "Filter"

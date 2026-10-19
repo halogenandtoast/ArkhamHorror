@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { importGame } from '@/arkham/api'
 import type { Investigator } from '@/arkham/types/Investigator'
@@ -10,6 +11,7 @@ import { campaignSetIcon, scenarioSetIcon } from '@/arkham/helpers'
 import { setGameLocalStorageItem } from '@/arkham/localStorage'
 
 const router = useRouter()
+const { t } = useI18n()
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const selectedFile = ref<File | null>(null)
@@ -30,12 +32,160 @@ const gamePreview = ref<GamePreview | null>(null)
 const gameStub = { campaign: null, scenario: null, investigators: {} } as unknown as Game
 const loading = ref(false)
 const error = ref<string | null>(null)
+/* The file actually sent: compressed, and trimmed when the untrimmed one is
+ * bigger than the server will take. Built when the file is chosen so the
+ * trimming can be announced before the upload rather than after it. */
+const preparedUpload = ref<File | null>(null)
+const stepsTotal = ref(0)
+const stepsKept = ref<number | null>(null)
 
 const showModePicker = computed(() => investigators.value.length > 1)
 
 const showInvestigatorPicker = computed(() =>
   importMode.value === 'WithFriends' && investigators.value.length > 1
 )
+
+const K = 'importGame.'
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
+
+const GZIP_MAGIC = [0x1f, 0x8b]
+
+async function isGzipped(file: File): Promise<boolean> {
+  const head = new Uint8Array(await file.slice(0, 2).arrayBuffer())
+  return head.length === 2 && head[0] === GZIP_MAGIC[0] && head[1] === GZIP_MAGIC[1]
+}
+
+/* The export the game offers admins is already gzipped, and the import handler
+ * sniffs the magic bytes either way, so a .gz file has to be readable here too
+ * -- otherwise the one file small enough to upload is the one we refuse. */
+class UnreadableFile extends Error {}
+
+async function readAsText(file: File): Promise<string> {
+  if (!(await isGzipped(file))) return file.text()
+  if (typeof DecompressionStream === 'undefined') {
+    throw new UnreadableFile(t(`${K}errors.noDecompression`))
+  }
+  try {
+    const stream = file.stream().pipeThrough(new DecompressionStream('gzip'))
+    return await new Response(stream).text()
+  } catch {
+    throw new UnreadableFile(t(`${K}errors.badGzip`))
+  }
+}
+
+/* Compressing before the upload is what keeps a long campaign importable at
+ * all: the proxy caps the request body well below what an uncompressed export
+ * of a finished campaign weighs, and JSON this repetitive gives back an order
+ * of magnitude. Returns the original file when compression is unavailable. */
+async function compressedForUpload(file: File): Promise<File> {
+  if (typeof CompressionStream === 'undefined') return file
+  if (await isGzipped(file)) return file
+  try {
+    const stream = file.stream().pipeThrough(new CompressionStream('gzip'))
+    const blob = await new Response(stream).blob()
+    if (blob.size === 0 || blob.size >= file.size) return file
+    return new File([blob], `${file.name}.gz`, { type: 'application/gzip' })
+  } catch {
+    return file
+  }
+}
+
+/* Yesod answers `invalidArgs` with {message, errors}; other handlers use
+ * errorMsg, and a proxy that rejects the body outright answers with HTML or
+ * nothing at all. Pull out whichever one is actually there. */
+function serverReason(e: unknown): string | null {
+  const data = (e as { response?: { data?: unknown } })?.response?.data
+  if (typeof data === 'string') {
+    const trimmed = data.trim()
+    // An nginx or proxy error page is not a reason worth showing verbatim.
+    if (trimmed === '' || trimmed.startsWith('<')) return null
+    return trimmed.slice(0, 500)
+  }
+  if (data && typeof data === 'object') {
+    const d = data as { errors?: unknown; message?: unknown; errorMsg?: unknown }
+    if (Array.isArray(d.errors) && d.errors.length > 0) {
+      return d.errors.filter(x => typeof x === 'string').join('; ').slice(0, 500)
+    }
+    if (typeof d.errorMsg === 'string' && d.errorMsg !== '') return d.errorMsg.slice(0, 500)
+    if (typeof d.message === 'string' && d.message !== '') return d.message.slice(0, 500)
+  }
+  return null
+}
+
+function importErrorMessage(e: unknown, uploadedBytes: number): string {
+  const status = (e as { response?: { status?: number } })?.response?.status
+  const reason = serverReason(e)
+
+  // 413 is the proxy, and so is a connection dropped mid-upload: nginx closes
+  // the socket on an oversized body, which axios surfaces as a network error
+  // with no response at all.
+  if (status === 413) {
+    return t(`${K}errors.tooLarge`, { size: formatBytes(uploadedBytes) })
+  }
+  if (status === undefined) {
+    return t(`${K}errors.unreachable`, { size: formatBytes(uploadedBytes) })
+  }
+  if (status === 401 || status === 403) return t(`${K}errors.notAuthorized`)
+  if (status === 503) return t(`${K}errors.maintenance`)
+  if (reason) return t(`${K}errors.rejected`, { reason })
+  return t(`${K}errors.statusOnly`, { status })
+}
+
+/* What the game's own basic export keeps, so a trimmed upload is exactly a
+ * minimal export of the same game rather than some third thing. */
+const TRIMMED_STEPS = 30
+
+/* Comfortably under the 5 MB the production proxy accepts (prod.nginxconf), so
+ * the trim happens before the upload rather than after a rejected one. Being
+ * wrong either way only costs a retry: the ladder in `submit` trims further
+ * when the server refuses anyway, and an untrimmed file under this never gets
+ * trimmed speculatively. */
+const UPLOAD_SOFT_LIMIT = 4 * 1024 * 1024
+
+/* Only production sits behind a proxy that caps the request body: prod.nginxconf
+ * allows 5 MB, while local nginx allows 100 MB and `npm run dev` proxies
+ * straight to the API. Trimming in dev would throw away undo history that would
+ * have imported perfectly well, so dev uploads whatever it was given and lets a
+ * real failure speak for itself. */
+const TRIMS_LARGE_UPLOADS = import.meta.env.PROD
+
+/* Keeping the highest `keep` steps is exactly what the server does for a basic
+ * export, so a trimmed file is a smaller export of the same game. Sorted by
+ * `step` rather than sliced off the front: the export happens to write them
+ * newest-first, and keeping the wrong end would leave the game with ancient
+ * history and no recent undo at all.
+ *
+ * `currentData` is untouched either way, so the imported game resumes at the
+ * same point -- all that is lost is how far back undo can reach. */
+function trimSteps(json: any, keep: number): number {
+  const steps = json?.campaignData?.steps
+  if (!Array.isArray(steps)) return 0
+  if (steps.length <= keep) return 0
+  const newest = [...steps]
+    .sort((a, b) => (b?.step ?? 0) - (a?.step ?? 0))
+    .slice(0, keep)
+  json.campaignData.steps = newest
+  return steps.length - keep
+}
+
+async function uploadFor(json: any): Promise<File> {
+  return compressedForUpload(
+    new File([JSON.stringify(json)], 'arkham-import.json', { type: 'application/json' })
+  )
+}
+
+/* A proxy that refuses an oversized body answers 413, but it may also just
+ * close the connection, which axios reports as a failure with no response at
+ * all. Both are worth one more try with less history in the file. */
+function mightBeTooLarge(e: unknown): boolean {
+  const status = (e as { response?: { status?: number } })?.response?.status
+  return status === 413 || status === undefined
+}
 
 async function onFileChange(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
@@ -46,10 +196,32 @@ async function onFileChange(e: Event) {
   selectedInvestigator.value = null
   gamePreview.value = null
   importMode.value = 'Solo'
+  preparedUpload.value = null
+  stepsTotal.value = 0
+  stepsKept.value = null
+
+  if (file.size === 0) {
+    error.value = t(`${K}errors.empty`)
+    selectedFile.value = null
+    return
+  }
+
+  let json: any
+  try {
+    json = JSON.parse(await readAsText(file))
+  } catch (e) {
+    error.value = e instanceof UnreadableFile ? e.message : t(`${K}errors.notJson`)
+    selectedFile.value = null
+    return
+  }
+
+  if (!json || typeof json !== 'object' || !json.campaignData) {
+    error.value = t(`${K}errors.notAnExport`)
+    selectedFile.value = null
+    return
+  }
 
   try {
-    const text = await file.text()
-    const json = JSON.parse(text)
     const variant = json.multiplayerVariant ?? json.campaignData?.multiplayerVariant ?? 'Solo'
     const invMap: Record<string, Investigator> = json.campaignData?.currentData?.gameEntities?.investigators ?? {}
     const playerOrder: string[] = json.campaignData?.currentData?.gamePlayerOrder ?? []
@@ -74,18 +246,32 @@ async function onFileChange(e: Event) {
       difficulty: scenario?.difficulty ?? campaign?.difficulty ?? null,
     }
   } catch {
-    error.value = 'Could not parse the export file. Make sure it is a valid Arkham Horror export.'
+    error.value = t(`${K}errors.notAnExport`)
     selectedFile.value = null
+    return
+  }
+
+  const steps = json.campaignData?.steps
+  stepsTotal.value = Array.isArray(steps) ? steps.length : 0
+
+  try {
+    let upload = await compressedForUpload(file)
+    if (TRIMS_LARGE_UPLOADS && upload.size > UPLOAD_SOFT_LIMIT && stepsTotal.value > TRIMMED_STEPS) {
+      trimSteps(json, TRIMMED_STEPS)
+      upload = await uploadFor(json)
+      stepsKept.value = TRIMMED_STEPS
+    }
+    preparedUpload.value = upload
+  } catch {
+    // Preparing the upload is an optimisation; the raw file still works.
+    preparedUpload.value = file
+    stepsKept.value = null
   }
 }
 
-async function submit() {
-  if (!selectedFile.value) return
-  loading.value = true
-  error.value = null
-
+async function send(upload: File): Promise<Game> {
   const formData = new FormData()
-  formData.append('debugFile', selectedFile.value)
+  formData.append('debugFile', upload)
 
   if (importMode.value === 'WithFriends') {
     const investigatorId = selectedInvestigator.value ?? (investigators.value.length === 1 ? investigators.value[0].id : null)
@@ -94,18 +280,58 @@ async function submit() {
     }
   }
 
-  try {
-    const game = await importGame(formData, importMode.value)
-    if (importMode.value === 'WithFriends' && investigators.value.length > 1) {
-      setGameLocalStorageItem(game.id, 'host', 'true')
-      router.push(`/games/${game.id}/claim-seat`)
-    } else {
-      router.push(`/games/${game.id}`)
+  return importGame(formData, importMode.value)
+}
+
+async function submit() {
+  if (!selectedFile.value) return
+  const file = selectedFile.value
+  loading.value = true
+  error.value = null
+
+  /* What was prepared when the file was chosen, then -- only where a proxy caps
+   * the body -- progressively less undo history. The pre-trim guesses the limit
+   * from a constant, so a rejection it did not predict is still worth a retry
+   * with a smaller file before giving up. */
+  const ladder: (number | null)[] = [null]
+  if (TRIMS_LARGE_UPLOADS) {
+    for (const keep of [TRIMMED_STEPS, 0]) {
+      if ((stepsKept.value ?? stepsTotal.value) > keep) ladder.push(keep)
     }
-  } catch {
-    error.value = 'Failed to import the game. Please try again.'
-    loading.value = false
   }
+
+  let upload = preparedUpload.value ?? (await compressedForUpload(file))
+  let lastError: unknown = null
+
+  for (const keep of ladder) {
+    if (keep !== null) {
+      try {
+        const json = JSON.parse(await readAsText(file))
+        trimSteps(json, keep)
+        upload = await uploadFor(json)
+        stepsKept.value = keep
+      } catch {
+        break
+      }
+    }
+
+    try {
+      const game = await send(upload)
+      if (importMode.value === 'WithFriends' && investigators.value.length > 1) {
+        setGameLocalStorageItem(game.id, 'host', 'true')
+        router.push(`/games/${game.id}/claim-seat`)
+      } else {
+        router.push(`/games/${game.id}`)
+      }
+      return
+    } catch (e) {
+      lastError = e
+      if (!TRIMS_LARGE_UPLOADS || !mightBeTooLarge(e)) break
+    }
+  }
+
+  error.value = importErrorMessage(lastError, upload.size)
+  loading.value = false
 }
 
 const canSubmit = computed(() => {
@@ -127,10 +353,10 @@ defineExpose({
   <div class="import-game box">
     <div class="file-section">
       <label class="file-label">
-        <span>{{ selectedFile ? selectedFile.name : 'Click to choose export file…' }}</span>
+        <span>{{ selectedFile ? selectedFile.name : $t('importGame.chooseFile') }}</span>
         <input
           type="file"
-          accept="application/json"
+          accept=".json,.gz,application/json,application/gzip"
           ref="fileInput"
           @change="onFileChange"
           class="hidden-input"
@@ -151,6 +377,13 @@ defineExpose({
         </div>
       </div>
     </div>
+
+    <!-- Said before the import, not after it: the dropped history is gone by
+         the time the game opens, and this is the only chance to mention it. -->
+    <p v-if="stepsKept !== null" class="notice">
+      <template v-if="stepsKept > 0">{{ $t('importGame.trimmed', { kept: stepsKept, total: stepsTotal }) }}</template>
+      <template v-else>{{ $t('importGame.trimmedAll', { total: stepsTotal }) }}</template>
+    </p>
 
     <div v-if="showModePicker" class="mode-section">
       <div class="mode-picker">
@@ -354,6 +587,13 @@ defineExpose({
     border-color: rgba(110, 134, 64, 0.6);
     color: white;
   }
+}
+
+.notice {
+  color: #d8c48a;
+  font-size: 0.85em;
+  line-height: 1.4;
+  margin: 0;
 }
 
 .error {

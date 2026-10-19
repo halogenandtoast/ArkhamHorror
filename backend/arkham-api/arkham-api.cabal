@@ -27,6 +27,7 @@ library
       Api.Arkham.Export
       Api.Arkham.Helpers
       Api.Arkham.Maintenance
+      Api.Arkham.RoomOps
       Api.Arkham.Types.MultiplayerVariant
       Api.BugUpload
       Api.Handler.ApiKeys

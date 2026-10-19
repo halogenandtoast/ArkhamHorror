@@ -3,6 +3,7 @@
 module Api.Arkham.Helpers where
 
 import Api.Arkham.Maintenance
+import Api.Arkham.RoomOps
 import Arkham.Card
 import Arkham.Classes hiding (Entity (..), select)
 import Arkham.Classes.HasGame
@@ -16,7 +17,7 @@ import Arkham.Message
 import Arkham.Phase qualified as Phase
 import Arkham.Queue
 import Arkham.Random
-import Control.Concurrent (threadDelay)
+import Control.Concurrent (forkIO, threadDelay)
 import Control.Concurrent.MVar
 import Control.Concurrent.MVar qualified as MVar
 import Control.Exception (throwIO, try)
@@ -28,8 +29,9 @@ import Data.ByteString.Char8 qualified as BS8
 import Data.ByteString.Lazy qualified as BSL
 import Data.Map.Strict qualified as Map
 import Data.Time.Clock
-import Data.Time.Clock.POSIX (getPOSIXTime)
+import Data.Time.Clock.POSIX (getPOSIXTime, posixSecondsToUTCTime)
 import Data.UUID qualified as UUID
+import Data.UUID.V4 qualified as UUID
 import Database.Esqueleto.Experimental
 
 -- Aliased for '<.', which Control.Lens and persistent also define.
@@ -363,15 +365,16 @@ pod.
 -}
 joinRoomIn
   :: (MonadIO m, HasApp m, Ord k)
-  => (App -> MVar (Map k Room))
+  => SubscriberInfo
+  -> (App -> MVar (Map k Room))
   -> (k -> RedisChannel)
   -> k
   -> m (Room, Int, Subscriber)
-joinRoomIn roomsOf channelFor key = do
+joinRoomIn joining roomsOf channelFor key = do
   app <- getApp
   liftIO $ modifyMVar (roomsOf app) \rooms -> do
     (rooms', r) <- ensureRoom app channelFor key rooms
-    (subId, sub) <- subscribeToRoom r
+    (subId, sub) <- subscribeToRoom joining r
     pure (rooms', (r, subId, sub))
 
 -- | Look up or create a room. Assumes the caller holds the rooms 'MVar'.
@@ -419,7 +422,9 @@ releaseRoomIfEmpty roomsOf key = do
 
 joinEventRoom
   :: (MonadIO m, HasApp m) => ArkhamEpicEventId -> m (Room, Int, Subscriber)
-joinEventRoom = joinRoomIn appEventRooms eventChannel
+joinEventRoom eid = do
+  joining <- anonymousSubscriber
+  joinRoomIn joining appEventRooms eventChannel eid
 
 releaseEventRoomIfEmpty :: (MonadIO m, HasApp m) => ArkhamEpicEventId -> m Bool
 releaseEventRoomIfEmpty = releaseRoomIfEmpty appEventRooms
@@ -429,8 +434,10 @@ lookupEventRoom eid = do
   roomsVar <- getsApp appEventRooms
   Map.lookup eid <$> liftIO (MVar.readMVar roomsVar)
 
-joinGameRoom :: (MonadIO m, HasApp m) => ArkhamGameId -> m (Room, Int, Subscriber)
-joinGameRoom = joinRoomIn appGameRooms gameChannel
+joinGameRoom
+  :: (MonadIO m, HasApp m)
+  => SubscriberInfo -> ArkhamGameId -> m (Room, Int, Subscriber)
+joinGameRoom joining = joinRoomIn joining appGameRooms gameChannel
 
 releaseGameRoomIfEmpty :: (MonadIO m, HasApp m) => ArkhamGameId -> m Bool
 releaseGameRoomIfEmpty = releaseRoomIfEmpty appGameRooms
@@ -630,6 +637,28 @@ getRedisRoomCounts = do
     n <- readMaybe (BS8.unpack v)
     pure (coerce uuid :: ArkhamGameId, n)
 
+{- | The whole spectator hash, for the admin rooms list.
+
+Not filtered for staleness: it shares 'roomsSeenHashKey' with the room counts,
+which 'getRedisRoomCounts' has already swept by the time this is read, and a
+watcher count for a game that is not in that list is not shown anyway.
+-}
+getRedisWatcherCounts :: (MonadIO m, HasApp m) => m (Map ArkhamGameId Int)
+getRedisWatcherCounts = do
+  broker <- getsApp appMessageBroker
+  case broker of
+    WebSocketBroker -> pure Map.empty
+    RedisBroker conn _ -> do
+      result <- liftIO $ try @SomeException $ runRedis conn $ hgetall watchersHashKey
+      pure case result of
+        Right (Right entries) -> Map.fromList (mapMaybe parseEntry entries)
+        _ -> Map.empty
+ where
+  parseEntry (k, v) = do
+    uuid <- UUID.fromText (decodeUtf8 k)
+    n <- readMaybe (BS8.unpack v)
+    pure (coerce uuid :: ArkhamGameId, n)
+
 sweepStaleRooms :: Connection -> [ArkhamGameId] -> IO ()
 sweepStaleRooms conn gameIds = for_ (nonEmpty $ map roomField gameIds) \fields ->
   void $ runRedis conn do
@@ -637,6 +666,149 @@ sweepStaleRooms conn gameIds = for_ (nonEmpty $ map roomField gameIds) \fields -
     void $ hdel roomsSeenHashKey fields
     -- Counted on the same connects as the room itself, so it goes stale with it.
     void $ hdel watchersHashKey fields
+
+{- | What Redis records about one game's room, as opposed to what the pods
+holding it actually have open.
+
+The two are allowed to disagree, and the disagreement is the diagnosis: a
+'tallyClients' of 3 against a single socket on a single pod is two sockets'
+worth of tally left behind by a replica that died holding them, and that
+leftover is what 'seatedPlayerCount' reads as a seated player and
+'sweepAbandonedRooms' therefore refuses to touch.
+-}
+data RoomTally = RoomTally
+  { tallyClients :: Maybe Int
+  , tallyWatchers :: Maybe Int
+  , tallySeenAt :: Maybe UTCTime
+  -- ^ When a pod last claimed to be serving this game.
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass Aeson.ToJSON
+
+getRoomTally :: (MonadIO m, HasApp m) => ArkhamGameId -> m RoomTally
+getRoomTally gameId = do
+  broker <- getsApp appMessageBroker
+  case broker of
+    WebSocketBroker -> pure $ RoomTally Nothing Nothing Nothing
+    RedisBroker conn _ -> do
+      result <- liftIO $ try @SomeException $ runRedis conn do
+        clients <- hget roomsHashKey (roomField gameId)
+        watchers <- hget watchersHashKey (roomField gameId)
+        seen <- hget roomsSeenHashKey (roomField gameId)
+        pure (clients, watchers, seen)
+      pure case result of
+        Right (Right clients, Right watchers, Right seen) ->
+          RoomTally
+            { tallyClients = readInt =<< clients
+            , tallyWatchers = readInt =<< watchers
+            , tallySeenAt = fmap epochToUTC . readInt =<< seen
+            }
+        _ -> RoomTally Nothing Nothing Nothing
+ where
+  readInt :: ByteString -> Maybe Int
+  readInt = readMaybe . BS8.unpack
+  epochToUTC = posixSecondsToUTCTime . fromIntegral
+
+{- | Forget a game's rows in all three room hashes.
+
+The counts are maintained by increments and decrements from the sockets
+themselves, which is exactly why they can be wrong: a pod that dies with
+sockets attached never sends its decrements, and its share of the tally stays
+behind. 'sweepStaleRooms' cleans that up only for a game nothing else is
+keeping fresh -- a leftover player count on a game one spectator is still
+watching is refreshed by that spectator's pod forever, reads as a seated
+player to 'seatedPlayerCount', and so keeps the room out of
+'sweepAbandonedRooms' for good.
+
+That is the shape of an admin's stuck room, so closing one has to be able to
+drop the tally as well as the sockets. The ordinary decrements stay correct
+either way: 'decrRoomMember' deletes the field again whenever its count
+reaches zero.
+-}
+purgeRoomTallies :: (MonadIO m, HasApp m) => ArkhamGameId -> m ()
+purgeRoomTallies gameId = withRedis \conn -> runRedis conn do
+  void $ hdel roomsHashKey (roomField gameId :| [])
+  void $ hdel roomsSeenHashKey (roomField gameId :| [])
+  void $ hdel watchersHashKey (roomField gameId :| [])
+
+{- | Perform one room op against this pod's own rooms.
+
+The same function on both sides of the Redis hop: it is what a pod runs when a
+request arrives on 'roomOpsChannel', and what the handler runs directly when
+there is no Redis broker at all, so development exercises the same code as
+production with one pod in the fleet instead of six.
+-}
+runRoomOpOn :: Text -> MVar (Map ArkhamGameId Room) -> ArkhamGameId -> RoomOp -> IO RoomOpReply
+runRoomOpOn podId roomsVar gameId roomOp = do
+  rooms <- MVar.readMVar roomsVar
+  case Map.lookup gameId rooms of
+    Nothing -> pure $ RoomOpReply podId False False []
+    Just room -> case roomOp of
+      InspectRoom -> RoomOpReply podId True False <$> roomConnectionsOn podId room
+      ProbeRoom ->
+        RoomOpReply podId True False <$> probeRoomConnections podId roomProbeWaitMicros room
+      CloseRoom reason -> do
+        -- Read before closing: afterwards there is nothing left to describe,
+        -- and who was evicted is the whole record of what the close did.
+        conns <- roomConnectionsOn podId room
+        closed <- closeRoomIn roomsVar gameId (Aeson.encode $ RoomClosed reason)
+        pure $ RoomOpReply podId True closed conns
+
+{- | Pub/sub handler for 'roomOpsChannel': answer for the room this pod holds.
+
+Forked rather than run inline. The callback runs on the controller's single
+subscriber thread, and a probe deliberately sits still for
+'roomProbeWaitMicros' waiting for pongs -- doing that on that thread would
+stall every cross-pod game update on the pod for two and a half seconds.
+
+Best-effort like the rest of the room bookkeeping: a reply that cannot be
+written is a pod missing from the admin's answer, which the answer says, and
+never a failure that touches a live game.
+-}
+onRoomOpMessage
+  :: Connection -> Text -> MVar (Map ArkhamGameId Room) -> ByteString -> IO ()
+onRoomOpMessage conn podId roomsVar raw =
+  for_ (Aeson.decodeStrict @RoomOpRequest raw) \req ->
+    for_ (UUID.fromText req.roomOpGameId) \uuid -> void $ forkIO do
+      reply <- runRoomOpOn podId roomsVar (coerce uuid) req.roomOpOp
+      let key = roomOpsReplyKey req.roomOpId
+      tryRedis_ $ runRedis conn do
+        void $ Redis.rpush key (BSL.toStrict (Aeson.encode reply) :| [])
+        void $ Redis.expire key roomOpsReplyTtlSeconds
+
+{- | Run a room op on every pod and collect what they say.
+
+Publish, wait a fixed window, read the reply list, delete it. A fixed window
+and not a quorum because nothing here knows how many replicas are running: the
+answer carries the pods that replied, and an admin reading "two pods answered,
+neither held this room" is better served than one watching a request hang for
+the pod that will never answer.
+
+Without Redis this is a fleet of one and the op runs in place.
+-}
+runRoomOp :: (MonadIO m, HasApp m) => ArkhamGameId -> RoomOp -> m [RoomOpReply]
+runRoomOp gameId roomOp = do
+  app <- getApp
+  case appMessageBroker app of
+    WebSocketBroker ->
+      liftIO $ (: []) <$> runRoomOpOn (appPodId app) (appGameRooms app) gameId roomOp
+    RedisBroker conn _ -> do
+      opId <- UUID.toText <$> liftIO UUID.nextRandom
+      let key = roomOpsReplyKey opId
+      -- This pod is subscribed to the channel like any other, so it answers
+      -- through the same path rather than being special-cased here.
+      tryRedis_
+        $ runRedis conn
+        $ publish roomOpsChannel
+        $ BSL.toStrict
+        $ Aeson.encode
+        $ RoomOpRequest opId (gameIdToText gameId) roomOp
+      liftIO $ threadDelay (roomOpCollectMicros roomOp)
+      replies <- liftIO $ try @SomeException $ runRedis conn $ Redis.lrange key 0 (-1)
+      tryRedis_ $ runRedis conn $ Redis.del (key :| [])
+      pure case replies of
+        Right (Right items) -> mapMaybe Aeson.decodeStrict items
+        _ -> []
 
 {- | Background heartbeat: every 'roomHeartbeatSeconds' refresh the seen
 timestamp for every game this pod still has live subscribers for. This

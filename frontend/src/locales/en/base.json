@@ -673,6 +673,7 @@
     "submissions": "Submissions",
     "deleteRoom": "Delete",
     "dropRoom": "Drop",
+    "inspectRoom": "Inspect",
     "confirmDropRoom": "Drop this room? {n} connected player will be sent back to the home page. | Drop this room? {n} connected players will be sent back to the home page.",
     "gameStats": "Stats",
     "notifications": "Notifications"

@@ -2,23 +2,27 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import api from '@/api'
+import type { RoomData } from './roomTypes'
 
 const { t } = useI18n()
-
-interface RoomData {
-  roomClients: number
-  roomLastUpdatedAt: string | null
-  roomArkhamGameId: string
-}
 
 const props = defineProps<{
   room: RoomData
 }>()
 
+const emit = defineEmits<{ (e: 'inspect'): void }>()
+
 /* No timestamp means there is no game row behind this room any more: the game was
  * deleted and the room outlived it, which is worth calling out on its own. */
 const deleted = computed(() => !props.room.roomLastUpdatedAt)
 const lastUpdated = computed(() => props.room.roomLastUpdatedAt ?? 'deleted')
+
+/* All clients and no players: nothing further will happen on that board, so
+ * the room is being held open by its watchers (or by a tally nobody is behind).
+ * Either way it is a candidate for a sweep. */
+const watchersOnly = computed(
+  () => props.room.roomClients > 0 && props.room.roomWatchers >= props.room.roomClients,
+)
 
 /* Dropping a room evicts everyone on it -- the server sends them home and closes
  * their sockets -- so a room with people in it asks first. An orphaned one has
@@ -33,16 +37,21 @@ async function deleteRoom() {
 </script>
 
 <template>
-  <div class="room box" :class="{ deleted }">
+  <div class="room box" :class="{ deleted, 'watchers-only': watchersOnly }">
     <div class="room-stat">
       <span class="label">Clients</span>
       <strong>{{ room.roomClients }}</strong>
+    </div>
+    <div class="room-stat">
+      <span class="label">Watching</span>
+      <strong>{{ room.roomWatchers }}</strong>
     </div>
     <div class="room-stat updated">
       <span class="label">Last Updated</span>
       <span>{{ lastUpdated }}</span>
     </div>
     <div class="room-actions">
+      <a href="#" @click.prevent="emit('inspect')">{{ t('admin.inspectRoom') }}</a>
       <router-link :to="`/admin/games/${room.roomArkhamGameId}`">View</router-link>
       <a href="#" class="delete" @click.prevent="deleteRoom">
         {{ room.roomClients > 0 ? t('admin.dropRoom') : t('admin.deleteRoom') }}
@@ -56,7 +65,11 @@ async function deleteRoom() {
   align-items: center;
   display: grid;
   gap: 14px;
-  grid-template-columns: minmax(80px, 0.5fr) minmax(180px, 1fr) auto;
+  grid-template-columns: minmax(70px, 0.4fr) minmax(70px, 0.4fr) minmax(180px, 1fr) auto;
+}
+
+.room.watchers-only {
+  border-left: 3px solid color-mix(in srgb, var(--delete) 70%, transparent);
 }
 
 .room.deleted {

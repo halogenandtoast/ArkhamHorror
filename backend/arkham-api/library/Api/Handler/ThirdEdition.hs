@@ -118,9 +118,10 @@ getApiV1ThirdEditionTableR :: UUID -> Handler Value
 getApiV1ThirdEditionTableR tid = do
   _ <- getRequestUserId
   wsOptions <- websocketConnectionOptions
+  joining <- anonymousSubscriber
   webSocketsOptions wsOptions
     $ streamRoom
-      (joinRoomIn appThirdEditionRooms tableChannel tid)
+      (joinRoomIn joining appThirdEditionRooms tableChannel tid)
       (void $ releaseRoomIfEmpty appThirdEditionRooms tid)
   store <- getStore
   liftIO (store.getTable tid) >>= \case

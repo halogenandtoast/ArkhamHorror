@@ -66,7 +66,6 @@ import Entity.Answer
 import Entity.Arkham.GameRaw
 import Entity.Arkham.Step
 import Import hiding (Value, delete, exists, on, (==.))
-import Yesod.WebSockets
 
 {- | Step counter only: one indexed Int column, no game JSON touched, no lock.
 
@@ -94,8 +93,7 @@ newtype GameStepJson = GameStepJson
 getApiV1ArkhamGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameR gameId = do
   userId <- getRequestUserId
-  wsOptions <- websocketConnectionOptions
-  webSocketsOptions wsOptions $ gameStream gameId
+  servePongAware $ gameStream gameId
   runDB do
     g <- get404 gameId
     gameLog <- getGameLogTail gameId gameLogTailSize
@@ -138,8 +136,7 @@ questions.
 -}
 getApiV1ArkhamGameSpectateR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameSpectateR gameId = do
-  wsOptions <- websocketConnectionOptions
-  webSocketsOptions wsOptions $ spectatorStream gameId
+  servePongAware $ spectatorStream gameId
   runDB do
     g <- get404 gameId
     let Game {..} = g.currentData

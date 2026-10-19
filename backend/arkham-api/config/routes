@@ -134,7 +134,9 @@
       /rooms ApiV1AdminRoomsP:
         / ApiV1AdminRoomsR GET
         /#ArkhamGameId ApiV1AdminRoomP:
-          / ApiV1AdminRoomR DELETE
+          / ApiV1AdminRoomR GET DELETE
+          /probe ApiV1AdminRoomProbeR POST
+          /sweep ApiV1AdminRoomSweepR POST
       /game-stats ApiV1AdminGameStatsP:
         / ApiV1AdminGameStatsR GET
         !/refresh ApiV1AdminGameStatsRefreshR POST

@@ -16,6 +16,8 @@ module Foundation where
 
 import Import.NoFoundation
 
+import Control.Concurrent (threadDelay)
+import Control.Concurrent.MVar qualified as MVar
 import Control.Concurrent.STM.TBQueue
 import Control.Exception.Annotated qualified as UE
 import Control.Exception.Annotated.UnliftIO qualified as AnnotatedIO
@@ -27,9 +29,11 @@ import Control.Monad.Catch (
  )
 import Control.Monad.Catch qualified as Catch
 import Data.IntMap.Strict qualified as IntMap
+import Data.Map.Strict qualified as Map
 import UnliftIO.Exception qualified as UnliftIO
 
 import Api.Arkham.Maintenance
+import Api.Arkham.RoomOps
 import Arkham.Card.CardCode
 import Arkham.Log.Entry (LogRow)
 import Auth.ApiKey qualified as ApiKey
@@ -80,7 +84,57 @@ data Subscriber = Subscriber
   deleted room alive, and cannot be left attached to one that no longer
   exists. See 'closeRoomSubscribers'.
   -}
+  , subInfo :: SubscriberInfo
   }
+
+{- | Who is on the other end of one websocket, and how to ask whether they are
+still there.
+
+Recorded on the subscriber because there is nowhere to look it up from later: a
+room is a set of queues, and the moment a socket is registered the only things
+the server knew about it -- which account opened it, and whether that account
+took a seat or is only watching -- have gone out of scope. An admin staring at
+"3 clients" on a room nobody is playing needs those three names, and needs to
+be able to ask each of them to prove it is still connected.
+-}
+data SubscriberInfo = SubscriberInfo
+  { subUserId :: Maybe UserId
+  {- ^ 'Nothing' for a spectator watching without signing in, which spectating
+  allows -- reaching a game needs only its id. A seated player always has one.
+  -}
+  , subSpectator :: Bool
+  , subConnectedAt :: UTCTime
+  , subLastPong :: TVar (Maybe UTCTime)
+  {- ^ When this socket last answered a ping. Any pong counts, the keepalive's
+  as much as a probe's, because any pong is proof of life. 'Nothing' until the
+  first one, which is the ordinary state of a socket younger than
+  'Api.Handler.Arkham.Games.Shared.keepAlivePingSeconds'.
+  -}
+  , subSendPing :: IO ()
+  {- ^ Ping this one socket now. A WebSocket-level ping: the browser answers it
+  in its protocol layer without the page being involved, so an answer means
+  the socket is alive even if the tab is asleep or the client is an old build.
+  -}
+  }
+
+{- | A subscriber nothing is known about, for the rooms that are not inspected.
+
+Event and third-edition rooms do not appear on the admin rooms page and have no
+seats to distinguish, so there is nothing for an identity to say about them.
+The ping is a no-op rather than a lie about having asked.
+-}
+anonymousSubscriber :: MonadIO m => m SubscriberInfo
+anonymousSubscriber = liftIO do
+  now <- getCurrentTime
+  lastPong <- newTVarIO Nothing
+  pure
+    $ SubscriberInfo
+      { subUserId = Nothing
+      , subSpectator = False
+      , subConnectedAt = now
+      , subLastPong = lastPong
+      , subSendPing = pure ()
+      }
 
 data Room = Room
   { roomSubscribers :: TVar (IntMap Subscriber)
@@ -154,12 +208,12 @@ newRoom chn = atomically do
 subscription id (used to unsubscribe) and the bounded queue the
 subscriber should read from.
 -}
-subscribeToRoom :: MonadIO m => Room -> m (Int, Subscriber)
-subscribeToRoom room = liftIO $ atomically do
+subscribeToRoom :: MonadIO m => SubscriberInfo -> Room -> m (Int, Subscriber)
+subscribeToRoom info room = liftIO $ atomically do
   q <- newTBQueue roomQueueBound
   overflow <- newTVar False
   closed <- newTVar False
-  let sub = Subscriber q overflow closed
+  let sub = Subscriber q overflow closed info
   subId <- readTVar (roomNextSubId room)
   writeTVar (roomNextSubId room) (subId + 1)
   modifyTVar' (roomSubscribers room) (IntMap.insert subId sub)
@@ -217,6 +271,94 @@ broadcastToRoom room msg = liftIO $ atomically do
         then writeTVar subOverflow True
         else writeTBQueue subQueue msg
 
+{- | Snapshot every socket on a room, as the admin rooms page shows them.
+
+Reads the queue depth and the flags under one 'atomically' per socket rather
+than one for the room: a snapshot of a room is not a transaction anybody acts
+on, and holding every subscriber's state still while an admin looks at it would
+block the broadcast path to do it.
+-}
+roomConnectionsOn :: MonadIO m => Text -> Room -> m [RoomConnection]
+roomConnectionsOn pod room = liftIO do
+  subs <- IntMap.toList <$> readTVarIO (roomSubscribers room)
+  for subs \(subId, sub) -> do
+    (depth, full, evicted) <- atomically do
+      queued <- fromIntegral <$> lengthTBQueue (subQueue sub)
+      overflowed <- readTVar (subOverflow sub)
+      closing <- readTVar (subClosed sub)
+      pure (queued, overflowed, closing)
+    lastPong <- readTVarIO (subLastPong (subInfo sub))
+    pure
+      $ RoomConnection
+        { connPod = pod
+        , connId = subId
+        , connUserId = toPathPiece <$> subUserId (subInfo sub)
+        , connSpectator = subSpectator (subInfo sub)
+        , connConnectedAt = subConnectedAt (subInfo sub)
+        , connLastPongAt = lastPong
+        , connQueued = depth
+        , connOverflowed = full
+        , connClosing = evicted
+        , connProbeAnswered = Nothing
+        }
+
+{- | Ping every socket on the room and report which ones answered.
+
+What makes this worth doing at all: a half-open TCP connection is invisible
+from the server side. The socket is still open, its sender loop is still
+parked, the room still counts it -- and the client behind it has been gone for
+hours. Asking is the only way to tell, and a WebSocket ping asks the protocol
+layer rather than the page, so it is answered by a client that is merely idle
+and unanswered by one that is merely gone.
+
+A pong that arrives from the keepalive ping inside the window counts too: the
+question is whether the socket is alive, not whose ping proved it.
+
+A socket that appeared after the pings went out is reported with
+'connProbeAnswered' 'Nothing' rather than as a failure, because it was never
+asked.
+-}
+probeRoomConnections :: MonadIO m => Text -> Int -> Room -> m [RoomConnection]
+probeRoomConnections pod waitMicros room = liftIO do
+  subs <- IntMap.toList <$> readTVarIO (roomSubscribers room)
+  pongsBefore <-
+    IntMap.fromList <$> for subs \(subId, sub) ->
+      (subId,) <$> readTVarIO (subLastPong (subInfo sub))
+  -- A send on a socket whose peer has already gone throws; that is an answer
+  -- about that socket, not a reason to abandon the other sockets' probes.
+  for_ subs \(_, sub) -> UnliftIO.tryAny $ subSendPing (subInfo sub)
+  threadDelay waitMicros
+  map (answeredSince pongsBefore) <$> roomConnectionsOn pod room
+ where
+  answeredSince pongs c = case IntMap.lookup (connId c) pongs of
+    Nothing -> c
+    Just priorPong -> c {connProbeAnswered = Just (connLastPongAt c /= priorPong)}
+
+{- | Close one room and forget it: announce why, evict its sockets, tear down
+its Redis subscription. Returns whether there was a room here to close.
+
+Takes the notice already encoded because the message type it is an alternative
+of lives in "Api.Arkham.Helpers", which imports this module. Order matters and
+is the same order 'Api.Handler.Arkham.Games.Shared.forceDeleteRoom' uses: the
+notice is broadcast while the subscribers are still reading, and each drains
+what it has before stopping, so the reason is the last thing delivered rather
+than something racing the teardown.
+
+Dropping the map entry alone would not get rid of the room -- every websocket
+joins through 'Api.Arkham.Helpers.joinRoomIn', which recreates one on demand,
+so a client still holding its socket (or reconnecting, which the client does by
+itself) would put it straight back with no game behind it.
+-}
+closeRoomIn :: (MonadIO m, Ord k) => MVar (Map k Room) -> k -> BSL.ByteString -> m Bool
+closeRoomIn roomsVar key notice = liftIO $ MVar.modifyMVar roomsVar \rooms ->
+  case Map.lookup key rooms of
+    Nothing -> pure (rooms, False)
+    Just room -> do
+      broadcastToRoom room notice
+      closeRoomSubscribers room
+      void $ UnliftIO.tryAny $ join $ readTVarIO (roomUnsubscribe room)
+      pure (Map.delete key rooms, True)
+
 data MessageBroker = WebSocketBroker | RedisBroker Connection PubSubController
 
 {- | The foundation datatype for your application. This can be a good place to
@@ -254,6 +396,16 @@ data App = App
   'maintenanceMiddleware'.
   -}
   , appBugsnag :: Bugsnag.Settings
+  , appPodId :: Text
+  {- ^ Which replica this is, for the cross-pod room ops in
+  "Api.Arkham.RoomOps". An admin looking at a room needs to know that three
+  sockets on one pod and three spread over three pods are different
+  situations, and a sweep that closed a room on two pods out of six needs to
+  be able to say which two.
+
+  The Kubernetes pod name when there is one, plus a per-process suffix so a
+  restarted pod is not mistaken for the one it replaced.
+  -}
   }
 
 class Monad m => HasApp m where

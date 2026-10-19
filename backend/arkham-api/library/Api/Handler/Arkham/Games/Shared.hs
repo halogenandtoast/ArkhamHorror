@@ -105,7 +105,7 @@ import Json
 import Text.Printf (printf)
 
 -- ConnectionOptions, connectionCompressionOptions and defaultConnectionOptions
--- come in via the Yesod.WebSockets re-export below.
+-- come in via the Yesod.WebSockets re-export below, connectionOnPong with them.
 import Network.WebSockets (
   CompressionOptions (PermessageDeflateCompression),
   ConnectionException,
@@ -113,6 +113,11 @@ import Network.WebSockets (
   defaultPermessageDeflate,
   withPingThread,
  )
+
+-- Qualified for 'sendPing' alone: Yesod.WebSockets re-exports a 'sendPing' of
+-- its own that pings the ambient 'WebSocketsT' connection, and the one wanted
+-- here takes the socket to ping as an argument.
+import Network.WebSockets qualified as WS
 import UnliftIO.Exception hiding (Handler)
 import UnliftIO.Timeout (timeout)
 import Yesod.WebSockets
@@ -193,6 +198,27 @@ websocketConnectionOptions = do
   enabled <- getsYesod $ appWebsocketCompression . appSettings
   pure $ if enabled then compressedConnectionOptions else defaultConnectionOptions
 
+{- | Serve a game socket that records when its client last answered a ping.
+
+The recording has to be set up out here, before the connection exists: the
+observer is a field of 'ConnectionOptions', and the options are chosen when the
+handler decides to upgrade. So the 'TVar' is made first and handed to both
+halves -- to the options, which write to it, and to the stream, which publishes
+it on the room as part of 'SubscriberInfo' for an admin to read.
+
+Without it a half-open socket is undetectable from the server: it stays open,
+its sender loop stays parked, the room keeps counting it, and the client behind
+it left hours ago. The pong is the only thing that can tell those apart, and a
+room that cannot be told apart from a live one is a room that never closes.
+-}
+servePongAware
+  :: (TVar (Maybe UTCTime) -> WebSocketsT Handler ()) -> Handler ()
+servePongAware mkStream = do
+  pongVar <- newTVarIO Nothing
+  base <- websocketConnectionOptions
+  let observe = getCurrentTime >>= atomically . writeTVar pongVar . Just
+  webSocketsOptions base {connectionOnPong = observe} (mkStream pongVar)
+
 {- | Warp treats a websocket as a raw response and only tickles its idle
 timeout on real socket traffic, so a quiet game (nobody taking a turn) is
 torn down after 'settingsTimeout' seconds and the client silently
@@ -216,7 +242,7 @@ data StreamRole = Answering | Watching
   deriving stock Eq
 
 -- | The socket a seated player holds: receives updates and submits answers.
-gameStream :: ArkhamGameId -> WebSocketsT Handler ()
+gameStream :: ArkhamGameId -> TVar (Maybe UTCTime) -> WebSocketsT Handler ()
 gameStream = gameStreamAs Answering
 
 {- | The socket a spectator holds: receives the same updates and sends nothing.
@@ -224,15 +250,30 @@ gameStream = gameStreamAs Answering
 Spectating used to share 'gameStream', which meant a watcher's socket accepted
 answers and could play the game it was only meant to be watching.
 -}
-spectatorStream :: ArkhamGameId -> WebSocketsT Handler ()
+spectatorStream :: ArkhamGameId -> TVar (Maybe UTCTime) -> WebSocketsT Handler ()
 spectatorStream = gameStreamAs Watching
 
-gameStreamAs :: StreamRole -> ArkhamGameId -> WebSocketsT Handler ()
-gameStreamAs role gameId = catchingConnectionException $ withKeepAlive do
+gameStreamAs
+  :: StreamRole -> ArkhamGameId -> TVar (Maybe UTCTime) -> WebSocketsT Handler ()
+gameStreamAs role gameId pongVar = catchingConnectionException $ withKeepAlive do
   mUserId <- case role of
     Answering -> Just <$> lift getRequestUserId
-    Watching -> pure Nothing
+    {- A watcher is not required to sign in, so this is the account behind the
+    socket when there is one and 'Nothing' when there is not. Worth asking even
+    though nothing is decided on the answer: a room an admin has to sweep is
+    much easier to account for when its watchers have names. -}
+    Watching -> lift lookupRequestUserId
   let watching = role == Watching
+  conn <- ask
+  openedAt <- liftIO getCurrentTime
+  let joining =
+        SubscriberInfo
+          { subUserId = mUserId
+          , subSpectator = watching
+          , subConnectedAt = openedAt
+          , subLastPong = pongVar
+          , subSendPing = WS.sendPing conn ("arkham-probe" :: ByteString)
+          }
   let cleanup room subId = do
         unsubscribeFromRoom room subId
         lift $ decrRoomMember gameId
@@ -253,7 +294,7 @@ gameStreamAs role gameId = catchingConnectionException $ withKeepAlive do
   -- rooms lock that looks the room up, so a concurrently departing connection
   -- can't release the room before we are counted on it.
   let acquire = do
-        joined@(room, _, _) <- lift $ joinGameRoom gameId
+        joined@(room, _, _) <- lift $ joinGameRoom joining gameId
         lift $ incrRoomMember gameId
         when watching do
           void $ adjustRoomWatchers room 1
@@ -1741,23 +1782,15 @@ deleteRoom = forceDeleteRoom appGameRooms
 deleteEventRoom :: ArkhamEpicEventId -> Handler ()
 deleteEventRoom = forceDeleteRoom appEventRooms
 
-{- | Delete a room and evict everyone on it.
+{- | Delete a room on THIS pod and evict everyone on it.
 
-Dropping the map entry alone does not get rid of a room: every websocket joins
-through 'joinRoomIn', which recreates one on demand, so a client still holding
-the socket -- or reconnecting, which the client does automatically -- puts it
-straight back, now with no game behind it. The sockets have to go too.
-
-Order matters. The notice is broadcast while the subscribers are still reading,
-then they are closed; each drains its queue before stopping, so the notice is
-the last thing delivered rather than something racing the teardown.
+Only this pod: the rooms are per-replica, and nothing published here reaches
+the others. For a game room that is not enough on its own, which is why
+'Api.Handler.Arkham.Games.Admin.deleteApiV1AdminRoomR' goes through
+'runRoomOp' instead -- see "Api.Arkham.RoomOps". This is still right where the
+caller is acting on the pod it is already on, as the event-room delete is.
 -}
 forceDeleteRoom :: Ord k => (App -> MVar (Map k Room)) -> k -> Handler ()
 forceDeleteRoom roomsOf key = do
   roomsVar <- getsYesod roomsOf
-  liftIO $ modifyMVar_ roomsVar \rooms -> do
-    for_ (Map.lookup key rooms) \room -> do
-      broadcastToRoom room $ encode $ RoomClosed "deleted"
-      closeRoomSubscribers room
-      tryRedis_ . join . readTVarIO $ roomUnsubscribe room
-    pure $ Map.delete key rooms
+  void $ closeRoomIn roomsVar key $ encode $ RoomClosed "deleted"

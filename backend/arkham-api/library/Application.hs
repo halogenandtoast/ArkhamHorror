@@ -27,12 +27,14 @@ import Api.Arkham.Helpers (
   loadMaintenance,
   markPubSubAlive,
   onMaintenanceMessage,
+  onRoomOpMessage,
   pubSubHealthChannel,
   pubSubSupervisor,
   roomHeartbeat,
   roomSourcesFrom,
  )
 import Api.Arkham.Maintenance (maintenanceChannel)
+import Api.Arkham.RoomOps (roomOpsChannel)
 import Arkham.Metrics qualified as Metrics
 import Config
 import Control.Concurrent.MVar (newMVar)
@@ -43,6 +45,8 @@ import Data.Default.Class (def)
 import Data.List (lookup)
 import Data.Text qualified as T
 import Data.Time.Clock (getCurrentTime)
+import Data.UUID qualified as UUID
+import Data.UUID.V4 qualified as UUID
 import Data.X509.CertificateStore (readCertificateStore)
 import Database.Persist.Postgresql (
   SqlBackend,
@@ -142,6 +146,19 @@ import ThirdEdition.Store qualified as ThirdEdition
 -- comments there for more details.
 mkYesodDispatch "App" resourcesApp
 
+{- | A name for this replica, for the cross-pod room ops in "Api.Arkham.RoomOps".
+
+@HOSTNAME@ is the pod name under Kubernetes, which is the name an operator
+already has in front of them in @kubectl@. The suffix is this process: a pod
+that restarts keeps its name, and an admin comparing two answers five minutes
+apart should be able to see that the pod behind them is not the same one.
+-}
+currentPodId :: IO Text
+currentPodId = do
+  podHost <- lookupEnv "HOSTNAME"
+  podSuffix <- T.take 6 . UUID.toText <$> UUID.nextRandom
+  pure $ maybe "pod" T.pack podHost <> "/" <> podSuffix
+
 {- | This function allocates resources (such as a database connection pool),
  performs initialization and returns a foundation datatype value. This is also
  the place to put your migrate statements to have automatic database
@@ -160,6 +177,7 @@ makeFoundation appSettings = do
   appThirdEditionRooms <- newMVar mempty
   appPubSubHealth <- newTVarIO =<< getCurrentTime
   appMaintenance <- newTVarIO Nothing
+  appPodId <- currentPodId
 
   -- Closed over by the pub/sub handler below, which is built before the
   -- foundation exists -- so it gets the room maps, not the 'App'.
@@ -182,6 +200,7 @@ makeFoundation appSettings = do
         newPubSubController
           [ (pubSubHealthChannel, const $ markPubSubAlive appPubSubHealth)
           , (maintenanceChannel, onMaintenanceMessage appMaintenance maintenanceRooms)
+          , (roomOpsChannel, onRoomOpMessage conn appPodId appGameRooms)
           ]
           []
       -- Supervised, not bare: 'pubSubForever' exits on connection loss and

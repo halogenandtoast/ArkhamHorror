@@ -2462,10 +2462,18 @@ reckoningSources = do
   assetSources <- fmap concat $ for invs \i -> fmap catMaybes $ for i.assets \cid -> do
     b <- assetBehavior cid
     pure $ SourceCard cid <$ b.reckoning
+  -- a rumor that prints no Reckoning line is no reckoning (Truckers' Strike, Stocks Stutter)
+  rumorSources <- case rumorNow of
+    Nothing -> pure []
+    Just r -> do
+      d <- getCardDef r.card
+      pure case d.kind of
+        HeadlineCard h -> [SourceHeadline r.card | isJust h.reckoning]
+        _ -> []
   pure
     $ [SourceScenario]
     <> [SourceCodex e.number | e <- codex, isJust ((codexBehavior e.number).reckoning e)]
-    <> [SourceHeadline r.card | Just r <- [rumorNow]]
+    <> rumorSources
     <> assetSources
 
 resolveReckoning :: Source -> GameM ()

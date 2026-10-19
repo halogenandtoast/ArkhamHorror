@@ -1,6 +1,7 @@
 module Arkham.Homebrew.AgesUnwound.Locations.RitualCircle_225 (ritualCircle_225) where
 
 import Arkham.Ability
+import Arkham.Capability
 import Arkham.Draw.Types (cardDrawAmount, cardDrawSource)
 import Arkham.GameValue
 import Arkham.Helpers.Message.Discard.Lifted (chooseAndDiscardCards)
@@ -19,18 +20,22 @@ newtype RitualCircle_225 = RitualCircle_225 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
--- | /Gateway to the Past/. Set aside; Scenario III puts it into play.
 ritualCircle_225 :: LocationCard RitualCircle_225
 ritualCircle_225 = symbolLabel $ location RitualCircle_225 Cards.ritualCircle_225 4 (PerPlayer 2)
 
 playerCardEffect :: SourceMatcher
 playerCardEffect = SourceIsPlayerCard <> SourceIsCardEffect
 
-getGainedResources :: [Window] -> Maybe Int
-getGainedResources = \case
+-- | Which third of ability 2 the window that triggered it names.
+data TriggeredAspect = GainedResources Int | GainedActions Int | WouldDrawCards
+
+triggeredAspect :: [Window] -> Maybe TriggeredAspect
+triggeredAspect = \case
   [] -> Nothing
-  ((windowType -> Window.GainsResources _ _ n) : _) -> Just n
-  (_ : ws) -> getGainedResources ws
+  ((windowType -> Window.GainsResources _ _ n) : _) -> Just (GainedResources n)
+  ((windowType -> Window.GainsActions _ _ n) : _) -> Just (GainedActions n)
+  ((windowType -> Window.WouldDrawCard {}) : _) -> Just WouldDrawCards
+  (_ : ws) -> triggeredAspect ws
 
 {- | "Haunted - Move to Front Gates. /
 Forced - When an investigator at this location would draw cards, gain resources
@@ -44,11 +49,8 @@ The third clause names /Ritual Circle/ where the other two say /this location/,
 so it is read as every location with that title -- Scenario III has both of
 them in play.
 
-TODO(ages-unwound): the /gain actions/ third of ability 2 is unimplemented.
-There is no @GainedActions@ window (only @LostActions@); @handleGainActions@
-adds to @remainingActions@ with no timing point at all
-(@Investigator/Runner/Action.hs:410@). This card is the first real consumer, so
-the window needs adding in core.
+This card is what put the @GainsActions@ window in core: gaining actions had no
+timing point at all before it, so the third of ability 2 had nothing to cancel.
 -}
 instance HasAbilities RitualCircle_225 where
   getAbilities (RitualCircle_225 a) =
@@ -59,9 +61,12 @@ instance HasAbilities RitualCircle_225 where
           $ forced
           $ oneOf
             [ GainsResources #when You playerCardEffect (atLeast 1)
+            , GainsActions #when You playerCardEffect (atLeast 1)
             , WouldDrawCardFrom #when You (DeckOf You) playerCardEffect
             ]
-      , restricted a 3 (exists $ InvestigatorAt "Ritual Circle") $ forced $ RoundEnds #when
+      , restricted a 3 (exists $ InvestigatorAt "Ritual Circle" <> can.heal.any (a.ability 3))
+          $ forced
+          $ RoundEnds #when
       ]
 
 instance RunMessage RitualCircle_225 where
@@ -69,16 +74,21 @@ instance RunMessage RitualCircle_225 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       moveToMatch (attrs.ability 1) iid "Front Gates"
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 (getGainedResources -> mResources) _ -> do
-      case mResources of
-        -- "Cancel that aspect": the resource gain is still a queued
-        -- `Do (TakeResources ...)` at the #when window
-        Just n -> do
+    UseCardAbility iid (isSource attrs -> True) 2 (triggeredAspect -> mAspect) _ -> do
+      -- "Cancel that aspect": at the #when window each of the three is still a
+      -- queued `Do`, so cancelling is dropping it.
+      for_ mAspect \case
+        GainedResources n -> do
           matchingDon't \case
             Do (TakeResources iid' _ _ False) -> iid' == iid
             _ -> False
           loseResources iid (attrs.ability 2) n
-        Nothing -> do
+        GainedActions n -> do
+          matchingDon't \case
+            Do (GainActions iid' _ _) -> iid' == iid
+            _ -> False
+          loseActions iid (attrs.ability 2) n
+        WouldDrawCards -> do
           mDrawing <- field InvestigatorDrawing iid
           for_ mDrawing \drawing -> do
             -- the window gated on this, but a sibling reaction in the same

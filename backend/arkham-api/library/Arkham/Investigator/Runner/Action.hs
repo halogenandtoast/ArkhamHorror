@@ -408,8 +408,24 @@ handleSetActions a@InvestigatorAttrs {..} iid = do
 handleSetActionsV2 a@InvestigatorAttrs {..} iid n = do
   pure $ a & remainingActionsL .~ n
 
-handleGainActions a@InvestigatorAttrs {..} iid n = do
-  -- TODO: If we add a window here we need to reconsider Ace of Rods, likely it would need a Do variant
+{- | Shaped like 'handleTakeResourcesV2': the increment becomes a @Do@ of its
+own behind a @#when@ window, so an ability there can cancel the gain by dropping
+that @Do@ -- and the @#after@ window is raised from the @Do@, so a cancelled
+gain raises no "after" window either. A negative gain is a debug adjustment
+rather than a gain, and raises neither.
+-}
+handleGainActions a@InvestigatorAttrs {..} iid source n msg = do
+  beforeWindowMsgs <-
+    if n > 0
+      then pure <$> checkWindows [mkWhen $ Window.GainsActions iid source n]
+      else pure []
+  pushAll $ beforeWindowMsgs <> [Do msg]
+  pure a
+
+handleDoGainActions a@InvestigatorAttrs {..} iid source n = do
+  when (n > 0) do
+    afterWindowMsg <- checkWindows [mkAfter $ Window.GainsActions iid source n]
+    push afterWindowMsg
   pure $ a & remainingActionsL %~ max 0 . (+ n)
 
 handleLoseAdditionalAction a@InvestigatorAttrs {..} iid n = do

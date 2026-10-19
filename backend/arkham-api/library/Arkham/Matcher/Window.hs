@@ -193,6 +193,10 @@ data WindowMatcher
   | DiscoverClues Timing Who Where ValueMatcher
   | WouldDiscoverClues Timing Who Where ValueMatcher SourceMatcher
   | GainsClues Timing Who ValueMatcher
+  | {- | The counterpart of 'LostActions'. @#when@ is before the gain lands, so
+    it can be cancelled by dropping the queued @Do (GainActions ...)@.
+    -}
+    GainsActions Timing Who SourceMatcher ValueMatcher
   | GainsResources Timing Who SourceMatcher ValueMatcher
   | SpendsResources Timing Who ValueMatcher
   | EnemyWouldAttack Timing Who EnemyAttackMatcher EnemyMatcher

@@ -2680,7 +2680,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (handL %~ filter (`notElem` cards))
       & (discardL %~ filter ((`notElem` cards) . PlayerCard))
       & (deckL %~ Deck . filter ((`notElem` cards) . PlayerCard) . unDeck)
-  GainActions iid _ n | iid == investigatorId -> handleGainActions a iid n
+  GainActions iid source n | iid == investigatorId -> handleGainActions a iid source n msg
+  Do (GainActions iid source n) | iid == investigatorId -> handleDoGainActions a iid source n
   LoseAdditionalAction iid n | iid == investigatorId -> handleLoseAdditionalAction a iid n
   TakeActions iid actions cost | iid == investigatorId -> handleTakeActions a iid actions cost
   TakenActions iid actions | iid == investigatorId -> handleTakenActions a iid actions

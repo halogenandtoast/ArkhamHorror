@@ -358,6 +358,7 @@ data WindowType
   | FailSkillTest InvestigatorId Int
   | FailSkillTestAtOrLess InvestigatorId Int
   | FastPlayerWindow
+  | GainsActions InvestigatorId Source Int
   | GainsClues InvestigatorId Source Int
   | GainsResources InvestigatorId Source Int
   | SpendsResources InvestigatorId Int

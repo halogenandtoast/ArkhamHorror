@@ -135,6 +135,7 @@ windowTable =
   , ("FlipLocation", ["FlipLocation"])
   , ("FloodLevelChanged", ["FloodLevelChanged"])
   , ("FloodLevelIncreased", ["FloodLevelChanged"])
+  , ("GainsActions", ["GainsActions"])
   , ("GainsClues", ["GainsClues"])
   , ("GainsResources", ["GainsResources"])
   , ("GainsSurge", ["GainedSurge"])

@@ -1,11 +1,9 @@
 module Arkham.Event.Events.MotivationalSpeech (motivationalSpeech) where
 
-import Arkham.Card
 import Arkham.Cost.Status
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Cost (getSpendableResources)
-import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Playable (getIsPlayableWithResources)
 import Arkham.Matcher
 import Arkham.Window (defaultWindows)
@@ -31,7 +29,7 @@ instance RunMessage MotivationalSpeech where
             labeledI "doNotPlayAlly" unfocusCards
             targets allies \ally -> do
               unfocusCards
-              costModifier attrs iid (ReduceCostOf (CardWithId $ toCardId ally) 3)
+              reduceCostOf attrs ally 3
               playCardPayingCost iid ally
       pure e
     _ -> MotivationalSpeech <$> liftRunMessage msg attrs

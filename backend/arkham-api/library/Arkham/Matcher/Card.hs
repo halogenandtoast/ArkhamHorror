@@ -77,6 +77,15 @@ data ExtendedCardMatcher
   | HandCardWithDifferentTitleFromAtLeastOneAsset InvestigatorMatcher AssetMatcher CardMatcher
   | ExtendedCardWithOneOf [ExtendedCardMatcher]
   | ExtendedCardMatches [ExtendedCardMatcher]
+  | {- | Cost of at least @n@ after the cost modifiers already in play, as
+    opposed to 'CardWithCostAtLeast', which reads the printed cost. A card with
+    no cost at all never matches.
+
+    This is the question a cost-reduction [reaction] has to ask before it offers
+    itself: Rod of Animalism (1) reducing a Guard Dog already brought to 0 by
+    Motivational Speech does nothing, so it should not prompt.
+    -}
+    CardWithModifiedCostAtLeast Int
   | PlayableCardWithCostReduction ActionStatus Int ExtendedCardMatcher
   | PlayableCardWithNoCost ActionStatus ExtendedCardMatcher
   | PlayableCard CostStatus ExtendedCardMatcher
@@ -223,9 +232,10 @@ data CardMatcher
   | CardWithId CardId
   | CardWithLevel Int
   | CardWithMaxLevel Int
-  | -- | Matches a card whose printed enemy health (fixed or per-investigator) is
-    -- at most the given value. Cards with no fixed printed health (X, *, or none)
-    -- never match. Requires the Player Count as the first Int to be able to calculate purely
+  | {- | Matches a card whose printed enemy health (fixed or per-investigator) is
+    at most the given value. Cards with no fixed printed health (X, *, or none)
+    never match. Requires the Player Count as the first Int to be able to calculate purely
+    -}
     CardWithMaxPrintedHealth Int Int
   | CardWithoutKeyword Keyword
   | CardWithKeyword Keyword

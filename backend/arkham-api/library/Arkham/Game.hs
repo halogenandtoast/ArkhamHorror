@@ -83,6 +83,7 @@ import Arkham.Helpers.Card (
   extendedCardMatch,
   filterCardsSubstituted,
   getHasVictoryPoints,
+  getModifiedCardCost,
   getVictoryPoints,
   iconsForCard,
  )
@@ -5968,6 +5969,10 @@ instance Query ExtendedCardMatcher where
       VictoryDisplayCardMatch matcher' -> do
         cards <- filter (`elem` cs) <$> getVictoryDisplay
         go cards matcher'
+      CardWithModifiedCostAtLeast n -> do
+        iid <- fromMaybeM (selectJust ActiveInvestigator) (selectOne TurnInvestigator)
+        -- encounter cards have no cost to modify and 'getModifiedCardCost' errors on them
+        filterM (fmap (maybe False (>= n)) . getModifiedCardCost iid) (filterCards IsPlayerCard cs)
       PlayableCardWithCostReduction actionStatus n matcher' -> do
         mTurnInvestigator <- selectOne TurnInvestigator
         active <- selectJust ActiveInvestigator

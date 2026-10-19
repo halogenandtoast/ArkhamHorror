@@ -19,8 +19,8 @@ rodOfAnimalism1 = asset RodOfAnimalism1 Cards.rodOfAnimalism1
 
 instance HasModifiersFor RodOfAnimalism1 where
   getModifiersFor (RodOfAnimalism1 a) = for_ a.controller \iid -> do
-    whenM (matches iid TurnInvestigator) $
-      modified_ a iid [CanReduceCostOf (#asset <> CardWithTrait Creature) 1]
+    whenM (matches iid TurnInvestigator)
+      $ modified_ a iid [CanReduceCostOf (#asset <> CardWithTrait Creature) 1]
 
 slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Creature []
@@ -28,7 +28,10 @@ slot attrs = TraitRestrictedSlot (toSource attrs) Creature []
 instance HasAbilities RodOfAnimalism1 where
   getAbilities (RodOfAnimalism1 attrs) =
     [ controlled attrs 1 (DuringTurn You)
-        $ freeReaction (PlayCard #when You $ basic $ #asset <> CardWithTrait Creature)
+        $ freeReaction
+        $ PlayCard #when You
+        $ basic (#asset <> CardWithTrait Creature)
+        <> CardWithModifiedCostAtLeast 1
     ]
 
 instance RunMessage RodOfAnimalism1 where
@@ -36,8 +39,7 @@ instance RunMessage RodOfAnimalism1 where
     CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       pushAll $ replicate 2 (AddSlot iid #ally (slot attrs))
       RodOfAnimalism1 <$> liftRunMessage msg attrs
-    UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
-      let source = toAbilitySource attrs 1
-      costModifier source iid (ReduceCostOf (CardWithId $ toCardId card) 1)
+    UseCardAbility _iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
+      reduceCostOf (attrs.ability 1) card 1
       pure a
     _ -> RodOfAnimalism1 <$> liftRunMessage msg attrs

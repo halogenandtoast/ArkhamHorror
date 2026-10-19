@@ -567,6 +567,35 @@ decrRoomMember gameId = withRedis \conn -> runRedis conn do
       now <- liftIO currentEpoch
       void $ hset roomsSeenHashKey ((roomField gameId, BS8.pack (show now)) :| [])
 
+{- | Write the cross-server tallies for a game from a count that was just
+observed, rather than adjusting them by one.
+
+The tallies are only ever moved by 'incrRoomMember' and 'decrRoomMember', so a
+pod that dies with sockets attached never decrements and the count keeps its
+share forever. Nothing reconciles that: 'getRedisRoomCounts' sweeps a game
+whose @seen@ has gone stale, which never happens while another pod is still
+holding the room and refreshing it. The drift then reads as seated players,
+which is what stops the abandoned-room sweep closing the room -- a state that
+sustains itself.
+
+So an admin sweep that has just probed every socket can say what the number
+actually is. Zero drops the fields, the same shape 'decrRoomMember' leaves
+behind, so an empty room does not linger on the admin list.
+-}
+setRoomTallies :: (MonadIO m, HasApp m) => ArkhamGameId -> Int -> Int -> m ()
+setRoomTallies gameId sockets watchers = withRedis \conn -> runRedis conn do
+  if sockets <= 0
+    then do
+      void $ hdel roomsHashKey (roomField gameId :| [])
+      void $ hdel roomsSeenHashKey (roomField gameId :| [])
+    else do
+      now <- liftIO currentEpoch
+      void $ hset roomsHashKey ((roomField gameId, BS8.pack (show sockets)) :| [])
+      void $ hset roomsSeenHashKey ((roomField gameId, BS8.pack (show now)) :| [])
+  if watchers <= 0
+    then void $ hdel watchersHashKey (roomField gameId :| [])
+    else void $ hset watchersHashKey ((roomField gameId, BS8.pack (show watchers)) :| [])
+
 {- | Increment the cross-server spectator count for a game. No-op without a
 Redis broker, where the room's own tally is the whole truth.
 -}

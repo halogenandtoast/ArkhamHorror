@@ -399,6 +399,13 @@ seat as far as the room and the Redis tally are concerned, and it will go on
 holding it forever, because nothing in the ordinary path can tell a silent
 socket from a quiet one.
 
+A refusal still reconciles the tally. The probe has just counted every socket
+the fleet is holding, and the tally is only ever moved a step at a time by a
+join or a leave, so a pod that died with sockets attached leaves its share in
+there forever -- which reads as seated players, which is what stops the room
+ever being swept. Leaving a live room open is the right call; leaving the drift
+behind with it is not, and the two are independent.
+
 @?force=true@ skips the probe's verdict and closes regardless, for the case
 where an admin can see from the detail view that the sockets are dead and does
 not want to argue with a probe about it.
@@ -410,15 +417,25 @@ postApiV1AdminRoomSweepR gameId = do
   probed <- roomDetailsFrom gameId probe
   let live = [c | c <- probed.connections, not c.spectator, c.probeAnswered == Just True]
   if not forced && not (null live)
-    then
+    then do
+      let held = length probed.connections
+      let drift = maybe 0 (subtract held) probed.tally.tallyClients
+      setRoomTallies gameId held probed.spectatorConnections
+      reconciled <- roomDetailsFrom gameId probe
       pure
         $ RoomSweepResult
           { swept = False
           , detail =
               tshow (length live)
                 <> " player connection(s) answered the probe, so the room was left open"
+                <> if drift > 0
+                  then
+                    "; cleared "
+                      <> tshow drift
+                      <> " socket(s) Redis was counting that no pod holds"
+                  else "; Redis tally already matched the sockets held"
           , livePlayers = live
-          , room = probed
+          , room = reconciled
           }
     else do
       closed <- runRoomOp gameId (CloseRoom "swept")

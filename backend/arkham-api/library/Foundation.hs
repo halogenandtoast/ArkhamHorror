@@ -107,6 +107,14 @@ data Room = Room
   number is the cross-pod total in @arkham:watchers@, and this is the
   fallback for a single-pod deployment, which is every local dev setup.
   -}
+  , roomNoPlayersSince :: TVar (Maybe Int)
+  {- ^ Unix epoch at which this room was first seen holding watchers and no
+  players, or 'Nothing' while a player is still on it. Read by the sweep
+  in 'Api.Arkham.Helpers.sweepAbandonedRooms', which is why it is a
+  timestamp and not a flag: a player reloading the page is a room with no
+  players for a second or two, and only a room that stays that way is
+  abandoned.
+  -}
   }
 
 {- | Cache of one game's log entries. 'cacheStep' is the arkham_games.step
@@ -139,7 +147,8 @@ newRoom chn = atomically do
   cache <- newTVar Nothing
   unsub <- newTVar (pure ())
   watchers <- newTVar 0
-  pure $ Room subs next chn cache unsub watchers
+  noPlayers <- newTVar Nothing
+  pure $ Room subs next chn cache unsub watchers noPlayers
 
 {- | Register a new WebSocket subscriber on the room. Returns the
 subscription id (used to unsubscribe) and the bounded queue the

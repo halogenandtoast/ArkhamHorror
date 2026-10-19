@@ -226,10 +226,11 @@ makeFoundation appSettings = do
 
   let foundation = mkFoundation pool thirdEditionStore
 
-  -- Per-pod heartbeat for the cross-server room registry: refreshes the
-  -- 'arkham:rooms:seen' timestamps for any game this pod is still
-  -- serving, so admin counts age out automatically when a pod crashes.
-  -- No-op when no Redis broker is configured.
+  -- Per-pod room upkeep, on one timer. Refreshes the 'arkham:rooms:seen'
+  -- timestamps for any game this pod is still serving, so admin counts age out
+  -- automatically when a pod crashes (that half needs Redis and is skipped
+  -- without it), and closes the rooms whose players have all left, which does
+  -- not.
   _ <- forkIO (roomHeartbeat foundation)
 
   -- The daily sweep that offloads old games' undo history, and the worker that

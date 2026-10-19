@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import {
   computed,
-  markRaw,
   nextTick,
   onMounted,
   onUnmounted,
@@ -10,7 +9,7 @@ import {
   shallowRef,
   watch,
 } from 'vue'
-import { useToast } from 'vue-toastification'
+import { useToast } from '@/toasts'
 import { storeToRefs } from 'pinia'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -1397,6 +1396,11 @@ const { send, close } = useWebSocket(websocketUrl, {
   onMessage,
 })
 
+/* Put up in place of leaving at once when the players have gone: a watcher
+ * whose board vanished mid-scenario is owed the reason, and a toast on the way
+ * out of the page is easy to miss. Dismissing it goes home. */
+const roomAbandoned = ref(false)
+
 /* The room was deleted. Close before navigating: `autoReconnect` would
  * otherwise bring the socket straight back up against a room the server has
  * just removed, and recreate it. Going home rather than showing a dead board,
@@ -1409,9 +1413,20 @@ function roomClosed(reason: string) {
    * socket carries this but no REST call has 503'd yet, so nothing else would. */
   if (reason === 'maintenance') {
     setMaintenance(true)
+  } else if (reason === 'abandoned') {
+    /* Only a spectator can receive this one -- it is sent because the last seat
+       left -- and the board behind the dialog is the last thing that happened,
+       which is worth leaving up while it is read. */
+    roomAbandoned.value = true
+    return
   } else {
     toast.info(t('gameClosed'), { timeout: 6000 })
   }
+  router.push({ name: 'Home' })
+}
+
+function leaveAbandonedRoom() {
+  roomAbandoned.value = false
   router.push({ name: 'Home' })
 }
 
@@ -1593,19 +1608,17 @@ const handleResult = (result: ServerResult) => {
       return
 
     case 'GameAchievement': {
-      // Non-blocking gold toast; vue-toastification stacks multiple unlocks.
-      // Strings are translated here because the toast container has no i18n.
+      // Non-blocking gold toast; several unlocks at once stack. Translated here
+      // rather than in the component so the component stays a dumb presenter.
       const tag = result.contents
-      toast(
+      toast.custom(
+        AchievementToast,
         {
-          component: markRaw(AchievementToast),
-          props: {
-            title: t('achievements.toastTitle'),
-            name: t(`${achievementEntryScope(tag)}.name`),
-            text: t(`${achievementEntryScope(tag)}.text`),
-          },
+          title: t('achievements.toastTitle'),
+          name: t(`${achievementEntryScope(tag)}.name`),
+          text: t(`${achievementEntryScope(tag)}.text`),
         },
-        { timeout: 8000, icon: false, closeButton: false, toastClassName: 'achievement-toast' },
+        { timeout: 8000, dismissible: false, className: 'achievement-toast' },
       )
       return
     }
@@ -2725,6 +2738,13 @@ onUnmounted(() => {
     </div>
   </div>
   <div id="game" v-else-if="ready && game && playerId" :class="{ 'game--inline-modals': inlineModals }" :style="{ '--epic-bar-height': epicBarHeight + 'px' }">
+    <dialog v-if="roomAbandoned" class="error-dialog">
+      <h2>{{ $t('gameAbandonedTitle') }}</h2>
+      <p>{{ $t('gameAbandoned') }}</p>
+      <div class="buttons">
+        <button @click="leaveAbandonedRoom">{{ $t('close') }}</button>
+      </div>
+    </dialog>
     <dialog v-if="error" class="error-dialog">
       <h2>{{ $t('error') }}</h2>
       <p class="error-message">{{ error }}</p>

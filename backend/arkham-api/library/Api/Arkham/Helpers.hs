@@ -505,6 +505,17 @@ roomStaleSeconds = 90
 roomHeartbeatSeconds :: Int
 roomHeartbeatSeconds = 30
 
+{- | How long a room may hold nothing but spectators before it is closed.
+
+Comfortably longer than a reload, which is the one ordinary way a game ends up
+with watchers and no players for a moment, and short enough that a watcher is
+not left staring at a table everybody else has left. Measured from the first
+sweep that saw no players, so the real wait is this plus up to one
+'roomHeartbeatSeconds'.
+-}
+roomAbandonedSeconds :: Int
+roomAbandonedSeconds = 60
+
 roomField :: ArkhamGameId -> ByteString
 roomField = encodeUtf8 . gameIdToText
 
@@ -634,21 +645,96 @@ keeps active games out of the staleness sweep even when nothing else
 'forkIO' from 'makeFoundation'.
 -}
 roomHeartbeat :: App -> IO ()
-roomHeartbeat app = case appMessageBroker app of
-  WebSocketBroker -> pure ()
-  RedisBroker conn _ -> forever do
-    threadDelay (roomHeartbeatSeconds * 1000000)
-    rooms <- MVar.readMVar (appGameRooms app)
-    active <- catMaybes <$> traverse keepIfActive (Map.toList rooms)
-    unless (null active) do
+roomHeartbeat app = forever do
+  threadDelay (roomHeartbeatSeconds * 1000000)
+  rooms <- MVar.readMVar (appGameRooms app)
+  active <- catMaybes <$> traverse keepIfActive (Map.toList rooms)
+  case appMessageBroker app of
+    WebSocketBroker -> pure ()
+    RedisBroker conn _ -> unless (null active) do
       now <- currentEpoch
       void $ try @SomeException $ runRedis conn do
         for_ active \gid ->
           void $ hset roomsSeenHashKey ((roomField gid, BS8.pack (show now)) :| [])
+  -- The same pass, because it asks the same question of the same rooms: this
+  -- one about who is left on them rather than whether anyone is.
+  sweepAbandonedRooms app
  where
   keepIfActive (gid, room) = do
     n <- roomClientCount room
     pure $ if n > 0 then Just gid else Nothing
+
+{- | Close every room this pod holds that has been left to its spectators.
+
+A game is over for a watcher the moment the last seat leaves it: nothing more
+will happen on the board, and the socket would otherwise sit there forever
+holding a room open on the server. So the room is closed out from under them,
+with the notice that says why -- the same eviction an admin's delete performs,
+and the client treats it the same way, by leaving rather than reconnecting.
+
+Deliberately not done the instant the last player disconnects. A reload is a
+disconnect, and a table of one that refreshes its page would otherwise take its
+watchers down with it; 'roomAbandonedSeconds' is the grace that distinguishes
+the two. Every pod sweeps its own rooms, and the player count is the cross-pod
+one, so a pod whose own players have gone does not evict the watchers of a game
+somebody is still playing on another.
+-}
+sweepAbandonedRooms :: App -> IO ()
+sweepAbandonedRooms app = do
+  rooms <- MVar.readMVar (appGameRooms app)
+  now <- currentEpoch
+  abandoned <- catMaybes <$> traverse (uncurry $ abandonedFor now) (Map.toList rooms)
+  for_ abandoned (closeAbandonedRoom app)
+ where
+  abandonedFor now gid room = do
+    subscribers <- roomClientCount room
+    watchers <- roomWatcherCount room
+    players <- seatedPlayerCount app gid (subscribers - watchers)
+    if players > 0 || watchers <= 0 || subscribers <= 0
+      then do
+        atomically $ writeTVar (roomNoPlayersSince room) Nothing
+        pure Nothing
+      else do
+        since <- atomically do
+          current <- readTVar (roomNoPlayersSince room)
+          case current of
+            Just t -> pure t
+            Nothing -> now <$ writeTVar (roomNoPlayersSince room) (Just now)
+        pure $ if now - since >= roomAbandonedSeconds then Just gid else Nothing
+
+{- | Seated players on a game across every pod, falling back to @onThisPod@
+(this pod's own subscribers less its own watchers) when Redis cannot answer.
+-}
+seatedPlayerCount :: App -> ArkhamGameId -> Int -> IO Int
+seatedPlayerCount app gameId onThisPod = case appMessageBroker app of
+  WebSocketBroker -> pure onThisPod
+  RedisBroker conn _ -> do
+    result <- try @SomeException $ runRedis conn do
+      total <- hget roomsHashKey (roomField gameId)
+      watching <- hget watchersHashKey (roomField gameId)
+      pure (total, watching)
+    -- No entry for the game at all is Redis having lost sight of sockets this
+    -- pod can see, not a game with nobody in it, so it falls back rather than
+    -- reading as abandoned.
+    pure case result of
+      Right (Right (Just total), Right mWatching) -> readInt total - maybe 0 readInt mWatching
+      _ -> onThisPod
+ where
+  readInt :: ByteString -> Int
+  readInt = fromMaybe 0 . readMaybe . BS8.unpack
+
+{- | Evict a room's remaining sockets and forget it, as
+'Api.Handler.Arkham.Games.Shared.forceDeleteRoom' does for a deleted game --
+same order, and for the same reason: the notice goes out while the subscribers
+are still reading, and each drains its queue before stopping.
+-}
+closeAbandonedRoom :: App -> ArkhamGameId -> IO ()
+closeAbandonedRoom app gameId = MVar.modifyMVar_ (appGameRooms app) \rooms -> do
+  for_ (Map.lookup gameId rooms) \room -> do
+    broadcastToRoom room $ Aeson.encode $ RoomClosed "abandoned"
+    closeRoomSubscribers room
+    tryRedis_ . join . readTVarIO $ roomUnsubscribe room
+  pure $ Map.delete gameId rooms
 
 {- | Every websocket room this pod is serving, across all three kinds.
 

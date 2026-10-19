@@ -1539,6 +1539,8 @@
     "futureDated": "Dated ahead \u2014 already live"
   },
   "gameClosed": "That game has been closed.",
+  "gameAbandonedTitle": "Everyone has left",
+  "gameAbandoned": "The players have left this game, so there is nothing left to watch.",
   "maintenance": {
     "title": "Down for maintenance",
     "body": "Arkham Horror is down for scheduled database maintenance.",
@@ -1644,5 +1646,8 @@
     "ofWhichUncertain": "{n} stated as \u201c\u2026?\u201d",
     "resolutionN": "Resolution {n}",
     "nPlayerPlus": "{n}+ players"
+  },
+  "toasts": {
+    "dismiss": "Dismiss"
   }
 }

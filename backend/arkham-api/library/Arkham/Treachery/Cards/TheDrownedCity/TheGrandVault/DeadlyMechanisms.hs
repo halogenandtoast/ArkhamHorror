@@ -33,9 +33,13 @@ instance RunMessage DeadlyMechanisms where
       nearestVault <- select $ NearestLocationTo iid (activatedLocation <> LocationWithTrait Vault)
       -- Draw 1 of the set-aside Vault Attendant enemies.
       attendants <- getSetAsideCardsMatching (cardIs Enemies.vaultAttendant)
-      -- Move to an adjacent location (flooded if able).
-      flooded <- select $ ConnectedFrom ForMovement (locationWithInvestigator iid) <> FloodedLocation
-      allAdjacent <- select $ ConnectedFrom ForMovement (locationWithInvestigator iid)
+      -- Move to an adjacent location (flooded if able). "Investigators cannot enter
+      -- X" bars this move like any other, and the Move handler never checks
+      -- CannotEnter -- it is only ever honored where destinations are chosen, so the
+      -- filter has to be here.
+      let adjacentTo = ConnectedFrom ForMovement (locationWithInvestigator iid) <> canEnterLocation iid
+      flooded <- select $ adjacentTo <> FloodedLocation
+      allAdjacent <- select adjacentTo
       let adjacent = if null flooded then allAdjacent else flooded
 
       chooseNM iid numChoices $ scenarioI18n do

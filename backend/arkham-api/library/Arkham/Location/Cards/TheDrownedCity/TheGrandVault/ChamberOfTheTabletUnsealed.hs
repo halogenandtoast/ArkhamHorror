@@ -20,6 +20,10 @@ chamberOfTheTabletUnsealed = location ChamberOfTheTabletUnsealed Cards.chamberOf
 instance HasModifiersFor ChamberOfTheTabletUnsealed where
   getModifiersFor (ChamberOfTheTabletUnsealed a) = do
     modifySelf a [CannotBeFlooded]
+    -- Sealed Chamber (unrevealed): "Investigators cannot enter Sealed Chamber."
+    -- The modifier belongs on the investigators who might enter, not on the ones
+    -- standing here -- see the note in CourtOfTheAncients/AncientAltar.
+    whenUnrevealed a $ modifySelect a Anyone [CannotEnter a.id]
     -- Connected to the location to the left of it, and vice versa.
     for_ (locationPosition a) \pos -> do
       let leftPos = updatePosition pos GridLeft

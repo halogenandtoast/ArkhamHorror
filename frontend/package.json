@@ -36,31 +36,27 @@
     "gsap": "^3.13.0",
     "lottie-web-vue": "^2.0.7",
     "mitt": "^3.0.1",
-    "pinia": "^3.0.3",
+    "pinia": "^4.1.0",
     "ts.data.json": "^3.1.1",
     "v-jsoneditor": "^1.4.5",
     "vue": "^3.5.22",
     "vue-final-modal": "^4.5.5",
     "vue-i18n": "^11.1.12",
-    "vue-router": "^4.5.1",
-    "vue-toastification": "^2.0.0-rc.5"
+    "vue-router": "^5.4.0"
   },
   "devDependencies": {
-    "@rushstack/eslint-patch": "^1.13.0",
-    "@tsconfig/node18": "^18.2.4",
+    "@eslint/js": "^9.39.0",
     "@types/node": "^24.6.2",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/eslint-config-prettier": "^10.2.0",
-    "@vue/eslint-config-typescript": "^14.6.0",
-    "@vue/tsconfig": "^0.8.1",
     "eslint": "^9.37.0",
     "eslint-plugin-vue": "^10.5.0",
-    "npm-run-all": "^4.1.5",
     "prettier": "^3.6.2",
-    "rollup": "^4.52.4",
     "sass-embedded": "^1.93.2",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.71.2",
     "vite": "^7.1.9",
-    "vue-tsc": "^3.1.0"
+    "vue-eslint-parser": "^10.4.1",
+    "vue-tsc": "^3.3.13"
   }
 }

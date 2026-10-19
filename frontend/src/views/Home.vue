@@ -555,6 +555,17 @@ header {
   min-width: 220px;
 }
 
+@media (max-width: 768px) {
+  .main-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-actions {
+    justify-content: flex-start;
+  }
+}
+
 .outcome-filter {
   margin-bottom: 10px;
   max-width: 360px;

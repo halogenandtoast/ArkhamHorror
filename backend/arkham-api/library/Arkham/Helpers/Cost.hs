@@ -438,7 +438,19 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
           elem eid <$> select Matcher.EventReady
         EnemyTarget eid ->
           elem eid <$> select Matcher.ReadyEnemy
-        _ -> error $ "Not handled " <> show target
+        -- "this card" is authored as a 'CardIdTarget': the one target that matches
+        -- the card in every zone. 'isTarget' already honours it, so the exhaust that
+        -- gets pushed lands -- which leaves affordability as the only half that has
+        -- to learn it.
+        CardIdTarget cid ->
+          orM
+            [ selectAny $ Matcher.AssetWithCardId cid <> Matcher.AssetReady
+            , selectAny $ Matcher.EventWithCardId cid <> Matcher.EventReady
+            , selectAny $ Matcher.EnemyWithCardId cid <> Matcher.ReadyEnemy
+            ]
+        -- A target with nothing to exhaust is an unpayable cost, not a crash: the
+        -- card builder lets an author pick any 'Target' here.
+        _ -> pure False
       ExhaustAssetCost matcher ->
         selectAny $ Matcher.replaceYouMatcher iid matcher <> Matcher.AssetReady
       ExhaustXAssetCost matcher ->

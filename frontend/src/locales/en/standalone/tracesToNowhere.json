@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-2. If you fail and there is a _Monster_ enemy at your location, that enemy attacks you.",
+      "cultist": "-1. If there is a _Syndicate_ enemy at your location, reveal another token.",
+      "tablet": "-2 (-4 instead if you are at an _Otherworld_ location).",
+      "elderThing": "-4. If you fail, deal 1 horror to a _Witness_ asset in play."
+    },
+    "hardExpert": {
+      "skull": "-3. After this test resolves, if there is a _Monster_ enemy at your location, that enemy attacks you.",
+      "cultist": "-2. If there is a _Syndicate_ enemy at your location, reveal another token.",
+      "tablet": "-3 (-5 instead if you are at an _Otherworld_ location).",
+      "elderThing": "-5. If you fail, choose an _Ally_ or _Witness_ asset. Something abducts that asset."
+    }
+  }
+}

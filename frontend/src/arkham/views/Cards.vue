@@ -28,7 +28,7 @@ enum View {
   List = "LIST",
 }
 
-const CHAPTER_2_CYCLES = new Set([12, 13, 61])
+const CHAPTER_2_CYCLES = new Set([12, 13, 61, 73])
 
 /* The third chapter: cards that aren't printed cards. Two groups of them --
  * the homebrew campaigns this build ships, and the cards you built yourself --
@@ -779,6 +779,7 @@ const CYCLE_ICON_OVERRIDES: Record<number, string> = {
   60: 'core',  // Investigator Starter Decks
   61: 'core',  // Investigator Starter Decks (Chapter 2)
   70: 'core',  // Side Stories
+  73: 'core',  // Side Stories (Chapter 2)
   90: 'otr',   // Parallel — On the Road Again
 }
 

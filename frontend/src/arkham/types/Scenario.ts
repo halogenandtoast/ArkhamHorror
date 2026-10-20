@@ -512,6 +512,7 @@ export function scenarioIdToI18n(scenarioId: string): string {
     case "70001": return "standalone.theLabyrinthsOfLunacy"
     case "71001": return "standalone.theMidwinterGala"
     case "72001": return "standalone.filmFatale"
+    case "73001": return "standalone.tracesToNowhere"
     case "81001": return "standalone.curseOfTheRougarou"
     case "82001": return "standalone.carnevaleOfHorrors"
     case "83001": return "standalone.theEternalSlumber"

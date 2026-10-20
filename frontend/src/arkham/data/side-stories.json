@@ -630,6 +630,19 @@
     "xp": 3
   },
   {
+    "id": "73001",
+    "name": "Traces to Nowhere",
+    "group": "chapter2",
+    "dev": true,
+    "standaloneDifficulties": [
+      "Easy",
+      "Standard",
+      "Hard",
+      "Expert"
+    ],
+    "xp": 2
+  },
+  {
     "id": "90004",
     "name": "Read or Die",
     "requiredInvestigator": "Daisy Walker",

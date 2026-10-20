@@ -662,6 +662,17 @@
   },
 
   {
+    "name": "Traces to Nowhere",
+    "min": 73001,
+    "max": 73059,
+    "playerCards": 0,
+    "code": "ttn",
+    "cycle": 73,
+    "previewUnimplemented": true,
+    "missing": ["73053"]
+  },
+
+  {
     "name": "Hour of the Huntress",
     "min": 98001,
     "max": 98003,

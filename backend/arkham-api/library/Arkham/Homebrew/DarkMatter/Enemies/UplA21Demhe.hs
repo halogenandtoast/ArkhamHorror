@@ -10,18 +10,11 @@ newtype UplA21Demhe = UplA21Demhe EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
-{- | "Spawn - Cargo Hold. Hunter. While moving or engaging, UPL-A21 'Demhe'
-ignores investigators without an [[AI]] encounter card in their threat area."
-
-The "ignores" clause is modeled as prey: both hunter movement and engagement
-consult the prey matcher, so restricting prey to investigators with an AI card
-in their threat area reproduces both halves of the rule.
--}
 uplA21Demhe :: EnemyCard UplA21Demhe
 uplA21Demhe =
   enemy UplA21Demhe Cards.uplA21Demhe
     & setSpawnAt (locationIs Locations.cargoHold)
-    & setPrey (HasMatchingTreachery $ TreacheryWithTrait AI)
+    & setOnlyPrey (HasMatchingTreachery $ TreacheryWithTrait AI)
 
 instance RunMessage UplA21Demhe where
   runMessage msg (UplA21Demhe attrs) = UplA21Demhe <$> runMessage msg attrs

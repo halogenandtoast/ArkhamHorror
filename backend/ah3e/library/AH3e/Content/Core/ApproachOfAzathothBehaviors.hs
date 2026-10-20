@@ -248,7 +248,11 @@ strangeBarrier =
                 pure (maybe False (.flipped) me && here && clues >= 3)
             , perform = \_ -> do
                 spendSheetClues 3
-                pushAll [LogText "Time Unstuck: Investigators win the game!", WinTheGame]
+                -- card 7 is reachable without card 5, which card 3 only adds at three doom
+                held <- inCodex 5
+                pushAll
+                  $ [if held then FlipCodexCard 5 else AddArchiveToCodexFlipped 5]
+                  <> [LogText "Time Unstuck: Investigators win the game!", WinTheGame]
             }
         ]
     }

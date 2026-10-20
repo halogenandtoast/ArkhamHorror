@@ -37,6 +37,7 @@ import Arkham.Message.Lifted.Log (record, remember)
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier (UIModifier (..), setActiveDuringSetup)
 import Arkham.Projection
+import Arkham.Queue (QueueT)
 import Arkham.Resolution
 import Arkham.Scenario.Deck (ScenarioDeckKey (..))
 import Arkham.Scenario.Import.Lifted hiding (say, (.=))
@@ -221,6 +222,33 @@ drawCardFromAbyss iid source card = do
   abyssDrawWindow "scenario" iid card
     $ ScenarioSpecific "resolveAbyssDraw" (toJSON (iid, source, card))
 
+{- | Put a location from The Abyss into play: attach it to the Mirror Nest
+nearest the investigator, preferring one that does not already have a Cave
+connected, give it an open cave slot label, and connect it both ways. The
+continuation runs with the placed location once the connection is made.
+-}
+placeAbyssLocation
+  :: ReverseQueue m => InvestigatorId -> Card -> (LocationId -> QueueT Message m ()) -> m ()
+placeAbyssLocation iid card afterPlaced = do
+  let mirrorNest = LocationWithTitle "Mirror Nest"
+  preferred <-
+    select
+      $ NearestLocationTo iid
+      $ mirrorNest
+      <> not_ (ConnectedTo NotForMovement (LocationWithTrait Cave))
+  fallback <- select $ NearestLocationTo iid mirrorNest
+  let choices = if null preferred then fallback else preferred
+  let
+    placeAndConnect nest = do
+      lid <- placeLocation card
+      openCaveLabelFor nest >>= traverse_ (setLocationLabel lid)
+      connectBothWays nest lid
+      afterPlaced lid
+  case choices of
+    [] -> runQueueT $ afterPlaced =<< placeLocation card
+    [nest] -> runQueueT $ placeAndConnect nest
+    nests -> chooseTargetM iid nests placeAndConnect
+
 {- | Resolve a card drawn from The Abyss. Resident cards have special text on
 The Abyss: flip them to their enemy side, they attack without engaging, then
 are discarded instead of going to hand. A "true" investigator card shuffled in
@@ -229,25 +257,7 @@ during setup returns its owner to their true self instead of going to a hand.
 resolveAbyssDraw :: ReverseQueue m => InvestigatorId -> Source -> Card -> m ()
 resolveAbyssDraw iid source card = case toCardType card of
   InvestigatorType -> resolveTrueSelf source iid card
-  LocationType -> do
-    let mirrorNest = LocationWithTitle "Mirror Nest"
-    preferred <-
-      select
-        $ NearestLocationTo iid
-        $ mirrorNest
-        <> not_ (ConnectedTo NotForMovement (LocationWithTrait Cave))
-    fallback <- select $ NearestLocationTo iid mirrorNest
-    let choices = if null preferred then fallback else preferred
-    let
-      placeAndConnect :: ReverseQueue m => LocationId -> m ()
-      placeAndConnect nest = do
-        lid <- placeLocation card
-        openCaveLabelFor nest >>= traverse_ (setLocationLabel lid)
-        connectBothWays nest lid
-    case choices of
-      [] -> void $ placeLocation card
-      [nest] -> placeAndConnect nest
-      nests -> chooseTargetM iid nests placeAndConnect
+  LocationType -> placeAbyssLocation iid card (const $ pure ())
   _ -> case residentFromCardDef (toCardDef card) of
     Just resident -> do
       enemyCard <- fetchCard (residentEnemyDef resident)
@@ -707,8 +717,7 @@ instance RunMessage FateOfTheVale where
                   unscoped $ labeled "skip" unfocusCards
                   targets locationCards \card -> do
                     unfocusCards
-                    lid <- placeLocation card
-                    moveTo source iid lid
+                    placeAbyssLocation iid card (moveTo source iid)
                     scenarioSpecific "removeFromAbyss" (toCardId card)
             else do
               codexFinished 8

@@ -11,7 +11,7 @@ newtype AcidicCoelom = AcidicCoelom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 acidicCoelom :: LocationCard AcidicCoelom
-acidicCoelom = location AcidicCoelom Cards.acidicCoelom 4 (Static 1)
+acidicCoelom = location AcidicCoelom Cards.acidicCoelom 4 (PerPlayer 1)
 
 instance HasModifiersFor AcidicCoelom where
   getModifiersFor (AcidicCoelom a) =

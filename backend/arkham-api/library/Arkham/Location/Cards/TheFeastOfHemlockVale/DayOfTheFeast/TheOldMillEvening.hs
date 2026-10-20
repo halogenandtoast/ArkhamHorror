@@ -10,7 +10,7 @@ newtype TheOldMillEvening = TheOldMillEvening LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theOldMillEvening :: LocationCard TheOldMillEvening
-theOldMillEvening = symbolLabel $ location TheOldMillEvening Cards.theOldMillEvening 4 (Static 1)
+theOldMillEvening = symbolLabel $ location TheOldMillEvening Cards.theOldMillEvening 4 (PerPlayer 1)
 
 instance HasAbilities TheOldMillEvening where
   getAbilities (TheOldMillEvening a) =

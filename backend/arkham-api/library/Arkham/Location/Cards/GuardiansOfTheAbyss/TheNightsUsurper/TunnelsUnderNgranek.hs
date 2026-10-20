@@ -13,7 +13,8 @@ newtype TunnelsUnderNgranek = TunnelsUnderNgranek LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tunnelsUnderNgranek :: LocationCard TunnelsUnderNgranek
-tunnelsUnderNgranek = locationWith TunnelsUnderNgranek Cards.tunnelsUnderNgranek 2 (Static 1) (canBeFlippedL .~ True)
+tunnelsUnderNgranek =
+  locationWith TunnelsUnderNgranek Cards.tunnelsUnderNgranek 2 (PerPlayer 1) (canBeFlippedL .~ True)
 
 instance HasAbilities TunnelsUnderNgranek where
   getAbilities (TunnelsUnderNgranek a) =

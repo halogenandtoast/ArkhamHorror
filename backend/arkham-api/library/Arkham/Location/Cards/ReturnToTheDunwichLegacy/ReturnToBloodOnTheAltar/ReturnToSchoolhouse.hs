@@ -12,7 +12,7 @@ newtype ReturnToSchoolhouse = ReturnToSchoolhouse LocationAttrs
 
 returnToSchoolhouse :: LocationCard ReturnToSchoolhouse
 returnToSchoolhouse =
-  locationWith ReturnToSchoolhouse Cards.returnToSchoolhouse 4 (PerPlayer 1) (labelL .~ "schoolhouse")
+  locationWith ReturnToSchoolhouse Cards.returnToSchoolhouse 4 (Static 1) (labelL .~ "schoolhouse")
 
 instance HasAbilities ReturnToSchoolhouse where
   getAbilities (ReturnToSchoolhouse a) =

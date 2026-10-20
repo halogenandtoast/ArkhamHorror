@@ -14,7 +14,8 @@ newtype StairwayToSarkomand = StairwayToSarkomand LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stairwayToSarkomand :: LocationCard StairwayToSarkomand
-stairwayToSarkomand = locationWith StairwayToSarkomand Cards.stairwayToSarkomand 3 (Static 1) (canBeFlippedL .~ True)
+stairwayToSarkomand =
+  locationWith StairwayToSarkomand Cards.stairwayToSarkomand 3 (PerPlayer 1) (canBeFlippedL .~ True)
 
 instance HasAbilities StairwayToSarkomand where
   getAbilities (StairwayToSarkomand a) =

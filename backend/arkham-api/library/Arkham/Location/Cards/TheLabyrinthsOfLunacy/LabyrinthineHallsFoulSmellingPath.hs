@@ -14,7 +14,7 @@ newtype LabyrinthineHallsFoulSmellingPath = LabyrinthineHallsFoulSmellingPath Lo
 
 labyrinthineHallsFoulSmellingPath :: LocationCard LabyrinthineHallsFoulSmellingPath
 labyrinthineHallsFoulSmellingPath =
-  location LabyrinthineHallsFoulSmellingPath Cards.labyrinthineHallsFoulSmellingPath 2 (PerPlayer 1)
+  location LabyrinthineHallsFoulSmellingPath Cards.labyrinthineHallsFoulSmellingPath 2 (Static 1)
 
 instance HasAbilities LabyrinthineHallsFoulSmellingPath where
   getAbilities (LabyrinthineHallsFoulSmellingPath a) =

@@ -13,7 +13,7 @@ newtype MistFilledCaverns = MistFilledCaverns LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mistFilledCaverns :: LocationCard MistFilledCaverns
-mistFilledCaverns = locationWith MistFilledCaverns Cards.mistFilledCaverns 1 (Static 1) (canBeFlippedL .~ True)
+mistFilledCaverns = locationWith MistFilledCaverns Cards.mistFilledCaverns 1 (PerPlayer 1) (canBeFlippedL .~ True)
 
 instance HasAbilities MistFilledCaverns where
   getAbilities (MistFilledCaverns a) =

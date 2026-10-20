@@ -12,7 +12,7 @@ newtype TheGreatAbyss = TheGreatAbyss LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theGreatAbyss :: LocationCard TheGreatAbyss
-theGreatAbyss = locationWith TheGreatAbyss Cards.theGreatAbyss 5 (Static 1) (canBeFlippedL .~ True)
+theGreatAbyss = locationWith TheGreatAbyss Cards.theGreatAbyss 5 (PerPlayer 1) (canBeFlippedL .~ True)
 
 instance HasAbilities TheGreatAbyss where
   getAbilities (TheGreatAbyss a) =

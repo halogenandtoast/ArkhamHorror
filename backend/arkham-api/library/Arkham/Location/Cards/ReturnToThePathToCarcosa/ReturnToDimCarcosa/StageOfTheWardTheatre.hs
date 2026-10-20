@@ -14,7 +14,7 @@ newtype StageOfTheWardTheatre = StageOfTheWardTheatre LocationAttrs
 
 stageOfTheWardTheatre :: LocationCard StageOfTheWardTheatre
 stageOfTheWardTheatre =
-  locationWith StageOfTheWardTheatre Cards.stageOfTheWardTheatre 0 (Static 0)
+  locationWith StageOfTheWardTheatre Cards.stageOfTheWardTheatre 4 (PerPlayer 2)
     $ (canBeFlippedL .~ True)
     . (revealedL .~ True)
 

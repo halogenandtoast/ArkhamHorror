@@ -14,7 +14,7 @@ newtype LabyrinthineHallsCorpseFilledPath = LabyrinthineHallsCorpseFilledPath Lo
 
 labyrinthineHallsCorpseFilledPath :: LocationCard LabyrinthineHallsCorpseFilledPath
 labyrinthineHallsCorpseFilledPath =
-  location LabyrinthineHallsCorpseFilledPath Cards.labyrinthineHallsCorpseFilledPath 2 (PerPlayer 1)
+  location LabyrinthineHallsCorpseFilledPath Cards.labyrinthineHallsCorpseFilledPath 2 (Static 1)
 
 instance HasAbilities LabyrinthineHallsCorpseFilledPath where
   getAbilities (LabyrinthineHallsCorpseFilledPath a) =

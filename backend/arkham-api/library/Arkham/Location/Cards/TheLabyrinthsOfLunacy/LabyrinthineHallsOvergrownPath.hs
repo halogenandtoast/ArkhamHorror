@@ -15,7 +15,7 @@ newtype LabyrinthineHallsOvergrownPath = LabyrinthineHallsOvergrownPath Location
 
 labyrinthineHallsOvergrownPath :: LocationCard LabyrinthineHallsOvergrownPath
 labyrinthineHallsOvergrownPath =
-  location LabyrinthineHallsOvergrownPath Cards.labyrinthineHallsOvergrownPath 2 (PerPlayer 1)
+  location LabyrinthineHallsOvergrownPath Cards.labyrinthineHallsOvergrownPath 2 (Static 1)
 
 instance HasAbilities LabyrinthineHallsOvergrownPath where
   getAbilities (LabyrinthineHallsOvergrownPath a) =
@@ -34,9 +34,9 @@ instance RunMessage LabyrinthineHallsOvergrownPath where
             questionLabeled "chooseAdditionalActions"
             targets (toList others) \iid' ->
               nextTurnModifier
-                 iid'
-                 (attrs.ability 1)
-                 iid'
+                iid'
+                (attrs.ability 1)
+                iid'
                 (AdditionalActions (ikey' "additionalActions") (toSource attrs) 2)
       pure l
     _ -> LabyrinthineHallsOvergrownPath <$> liftRunMessage msg attrs

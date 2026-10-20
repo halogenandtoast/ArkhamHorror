@@ -1125,20 +1125,33 @@ watch(
     const [newId] = newVals
     if (!newId) return
     if (oldVals && newId === oldVals[0] && newVals[1] === oldVals[1]) return
-    await fetchGame(props.gameId, props.spectate).then(
-      async ({ game: newGame, playerId: newPlayerId, multiplayerMode, eventId }) => {
-        preloadImages(newGame)
-        ;(window as Window & { g?: Arkham.Game }).g = newGame
-        game.value = newGame
-        solo.value = multiplayerMode === 'Solo'
-        // Engage the Epic event this game belongs to even when the URL lacks
-        // ?event (e.g. entered via the join / take-a-seat path).
-        gamePayloadEventId.value = eventId
-        updateGameLog(newGame.log)
-        playerId.value = newPlayerId
-        ready.value = true
-      },
-    )
+    await fetchGame(props.gameId, props.spectate)
+      .then(
+        async ({ game: newGame, playerId: newPlayerId, multiplayerMode, eventId }) => {
+          preloadImages(newGame)
+          ;(window as Window & { g?: Arkham.Game }).g = newGame
+          game.value = newGame
+          solo.value = multiplayerMode === 'Solo'
+          // Engage the Epic event this game belongs to even when the URL lacks
+          // ?event (e.g. entered via the join / take-a-seat path).
+          gamePayloadEventId.value = eventId
+          updateGameLog(newGame.log)
+          playerId.value = newPlayerId
+          ready.value = true
+        },
+      )
+      .catch((err) => {
+        /* A game you hold no seat in answers 404: the handler looks for your
+         * player row and there is not one. An admin has somewhere to go with
+         * that -- the read-only admin view of the same game -- so send them
+         * there rather than leaving the page on its loading state. Everyone
+         * else keeps the error they were given. */
+        const status = (err as { response?: { status?: number } })?.response?.status
+        if (!props.spectate && userStore.isAdmin && status === 404) {
+          return router.replace({ name: 'AdminGame', params: { gameId: props.gameId } })
+        }
+        throw err
+      })
   },
   { immediate: true },
 )

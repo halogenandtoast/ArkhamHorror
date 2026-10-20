@@ -913,7 +913,11 @@ sweepAbandonedRooms app = do
     subscribers <- roomClientCount room
     watchers <- roomWatcherCount room
     players <- seatedPlayerCount app gid (subscribers - watchers)
-    if players > 0 || watchers <= 0 || subscribers <= 0
+    -- An admin on the room is somebody deliberately looking at it. Closing it
+    -- would throw them off mid-look, which is the one thing this sweep should
+    -- never do; when they leave it is as abandoned as it ever was.
+    admin <- roomHasAdmin room
+    if admin || players > 0 || watchers <= 0 || subscribers <= 0
       then do
         atomically $ writeTVar (roomNoPlayersSince room) Nothing
         pure Nothing

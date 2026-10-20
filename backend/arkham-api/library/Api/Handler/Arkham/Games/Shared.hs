@@ -264,12 +264,20 @@ gameStreamAs role gameId pongVar = catchingConnectionException $ withKeepAlive d
     much easier to account for when its watchers have names. -}
     Watching -> lift lookupRequestUserId
   let watching = role == Watching
+  {- Read once, here, rather than when the sweep wants it: the sweep runs on a
+  timer with no request behind it, and a room full of sockets is no place to
+  start opening the users table. An admin on a room is what keeps
+  'sweepAbandonedRooms' from evicting them -- see 'roomHasAdmin'. -}
+  admin <- case mUserId of
+    Nothing -> pure False
+    Just uid -> lift $ runDB $ maybe False (userAdmin . entityVal) <$> P.selectFirst [P.UserId P.==. uid] []
   conn <- ask
   openedAt <- liftIO getCurrentTime
   let joining =
         SubscriberInfo
           { subUserId = mUserId
           , subSpectator = watching
+          , subAdmin = admin
           , subConnectedAt = openedAt
           , subLastPong = pongVar
           , subSendPing = WS.sendPing conn ("arkham-probe" :: ByteString)

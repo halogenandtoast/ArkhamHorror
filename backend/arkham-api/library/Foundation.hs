@@ -103,6 +103,11 @@ data SubscriberInfo = SubscriberInfo
   allows -- reaching a game needs only its id. A seated player always has one.
   -}
   , subSpectator :: Bool
+  , subAdmin :: Bool
+  {- ^ Whether the account on this socket is an admin. Read once, when the
+  socket joins, because the sweep that consults it runs on a timer with no
+  request behind it and no business opening the users table.
+  -}
   , subConnectedAt :: UTCTime
   , subLastPong :: TVar (Maybe UTCTime)
   {- ^ When this socket last answered a ping. Any pong counts, the keepalive's
@@ -131,6 +136,7 @@ anonymousSubscriber = liftIO do
     $ SubscriberInfo
       { subUserId = Nothing
       , subSpectator = False
+      , subAdmin = False
       , subConnectedAt = now
       , subLastPong = lastPong
       , subSendPing = pure ()
@@ -222,6 +228,17 @@ subscribeToRoom info room = liftIO $ atomically do
 unsubscribeFromRoom :: MonadIO m => Room -> Int -> m ()
 unsubscribeFromRoom room subId = liftIO $ atomically do
   modifyTVar' (roomSubscribers room) (IntMap.delete subId)
+
+{- | Is an admin on this room right now?
+
+A room with an admin watching it is one somebody is deliberately looking at, so
+the abandoned-room sweep leaves it alone rather than evicting them mid-look.
+Nothing else is implied: when they disconnect the room is as abandoned as it
+ever was, and the next sweep takes it.
+-}
+roomHasAdmin :: MonadIO m => Room -> m Bool
+roomHasAdmin room =
+  liftIO $ any (subAdmin . subInfo) <$> readTVarIO (roomSubscribers room)
 
 {- | Evict every socket on the room.
 

@@ -15,7 +15,7 @@ hallucinatoryHolograms = treachery HallucinatoryHolograms Cards.hallucinatoryHol
 
 instance HasAbilities HallucinatoryHolograms where
   getAbilities (HallucinatoryHolograms a) =
-    [ restricted a 1 (youExist $ HasMatchingTreachery $ TreacheryWithTrait AI)
+    [ restricted a 1 (InYourHand <> youExist (HasMatchingTreachery $ TreacheryWithTrait AI))
         $ forced
         $ TurnEnds #when You
     , restricted a 2 (thisExists a $ TreacheryInHandOf You) doubleActionAbility

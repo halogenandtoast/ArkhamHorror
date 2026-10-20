@@ -14,8 +14,10 @@ cabinPressure = treachery CabinPressure Cards.cabinPressure
 
 instance HasAbilities CabinPressure where
   getAbilities (CabinPressure a) =
-    [ restricted a 1 (youExist $ at_ LocationWithAnyClues) $ forced $ TurnEnds #when You
-    , restricted a 2 OnSameLocation doubleActionAbility
+    [ restricted a 1 (InYourHand <> youExist (at_ LocationWithAnyClues))
+        $ forced
+        $ TurnEnds #when You
+    , restricted a 2 InYourHand doubleActionAbility
     ]
 
 instance RunMessage CabinPressure where

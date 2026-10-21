@@ -3,7 +3,8 @@
 {-# LANGUAGE NoFieldSelectors #-}
 
 {- | A third-edition table: a lobby of seats that becomes a game once the host
-starts it. Tables are not kept in the database; see "ThirdEdition.Store".
+starts it. A table is one row, this whole record in its @payload@; see
+"ThirdEdition.Store".
 -}
 module ThirdEdition.Table where
 

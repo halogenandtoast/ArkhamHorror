@@ -72,8 +72,15 @@ const join = (t: TableSummary) =>
     void router.push(`/tables/${t.id}`)
   })
 const leave = (t: TableSummary) => act(t.id, () => api.leaveTable(t.id))
+// two tables made the same day carry the same default name, so the name alone
+// cannot say which one this is about and closing a game cannot be undone
+const closeDetail = (t: TableSummary) =>
+  [scenarioName(t), `${t.seats.length} players`, `made ${new Date(t.createdAt).toLocaleString()}`]
+    .filter(Boolean)
+    .join(' \u00b7 ')
 const close = (t: TableSummary) => {
-  if (confirm(`Close "${t.name}" for everyone?`)) void act(t.id, () => api.closeTable(t.id))
+  if (confirm(`Close "${t.name}" for everyone?\n\n${closeDetail(t)}\n\nThis cannot be undone.`))
+    void act(t.id, () => api.closeTable(t.id))
 }
 const dismissNotice = () => void router.replace({ path: '/' })
 

@@ -234,14 +234,8 @@ makeFoundation appSettings = do
   -- Perform database migration using our application's logging settings.
   -- runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc
 
-  -- Third-edition tables are state, so they live in the database. Whatever is
-  -- still in Redis from before that was true is brought across once.
+  -- Third-edition tables are state, so they live in the database.
   thirdEditionStore <- ThirdEdition.newPostgresStore pool
-  case appMessageBroker of
-    RedisBroker conn _ -> do
-      brought <- ThirdEdition.importRedisTables conn thirdEditionStore
-      when (brought > 0) $ putStrLn ("Imported " <> show brought <> " third-edition tables from Redis")
-    WebSocketBroker -> pure ()
 
   let foundation = mkFoundation pool thirdEditionStore
 

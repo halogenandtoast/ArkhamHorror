@@ -738,6 +738,7 @@ scenarioEncounterSets =
       , ("54056", EncounterSet.ReturnToBeforeTheBlackThrone)
       , ("71001", EncounterSet.TheMidwinterGala)
       , ("72001", EncounterSet.FilmFatale)
+      , ("73001", EncounterSet.TracesToNowhere)
       , ("81001", EncounterSet.CurseOfTheRougarou)
       , ("82001", EncounterSet.CarnevaleOfHorrors)
       , ("83001", EncounterSet.TheEternalSlumber)

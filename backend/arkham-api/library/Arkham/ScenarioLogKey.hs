@@ -155,6 +155,13 @@ data ScenarioLogKey
   | TheVentIsOpen
   | -- | Film Fatale
     TheInvestigatorsMadeTheirCallTime
+  | -- | Traces to Nowhere
+    TheInvestigatorsFoundRecordOfMatildesBribe
+  | TheInvestigatorsFoundSomethingStrangeInTheFuneralHomeBasement
+  | TheInvestigatorsGlimpsedAnotherWorld
+  | AlbrechtIsTheCulprit
+  | LinaOpenedTheDoor
+  | EugeneIsNotWhatHeSeems
   | -- | Machinations Through Time
     ThomasAndMaryHaveMet
   | ThomasAndMaryAreInspiredByNikolaTesla

@@ -17,7 +17,7 @@ import { Difficulty, difficultyDecoder } from '@/arkham/types/Difficulty';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { TarotCard, tarotCardDecoder, tarotScopeDecoder } from '@/arkham/types/TarotCard';
 import { XpEntry, xpEntryDecoder} from '@/arkham/types/Xp';
-import { customTokenKey, type TokenFace } from '@/arkham/types/ChaosToken';
+import { chaosTokenDecoder, customTokenKey, type ChaosToken, type TokenFace } from '@/arkham/types/ChaosToken';
 
 /** A set of locations the map draws as one box, routing connections to the box. */
 export type GroupLayout = 'GroupRow' | 'GroupColumn' | 'GroupSquare'
@@ -78,6 +78,7 @@ export type Scenario = {
   decks: [string, Card[]][];
   deckDiscards: [string, Card[]][];
   cardsUnderScenarioReference: Card[];
+  sealedChaosTokens: ChaosToken[];
   cardsUnderAgendaDeck: Card[];
   cardsUnderActDeck: Card[];
   cardsNextToActDeck: Card[];
@@ -237,6 +238,7 @@ export const scenarioDecoder = JsonDecoder.object<DecodedScenario>({
     JsonDecoder.constant([] as [string, Card[]][]),
   ], 'deckDiscards'),
   cardsUnderScenarioReference: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
+  sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
   cardsUnderAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
   cardsUnderActDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathActCards'),
   tarotCards: JsonDecoder.

@@ -28,7 +28,7 @@ instance RunMessage ButterflySwords2 where
       pure a
     AfterSkillTestEnds (isAbilitySource attrs 1 -> True) _ _ | not attrs.exhausted -> do
       iid <- fromJustNote "no investigator" <$> getSkillTestInvestigator
-      oncePerAbility attrs 1 $ afterSkillTest iid "Butterfly Swords (2)" $ forInvestigator iid msg
+      oncePerAbility attrs 1 $ afterSkillTest iid attrs $ forInvestigator iid msg
       pure a
     ForInvestigator iid (AfterSkillTestEnds (isAbilitySource attrs 1 -> True) _ _) | not attrs.exhausted -> do
       canFight <- hasFightActions iid (attrs.ability 1) (DuringYourAction You) (defaultWindows iid)
@@ -36,6 +36,7 @@ instance RunMessage ButterflySwords2 where
       fight <- capture $ withCost iid (exhaust attrs) do
         skillTestModifiers sid attrs iid [AddSkillValue #agility, DamageDealt 1]
         chooseFightEnemy sid iid (attrs.ability 1)
-      chooseOrRunOne iid $ Label "$label.doNotFightAgain" [] : [Label "$label.fightAgain" fight | canFight]
+      chooseOrRunOne iid $ Label "$label.doNotFightAgain" []
+        : [Label "$label.fightAgain" fight | canFight]
       pure a
     _ -> ButterflySwords2 <$> liftRunMessage msg attrs

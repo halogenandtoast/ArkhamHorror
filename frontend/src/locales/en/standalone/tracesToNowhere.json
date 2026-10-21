@@ -12,5 +12,153 @@
       "tablet": "-3 (-5 instead if you are at an _Otherworld_ location).",
       "elderThing": "-5. If you fail, choose an _Ally_ or _Witness_ asset. Something abducts that asset."
     }
+  },
+  "intro": {
+    "title": "Traces to Nowhere",
+    "body": "<p>Ever since their arrival in Arkham, the Husserl family has been the center of one scandal or another, with each member of the family intent on making waves. Josephine Husserl, matriarch of the family, threw swanky parties for the real movers and shakers of the city. While she entertained guests from all walks of life, her husband Elias would hold secret meetings with mob bosses, local politicians, and even members of the police force. The Husserls had money to invest, and they saw Arkham as rife with opportunity.</p><p>Each of Elias and Josephine's children ran afoul of other influential people in Arkham, however. Whether it was Albrecht gambling his family's wealth away, Elias Jr. forging bad deals, Lina's paintings failing to garner any interest in high society, or Adele struggling and failing to distance herself from them all, the rumors about the Husserls swirled through the streets.</p><p>Surprisingly, however, the Arkham Advertiser only ever commented on the more positive parts of their public image—stretching every meager humanitarian effort as far as they could to make a story.</p><p>But the controversy came to a head when Elias Husserl Sr. went missing one evening. He had been on his way to a private meeting in French Hill, and he never returned. Frustrated by the lack of initiative from the police force, Josephine hired private detective Aziza Steer, who wasted no time in digging into Elias's many contacts. After a couple of weeks with little progress, Aziza reached out to you for assistance in the investigation.</p><p>But once you arrived, Aziza was nowhere to be found. Now, alone in her office, it is up to you to discover what happened to Aziza and Elias Sr.</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the *Traces to Nowhere* and *Dimensional Madness* encounter sets. These sets are indicated by the following icons:<section class='encounter-sets two-columns'><img src='{setImgPath}/traces-to-nowhere.png' /><img src='{setImgPath}/dimensional-madness.png' /></section>",
+    "placeLocations": "Put the following locations into play: Steer's Office, Merchant District, French Hill, South Church, and Historical Society.",
+    "beginPlay": "Each investigator begins play at Steer's Office.",
+    "spawnEnforcer": "Spawn 1 of the Hired Enforcer enemies at Merchant District.",
+    "abductAziza": "Find the Aziza Steer (*Has a Bone to Pick*) story asset and place her facedown beneath the scenario reference card. Aziza Steer has been abducted!",
+    "setOutOfPlay": "Set the following cards aside, out of play:",
+    "suspects": "The 6 _Suspect_ story assets.",
+    "culprits": "The Crooked Cops enemy and all 3 _Culprit_ enemies.",
+    "actAgenda": "Agenda 4a—\"Into the Pit\" and all 3 copies of act 4a.",
+    "locations": "The Arkham Advertiser, Train Station, and Tick-Tock Club locations, as well as both copies of the Duterte Funeral Home location and both copies of the Meiger Estate location.",
+    "witnesses": "The 4 _Witness_ story assets (Adele Husserl, Josephine Husserl, Charles Tamm, and Gladys Washington).",
+    "dimensionalMadness": "The *Dimensional Madness* encounter set.",
+    "leadsDeck": "Create the Leads deck by shuffling the 4 set-aside _Witness_ story assets along with the top 2 cards of the encounter deck (top 3 cards instead if there are 3 or 4 investigators in the game).",
+    "leadsDeckNote": "The Leads deck is a special deck of scenario cards. When an investigator is instructed to draw a card from the Leads deck, they resolve it as if it were drawn from the encounter deck.",
+    "leadsDeckPlacement": "Place the Leads deck next to the scenario reference card.",
+    "begin": "You are now ready to begin.",
+    "note": "<p class='basic'>*Note*: The Abductor enemy in the *Dimensional Madness* encounter set is a double-sided card. For the best experience, do not look at the reverse side of Abductor until explicitly instructed to do so.</p>"
+  },
+  "codex": {
+    "josephineHusserl": {
+      "title": "Codex A: Josephine Husserl",
+      "body": "<p>Josephine turns her steely glare on you. Her thin lips and furrowed brow tell you she's not excited to see you. She offers a forced smile to those around her as she gently pulls you aside. “Whoever is behind this,” she says just above a whisper, “they know my family. It has to be either a close business associate of Elias's, or one of my own children.” When you look on her with surprise, she offers a slight shrug of one shoulder. “Heaven forbid,” she adds nonchalantly.</p><p>You ask whether there's anyone in particular you should look into. “My daughter, Lina,” Josephine says. “She's been to the church a lot lately. Probably guilty about something.” She sips her drink. “And Albrecht. He can't keep himself away from the cards, and he's been seeing some reporter at least once a week.”</p><p class='basic right'>Search the chaos bag for a {'{'}cultist{'}'} token and seal it on the scenario reference card. Add Josephine Husserl to the victory display.</p>"
+    },
+    "adeleHusserl": {
+      "title": "Codex B: Adele Husserl",
+      "body": "<p>Adele sighs in exasperation at your questions. “Look, you're wasting your time,” she says. “I've done much to cut my family's influence out of my life. Other than a few hundred dollars—which Albrecht insisted I take—everything I have, I earned.” She shakes her head helplessly. “He said I deserved it for staying out of the papers.”</p><p>You ask whether she's had contact with anyone else, and she nods. “Junior,” she says. “I spoke to him at Velma's a couple of nights ago. He seemed anxious about something. Nervous. He said he was going to leave town, and asked if I would go with. I told him no. Now that I'm on my own, I've made friends here in Arkham. People I can actually rely on. I don't want to start all over again. Besides, I don't trust his assistant, Mr. Peel.”</p><p class='basic right'>Search the chaos bag for a {'{'}tablet{'}'} token and seal it on the scenario reference card. Add Adele Husserl to the victory display.</p>"
+    },
+    "gladysWashington": {
+      "title": "Codex C: Gladys Washington",
+      "body": "<p>“You're taking over for Aziza?” Gladys asks you. “I'm glad. The Husserls aren't all bad.”</p><p>You ask her whom she means, and after a beat she says “I used to be close with Lina. She's a painter. And her art is very… unique. She's held exhibitions up in the Merchant District, trying to sell some pieces. But she's not had much success, and I can tell it eats away at her.” You ask if there's anyone else. “Maybe keep an eye on Junior? Lina has said he wants to leave town. I'm no detective, but given all that's happened, it seems like suspicious timing to me.”</p><p>You thank Gladys for the information and go to leave, but she raises a hand to stop you. “Something strange happened the other day. I came in to work in the morning, and the front door was broken. Like it was forced open from the inside.” She shrugs. “Nobody here but me and the deceased,” she says. “But the basement has been smelling stranger than normal. Would you mind taking a look, if you get the chance?”</p><p class='basic right'>Search the chaos bag for a {'{'}skull{'}'} token and seal it on the scenario reference card. Add Gladys Washington to the victory display.</p>"
+    },
+    "charlesTamm": {
+      "title": "Codex D: Charles Tamm",
+      "body": "<p class='basic'>If this is the first time this codex has been triggered during this game, proceed to *Charles Tamm 1*.</p><p class='basic'>Otherwise, skip to *Charles Tamm 2*.</p><p>*Charles Tamm 1*: When you return to the office, a man in a crisp suit is seated with his feet up on the desk. You demand to know who he is.</p><p>“Charles Tamm,” he says. “Mrs. Husserl has paid me to keep an eye on you.” He shrugs as he reaches into his pocket, producing and unwrapping a stick of chewing gum. He pops it into his mouth. “Of course, I could be convinced to turn in early tonight.”</p><p class='basic right'>Proceed to *Charles Tamm 2*.</p><p>*Charles Tamm 2*: “Well? Do we have a deal?”</p><p class='basic right'>Any investigator at Charles Tamm's location may spend 4 resources to add him to the victory display. Otherwise, any investigator may trigger this codex again.</p>"
+    },
+    "albrechtHusserl": {
+      "title": "Codex E: Albrecht Husserl",
+      "body": "<p class='basic'>_If the investigators “found record of Matilde's bribe,” continue reading. Otherwise, Albrecht refuses to give a straight answer. Any investigator may trigger this codex again._</p><p>You confront Albrecht about all the bribes he's been paying to the Arkham Police Force, as well as to the Arkham Advertiser. He raises his hands defensively, a desperate look in his eyes. “It was never supposed to go this far,” he says. “But when you have half a dozen mobsters breathing down your neck—not to mention your own father—you have to do something! And now it looks like I'll have to clean this up, too.”</p><p>He reaches into his coat pocket, producing a sealed glass jar. Floating inside is a fluorescent pink jellyfish-like creature. You rush to stop him, knocking the jar from his grasp to shatter on the floor.</p><p class='basic'>Remember that “Albrecht is the culprit.”</p><p class='basic right'>Skip to *Interlude: The Culprit*.</p>"
+    },
+    "matildeCorrea": {
+      "title": "Codex F: Matilde Correa",
+      "body": "<p>You toss the stuffed envelope to Matilde. She catches it awkwardly, but she doesn't even have to open it to know what it contains. “I needed the money!” she says. “And Albrecht was paying. Don't act like you wouldn't have taken the deal too!”</p><p>You ask about the creature you read about, the jellyfish. “I don't know what it is,” she says. “All I know is that Albrecht collects it from some mysterious people. He needs it to make people disappear.”</p><p>You tell Matilde to find work in another town before you head out to confront Albrecht Husserl.</p><p class='basic right'>Add Matilde Correa to the victory display.</p>"
+    },
+    "vicarYang": {
+      "title": "Codex G: Vicar Yang",
+      "body": "<p class='basic'>If this is the first time this codex has been triggered this game, proceed to *Vicar Yang 1*.</p><p class='basic'>Otherwise, skip to *Vicar Yang 2*.</p><p>*Vicar Yang 1*: The vicar is welcoming when you first arrive, but his demeanor changes to one of melancholic regret when you mention why you're there. “I have met with Lina. The woman is plagued by terrible nightmares. But I can't discuss the things she's told me. She trusts me to respect her privacy.”</p><p class='basic right'>Proceed to *Vicar Yang 2*.</p><p>*Vicar Yang 2*: The vicar will need some convincing.</p><p class='basic right'>Choose an investigator at Vicar Yang's location to test {'{'}intellect{'}'} (3). If they succeed, he suggests that you visit the old manor in French Hill. Put the set-aside Meiger Estate (*Under New Ownership*) location into play, and add Vicar Yang to the victory display. Otherwise, any investigator may trigger this codex again.</p>"
+    },
+    "linaHusserl": {
+      "title": "Codex H: Lina Husserl",
+      "body": "<p class='basic'>_If the investigators “glimpsed another world,” continue reading. Otherwise, Lina refuses to give a straight answer. Any investigator may trigger this codex again._</p><p>Tired of Lina giving you the run-around, you finally reveal what you witnessed at the Meiger Estate. Her brown eyes lock with yours in an intense glare. “It was open?” she asks, a hint of desperation in her voice. “The door from my dreams? Was it open?!”</p><p>Before you can protest, she rushes past you. You follow her. As you cross town towards the Meiger Estate, she confesses how she had seen the door in her nightmares. She saw it so vividly and so frequently that she had to paint it. But after she had painted the door, something came through. It took her father. It took Aziza. And she wants to stop it before it can take anyone else. But before you can make it back to the estate, it seems that something has found you.</p><p class='basic'>Remember that “Lina opened the door.”</p><p class='basic right'>Skip to *Interlude: The Culprit*.</p>"
+    },
+    "eliasHusserlJr": {
+      "title": "Codex I: Elias Husserl Jr.",
+      "body": "<p>“Look, I know why you're here,” Elias says. “But I'm not involved in any of that!” Before you can reply, the sound of someone approaching draws your attention. A tall man with a thin mustache and an exhausted look in his eye silently considers you for a moment. “Oh, Eugene,” Elias says, seeing the man. “I'm glad you're here. Tell these people to leave me alone, will you?”</p><p>Mr. Peel ignores Junior's command. “You're not going anywhere, Elias,” he says. “It's time for you to make good on your deal.” A group of tough-looking goons with arcane symbols tattooed on their arms gather, ready to attack. These are no mere gangsters, but cultists in disguise! You tell Junior to get out of there.</p><p class='basic right'>Put the set-aside Eugene Peel story asset into play at Elias Husserl Jr.'s location.</p><p class='basic right'>Search the encounter deck and discard pile for 1 {'{'}perPlayer{'}'} _Syndicate_ enemies and spawn them at Elias Husserl Jr.'s location.</p><p class='basic right'>Add Elias Husserl Jr. to the victory display.</p>"
+    },
+    "eugenePeel": {
+      "title": "Codex J: Eugene Peel",
+      "body": "<p>After you rough up Peel's cultists, you grab him by the collar and toss him into some nearby trash cans. He sprawls onto the platform floorboards, covered in refuse.</p><p>“You're meddling in a deal you don't understand,” Mr. Peel says. “Junior wanted money from me and my brothers, and we wanted influence in the city of Arkham. But when his father refused to honor the deal Junior made, we had him removed. We did the same to that other investigator, and we'll do it to you, too!”</p><p>He reaches into his pocket, producing a small glass jar with a strange, jellyfish-like creature inside. “Time to answer all of your questions!” he says, tossing the glass jar onto the ground at your feet, where it shatters, the tentacled creature spilling out onto the floor of the train platform.</p><p class='basic'>Remember that “Eugene is not what he seems.”</p><p class='basic right'>Skip to *Interlude: The Culprit*.</p>"
+    }
+  },
+  "interlude": {
+    "theCulprit1": {
+      "title": "The Culprit",
+      "body": "<p>The world around you suddenly opens up, your senses overwhelmed by a sudden flash of purple light and the sharp smell of ozone. You feel cold, clawed hands reach through the very air and grasp you, pulling you into the light. Your vision swirls, your head swims, and the next thing you know you're plummeting through the air of an alien world. You land in a pool of thick gray ooze, human bones shifting and sinking all around you. Before you can think, you are struggling, swimming, trying to keep from descending below the surface of the strange ichor that clings to your clothes.</p><ul><li>Put each set-aside _Otherworld_ location into play.</li><li>Each investigator moves directly to Bone Pit.</li><li>Flip Abductor to its Dimensional Shambler side and move it to Bone Pit (or spawn it at Bone Pit, if it is set-aside).</li><li>Add the set-aside agenda 4a—“Into the Pit” to the agenda deck. Advance directly to agenda 4a (do not resolve any other agendas).</li></ul>"
+    },
+    "theCulprit2": {
+      "title": "The Culprit",
+      "body": "<p>Squirming in the ooze beside you is the form of Albrecht Husserl. “What?!” he exclaims, slowly sinking into the ooze-filled pit of bones. “It wasn't supposed to take me! This is all your fault!” He grasps the side of the pit and climbs out. Reaching into his coat again, he draws a gun. He levels the barrel at you as he stands on the edge of the pit, but the unearthly screech of a great monster draws his attention.</p><p>You've come too far to let Albrecht die here in this hellish place. You need to get him back to Arkham, to face real justice for his crimes.</p><ul><li>Remove the Albrecht Husserl story asset from the game.</li><li>Spawn the set-aside Albrecht Husserl enemy at Bone Pit.</li><li>Something abducts each _Suspect_ story asset in play at an _Arkham_ location, and each card in the Leads deck.</li><li>Gather all abducted cards and shuffle them together. Attach 1 {'{'}perPlayer{'}'} of these cards, at random, to Dimensional Shambler. Place the remaining cards facedown beneath Bone Pit.<ul><li>*Note*: Cards attached to Dimensional Shambler are no longer considered to be abducted.</li></ul></li><li>Add the set-aside act 4a—“Albrecht's Gamble” to the act deck. Advance directly to act 4a (do not resolve act 3b).</li><li>Continue playing.</li></ul>"
+    },
+    "theCulprit3": {
+      "title": "The Culprit",
+      "body": "<p>Squirming in the ooze beside you is the form of Lina Husserl. She grasps the side of the pit and climbs out, spitting ichor onto the ground as she catches her breath. She looks down at you with an expression of fear and bewilderment, when slowly an alien form draws up behind her. The hulking, spiked silhouette of the creature looms over Lina as she turns to face it. “I've seen you before,” she says. “You're here because of me. You're here for me!”</p><p>You've come too far to let Lina die here in this hellish place. You need to get her back to Arkham and put an end to that monster plaguing her nightmares.</p><ul><li>Remove the Lina Husserl story asset from the game.</li><li>Spawn the set-aside Lina Husserl enemy at Bone Pit.</li><li>Something abducts each _Suspect_ story asset in play at an _Arkham_ location, and each card in the Leads deck.</li><li>Gather all abducted cards and shuffle them together. Attach 1 {'{'}perPlayer{'}'} of these cards, at random, to Dimensional Shambler. Place the remaining cards facedown beneath Bone Pit.<ul><li>*Note*: Cards attached to Dimensional Shambler are no longer considered to be abducted.</li></ul></li><li>Add the set-aside act 4a—“Lina's Nightmare” to the act deck. Advance directly to act 4a (do not resolve act 3b).</li><li>Continue playing.</li></ul>"
+    },
+    "theCulprit4": {
+      "title": "The Culprit",
+      "body": "<p>Squirming in the ooze beside you is the form of Eugene Peel. “You insolent fool!” he shouts at you as he moves toward the side of the pit. Grasping the ledge, he climbs out. “Your meddling stops here,” he says, and reaches beneath his coat to draw a wicked-looking dagger. “Prepare to meet your fate, so far from—”</p><p>His threats are stopped short as a great monster leaps into view, landing to perch on a nearby rock. It snarls at Eugene, baring rows of sharp teeth. He looks on with horror as the creature slowly stalks down from its perch. But you've come too far to let Eugene die here in this hellish place. You need to get him back to Arkham, to face real justice for his crimes.</p><ul><li>Remove the Eugene Peel story asset from the game.</li><li>Spawn the set-aside Eugene Peel enemy at Bone Pit.</li><li>Something abducts each _Suspect_ story asset in play at an _Arkham_ location, and each card in the Leads deck.</li><li>Gather all abducted cards and shuffle them together. Attach 1 {'{'}perPlayer{'}'} of these cards, at random, to Dimensional Shambler. Place the remaining cards facedown beneath Bone Pit.<ul><li>*Note*: Cards attached to Dimensional Shambler are no longer considered to be abducted.</li></ul></li><li>Add the set-aside act 4a—“Mr. Peel's Scheme” to the act deck. Advance directly to act 4a (do not resolve act 3b).</li><li>Continue playing.</li></ul>"
+    }
+  },
+  "resolutions": {
+    "xp": "Experience",
+    "noResolution": "<p>The strength of the many threats arrayed against the Husserl family prove too much for you. Despite your best efforts, you succumb to the will of the Dimensional Shambler as you are dragged into the bone pit of the otherworld.</p><ul><li>In your campaign log, record *the investigators failed to solve the case*.</li><li>The investigators lose the campaign.</li></ul>",
+    "resolution1": "<p>It took every ounce of strength you could muster, but you were able to convince Lina Husserl to face her deepest fears and defeat the monster of her nightmares. You don't know how her paintings reached across the veil between worlds to call the Shambler to Arkham, but you suggest she maybe stop painting the things she sees in her dreams.</p><ul><li>In your campaign log, record *the investigators saved Lina Husserl*.</li></ul>",
+    "resolution2": "<p>Despite being just one man, Eugene Peel was a leader among his peers in the occult. With him removed, the cult has gone quiet.</p><ul><li>In your campaign log, record *the investigators stopped Eugene Peel*.</li></ul>",
+    "resolution3": "<p>You return to Arkham with Albrecht Husserl in tow, and are quick to hand him over to the authorities. You can only hope that the Husserl family doesn't have the entire Arkham Police Force in their pocket.</p><ul><li>In your campaign log, record *the investigators stopped Albrecht Husserl*.</li></ul>",
+    "resolution4": "<p>Despite your best efforts, you are unable to keep the Dimensional Shambler from claiming its next victim. You escape back to Arkham, where you can only hope that these events are well and truly done.</p><ul><li>In your campaign log, record *the culprit is still at large*.</li></ul>",
+    "resolution5": "<p>You weren't able to locate and recover Elias, but the progress you did make seems to have satisfied the city. Arkham is quick to recover, the city seemingly eager to forget all of the business of the investigation of the Husserl family. Josephine steps into the position of power and authority left vacant by her missing husband, and the leadership of the Husserl family continues to thrive in the city, albeit with a bit more caution.</p>",
+    "fin": "Fin",
+    "bonus": {
+      "storyAssets": "Story assets in the victory display"
+    }
+  },
+  "label": {
+    "cab": {
+      "resources": "Spend 4 resources to hire a cab",
+      "actionAndResources": "Spend 1 action and 2 resources to hire a cab"
+    },
+    "witness": {
+      "keepClue": "Do not spend a clue",
+      "spendClue": "Spend 1 clue to reduce the difficulty of this test by 3"
+    },
+    "culprit": {
+      "spendClues": "Spend {count} clues, reducing the difficulty by {count}"
+    },
+    "blackjack": {
+      "decline": "Do not play blackjack",
+      "play": "Spend 2 resources to play blackjack",
+      "hit": "Reveal another token",
+      "stand": "Stop revealing (your hand is {count})",
+      "countAs": "Count the {'{'}elderSign{'}'} as {count}"
+    },
+    "bonePit": {
+      "stop": "Spend no more clues",
+      "spendAnother": "Spend 1 more clue to save another card"
+    },
+    "thePortal": {
+      "noAdditionalRescue": "Do not spend 2 clues",
+      "rescueAdditional": "Spend 2 clues to rescue an additional card"
+    },
+    "hungryVoid": {
+      "takeDamageAndHorror": "Take 1 damage and 1 horror",
+      "placeDoom": "Place 1 doom on the current agenda"
+    },
+    "overYourShoulder": {
+      "abductAlly": "Something abducts an _Ally_ asset at your location",
+      "takeHorror": "Take 1 direct horror"
+    },
+    "disappearingEvidence": {
+      "discard": "Discard 1 card at random from your hand",
+      "allyHorror": "An _Ally_ asset at your location takes 1 horror"
+    },
+    "lockedOut": {
+      "loseAction": "Lose 1 action",
+      "allyDamage": "An _Ally_ asset at your location takes 1 damage"
+    },
+    "ambushingShadow": {
+      "loseClue": "Lose 1 clue",
+      "discardCard": "Discard 1 card at random from your hand"
+    },
+    "aethrealBlight": {
+      "discardAsset": "Discard an asset you control",
+      "removeFromGame": "Remove the top 2 cards of your deck from the game"
+    }
   }
 }

@@ -13,6 +13,9 @@ export type SealableTarget = {
     | 'TreacheryTarget'
     | 'StoryTarget'
   contents: string
+} | {
+  /* The scenario reference card has no id -- `ScenarioTarget` is nullary. */
+  tag: 'ScenarioTarget'
 }
 
 /* Both messages take the whole record, and `Eq ChaosToken` compares ids, so the

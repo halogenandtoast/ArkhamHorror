@@ -25,6 +25,6 @@ instance RunMessage QuickThinking where
             labeledI "passOnAdditionalAction" nothing
       pure s
     DoStep 1 (PassedSkillTest iid _ _ (isTarget attrs -> True) _ _) -> do
-      afterSkillTest iid "Quick Thinking" $ takeActionAsIfTurn attrs.controller attrs
+      afterSkillTest iid attrs $ takeActionAsIfTurn attrs.controller attrs
       pure s
     _ -> QuickThinking <$> liftRunMessage msg attrs

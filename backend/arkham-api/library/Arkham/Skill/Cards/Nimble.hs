@@ -18,7 +18,7 @@ nimble = skill Nimble Cards.nimble
 instance RunMessage Nimble where
   runMessage msg s@(Nimble attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ (min 3 -> n) | n > 0 -> do
-      afterSkillTest attrs.owner "Nimble" $ createCardEffect Cards.nimble (effectInt n) attrs attrs.owner
+      afterSkillTest attrs.owner attrs $ createCardEffect Cards.nimble (effectInt n) attrs attrs.owner
       pure s
     _ -> Nimble <$> liftRunMessage msg attrs
 

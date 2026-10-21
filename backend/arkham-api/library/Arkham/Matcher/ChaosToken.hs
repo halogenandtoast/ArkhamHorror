@@ -37,6 +37,7 @@ data ChaosTokenMatcher
   | SealedOnEnemy EnemyMatcher ChaosTokenMatcher
   | SealedOnLocation LocationMatcher ChaosTokenMatcher
   | SealedOnInvestigator InvestigatorMatcher ChaosTokenMatcher
+  | SealedOnScenarioReference ChaosTokenMatcher
   | RevealedChaosTokens ChaosTokenMatcher
   | ChaosTokenRevealedBy InvestigatorMatcher
   | ChaosTokenMatchesOrElse ChaosTokenMatcher ChaosTokenMatcher

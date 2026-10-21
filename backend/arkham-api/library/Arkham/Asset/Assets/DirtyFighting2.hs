@@ -39,7 +39,7 @@ instance HasAbilities DirtyFighting2 where
 instance RunMessage DirtyFighting2 where
   runMessage msg a@(DirtyFighting2 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (evadedEnemy -> enemy) _ -> do
-      afterMaybeSkillTest iid "Dirty Fighting" do
+      afterMaybeSkillTest iid attrs do
         temporaryModifiers iid (attrs.ability 1) [IgnoreAloof, MustFight enemy] do
           performActionAction iid (attrs.ability 1) #fight
       pure a

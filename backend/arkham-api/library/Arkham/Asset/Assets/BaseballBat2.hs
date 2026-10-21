@@ -50,7 +50,7 @@ instance RunMessage BaseballBat2 where
               eid <- MaybeT getSkillTestTargetedEnemy
               liftGuardM $ selectAny (Matcher.EnemyWithId eid)
               pure eid
-            afterSkillTest iid "Baseball Bat (2)" do
+            afterSkillTest iid attrs do
               chooseOneM iid do
                 (cardI18n $ labeled "baseballBat2.returnToHand") $ returnToHand iid attrs
                 (cardI18n $ labeled "baseballBat2.extraDamage") do

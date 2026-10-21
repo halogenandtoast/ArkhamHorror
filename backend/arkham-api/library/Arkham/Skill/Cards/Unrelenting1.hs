@@ -28,6 +28,6 @@ instance RunMessage Unrelenting1 where
     DoStep 1 (InvestigatorCommittedSkill iid sid) | sid == toId attrs -> do
       when (count ((`elem` [PlusOne, Zero, BlessToken, ElderSign]) . chaosTokenFace) attrs.sealed == 3) do
         drawCards iid attrs 2
-      afterSkillTest iid "Unrelenting (1)" $ for_ attrs.sealed unsealChaosToken
+      afterSkillTest iid attrs $ for_ attrs.sealed unsealChaosToken
       pure s
     _ -> Unrelenting1 <$> liftRunMessage msg attrs

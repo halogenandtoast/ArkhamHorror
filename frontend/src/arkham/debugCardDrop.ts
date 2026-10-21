@@ -27,12 +27,11 @@ export type SealTarget =
   | { tag: 'LocationTarget'; contents: string }
   | { tag: 'InvestigatorTarget'; contents: string }
   | { tag: 'TreacheryTarget'; contents: string }
+  /* The scenario reference card seals tokens of its own (Traces to Nowhere's
+     codex entries), so it takes a seal drag like any other seal target. */
+  | { tag: 'ScenarioTarget' }
 
-/* Takes placed tokens (Piper's skull counts resources on it) but has no sealed
- * pool, so it refuses a seal drag. */
-export type TokensOnlyTarget = { tag: 'ScenarioTarget' }
-
-export type CardDropTarget = SealTarget | TokensOnlyTarget
+export type CardDropTarget = SealTarget
 
 /* Where a remove drag came from. Wider than `CardDropTarget` because the drag starts
  * from a token that is already on the card, so anything rendering a pool qualifies --
@@ -47,7 +46,7 @@ export const investigatorTarget = (id: string): SealTarget =>
 /* Treacheries keep plain tokens -- no uses -- so a Resource stays a resource. */
 export const treacheryTarget = (id: string): SealTarget =>
   ({ tag: 'TreacheryTarget', contents: id })
-export const scenarioTarget: TokensOnlyTarget = { tag: 'ScenarioTarget' }
+export const scenarioTarget: SealTarget = { tag: 'ScenarioTarget' }
 
 const sameTarget = (a: RemoveTarget, b: RemoveTarget) =>
   a.tag === b.tag && a.contents === b.contents
@@ -59,7 +58,7 @@ function accepts(drop: DebugCardDrop, target: CardDropTarget): boolean {
     if (sameTarget(drop.target, target)) return false
     return drop.token !== 'Breach' || target.tag === 'LocationTarget'
   }
-  return drop.kind !== 'seal' || target.tag !== 'ScenarioTarget'
+  return true
 }
 
 /* Shift takes the whole stack rather than the 5 a place drag uses: a pool is usually

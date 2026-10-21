@@ -2454,14 +2454,17 @@ resolveAbilityAndThen mref body = do
         Nothing -> pushAll msgs
         Just msg -> insertAfterMatching msgs (== msg)
 
+-- | As 'afterSkillTest', but also handles there being no skill test in progress.
 afterMaybeSkillTest
   :: ( MonadTrans t
      , HasQueue Message m
      , HasQueue Message (t m)
      , HasGame (t m)
+     , HasCardCode card
+     , Named card
      )
-  => InvestigatorId -> Text -> QueueT Message (t m) a -> t m ()
-afterMaybeSkillTest iid lbl body = do
+  => InvestigatorId -> card -> QueueT Message (t m) a -> t m ()
+afterMaybeSkillTest iid card body = do
   mst <- getSkillTest
   case mst of
     Nothing -> do
@@ -2479,7 +2482,7 @@ afterMaybeSkillTest iid lbl body = do
         Just (EventSource e) ->
           insertAfterMatchingOrNow msgs (== FinishedEvent e)
         _ -> insertAfterMatchingOrNow msgs (== EndSkillTestWindow)
-    Just _ -> afterSkillTest iid lbl body
+    Just _ -> afterSkillTest iid card body
 
 afterMaybeSkillTestQuiet
   :: ( MonadTrans t
@@ -2508,15 +2511,25 @@ afterMaybeSkillTestQuiet body = do
         _ -> insertAfterMatchingOrNow msgs (== EndSkillTestWindow)
     Just _ -> afterSkillTestQuiet body
 
+{- | Queue @body@ to run after the current skill test, offered to the investigator
+as a named option.
+
+The name is taken from the card offering it rather than written out, so the
+option is localized like every other label; a hand-typed English card name here
+would be the one untranslated string in the prompt.
+-}
 afterSkillTest
   :: ( MonadTrans t
      , HasQueue Message m
      , HasQueue Message (t m)
      , HasGame (t m)
      , ToId investigator InvestigatorId
+     , HasCardCode card
+     , Named card
      )
-  => investigator -> Text -> QueueT Message (t m) a -> t m ()
-afterSkillTest investigator lbl body = do
+  => investigator -> card -> QueueT Message (t m) a -> t m ()
+afterSkillTest investigator card body = do
+  let lbl = withI18n $ cardNameVar card $ ikey' "label.afterSkillTestOption"
   msgs <- capture body
   let
     option = [AfterSkillTestOption (asId investigator) lbl msgs]

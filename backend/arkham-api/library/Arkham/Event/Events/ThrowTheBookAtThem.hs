@@ -45,7 +45,7 @@ instance RunMessage ThrowTheBookAtThem where
         _ -> pure ()
       pure e
     DoStep 1 (PassedThisSkillTest iid (isSource attrs -> True)) -> do
-      afterSkillTest iid "Throw the Book at Them" do
+      afterSkillTest iid attrs do
         push $ ResolveEventChoice iid attrs.id 1 Nothing []
       pure e
     ResolveEventChoice iid eid _ _ _ | eid == attrs.id -> do

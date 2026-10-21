@@ -14,7 +14,6 @@ module Arkham.Homebrew.AndThenThereWereNone.CardDefs.Enemies where
 
 import Arkham.Enemy.CardDefs.Import
 import Arkham.Homebrew.AndThenThereWereNone.Sets qualified as Set
-import Arkham.Homebrew.AndThenThereWereNone.Traits (pattern Culprit)
 import Arkham.Keyword qualified as Keyword
 
 {- | A guest, unmasked. Every culprit shares its traits, its 10[per_investigator]

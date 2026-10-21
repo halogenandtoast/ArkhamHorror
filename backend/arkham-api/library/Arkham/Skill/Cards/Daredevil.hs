@@ -35,7 +35,7 @@ instance RunMessage Daredevil where
       unless (attrs.tabooed TabooList21) $ shuffleCardsIntoDeck iid weaknesses
 
       when (attrs.tabooed TabooList21 && notNull weaknesses) do
-        afterSkillTest iid "Daredevil" do
+        afterSkillTest iid attrs do
           ifCardExists (inDiscardOf iid <> basic (mapOneOf (CardWithId . toCardId) weaknesses)) do
             chooseOneAtATimeM iid
               $ targets weaknesses

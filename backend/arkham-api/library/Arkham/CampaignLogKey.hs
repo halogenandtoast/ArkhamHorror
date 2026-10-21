@@ -80,6 +80,12 @@ data CampaignLogKey
   | -- | The Midwinter Gala
     TheInvestigatorsSurvivedTheMidwinterGala
   | TheInvestigatorsWereDefeatedAtTheMidwinterGala
+  | -- | Traces to Nowhere
+    TheInvestigatorsFailedToSolveTheCase
+  | TheInvestigatorsSavedLinaHusserl
+  | TheInvestigatorsStoppedEugenePeel
+  | TheInvestigatorsStoppedAlbrechtHusserl
+  | TheCulpritIsStillAtLarge
   | -- | Fortune and Folly
     PracticedRoles
   | -- | The Blob That Ate Everything

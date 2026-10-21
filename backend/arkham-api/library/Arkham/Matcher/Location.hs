@@ -98,6 +98,7 @@ data LocationMatcher
   | LocationWithPrintedShroud ValueMatcher
   | LocationWithShroudLessThanOrEqualToLessThanEnemyMaybeField EnemyId (Field Enemy (Maybe Int))
   | LocationWithMostClues LocationMatcher
+  | LocationWithMostCardsUnderneath LocationMatcher
   | LocationWithMostInvestigators LocationMatcher
   | LocationWithMostEnemies LocationMatcher EnemyMatcher
   | LocationWithFewestEnemies LocationMatcher EnemyMatcher

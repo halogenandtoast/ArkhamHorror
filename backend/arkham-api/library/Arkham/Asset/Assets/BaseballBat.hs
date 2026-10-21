@@ -31,6 +31,6 @@ instance RunMessage BaseballBat where
         when (isAbilitySource attrs 1 source) do
           tokens <- getModifiedChaosTokenFaces =<< getSkillTestRevealedChaosTokens
           when (any (`elem` [Skull, AutoFail]) tokens) do
-            afterSkillTest iid "Baseball Bat" $ toDiscardBy iid (attrs.ability 1) attrs
+            afterSkillTest iid attrs $ toDiscardBy iid (attrs.ability 1) attrs
       pure a
     _ -> BaseballBat <$> liftRunMessage msg attrs

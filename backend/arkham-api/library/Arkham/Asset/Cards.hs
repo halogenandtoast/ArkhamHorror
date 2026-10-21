@@ -1109,6 +1109,8 @@ allPlayerAssetCards =
         gMen
       , corrosiveCloud
       , alienInstruments
+      , --- Traces to Nowhere
+        azizaSteerHardboiled
       ]
 
 -- with encounter backs
@@ -1240,6 +1242,18 @@ allEncounterAssetCards =
       , obsidianClaw
       , obsidianClawPower
       , horrorInClay
+      , --- Traces to Nowhere
+        albrechtHusserlRecklessGambler
+      , eliasHusserlJrFleeingTheCity
+      , eugenePeelHidingSomething
+      , linaHusserlTheNextBigThing
+      , matildeCorreaInvestigativeReporter
+      , vicarYangTryingToDoTheRightThing
+      , josephineHusserlMiffedMatriarch
+      , adeleHusserlEstrangedDaughter
+      , gladysWashingtonCuriousCoroner
+      , charlesTammJustHereToGetPaid
+      , azizaSteerHasABoneToPick
       ]
 
 allSpecialPlayerAssetCards :: Map CardCode CardDef

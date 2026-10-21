@@ -39,7 +39,7 @@ instance HasChaosTokenValue TrishScarborough2 where
 instance RunMessage TrishScarborough2 where
   runMessage msg i@(TrishScarborough2 attrs) = runQueueT $ case msg of
     ElderSignEffect iid | attrs `is` iid -> do
-      afterSkillTest iid "Trish Scarborough" do
+      afterSkillTest iid attrs do
         chooseOneM iid do
           labeledI "disengageAndMove" $ doStep 1 msg
           withI18n skip_

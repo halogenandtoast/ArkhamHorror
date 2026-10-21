@@ -22,6 +22,6 @@ instance RunMessage CalculatedRisk where
   runMessage msg (CalculatedRisk attrs) = runQueueT $ case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
       whenM (matches iid TurnInvestigator) do
-        afterSkillTest iid "Calculated Risk" $ push $ ChooseEndTurn iid
+        afterSkillTest iid attrs $ push $ ChooseEndTurn iid
       CalculatedRisk <$> liftRunMessage msg attrs
     _ -> CalculatedRisk <$> liftRunMessage msg attrs

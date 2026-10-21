@@ -316,6 +316,8 @@ data EncounterSet
   | FilmFatale
   | CosmicJourney
   | ForgottenIsland
+  | TracesToNowhere
+  | DimensionalMadness
   | AbominableContessa
   | SpreadingFlames
   | AshenPilgrims

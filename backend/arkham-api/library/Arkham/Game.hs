@@ -2540,6 +2540,9 @@ getLocationsMatching lmatcher = do
     LocationWithMostClues locationMatcher -> do
       matches' <- go ls locationMatcher
       maxes <$> forToSnd matches' (pure . attr locationClues)
+    LocationWithMostCardsUnderneath locationMatcher -> do
+      matches' <- go ls locationMatcher
+      maxes <$> forToSnd matches' (fieldMap LocationCardsUnderneath length . toId)
     LocationCanBeEnteredBy enemyId -> do
       emods <- getModifiers enemyId
       flip filterM ls $ \l -> do
@@ -5613,6 +5616,7 @@ instance Query ChaosTokenMatcher where
       IncludeTokenPool m -> includeSealed m
       SealedOnAsset _ _ -> True
       SealedOnEnemy _ _ -> True
+      SealedOnScenarioReference _ -> True
       SealedOnInvestigator _ _ -> True
       SealedOnLocation _ _ -> True
       _ -> False
@@ -5665,6 +5669,10 @@ instance Query ChaosTokenMatcher where
         pure $ isMatch' && t `elem` sealedTokens
       SealedOnAsset assetMatcher chaosTokenMatcher -> \t -> do
         sealedTokens <- selectAgg id AssetSealedChaosTokens assetMatcher
+        isMatch' <- go chaosTokenMatcher t
+        pure $ isMatch' && t `elem` sealedTokens
+      SealedOnScenarioReference chaosTokenMatcher -> \t -> do
+        sealedTokens <- scenarioField ScenarioSealedChaosTokens
         isMatch' <- go chaosTokenMatcher t
         pure $ isMatch' && t `elem` sealedTokens
       WouldReduceYourSkillValueToZero -> \t ->
@@ -6576,6 +6584,7 @@ instance Projection Scenario where
       ScenarioResignedCardCodes -> pure scenarioResignedCardCodes
       ScenarioResolvedStories -> pure scenarioResolvedStories
       ScenarioChaosBag -> pure scenarioChaosBag
+      ScenarioSealedChaosTokens -> pure scenarioSealedChaosTokens
       ScenarioCustomChaosBags -> pure scenarioCustomChaosBags
       ScenarioInResolution -> pure scenarioInResolution
       ScenarioIsPrelude -> pure scenarioIsPrelude

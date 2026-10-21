@@ -410,6 +410,126 @@ rocketShipRattlingWithEnergy =
     , cdCardType = EncounterAssetType
     }
 
+albrechtHusserlRecklessGambler :: CardDef
+albrechtHusserlRecklessGambler =
+  (storyAsset "73013" ("Albrecht Husserl" <:> "Reckless Gambler") 0 TracesToNowhere)
+    { cdCardTraits = singleton Suspect
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdRevelation = IsRevelation
+    , cdCardType = EncounterAssetType
+    }
+
+eliasHusserlJrFleeingTheCity :: CardDef
+eliasHusserlJrFleeingTheCity =
+  (storyAsset "73014" ("Elias Husserl Jr." <:> "Fleeing the City") 0 TracesToNowhere)
+    { cdCardTraits = singleton Suspect
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdRevelation = IsRevelation
+    , cdCardType = EncounterAssetType
+    }
+
+eugenePeelHidingSomething :: CardDef
+eugenePeelHidingSomething =
+  (storyAsset "73015" ("Eugene Peel" <:> "Hiding Something") 0 TracesToNowhere)
+    { cdCardTraits = singleton Suspect
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdRevelation = IsRevelation
+    , cdCardType = EncounterAssetType
+    }
+
+linaHusserlTheNextBigThing :: CardDef
+linaHusserlTheNextBigThing =
+  (storyAsset "73016" ("Lina Husserl" <:> "The Next Big Thing") 0 TracesToNowhere)
+    { cdCardTraits = singleton Suspect
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdRevelation = IsRevelation
+    , cdCardType = EncounterAssetType
+    }
+
+matildeCorreaInvestigativeReporter :: CardDef
+matildeCorreaInvestigativeReporter =
+  (storyAsset "73017" ("Matilde Correa" <:> "Investigative Reporter") 0 TracesToNowhere)
+    { cdCardTraits = singleton Suspect
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdRevelation = IsRevelation
+    , cdCardType = EncounterAssetType
+    }
+
+vicarYangTryingToDoTheRightThing :: CardDef
+vicarYangTryingToDoTheRightThing =
+  (storyAsset "73018" ("Vicar Yang" <:> "Trying to Do the Right Thing") 0 TracesToNowhere)
+    { cdCardTraits = singleton Suspect
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdRevelation = IsRevelation
+    , cdCardType = EncounterAssetType
+    }
+
+josephineHusserlMiffedMatriarch :: CardDef
+josephineHusserlMiffedMatriarch =
+  (storyAsset "73034" ("Josephine Husserl" <:> "Miffed Matriarch") 0 TracesToNowhere)
+    { cdCardTraits = singleton Witness
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdRevelation = IsRevelation
+    , cdCardType = EncounterAssetType
+    }
+
+adeleHusserlEstrangedDaughter :: CardDef
+adeleHusserlEstrangedDaughter =
+  (storyAsset "73035" ("Adele Husserl" <:> "Estranged Daughter") 0 TracesToNowhere)
+    { cdCardTraits = singleton Witness
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdRevelation = IsRevelation
+    , cdCardType = EncounterAssetType
+    }
+
+gladysWashingtonCuriousCoroner :: CardDef
+gladysWashingtonCuriousCoroner =
+  (storyAsset "73036" ("Gladys Washington" <:> "Curious Coroner") 0 TracesToNowhere)
+    { cdCardTraits = singleton Witness
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdRevelation = IsRevelation
+    , cdCardType = EncounterAssetType
+    }
+
+charlesTammJustHereToGetPaid :: CardDef
+charlesTammJustHereToGetPaid =
+  (storyAsset "73037" ("Charles Tamm" <:> "Just Here to Get Paid") 0 TracesToNowhere)
+    { cdCardTraits = singleton Witness
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdRevelation = IsRevelation
+    , cdCardType = EncounterAssetType
+    , cdSlots = [#ally]
+    }
+
+azizaSteerHasABoneToPick :: CardDef
+azizaSteerHasABoneToPick =
+  (storyAsset "73049" ("Aziza Steer" <:> "Has a Bone to Pick") 0 TracesToNowhere)
+    { cdCardTraits = setFromList [Ally, Detective]
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdCardType = EncounterAssetType
+    , cdSlots = [#ally]
+    }
+
+azizaSteerHardboiled :: CardDef
+azizaSteerHardboiled =
+  (storyAsset "73059" ("Aziza Steer" <:> "Hardboiled") 3 DimensionalMadness)
+    { cdCardTraits = setFromList [Ally, Detective, Reward]
+    , cdUnique = True
+    , cdLevel = Just 3
+    , cdSlots = [#ally]
+    }
+
 ladyEsprit :: CardDef
 ladyEsprit =
   (storyAsset "81019" ("Lady Esprit" <:> "Dangerous Bokor") 4 TheBayou)

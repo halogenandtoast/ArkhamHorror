@@ -36,7 +36,7 @@ instance HasChaosTokenValue FatherMateo where
 instance RunMessage FatherMateo where
   runMessage msg i@(FatherMateo attrs) = runQueueT $ case msg of
     ElderSignEffect iid | attrs `is` iid -> do
-      afterSkillTest iid "Father Mateo" $ do_ msg
+      afterSkillTest iid attrs $ do_ msg
       passSkillTest
       pure i
     Do (ElderSignEffect iid) | attrs `is` iid -> do

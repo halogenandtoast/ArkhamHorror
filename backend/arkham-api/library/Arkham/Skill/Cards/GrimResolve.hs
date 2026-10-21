@@ -37,7 +37,7 @@ grimResolveEffect = cardEffect GrimResolveEffect Cards.grimResolve
 instance RunMessage GrimResolveEffect where
   runMessage msg e@(GrimResolveEffect attrs) = runQueueT $ case msg of
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == attrs.id -> do
-      afterSkillTest iid "Grim Resolve" $ forTarget attrs msg
+      afterSkillTest iid Cards.grimResolve $ forTarget attrs msg
       pure e
     ForTarget (isTarget attrs -> True) _ -> do
       for_ attrs.target.investigator \iid -> do

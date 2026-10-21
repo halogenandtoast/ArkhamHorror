@@ -7,6 +7,7 @@ import Arkham.CampaignLog
 import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.ChaosBag.Base
+import Arkham.ChaosToken.Types (ChaosToken)
 import Arkham.Classes.Entity
 import Arkham.Classes.HasChaosTokenValue
 import Arkham.Classes.HasModifiersFor
@@ -93,6 +94,7 @@ data instance Field Scenario :: Type -> Type where
   ScenarioResignedCardCodes :: Field Scenario [CardCode]
   ScenarioResolvedStories :: Field Scenario [StoryId]
   ScenarioChaosBag :: Field Scenario ChaosBag
+  ScenarioSealedChaosTokens :: Field Scenario [ChaosToken]
   ScenarioCustomChaosBags :: Field Scenario (Map Text CustomChaosBag)
   ScenarioInResolution :: Field Scenario Bool
   ScenarioIsPrelude :: Field Scenario Bool
@@ -151,6 +153,10 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioNoRemainingInvestigatorsHandler :: Target
   , scenarioVictoryDisplay :: [Card]
   , scenarioChaosBag :: ChaosBag
+  {- | Chaos tokens sealed on the scenario reference card itself, rather than on
+  an asset, enemy, location or investigator (Traces to Nowhere's codex entries).
+  -}
+  , scenarioSealedChaosTokens :: [ChaosToken]
   , scenarioCustomChaosBags :: Map Text CustomChaosBag
   , scenarioEncounterDeck :: Deck EncounterCard
   , scenarioHasEncounterDeck :: Bool
@@ -372,6 +378,7 @@ scenario f cardCode name difficulty layout =
       , scenarioNoRemainingInvestigatorsHandler = ScenarioTarget
       , scenarioVictoryDisplay = mempty
       , scenarioChaosBag = emptyChaosBag
+      , scenarioSealedChaosTokens = mempty
       , scenarioCustomChaosBags = mempty
       , scenarioEncounterDeck = mempty
       , scenarioEncounterDecks = mempty
@@ -501,6 +508,7 @@ instance FromJSON ScenarioAttrs where
     scenarioNoRemainingInvestigatorsHandler <- o .: "noRemainingInvestigatorsHandler"
     scenarioVictoryDisplay <- o .: "victoryDisplay"
     scenarioChaosBag <- o .: "chaosBag"
+    scenarioSealedChaosTokens <- o .:? "sealedChaosTokens" .!= []
     scenarioCustomChaosBags <- o .:? "customChaosBags" .!= mempty
     scenarioEncounterDeck <- o .: "encounterDeck"
     scenarioHasEncounterDeck <- o .: "hasEncounterDeck"

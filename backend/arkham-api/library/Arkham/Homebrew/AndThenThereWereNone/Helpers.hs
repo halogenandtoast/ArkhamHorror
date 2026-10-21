@@ -31,7 +31,7 @@ import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.SkillTest (getSkillTestSkillTypes, getSkillTestTargetedEnemy)
 import Arkham.Homebrew.AndThenThereWereNone.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.AndThenThereWereNone.CardDefs.Enemies qualified as Enemies
-import Arkham.Homebrew.AndThenThereWereNone.Traits (pattern Culprit, pattern Method, pattern Victim)
+import Arkham.Homebrew.AndThenThereWereNone.Traits (pattern Method, pattern Victim)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher hiding (AssetCard)
@@ -46,7 +46,7 @@ import Arkham.Projection
 import Arkham.SkillType (SkillIcon (..))
 import Arkham.Source (Sourceable, toSource)
 import Arkham.Token qualified as Token
-import Arkham.Trait (Trait (Geist))
+import Arkham.Trait (Trait (Culprit, Geist))
 
 -- * The cast
 

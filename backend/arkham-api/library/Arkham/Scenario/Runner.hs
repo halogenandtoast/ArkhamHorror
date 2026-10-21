@@ -857,6 +857,20 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure $ a & setAsideCardsL %~ filter (`notElem` cards)
   PlaceUnderneath ScenarioTarget cards -> do
     pure $ a & cardsUnderScenarioReferenceL <>~ cards & setAsideCardsL %~ filter (`notElem` cards)
+  {- Chaos tokens sealed on the scenario reference card. Mirrors the asset,
+  enemy, location and investigator seal targets: a token sealed elsewhere is
+  dropped from here, and releasing one raises the usual released windows. -}
+  SealedChaosToken token _ ScenarioTarget -> do
+    pure $ a & sealedChaosTokensL %~ addSealedChaosToken token
+  SealedChaosToken token _ _ -> do
+    pure $ a & sealedChaosTokensL %~ filter (/= token)
+  UnsealChaosToken token -> do
+    when (token `elem` scenarioSealedChaosTokens) do
+      checkWhen $ Window.ChaosTokenReleased ScenarioTarget token
+      checkAfter $ Window.ChaosTokenReleased ScenarioTarget token
+    pure $ a & sealedChaosTokensL %~ filter (/= token)
+  RemoveAllChaosTokens face -> do
+    pure $ a & sealedChaosTokensL %~ filter ((/= face) . (.face))
   PlaceUnderneath _ cards -> do
     pure $ a & setAsideCardsL %~ filter (`notElem` cards)
   CardEnteredPlay _ card -> liftRunMessage (ObtainCard card.id) a

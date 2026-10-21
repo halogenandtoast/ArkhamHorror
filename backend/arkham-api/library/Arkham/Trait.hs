@@ -82,6 +82,7 @@ data Trait
   | CrimeScene
   | Criminal
   | Cthulhu
+  | Culprit
   | Cultist
   | Curse
   | Cursed
@@ -368,6 +369,7 @@ data Trait
   | Wilderness
   | Witch
   | WitchHouse
+  | Witness
   | Woods
   | Worker
   | Yhanthlei

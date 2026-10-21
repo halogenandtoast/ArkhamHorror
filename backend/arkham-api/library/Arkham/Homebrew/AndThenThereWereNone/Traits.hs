@@ -15,8 +15,7 @@ module Arkham.Homebrew.AndThenThereWereNone.Traits (module Arkham.Homebrew.AndTh
 import Arkham.Homebrew.TH (declareHomebrewTraits)
 
 declareHomebrewTraits
-  [ "Culprit"
-  , "Method"
+  [ "Method"
   , "SoldierIsland"
   , "Victim"
   ]

@@ -411,6 +411,11 @@ function moveUp() {
 <style scoped>
 .draggable {
   position: absolute;
+  /* Paired with the ::view-transition-group(.modal-window) rule in base.css: a
+     window already carries a view-transition-name for its own minimize, which
+     makes it a group in every other transition too, and groups ignore z-index
+     unless one is given. */
+  view-transition-class: modal-window;
   background: rgba(94, 123, 115, 0.5);
   border-radius: 16px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);

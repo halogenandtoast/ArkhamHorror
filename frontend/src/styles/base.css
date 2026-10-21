@@ -172,3 +172,14 @@ footer {
     animation-duration: 0.01s;
   }
 }
+
+/* Every named element is lifted into the ::view-transition pseudo tree for the
+   length of a transition, and in there the page's own z-index means nothing --
+   groups paint in capture order, with a name new to this transition appended
+   last. A card flight is exactly that, so one launched while a window was open
+   (setup shuffling cards behind the File A Bug form) flew straight over the
+   top of it. Draggable names its group `modal-window`; this puts the window
+   back above the board for the transition, where it is the rest of the time. */
+::view-transition-group(.modal-window) {
+  z-index: 1;
+}

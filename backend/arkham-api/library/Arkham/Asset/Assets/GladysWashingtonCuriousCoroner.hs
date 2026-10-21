@@ -30,7 +30,7 @@ instance RunMessage GladysWashingtonCuriousCoroner where
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      witnessParley sid iid attrs #agility
+      witnessParley sid iid (attrs.ability 1) #agility
       pure a
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       codexEntry "codex.gladysWashington"

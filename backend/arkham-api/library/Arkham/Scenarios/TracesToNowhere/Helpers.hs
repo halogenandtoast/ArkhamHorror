@@ -42,6 +42,7 @@ import Arkham.Target
 import Arkham.Trait (Trait (Arkham, Witness))
 import Arkham.Treachery.CardDefs.TracesToNowhere qualified as Treacheries
 import Arkham.Window (Window)
+import Data.Aeson.Key qualified as Key
 import Data.List.NonEmpty qualified as NE
 
 scenarioI18n :: (HasI18n => a) -> a
@@ -320,7 +321,7 @@ revealLeadsUntilWitness :: ReverseQueue m => InvestigatorId -> m ()
 revealLeadsUntilWitness iid = do
   deck <- getLeadsDeck
   let (skipped, found) = break (`cardMatch` CardWithTrait Witness) deck
-  for_ skipped \card -> push $ RemoveCardFromScenarioDeck LeadsDeck card
+  for_ skipped $ push . RemoveCardFromScenarioDeck LeadsDeck
   for_ (listToMaybe found) \card -> do
     push $ RemoveCardFromScenarioDeck LeadsDeck card
     resolveAsEncounterCard iid card
@@ -340,6 +341,46 @@ ten entries are all reached from a Suspect or Witness parley.
 -}
 codexEntry :: (HasI18n, ReverseQueue m) => Scope -> m ()
 codexEntry x = scope x $ flavor $ setTitle "title" >> compose.codex (h "title" >> p "body")
+
+{- | Codex D and G print two displays of one entry. The first trigger reads
+display one and then proceeds to display two; every later trigger skips straight
+to display two. Both displays keep the routing lines the entry prints above the
+split, so each reads as the whole codex page, and display two carries the entry's
+own choices as buttons on the panel rather than as a question after it.
+-}
+codexBody :: HasI18n => Scope -> Scope -> FlavorTextBuilder ()
+codexBody x part =
+  scope x $ setTitle "title" >> compose.codex (h "title" >> scope part (p "body"))
+
+codexDisplay :: (HasI18n, ReverseQueue m) => Scope -> Scope -> m ()
+codexDisplay x part = flavor $ codexBody x part
+
+codexReadKey :: Text -> Key.Key
+codexReadKey name = Key.fromText $ "tracesToNowhere.codexRead." <> name
+
+{- | Whether a codex has been triggered before this game. The flag outlives the
+parley that set it and the asset may be added to the victory display, so it lives
+in scenario meta rather than on the card.
+-}
+hasReadCodex :: HasGame m => Text -> m Bool
+hasReadCodex name = getScenarioMetaKeyDefault (codexReadKey name) False
+
+markCodexRead :: ReverseQueue m => Text -> m ()
+markCodexRead name = setGlobal ScenarioTarget (codexReadKey name) True
+
+{- | "If this is the first time this codex has been triggered during this game,
+proceed to <X> 1. Otherwise, skip to <X> 2." Display one always falls through to
+display two, which carries the entry's mechanical half as buttons on the panel
+itself. The choices go to the parleying investigator's player, not the lead's,
+because they spend that investigator's resources.
+-}
+twoPartCodex
+  :: (HasI18n, ReverseQueue m) => InvestigatorId -> Scope -> Text -> ChooseT m a -> m ()
+twoPartCodex iid x name choices = do
+  unlessM (hasReadCodex name) do
+    markCodexRead name
+    codexDisplay x "first"
+  investigatorStoryWithChooseOneM' iid (codexBody x "second") choices
 
 {- | The Witness parley, printed the same on all four: "Parley. Test <skill> (4).
 You may spend 1 clue to reduce the difficulty of this test by 3."

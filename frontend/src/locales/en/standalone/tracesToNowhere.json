@@ -18,7 +18,7 @@
     "body": "<p>Ever since their arrival in Arkham, the Husserl family has been the center of one scandal or another, with each member of the family intent on making waves. Josephine Husserl, matriarch of the family, threw swanky parties for the real movers and shakers of the city. While she entertained guests from all walks of life, her husband Elias would hold secret meetings with mob bosses, local politicians, and even members of the police force. The Husserls had money to invest, and they saw Arkham as rife with opportunity.</p><p>Each of Elias and Josephine's children ran afoul of other influential people in Arkham, however. Whether it was Albrecht gambling his family's wealth away, Elias Jr. forging bad deals, Lina's paintings failing to garner any interest in high society, or Adele struggling and failing to distance herself from them all, the rumors about the Husserls swirled through the streets.</p><p>Surprisingly, however, the Arkham Advertiser only ever commented on the more positive parts of their public image—stretching every meager humanitarian effort as far as they could to make a story.</p><p>But the controversy came to a head when Elias Husserl Sr. went missing one evening. He had been on his way to a private meeting in French Hill, and he never returned. Frustrated by the lack of initiative from the police force, Josephine hired private detective Aziza Steer, who wasted no time in digging into Elias's many contacts. After a couple of weeks with little progress, Aziza reached out to you for assistance in the investigation.</p><p>But once you arrived, Aziza was nowhere to be found. Now, alone in her office, it is up to you to discover what happened to Aziza and Elias Sr.</p>"
   },
   "setup": {
-    "gatherSets": "Gather all cards from the *Traces to Nowhere* and *Dimensional Madness* encounter sets. These sets are indicated by the following icons:<section class='encounter-sets two-columns'><img src='{setImgPath}/traces-to-nowhere.png' /><img src='{setImgPath}/dimensional-madness.png' /></section>",
+    "gatherSets": "Gather all cards from the _Traces to Nowhere_ and _Dimensional Madness_ encounter sets. These sets are indicated by the following icons:<section class='encounter-sets two-columns'><img src='{setImgPath}/traces-to-nowhere.png' /><img src='{setImgPath}/dimensional-madness.png' /></section>",
     "placeLocations": "Put the following locations into play: Steer's Office, Merchant District, French Hill, South Church, and Historical Society.",
     "beginPlay": "Each investigator begins play at Steer's Office.",
     "spawnEnforcer": "Spawn 1 of the Hired Enforcer enemies at Merchant District.",
@@ -29,12 +29,12 @@
     "actAgenda": "Agenda 4a—\"Into the Pit\" and all 3 copies of act 4a.",
     "locations": "The Arkham Advertiser, Train Station, and Tick-Tock Club locations, as well as both copies of the Duterte Funeral Home location and both copies of the Meiger Estate location.",
     "witnesses": "The 4 _Witness_ story assets (Adele Husserl, Josephine Husserl, Charles Tamm, and Gladys Washington).",
-    "dimensionalMadness": "The *Dimensional Madness* encounter set.",
+    "dimensionalMadness": "The _Dimensional Madness_ encounter set.",
     "leadsDeck": "Create the Leads deck by shuffling the 4 set-aside _Witness_ story assets along with the top 2 cards of the encounter deck (top 3 cards instead if there are 3 or 4 investigators in the game).",
     "leadsDeckNote": "The Leads deck is a special deck of scenario cards. When an investigator is instructed to draw a card from the Leads deck, they resolve it as if it were drawn from the encounter deck.",
     "leadsDeckPlacement": "Place the Leads deck next to the scenario reference card.",
     "begin": "You are now ready to begin.",
-    "note": "<p class='basic'>*Note*: The Abductor enemy in the *Dimensional Madness* encounter set is a double-sided card. For the best experience, do not look at the reverse side of Abductor until explicitly instructed to do so.</p>"
+    "note": "<p class='basic'>*Note*: The Abductor enemy in the _Dimensional Madness_ encounter set is a double-sided card. For the best experience, do not look at the reverse side of Abductor until explicitly instructed to do so.</p>"
   },
   "codex": {
     "josephineHusserl": {
@@ -51,11 +51,16 @@
     },
     "charlesTamm": {
       "title": "Codex D: Charles Tamm",
-      "body": "<p class='basic'>If this is the first time this codex has been triggered during this game, proceed to *Charles Tamm 1*.</p><p class='basic'>Otherwise, skip to *Charles Tamm 2*.</p><p>*Charles Tamm 1*: When you return to the office, a man in a crisp suit is seated with his feet up on the desk. You demand to know who he is.</p><p>“Charles Tamm,” he says. “Mrs. Husserl has paid me to keep an eye on you.” He shrugs as he reaches into his pocket, producing and unwrapping a stick of chewing gum. He pops it into his mouth. “Of course, I could be convinced to turn in early tonight.”</p><p class='basic right'>Proceed to *Charles Tamm 2*.</p><p>*Charles Tamm 2*: “Well? Do we have a deal?”</p><p class='basic right'>Any investigator at Charles Tamm's location may spend 4 resources to add him to the victory display. Otherwise, any investigator may trigger this codex again.</p>"
+      "first": {
+        "body": "<p class='basic'>If this is the first time this codex has been triggered during this game, proceed to _Charles Tamm 1_.</p><p class='basic'>Otherwise, skip to _Charles Tamm 2_.</p><p>_Charles Tamm 1_: When you return to the office, a man in a crisp suit is seated with his feet up on the desk. You demand to know who he is.</p><p>“Charles Tamm,” he says. “Mrs. Husserl has paid me to keep an eye on you.” He shrugs as he reaches into his pocket, producing and unwrapping a stick of chewing gum. He pops it into his mouth. “Of course, I could be convinced to turn in early tonight.”</p><p class='basic right'>Proceed to _Charles Tamm 2_.</p>"
+      },
+      "second": {
+        "body": "<p class='basic'>If this is the first time this codex has been triggered during this game, proceed to _Charles Tamm 1_.</p><p class='basic'>Otherwise, skip to _Charles Tamm 2_.</p><p>_Charles Tamm 2_: “Well? Do we have a deal?”</p><p class='basic right'>Any investigator at Charles Tamm's location may spend 4 resources to add him to the victory display. Otherwise, any investigator may trigger this codex again.</p>"
+      }
     },
     "albrechtHusserl": {
       "title": "Codex E: Albrecht Husserl",
-      "body": "<p class='basic'>_If the investigators “found record of Matilde's bribe,” continue reading. Otherwise, Albrecht refuses to give a straight answer. Any investigator may trigger this codex again._</p><p>You confront Albrecht about all the bribes he's been paying to the Arkham Police Force, as well as to the Arkham Advertiser. He raises his hands defensively, a desperate look in his eyes. “It was never supposed to go this far,” he says. “But when you have half a dozen mobsters breathing down your neck—not to mention your own father—you have to do something! And now it looks like I'll have to clean this up, too.”</p><p>He reaches into his coat pocket, producing a sealed glass jar. Floating inside is a fluorescent pink jellyfish-like creature. You rush to stop him, knocking the jar from his grasp to shatter on the floor.</p><p class='basic'>Remember that “Albrecht is the culprit.”</p><p class='basic right'>Skip to *Interlude: The Culprit*.</p>"
+      "body": "<p class='basic'>_If the investigators “found record of Matilde's bribe,” continue reading. Otherwise, Albrecht refuses to give a straight answer. Any investigator may trigger this codex again._</p><p>You confront Albrecht about all the bribes he's been paying to the Arkham Police Force, as well as to the Arkham Advertiser. He raises his hands defensively, a desperate look in his eyes. “It was never supposed to go this far,” he says. “But when you have half a dozen mobsters breathing down your neck—not to mention your own father—you have to do something! And now it looks like I'll have to clean this up, too.”</p><p>He reaches into his coat pocket, producing a sealed glass jar. Floating inside is a fluorescent pink jellyfish-like creature. You rush to stop him, knocking the jar from his grasp to shatter on the floor.</p><p class='basic'>Remember that “Albrecht is the culprit.”</p><p class='basic right'>Skip to _Interlude: The Culprit_.</p>"
     },
     "matildeCorrea": {
       "title": "Codex F: Matilde Correa",
@@ -63,11 +68,16 @@
     },
     "vicarYang": {
       "title": "Codex G: Vicar Yang",
-      "body": "<p class='basic'>If this is the first time this codex has been triggered this game, proceed to *Vicar Yang 1*.</p><p class='basic'>Otherwise, skip to *Vicar Yang 2*.</p><p>*Vicar Yang 1*: The vicar is welcoming when you first arrive, but his demeanor changes to one of melancholic regret when you mention why you're there. “I have met with Lina. The woman is plagued by terrible nightmares. But I can't discuss the things she's told me. She trusts me to respect her privacy.”</p><p class='basic right'>Proceed to *Vicar Yang 2*.</p><p>*Vicar Yang 2*: The vicar will need some convincing.</p><p class='basic right'>Choose an investigator at Vicar Yang's location to test {'{'}intellect{'}'} (3). If they succeed, he suggests that you visit the old manor in French Hill. Put the set-aside Meiger Estate (*Under New Ownership*) location into play, and add Vicar Yang to the victory display. Otherwise, any investigator may trigger this codex again.</p>"
+      "first": {
+        "body": "<p class='basic'>If this is the first time this codex has been triggered this game, proceed to _Vicar Yang 1_.</p><p class='basic'>Otherwise, skip to _Vicar Yang 2_.</p><p>_Vicar Yang 1_: The vicar is welcoming when you first arrive, but his demeanor changes to one of melancholic regret when you mention why you're there. “I have met with Lina. The woman is plagued by terrible nightmares. But I can't discuss the things she's told me. She trusts me to respect her privacy.”</p><p class='basic right'>Proceed to _Vicar Yang 2_.</p>"
+      },
+      "second": {
+        "body": "<p class='basic'>If this is the first time this codex has been triggered this game, proceed to _Vicar Yang 1_.</p><p class='basic'>Otherwise, skip to _Vicar Yang 2_.</p><p>_Vicar Yang 2_: The vicar will need some convincing.</p><p class='basic right'>Choose an investigator at Vicar Yang's location to test {'{'}intellect{'}'} (3). If they succeed, he suggests that you visit the old manor in French Hill. Put the set-aside Meiger Estate (*Under New Ownership*) location into play, and add Vicar Yang to the victory display. Otherwise, any investigator may trigger this codex again.</p>"
+      }
     },
     "linaHusserl": {
       "title": "Codex H: Lina Husserl",
-      "body": "<p class='basic'>_If the investigators “glimpsed another world,” continue reading. Otherwise, Lina refuses to give a straight answer. Any investigator may trigger this codex again._</p><p>Tired of Lina giving you the run-around, you finally reveal what you witnessed at the Meiger Estate. Her brown eyes lock with yours in an intense glare. “It was open?” she asks, a hint of desperation in her voice. “The door from my dreams? Was it open?!”</p><p>Before you can protest, she rushes past you. You follow her. As you cross town towards the Meiger Estate, she confesses how she had seen the door in her nightmares. She saw it so vividly and so frequently that she had to paint it. But after she had painted the door, something came through. It took her father. It took Aziza. And she wants to stop it before it can take anyone else. But before you can make it back to the estate, it seems that something has found you.</p><p class='basic'>Remember that “Lina opened the door.”</p><p class='basic right'>Skip to *Interlude: The Culprit*.</p>"
+      "body": "<p class='basic'>_If the investigators “glimpsed another world,” continue reading. Otherwise, Lina refuses to give a straight answer. Any investigator may trigger this codex again._</p><p>Tired of Lina giving you the run-around, you finally reveal what you witnessed at the Meiger Estate. Her brown eyes lock with yours in an intense glare. “It was open?” she asks, a hint of desperation in her voice. “The door from my dreams? Was it open?!”</p><p>Before you can protest, she rushes past you. You follow her. As you cross town towards the Meiger Estate, she confesses how she had seen the door in her nightmares. She saw it so vividly and so frequently that she had to paint it. But after she had painted the door, something came through. It took her father. It took Aziza. And she wants to stop it before it can take anyone else. But before you can make it back to the estate, it seems that something has found you.</p><p class='basic'>Remember that “Lina opened the door.”</p><p class='basic right'>Skip to _Interlude: The Culprit_.</p>"
     },
     "eliasHusserlJr": {
       "title": "Codex I: Elias Husserl Jr.",
@@ -75,7 +85,7 @@
     },
     "eugenePeel": {
       "title": "Codex J: Eugene Peel",
-      "body": "<p>After you rough up Peel's cultists, you grab him by the collar and toss him into some nearby trash cans. He sprawls onto the platform floorboards, covered in refuse.</p><p>“You're meddling in a deal you don't understand,” Mr. Peel says. “Junior wanted money from me and my brothers, and we wanted influence in the city of Arkham. But when his father refused to honor the deal Junior made, we had him removed. We did the same to that other investigator, and we'll do it to you, too!”</p><p>He reaches into his pocket, producing a small glass jar with a strange, jellyfish-like creature inside. “Time to answer all of your questions!” he says, tossing the glass jar onto the ground at your feet, where it shatters, the tentacled creature spilling out onto the floor of the train platform.</p><p class='basic'>Remember that “Eugene is not what he seems.”</p><p class='basic right'>Skip to *Interlude: The Culprit*.</p>"
+      "body": "<p>After you rough up Peel's cultists, you grab him by the collar and toss him into some nearby trash cans. He sprawls onto the platform floorboards, covered in refuse.</p><p>“You're meddling in a deal you don't understand,” Mr. Peel says. “Junior wanted money from me and my brothers, and we wanted influence in the city of Arkham. But when his father refused to honor the deal Junior made, we had him removed. We did the same to that other investigator, and we'll do it to you, too!”</p><p>He reaches into his pocket, producing a small glass jar with a strange, jellyfish-like creature inside. “Time to answer all of your questions!” he says, tossing the glass jar onto the ground at your feet, where it shatters, the tentacled creature spilling out onto the floor of the train platform.</p><p class='basic'>Remember that “Eugene is not what he seems.”</p><p class='basic right'>Skip to _Interlude: The Culprit_.</p>"
     }
   },
   "interlude": {
@@ -159,6 +169,10 @@
     "aethrealBlight": {
       "discardAsset": "Discard an asset you control",
       "removeFromGame": "Remove the top 2 cards of your deck from the game"
+    },
+    "charlesTamm": {
+      "payOff": "Spend 4 resources to add Charles Tamm to the victory display",
+      "continue": "Continue"
     }
   }
 }

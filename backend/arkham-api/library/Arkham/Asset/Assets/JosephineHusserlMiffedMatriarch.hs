@@ -27,7 +27,7 @@ instance RunMessage JosephineHusserlMiffedMatriarch where
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      witnessParley sid iid attrs #willpower
+      witnessParley sid iid (attrs.ability 1) #willpower
       pure a
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       codexEntry "codex.josephineHusserl"

@@ -307,6 +307,26 @@ const spawningEnemies = computed(() => {
   )
 })
 
+// An asset drawn from the encounter deck is Unplaced while its revelation
+// resolves — often asking where to put it — and belongs to no investigator yet,
+// so it shows in none of the entity lists. Surface it the same way as a
+// spawning enemy so you can see what you are resolving.
+const revelationAssets = computed(() => {
+  const hasQuestion = Boolean(props.game.question[props.investigator.playerId])
+  const activeCardId = props.game.activeCard ? CardT.cardId(props.game.activeCard) : null
+  const isResolvingActiveCard =
+    props.game.activeInvestigatorId === investigatorId.value && activeCardId !== null
+
+  return Object.values(props.game.assets).filter(
+    (a) =>
+      a.placement.tag === 'OtherPlacement' &&
+      a.placement.contents === 'Unplaced' &&
+      a.controller === null &&
+      activeCardId === a.cardId &&
+      (hasQuestion || isResolvingActiveCard)
+  )
+})
+
 const stories = computed(() =>
   Object.
     values(props.game.stories).
@@ -1055,6 +1075,18 @@ function closeHand() {
               @choose="$emit('choose', $event)"
             />
 
+            <Asset
+              v-for="asset in revelationAssets"
+              :key="asset.id"
+              :asset="asset"
+              :game="game"
+              :data-index="asset.cardId"
+              :playerId="playerId"
+              class="revelation-asset"
+              @choose="$emit('choose', $event)"
+              @showCards="doShowCards"
+            />
+
             <Story
               v-for="story in stories"
               :key="story.id"
@@ -1708,6 +1740,12 @@ function closeHand() {
   }
 
   .spawning-enemy {
+    border-radius: 8px;
+    box-shadow: 0 0 12px 3px var(--important);
+    margin-right: 8px;
+  }
+
+  .revelation-asset {
     border-radius: 8px;
     box-shadow: 0 0 12px 3px var(--important);
     margin-right: 8px;

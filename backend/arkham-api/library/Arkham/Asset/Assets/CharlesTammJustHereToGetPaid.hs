@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Location.CardDefs.TracesToNowhere qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Scenarios.TracesToNowhere.Helpers
 
@@ -31,7 +32,15 @@ instance RunMessage CharlesTammJustHereToGetPaid where
     Revelation _ (isSource attrs -> True) -> do
       selectForMaybeM (locationIs Locations.steersOffice) $ place attrs . AtLocation
       pure a
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      codexEntry "codex.charlesTamm"
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      {- "Any investigator at Charles Tamm's location may spend 4 resources to add
+      him to the victory display. Otherwise, any investigator may trigger this
+      codex again." -}
+      canPay <- iid <=~> InvestigatorWithResources (atLeast 4)
+      twoPartCodex iid "codex.charlesTamm" "charlesTamm" do
+        labeledValidate canPay "charlesTamm.payOff" do
+          spendResources iid 4
+          addToVictory_ attrs
+        labeled "charlesTamm.continue" nothing
       pure a
     _ -> CharlesTammJustHereToGetPaid <$> liftRunMessage msg attrs

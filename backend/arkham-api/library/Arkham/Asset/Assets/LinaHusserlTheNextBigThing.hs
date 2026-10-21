@@ -19,7 +19,9 @@ linaHusserlTheNextBigThing = allyWith LinaHusserlTheNextBigThing Cards.linaHusse
 
 instance HasAbilities LinaHusserlTheNextBigThing where
   getAbilities (LinaHusserlTheNextBigThing a) =
-    [restricted a 1 (OnSameLocation <> Remembered TheInvestigatorsGlimpsedAnotherWorld) parleyAction_]
+    -- "{action}: Parley. (Codex H)." The condition is printed in the codex, not on
+    -- the card, and the entry lets it be triggered again.
+    [restricted a 1 OnSameLocation parleyAction_]
 
 instance RunMessage LinaHusserlTheNextBigThing where
   runMessage msg a@(LinaHusserlTheNextBigThing attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -27,8 +29,12 @@ instance RunMessage LinaHusserlTheNextBigThing where
       selectForMaybeM (locationIs Locations.merchantDistrict) $ place attrs . AtLocation
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
+      {- "If the investigators glimpsed another world, continue reading. Otherwise,
+      Lina refuses to give a straight answer. Any investigator may trigger this
+      codex again." -}
       codexEntry "codex.linaHusserl"
-      remember LinaOpenedTheDoor
-      scenarioSpecific "theCulprit" ()
+      whenM (remembered TheInvestigatorsGlimpsedAnotherWorld) do
+        remember LinaOpenedTheDoor
+        scenarioSpecific "theCulprit" ()
       pure a
     _ -> LinaHusserlTheNextBigThing <$> liftRunMessage msg attrs

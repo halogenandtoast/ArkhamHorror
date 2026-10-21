@@ -63,6 +63,10 @@ getSealedChaosTokens =
       , selectAgg id EventSealedChaosTokens AnyEvent
       , selectAgg id InvestigatorSealedChaosTokens Anyone
       , selectAgg id LocationSealedChaosTokens Anywhere
+      , -- The scenario reference card is a seal target in its own right, and its
+        -- store hangs off the scenario rather than an entity, so it has no
+        -- 'selectAgg' to be swept up by.
+        scenarioField ScenarioSealedChaosTokens
       ]
 
 getAllChaosTokens :: HasGame m => m [ChaosToken]

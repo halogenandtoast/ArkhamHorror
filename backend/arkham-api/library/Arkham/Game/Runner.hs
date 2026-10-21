@@ -4000,16 +4000,28 @@ runGameMessage msg g = case msg of
           assetId <- getRandom
           let asset = createAsset card assetId
           -- Story assets can be drawn from encounter decks while still having AssetType.
-          pushAll $ afterDraw
+          -- Active while the revelation resolves, so the card is visible in the
+          -- play area the way a resolving treachery or a spawning enemy is.
+          pushAll
+            $ afterDraw
             : (guard (not ignoreRevelation) *> resolve (Revelation iid $ AssetSource assetId))
-          pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
+              <> [UnsetActiveCard]
+          pure
+            $ g'
+            & (entitiesL . assetsL . at assetId ?~ asset)
+            & (activeCardL ?~ toCard card)
         EncounterAssetType -> do
           assetId <- getRandom
           let asset = createAsset card assetId
           -- Asset is assumed to have a revelation ability if drawn from encounter deck
-          pushAll $ afterDraw
+          pushAll
+            $ afterDraw
             : (guard (not ignoreRevelation) *> resolve (Revelation iid $ AssetSource assetId))
-          pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
+              <> [UnsetActiveCard]
+          pure
+            $ g'
+            & (entitiesL . assetsL . at assetId ?~ asset)
+            & (activeCardL ?~ toCard card)
         EncounterEventType -> do
           eventId <- getRandom
           let owner = fromMaybe iid (toCardOwner card)

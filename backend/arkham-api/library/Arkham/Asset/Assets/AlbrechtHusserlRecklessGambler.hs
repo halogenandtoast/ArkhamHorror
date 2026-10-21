@@ -19,12 +19,10 @@ albrechtHusserlRecklessGambler = allyWith AlbrechtHusserlRecklessGambler Cards.a
 
 instance HasAbilities AlbrechtHusserlRecklessGambler where
   getAbilities (AlbrechtHusserlRecklessGambler a) =
-    [ restricted
-        a
-        1
-        (OnSameLocation <> Remembered TheInvestigatorsFoundRecordOfMatildesBribe)
-        parleyAction_
-    ]
+    -- "{action}: Parley. (Codex E)." The bribe condition is printed in the codex,
+    -- not on the card, and the entry lets it be triggered again, so the ability
+    -- itself stays unrestricted.
+    [restricted a 1 OnSameLocation parleyAction_]
 
 instance RunMessage AlbrechtHusserlRecklessGambler where
   runMessage msg a@(AlbrechtHusserlRecklessGambler attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -33,8 +31,12 @@ instance RunMessage AlbrechtHusserlRecklessGambler where
       selectForMaybeM (locationIs Locations.tickTockClub) $ place attrs . AtLocation
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
+      {- "If the investigators found record of Matilde's bribe, continue reading.
+      Otherwise, Albrecht refuses to give a straight answer. Any investigator may
+      trigger this codex again." -}
       codexEntry "codex.albrechtHusserl"
-      remember AlbrechtIsTheCulprit
-      scenarioSpecific "theCulprit" ()
+      whenM (remembered TheInvestigatorsFoundRecordOfMatildesBribe) do
+        remember AlbrechtIsTheCulprit
+        scenarioSpecific "theCulprit" ()
       pure a
     _ -> AlbrechtHusserlRecklessGambler <$> liftRunMessage msg attrs

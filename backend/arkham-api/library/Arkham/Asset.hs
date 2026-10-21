@@ -1700,4 +1700,17 @@ allAssets =
       , SomeAssetCard obsidianClawPower
       , SomeAssetCard johnRaymondLegrasse
       , SomeAssetCard horrorInClay
+      , -- Traces to Nowhere
+        SomeAssetCard albrechtHusserlRecklessGambler
+      , SomeAssetCard eliasHusserlJrFleeingTheCity
+      , SomeAssetCard eugenePeelHidingSomething
+      , SomeAssetCard linaHusserlTheNextBigThing
+      , SomeAssetCard matildeCorreaInvestigativeReporter
+      , SomeAssetCard vicarYangTryingToDoTheRightThing
+      , SomeAssetCard josephineHusserlMiffedMatriarch
+      , SomeAssetCard adeleHusserlEstrangedDaughter
+      , SomeAssetCard gladysWashingtonCuriousCoroner
+      , SomeAssetCard charlesTammJustHereToGetPaid
+      , SomeAssetCard azizaSteerHasABoneToPick
+      , SomeAssetCard azizaSteerHardboiled
       ]

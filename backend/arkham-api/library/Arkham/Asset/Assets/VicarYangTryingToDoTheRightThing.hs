@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Location.CardDefs.TracesToNowhere qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Scenarios.TracesToNowhere.Helpers
 
@@ -23,7 +24,18 @@ instance RunMessage VicarYangTryingToDoTheRightThing where
     Revelation _ (isSource attrs -> True) -> do
       selectForMaybeM (locationIs Locations.southChurch) $ place attrs . AtLocation
       pure a
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      codexEntry "codex.vicarYang"
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      {- "Choose an investigator at Vicar Yang's location to test {intellect} (3).
+      If they succeed, put the set-aside Meiger Estate (Under New Ownership)
+      location into play, and add Vicar Yang to the victory display. Otherwise,
+      any investigator may trigger this codex again." -}
+      investigators <- select $ investigatorAt (locationWithAsset attrs)
+      twoPartCodex iid "codex.vicarYang" "vicarYang" $ targets investigators \chosen -> do
+        sid <- getRandom
+        beginSkillTest sid chosen (attrs.ability 1) chosen #intellect (Fixed 3)
+      pure a
+    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
+      placeLocationIfNotInPlay_ Locations.meigerEstateUnderNewOwnership
+      addToVictory_ attrs
       pure a
     _ -> VicarYangTryingToDoTheRightThing <$> liftRunMessage msg attrs

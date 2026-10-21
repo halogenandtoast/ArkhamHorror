@@ -7,9 +7,8 @@ abductorThatWhichLurksInShadows :: CardDef
 abductorThatWhichLurksInShadows =
   unique
     $ doubleSided "73053b"
-    $ (enemy "73053" ("Abductor" <:> "That Which Lurks in Shadows") DimensionalMadness 1)
-      { cdArt = "73053a"
-      , cdHealthDamage = healthDamage 2
+    $ (enemy "73053a" ("Abductor" <:> "That Which Lurks in Shadows") DimensionalMadness 1)
+      { cdHealthDamage = healthDamage 2
       , cdSanityDamage = sanityDamage 2
       , cdFight = fight 4
       , cdEvade = evade 4
@@ -68,7 +67,7 @@ crookedCops =
 dimensionalShamblerDraggingThemBelow :: CardDef
 dimensionalShamblerDraggingThemBelow =
   unique
-    $ doubleSided "73053"
+    $ doubleSided "73053a"
     $ (enemy "73053b" ("Dimensional Shambler" <:> "Dragging Them Below") DimensionalMadness 1)
       { cdHealthDamage = healthDamage 2
       , cdSanityDamage = sanityDamage 2

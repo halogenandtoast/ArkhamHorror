@@ -171,10 +171,7 @@ dynamite =
         [ Reaction
             "dynamite"
             "Dynamite: discard to deal five damage to each monster engaged with you"
-            ( DiscardAsset cid
-                : [DealMonsterDamage m.card (SourceCard cid) 5 | m <- engaged]
-                  <> [ContinueTest]
-            )
+            (DiscardAsset cid : [DealMonsterDamage m.card (SourceCard cid) 5 | m <- engaged])
         | isAttackTest ts
         , not (null engaged)
         ]

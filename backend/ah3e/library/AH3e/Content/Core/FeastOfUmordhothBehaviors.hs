@@ -264,7 +264,7 @@ umordhoth =
         [ Reaction
             ("umordhoth-clues-" <> tshow k)
             ("Umordhoth: spend " <> tshow k <> " clues from the sheet for " <> tshow k <> " more damage")
-            [SpendSheetClues k, AddTestSuccesses k, ContinueTest]
+            [SpendSheetClues k, AddTestSuccesses k]
         | liveDiceCount ts > 0
         , k <- [1 .. clues]
         ]

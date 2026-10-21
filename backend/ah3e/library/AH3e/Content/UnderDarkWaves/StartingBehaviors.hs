@@ -180,7 +180,6 @@ bonnieWalsh =
             "Bonnie Walsh: focus one skill first"
             [ MarkAssetUsed iid cid
             , ResolveEffect (EffectCtx iid (SourceCard cid) Nothing) (Focus Nothing False)
-            , ContinueTest
             ]
         | not used
         ]
@@ -588,7 +587,7 @@ snowNorRain =
         [ Reaction
             "snow-nor-rain"
             "Snow Nor Rain: discard a will focus for one success"
-            [MarkAssetUsed iid cid, DiscardFocus iid Will, AddTestSuccesses 1, ContinueTest]
+            [MarkAssetUsed iid cid, DiscardFocus iid Will, AddTestSuccesses 1]
         | not used
         , Map.findWithDefault 0 Will i.focus > 0
         ]

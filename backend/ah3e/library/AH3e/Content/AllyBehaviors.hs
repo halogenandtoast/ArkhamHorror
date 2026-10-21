@@ -296,7 +296,7 @@ strayCat =
         [ Reaction
             "stray-cat"
             "Stray Cat: discard to add two successes"
-            [DiscardAsset cid, AddTestSuccesses 2, ContinueTest]
+            [DiscardAsset cid, AddTestSuccesses 2]
         | ActionTest EvadeAction _ <- [ts.kind]
         ]
 

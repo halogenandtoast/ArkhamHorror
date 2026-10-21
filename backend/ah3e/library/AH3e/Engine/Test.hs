@@ -123,6 +123,13 @@ poolDeltaFor ts = do
     b <- assetBehavior cid
     b.poolDelta cid ts.investigator ts
 
+{- | What the test asks for at the step it has reached. An option a card offers here
+owes the test a way back to this prompt, and the engine owes that rather than each
+card: one whose work ends in a counter or in a question of its own (Won't Go Back's
+focus, Flannel Shirt's successes) would otherwise leave the test live with nothing
+asking about it, and whatever was queued behind the test would end the action over
+the top of it. A card that reaches the prompt by itself is simply asked again.
+-}
 testPrompt :: GameM ()
 testPrompt = do
   ts <- currentTest
@@ -150,7 +157,7 @@ testPrompt = do
         ("Roll " <> tshow pool <> " dice")
         ( Choice (DoneLabel "Roll dice") [RollDice]
             : toggles
-              <> [Choice (TextLabel r.label) r.messages | r <- fromCards]
+              <> [Choice (TextLabel r.label) (r.messages <> [ContinueTest]) | r <- fromCards]
         )
     ManipulateDice -> do
       i <- getInvestigator iid
@@ -175,7 +182,7 @@ testPrompt = do
             : focusRerolls
               <> clueRerolls
               <> freeRerolls
-              <> [Choice (TextLabel r.label) r.messages | r <- fromCards]
+              <> [Choice (TextLabel r.label) (r.messages <> [ContinueTest]) | r <- fromCards]
         )
     TestResolved -> pure ()
 

@@ -89,7 +89,15 @@
     "heretics": "混洗6张异端者敌人，将其中随机4张放在一边。将另外2张从游戏中移除。这些卡牌是双面的，其背面为剧情卡。为了获得最佳的游戏体验，请勿查看其另一面的剧情卡牌。",
     "encounterDecks": "本场冒险会用到2个独立的遭遇牌库。",
     "spectralDeck": "将剩余所有带有_幽灵_属性的卡牌混洗在一起，创建幽灵遭遇牌库（*参考下方的“幽灵遭遇牌库”*）。",
-    "standardDeck": "将剩余所有不带蛋_幽灵_属性的卡牌混洗在一起，创建基础遭遇牌库。"
+    "standardDeck": "将剩余所有不带蛋_幽灵_属性的卡牌混洗在一起，创建基础遭遇牌库。",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返罪孽之酬*、*被诅咒之城*、*不可言说的命运*、*不稳定的领域*、*嗜血之灵*与*魔咒术*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-the-wages-of-sin.png' /><img src='{setImgPath}/city-of-the-damned.png' /><img src='{setImgPath}/unspeakable-fate.png' /><img src='{setImgPath}/unstable-realm.png' /><img src='{setImgPath}/bloodthirsty-spirits.png' /><img src='{setImgPath}/hexcraft.png' /></section>*被诅咒之城*替代*罪孽之城*，*不可言说的命运*替代*无情的命运*，*不稳定的领域*替代*死亡领域*，*嗜血之灵*替代*被困的灵魂*，*魔咒术*替代*巫术*。将被替代的遭遇牌组移出游戏。",
+      "setAside": "同时将艾琳·麦克阿伊故事支援放到一旁，不放入游戏中。",
+      "actDeck": "查看战役日志。若*艾琳想要见面*：组建场景牌库时，使用新的场景1a——*寻求答案*来取代原来的场景1，并纳入场景2的两个版本。推进至场景2a时，将两张场景牌都放入游戏中；两张牌的文本均已生效。",
+      "placeLocations": "随机选择两个绞刑溪地点中的一个，在本剧本的准备中使用。将另一个版本移出游戏。",
+      "heretics": "随机选择4个异端敌人放到一旁时，将2个新的异端敌人与原有的6个洗在一起，共计8种可能。",
+      "additionalRule": "在本剧本期间，适用以下附加规则：结算守望者之握诡计时，幽灵守望者在攻击后不会横置。"
+    }
   },
   "specialRules": [
     {

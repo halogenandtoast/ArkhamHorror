@@ -1,6 +1,18 @@
 {
   "tooltips": {
-    "weakenCthulhu": "在你的回合中，从你控制的一张神器支援移除1个毁灭标记：克苏鲁失去_不屈_，且直到本轮结束获得-1战斗与-1躲避。每张支援每轮限一次。"
+    "weakenCthulhu": "在你的回合中，从你控制的一张神器支援移除1个毁灭标记：克苏鲁失去_不屈_，且直到本轮结束获得-1战斗与-1躲避。每张支援每轮限一次。",
+    "sigilCarvedAlcoveStoryOfAmbition": {
+      "test": "{action}：进行{willpower}（5）检定。若你成功，在黑曜石之爪上放置1个毁灭标记。位于此地点的调查员可以全体共同花费1个{perPlayer}线索，在黑曜石之爪上额外放置1个毁灭标记。"
+    },
+    "sigilCarvedAlcoveStoryOfResilience": {
+      "test": "{action}：进行{combat}（5）检定。若你成功，在屏障节点上放置1个毁灭标记。位于此地点的调查员可以全体共同花费1个{perPlayer}线索，在屏障节点上额外放置1个毁灭标记。"
+    },
+    "sigilCarvedAlcoveStoryOfInfinity": {
+      "test": "{action}：进行{intellect}（5）检定。若你成功，在潮汐石板上放置1个毁灭标记。位于此地点的调查员可以全体共同花费1个{perPlayer}线索，在潮汐石板上额外放置1个毁灭标记。"
+    },
+    "sigilCarvedAlcoveStoryOfDefiance": {
+      "test": "{action}：进行{agility}（5）检定。若你成功，在骇人“面具”上放置1个毁灭标记。位于此地点的调查员可以全体共同花费1个{perPlayer}线索，在骇人“面具”上额外放置1个毁灭标记。"
+    }
   },
   "placeAdditionalDoom": "作为群体每位调查员花费1个线索，在潮汐碑匾上额外放置1个毁灭标记",
   "placeAdditionalDoomOnObsidianClaw": "作为群体每位调查员花费1个线索，在黑曜石之爪上额外放置1个毁灭标记",
@@ -36,6 +48,58 @@
     "noResolution": {
       "title": "未达成结局",
       "body": "<p>_若未达成结局：_</p>你身心俱裂，在克苏鲁的伟大形体前倒下了。四周的城市在颤动，你耳中全是嗡鸣，几乎将你震聋。克苏鲁冷漠地俯视着你。你对他而言不过是一个小小的妨碍，一只无关紧要的小虫。你的意志很快就开始塌缩，你脆弱的思维已经崩渍，取而代之的，是无拘无束的彻底疯狂。"
+    },
+    "investigatorDefeat": {
+      "title": "调查员被击败",
+      "body": "<p>_调查员被击败_：身心俱碎的你，在克苏鲁的庞大身躯前瘫倒。四周的城市震颤着，嗡嗡的轰鸣声震耳欲聋。克苏鲁漠然地俯视着你。对他而言，你不过是一个麻烦、一只微不足道的害虫。你的意识很快向内坍缩，你脆弱的心智结构让位于彻底疯狂的无拘无束的自由。</p>",
+      "drivenInsane": "每位被击败的调查员都<b>陷入疯狂</b>。若没有存活的调查员，则调查员输掉了战役。",
+      "otherResolution": "若达成了其他结算，则剩余的调查员前往该结算。"
     }
+  },
+  "intro": {
+    "title": "沉睡者墓穴",
+    "checkCampaignLog": "查看你的战役日志。",
+    "sepulchreOfTheSleeper1": "<p>_沉睡者墓穴1_：远征队在海滩上的重逢气氛十分阴郁，翻滚的雾气更添了几分沉重。你留下看守船只的一名队员已经死去；据其他人说，她是在饥饿的朝圣者偷走剩余口粮时遇害的。所幸，“卡桑德拉号”完好无损。你们剩下的食物几乎只够撑到大陆。安迪和露比讨论着他们的发现，其他人则在包扎伤口，并开始把物资装上“卡桑德拉号”以备返航。船装完之后，你走到岸边，与安迪和露比会合。</p>",
+    "proceedToSepulchreOfTheSleeper2": "若“获得的神器”下至少勾选了1件神器，并且符文记录中至少翻译了10个符文，前往_沉睡者墓穴2_。",
+    "proceedToTheAwakening": "否则，前往_幕间故事III：觉醒_。",
+    "sepulchreOfTheSleeper2": "<p>_沉睡者墓穴2_：“你到底破译了多少那些丑陋的鸡爪字？”露比问道。安迪弓着背伏在黑曜石石板上，在皮面笔记本里做着笔记。暮色中，石板上的符文泛着苍白的火光。安迪翻过几页被水浸湿的纸，将一张沾血的纸条放在石头上。“足以破译这个了。我是在一名朝圣者的尸体上找到的。大意翻译过来是这样，”他匆忙在新的一页上写下译文，递给你。上面写着：</p><p>“那永恒沉睡的，并非真正死去；<br />在奇异的纪元中，连死亡也会死去。”</p>",
+    "proceedToSepulchreOfTheSleeper3": "若“获得的神器”下勾选了全部5件神器，符文记录中全部26个符文都已翻译，并且内室已被开启，前往_沉睡者墓穴3_。",
+    "addZeroToken": "否则，在战役剩余的时间内，向混乱袋中加入一个0标记。前往_幕间故事III：觉醒_。",
+    "sepulchreOfTheSleeper3": "<p>_沉睡者墓穴3_：借助你自己的说法，露比和安迪帮你把古城中各处发现的浮雕与神器拼凑成一个完整的故事。一个共同的主题逐渐浮现：来自遥远星辰之外的外星文明；早于历史本身的一场古老战争；拉莱耶的沉没；名为克苏鲁的古老神明的“死亡”及其预言中的归来。</p><p>安迪指向中央尖塔。底部的黑曜石之门大大敞开着。一股若有若无却刺鼻的腐朽气味从门内飘出。“那些留守的船员说，这扇门一周前就开了。有人进去了，但再也没有回来，”安迪说。他分享了几条他从门上拓印下来的图案中翻译出的内容。“这一段描述了一场光荣的重生，一位复苏的沉睡者，以及伟大旧日支配者的归来。它声称他会夺回属于他的一切：拉莱耶被窃走的每一部分，他领域的每一个角落。”</p><p>“这东西——克苏鲁——已经死了。或者在沉睡。我不确定；细节充其量是模糊的。但随着这座城市和其中的一切都在苏醒，我想他醒来也只是时间问题。他已经在梦中召唤了追随者来到这里。从那股气味判断，他就在里面，”这位记者指向黑曜石之门。</p><p>良久的沉默后，露比站了起来。</p><p>“如果我们把门敞开着，那这趟劫案可就不够完美了，”她眨了眨眼，“我说，在我们乘船驶向落日之前，把这东西锁起来。谁跟我一起？”</p>",
+    "mustDecide": "调查员必须做出决定（选择一项）：",
+    "knowBetter": "“我们本该明白，不要去打扰里面的东西。”每位调查员在战役日志中，在其任务下标记1个进度。在你的战役日志中记录_调查员没有直面梦魇_。前往_幕间故事III：觉醒_。",
+    "layItToRest": "“我们应该让它安息……永远地。”前往_准备_。",
+    "label": {
+      "knowBetter": "“我们本该明白，不要去打扰里面的东西。”",
+      "layItToRest": "“我们应该让它安息……永远地。”"
+    }
+  },
+  "setup": {
+    "gatherSets": "收集以下遭遇牌组中的所有卡牌：*沉睡者墓穴*、*支配*、*梦境*、*拉莱耶*、*星之眷族*、*远古邪恶*与*恐惧打击*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/sepulchre-of-the-sleeper.png' /><img src='{setImgPath}/domination.png' /><img src='{setImgPath}/dreams.png' /><img src='{setImgPath}/rlyeh.png' /><img src='{setImgPath}/star-spawn.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "placeLocations": "将入梦者安眠处以及每张刻印壁龛放入游戏中。",
+    "startAt": "每位调查员从入梦者安眠处开始游戏。",
+    "chooseExpeditionItem": "按玩家顺序，每位玩家可以选择1张来自*远征*遭遇牌组的_道具_支援，使其在游戏开始时由其控制。该遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/tdc_expedition.png' /></section>",
+    "artifacts": "收集所有已获得的_神器_支援，并将每一件都放入游戏中，由某位调查员控制，尽可能平均地分配。",
+    "buildAgendaDeck": "组建一副特殊的密谋牌库：以_城市之下_作为第一个密谋，以_克苏鲁苏醒_作为第二个密谋。它们取代场景牌库与密谋牌库。",
+    "buildEncounterDeck": "将剩余的遭遇牌洗匀，组成遭遇牌库。"
+  },
+  "rules": {
+    "disturbance": {
+      "title": "扰动",
+      "body": "<p class='basic'>在整个剧本中，剧本参考卡上“扰动”下的资源数量表示克苏鲁对调查员的察觉程度。扰动越高，沉睡者就越接近苏醒。扰动本身没有固有的游戏效果；然而，某些遭遇牌的效果可能会根据扰动的当前程度而改变或变得更强。</p>"
+    }
+  },
+  "label": {
+    "chooseExpeditionItem": "选择一张_道具_支援，使其在游戏开始时由你控制。",
+    "noExpeditionItem": "不获取_道具_支援。",
+    "chooseArtifactInvestigator": "选择一名调查员，使其控制{name}。",
+    "placeAdditionalDoomOnObsidianClaw": "全体共同花费1个{perPlayer}线索，在黑曜石之爪上额外放置1个毁灭标记",
+    "placeAdditionalDoomOnBarrierNode": "全体共同花费1个{perPlayer}线索，在屏障节点上额外放置1个毁灭标记",
+    "placeAdditionalDoomOnTidalTablet": "全体共同花费1个{perPlayer}线索，在潮汐石板上额外放置1个毁灭标记",
+    "placeAdditionalDoomOnGrislyMask": "全体共同花费1个{perPlayer}线索，在骇人“面具”上额外放置1个毁灭标记",
+    "placeAdditionalDoomOnShardOfYchlecht": "全体共同花费1个{perPlayer}线索，在伊奇莱赫之碎片上额外放置1个毁灭标记",
+    "doNotPlaceAdditionalDoom": "不额外放置毁灭标记",
+    "readyCthulhu": "重整克苏鲁",
+    "eachInvestigatorHereTakesDirectDamage": "克苏鲁所在地点的每位调查员直接承受1点伤害"
   }
 }

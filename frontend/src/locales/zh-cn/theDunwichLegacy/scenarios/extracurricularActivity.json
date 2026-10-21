@@ -12,7 +12,12 @@
       "theHourIsLate": "如果你已经完成了百赌百胜，使用教师办公室(*夜色已深*)，将其放在一边。将教师办公室(*夜色未深*)*移出游戏。"
     },
     "setAside": "将下列卡牌放在一边：“爵士”马利根、炼金试剂、实验体、沃伦·莱斯教授、宿舍、炼金实验室。",
-    "placeLocations": "将大学广场、奥恩图书馆、人文学大楼、学生会、科学大楼、管理大楼放置入场。每位调查员从大学广场开始游戏。"
+    "placeLocations": "将大学广场、奥恩图书馆、人文学大楼、学生会、科学大楼、管理大楼放置入场。每位调查员从大学广场开始游戏。",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返课外活动*、*门槛之外*、*复苏的邪恶*、*密门*与*犹格-索托斯的使者*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-extracurricular-activities.png' /><img src='{setImgPath}/beyond-the-threshold.png' /><img src='{setImgPath}/resurgent-evils.png' /><img src='{setImgPath}/secret-doors.png' /><img src='{setImgPath}/yog-sothoths-emissaries.png' /></section>*门槛之外*替代*彼岸*，*复苏的邪恶*替代*远古邪恶*，*密门*替代*锁闭之门*，*犹格-索托斯的使者*替代*犹格-索托斯的特工*。将被替代的遭遇牌组移出游戏。",
+      "placeLocations": "将米斯卡塔尼克方院、人文学院大楼、学生会馆、科学楼与行政楼地点放入游戏中。然后随机在奥恩图书馆与沃伦天文台之间选择一个：将所选地点放入游戏中，并将另一个移出游戏。每位调查员从米斯卡塔尼克方院开始游戏。",
+      "enthralledSecurityGuard": "查看战役日志。若你已完成*重返庄家总是赢*：在遭遇牌组中搜寻一张被迷惑的保安，并将其生成在行政楼。"
+    }
   },
   "resolutions": {
     "noResolution": {
@@ -61,6 +66,11 @@
         "can": "{'{'}action{'}'}：_调查_。如果成功，不发现线索，改为拿取该地点下方的炼金试剂（如可能）。",
         "cannot": "{'{'}action{'}'}：_调查_。如果成功，不发现线索，改为拿取该地点下方的炼金试剂（如可能；你无法如此做）。"
       }
+    }
+  },
+  "label": {
+    "alchemyLabs": {
+      "investigate": "取得炼金合剂"
     }
   }
 }

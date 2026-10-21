@@ -77,6 +77,10 @@
       "twoPlayers": "如果有2位调查员进行游戏，执行本步骤2次。",
       "threePlayers": "如果有3位调查员进行游戏，执行本步骤3次。",
       "fourPlayers": "如果有4位调查员进行游戏，执行本步骤3次，每次随机选择的不同地点数量从2个改为3个。"
+    },
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返陷入混沌之爪*、*被诅咒之城*与*魔咒术*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-in-the-clutches-of-chaos.png' /><img src='{setImgPath}/city-of-the-damned.png' /><img src='{setImgPath}/hexcraft.png' /></section>*被诅咒之城*替代*罪孽之城*，*魔咒术*替代*巫术*。将被替代的遭遇牌组移出游戏。",
+      "placeLocations": "随机从以下每种地点的三个副本中各选择一个：法式山丘、河镇、南区、上城区、南教堂与商人区。将所选地点移出游戏，并在准备中照常使用其余地点。"
     }
   },
   "choosingARandomLocation": {

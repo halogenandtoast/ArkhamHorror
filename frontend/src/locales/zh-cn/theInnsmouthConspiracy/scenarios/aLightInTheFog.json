@@ -68,5 +68,25 @@
     "label": {
       "moveBelow": "移动到其所在地点正下方的地点"
     }
+  },
+  "setup": {
+    "gatherSets": "收集以下遭遇牌组中的所有卡牌：*迷雾中的光*、*深海生物*、*淹没的洞穴*、*涨潮*、*朔望*与*恐惧打击*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/a-light-in-the-fog.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/flooded-caves.png' /><img src='{setImgPath}/rising-tide.png' /><img src='{setImgPath}/syzygy.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "placeLocations": "将猎鹰角门房、猎鹰角悬崖、灯塔楼梯间与灯塔看守人的小屋放入游戏中，并位于同一行。将灯室直接放在灯塔楼梯间的上方。",
+    "startAt": "每位调查员从猎鹰角门房开始游戏。",
+    "removeUndergroundRivers": "在潮汐隧道地点中，将2个地下河地点移出游戏。",
+    "setAsideOtherLocations": "将其他每个地点放到一旁，不放入游戏中。",
+    "placeKeys": "按以下方式将每把钥匙放到一旁：",
+    "faceupKeys": "将白色、黑色、蓝色、黄色与红色钥匙以正面朝上的方式放到一旁。",
+    "facedownKeys": "将紫色与绿色钥匙以背面朝下的方式放到一旁。将它们洗匀，使你无法分辨哪把是哪把。",
+    "captured": "将双面的“被捕了！”故事牌放入游戏中，放在剧本参考卡旁边，故事面朝上。（这张牌位于牢房地点的背面。）其文本已生效。",
+    "setAsideCards": "将以下牌放到一旁，不放入游戏中：奥西罗斯沼泽敌人、两张“物有所值”诡计，以及两张“被俘”诡计。",
+    "checkCampaignLog": "查看战役日志。",
+    "wavewornIdol": "若_神像已被带到灯塔_，在收藏中搜寻被海浪侵蚀的神像，并将其放到一旁，不放入游戏中。",
+    "awakenedMantle": "若_披风已被带到灯塔_，在收藏中搜寻觉醒的披风，并将其放到一旁，不放入游戏中。",
+    "headdressOfYhaNthlei": "若_头饰已被带到灯塔_，在收藏中搜寻伊哈-恩赛的头饰，并将其放到一旁，不放入游戏中。",
+    "checkCampaignLogDoom": "查看战役日志。",
+    "afterSunrise": "若_调查员在日出之后抵达猎鹰角_，在密谋1上放置1个毁灭标记。",
+    "tideHasGrownStronger": "若_潮水已经变得更强_，在密谋1上放置1个毁灭标记。",
+    "floodTokens": "将洪水标记加入筹码库。"
   }
 }

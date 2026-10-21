@@ -77,7 +77,14 @@
     "valentinoNotCrossedOff": "如果瓦伦蒂诺·里瓦斯的档案未被划掉，在台球室放置6个线索。",
     "pennyNotCrossedOff": "如果佩妮·怀特的档案未被划掉，在露台放置6个线索。",
     "piecesOfEvidence": "尽可能平均地移除上述地点的总计X个线索，其中X等于剧本日志记录的“_留下的证据_”数量。",
-    "theMortalRealm": "<section class='note-green'><h1>凡人领域</h1><p>_注意：_本场冒险设置只会用到七张没有_幽灵_特性的地点。所有_幽灵_地点一开始都被放在一边。</p></div>"
+    "theMortalRealm": "<section class='note-green'><h1>凡人领域</h1><p>_注意：_本场冒险设置只会用到七张没有_幽灵_特性的地点。所有_幽灵_地点一开始都被放在一边。</p></div>",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返死亡门口*、*嗜血之灵*、*不可言说的命运*、*刺骨迷雾*与*不稳定的领域*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-at-deaths-doorstep.png' /><img src='{setImgPath}/bloodthirsty-spirits.png' /><img src='{setImgPath}/unspeakable-fate.png' /><img src='{setImgPath}/chilling-mists.png' /><img src='{setImgPath}/unstable-realm.png' /></section>*嗜血之灵*替代*被困的灵魂*，*不可言说的命运*替代*无情的命运*，*刺骨迷雾*替代*刺骨寒意*，*不稳定的领域*替代*死亡领域*。将被替代的遭遇牌组移出游戏。",
+      "setSetsAside": "将*不稳定的领域*遭遇牌组放到一旁，不放入游戏中，以取代*死亡领域*遭遇牌组。同样，当场景1b指示玩家将*死亡领域*遭遇牌组洗入遭遇牌库时，改为洗入*不稳定的领域*遭遇牌组。",
+      "placeLocations": "同时将参议员内森尼尔·罗兹敌人放入入口大厅，并在其上放置每位调查员1个线索，同时将酒窖地点放入游戏中。",
+      "setLocationsAside": "同时将酒窖的_幽灵_版本放到一旁，不放入游戏中。",
+      "additionalRule": "在本剧本期间，适用以下附加规则：在结算守望者之握诡计时，幽灵守望者在攻击后不会横置。"
+    }
   },
   "interlude1": {
     "title": "幕间故事I：失踪人口记录",

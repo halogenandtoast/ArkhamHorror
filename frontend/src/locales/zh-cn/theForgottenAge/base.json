@@ -375,5 +375,10 @@
       "tooltip": "@:theForgottenAge.supplies.satchel.description",
       "count": "@:theForgottenAge.supplies.satchel.name | @:theForgottenAge.supplies.satchel.name ({count})"
     }
+  },
+  "vengeance": {
+    "investigatorsDefeated": "一名或多名调查员被击败",
+    "ruinsDestroyed": "艾兹特利的废墟被摧毁了",
+    "pillarsOfKnYan": "凯恩-扬之柱"
   }
 }

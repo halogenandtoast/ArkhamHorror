@@ -49,7 +49,15 @@
       "v3": "如果上述都不符实，使用场景2——登山路途(版本三)。将另外2张场景2移出游戏。"
     },
     "addDoom": "检查剧本日志。*每有1个逃跑的犹格·索托斯之子*，在密谋1a上放置1个毁灭标记。",
-    "hideousAbominations": "检查剧本日志。如果*塞拉斯·毕晓普结束了悲惨的一生*。异教徒们把赛拉斯的尸体带到了哨兵山上，这具尸体发生了变异并生长。将*丑陋异形*遭遇组中的1张“球之群”敌人卡生成在上山道路。将该遭遇组剩余卡牌洗入遭遇牌库。这张卡具有以下图标：<section class='encounter-sets'><img src='{setImgPath}/hideous-abominations.png' /></section>"
+    "hideousAbominations": "检查剧本日志。如果*塞拉斯·毕晓普结束了悲惨的一生*。异教徒们把赛拉斯的尸体带到了哨兵山上，这具尸体发生了变异并生长。将*丑陋异形*遭遇组中的1张“球之群”敌人卡生成在上山道路。将该遭遇组剩余卡牌洗入遭遇牌库。这张卡具有以下图标：<section class='encounter-sets'><img src='{setImgPath}/hideous-abominations.png' /></section>",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返厄运降临之处*、*不稳定的恐惧*、*复苏的邪恶*与*蔓延的寒意*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-where-doom-awaits.png' /><img src='{setImgPath}/erratic-fear.png' /><img src='{setImgPath}/resurgent-evils.png' /><img src='{setImgPath}/creeping-cold.png' /></section>*不稳定的恐惧*替代*打击恐惧*，*复苏的邪恶*替代*远古邪恶*，*蔓延的寒意*替代*刺骨寒意*。将被替代的遭遇牌组移出游戏。",
+      "placeLocations": "将山脚（*扭曲变形*）、上升之路（*扭曲变形*）与哨兵峰放入游戏中。每位调查员从山脚开始游戏。",
+      "divergingPaths": "将新的分岔路加入原有的分岔路中，然后随机将一张分岔路移出游戏。将其余3张分岔路放到一旁，不放入游戏中。",
+      "alteredPaths": "将新的改变之路加入原有的改变之路中，然后随机将一张改变之路移出游戏。将其余3张改变之路放到一旁，不放入游戏中。",
+      "setAside": "同时将娜奥米·欧班农放到一旁，不放入游戏中。",
+      "naomi": "查看战役日志。若*娜奥米支持你*：首席调查员可以不从筹码库中获得线索，而是选择一名调查员，将放到一旁的娜奥米·欧班农加入其牌组。该牌不计入该调查员的牌组张数。"
+    }
   },
   "resolutions": {
     "noResolution": {
@@ -63,6 +71,17 @@
     "resolution2": {
       "title": "结局 2",
       "body": "<div class='resolution'><p>_结局 2_: 敦威治的法师们，穷极一生寻找着异界的魔力源泉，他们完成了威尔伯和老沃特雷没能做到的事情。经过了鲜血献祭和不可名状的实验，法师们掌握了他们所追寻的黑暗力量。但是，他们永远都没有机会去运用这股力量了。他们曾向威尔伯的父亲索要知识，将这个生物从异界招来。犹格·索托斯从哨兵山上空开启的裂缝出现，屏蔽苍穹，笼罩整个世界。现在它已降临到地球，统治人类曾经立足的世界。</p><ul><li>在剧本日志中，记录下*犹格·索托斯将所有世界的间隔撕裂，一切变为一个原点*。</li><li>每位调查员_发疯_。</li><li>调查员输掉了剧本。</li></ul></div>"
+    }
+  },
+  "label": {
+    "baseOfTheHill": {
+      "investigate": "放入一张随机的分岔路"
+    },
+    "ascendingPath": {
+      "investigate": "放入一张随机的改变之路"
+    },
+    "destroyedPath": {
+      "investigate": "从{name}上移除1个毁灭标记"
     }
   }
 }

@@ -50,5 +50,60 @@
       "title": "为蜂拥使用占位卡",
       "description": "不再使用调查员队长的牌组中的卡牌作为蜂拥卡，而是生成不属于任何调查员牌组的专用占位卡。"
     }
+  },
+  "requiresInvestigator": "需要{name}",
+  "bothScenarios": "两个剧本（战役）",
+  "scenarios": "剧本",
+  "allowSpectators": "允许观战",
+  "allowSpectatorsDescription": "在首页列出此游戏，任何人都可以观看。观战者能看到牌桌，但不能执行任何操作。此选项需在现在决定，游戏开始后不可更改。",
+  "allowSpectatorsMakeDefault": "设为我的默认值",
+  "allowSpectatorsDefaultSaved": "已保存为你的默认值",
+  "playMode": "游戏模式",
+  "singleGroupMode": "单组模式",
+  "epicMultiplayerMode": "史诗多人模式",
+  "singleScenarioMode": "单个剧本",
+  "miniCampaignMode": "迷你战役",
+  "miniCampaignDescription": "<p>依次进行三场游戏，每个小组一场，顺序由你决定。与普通战役不同：</p><ul><li>使用单独剧本的牌组构筑规则，无需以 0 经验开始。</li><li>玩家可以在每个剧本之间更换调查员和/或牌组。</li><li>剧本之间不获得也不消耗经验。</li><li>没有战役日志；调查员不会获得创伤，被杀死或逼疯的调查员仍可在其他剧本中使用。</li></ul>",
+  "numberOfGroups": "小组数量",
+  "groupName": "小组名称",
+  "groupPlayers": "玩家",
+  "imposeTimeLimit": "设置时间限制",
+  "timeLimitMinutes": "时间限制（分钟）",
+  "decksChosen": "已选择 {chosen}/{total} 个牌组",
+  "seatNumber": "调查员 {number}",
+  "seatNoDeckYet": "尚未选择牌组",
+  "advancedRulesConfiguration": "高级规则设置",
+  "rulesPresets": "预设",
+  "presetCustom": "自定义",
+  "preset": {
+    "chapter1": {
+      "name": "第一章",
+      "description": "推荐用于第一章的战役。"
+    },
+    "chapter2": {
+      "name": "第二章",
+      "description": "推荐用于第二章的战役。"
+    }
+  },
+  "chapter1Heading": "第一章",
+  "chapter2Heading": "第二章",
+  "homebrewHeading": "自制内容",
+  "designedBy": "设计者：{name}",
+  "sideStoriesHeading": "支线故事",
+  "challengeScenariosHeading": "挑战剧本",
+  "asIfAtBehavior": "“仿佛”在地点上的行为",
+  "asIfAtChapter1": "第一章规则",
+  "asIfAtChapter1Description": "地点上的“仿佛”效果在整张卡牌或能力的全过程中生效，包括其他卡牌引发的窗口触发。",
+  "asIfAtChapter2": "第二章规则",
+  "asIfAtChapter2Description": "地点上的“仿佛”效果仅在所指定能力或行动的结算期间生效。其他卡牌能力与窗口触发则按实际的游戏状态结算。",
+  "narrative": {
+    "title": "故事文本",
+    "description": "你阅读的是本战役故事的哪一版叙述。此设置只改变文字叙述——卡牌、规则、准备与战役日志在两种情况下完全相同。",
+    "campaignGuide": "官方战役指南",
+    "campaignGuideDescription": "按已出版的版本，从战役指南阅读的故事。这是默认选项。",
+    "community": "社区内容",
+    "beta": "测试版",
+    "betaWarning": "此版本已可供测试，但社区版本的游玩次数远少于战役指南。如果有内容读起来不对，请提交问题报告。",
+    "by": "作者：{designer}"
   }
 }

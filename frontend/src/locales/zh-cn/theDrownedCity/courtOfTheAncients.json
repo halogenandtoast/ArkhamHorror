@@ -2,7 +2,11 @@
   "additionalActions": "可花费的额外行动",
   "cosmicOmen": {
     "shuffleGlyphIntoEncounterDeck": "将场上一张字符卡洗入遭遇牌库",
-    "takeHorrorAndDiscard": "承受1点直接恐惧，并随机弃掉1张手牌"
+    "takeHorrorAndDiscard": "承受1点直接恐惧，并随机弃掉1张手牌",
+    "label": {
+      "shuffleGlyphIntoEncounterDeck": "将一张游戏中的符文牌洗入遭遇牌库",
+      "takeHorrorAndDiscard": "直接承受1点恐惧，并随机从你的手牌中弃置1张牌"
+    }
   },
   "tokens": {
     "easyStandard": {
@@ -40,6 +44,80 @@
     "noResolution": {
       "title": "未达成结局",
       "body": "<p>_若未达成结局：_</p>探险队的其余成员告诉你，他们发现你站在高耸的峭壁边缘，仿佛是在梦游。你擦了擦眼睛，异星的宫廷你一点儿也不记得了，而且，由于它已经完全崩塌，你也永远不会记得了。"
+    }
+  },
+  "intro": {
+    "title": "古代议庭",
+    "checkCampaignLog": "查看你的战役日志。",
+    "headedWest": "若远征队向西前进，前往_古代议庭1_。",
+    "headedEast": "若远征队向东前进，跳至_古代议庭2_。",
+    "courtOfTheAncients1": "_古代议庭1_：当你沿着黑暗的隧道走出城市的心脏时，时间似乎悄然流逝。终于，机械永不停歇的轰鸣与嗡嗡声渐渐消散，取而代之的是令人不安的寂静。安迪刚提议折返寻找另一条路，无尽的阶梯就戛然而止。一扇雕刻精美的门嵌在你头顶的天花板上。按下门中央的一块面板后，露出一座空旷而通风的巨大结构，隐约像某座古老外星大教堂的中殿。一座高耸的升降梯占据中央，周围环绕着螺旋状的环形楼层。墙壁上布满了无数外星符文，闪烁着绿光。你不禁想，这座伟大的档案馆里是否藏着什么有价值的东西。",
+    "courtOfTheAncients2": "_古代议庭2_：你降落在高耸中殿的顶层。扭曲的阶梯与栈桥环绕着这座庞大的结构，向下揭示出更多层。你周围的墙壁上布满了发光的外星符文：数十万个符号覆盖了每一寸表面。你不禁想，这座伟大的档案馆里是否藏着什么有价值的东西。",
+    "courtOfTheAncients2Ruby": "“当心。我们不是第一批来这里的人，”露比说。这位珠宝窃贼俯身查看一具瘫倒在新鲜血泊中的人类尸体。你注意到那斗篷色彩斑斓，是拼布的样式。一阵深沉的隆隆咆哮在腔室中回荡。露比的表情变得凝重起来。",
+    "courtOfTheAncients2Conclusion": "“如果我们要找到有价值的东西，最好赶快行动。”",
+    "resolvePlumbTheDepths": "若任一调查员持有“探究深渊”任务，则在右侧结算其各自的故事。",
+    "proceedToSetup": "前往_准备_。",
+    "plumbTheDepths": {
+      "title": "任务：探究深渊",
+      "instructions": "_仅当你持有“探究深渊”任务时阅读：_",
+      "body": "你不禁为这座古老建筑朴素而庄严的宏伟而赞叹。这是一座古老的宫殿？一座图书馆？还是一座礼拜之所？墙上繁复的壁画融合了象形文字与外星文字，描绘着一次横跨星际的古老迁徙。符文闪烁着摇曳的绿光，记载着无法知晓的历史，那些是隐藏于人类之外的古老秘密。",
+      "memories": "其中一幅画面——一幅充满海洋恐怖与沉没城市的噩梦景象——吸引了你的注意。你按下一只格外令人不安的生物的眼睛，随即涌上一股古老的记忆洪流。一个外星生命的念头与情感，远方某颗行星幽暗深渊的图景，压倒性地冲击着你的意识。记忆逐渐让位于更清晰、更明确的事实与日期，那是一个史前文明所记录的历史。",
+      "reflection": "你开始感到自己在逐渐滑离，仿佛你的意识正被筛子一点点滤去。还有更多东西可以去了解……但你应该去吗？",
+      "choose": "你必须做出决定（选择一项）：",
+      "lookAway": "移开视线。在你的战役日志中，擦除“探究深渊”下的1个进度。在下一个剧本开始时，每位调查员（从筹码库中）获得1个线索。",
+      "seekTheTruth": "探求真相。在你的战役日志中，在“探究深渊”下标记2个进度，并承受1点精神创伤。在下一个剧本开始时，每位调查员的起始手牌少1张牌。"
+    },
+    "label": {
+      "plumbTheDepths": {
+        "lookAway": "移开视线。",
+        "seekTheTruth": "探求真相。"
+      }
+    }
+  },
+  "setup": {
+    "title": "准备",
+    "gatherSets": "收集以下遭遇牌组中的所有卡牌：_古代议庭_、_支配_、_梦境_、_远古之雾_、_穷途异魔_、_拉莱耶_与_星之眷族_。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/court-of-the-ancients.png' /><img src='{setImgPath}/domination.png' /><img src='{setImgPath}/dreams.png' /><img src='{setImgPath}/elder-mist.png' /><img src='{setImgPath}/the-inescapable.png' /><img src='{setImgPath}/rlyeh.png' /><img src='{setImgPath}/star-spawn.png' /></section>",
+    "placeFixedLocations": "按照地点摆放图，将扭曲栈桥、西侧前厅、东侧前厅与远古祭坛放入游戏中。",
+    "placeCrumblingArchives": "将每张崩塌档案馆洗在一起，并随机将其中一张移出游戏。按照地点摆放图，将其余每张崩塌档案馆放入游戏中。",
+    "checkCampaignLogWest": "查看你的战役日志。若_远征队向西前进_：",
+    "westGreatLift": "将大升降梯放入游戏中，位于第1层，未激活一面朝上。（见_大升降梯与滑动地点_。）",
+    "westGatherStowaways": "收集_偷渡者_遭遇牌组中的所有卡牌。该遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/stowaways.png' /></section>",
+    "westBuildActAgendaDeck": "使用密谋1a——“废墟档案塔”、密谋2a——“不稳地基”、场景1a——“巨人阶梯”与场景2a——“逃离高塔（版本I）”组建场景牌库与密谋牌库。将其他每个场景与密谋移出游戏。",
+    "westStarSpawn": "在_星之眷族_遭遇牌组中搜寻星之眷族观察者敌人，并将其放到一旁，不放入游戏中。随机将_星之眷族_遭遇牌组中的另外两张牌移出游戏。",
+    "westBeginAtEastAntechamber": "每位调查员从东侧前厅开始游戏。",
+    "checkCampaignLogEast": "查看你的战役日志。若_远征队向东前进_：",
+    "eastGreatLift": "将大升降梯放入游戏中，位于第4层，未激活一面朝上。（见_大升降梯与滑动地点_。）",
+    "eastGatherPilgrims": "收集_朝圣者_遭遇牌组中的所有卡牌。该遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/pilgrims.png' /></section>",
+    "eastBuildActAgendaDeck": "使用密谋1a——“淹没档案塔”、密谋2a——“不稳地基”、场景1a——“巨人阶梯”与场景2a——“逃离高塔（版本II）”组建场景牌库与密谋牌库。将其他每个场景与密谋移出游戏。",
+    "eastAddFloodTokens": "将洪水标记加入筹码库。",
+    "eastFloodLevelsOneAndTwo": "提高第1层和第2层每个地点的洪水水位。",
+    "eastFullyFloodLevelOne": "提高第1层每个地点的洪水水位，使其完全被淹没。",
+    "eastStarSpawn": "在_星之眷族_遭遇牌组中搜寻星之眷族观察者敌人，并将其放到一旁，不放入游戏中。将_星之眷族_遭遇牌组中的其他每张牌移出游戏。",
+    "eastBeginAtTwistingCatwalks": "每位调查员从扭曲栈桥开始游戏。",
+    "setCardsAside": "将伊奇莱赫之碎片故事支援与巨型暴君敌人放到一旁，不放入游戏中。",
+    "checkCampaignLogInescapable": "查看你的战役日志。",
+    "creatureWasDefeated": "若_生物已被击败_，将_穷途异魔_遭遇牌组移出游戏。",
+    "otherwise": "否则，将穷途异魔敌人放到一旁，不放入游戏中。",
+    "chooseExpeditionAsset": "按玩家顺序，每位玩家可以选择1张已获得的_神器_支援，或来自_远征_遭遇牌组的1张_道具_支援，使其在游戏开始时由其控制。该遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/tdc_expedition.png' /></section>",
+    "buildEncounterDeck": "将剩余的遭遇牌洗匀，组成遭遇牌库。",
+    "readyToBegin": "现在你已准备好开始。"
+  },
+  "rules": {
+    "greatLift": {
+      "title": "大升降梯与滑动地点",
+      "body": "<p class='basic'>在本剧本中，调查员需要使用大升降梯来探索高塔的其他楼层。</p><ul><li>地点之间除了通过大升降梯、它们的连接图标或某些牌效果外，彼此并不相连。</li><li>大升降梯只与其左右两侧的地点相连，反之亦然。</li><li>当被指示将大升降梯向上或向下滑动时，将大升降梯移动到其当前层级的上一层或下一层。<ul><li>大升降梯不能移动到第4层以上或第1层以下。</li></ul></li><li>大升降梯移动时，该地点上的每张牌与每个筹码都随之移动。</li></ul>"
+    }
+  },
+  "label": {
+    "chooseExpeditionAssetQuestion": "选择一张已获得的神器支援，或来自远征遭遇牌组的一张道具支援，使其在游戏开始时由你控制。",
+    "noExpeditionAsset": "不获取神器或远征支援。",
+    "additionalActions": "要花费的额外行动",
+    "greatLift": {
+      "slideUp": "将大升降梯向上滑动",
+      "slideDown": "将大升降梯向下滑动",
+      "slideUpAdditional": "每位调查员花费1个线索，将大升降梯向上滑动",
+      "slideDownAdditional": "每位调查员花费1个线索，将大升降梯向下滑动",
+      "doNotSlide": "不滑动大升降梯"
     }
   }
 }

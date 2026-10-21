@@ -51,6 +51,9 @@
     },
     "lightOutOfVoid": {
       "doom": "在场上躲避值最高的_异教徒_敌人上放置1个毁灭标记"
+    },
+    "grandBazaarJewelersRoad": {
+      "investigate": "从你的手牌中打出一张_护符_或_遗物_"
     }
   },
   "intro": {

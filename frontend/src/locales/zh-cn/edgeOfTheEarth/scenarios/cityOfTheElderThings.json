@@ -115,5 +115,44 @@
       "tablet": "-4。如果本次检定抽出过{'{'}frost{'}'}标记，受到1点伤害并改为自动失败。",
       "elderThing": "-5。如果你失败，最近的敌人向你移动一次；若其与你交战，其攻击。"
     }
+  },
+  "setup": {
+    "v1": {
+      "gatherSets": "收集以下遭遇牌组中的所有卡牌：*远古者之城*、*远古之物*、*瘴气*、*无名恐怖*、*企鹅*、*修格斯*、*忒咳哩-哩*与*锁闭之门*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/city-of-the-elder-things.png' /><img src='{setImgPath}/elder-things.png' /><img src='{setImgPath}/miasma.png' /><img src='{setImgPath}/nameless-horrors.png' /><img src='{setImgPath}/penguins.png' /><img src='{setImgPath}/shoggoths.png' /><img src='{setImgPath}/tekeli-li.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
+      "setAside": "将*修格斯*遭遇牌组放到一旁。",
+      "createActDeck": "仅使用场景1（版本I）——“蔓延之城”与密谋1（版本I）——“追寻未知”组建场景牌库。将其他所有场景牌移出游戏。",
+      "placeLocations": "将十六张城市地貌地点洗匀，并按照地图将它们与隐秘隧道一起放入游戏中。",
+      "startAt": "首席调查员选择八个最外侧的地点之一。每位调查员从所选地点开始游戏。",
+      "adjacency": "本剧本中的地点与每个相邻的地点相连。",
+      "keys": "从收藏中取出以下每种标记各两个（*不要从混乱袋中取*）：{'{'}skull{'}'}、{'{'}cultist{'}'}、{'{'}tablet{'}'}、{'{'}elderThing{'}'}、0、–1、–2与–3。将这十六个标记随机放置在每个城市地貌地点上。这些标记称为“钥匙”。",
+      "addElderThingToken": "向混乱袋中加入1个{'{'}elderThing{'}'}标记。",
+      "removals": "将良善的远古之物敌人的全部三个副本移出游戏。将星辰的恐怖敌人放到一旁，不放入游戏中。"
+    },
+    "v2": {
+      "gatherSets": "收集以下遭遇牌组中的所有卡牌：*远古者之城*、*冰中生物*、*远古之物*、*无名恐怖*、*企鹅*、*寂静与神秘*、*忒咳哩-哩*与*刺骨寒意*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/city-of-the-elder-things.png' /><img src='{setImgPath}/creatures-in-the-ice.png' /><img src='{setImgPath}/elder-things.png' /><img src='{setImgPath}/nameless-horrors.png' /><img src='{setImgPath}/penguins.png' /><img src='{setImgPath}/silence-and-mystery.png' /><img src='{setImgPath}/tekeli-li.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
+      "setAside": "将*冰中生物*遭遇牌组放到一旁。",
+      "createActDeck": "仅使用场景1（版本II）——“蔓延之城”与密谋1（版本II）——“追寻未知”组建场景牌库。将其他所有场景牌移出游戏。",
+      "placeLocations": "将十六张城市地貌地点洗匀，并按照地图将它们与隐秘隧道一起放入游戏中。",
+      "startAt": "每位调查员从右下角的地点开始游戏。",
+      "adjacency": "本剧本中的地点与每个相邻的地点相连。",
+      "keys": "从收藏中取出以下每种标记各两个（*不要从混乱袋中取*）：{'{'}skull{'}'}、{'{'}cultist{'}'}、{'{'}tablet{'}'}、{'{'}elderThing{'}'}、0、–1、–2与–3。将这十六个标记随机放置在每个城市地貌地点上。这些标记称为“钥匙”。",
+      "addElderThingToken": "向混乱袋中加入1个{'{'}elderThing{'}'}标记。",
+      "removals": "将星辰的恐怖敌人以及良善的远古之物敌人的全部三个副本移出游戏。"
+    },
+    "v3": {
+      "gatherSets": "收集以下遭遇牌组中的所有卡牌：*远古者之城*、*冰中生物*、*瘴气*、*企鹅*、*修格斯*、*忒咳哩-哩*、*刺骨寒意*与*锁闭之门*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/city-of-the-elder-things.png' /><img src='{setImgPath}/creatures-in-the-ice.png' /><img src='{setImgPath}/miasma.png' /><img src='{setImgPath}/penguins.png' /><img src='{setImgPath}/shoggoths.png' /><img src='{setImgPath}/tekeli-li.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
+      "setAside": "将*修格斯*遭遇牌组放到一旁。",
+      "createActDeck": "仅使用场景1（版本III）——“蔓延之城”与密谋1（版本III）——“追寻未知”组建场景牌库。将其他所有场景牌移出游戏。",
+      "placeLocations": "将十六张城市地貌地点洗匀，并按照地图将它们与隐秘隧道一起放入游戏中。",
+      "startAt": "每位调查员从左上角的地点开始游戏。",
+      "adjacency": "本剧本中的地点与每个相邻的地点相连。",
+      "keys": "从收藏中取出以下每种标记各两个（*不要从混乱袋中取*）：{'{'}skull{'}'}、{'{'}cultist{'}'}、{'{'}tablet{'}'}、{'{'}elderThing{'}'}、0、–1、–2与–3。将这十六个标记随机放置在每个城市地貌地点上。这些标记称为“钥匙”。",
+      "removals": "将星辰的恐怖敌人以及重新觉醒的远古之物敌人的全部三个副本移出游戏。"
+    },
+    "removeUnearnedWeaknesses": "将在序章中没有获得的每张冻伤与附身弱点移出游戏。",
+    "checkDifficulty": "查看难度等级。",
+    "hard": "若你在困难难度下游玩，在密谋1a上加入1个毁灭标记。",
+    "expert": "若你在专家难度下游玩，在密谋1a上加入2个毁灭标记。",
+    "tekelili": "将每张尚未成为任何调查员牌组一部分的“忒咳哩-哩！”弱点牌洗在一起，组成忒咳哩-哩牌库。将该牌库放在密谋牌库附近。"
   }
 }

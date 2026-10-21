@@ -3,7 +3,13 @@
   "setup": {
     "gatherSets": "找出以下遭遇组中的所有遭遇卡：*聚集于此*、*老鼠*、*食尸鬼*、*恐惧打击*、*远古恶魔*和*寒冷刺骨*。这些遭遇组以如下图标表示：<section class='encounter-sets'><img src='{setImgPath}/the-gathering.png' /><img src='{setImgPath}/rats.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
     "placeLocations": "将地点“书房”放置入场。将其他地点卡放在一边。每位调查员从书房开始游戏。",
-    "setOutOfPlay": "将食尸鬼祭司和丽塔·钱德勒放在一边。"
+    "setOutOfPlay": "将食尸鬼祭司和丽塔·钱德勒放在一边。",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返集会*与*乌莫尔德的食尸鬼*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-the-gathering.png' /><img src='{setImgPath}/ghouls-of-umrdhoth.png' /></section>*乌莫尔德的食尸鬼*替代*食尸鬼*。将被替代的遭遇牌组移出游戏。",
+      "mysteriousGateway": "组建场景牌库时，使用场景1a——*神秘之门*。将场景1a——*被困*移出游戏。",
+      "placeLocations": "将书房（*畸变之门*）地点连同新的客厅、卧室与浴室地点一起放入游戏中。每位调查员从书房（*畸变之门*）开始游戏。将原有的书房与走廊地点移出游戏，并将其他每个地点放到一旁，不放入游戏中。",
+      "atticAndCellar": "随机选择两个阁楼地点中的一个，以及两个地窖地点中的一个，并将它们放到一旁，不放入游戏中。将阁楼与地窖的其他版本移出游戏。"
+    }
   },
   "tokens": {
     "easyStandard": {

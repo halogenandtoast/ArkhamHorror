@@ -69,7 +69,13 @@
       "sixToEight": "如果记录次数在6-8，在密谋1a上增加1个毁灭标记。",
       "nineOrMore": "如果记录次数大于等于9，则不作改动。"
     },
-    "takeHorror": "每位调查员受到等同于其一半神智值的直接恐惧，向下取整(*不能被防止*)。此恐惧不会导致你被击败(见下方“卡尔克萨领域的神智值”)。"
+    "takeHorror": "每位调查员受到等同于其一半神智值的直接恐惧，向下取整(*不能被防止*)。此恐惧不会导致你被击败(见下方“卡尔克萨领域的神智值”)。",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返幽暗卡尔克萨*、*疯狂妄想*、*哈斯塔的使者*与*神经质的恐惧*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-dim-carcosa.png' /><img src='{setImgPath}/maddening-delusions.png' /><img src='{setImgPath}/hasturs-envoys.png' /><img src='{setImgPath}/neurotic-fear.png' /></section>*疯狂妄想*替代*妄想*，*哈斯塔的使者*替代*哈斯塔的特工*，*神经质的恐惧*替代*打击恐惧*。将被替代的遭遇牌组移出游戏。",
+      "placeLocations": "将原有的国王宫殿地点移出游戏，并以新的国王宫殿（*哈斯塔的领域*）取代它。照常进行地点准备。",
+      "setAside": "同时将以下新的地点放到一旁，不放入游戏中：自身思维的深处、王座室与守卫剧院的舞台。",
+      "additionalRule": "在本剧本期间，适用以下附加规则：除非有调查员_知道这个秘密_，否则哈斯塔的生命值不能被降至每位调查员2点以下。"
+    }
   },
   "resolutions": {
     "xp": {

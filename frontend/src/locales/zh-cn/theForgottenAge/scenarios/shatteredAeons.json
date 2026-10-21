@@ -57,7 +57,13 @@
     "setAsideEnemiesNote": "<div class='columns' style='overflow: none;padding-bottom: 40px;'><div style='flex-basis: 20%;'>_注意：_这些卡牌是双面的，其背面为剧情卡牌。为了获得最佳的游戏体验，请勿查看背面内容，除非有效果指示你如此做。</div><div style='flex:1; margin-top: 30px;' class='fan'><img src='{setImgPath}/../cards/04325.avif' /><img src='{setImgPath}/../cards/04326.avif' /></div></div>",
     "setAside": "将下列卡牌放在一边，置于场外：无形之子、古代遗物*(时光涌流)*、时间之窗、场景4a-“失乐园”、场景4a-“锁定时间”、6张单面_破碎_地点。",
     "explorationDeck": "构建探索牌库。拿取3张剩余的单面地点卡牌，并与以下遭遇卡牌每种一张混洗：时空撕裂、异界之间、远古恶魔。",
-    "yigsFury": "检查剧本日志。“伊格之怒”下方每有10次记录，将调查员队长牌库顶的1张卡牌正面朝下放入胜利区。直到冒险结束，将这些卡牌每张视为具有_复仇1_。"
+    "yigsFury": "检查剧本日志。“伊格之怒”下方每有10次记录，将调查员队长牌库顶的1张卡牌正面朝下放入胜利区。直到冒险结束，将这些卡牌每张视为具有_复仇1_。",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返破碎的纪元*、*时间猎手*与*皮纳科图斯教团*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-shattered-aeons.png' /><img src='{setImgPath}/temporal-hunters.png' /><img src='{setImgPath}/cult-of-pnakotus.png' /></section>*时间猎手*替代*时间涌流*，*皮纳科图斯教团*替代*黑暗邪教*。将被替代的遭遇牌组移出游戏。",
+      "explorationDeck": "组建探索牌库时，只使用4张单面的_异界_地点。不要纳入原准备说明中列出的任何其他遭遇牌。",
+      "setAside": "同时将新的_破碎的_地点放到一旁，不放入游戏中。",
+      "additionalRule": "在本剧本期间，适用以下附加规则：_强制_——探索成功结束后：将遭遇牌库顶部的一张牌洗入探索牌库。"
+    }
   },
   "specialRules": [
     {

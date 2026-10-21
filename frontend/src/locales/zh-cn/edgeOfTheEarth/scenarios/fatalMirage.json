@@ -80,5 +80,30 @@
     "label": {
       "removeSecret": "从你控制的一张支援上移除1个秘密"
     }
+  },
+  "setup": {
+    "gatherSets": "收集以下遭遇牌组中的所有卡牌：*致命幻象*、*未知的特工*、*遗留之物*、*瘴气*、*无名恐怖*、*寂静与神秘*、*忒咳哩-哩*与*刺骨寒意*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/fatal-mirage.png' /><img src='{setImgPath}/agents-of-the-unknown.png' /><img src='{setImgPath}/left-behind.png' /><img src='{setImgPath}/miasma.png' /><img src='{setImgPath}/nameless-horrors.png' /><img src='{setImgPath}/silence-and-mystery.png' /><img src='{setImgPath}/tekeli-li.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
+    "firstTime": {
+      "buildAgendaDeck": "仅使用密谋1组建密谋牌库。将其余密谋移出游戏。",
+      "buildActDeck": "仅使用场景1组建场景牌库。将其余场景移出游戏。",
+      "placeLocations": "将记忆牢笼地点放入游戏中，已揭示面朝上。",
+      "startAt": "每位调查员从记忆牢笼开始游戏。",
+      "setOtherLocationsAside": "将其他每个地点放到一旁，不放入游戏中。",
+      "setOutOfPlay": "将以下每张牌放到一旁，不放入游戏中：九个“……的记忆”敌人，以及九张_坚毅_故事支援。"
+    },
+    "repeat": {
+      "buildAgendaDeck": "若这是你第二次游玩_致命幻象_，则仅使用密谋2组建密谋牌库；若是第三次，则仅使用密谋3。将其余密谋移出游戏。",
+      "buildActDeck": "若这是你第二次游玩_致命幻象_，则仅使用场景2组建场景牌库；若是第三次，则仅使用场景3。将其余场景移出游戏。",
+      "memoriesBanished": "找到战役日志中“被驱散的记忆”下列出的每张故事牌。将这些牌中的每一张放入胜利区。",
+      "setRemainingMemoriesAside": "将其余每个“……的记忆”敌人放到一旁，不放入游戏中。",
+      "memoriesDiscovered": "找到战役日志中“被发现的记忆”下列出的每个地点。将这些地点连同记忆牢笼一起放入游戏中，已揭示面朝上（*记得根据幻象关键词调整每个地点的线索值*）。",
+      "startAt": "每位调查员从记忆牢笼开始游戏。",
+      "setOtherLocationsAside": "将其他每个地点放到一旁，不放入游戏中。",
+      "setResoluteAside": "将九张_坚毅_故事支援中，在之前游玩_致命幻象_时尚未获得的每一张放到一旁。"
+    },
+    "checkDifficulty": "查看难度等级。",
+    "hard": "若你在困难难度下游玩，在密谋上加入1个毁灭标记。",
+    "expert": "若你在专家难度下游玩，在密谋上加入2个毁灭标记。",
+    "tekelili": "将每张尚未成为任何调查员牌组一部分的“忒咳哩-哩！”弱点牌洗在一起，组成忒咳哩-哩牌库。将该牌库放在密谋牌库附近。"
   }
 }

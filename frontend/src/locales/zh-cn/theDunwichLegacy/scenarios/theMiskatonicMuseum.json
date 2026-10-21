@@ -42,7 +42,12 @@
       "bottom": "将展厅（禁止入内）和其他随机2张展厅混洗，未揭示面朝上，作为展厅牌堆底部3张牌。",
       "top": "然后，将其余3个展厅地点以随机顺序放在牌堆顶部。全部6张展厅牌都应仅显示未揭示面，使玩家无法得知其中哪一张是展厅（*禁止入内*）。"
     },
-    "setAside": "将下列卡牌放在一边：哈罗德·维尔斯特、亚当·林奇、死灵之书（奥洛斯·沃尔密乌斯译本）、暗影之子。"
+    "setAside": "将下列卡牌放在一边：哈罗德·维尔斯特、亚当·林奇、死灵之书（奥洛斯·沃尔密乌斯译本）、暗影之子。",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返米斯卡塔尼克博物馆*、*门槛之外*、*刺骨的寒意*与*密门*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-the-miskatonic-museum.png' /><img src='{setImgPath}/beyond-the-threshold.png' /><img src='{setImgPath}/creeping-cold.png' /><img src='{setImgPath}/secret-doors.png' /></section>*门槛之外*替代*彼岸*，*蔓延的寒意*替代*刺骨寒意*，*密门*替代*锁闭之门*。将被替代的遭遇牌组移出游戏。",
+      "exhibitDeck": "在组建展厅牌库之前，将2个新的展厅地点加入原有的6个展厅地点中。将展厅（*限制展厅*）放到一旁，并随机将2个展厅地点移出游戏。然后照常继续组建展厅牌库。",
+      "additionalRule": "在本剧本期间，适用以下附加规则：当调查员结算密谋1b与密谋2b的文本时，密谋牌库中下一个密谋上的_强制_能力视为生效。"
+    }
   },
   "theVoid": {
     "title": "“混沌”",

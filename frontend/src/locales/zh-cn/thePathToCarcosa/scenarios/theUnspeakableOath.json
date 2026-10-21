@@ -46,6 +46,11 @@
       "instructions": "查看剧本日志。根据以下情况，这场冒险会使用不同版本的场景2。将其他版本的每张场景2从游戏中移除。",
       "v1": "如果你拿到了黑玛瑙扣环，使用场景2-真正可怕的人(版本一)。",
       "v2": "否则，使用场景2-真正可怕的人(版本二)。"
+    },
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返不可言说的誓言*、*疯狂妄想*、*腐朽的现实*与*哈斯塔的使者*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-the-unspeakable-oath.png' /><img src='{setImgPath}/maddening-delusions.png' /><img src='{setImgPath}/decaying-reality.png' /><img src='{setImgPath}/hasturs-envoys.png' /></section>*疯狂妄想*替代*妄想*，*腐朽的现实*替代*腐朽与污秽*，*哈斯塔的使者*替代*哈斯塔的特工*。将被替代的遭遇牌组移出游戏。",
+      "setAside": "同时将疯狂之主敌人与激进疗法诡计放到一旁，不放入游戏中。",
+      "act2": "在确定使用哪个版本的场景2时，不要遵循原有的准备说明。相反，将原版的场景2移出游戏，并查看战役日志。若你的_信念_多于（或等于）_怀疑_，则使用新的场景2——*真正的坏家伙（版本III）*。若你的_怀疑_多于_信念_，则使用新的场景2——*真正的坏家伙（版本IV）*。"
     }
   },
   "tooltips": {
@@ -70,6 +75,15 @@
     },
     "arkhamAsylum": {
       "youKnockHerOverAndGrabTheKeys": "你强行夺走了钥匙"
+    },
+    "remembered": {
+      "setAFireInTheKitchen": "在厨房放火",
+      "incitedAFightAmongstThePatients": "煽动病人之间的斗殴",
+      "distractedTheGuards": "分散了守卫的注意",
+      "releasedADangerousPatient": "释放了一名危险病人",
+      "knowTheGuardsPatrols": "掌握了守卫的巡逻路线",
+      "recalledTheWayOut": "想起了出路",
+      "youTookTheKeysByForce": "你强行夺下了钥匙"
     }
   },
   "resolutions": {

@@ -1,19 +1,31 @@
 {
-    "title": "升级牌组 (共计{xp}点经验)",
-    "fetching": "正在从{deckSource}获取牌组，请稍等...",
-    "directlyUpdateContent": "直接在{deckSource}进行升级，然后同步到这里",
-    "openDeck": "在{deckSource}查看牌组",
-    "pullUpdate": "从{deckSource}获取更新后的牌组",
-    "OR": "或者",
-    "deckUrlPlaceholder": "在这里填写ArkhamDB或arkham.build牌组url链接",
-    "orUploadJson": "或上传JSON",
-    "Upgrade": "升级",
-    "continueWithoutUpgrading": "跳过升级，直接继续",
-    "waitingOtherPlayer": "正在等待其他玩家升级牌组。",
-
-    "skippingPrompt": "你是否确定要跳过此次升级?",
-
-    "xp": "{total}点经验",
-    "victoryDisplay": "胜利区"
-
+  "title": "升级牌组 (共计{xp}点经验)",
+  "fetching": "正在从{deckSource}获取牌组，请稍等...",
+  "directlyUpdateContent": "直接在{deckSource}进行升级，然后同步到这里",
+  "openDeck": "在{deckSource}查看牌组",
+  "pullUpdate": "从{deckSource}获取更新后的牌组",
+  "OR": "或者",
+  "deckUrlPlaceholder": "在这里填写ArkhamDB或arkham.build牌组url链接",
+  "orUploadJson": "或上传JSON",
+  "Upgrade": "升级",
+  "continueWithoutUpgrading": "跳过升级，直接继续",
+  "waitingOtherPlayer": "正在等待其他玩家升级牌组。",
+  "skippingPrompt": "你是否确定要跳过此次升级?",
+  "xp": "{total}点经验",
+  "victoryDisplay": "胜利区",
+  "newInvestigator": "载入新的调查员",
+  "killed": "你的调查员被杀死或逼疯了。请选择一名新的调查员。",
+  "fetchFailed": "无法从{deckSource}获取牌组。请确认该牌组已公开，然后重试。",
+  "fetchRejected": "{deckSource}拒绝了该请求：{message}",
+  "fetchUnusable": "从{deckSource}获取的牌组没有调查员或没有卡牌，无法使用。",
+  "arkhamBuildShareNotFound": "arkham.build 上没有该链接对应的已分享牌组。请在 arkham.build 上打开该牌组，并使用其“分享”链接；地址栏中你自己牌组的链接无效。",
+  "unrecognizedUrl": "这看起来不是 ArkhamDB 或 arkham.build 的牌组链接。",
+  "uploadInvalidJson": "该文件不是有效的 JSON。请从 ArkhamDB 或 arkham.build 导出牌组，然后上传该文件。",
+  "uploadNotADecklist": "该文件看起来不是牌组导出文件，它没有调查员或没有卡牌。",
+  "noChangesPrompt": "此牌组没有新增卡牌，而你仍有 {xp} 点未花费的经验。在 arkham.build 和 ArkhamDB 上，升级后的版本是在你花费经验之前创建的。请先在那里完成修改，再重新拉取。仍要在没有修改的情况下升级吗？",
+  "upgradeFailed": "无法升级牌组。没有任何内容被更改，你可以放心地重试。",
+  "unspendableXp": "无法花费的经验",
+  "tally": {
+    "vengeance": "复仇"
+  }
 }

@@ -32,7 +32,15 @@
     "setAside": "将下列卡牌放在一边，位于场外：塞拉斯·毕晓普、隐藏密室、密室的钥匙、伊本巴奇之粉末。",
     "delayed": "检查剧本日志。如果*调查员前往敦威治时迟到了*: 将1个毁灭标记放置在密谋1a。",
     "seekingVengeance": "检查剧本日志。如果*欧巴尼恩帮与调查员有过节*：为了复仇，四叶草俱乐部的帮派一路跟踪你来到敦威治。收齐*娜奥米的打手*遭遇组中的所有卡牌，并将其混洗入遭遇牌库。该遭遇组的图标为：<section class='encounter-sets'><img src='{setImgPath}/naomis-crew.png' /></section>",
-    "placeUnderneath": "将放在一边的隐藏密室和密室的钥匙，以及遭遇牌库顶部的3张卡牌混洗。面朝下，在除公共空地以外的每张地点卡下各放置1张。"
+    "placeUnderneath": "将放在一边的隐藏密室和密室的钥匙，以及遭遇牌库顶部的3张卡牌混洗。面朝下，在除公共空地以外的每张地点卡下各放置1张。",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返祭坛上的血*与*复苏的邪恶*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-blood-on-the-altar.png' /><img src='{setImgPath}/resurgent-evils.png' /></section>*复苏的邪恶*替代*远古邪恶*。将被替代的遭遇牌组移出游戏。",
+      "placeLocations": "将原有的村庄公地地点移出游戏，并以新的村庄公地（*沉默的腐朽*）取代它。将其放入游戏中。每位调查员从村庄公地开始游戏。",
+      "placeRandomLocations": "将新的地点加入*祭坛上的血*遭遇牌组中的原有地点。随机将这些地点中每一种的3个副本中的1个移出游戏。然后，随机从剩余的6个地点中选择1个，也将其移出游戏。将剩余的地点放入游戏中。",
+      "setAside": "同时将每张雇佣枪手放到一旁，不放入游戏中。",
+      "seekingVengeance": "将放到一旁的一张雇佣枪手生成在一个不与村庄公地相连的地点，并将另一张放到一旁的雇佣枪手洗入遭遇牌库。",
+      "placeUnderneath": "在将遭遇牌放在地点之下时，不要纳入*娜奥米的队伍*遭遇牌组中的6张牌。"
+    }
   },
   "hiddenChamber": {
     "title": "隐藏密室",

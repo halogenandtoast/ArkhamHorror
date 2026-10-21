@@ -31,7 +31,12 @@
       "fiveOrSixNames": "如果恰好有5个或6个名字，在密谋 1a放置3个毁灭标记。"
     },
     "pastMidnight": "检查剧本日志，如果*午夜已至*，每位玩家随机丢弃2张起始手牌。",
-    "ghoulPriest": "检查剧本日志，如果*食尸鬼祭司仍然存活*，将其洗入遭遇牌库。"
+    "ghoulPriest": "检查剧本日志，如果*食尸鬼祭司仍然存活*，将其洗入遭遇牌库。",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返深渊吞噬者*、*乌莫尔德的食尸鬼*与*吞噬者的教团*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-the-devourer-below.png' /><img src='{setImgPath}/ghouls-of-umrdhoth.png' /><img src='{setImgPath}/the-devourers-cult.png' /></section>*乌莫尔德的食尸鬼*替代*食尸鬼*，*吞噬者的教团*替代*黑暗邪教*。将被替代的遭遇牌组移出游戏。",
+      "placeLocations": "随机选择4个阿卡姆树林地点放入游戏中时，将本遭遇牌组中的4个新阿卡姆树林地点也纳入，共计10种可能。",
+      "vaultOfEarthlyDemise": "将乌莫尔德敌人放到一旁后，将*尘世毁灭之库*附着在其上。"
+    }
   },
   "tooltips": {
     "mainPath": {

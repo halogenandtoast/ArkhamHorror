@@ -50,7 +50,13 @@
     "explorationDeck": "构建探索牌库。抽取12张单面的_古代_地点卡牌，并与以下遭遇卡牌每种一张混洗：异时空之窗、时间线失稳、时间裂缝、困于时间。",
     "setAside": "将帕德玛·阿姆丽塔敌人放在一边，位于场外。",
     "setActAndAgenda3OutOfPlay": "将场景3a和密谋3a放在一边，位于场外。这些卡牌暂时不在场景或密谋牌库中。",
-    "poisoned": "将不在调查员牌库中的所有中毒弱点放在一边。"
+    "poisoned": "将不在调查员牌库中的所有中毒弱点放在一边。",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返边界之外*、*时间猎手*、*皮纳科图斯教团*与*毒液之恨*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-the-boundary-beyond.png' /><img src='{setImgPath}/temporal-hunters.png' /><img src='{setImgPath}/cult-of-pnakotus.png' /><img src='{setImgPath}/venomous-hate.png' /></section>*时间猎手*替代*时间涌流*，*皮纳科图斯教团*替代*黑暗邪教*，*毒液之恨*替代*伊格的毒液*。将被替代的遭遇牌组移出游戏。",
+      "placeLocations": "将新的_现代_地点加入*边界之外*遭遇牌组中的原有地点中。随机将这些地点中每一种的2个副本中的1个移出游戏。将剩余的地点放入游戏中。",
+      "explorationDeck": "组建探索牌库时，只使用12张单面的_远古_地点。不要纳入原准备说明中列出的任何其他遭遇牌。",
+      "harbinger": "准备完成后，在收藏中搜寻新的瓦卢西亚的先驱（*沉睡者归来*），并将其放到一旁，不放入游戏中。若瓦卢西亚的先驱会在本剧本中进入游戏，则使用这个版本而非原版。"
+    }
   },
   "resolutions": {
     "noResolution": {

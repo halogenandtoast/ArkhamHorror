@@ -50,7 +50,12 @@
     "gatherSets": "将下列遭遇组中，所有遭遇卡找出: *暮色庄园失踪事件*、*死亡门前*、*在劫难逃*、*冥界*、*幽灵捕食者*、*被困的灵魂*、*看守人*，以及 *寒冷刺骨*。这些遭遇组的图标为：<section class='encounter-sets'><img src='{setImgPath}/disappearance-at-the-twilight-estate.png' /><img src='{setImgPath}/at-deaths-doorstep.png' /><img src='{setImgPath}/inexorable-fate.png' /><img src='{setImgPath}/realm-of-death.png' /><img src='{setImgPath}/spectral-predators.png' /><img src='{setImgPath}/trapped-spirits.png' /><img src='{setImgPath}/the-watcher.png' /><img src='{setImgPath}/chilling-cold.png' /></section>找出*死亡门前*遭遇组时，只从该遭遇组拿取七张_幽灵_地点。不要拿取该遭遇组的其他任何卡牌。",
     "placeLocations": "将这七张_幽灵_地点放置入场。",
     "theSpectralWatcher": "将幽灵看守人敌人放置入场，放到入口大厅。",
-    "investigatorSetup": "每位玩家按照自己调查员卡背面的设置指示执行。"
+    "investigatorSetup": "每位玩家按照自己调查员卡背面的设置指示执行。",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返暮光庄园的失踪*、*不可言说的命运*、*不稳定的领域*、*嗜血之灵*与*刺骨迷雾*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-disappearance-at-the-twilight-estate.png' /><img src='{setImgPath}/unspeakable-fate.png' /><img src='{setImgPath}/unstable-realm.png' /><img src='{setImgPath}/bloodthirsty-spirits.png' /><img src='{setImgPath}/chilling-mists.png' /></section>*不可言说的命运*替代*无情的命运*，*不稳定的领域*替代*死亡领域*，*嗜血之灵*替代*被困的灵魂*，*刺骨迷雾*替代*刺骨寒意*。将被替代的遭遇牌组移出游戏。",
+      "placeLocations": "将酒窖的_幽灵_版本（编号28）放入游戏中。",
+      "additionalRule": "在本剧本期间，适用以下附加规则：结算守望者之握诡计时，幽灵守望者在攻击后不会横置。"
+    }
   },
   "specialRules": [
     {

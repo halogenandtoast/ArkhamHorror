@@ -59,7 +59,13 @@
       "explorationDeck": "构建探索牌库。拿取6张单面的[[丛林]]地点，将这些地点与遭遇卡一同混洗形成探索牌库，所混洗的遭遇卡为以下每种1张：落入陷阱、蚁群缠身、迷失荒野、补给短缺。",
       "chooseLocations": "随机从以下3个[[遗迹]]地点中选择一个：杂草丛生的遗迹、毒牙神庙、石板祭坛。将所选地点洗入探索牌库。将其他2个地点移出游戏。",
       "mappedOutTheWayForward": "查看剧本日志。*若调查员绘制出了前行的路线*，不将随机选出的地点洗入探索牌库，而是将其放置入场。",
-      "poisoned": "将不在调查员牌组中的所有中毒弱点卡放在一边。"
+      "poisoned": "将不在调查员牌组中的所有中毒弱点卡放在一边。",
+      "returnTo": {
+        "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返长者之心*、*重返审判之柱*、*重返雨林*与*注定的远征*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-the-heart-of-the-elders.png' /><img src='{setImgPath}/return-to-pillars-of-judgement.png' /><img src='{setImgPath}/return-to-the-rainforest.png' /><img src='{setImgPath}/doomed-expedition.png' /></section>*注定的远征*替代*远征*。将被替代的遭遇牌组移出游戏。",
+        "actDeck": "将场景1a——*寻找图案*移出游戏，并以新的场景1a——*熟悉的图案*取代它。",
+        "explorationDeck": "组建探索牌库时，仅随机从以下每种连接图标的两个地点中各选择一个纳入：紫色月亮、蓝色三角、红色方块与橙色心形。将其余4个_丛林_地点移出游戏，且不要查看它们。不要纳入原准备说明中列出的任何其他遭遇牌。（总共应有6张牌。）",
+        "additionalRule": "在本剧本期间，适用以下附加规则：凯恩-扬之口上的“检查你的补给”能力可以在任何地点使用；并且_强制_——探索成功结束后：将遭遇牌库顶部的一张牌洗入探索牌库。"
+      }
     },
     "resolutions": {
       "noResolution": {
@@ -87,7 +93,13 @@
       "theJungleWatches": "查看剧本日志中“丛林监视着你”旁边的括号内列出的卡牌，搜索收藏找出这些卡牌。将这些卡牌加入胜利区。",
       "setAside": "将深入幽嘶地点放在一边，位于场外。",
       "explorationDeck": "构建探索牌库。拿取<i>昆扬</i>遭遇组剩余的5张单面地点，将这些地点与遭遇卡一同混洗形成探索牌库，所混洗的遭遇卡为以下每种1张：落入陷阱、无路可退、一片漆黑、致命错误。",
-      "poisoned": "将不在调查员牌组中的所有中毒弱点卡放在一边。"
+      "poisoned": "将不在调查员牌组中的所有中毒弱点卡放在一边。",
+      "returnTo": {
+        "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返长者之心*、*重返凯恩-扬*与*毒液之恨*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-the-heart-of-the-elders.png' /><img src='{setImgPath}/return-to-knyan.png' /><img src='{setImgPath}/venomous-hate.png' /></section>*毒液之恨*替代*伊格的毒液*。将被替代的遭遇牌组移出游戏。",
+        "harbinger": "准备完成后，在收藏中搜寻新的瓦卢西亚的先驱（*沉睡者归来*），并将其放到一旁，不放入游戏中。若瓦卢西亚的先驱会在本剧本中进入游戏，则使用这个版本而非原版。",
+        "explorationDeck": "组建探索牌库时，仅随机从以下每种连接图标的两个地点中各选择一个纳入：紫色月亮、蓝色三角、红色方块与绿色菱形。将其余4个_远古_地点移出游戏，且不要查看它们。不要纳入原准备说明中列出的任何其他遭遇牌。（总共应有5张牌，不计放到一旁的通往尤斯的下降。）",
+        "additionalRule": "在本剧本期间，适用以下附加规则：凯恩-扬之口上的“检查你的补给”能力可以在任何地点使用，并且它既弃置敌人也弃置诡计；并且_强制_——探索成功结束后：将遭遇牌库顶部的一张牌洗入探索牌库。"
+      }
     },
     "resolutions": {
       "noResolution": {

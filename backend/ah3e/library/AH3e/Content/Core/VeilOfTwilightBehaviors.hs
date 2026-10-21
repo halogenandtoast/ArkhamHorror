@@ -326,14 +326,20 @@ silverKey ctx = do
     ]
 
 {- | The back of card 26, which four different cards send the players to: Sanford
-takes the Lurker's power and becomes its servitor.
+takes the Lurker's power and becomes its servitor. Only the fifth way in -- card
+26's own doom trigger -- has the card in the codex to flip; the other four leave
+it in the archive, so it is brought out back-side-up to be read. Either way the
+card goes back to the archive, and RemoveCodexCard asks before a flipped one goes.
 -}
 likeUntoAGod :: EffectCtx -> GameM ()
 likeUntoAGod _ = do
   logText "Like Unto a God"
   spawn <- spawnAside "vot-28" "Historical Society"
   revealed <- codexHas 26
-  pushAll (spawn <> [AddArchiveToCodex 27] <> [RemoveCodexCard 26 | revealed])
+  pushAll
+    $ [AddArchiveToCodexFlipped 26 | not revealed]
+    <> spawn
+    <> [AddArchiveToCodex 27, RemoveCodexCard 26]
 
 {- | Takes the set-aside epic monster out of the pile and returns what puts it on
 the board, so the caller can order it against the rest of its card.

@@ -17,6 +17,7 @@ import { setI18n } from '@/locales/i18n'
 import { preferredLanguage } from '@/locales/language'
 import mitt from 'mitt';
 import { installChunkRecovery, reloadIfStaleChunk } from '@/chunkRecovery'
+import { hideAppLoading } from '@/appLoading'
 
 library.add(faCode, faFilter, faBan, faLocationDot, faCircleExclamation, faGhost, faSearch, faList, faImage, faAngleDown, faExpeditedssl, faUndo, faTrash, faEye, faCopy, faExternalLink, faRefresh, faBook, faChevronLeft, faChevronRight, faBars, faTimes, faShieldHeart, faWrench, faPaperclip, faArrowLeft, faArrowUp, faStore, faTriangleExclamation, faShuffle, faTrophy, faGear, faLayerGroup, faDownload, faUpload, faCheckDouble, faFlask, faBug, faPen, faThumbsUp, faHourglassHalf, faCircleXmark, faCircleCheck, faClipboardCheck, faChartSimple, faRectangleList, faCircleQuestion, faBullhorn, faBoxArchive, faUserGear, faPlus, faLink, faLinkSlash, faUsers, faLock, faUnlock)
 
@@ -101,5 +102,11 @@ async function bootstrap() {
  * before the app ever mounts -- where there is no router and no error handler to
  * notice. */
 void bootstrap().catch((error) => {
-  if (!reloadIfStaleChunk(error)) throw error
+  /* A reload is about to replace the page, so the splash should stay up over
+   * it; anything else means there is no app coming, and sitting under a
+   * throbbing token forever is worse than an empty page. */
+  if (!reloadIfStaleChunk(error)) {
+    hideAppLoading()
+    throw error
+  }
 })

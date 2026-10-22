@@ -65,6 +65,9 @@ missingCustomCardDef cardType cardCode =
   (emptyCardDef cardCode ("Missing card" :: Name) cardType)
     { cdCardTraits = mempty
     , cdTags = [missingCustomCardTag]
+    , -- Building an investigator reads its class, so a stand-in without one
+      -- throws rather than losing the one card this exists to lose.
+      cdClassSymbols = singleton #neutral
     }
 
 {- | The def for a custom code, or a stand-in when it is not to hand.
@@ -162,6 +165,23 @@ customCardCodes card =
   cdCardCode def : map arkhamBuildCustomCardCode (maybeToList $ arkhamBuildIdOf def)
  where
   def = customCardDef card
+
+{- | A library keyed by every code its cards answer to, ready for the registry.
+
+Aliases underneath, so a card's own code always wins one. Importing the
+arkham.build pack gives its card a code derived from the same id a hand-built
+card can claim, and in that collision the imported card is the one the deck
+means. Left-biased union rather than row order, which is `updatedAt` and says
+nothing about which card is which.
+
+One function because every path that loads a deck has to resolve the same codes:
+keying it by hand at each of them drifted once already, and a deck naming a card
+by the id it claims then missed it (#5891).
+-}
+customCardsByCode :: [CustomCard] -> Map CardCode CustomCard
+customCardsByCode cards =
+  Map.fromList [(cdCardCode (customCardDef c), c) | c <- cards]
+    `Map.union` Map.fromList [(code, c) | c <- cards, code <- drop 1 (customCardCodes c)]
 
 {- | The registry, with the one thing that can only be known from all of it.
 

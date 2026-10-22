@@ -444,10 +444,10 @@ resolves. See "Api.Handler.Arkham.CustomCards".
 registerDeckOwnerCustomCards :: UserId -> DB ()
 registerDeckOwnerCustomCards userId = do
   rows <- selectList [ArkhamCustomCardUserId ==. userId] []
-  registerCustomCards $ Map.fromList do
+  registerCustomCards $ customCardsByCode do
     Entity _ row <- rows
     def <- maybeToList $ Aeson.parseMaybe parseJSON (arkhamCustomCardDef row)
-    pure (cdCardCode def, CustomCard def (arkhamCustomCardArt row))
+    pure $ CustomCard def (arkhamCustomCardArt row)
 
 handleAnswer :: Game -> PlayerId -> Answer -> DB Reply
 handleAnswer game playerId = \case

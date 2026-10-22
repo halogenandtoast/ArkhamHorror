@@ -171,6 +171,13 @@ putApiV1ArkhamGameDecksR gameId = do
   postData <- requireCheckJsonBody
   now <- liftIO getCurrentTime
 
+  {- The upgraded list may name cards -- or an investigator -- only this user has,
+  so the library has to be resolvable before it is validated and before the engine
+  builds anything from it. Without this a deck naming a card built since the
+  campaign started read as unimplemented, and a replacement custom investigator
+  resolved to the missing-card stand-in (#5891). -}
+  registerUserCustomCards userId
+
   -- Resolve the deck before opening the game transaction. Fetching inside it held the
   -- game's row lock across an ArkhamDB round trip, and every failure (site unreachable,
   -- malformed json, a card the engine does not implement) was a bare `error`: an opaque

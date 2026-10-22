@@ -419,11 +419,11 @@ investigator f cardDef Stats {..} =
                 , investigatorName = cdName cardDef
                 , investigatorCardCode = cdCardCode cardDef
                 , investigatorArt = CardCodeExact $ cdCardCode cardDef
-                , investigatorClass =
-                    fromJustNote "missing class symbol"
-                      . headMay
-                      . setToList
-                      $ cdClassSymbols cardDef
+                , -- A printed investigator always has exactly one, so only a def
+                  -- handed to the engine at runtime can be without. Neutral is
+                  -- what the card builder reads one of those as.
+                  investigatorClass =
+                    fromMaybe #neutral . headMay . setToList $ cdClassSymbols cardDef
                 , investigatorHealth = health
                 , investigatorSanity = sanity
                 , investigatorWillpower = willpower

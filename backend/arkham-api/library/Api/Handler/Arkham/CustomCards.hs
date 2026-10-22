@@ -35,7 +35,7 @@ import Arkham.Card.CardCode (CardCode (..), unCardCode)
 import Arkham.Card.CardDef (CardDef, cdArt, cdCardCode, cdMeta, cdName)
 import Arkham.Card.CustomCard (
   CustomCard (..),
-  customCardCodes,
+  customCardsByCode,
   isCustomCardCode,
   registerCustomCards,
   sanitizeCustomCardCode,
@@ -824,14 +824,7 @@ readUserCustomCards userId = do
         Entity _ row <- rows
         def <- maybeToList $ parseMaybe parseJSON (arkhamCustomCardDef row)
         pure $ CustomCard def (arkhamCustomCardArt row)
-  {- Aliases underneath, so a card's own code always wins one. Importing the
-  arkham.build pack gives its card a code derived from the same id a hand-built
-  card can claim, and in that collision the imported card is the one the deck
-  means. Left-biased union rather than row order, which is `updatedAt` and says
-  nothing about which card is which. -}
-  pure
-    $ Map.fromList [(cdCardCode (customCardDef c), c) | c <- cards]
-    `Map.union` Map.fromList [(code, c) | c <- cards, code <- drop 1 (customCardCodes c)]
+  pure $ customCardsByCode cards
 
 registerUserCustomCards :: UserId -> Handler ()
 registerUserCustomCards userId = registerCustomCards =<< userCustomCards userId

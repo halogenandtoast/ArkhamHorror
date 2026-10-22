@@ -9985,6 +9985,7 @@ test-suite spec
       Arkham.Matcher.LegacyJSONSpec
       Arkham.Matcher.NearestLocationToMostSpec
       Arkham.Matcher.OutOfPlayEnemySpec
+      Arkham.MissingCustomCardSpec
       Arkham.Modifier.CannotAttackDuringEnemyPhaseSpec
       Arkham.Modifier.SearchAllInvestigatorsSpec
       Arkham.Scenario.DancingMadSpec

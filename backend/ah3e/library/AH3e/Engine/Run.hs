@@ -1128,13 +1128,19 @@ dispatch msg = case msg of
             <> [CheckReactions (AfterEvadeMonster iid mid) []]
         unless (null ms) $ investigatorL iid . #bonusActions += 1
       else
-        when (n > 0)
-          $ chooseFor
-            iid
-            "Choose a monster to evade"
-            [ Choice (MonsterLabel m) [EvadedMonster iid m, EvadeMonsters iid (n - 1)]
-            | m <- ms
-            ]
+        if n > 0
+          then
+            chooseFor
+              iid
+              "Choose a monster to evade"
+              [ Choice (MonsterLabel m) [EvadedMonster iid m, EvadeMonsters iid (n - 1)]
+              | m <- ms
+              ]
+          else
+            {- Out of successes with monsters still engaged: those are the ones the
+            evade action failed against, whether it scored nothing at all or ran dry
+            part way through. -}
+            for_ ms \mid -> monsterBehavior mid >>= \b -> b.afterFailedEvade mid iid >>= pushAll
   MonstersWatchAction iid kind -> do
     ms <- engagedMonsters iid
     answers <- for ms \m -> monsterBehavior m.card >>= \b -> b.afterAction m.card iid kind

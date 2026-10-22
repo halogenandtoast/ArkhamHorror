@@ -420,6 +420,10 @@ data MonsterBehavior = MonsterBehavior
   -- ^ what it does to whoever it has just closed with
   , afterEvaded :: CardId -> InvestigatorId -> GameM [Message]
   -- ^ what it does once someone has slipped past it
+  , afterFailedEvade :: CardId -> InvestigatorId -> GameM [Message]
+  {- ^ what it does to whoever tried to slip past it and is still engaged with it
+  once the evade action has run out of successes
+  -}
   , afterAction :: CardId -> InvestigatorId -> ActionKind -> GameM [Message]
   -- ^ what it makes of an action taken by whoever it is engaged with
   , afterAnotherDefeated :: CardId -> CardId -> InvestigatorId -> GameM [Message]
@@ -463,6 +467,7 @@ defaultMonsterBehavior =
     , afterDefeated = \_ _ -> pure []
     , afterEngaged = \_ _ -> pure []
     , afterEvaded = \_ _ -> pure []
+    , afterFailedEvade = \_ _ -> pure []
     , afterAction = \_ _ _ -> pure []
     , afterAnotherDefeated = \_ _ _ -> pure []
     , afterAttackAction = \_ _ _ -> pure []

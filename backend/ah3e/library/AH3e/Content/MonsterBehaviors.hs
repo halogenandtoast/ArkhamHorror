@@ -17,6 +17,7 @@ import AH3e.Types.Effect
 import AH3e.Types.Ids
 import AH3e.Types.Skill
 import AH3e.Types.State
+import Data.List (nub)
 import Data.Map.Strict qualified as Map
 
 behaviors :: Behaviors
@@ -32,6 +33,8 @@ behaviors =
       , ("hulking-thrall", onAttack \_ iid -> pure [ResolveEffect (ctxFor iid) cursedUnlessRemnant])
       , ("masked-ones", onAttack maskedOnes)
       , ("swooping-scavenger", onAttack swoopingScavenger)
+      , -- "After you fail to evade this monster, ..."
+        ("abyssal-servant", defaultMonsterBehavior & #afterFailedEvade .~ abyssalServant)
       , -- "After you disengage this monster, ..."
         ("lodge-enforcer", onDisengage \_ iid -> pure [SufferHarm iid rules NormalHarm 0 1])
       , ("lodge-loyalist", onDisengage \mid _ -> doomWhereItStands mid)
@@ -194,6 +197,25 @@ whenFailed src result f = when (result <= 0) case src of
 -- | "it moves one space toward the unstable space"
 crawlToward :: CardId -> GameM [Message]
 crawlToward mid = pure [MonsterStep mid 1 (TowardSpaces UnstableSpace)]
+
+{- | "you disengage other monsters and both you and it move one space toward the
+unstable space". The step is worked out once and taken by the pair of them, so the
+servant cannot drag you somewhere it is not going itself.
+-}
+abyssalServant :: CardId -> InvestigatorId -> GameM [Message]
+abyssalServant mid iid = do
+  m <- getMonster mid
+  others <- filter ((/= mid) . (.card)) <$> engagedMonsters iid
+  closest <- unstableSpaces >>= closestTo m.space
+  steps <- nub . concat <$> traverse (nextStepsToward m.space) closest
+  let letGo = [DisengageMonster iid o.card | o <- others]
+  -- standing in the unstable space already, or cut off from it: only the letting go
+  if null steps
+    then pure letGo
+    else do
+      chooseGroup "Choose where the servant drags you"
+        $ spaceChoices steps \s -> letGo <> [MoveDirectly iid s, MoveMonsterTo mid s]
+      pure []
 
 {- | "After this monster becomes engaged with you, test influence -1. If you pass,
 defeat it. If you fail, you suffer one damage."

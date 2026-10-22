@@ -99,9 +99,11 @@ instance FromJSON Entities where
 clearRemovedEntities :: Entities -> Entities
 clearRemovedEntities entities =
   entities
-    { -- An enemy defeated by a "when... attacks" interrupt still has to resolve
-      -- the attack it is in the middle of, so keep it until 'enemyAttacking' is
-      -- cleared by the attack's After step.
+    { -- An enemy defeated part way through its own attack (Aquinnah's redirect
+      -- killing it with the attack's horror still queued) has to see that attack
+      -- out, so keep it until 'enemyAttacking' is cleared -- by the attack's After
+      -- step, or by 'PerformEnemyAttack' when the attacker died before it could
+      -- attack at all.
       entitiesEnemies =
         Map.filter
           (\e -> e.placement /= OutOfPlay RemovedZone || isJust (attr enemyAttacking e))

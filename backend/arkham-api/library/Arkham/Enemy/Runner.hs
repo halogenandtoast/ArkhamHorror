@@ -1624,13 +1624,25 @@ instance RunMessage EnemyAttrs where
         & attackingL
         ?~ details {attackCanBeCanceled = canBeCancelled, attackDamageStrategy = strategy}
     -- Defeat does not cancel an attack that has already begun (FAQ 1.4): a
-    -- "when... attacks" interrupt that kills the attacker (Aquinnah (3)
-    -- redirecting the damage onto it) still leaves the attack to resolve, so
-    -- its horror is dealt. 'enemyAttacking' is only set once 'Do EnemyAttack'
-    -- has run, and is cleared again when the attack finishes, so it marks an
-    -- attack that is mid-flight; an enemy defeated before its attack begins
-    -- never gets there.
-    PerformEnemyAttack eid | eid == enemyId && (not enemyDefeated || isJust enemyAttacking) -> do
+    -- "when... attacks" interrupt that kills the attacker does not retroactively
+    -- undo what the attack has already put on the board. But the interrupt runs
+    -- \*before* the attack resolves, so an attacker defeated there never attacks at
+    -- all: Survival Knife (2) (53002) prints "(before resolving that attack)" for
+    -- exactly this (#5890). 'enemyAttacking' cannot tell the two apart -- 'Do
+    -- (EnemyAttack)' sets it before pushing the when-window -- so the test is
+    -- whether the defeat landed before 'PerformEnemyAttack' or inside it.
+    --
+    -- Aquinnah (1)/(3) are the inside case: the redirect is registered as
+    -- 'attackDamageReplacement' and pushed from the branch below, ahead of the
+    -- attack's own damage message, so it kills the attacker with the horror
+    -- already queued and "(You still take horror dealt by the attack.)" holds.
+    --
+    -- Clearing 'attacking' is load-bearing: 'Entities.clearRemovedEntities' keeps
+    -- a RemovedZone enemy in the map while it is set, so the corpse would stay on
+    -- the board and keep matching 'AttackingEnemy' forever.
+    PerformEnemyAttack eid | eid == enemyId && enemyDefeated -> do
+      pure $ a & attackingL .~ Nothing
+    PerformEnemyAttack eid | eid == enemyId -> do
       let details = fromJustNote "missing attack details" enemyAttacking
       modifiers <- maybe (pure []) getModifiers details.singleTarget
       mods <- getModifiers a

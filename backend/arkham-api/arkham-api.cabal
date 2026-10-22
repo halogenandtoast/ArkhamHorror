@@ -9700,6 +9700,7 @@ test-suite spec
       Arkham.Agenda.Cards.TheScarletKeys.DeadHeat.EmptyStreetsSpec
       Arkham.Asset.Assets.AncientAnkhSpec
       Arkham.Asset.Assets.Aquinnah1Spec
+      Arkham.Asset.Assets.Aquinnah3Spec
       Arkham.Asset.Assets.ArcaneInitiateSpec
       Arkham.Asset.Assets.ArcaneStudies2Spec
       Arkham.Asset.Assets.ArcaneStudiesSpec
@@ -9802,6 +9803,7 @@ test-suite spec
       Arkham.Asset.Assets.SpringfieldM19034Spec
       Arkham.Asset.Assets.StrayCatSpec
       Arkham.Asset.Assets.SummonedHound1Spec
+      Arkham.Asset.Assets.SurvivalKnife2Spec
       Arkham.Asset.Assets.SurvivalKnifeSpec
       Arkham.Asset.Assets.SwitchbladeSpec
       Arkham.Asset.Assets.TheBlackCat5Spec

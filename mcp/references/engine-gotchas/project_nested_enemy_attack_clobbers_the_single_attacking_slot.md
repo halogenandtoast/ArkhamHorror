@@ -46,11 +46,15 @@ performed, and never pushes an `After (EnemyAttack)` of its own — today the la
 sub-attack's `After` is what leaves the slot `Nothing`. Reinstating the parent there would
 leave `attacking` set forever, which matters:
 `Entities.clearRemovedEntities` keeps a `RemovedZone` enemy in the map while the slot is
-set, and the `PerformEnemyAttack` guard (`not enemyDefeated || isJust enemyAttacking`,
-from "Let a defeated attacker finish the attack it had begun") lets a defeated enemy
-attack while it is set. Hence the `delegatedFrom` test: skip the reinstate when the
-occupant is a `MassiveAttackTargets` attack and the new details' target is one of its
-targets.
+set, so the corpse would never be swept and would keep matching `AttackingEnemy`. Hence
+the `delegatedFrom` test: skip the reinstate when the occupant is a `MassiveAttackTargets`
+attack and the new details' target is one of its targets.
+
+The slot is **not** a test for "this attack has begun resolving". `Do (EnemyAttack)` fills
+it *before* pushing the when-window, so it is already set while the interrupt runs, and a
+`PerformEnemyAttack` guard of `not enemyDefeated || isJust enemyAttacking` let Survival
+Knife's own kill through and the dead enemy attack anyway (#5890) — see
+[[project_defeat_in_the_when_attacks_window_cancels_the_attack]].
 
 `filterOutEnemyMessages` also drops the reinstate now, so an enemy that leaves play
 mid-attack (Hunting Horror's own void ability, `HuntingHorror.hs:47`) cannot have details

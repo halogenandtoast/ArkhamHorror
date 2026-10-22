@@ -11,7 +11,7 @@ import {
   type VNodeRef,
 } from 'vue'
 import { cardImg, formatContent, imgsrc, isLocalized, toCamelCase } from '@/arkham/helpers'
-import { useUnwatermarked } from '@/arkham/unwatermark'
+import { useUnwatermarked, warmCards } from '@/arkham/unwatermark'
 import { homebrewTokenMap } from '@/arkham/homebrewAssets'
 import { originalArt } from '@/arkham/artVariants'
 import { hasEngineCardDef } from '@/arkham/customCards'
@@ -258,8 +258,32 @@ const queueHover = (el: HTMLElement) => {
   }, delay)
 }
 
+/* Un-watermarking a card costs a fetch and a pixel pass, and doing that at the
+ * moment someone hovers is the one time it is visible. The cards on the table
+ * are reversed ahead of the ask instead, on idle time. Moving the pointer is
+ * the cue -- it means someone is playing, and it costs nothing to listen for,
+ * where a MutationObserver over the whole board would not be. */
+let lastSweep = 0
+const sweepVisibleCards = () => {
+  lastSweep = Date.now()
+  const urls: string[] = []
+  for (const img of document.querySelectorAll('img')) {
+    const src = img.currentSrc || img.src
+    if (!src) continue
+    const r = img.getBoundingClientRect()
+    if (r.width === 0 || r.bottom < 0 || r.top > window.innerHeight) continue
+    urls.push(src)
+  }
+  warmCards(urls)
+}
+
+const maybeSweep = () => {
+  if (Date.now() - lastSweep > 3000) sweepVisibleCards()
+}
+
 const onMouseOver = (e: MouseEvent) => {
   endDragIfIdle(e)
+  maybeSweep()
   if (currentPointerType === 'touch' || dragActive) return
   lastPointer.value = { clientX: e.clientX, clientY: e.clientY }
   const el = targetFromEvent(e)
@@ -340,6 +364,8 @@ const onOverlayContextMenu = (e: MouseEvent) => {
 }
 
 onMounted(() => {
+  /* The board is still filling in on mount, so the first sweep waits for it. */
+  window.setTimeout(sweepVisibleCards, 1500)
   document.addEventListener('pointerdown', onPointerDown, { passive: true })
   document.addEventListener('pointermove', onPointerMove, { passive: true })
   document.addEventListener('pointerup', onPointerUp, { passive: true })

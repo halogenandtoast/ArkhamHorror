@@ -19,9 +19,21 @@ import markUrl from '../../watermark/watermark.png'
 const WM_SCALE = 0.62
 const WM_OPACITY = 0.28
 
-/* One card is on screen at a time; the cache is for going back to one just
- * looked at. Each entry holds a decoded frame, so it is kept short. */
-const CACHE_LIMIT = 8
+/* A table holds about fifty distinct cards, and warming reverses all of them,
+ * so the cache has to outlast a sweep or the work is thrown away as fast as it
+ * is done. Entries are JPEG blobs of about 150KB. */
+const CACHE_LIMIT = 64
+
+/* Per-pixel the inverse needs 1/(1-a) and 255a, and alpha only ever takes 256
+ * values, so both are tabulated once instead of divided out a million times a
+ * card. */
+const GAIN = new Float32Array(256)
+const BIAS = new Float32Array(256)
+for (let v = 0; v < 256; v += 1) {
+  const a = (v / 255) * WM_OPACITY
+  GAIN[v] = 1 / (1 - a)
+  BIAS[v] = 255 * a
+}
 
 /* What the filter marks: img/arkham/cards/NAME.avif and the localized
  * img/arkham/<lang>/cards/NAME.avif. back_* is the face-down card back, which
@@ -65,13 +77,24 @@ function loadMark(): Promise<HTMLImageElement> {
   return markArt
 }
 
-/* The mark's alpha at every pixel of a card this size. It depends only on the
- * geometry, and there are a handful of card sizes, so it is built once each. */
-const alphaMaps = new Map<string, Float32Array>()
+/* The mark's own alpha, over the box it occupies rather than the whole card.
+ * The mark covers about a quarter of a card, so holding the box instead of the
+ * frame is the difference between 216KB and 3MB a geometry -- and the pixel
+ * pass then walks only the rows that can change. Opacity is applied through
+ * GAIN/BIAS at use, so this stays the art's own alpha. */
+interface AlphaBox {
+  x: number
+  y: number
+  w: number
+  h: number
+  alpha: Uint8Array
+}
 
-async function alphaMapFor(w: number, h: number): Promise<Float32Array> {
+const alphaBoxes = new Map<string, AlphaBox>()
+
+async function alphaBoxFor(w: number, h: number): Promise<AlphaBox> {
   const key = `${w}x${h}`
-  const known = alphaMaps.get(key)
+  const known = alphaBoxes.get(key)
   if (known) return known
 
   const mark = await loadMark()
@@ -80,24 +103,26 @@ async function alphaMapFor(w: number, h: number): Promise<Float32Array> {
    * truncates, so this does too. */
   const markW = Math.max(16, Math.trunc(Math.min(w, h) * WM_SCALE))
   const markH = Math.round((mark.naturalHeight * markW) / mark.naturalWidth)
+  /* ImageMagick's `-gravity center -extent` floors the offset. One pixel out
+   * and the mark is subtracted from the wrong place, leaving an outline. */
+  const x = Math.floor((w - markW) / 2)
+  const y = Math.floor((h - markH) / 2)
 
   const canvas = document.createElement('canvas')
-  canvas.width = w
-  canvas.height = h
+  canvas.width = markW
+  canvas.height = markH
   const ctx = canvas.getContext('2d', { willReadFrequently: true })
   if (!ctx) throw new Error('no 2d context')
   ctx.imageSmoothingQuality = 'high'
-  /* ImageMagick's `-gravity center -extent` floors the offset. One pixel out
-   * and the mark is subtracted from the wrong place, leaving an outline. */
-  ctx.drawImage(mark, Math.floor((w - markW) / 2), Math.floor((h - markH) / 2), markW, markH)
+  ctx.drawImage(mark, 0, 0, markW, markH)
 
-  const { data } = ctx.getImageData(0, 0, w, h)
-  const alpha = new Float32Array(w * h)
-  for (let i = 0, p = 3; i < alpha.length; i += 1, p += 4) {
-    alpha[i] = (data[p] / 255) * WM_OPACITY
-  }
-  alphaMaps.set(key, alpha)
-  return alpha
+  const { data } = ctx.getImageData(0, 0, markW, markH)
+  const alpha = new Uint8Array(markW * markH)
+  for (let i = 0, p = 3; i < alpha.length; i += 1, p += 4) alpha[i] = data[p]
+
+  const box: AlphaBox = { x, y, w: markW, h: markH, alpha }
+  alphaBoxes.set(key, box)
+  return box
 }
 
 const recovered = new Map<string, string>()
@@ -113,16 +138,17 @@ function remember(url: string, objectUrl: string) {
   }
 }
 
-/* Measured on a 750x1050 card: JPEG at 0.9 costs 0.33dB against the lossless
- * canvas and encodes in 5ms, where WebP 0.95 costs 0.49dB and takes 90ms, and
- * PNG is lossless but 1.6MB a card. Card faces are opaque, so losing the alpha
- * channel costs nothing. */
+/* Measured against the masters: JPEG 0.94 lands 33.81dB on a 750x1050 card and
+ * 36.45 on a 423x600 one, in 2-5ms. WebP 0.92 is no better (33.42 / 36.41) and
+ * takes 28-84ms, which matters when a sweep encodes fifty cards; PNG is
+ * lossless but 1.6MB a card. Below 0.94 the small cards lose almost a dB to
+ * chroma subsampling. Card faces are opaque, so dropping alpha costs nothing. */
 function encode(canvas: HTMLCanvasElement): Promise<string> {
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => (blob ? resolve(URL.createObjectURL(blob)) : reject(new Error('canvas encode failed'))),
       'image/jpeg',
-      0.9,
+      0.94,
     )
   })
 }
@@ -131,7 +157,7 @@ async function build(url: string): Promise<string> {
   const image = await loadImage(url, true)
   const w = image.naturalWidth
   const h = image.naturalHeight
-  const alpha = await alphaMapFor(w, h)
+  const box = await alphaBoxFor(w, h)
 
   const canvas = document.createElement('canvas')
   canvas.width = w
@@ -140,20 +166,23 @@ async function build(url: string): Promise<string> {
   if (!ctx) throw new Error('no 2d context')
   ctx.drawImage(image, 0, 0)
 
-  const frame = ctx.getImageData(0, 0, w, h)
+  /* Only the box the mark covers is read back and written again; the rest of
+   * the card is already what it should be. */
+  const frame = ctx.getImageData(box.x, box.y, box.w, box.h)
   const px = frame.data
+  const { alpha } = box
   for (let i = 0, p = 0; i < alpha.length; i += 1, p += 4) {
     const a = alpha[i]
     if (a === 0) continue
-    const gain = 1 / (1 - a)
-    const bias = 255 * a
+    const gain = GAIN[a]
+    const bias = BIAS[a]
     /* Uint8ClampedArray rounds and clamps on assignment, so the arithmetic
      * can stay in floats and land back in range by itself. */
     px[p] = (px[p] - bias) * gain
     px[p + 1] = (px[p + 1] - bias) * gain
     px[p + 2] = (px[p + 2] - bias) * gain
   }
-  ctx.putImageData(frame, 0, 0)
+  ctx.putImageData(frame, box.x, box.y)
   return encode(canvas)
 }
 
@@ -172,6 +201,51 @@ export function unwatermark(url: string): Promise<string> {
     inFlight.set(url, pending)
   }
   return pending
+}
+
+/* Fetch the mark art before anything needs it, so the first card of a session
+ * does not wait on a second round trip. */
+export function primeWatermark(): void {
+  void loadMark().catch(() => {})
+}
+
+/* Reverse cards before anyone asks for one.
+ *
+ * A reversal needs its own CORS fetch of the card, which the browser will not
+ * serve from the entry the page's own <img> filled, so hovering an unwarmed
+ * card pays a download it looks like it should not. Warming moves that cost
+ * off the hover and into idle time, one card at a time so a sweep of a whole
+ * table never competes with the game for a frame. */
+const warmQueued = new Set<string>()
+const warmQueue: string[] = []
+let warmRunning = false
+
+const whenIdle: (fn: () => void) => void =
+  typeof requestIdleCallback === 'function'
+    ? (fn) => { requestIdleCallback(() => fn(), { timeout: 2000 }) }
+    : (fn) => { setTimeout(fn, 16) }
+
+function drainWarmQueue() {
+  const next = warmQueue.shift()
+  if (next === undefined) {
+    warmRunning = false
+    return
+  }
+  warmRunning = true
+  warmQueued.delete(next)
+  void unwatermark(next)
+    .catch(() => {})
+    .then(() => whenIdle(drainWarmQueue))
+}
+
+export function warmCards(urls: Iterable<string>): void {
+  for (const url of urls) {
+    if (!isMarked(url)) continue
+    if (recovered.has(url) || inFlight.has(url) || warmQueued.has(url)) continue
+    warmQueued.add(url)
+    warmQueue.push(url)
+  }
+  if (!warmRunning && warmQueue.length > 0) whenIdle(drainWarmQueue)
 }
 
 /* Follows a card URL and gives back one to render.

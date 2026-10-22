@@ -13,7 +13,7 @@
  * holds and still what "save image as" writes, which is the arrangement we
  * want: clean while you play, marked once it leaves the page.
  */
-import { ref, watch, type Ref } from 'vue'
+import { computed, ref, watch, type Ref } from 'vue'
 import markUrl from '../../watermark/watermark.png'
 
 const WM_SCALE = 0.62
@@ -218,6 +218,7 @@ export function primeWatermark(): void {
  * table never competes with the game for a frame. */
 const warmQueued = new Set<string>()
 const warmQueue: string[] = []
+const warmListeners = new Map<string, Set<(objectUrl: string) => void>>()
 let warmRunning = false
 
 const whenIdle: (fn: () => void) => void =
@@ -234,7 +235,12 @@ function drainWarmQueue() {
   warmRunning = true
   warmQueued.delete(next)
   void unwatermark(next)
-    .catch(() => {})
+    .then((objectUrl) => {
+      const listeners = warmListeners.get(next)
+      warmListeners.delete(next)
+      if (listeners) for (const listener of listeners) listener(objectUrl)
+    })
+    .catch(() => { warmListeners.delete(next) })
     .then(() => whenIdle(drainWarmQueue))
 }
 
@@ -289,4 +295,32 @@ export function useUnwatermarked(source: Ref<string | null | undefined>): Ref<st
   )
 
   return display
+}
+
+/* A card in a grid reverses once the browser has actually loaded it. That
+ * piggybacks on loading="lazy", which already declines to fetch a card nobody
+ * has scrolled to -- and unlike watching for the element to near the viewport,
+ * it cannot be fooled by the grid's own layout, where a card with no image yet
+ * has no size and every card in the set sits piled at the top of the page.
+ *
+ * It goes through the same idle queue as the table sweep, so fifty cards
+ * appearing at once cannot stall a hover: an on-demand unwatermark() starts
+ * immediately, while this waits its turn. */
+export function warmCard(url: string, onReady: (objectUrl: string) => void): () => void {
+  const done = recovered.get(url)
+  if (done) {
+    onReady(done)
+    return () => {}
+  }
+  let live = true
+  const listeners = warmListeners.get(url) ?? new Set()
+  const listener = (objectUrl: string) => { if (live) onReady(objectUrl) }
+  listeners.add(listener)
+  warmListeners.set(url, listeners)
+  warmCards([url])
+  return () => {
+    live = false
+    listeners.delete(listener)
+    if (listeners.size === 0) warmListeners.delete(url)
+  }
 }

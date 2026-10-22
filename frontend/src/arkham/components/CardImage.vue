@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { useAttrs, inject, ref, computed, watch, type Ref } from 'vue'
+import { useAttrs, inject, onBeforeUnmount, ref, computed, watch, type Ref } from 'vue'
 import { altFrontImage, cardBackImage, cardFrontImage } from '@/arkham/cardArt'
+import { isMarked, warmCard } from '@/arkham/unwatermark'
 import { CardDef } from '@/arkham/types/CardDef'
 import { ArrowPathIcon } from '@heroicons/vue/20/solid'
 
@@ -58,15 +59,47 @@ function updateBackOrientation(e: Event) {
 watch(backImage, () => { backVertical.value = false })
 const vertical = computed(() => flipped.value && backVertical.value)
 
+/* The CDN watermarks card faces. Each image loads exactly as it always did --
+ * which keeps the grid's lazy loading and its layout -- and is then replaced
+ * by the same picture without the mark. Nothing unmarked (card backs,
+ * homebrew, custom art) is touched. */
+const frontClean = ref<string | null>(null)
+const backClean = ref<string | null>(null)
+let dropFront: (() => void) | null = null
+let dropBack: (() => void) | null = null
+
+function reverse(which: 'front' | 'back') {
+  const clean = which === 'front' ? frontClean : backClean
+  /* Swapping in the reversed image fires load again; the watches below clear
+   * this when the card itself changes, so it is the right thing to stop on. */
+  if (clean.value) return
+  ;(which === 'front' ? dropFront : dropBack)?.()
+  const src = which === 'front' ? frontSrc.value : backImage.value
+  if (!src || !isMarked(src)) return
+  const stop = warmCard(src, (objectUrl) => { clean.value = objectUrl })
+  if (which === 'front') dropFront = stop
+  else dropBack = stop
+}
+
+watch(frontSrc, () => { frontClean.value = null })
+watch(backImage, () => { backClean.value = null })
+onBeforeUnmount(() => { dropFront?.(); dropBack?.() })
+
 </script>
 
 <template>
   <div class='card-container' :class="[{vertical}]">
     <div class='front' :class="{flipped}">
+      <!-- crossorigin is bound BEFORE src on purpose: Vue sets attributes in
+           template order, and an <img> starts loading the moment src lands, so
+           setting it after would leave the fetch non-CORS and make the reversal
+           download the card all over again. -->
       <img
         loading="lazy"
+        :crossorigin="isMarked(frontSrc) ? 'anonymous' : undefined"
         :class="['card', 'card-front', { flipped }, attrs.class]"
-        :src="frontSrc"
+        :src="frontClean ?? frontSrc"
+        @load="reverse('front')"
         @error="onFrontError"
         v-bind="attrs"
       />
@@ -75,9 +108,10 @@ const vertical = computed(() => flipped.value && backVertical.value)
     <div v-if="flippable" class="back" :class="{flipped}">
       <img
         loading="lazy"
+        :crossorigin="isMarked(backImage) ? 'anonymous' : undefined"
         :class="['card', 'card-back', { flipped }, attrs.class]"
-        :src="backImage"
-        @load="updateBackOrientation"
+        :src="backClean ?? backImage"
+        @load="($event) => { updateBackOrientation($event); reverse('back') }"
         @error="backMissing = true"
         v-bind="attrs"
       />

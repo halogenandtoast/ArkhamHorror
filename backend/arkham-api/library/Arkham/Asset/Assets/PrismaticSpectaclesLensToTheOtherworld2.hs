@@ -55,9 +55,10 @@ prismaticSpectaclesLensToTheOtherworld2Effect =
 
 instance RunMessage PrismaticSpectaclesLensToTheOtherworld2Effect where
   runMessage msg e@(PrismaticSpectaclesLensToTheOtherworld2Effect attrs) = runQueueT $ case msg of
-    RevealChaosToken _ _ token | token.face == #curse -> do
+    RevealChaosToken _ _ token -> do
       case attrs.target of
         InvestigatorTarget iid -> void $ runMaybeT do
+          liftGuardM $ token <=~> ChaosTokenFaceIs #curse
           aid <- hoistMaybe attrs.source.asset
           liftGuardM $ aid <=~> AssetReady
           sid <- MaybeT getSkillTestId

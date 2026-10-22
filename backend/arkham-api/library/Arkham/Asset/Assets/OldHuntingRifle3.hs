@@ -7,6 +7,7 @@ import Arkham.Asset.Uses
 import Arkham.ChaosToken
 import Arkham.Helpers.SkillTest (getSkillTestSource)
 import Arkham.I18n
+import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Message qualified as Msg
 import Arkham.Modifier
 
@@ -43,11 +44,15 @@ instance RunMessage OldHuntingRifle3 where
       skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #combat 3, DamageDealt 2]
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
-    Msg.RevealChaosToken (SkillTestSource _) _ t | t.face `elem` [Skull, AutoFail] -> do
+    Msg.RevealChaosToken (SkillTestSource _) _ t -> do
       getSkillTestSource >>= \case
         Just (isAbilitySource attrs 1 -> True) -> do
-          failSkillTest
-          pure . OldHuntingRifle3 $ attrs `with` Metadata Jammed
+          jams <- t <=~> mapOneOf ChaosTokenFaceIs [Skull, AutoFail]
+          if jams
+            then do
+              failSkillTest
+              pure . OldHuntingRifle3 $ attrs `with` Metadata Jammed
+            else pure a
         _ -> pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       pure . OldHuntingRifle3 $ attrs `with` Metadata NotJammed

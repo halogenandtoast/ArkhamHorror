@@ -2,6 +2,7 @@ module Arkham.Treachery.Cards.ChildrenOfBlood.PreyedUpon.FeedingGrounds (feeding
 
 import Arkham.ChaosToken
 import Arkham.Helpers.SkillTest (withSkillTest, withSkillTestSource)
+import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Modifier
 import Arkham.Treachery.CardDefs.ChildrenOfBlood.PreyedUpon qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -19,8 +20,9 @@ instance RunMessage FeedingGrounds where
       sid <- getRandom
       revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
-    RevealChaosToken _ _ token | token.face == BloodToken -> do
-      withSkillTestSource \source -> when (isSource attrs source) do
+    RevealChaosToken _ _ token -> do
+      isBlood <- token <=~> ChaosTokenFaceIs BloodToken
+      withSkillTestSource \source -> when (isBlood && isSource attrs source) do
         withSkillTest \sid ->
           skillTestModifier sid attrs (ChaosTokenTarget token) DoNotRevealAnotherChaosToken
         failSkillTest

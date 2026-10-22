@@ -42,9 +42,10 @@ instance RunMessage Ofuda where
       pure a
     BeginRound -> do
       pure . Ofuda $ attrs & setMeta True
-    RevealChaosToken _ iid token | token.face == #bless -> do
+    RevealChaosToken _ iid token -> do
+      isBless <- token <=~> ChaosTokenFaceIs #bless
       sameLocation <- onSameLocation iid attrs.placement
-      let canReplenish = getAssetMetaDefault True attrs && attrs.use Charge == 0 && sameLocation
+      let canReplenish = isBless && getAssetMetaDefault True attrs && attrs.use Charge == 0 && sameLocation
       if canReplenish
         then do
           push $ AddUses (toSource attrs) attrs.id Charge 1

@@ -35,8 +35,8 @@ instance HasModifiersFor DawnStar1Effect where
 instance RunMessage DawnStar1Effect where
   runMessage msg e@(DawnStar1Effect attrs) = runQueueT $ case msg of
     CreatedEffect eid _ _ _ | eid == attrs.id -> do
-      tokens <- count ((== #curse) . (.face)) <$> getSkillTestRevealedChaosTokens
-      doStep tokens msg
+      tokens <- getSkillTestRevealedChaosTokens >>= filterM (<=~> ChaosTokenFaceIs #curse)
+      doStep (length tokens) msg
       pure e
     SkillTestEnded sid | isTarget sid attrs.target -> do
       disableReturn e
@@ -47,12 +47,13 @@ instance RunMessage DawnStar1Effect where
           doStep (n - 1) msg'
         _ -> pure ()
       pure e
-    After (RevealChaosToken _ _ token) | token.face == #curse -> do
-      for_ attrs.metaTarget \case
-        InvestigatorTarget iid ->
-          selectOneToHandle iid attrs
-            $ enemyAtLocationWith iid
-            <> EnemyCanBeDamagedBySource (toSource attrs)
-        _ -> pure ()
+    After (RevealChaosToken _ _ token) -> do
+      whenM (token <=~> ChaosTokenFaceIs #curse) do
+        for_ attrs.metaTarget \case
+          InvestigatorTarget iid ->
+            selectOneToHandle iid attrs
+              $ enemyAtLocationWith iid
+              <> EnemyCanBeDamagedBySource (toSource attrs)
+          _ -> pure ()
       pure e
     _ -> DawnStar1Effect <$> liftRunMessage msg attrs

@@ -2,6 +2,7 @@ module Arkham.Skill.Cards.Beloved (beloved) where
 
 import Arkham.Helpers.SkillTest (getSkillTestId)
 import Arkham.I18n
+import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Skill.Cards qualified as Cards
@@ -16,12 +17,12 @@ beloved = skillWith Beloved Cards.beloved (setMeta @Bool True)
 
 instance RunMessage Beloved where
   runMessage msg s@(Beloved attrs) = runQueueT $ case msg of
-    RevealChaosToken _ _ token | token.face == #bless -> do
+    RevealChaosToken _ _ token -> do
+      isBless <- token <=~> ChaosTokenFaceIs #bless
       getSkillTestId >>= \case
-        Nothing -> pure s
-        Just sid ->
-          if toResult attrs.meta
-            then do
+        Just sid
+          | isBless
+          , toResult attrs.meta -> do
               chooseOneM attrs.owner do
                 cardI18n $ scope "beloved" $ labeled "removeForAutoSuccess" do
                   removeFromGame attrs
@@ -29,5 +30,5 @@ instance RunMessage Beloved where
                   passSkillTest
                 labeledI "doNotRemove" nothing
               pure $ Beloved $ attrs & setMeta False
-            else pure s
+        _ -> pure s
     _ -> Beloved <$> liftRunMessage msg attrs

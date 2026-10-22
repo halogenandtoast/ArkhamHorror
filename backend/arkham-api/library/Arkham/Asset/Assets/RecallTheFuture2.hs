@@ -37,8 +37,9 @@ instance RunMessage RecallTheFuture2 where
       pure a
     HandleTargetChoice _ (isSource attrs -> True) (ChaosTokenFaceTarget t) -> do
       pure . RecallTheFuture2 $ attrs `with` Metadata (Just t)
-    When (Msg.RevealChaosToken _ _ token) | Just token.face == chosenChaosToken metadata -> do
-      unless (assetExhausted attrs) $ for_ (assetController attrs) $ \iid -> do
+    When (Msg.RevealChaosToken _ _ token) -> do
+      isChosen <- maybe (pure False) (\f -> token <=~> ChaosTokenFaceIs f) (chosenChaosToken metadata)
+      unless (assetExhausted attrs || not isChosen) $ for_ (assetController attrs) $ \iid -> do
         withSkillTest \sid -> do
           enable <- Msg.skillTestModifier sid attrs iid (AnySkillValue 2)
           push

@@ -485,8 +485,8 @@ runUltimatumsAndBoonsMessage msg = case msg of
                , Msg.checkDefeated source' iid
                ]
         _ -> error "invalid match"
-  RevealChaosToken _ iid token | token.face == AutoFail -> do
-    whenM (hasBoon BoonOfAthena) do
+  RevealChaosToken _ iid token -> do
+    whenM (andM [token <=~> Matcher.ChaosTokenFaceIs AutoFail, hasBoon BoonOfAthena]) do
       mods <- getModifiers iid
       unless (boonOfAthenaExpiredMarker `elem` mods) do
         push

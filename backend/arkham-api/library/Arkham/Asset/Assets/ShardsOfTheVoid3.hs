@@ -40,11 +40,12 @@ instance RunMessage ShardsOfTheVoid3 where
           ]
       aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
       pure a
-    Msg.RevealChaosToken (SkillTestSource sid) _ token | chaosTokenFace token == Zero -> do
+    Msg.RevealChaosToken (SkillTestSource sid) _ token -> do
+      isZero <- token <=~> ChaosTokenFaceIs Zero
       mSource <- getSkillTestSource
       mInvestigator <- getSkillTestInvestigator
       for_ ((,) <$> mSource <*> mInvestigator) $ \(source, iid) -> do
-        when (isAbilitySource attrs 1 source) do
+        when (isZero && isAbilitySource attrs 1 source) do
           skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
           pushAll
             [ SealChaosToken token

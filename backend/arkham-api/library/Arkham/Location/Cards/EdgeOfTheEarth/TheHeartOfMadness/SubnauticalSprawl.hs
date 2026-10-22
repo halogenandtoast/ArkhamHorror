@@ -5,6 +5,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), semaphore)
 import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, isSkillTestAt, withSkillTest)
 import Arkham.Location.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher hiding (RevealChaosToken)
 
 newtype SubnauticalSprawl = SubnauticalSprawl LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -15,9 +16,9 @@ subnauticalSprawl = location SubnauticalSprawl Cards.subnauticalSprawl 2 (PerPla
 
 instance RunMessage SubnauticalSprawl where
   runMessage msg l@(SubnauticalSprawl attrs) = runQueueT $ case msg of
-    RevealChaosToken _ _ token | token.face == #frost -> do
+    RevealChaosToken _ _ token -> do
       semaphore attrs do
-        whenM (isSkillTestAt attrs) do
+        whenM (andM [token <=~> ChaosTokenFaceIs #frost, isSkillTestAt attrs]) do
           withSkillTest \sid -> do
             tokens <- getSkillTestRevealedChaosTokens
             -- At this point the token will not be in the revealed tokens so we

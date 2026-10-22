@@ -20,8 +20,8 @@ icyWastes =
 
 instance RunMessage IcyWastes where
   runMessage msg l@(IcyWastes attrs) = runQueueT $ case msg of
-    RevealChaosToken _ _ token | token.face == #frost -> do
-      whenM (isSkillTestAt attrs) do
+    RevealChaosToken _ _ token -> do
+      whenM (andM [token <=~> ChaosTokenFaceIs #frost, isSkillTestAt attrs]) do
         withSkillTest \sid -> do
           tokens <- getSkillTestRevealedChaosTokens
           -- At this point the token will not be in the revealed tokens so we

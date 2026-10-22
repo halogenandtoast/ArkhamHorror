@@ -19,8 +19,9 @@ miGoGuard = enemy MiGoGuard Cards.miGoGuard & setPrey MostRemainingHealth
 -- during an attack against Mi-Go Guard, that attack deals 1 fewer damage.
 instance RunMessage MiGoGuard where
   runMessage msg e@(MiGoGuard attrs) = runQueueT $ case msg of
-    After (RevealChaosToken _ iid token) | token.face `elem` [Skull, Cultist, Tablet, ElderThing] -> do
+    After (RevealChaosToken _ iid token) -> do
       runMaybeT_ do
+        liftGuardM $ token <=~> mapOneOf ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing]
         Action.Fight <- MaybeT getSkillTestAction
         eid <- MaybeT getSkillTestTargetedEnemy
         guard $ eid == attrs.id

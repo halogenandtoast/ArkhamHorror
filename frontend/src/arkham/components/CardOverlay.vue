@@ -11,6 +11,7 @@ import {
   type VNodeRef,
 } from 'vue'
 import { cardImg, formatContent, imgsrc, isLocalized, toCamelCase } from '@/arkham/helpers'
+import { useUnwatermarked } from '@/arkham/unwatermark'
 import { homebrewTokenMap } from '@/arkham/homebrewAssets'
 import { originalArt } from '@/arkham/artVariants'
 import { hasEngineCardDef } from '@/arkham/customCards'
@@ -694,6 +695,12 @@ const additionalCard = computed<string | null>(() => {
   return imgsrc(`cards/${cardCode.value}b.avif`)
 })
 
+/* The CDN serves card faces with a watermark across them; this is the same
+ * picture with it taken back off. Everything downstream still reads `card` --
+ * these are only what gets drawn. The customization sheets are never marked. */
+const cardImage = useUnwatermarked(card)
+const additionalCardImage = useUnwatermarked(additionalCard)
+
 // A later taboo can mutate a card without touching its customizable sheet -- Taboo 24
 // only changed Power Word's test difficulty, which lives on the front. Point those
 // variants at the sheet from the taboo that last changed it.
@@ -1193,7 +1200,7 @@ watchEffect(() => {
     >
     <div class="card-image">
       <svg
-        v-if="card"
+        v-if="cardImage"
         class="card-svg"
         :viewBox="viewBox"
         :width="svgWidth"
@@ -1203,7 +1210,7 @@ watchEffect(() => {
       >
         <g :transform="groupTransform" :data-pc="playingCardOverlay">
           <image
-            :href="card"
+            :href="cardImage"
             x="0" y="0"
             :width="sideways ? viewH : VIEW_W"
             :height="sideways ? VIEW_W : viewH"
@@ -1272,10 +1279,10 @@ watchEffect(() => {
         </g>
       </svg>
 
-      <font-awesome-icon v-if="isSpirit && card" :icon="['fas', 'ghost']" class="spirit-icon" />
+      <font-awesome-icon v-if="isSpirit && cardImage" :icon="['fas', 'ghost']" class="spirit-icon" />
 
       <svg
-        v-if="additionalCard"
+        v-if="additionalCardImage"
         class="card-svg customizations-svg"
         :width="svgWidth"
         :height="svgHeight"
@@ -1285,7 +1292,7 @@ watchEffect(() => {
       >
         <g :transform="groupTransform">
           <image
-            :href="additionalCard"
+            :href="additionalCardImage"
             x="0" y="0"
             :width="sideways ? viewH : VIEW_W"
             :height="sideways ? VIEW_W : viewH"

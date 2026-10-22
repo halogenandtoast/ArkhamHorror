@@ -5,6 +5,7 @@ import { localizeArkhamDBBaseUrl } from '@/arkham/helpers'
 import { altFrontImage, cardBackImage, cardFrontImage, hasCardBackArt } from '@/arkham/cardArt'
 import { cardCost, cardIcons, cardSetText, cardTraits, cardType, levelText } from '@/arkham/cardDetails'
 import type { CardDef } from '@/arkham/types/CardDef'
+import { useUnwatermarked } from '@/arkham/unwatermark'
 
 const props = defineProps<{ card: CardDef, unimplemented?: boolean, hasPrev?: boolean, hasNext?: boolean }>()
 const emit = defineEmits<{ close: [], prev: [], next: [] }>()
@@ -26,6 +27,12 @@ function onFrontError() {
   const alt = altFrontImage(frontImage.value)
   if (alt) frontSrc.value = alt
 }
+
+/* The CDN watermarks card faces; these are the same pictures with the mark
+ * taken back off. A reversal that fails falls through to the marked URL, so
+ * the alt-art retry above still gets its error. */
+const frontDisplay = useUnwatermarked(frontSrc)
+const backDisplay = useUnwatermarked(backImage)
 
 const title = computed(() => props.unimplemented ? `#${props.card.art}` : props.card.name.title)
 const type = computed(() => props.card.cardType ? cardType(props.card) : '')
@@ -87,11 +94,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
         </div>
 
         <div class="faces">
-          <img class="face" :src="frontSrc" :alt="title" @error="onFrontError" />
+          <img class="face" :src="frontDisplay ?? undefined" :alt="title" @error="onFrontError" />
           <img
-            v-if="backImage && !backFailed"
+            v-if="backDisplay && !backFailed"
             class="face"
-            :src="backImage"
+            :src="backDisplay"
             :alt="`${title} — ${$t('cardDetails.back')}`"
             @error="backFailed = true"
           />

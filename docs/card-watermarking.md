@@ -22,7 +22,7 @@ mark".
 | renditions (public) | `frontend/.watermarked/img/arkham/` -- gitignored build artifact |
 | watermark art | `frontend/watermark/watermark.png` (see that directory's README) |
 | filter | `scripts/watermark-cards.sh` |
-| reversal | `scripts/unwatermark-cards.sh` (CLI), `frontend/src/arkham/unwatermark.ts` (in app) |
+| reversal | `scripts/unwatermark-cards.sh` (CLI), `frontend/src/arkham/unwatermark.ts` (in app, production builds only) |
 | public bucket | `s3://arkham-horror-assets` -> CloudFront `EMYS27JG801W1` (assets.arkhamhorror.app) |
 | originals bucket | `s3://arkham-horror-originals` -- private, no CloudFront |
 
@@ -30,8 +30,16 @@ Homebrew art (`img/arkham/homebrew/`) and custom card art (`img/custom/`) are
 never processed and never watermarked.
 
 Local development is unaffected: the masters stay clean, and `vite dev` serves
-them directly. You only see a watermark locally if `VITE_ASSET_HOST` points at
-production.
+them directly. You only see a watermark locally if the asset host is the CDN --
+which is the usual case, since no local checkout holds 50,000 card faces, so
+`/site-settings` hands back production's host.
+
+The in-app reversal does not run there. It is gated on `import.meta.env.PROD`
+(the `ENABLED` constant at the top of `unwatermark.ts`, which `isMarked` reads,
+and `isMarked` is what every entry point asks first), so outside a production
+build you see the marked renditions exactly as the CDN holds them -- which is
+what you want when checking the filter's own output, and saves a second CORS
+download plus a canvas pass per card the rest of the time.
 
 ## Settings
 

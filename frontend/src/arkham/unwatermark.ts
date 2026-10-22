@@ -16,6 +16,20 @@
 import { computed, ref, watch, type Ref } from 'vue'
 import markUrl from '../../watermark/watermark.png'
 
+/* Only a production build reverses anything.
+ *
+ * Nothing watermarks locally -- the masters stay clean -- but a dev whose asset
+ * host is the CDN (which is the default, since no local checkout holds 50,000
+ * card faces) is served the renditions, and reversing them there buys nothing:
+ * it spends a second CORS download and a canvas pass per card to hide the very
+ * thing a dev wants to be able to see, and it is the one place the marked art
+ * should be visible for checking the filter's own output.
+ *
+ * isMarked is the single gate: every entry point -- the composable, the grid's
+ * warm, the crossorigin attribute, the sweep -- asks it first, so one constant
+ * turns the whole thing off. */
+const ENABLED = import.meta.env.PROD
+
 const WM_SCALE = 0.62
 const WM_OPACITY = 0.28
 
@@ -44,6 +58,7 @@ const MARKED_PATH = /\/img\/arkham\/(?:(?:es|fr|ita|ko|rus|zh)\/)?cards\/(?!back
 /* Only renditions are marked, and only the asset host serves them. A relative
  * URL is vite serving the clean masters in development. */
 export function isMarked(url: string | null | undefined): boolean {
+  if (!ENABLED) return false
   if (!url || !/^https?:\/\//i.test(url)) return false
   try {
     return MARKED_PATH.test(new URL(url).pathname)
@@ -206,6 +221,7 @@ export function unwatermark(url: string): Promise<string> {
 /* Fetch the mark art before anything needs it, so the first card of a session
  * does not wait on a second round trip. */
 export function primeWatermark(): void {
+  if (!ENABLED) return
   void loadMark().catch(() => {})
 }
 
@@ -307,6 +323,7 @@ export function useUnwatermarked(source: Ref<string | null | undefined>): Ref<st
  * appearing at once cannot stall a hover: an on-demand unwatermark() starts
  * immediately, while this waits its turn. */
 export function warmCard(url: string, onReady: (objectUrl: string) => void): () => void {
+  if (!ENABLED) return () => {}
   const done = recovered.get(url)
   if (done) {
     onReady(done)

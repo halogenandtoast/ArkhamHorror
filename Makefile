@@ -221,11 +221,41 @@ db-unstick-kill:
 .PHONY: db-unstick-kill
 
 ## Sync local images to s3 bucket (public/ plus homebrew campaign and third edition images)
-sync-images:
-	cd frontend/public && aws s3 sync . s3://arkham-horror-assets --acl public-read --exclude ".DS_Store" --exclude "img/custom/*"
+##
+## Card faces are split in two: the clean masters go to the PRIVATE originals
+## bucket, and only the watermarked, resolution-capped renditions built by
+## scripts/watermark-cards.sh reach the public bucket. Everything else (boxes,
+## sets, portraits, homebrew, 3ed) syncs from public/ as before.
+##
+## No --acl public-read anywhere: CloudFront reads the bucket through its origin
+## access identity, so objects do not need to be world-readable, and dropping it
+## closes the direct s3.amazonaws.com path. scripts/fetch-assets.sh is unaffected
+## -- it lists via S3 (still public) and downloads via CloudFront.
+# Card faces are supplied by the watermarked tree, so they are held back from
+# the public/ sync -- except back_*, the face-down card back, which must stay
+# unmarked and has no rendition. Stale .jpg/.png under some card dirs are no
+# longer served and simply stop being re-synced.
+CARD_EXCLUDES = --exclude "img/arkham/cards/*" --include "img/arkham/cards/back_*" \
+                --exclude "img/arkham/es/cards/*" --exclude "img/arkham/fr/cards/*" \
+                --exclude "img/arkham/ita/cards/*" --exclude "img/arkham/ko/cards/*" \
+                --exclude "img/arkham/rus/cards/*" --exclude "img/arkham/zh/cards/*"
+
+sync-images: watermark-cards
+	cd frontend/public && aws s3 sync . s3://arkham-horror-assets --exclude "*.DS_Store" --exclude "img/custom/*" $(CARD_EXCLUDES)
+	aws s3 sync frontend/.watermarked/img/arkham s3://arkham-horror-assets/img/arkham --exclude "*.DS_Store" --exclude ".build-settings"
+	cd frontend/public && aws s3 sync . s3://arkham-horror-originals --exclude "*" \
+		--include "img/arkham/cards/*" --include "img/arkham/es/cards/*" \
+		--include "img/arkham/fr/cards/*" --include "img/arkham/ita/cards/*" \
+		--include "img/arkham/ko/cards/*" --include "img/arkham/rus/cards/*" \
+		--include "img/arkham/zh/cards/*" --exclude "*.DS_Store"
 	./scripts/sync-homebrew-images.sh
-	aws s3 sync frontend-3ed/public/img/ah3e s3://arkham-horror-assets/img/ah3e --acl public-read --exclude ".DS_Store"
+	aws s3 sync frontend-3ed/public/img/ah3e s3://arkham-horror-assets/img/ah3e --exclude "*.DS_Store"
 .PHONY: sync-images
+
+## Build the watermarked, resolution-capped card renditions (incremental)
+watermark-cards:
+	./scripts/watermark-cards.sh
+.PHONY: watermark-cards
 
 ## Fetch all images via CloudFront (requires aws + curl)
 fetch-images:

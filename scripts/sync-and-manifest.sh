@@ -11,14 +11,11 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 echo "=== Step 1/2: Syncing images to S3 ==="
-cd "$ROOT_DIR/frontend/public"
-aws s3 sync . s3://arkham-horror-assets --acl public-read --exclude ".DS_Store" --exclude "img/custom/*"
+# Delegate to the Makefile so the bucket split (watermarked renditions to the
+# public bucket, clean masters to the private originals bucket) has one
+# definition rather than two that drift.
 cd "$ROOT_DIR"
-./scripts/sync-homebrew-images.sh
-# Third edition art lives in its own frontend, under the same img/ prefix
-if [ -d "$ROOT_DIR/frontend-3ed/public/img/ah3e" ]; then
-  aws s3 sync "$ROOT_DIR/frontend-3ed/public/img/ah3e" s3://arkham-horror-assets/img/ah3e --acl public-read --exclude ".DS_Store"
-fi
+make sync-images
 echo ""
 
 echo "=== Step 2/2: Regenerating image manifest ==="

@@ -19,8 +19,15 @@
 # Third edition images (img/ah3e/) land in frontend-3ed/public; everything else
 # in frontend/public. en, en+<lang> and all include them.
 #
+# Card faces on the CDN carry a watermark (see docs/card-watermarking.md). The
+# clean masters live in a private bucket, so credentials that can read it switch
+# those keys over to fetching from there -- which is what stops a fetch from
+# replacing the masters with watermarked copies. Without credentials you get the
+# renditions, which is the intended contributor experience.
+#
 # Environment variables:
 #   FETCH_S3_BUCKET   S3 bucket name for listing (default: arkham-horror-assets)
+#   FETCH_ORIGINALS_BUCKET  Private masters bucket (default: arkham-horror-originals)
 #   FETCH_CDN_BASE    CloudFront base URL (default: https://assets.arkhamhorror.app)
 #   FETCH_PARALLEL    Concurrent downloads (default: 8)
 #   FETCH_RETRIES     Retries per file on failure (default: 3)
@@ -28,6 +35,7 @@
 set -euo pipefail
 
 S3_BUCKET="${FETCH_S3_BUCKET:-arkham-horror-assets}"
+ORIGINALS_BUCKET="${FETCH_ORIGINALS_BUCKET:-arkham-horror-originals}"
 CDN_BASE="${FETCH_CDN_BASE:-https://assets.arkhamhorror.app}"
 PARALLEL="${FETCH_PARALLEL:-8}"
 
@@ -115,9 +123,15 @@ export -f _file_size
 # single spaced key shift every following pair by one -- the next key was read
 # as a size and the one after that as a key -- which silently skipped whole
 # directories that sort after img/arkham/es/ (portraits/, sets/, slots/).
+#
+# The record is "<src><TAB><size><TAB><key>". <src> is C for the CDN or O for the
+# private originals bucket, and <size> is the size in whichever of the two the
+# file comes from, so the skip test and the post-download check both compare
+# against the right number.
 _fetch_one() {
   local record="$1"
-  local expected_size="${record%%$'\t'*}" key="${record#*$'\t'}"
+  local src="${record%%$'\t'*}" rest="${record#*$'\t'}"
+  local expected_size="${rest%%$'\t'*}" key="${rest#*$'\t'}"
   local public="$PUBLIC_DIR"
   case "$key" in img/ah3e/*) public="$PUBLIC_DIR_3ED" ;; esac
   local dest="$public/$key" tmp="$public/$key.tmp"
@@ -136,8 +150,16 @@ _fetch_one() {
     # Timeouts matter: without them a stalled connection blocks a worker
     # forever, and with -P N all N workers can end up wedged, leaving the whole
     # fetch hung with no output and no downloads in flight.
-    if curl -fsSL --retry 0 --connect-timeout 10 --max-time 300 --speed-time 60 --speed-limit 1024 \
-         "$CDN_BASE/$key" -o "$tmp" 2>/dev/null; then
+    local got=false
+    if [ "$src" = "O" ]; then
+      aws s3api get-object --bucket "$ORIGINALS_BUCKET" --key "$key" "$tmp" \
+        >/dev/null 2>&1 && got=true
+    elif curl -fsSL --retry 0 --connect-timeout 10 --max-time 300 --speed-time 60 --speed-limit 1024 \
+           "$CDN_BASE/$key" -o "$tmp" 2>/dev/null; then
+      got=true
+    fi
+
+    if $got; then
       local actual; actual=$(_file_size "$tmp")
       if [ "$actual" = "$expected_size" ]; then
         mv "$tmp" "$dest"
@@ -161,7 +183,7 @@ _fetch_one() {
   return 1
 }
 export -f _fetch_one
-export PUBLIC_DIR PUBLIC_DIR_3ED CDN_BASE
+export PUBLIC_DIR PUBLIC_DIR_3ED CDN_BASE ORIGINALS_BUCKET
 
 _list_objects() {
   aws s3api list-objects-v2 \
@@ -171,6 +193,46 @@ _list_objects() {
     --output text \
     --query 'Contents[].[Size,Key]' \
     | grep -v '^None$' || true
+}
+
+# ── Masters ───────────────────────────────────────────────────────────────────
+# The public bucket's card faces are watermarked renditions; the clean masters
+# are in a private bucket. Listed once up front, so each key can be routed to
+# whichever bucket holds the version we actually want.
+
+ORIGINALS_LIST=""
+
+_probe_originals() {
+  # A listing, not head-bucket: being able to see the bucket is not the same as
+  # being allowed to read it, and read is what the fetch needs.
+  aws s3api list-objects-v2 --bucket "$ORIGINALS_BUCKET" --max-keys 1 \
+    >/dev/null 2>&1 || return 1
+
+  local tmp; tmp=$(mktemp)
+  if aws s3api list-objects-v2 \
+       --bucket "$ORIGINALS_BUCKET" \
+       --output text \
+       --query 'Contents[].[Size,Key]' 2>/dev/null \
+       | grep -v '^None$' > "$tmp" && [ -s "$tmp" ]; then
+    ORIGINALS_LIST="$tmp"
+    return 0
+  fi
+  rm -f "$tmp"
+  return 1
+}
+
+# Tags each "<size><TAB><key>" record with its source, replacing the size with
+# the master's whenever the key has one. Without credentials every record is
+# tagged C and the behaviour is exactly as it was before the watermarking.
+_tag_sources() {
+  if [ -z "$ORIGINALS_LIST" ]; then
+    sed $'s/^/C\t/'
+  else
+    awk -F'\t' -v OFS='\t' '
+      NR == FNR { master[$2] = $1; next }
+      { if ($2 in master) print "O", master[$2], $2; else print "C", $1, $2 }
+    ' "$ORIGINALS_LIST" -
+  fi
 }
 
 _sync_prefix() {
@@ -211,6 +273,10 @@ _sync_prefix() {
   fi
 
   [ "$total" -eq 0 ] && return 0
+
+  # Route each key to the bucket holding the version we want. Done after the
+  # zero check, because tagging an empty listing would turn it into one record.
+  listing=$(printf '%s\n' "$listing" | _tag_sources)
 
   # ── Download phase ────────────────────────────────────────────────────────
 
@@ -338,6 +404,15 @@ printf '\n%s=== %s ===%s\n\n' "$_BOLD" \
     all)               echo 'Fetching all images' ;;
     3ed)               echo 'Fetching third edition images' ;;
   esac)" "$_RESET"
+
+if _probe_originals; then
+  printf '  %s↹%s  card faces: clean masters from s3://%s\n\n' \
+    "$_CYAN" "$_RESET" "$ORIGINALS_BUCKET"
+else
+  printf '  %s↹%s  card faces: watermarked renditions from the CDN\n\n' \
+    "$_DIM" "$_RESET"
+fi
+trap 'rm -f "$ORIGINALS_LIST" 2>/dev/null; printf "%s" "${_SHOW}" 2>/dev/null' EXIT
 
 case "$1" in
   cards)

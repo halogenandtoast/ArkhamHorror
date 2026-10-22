@@ -109,7 +109,7 @@ upload() {
   aws s3 sync "$src" "s3://$BUCKET/assets/" --size-only --acl public-read \
     --cache-control "$IMMUTABLE" \
     --exclude "*.js" --exclude "*.css" --exclude "*.br" --exclude "*.gz" \
-    --exclude ".DS_Store"
+    --exclude "*.DS_Store"
 }
 
 # Both frontends share the prefix. Their bundle names can only collide if the

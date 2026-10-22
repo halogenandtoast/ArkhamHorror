@@ -54,6 +54,9 @@ frontend/public/img/arkham/sets/
 frontend/public/img/arkham/customizations/
 frontend/public/img/arkham/seals/
 frontend/public/img/arkham/playing-cards/
+# Derived public card renditions built by scripts/watermark-cards.sh from the
+# masters above. Rebuildable, never committed, never served locally.
+frontend/.watermarked/
 # 3rd edition art, also on the CDN under img/ah3e/
 frontend-3ed/public/img/
 # Custom card art written by a local backend (custom-card-art-dir)

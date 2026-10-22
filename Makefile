@@ -240,22 +240,33 @@ CARD_EXCLUDES = --exclude "img/arkham/cards/*" --include "img/arkham/cards/back_
                 --exclude "img/arkham/ita/cards/*" --exclude "img/arkham/ko/cards/*" \
                 --exclude "img/arkham/rus/cards/*" --exclude "img/arkham/zh/cards/*"
 
+# Card art is not content-addressed -- a card keeps its URL when its art is
+# replaced -- so `immutable` or a year would mean a year of stale art after any
+# re-upload. A week removes the repeat downloads without that trap. Only files
+# a sync actually uploads get this; `make set-cache-control` backfills the rest.
+IMAGE_CACHE_CONTROL = public, max-age=604800
+
 sync-images: watermark-cards
-	cd frontend/public && aws s3 sync . s3://arkham-horror-assets --exclude "*.DS_Store" --exclude "img/custom/*" $(CARD_EXCLUDES)
-	aws s3 sync frontend/.watermarked/img/arkham s3://arkham-horror-assets/img/arkham --exclude "*.DS_Store" --exclude ".build-settings"
+	cd frontend/public && aws s3 sync . s3://arkham-horror-assets --exclude "*.DS_Store" --exclude "img/custom/*" --cache-control "$(IMAGE_CACHE_CONTROL)" $(CARD_EXCLUDES)
+	aws s3 sync frontend/.watermarked/img/arkham s3://arkham-horror-assets/img/arkham --exclude "*.DS_Store" --exclude ".build-settings" --cache-control "$(IMAGE_CACHE_CONTROL)"
 	cd frontend/public && aws s3 sync . s3://arkham-horror-originals --exclude "*" \
 		--include "img/arkham/cards/*" --include "img/arkham/es/cards/*" \
 		--include "img/arkham/fr/cards/*" --include "img/arkham/ita/cards/*" \
 		--include "img/arkham/ko/cards/*" --include "img/arkham/rus/cards/*" \
 		--include "img/arkham/zh/cards/*" --exclude "*.DS_Store"
 	./scripts/sync-homebrew-images.sh
-	aws s3 sync frontend-3ed/public/img/ah3e s3://arkham-horror-assets/img/ah3e --exclude "*.DS_Store"
+	aws s3 sync frontend-3ed/public/img/ah3e s3://arkham-horror-assets/img/ah3e --exclude "*.DS_Store" --cache-control "$(IMAGE_CACHE_CONTROL)"
 .PHONY: sync-images
 
 ## Build the watermarked, resolution-capped card renditions (incremental)
 watermark-cards:
 	./scripts/watermark-cards.sh
 .PHONY: watermark-cards
+
+## Backfill Cache-Control on images already in the bucket (see --canary first)
+set-cache-control:
+	./scripts/set-cache-control.sh
+.PHONY: set-cache-control
 
 ## Fetch all images via CloudFront (requires aws + curl)
 fetch-images:

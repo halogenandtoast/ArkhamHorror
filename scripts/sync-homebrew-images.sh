@@ -18,5 +18,5 @@ for dir in "$HOMEBREW_DIR"/*/img; do
   campaign="$(basename "$(dirname "$dir")")"
   echo "Syncing homebrew images: $campaign -> img/arkham/homebrew/$campaign/"
   aws s3 sync "$dir" "s3://arkham-horror-assets/img/arkham/homebrew/$campaign" \
-    --exclude "*.DS_Store"
+    --exclude "*.DS_Store" --cache-control "${IMAGE_CACHE_CONTROL:-public, max-age=604800}"
 done

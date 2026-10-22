@@ -22,6 +22,7 @@ mark".
 | renditions (public) | `frontend/.watermarked/img/arkham/` -- gitignored build artifact |
 | watermark art | `frontend/watermark/watermark.png` (see that directory's README) |
 | filter | `scripts/watermark-cards.sh` |
+| reversal | `scripts/unwatermark-cards.sh` (CLI), `frontend/src/arkham/unwatermark.ts` (in app) |
 | public bucket | `s3://arkham-horror-assets` -> CloudFront `EMYS27JG801W1` (assets.arkhamhorror.app) |
 | originals bucket | `s3://arkham-horror-originals` -- private, no CloudFront |
 
@@ -97,9 +98,18 @@ aws s3api list-objects-v2 --bucket arkham-horror-assets --query 'Contents[].Key'
   | xargs -0 -P 16 -I{} aws s3api put-object-acl --bucket arkham-horror-assets --key {} --acl private
 ```
 
-Strip one key first and confirm the CDN still serves it on a cache-busted URL
-(`?x=1`, so the answer comes from the origin rather than an edge cache). That
-canary costs nothing, and a mistake here blanks every image on the site.
+Strip one key first and confirm the CDN still serves it. **A query string does
+not bust the edge** -- this distribution does not include one in its cache key,
+so `?x=1` returns `x-cache: Hit` and tells you nothing about the origin.
+Invalidate the single path and then check:
+
+```bash
+aws cloudfront create-invalidation --distribution-id EMYS27JG801W1 \
+  --paths "/img/arkham/cards/01000.avif"
+curl -sI https://assets.arkhamhorror.app/img/arkham/cards/01000.avif
+```
+
+That canary costs nothing, and a mistake here blanks every image on the site.
 
 CloudFront is unaffected -- it reads through origin access identity
 `E1HKSII8X83RZP`, which the bucket policy grants `s3:GetObject` directly.
@@ -221,6 +231,22 @@ mark at all. The countermeasure that paper recommends -- and the only one that
 would change this materially -- is randomizing position, scale, rotation and
 opacity per image, so a multi-image attack has no single target. That is not
 implemented.
+
+## Caching
+
+Card images shipped without a `Cache-Control` header, so browsers fell back to
+heuristic freshness and CloudFront missed more than it should.
+`make sync-images` now sets `public, max-age=604800` on everything it uploads,
+and `scripts/set-cache-control.sh` backfills objects already in the bucket.
+
+A week, not a year, and not `immutable`: a card keeps its URL when its art is
+replaced, so a long TTL would mean stale art for that long after any re-upload.
+
+The backfill rewrites each object with `--metadata-directive REPLACE`, which
+replaces **all** system metadata -- an object copied without an explicit
+`--content-type` comes back as `binary/octet-stream` and stops rendering. That
+is why the script works one extension at a time with the type named each time,
+and why it has a `--canary` mode. Use it.
 
 ## What this does not achieve
 

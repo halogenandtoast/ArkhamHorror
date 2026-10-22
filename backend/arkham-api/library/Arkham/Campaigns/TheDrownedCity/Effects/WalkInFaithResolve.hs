@@ -30,6 +30,13 @@ can still be edited. Rather than replacing the pending draw outright (which woul
 lose its amount, deck and continuation), read it back off the investigator and add
 the surge rule to it, which is the same seam Temple of R'lyeh uses when it initiates
 a draw itself.
+
+The window carries 'You' as well as the effect's own investigator because the window
+is polled once per seat: a bare 'InvestigatorWithId' asks "is the drawer this one?",
+which every seat answers yes to, so the effect spent itself on whichever seat was
+polled first and found no pending draw there (#5888). The handler reads its subject
+off the effect's target for the same reason, since a materialised 'UseAbility' is
+never re-filtered against the window matcher.
 -}
 newtype WalkInFaithResolveEffect = WalkInFaithResolveEffect EffectAttrs
   deriving anyclass (IsEffect, HasModifiersFor)
@@ -42,16 +49,18 @@ walkInFaithResolveEffect (effectId, builder) =
 instance HasAbilities WalkInFaithResolveEffect where
   getAbilities (WalkInFaithResolveEffect a) = case a.target.investigator of
     Nothing -> []
-    Just iid -> [mkAbility a 1 $ SilentForcedAbility $ WouldDrawEncounterCard #when (be iid) #any]
+    Just iid ->
+      [mkAbility a 1 $ SilentForcedAbility $ WouldDrawEncounterCard #when (You <> be iid) #any]
 
 instance RunMessage WalkInFaithResolveEffect where
   runMessage msg e@(WalkInFaithResolveEffect attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      mDrawing <- field InvestigatorDrawing iid
-      for_ mDrawing \drawing -> do
-        let surge = WithDrawnCardModifiers (toSource attrs) [AddKeyword Keyword.Surge]
-        push
-          $ ReplaceCurrentCardDraw iid
-          $ drawing {cardDrawRules = insertSet surge drawing.cardDrawRules}
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      for_ attrs.target.investigator \iid -> do
+        mDrawing <- field InvestigatorDrawing iid
+        for_ mDrawing \drawing -> do
+          let surge = WithDrawnCardModifiers (toSource attrs) [AddKeyword Keyword.Surge]
+          push
+            $ ReplaceCurrentCardDraw iid
+            $ drawing {cardDrawRules = insertSet surge drawing.cardDrawRules}
       disableReturn e
     _ -> WalkInFaithResolveEffect <$> liftRunMessage msg attrs

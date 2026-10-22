@@ -30,6 +30,13 @@ is optional: the trigger is "the first time … would draw", so it is spent on t
 draw whether or not the option is taken. Forcing it means the effect always gets to
 present the choice and then disable itself; a declinable reaction would leave the
 effect alive for a later draw.
+
+The window carries 'You' as well as the effect's own investigator because the window
+is polled once per seat: a bare 'InvestigatorWithId' asks "is the drawer this one?",
+which every seat answers yes to, so the prompt landed on whoever was polled first
+rather than on the investigator drawing (#5888). The handler reads its subject off the
+effect's target for the same reason, since a materialised 'UseAbility' is never
+re-filtered against the window matcher.
 -}
 newtype WalkInFaithDoubtsEffect = WalkInFaithDoubtsEffect EffectAttrs
   deriving anyclass (IsEffect, HasModifiersFor)
@@ -42,20 +49,22 @@ walkInFaithDoubtsEffect (effectId, builder) =
 instance HasAbilities WalkInFaithDoubtsEffect where
   getAbilities (WalkInFaithDoubtsEffect a) = case a.target.investigator of
     Nothing -> []
-    Just iid -> [mkAbility a 1 $ SilentForcedAbility $ WouldDrawEncounterCard #when (be iid) #any]
+    Just iid ->
+      [mkAbility a 1 $ SilentForcedAbility $ WouldDrawEncounterCard #when (You <> be iid) #any]
 
 instance RunMessage WalkInFaithDoubtsEffect where
   runMessage msg e@(WalkInFaithDoubtsEffect attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      -- Only offer the swap to someone who can actually draw; otherwise it is a
-      -- dead button and the encounter card comes anyway.
-      cannotDraw <- hasModifier iid CannotDrawCards
-      withI18n $ scope "theDrownedCity" $ chooseOneM iid do
-        unless cannotDraw
-          $ labeled "walkInFaith.drawFromDeck"
-          $ push
-          $ ReplaceCurrentCardDraw iid
-          $ newCardDraw (toSource attrs) iid 1
-        labeled "walkInFaith.drawEncounter" nothing
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      for_ attrs.target.investigator \iid -> do
+        -- Only offer the swap to someone who can actually draw; otherwise it is a
+        -- dead button and the encounter card comes anyway.
+        cannotDraw <- hasModifier iid CannotDrawCards
+        withI18n $ scope "theDrownedCity" $ chooseOneM iid do
+          unless cannotDraw
+            $ labeled "walkInFaith.drawFromDeck"
+            $ push
+            $ ReplaceCurrentCardDraw iid
+            $ newCardDraw (toSource attrs) iid 1
+          labeled "walkInFaith.drawEncounter" nothing
       disableReturn e
     _ -> WalkInFaithDoubtsEffect <$> liftRunMessage msg attrs

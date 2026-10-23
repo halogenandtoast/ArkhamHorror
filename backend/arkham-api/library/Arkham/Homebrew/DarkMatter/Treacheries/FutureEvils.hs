@@ -26,9 +26,9 @@ instance HasAbilities FutureEvils where
         $ forced
         $ PlacedDoomCounter
           #after
-          -- the additional doom this ability places is itself a non-player
+          -- the additional doom this ability places is itself a scenario card
           -- source, so without excluding ourselves this retriggers forever
-          (NotSource SourceIsPlayerCard <> NotSource (SourceIsTreacheryEffect $ TreacheryWithId a.id))
+          (ScenarioCardSource <> NotSource (SourceIsTreacheryEffect $ TreacheryWithId a.id))
           AnyTarget
     ]
 

@@ -101,7 +101,12 @@ import GHC.Records
 
 activeCostActions :: ActiveCost -> [Action]
 activeCostActions ac = case ac.target of
-  ForAbility a -> #activate : a.actions
+  -- 'abilityActions' already adds #activate, and only for a non-basic
+  -- ActionAbility. Prefixing it here double-counted a real activation and, worse,
+  -- labelled the basic fight/evade/investigate/move abilities and every
+  -- reaction/fast ability an activate, so a cost modifier on #activate taxed them
+  -- all (#5895).
+  ForAbility a -> a.actions
   ForCard isPlayAction c ->
     [#play | isPlayAction == IsPlayAction]
       <> case ac.activeCostChosenOrAction of

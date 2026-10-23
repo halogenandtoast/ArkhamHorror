@@ -58,7 +58,6 @@ import Arkham.Window (Window (..), mkWhen)
 import Arkham.Window qualified as Window
 import Control.Lens (non)
 import Control.Monad.State.Strict (evalStateT, get, put)
-import Data.List qualified as List
 import Data.List.Extra (nubOrd)
 import Data.Set qualified as Set
 
@@ -810,17 +809,18 @@ getPlaceableClueCount iid = do
   z <- if canParallelRex then (`div` 2) <$> getRemainingCurseTokens else pure 0
   fieldMap InvestigatorClues (+ z) iid
 
+{- | The same 'Matcher.matchTarget' payment uses in
+'Arkham.ActiveCost.getActionCostSurcharges', so what is charged and what is checked
+for affordability cannot drift. Spelling out only 'IsAction' and
+'FirstOneOfPerformed' here left 'AnyActionTarget' unmatched, so Artificial Gravity
+Malfunction's surcharge was invisible until payment and a move was offered with one
+action left (#5895).
+-}
 applyActionCostModifier :: [[Action]] -> [[Action]] -> [Action] -> ModifierType -> Int -> Int
-applyActionCostModifier _ _ actions (ActionCostOf (IsAction action') m) n
-  | action' `elem` actions = n + m
-applyActionCostModifier _ performedActions actions (ActionCostOf (FirstOneOfPerformed as) m) n
-  | notNull (actions `List.intersect` as) && all (\a -> all (notElem a) performedActions) as =
-      n + m
-applyActionCostModifier _ _ actions (AdditionalActionCostOf (IsAction action') m) n
-  | action' `elem` actions = n + m
-applyActionCostModifier _ performedActions actions (AdditionalActionCostOf (FirstOneOfPerformed as) m) n
-  | notNull (actions `List.intersect` as) && all (\a -> all (notElem a) performedActions) as =
-      n + m
+applyActionCostModifier takenActions performedActions actions (ActionCostOf match m) n
+  | any (Matcher.matchTarget takenActions performedActions match) actions = n + m
+applyActionCostModifier takenActions performedActions actions (AdditionalActionCostOf match m) n
+  | any (Matcher.matchTarget takenActions performedActions match) actions = n + m
 applyActionCostModifier _ _ _ (ActionCostModifier m) n = n + m
 applyActionCostModifier _ _ _ _ n = n
 

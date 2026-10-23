@@ -513,7 +513,10 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
     ServitorAbility _ -> pure True
     Haunted -> pure True
     Cosmos -> pure True
-    ActionAbility actions _ cost -> getCanAffordCost iid (toSource a) (actionsToList actions) ws (f cost)
+    -- 'a.actions', not the bare designators: payment charges against the list that
+    -- includes #activate, so checking affordability without it offered an [action]
+    -- ability the investigator could not pay for (#5895).
+    ActionAbility _ _ cost -> getCanAffordCost iid (toSource a) a.actions ws (f cost)
     ReactionAbility _ cost actions -> getCanAffordCost iid (toSource a) (actionsToList actions) ws (f cost)
     CustomizationReaction _ _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
     ConstantReaction _ _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)

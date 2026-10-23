@@ -796,13 +796,17 @@ instance RunMessage AssetAttrs where
       pure $ a & controllerL .~ Nothing
     ReplacedInvestigatorAsset iid aid | aid == assetId -> do
       pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
+    -- An asset reaching the victory display leaves play, so it exits through
+    -- `RemoveFromPlay` like a discard or an exile does. That is what opens the
+    -- leave-play windows and parks the tombstone those reactions match against;
+    -- writing `VictoryDisplayZone` straight into the attrs skipped both, so
+    -- nothing could react to the asset going (#5901). The card itself is
+    -- already in the scenario's victory display by this point, which is what
+    -- the display and the xp count read, so the entity goes with every token it
+    -- held, doom included (#5680).
     AddToVictory _ (AssetTarget aid) | aid == assetId -> do
-      -- leaving play removes every token, doom included (#5680)
-      pure
-        $ a
-        & (placementL .~ OutOfPlay Zone.VictoryDisplayZone)
-        & (controllerL .~ Nothing)
-        & (tokensL .~ mempty)
+      push $ RemoveFromPlay (toSource a)
+      pure a
     AddToScenarioDeck key target | isTarget a target -> do
       pushAll
         [RemoveFromGame (toTarget a), AddCardToScenarioDeck key (toCard a)]

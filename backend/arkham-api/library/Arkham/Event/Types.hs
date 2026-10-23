@@ -68,6 +68,7 @@ data instance Field Event :: Type -> Type where
   EventCustomizations :: Field Event Customizations
   EventMeta :: Field Event Value
   EventPlayTarget :: Field Event (Maybe Target)
+  EventPlayedFrom :: Field Event Zone
 
 data instance Field (InHandEntity Event) :: Type -> Type where
   InHandEventCardId :: Field (InHandEntity Event) CardId

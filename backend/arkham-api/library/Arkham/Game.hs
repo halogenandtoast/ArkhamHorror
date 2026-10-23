@@ -6510,6 +6510,7 @@ eventField e fld = do
     EventUses -> pure $ Map.filterWithKey (\k _ -> Token.tokenIsUse k) eventTokens
     EventTokens -> pure eventTokens
     EventPlacement -> pure eventPlacement
+    EventPlayedFrom -> pure eventPlayedFrom
     EventCustomizations -> pure eventCustomizations
     EventMeta -> pure eventMeta
     EventTraits -> pure $ cdCardTraits cdef

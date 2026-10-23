@@ -3,12 +3,11 @@ module Arkham.Homebrew.DarkMatter.Enemies.HoundOfTindalos (houndOfTindalos) wher
 import Arkham.Ability
 import Arkham.Constants (pattern AbilityAttack, pattern AbilityEvade)
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Card (getHandAtInitiation)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelect)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
-import Arkham.Investigator.Types (Field (InvestigatorHand))
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Projection
 
 newtype HoundOfTindalos = HoundOfTindalos EnemyAttrs
   deriving anyclass IsEnemy
@@ -34,6 +33,13 @@ against it. Both are relaxed per investigator through 'SetAbilityCriteria' — t
 one hook 'getCanPerformAbility' consults, and the only one that works when the
 ability's source /is/ the enemy. Scoping falls out of who gets the modifier at
 all, so the replacements need not re-check engagement.
+
+The parity is read off 'getHandAtInitiation', not the literal hand: playing a Fight
+event removes it from hand before the event resolves, so reading the hand itself
+would let a play the engine had just judged legal disengage the Hound before the
+attack it licensed could be chosen. Per the campaign's FAQ, "all that matters is
+that you are able to attack the Hound when you initiate your
+action/effect/ability".
 -}
 instance HasModifiersFor HoundOfTindalos where
   getModifiersFor (HoundOfTindalos a) = do
@@ -41,7 +47,7 @@ instance HasModifiersFor HoundOfTindalos where
     -- is not in play and engages nobody.
     when (isInPlayPlacement a.placement) do
       investigators <- select UneliminatedInvestigator
-      odds <- filterM (fieldMap InvestigatorHand (odd . length)) investigators
+      odds <- filterM (fmap (odd . length) . getHandAtInitiation) investigators
       for_ odds \iid -> do
         modifySelect a (InvestigatorWithId iid) [AsIfEngagedWith a.id]
         modified_ a (abilityTarget iid AbilityAttack) [SetAbilityCriteria $ CriteriaOverride fightCriteria]

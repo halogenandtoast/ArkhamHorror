@@ -6,7 +6,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Fight
 import Arkham.Helpers.CombatTarget
-import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Matcher
@@ -20,30 +19,30 @@ spectralRazor2 = event SpectralRazor2 Cards.spectralRazor2
 
 instance RunMessage SpectralRazor2 where
   runMessage msg e@(SpectralRazor2 attrs) = runQueueT $ case msg of
+    {- The engage is offered before the attacked enemy is chosen because it is what
+    makes an Aloof enemy nobody is engaged with attackable at all, so taking it aims
+    the attack at that enemy: the card engages "the attacked enemy", never a second
+    one. With no fightable and no engageable enemy the event resolves as nothing --
+    its costs stay paid -- rather than erroring. -}
     PlayThisEvent iid eid | eid == toId attrs -> do
       canFight <- hasFightTargets (toSource attrs) iid
-      engageableEnemies <- select $ CanEngageEnemy (toSource attrs)
-
-      case (canFight, engageableEnemies) of
-        (False, []) -> error "invalid call"
-        (False, _ : _) -> do
-          push $ Msg.chooseEngageEnemy iid attrs
-          doStep 1 msg
-        (True, []) -> doStep 1 msg
-        (True, _ : _) ->
-          chooseOne
-            iid
-            [ Label "$cards.label.spectralRazor2.engageFirst" [Msg.chooseEngageEnemy iid attrs, DoStep 1 msg]
-            , Label "$cards.label.spectralRazor2.doNotEngage" [DoStep 1 msg]
-            ]
-      pure e
-    DoStep 1 (PlayThisEvent iid eid) | eid == toId attrs -> do
-      sid <- getRandom
-      skillTestModifier sid attrs iid (AddSkillValue #willpower)
-      createSkillTestCardEffect sid Cards.spectralRazor2 Nothing attrs iid
-      onRevealChaosTokenEffect sid IsSymbol attrs attrs do
-        atEndOfTurn attrs iid $ addToHand iid (only $ toCard attrs)
-      pushM $ mkChooseFight sid iid attrs
+      engageable <- select $ CanEngageEnemy (toSource attrs)
+      when (canFight || notNull engageable) do
+        sid <- getRandom
+        skillTestModifier sid attrs iid (AddSkillValue #willpower)
+        createSkillTestCardEffect sid Cards.spectralRazor2 Nothing attrs iid
+        onRevealChaosTokenEffect sid IsSymbol attrs attrs do
+          atEndOfTurn attrs iid $ addToHand iid (only $ toCard attrs)
+        fight <- capture $ pushM $ mkChooseFight sid iid attrs
+        engageThenFight <- capture $ chooseOneM iid $ targets engageable \enemy -> do
+          engageEnemy iid enemy
+          pushM $ mkFightEnemy sid iid attrs enemy
+        case (canFight, engageable) of
+          (_, []) -> pushAll fight
+          (False, _) -> pushAll engageThenFight
+          (True, _) -> chooseOneM iid do
+            labeledI "engageEnemyFirst" $ pushAll engageThenFight
+            labeledI "doNotEngageEnemy" $ pushAll fight
       pure e
     _ -> SpectralRazor2 <$> liftRunMessage msg attrs
 

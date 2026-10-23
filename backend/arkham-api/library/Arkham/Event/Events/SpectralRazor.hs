@@ -4,7 +4,6 @@ import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.CombatTarget
-import Arkham.Helpers.Message (chooseEngageEnemy)
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTestTarget)
 import Arkham.Matcher
@@ -18,26 +17,28 @@ spectralRazor = event SpectralRazor Cards.spectralRazor
 
 instance RunMessage SpectralRazor where
   runMessage msg e@(SpectralRazor attrs) = runQueueT $ case msg of
+    {- The engage is offered before the attacked enemy is chosen because it is what
+    makes an Aloof enemy nobody is engaged with attackable at all, so taking it aims
+    the attack at that enemy: the card engages "the attacked enemy", never a second
+    one. With no fightable and no engageable enemy the event resolves as nothing --
+    its costs stay paid -- rather than erroring. -}
     PlayThisEvent iid eid | eid == toId attrs -> do
       canFight <- hasFightTargets (toSource attrs) iid
-      engageableEnemies <- select $ CanEngageEnemy (toSource attrs)
-
-      case (canFight, engageableEnemies) of
-        (False, []) -> error "invalid call"
-        (False, _ : _) -> pushAll [chooseEngageEnemy iid attrs, DoStep 1 msg]
-        (True, []) -> doStep 1 msg
-        (True, _ : _) -> do
-          chooseOneM iid do
-            labeledI "engageEnemyFirst" do
-              push $ chooseEngageEnemy iid attrs
-              doStep 1 msg
-            labeledI "doNotEngageEnemy" $ doStep 1 msg
-      pure e
-    DoStep 1 (PlayThisEvent iid eid) | eid == toId attrs -> do
-      sid <- getRandom
-      skillTestModifier sid attrs iid (AddSkillValue #willpower)
-      createSkillTestCardEffect sid Cards.spectralRazor Nothing attrs iid
-      chooseFightEnemy sid iid attrs
+      engageable <- select $ CanEngageEnemy (toSource attrs)
+      when (canFight || notNull engageable) do
+        sid <- getRandom
+        skillTestModifier sid attrs iid (AddSkillValue #willpower)
+        createSkillTestCardEffect sid Cards.spectralRazor Nothing attrs iid
+        fight <- capture $ chooseFightEnemy sid iid attrs
+        engageThenFight <- capture $ chooseOneM iid $ targets engageable \enemy -> do
+          engageEnemy iid enemy
+          fightEnemy sid iid attrs enemy
+        case (canFight, engageable) of
+          (_, []) -> pushAll fight
+          (False, _) -> pushAll engageThenFight
+          (True, _) -> chooseOneM iid do
+            labeledI "engageEnemyFirst" $ pushAll engageThenFight
+            labeledI "doNotEngageEnemy" $ pushAll fight
       pure e
     _ -> SpectralRazor <$> liftRunMessage msg attrs
 

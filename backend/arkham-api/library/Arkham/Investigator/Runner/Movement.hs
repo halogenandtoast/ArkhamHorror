@@ -86,6 +86,7 @@ import Arkham.Helpers.Game (withAlteredGame)
 import Arkham.Helpers.Location (
   getCanMoveTo,
   getCanMoveToMatchingLocations,
+  getCanStepTo,
   isDiscoveringLastClue,
   withLocationOf,
  )
@@ -382,15 +383,23 @@ handleMove a@InvestigatorAttrs {..} movement = do
                   <> maybeToList mRunWhenLeaving
                   <> maybeToList mRunAtIfLeaving
                   <> [PayAdditionalCost iid batchId leaveCosts]
-            -- An additional cost to move is a cost of the move itself, so it is paid
-            -- before the would-move and leaving windows; cancelling the move while
-            -- paying it keeps those windows from firing at all.
-            if moveCosts == Cost.Free
-              then push moveBatch
-              else do
-                push $ PayAdditionalCost iid batchId moveCosts
-                push $ wrapMove $ WhenCanMove iid [moveBatch]
-            push $ wrapMove (wrapLeave whenCanMoveMsg)
+            -- An enter cost that cannot be paid is not a move. The enter cost and
+            -- everything after it are plain messages inside whenCanMoveMsg, not part
+            -- of the batch, so the `IgnoreBatch` that ActiveCost falls back to when
+            -- the cost is unaffordable cancels nothing and the investigator used to
+            -- enter for free. See #5894.
+            canPayToEnter <- getCanAffordCost iid source [#move] [] enterCosts
+
+            when canPayToEnter do
+              -- An additional cost to move is a cost of the move itself, so it is paid
+              -- before the would-move and leaving windows; cancelling the move while
+              -- paying it keeps those windows from firing at all.
+              if moveCosts == Cost.Free
+                then push moveBatch
+                else do
+                  push $ PayAdditionalCost iid batchId moveCosts
+                  push $ wrapMove $ WhenCanMove iid [moveBatch]
+              push $ wrapMove (wrapLeave whenCanMoveMsg)
           Place -> do
             -- like Direct, but no moves windows and no costs
 
@@ -447,8 +456,9 @@ handleMoveToward a@InvestigatorAttrs {..} target locationMatcher = do
       mlid <- selectOne locationMatcher
       for_ mlid \lid -> when (lid /= loc) do
         closestLocationIds <- select $ ClosestPathLocation loc lid
-        when (notNull closestLocationIds) do
-          Choose.chooseTargetM investigatorId closestLocationIds $ moveTo GameSource investigatorId
+        steps <- filterM (getCanStepTo investigatorId GameSource) closestLocationIds
+        when (notNull steps) do
+          Choose.chooseTargetM investigatorId steps $ moveTo GameSource investigatorId
   pure a
 
 handleMoveUntil a@InvestigatorAttrs {..} lid target = do
@@ -457,8 +467,11 @@ handleMoveUntil a@InvestigatorAttrs {..} lid target = do
     withLocationOf investigatorId \loc ->
       when (lid /= loc) do
         closestLocationIds <- select $ ClosestPathLocation loc lid
-        when (notNull closestLocationIds) do
-          Choose.chooseTargetM investigatorId closestLocationIds \nextLid -> do
+        -- Each step along the path is a real move, so a location this
+        -- investigator cannot pay to enter is not a step we can offer (#5894).
+        steps <- filterM (getCanStepTo investigatorId GameSource) closestLocationIds
+        when (notNull steps) do
+          Choose.chooseTargetM investigatorId steps \nextLid -> do
             moveTo GameSource investigatorId nextLid
             push $ MoveUntil lid target
   pure a

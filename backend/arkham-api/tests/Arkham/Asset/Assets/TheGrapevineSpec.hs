@@ -5,12 +5,13 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Base (
   connectedMatchersL,
   revealedConnectedMatchersL,
+  revealedL,
   revealedSymbolL,
   symbolL,
-  revealedL,
  )
 import Arkham.LocationSymbol
-import Arkham.Matcher (LocationMatcher (LocationWithSymbol))
+import Arkham.Matcher (LocationMatcher (Anywhere, LocationWithSymbol))
+import Arkham.Token (Token (Clue))
 import TestImport.New
 
 {- | location1 <-> location2 <-> location3. All revealed: The Grapevine can only
@@ -81,3 +82,66 @@ spec = describe "The Grapevine" do
       self.location `shouldReturn` Just (toId location1)
       enemy.location `shouldReturn` Just (toId location3)
       self.engagedEnemies `shouldReturn` []
+
+  -- Regression for issue #5894. The path steps were chosen straight off
+  -- ClosestPathLocation, so a location the group could not pay to enter
+  -- (Underground Cistern's group clue cost) was offered as a legal step -- and
+  -- the unpayable cost then resolved to nothing, letting you in for free.
+  context "a location you cannot pay to enter" do
+    it "is not offered as a step along the path" . gameTest $ \self -> do
+      grapevine <- self `putAssetIntoPlay` Assets.theGrapevine
+      (location1, location2, location3) <- threeInARow
+      self `moveTo` location1
+      enemy <- testEnemy
+      enemy `spawnAt` location3
+      run
+        =<< gameModifier
+          (TestSource mempty)
+          (toTarget location2)
+          (AdditionalCostToEnter $ GroupClueCost (Static 3) Anywhere)
+
+      [action] <- self `getActionsFrom` grapevine
+      self `useAbility` action
+      chooseTarget enemy
+
+      self.location `shouldReturn` Just (toId location1)
+      self.clues `shouldReturn` 0
+      enemy.location `shouldReturn` Just (toId location3)
+      self.engagedEnemies `shouldReturn` []
+
+    it "is a step along the path once the cost can be paid" . gameTest $ \self -> do
+      grapevine <- self `putAssetIntoPlay` Assets.theGrapevine
+      (location1, location2, location3) <- threeInARow
+      self `moveTo` location1
+      enemy <- testEnemy
+      enemy `spawnAt` location3
+      run $ PlaceTokens (TestSource mempty) (toTarget self) Clue 3
+      run
+        =<< gameModifier
+          (TestSource mempty)
+          (toTarget location2)
+          (AdditionalCostToEnter $ GroupClueCost (Static 3) Anywhere)
+
+      [action] <- self `getActionsFrom` grapevine
+      self `useAbility` action
+      chooseTarget enemy
+      chooseTarget location2
+      chooseTarget location3
+
+      self.location `shouldReturn` Just (toId location3)
+      self.clues `shouldReturn` 0
+      self.engagedEnemies `shouldReturn` [toId enemy]
+
+    it "is not entered by a direct move either" . gameTest $ \self -> do
+      (location1, location2, _location3) <- threeInARow
+      self `moveTo` location1
+      run
+        =<< gameModifier
+          (TestSource mempty)
+          (toTarget location2)
+          (AdditionalCostToEnter $ GroupClueCost (Static 3) Anywhere)
+
+      self `moveTo` location2
+
+      self.location `shouldReturn` Just (toId location1)
+      self.clues `shouldReturn` 0

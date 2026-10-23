@@ -4567,7 +4567,35 @@ runActionRemovedEntities msg g = case msg of
               , entitiesAssets = entitiesAssets removed' <> parkedAssets
               }
         }
+  -- A parked copy is never the entity entering play: a card that re-enters play gets a fresh
+  -- entity, so the `card.id == attrs.cardId` guard every "I entered play" handler uses fires on
+  -- the corpse as well. The King in Yellow, discarded by its own reaction and then redrawn after
+  -- a reshuffle in the same action, placed a second, dead copy into the threat area that way and
+  -- forced an unrelated hand asset to be discarded (#5899).
+  CardIsEnteringPlay _ card -> withoutCardId card.id
+  CardEnteredPlay _ card -> withoutCardId card.id
   _ -> actionRemovedEntitiesL (runMessage msg) g
+ where
+  withoutCardId cid = do
+    let
+      removed = gameActionRemovedEntities g
+      -- assets, events and skills are the card-backed entity kinds (cf. `loadedCardIds`)
+      (parkedAssets, ownAssets) = Map.partition (\x -> (toAttrs x).cardId == cid) (entitiesAssets removed)
+      (parkedEvents, ownEvents) = Map.partition (\x -> (toAttrs x).cardId == cid) (entitiesEvents removed)
+      (parkedSkills, ownSkills) = Map.partition (\x -> (toAttrs x).cardId == cid) (entitiesSkills removed)
+    removed' <-
+      runMessage
+        msg
+        removed {entitiesAssets = ownAssets, entitiesEvents = ownEvents, entitiesSkills = ownSkills}
+    pure
+      $ g
+        { gameActionRemovedEntities =
+            removed'
+              { entitiesAssets = entitiesAssets removed' <> parkedAssets
+              , entitiesEvents = entitiesEvents removed' <> parkedEvents
+              , entitiesSkills = entitiesSkills removed' <> parkedSkills
+              }
+        }
 
 -- NOTE: We need preloadEntities to be a the end because the game state is not
 -- "saved" between steps here. For example if we discard a card with in discard

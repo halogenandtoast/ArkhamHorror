@@ -11,6 +11,14 @@ import * as Arkham from '@/arkham/types/Investigator'
 import type { Game } from '@/arkham/types/Game'
 import { useDebug } from '@/arkham/debug'
 import { MessageType } from '@/arkham/types/Message'
+import { useI18n } from 'vue-i18n'
+import { useDbCardStore } from '@/stores/dbCards'
+import {
+  clueProhibition,
+  clueProhibitionTitle,
+  isProhibited,
+  prohibitionImageId,
+} from '@/arkham/clueProhibitions'
 
 const emits = defineEmits<{
   choose: [value: number]
@@ -62,6 +70,16 @@ const spendCluesAction = computed(() =>
     && c.component.investigatorId === iid.value
   )
 )
+
+/* An effect forbidding clues outright -- not "you have none", which the count
+ * beside it already says. Hovering the mark shows whatever is responsible, the
+ * way the badge on a forbidden card in hand does. */
+const dbCards = useDbCardStore()
+const { t } = useI18n()
+const clueProhibitions = computed(() => clueProhibition(props.investigator))
+const cluesProhibited = computed(() => isProhibited(clueProhibitions.value))
+const clueProhibitionImage = computed(() => prohibitionImageId(clueProhibitions.value))
+const clueProhibitionText = computed(() => clueProhibitionTitle(clueProhibitions.value, dbCards, t))
 
 const keys = computed(() => props.investigator.keys)
 const seals = computed(() => props.investigator.seals)
@@ -166,12 +184,21 @@ const hiGradId = computed(() => `auxMagentaHi-${iid.value}`)
       >-</button>
     </template>
 
-    <PoolItem
-      type="clue"
-      :amount="clues"
-      :class="{ 'clue--can-spend': spendCluesAction !== -1 }"
-      @choose="$emit('choose', spendCluesAction)"
-    />
+    <span class="pool-item-wrap">
+      <PoolItem
+        type="clue"
+        :amount="clues"
+        :class="{ 'clue--can-spend': spendCluesAction !== -1 }"
+        @choose="$emit('choose', spendCluesAction)"
+      />
+      <span
+        v-if="cluesProhibited"
+        class="clue-prohibited-badge"
+        :data-image-id="clueProhibitionImage"
+        :title="clueProhibitionText"
+        :aria-label="clueProhibitionText"
+      ><font-awesome-icon icon="ban" /></span>
+    </span>
 
     <template v-if="debug.active">
       <button
@@ -309,6 +336,24 @@ const hiGradId = computed(() => `auxMagentaHi-${iid.value}`)
   position: relative;
   display: inline-flex;
   overflow: visible;
+}
+
+/* Sits on the token's corner rather than over it: the count underneath is still
+   worth reading while the ban is up -- you keep the clues, you just cannot use
+   them. */
+.clue-prohibited-badge {
+  position: absolute;
+  top: -3px;
+  right: -5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e05252;
+  font-size: 13px;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.9));
+  cursor: default;
+  pointer-events: auto;
+  z-index: var(--z-index-2);
 }
 
 .pool-item-wrap--sanity {

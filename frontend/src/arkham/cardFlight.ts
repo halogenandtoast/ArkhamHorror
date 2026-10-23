@@ -57,23 +57,31 @@ export const CARD_FLIGHT_STATE = 'cardFlightState'
  * card frame inside it rather than fighting for the same element.
  */
 export function useCardFlight(id: MaybeRefOrGetter<string | undefined>) {
-  const state = inject<CardFlightState>(CARD_FLIGHT_STATE, {
+  const state = useCardFlightState()
+  return computed(() => cardFlightStyle(state, toValue(id)))
+}
+
+/* The same state, for a destination that renders a list and so cannot call
+ * `useCardFlight` per item -- `inject` only runs during setup. Pair it with
+ * `cardFlightStyle` in the template. */
+export function useCardFlightState(): CardFlightState {
+  return inject<CardFlightState>(CARD_FLIGHT_STATE, {
     previewed: ref(new Set()),
     flying: ref(new Set()),
   })
-  return computed(() => {
-    const value = toValue(id)
-    if (!value) return undefined
-    if (state.flying.value.has(value)) {
-      return {
-        viewTransitionName: cardFlightTransitionName(value),
-        viewTransitionClass: CARD_FLIGHT_TRANSITION_CLASS,
-      }
+}
+
+export function cardFlightStyle(state: CardFlightState, id: string | undefined) {
+  if (!id) return undefined
+  if (state.flying.value.has(id)) {
+    return {
+      viewTransitionName: cardFlightTransitionName(id),
+      viewTransitionClass: CARD_FLIGHT_TRANSITION_CLASS,
     }
-    // `visibility`, not `display`: the slot has to keep its layout box, both so
-    // the board does not reflow under the overlay and so the placeholder can be
-    // measured from it.
-    if (state.previewed.value.has(value)) return { visibility: 'hidden' as const }
-    return undefined
-  })
+  }
+  // `visibility`, not `display`: the slot has to keep its layout box, both so
+  // the board does not reflow under the overlay and so the placeholder can be
+  // measured from it.
+  if (state.previewed.value.has(id)) return { visibility: 'hidden' as const }
+  return undefined
 }

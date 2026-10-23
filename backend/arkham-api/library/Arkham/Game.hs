@@ -168,8 +168,10 @@ import Arkham.Location.Types (
   toLocationLabel,
   toLocationSymbol,
  )
+import Arkham.Log (toLogRef)
 import Arkham.Log.Entry
 import Arkham.Log.Narrator
+import Arkham.Log.Refs (sourceRefFor)
 import Arkham.Matcher hiding (
   AssetCard,
   AssetDefeated,
@@ -601,6 +603,47 @@ withSkillTestMetadata st = do
   stmRevealStrategy <- getSkillTestRevealStrategy st
   pure $ st `with` SkillTestMetadata {..}
 
+{- | What an effect forbids doing with each card an investigator could use, and
+what is forbidding it.
+
+Prohibitions only -- 'preventsPlay' and 'preventsCommit', the same predicates
+'getIsPlayable' and 'getIsCommittable' consult. Cost, timing, icons, criteria
+and limits are deliberately left out: those change from moment to moment and the
+client already learns them from whether the card is offered as a choice, whereas
+"Dissonant Voices is in your threat area" holds all round and is invisible until
+you try. An entry is kept even when no ref resolves, so the card is still badged
+when the source has left play.
+-}
+prohibitionRefs :: HasGame m => [(Card, [Modifier])] -> m [(CardId, [LogRef])]
+prohibitionRefs prohibited = do
+  entries <- for prohibited \(c, mods) ->
+    if null mods
+      then pure Nothing
+      else do
+        refs <- modifierRefs mods
+        pure $ Just (toCardId c, refs)
+  pure (catMaybes entries)
+
+{- | What to name as responsible for a set of modifiers. May come back empty:
+the effect still applies, we just cannot say what did it.
+-}
+modifierRefs :: HasGame m => [Modifier] -> m [LogRef]
+modifierRefs mods = do
+  -- A modifier whose source has left play still has the card it came on.
+  refs <- for mods \m -> do
+    mRef <- sourceRefFor m.source
+    pure $ mRef <|> (toLogRef <$> modifierCard m)
+  pure $ nub (catMaybes refs)
+
+{- | A prohibition that is about the investigator rather than about one card:
+'Nothing' when they are not under it at all, and the refs naming what is
+responsible when they are.
+-}
+investigatorProhibition :: HasGame m => [Modifier] -> m (Maybe [LogRef])
+investigatorProhibition mods
+  | null mods = pure Nothing
+  | otherwise = Just <$> modifierRefs mods
+
 withInvestigatorConnectionData
   :: HasGame m
   => With WithDeckSize ModifierData
@@ -632,10 +675,20 @@ withInvestigatorConnectionData inner@(With target _) = case target of
     combat <- field InvestigatorBaseCombat (toId investigator')
     agility <- field InvestigatorBaseAgility (toId investigator')
     handSize <- getHandSize (toAttrs investigator')
+    playProhibitions <- prohibitionRefs =<< getPlayProhibitions (toId investigator')
+    commitProhibitions <- prohibitionRefs =<< getCommitProhibitions (toId investigator')
+    cannotDiscoverClues <-
+      investigatorProhibition =<< getCannotDiscoverCluesModifiers (toId investigator')
+    cannotSpendClues <-
+      investigatorProhibition =<< getCannotSpendCluesModifiers (toId investigator')
     let
       additionalData =
         object
           [ "additionalActions" .= additionalActions
+          , "playProhibitions" .= playProhibitions
+          , "commitProhibitions" .= commitProhibitions
+          , "cannotDiscoverClues" .= cannotDiscoverClues
+          , "cannotSpendClues" .= cannotSpendClues
           , "engagedEnemies" .= engagedEnemies
           , "assets" .= (assets <> assets')
           , "events" .= events

@@ -502,6 +502,18 @@
   },
   "player": {
     "viewDeck": "View Deck",
+    "cannotPlay": "An effect is preventing you from playing this card",
+    "cannotPlayBecause": "{source} is preventing you from playing this card",
+    "cannotCommit": "An effect is preventing you from committing this card",
+    "cannotCommitBecause": "{source} is preventing you from committing this card",
+    "cannotPlayOrCommit": "An effect is preventing you from playing or committing this card",
+    "cannotPlayOrCommitBecause": "{source} is preventing you from playing or committing this card",
+    "cannotDiscoverClues": "An effect is preventing you from discovering clues",
+    "cannotDiscoverCluesBecause": "{source} is preventing you from discovering clues",
+    "cannotSpendClues": "An effect is preventing you from spending clues",
+    "cannotSpendCluesBecause": "{source} is preventing you from spending clues",
+    "cannotDiscoverOrSpendClues": "An effect is preventing you from discovering or spending clues",
+    "cannotDiscoverOrSpendCluesBecause": "{source} is preventing you from discovering or spending clues",
     "silenceCard": "Silence — skip this card's free triggers and reactions while it is hidden",
     "unsilenceCard": "Unsilence — offer this card's triggers again"
   },

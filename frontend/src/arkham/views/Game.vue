@@ -96,6 +96,7 @@ import {
   CARD_FLIGHT_TRANSITION_CLASS,
   cardFlightTransitionName,
 } from '@/arkham/cardFlight'
+import { PENDING_DRAWS, pendingDraws, type PendingDraw } from '@/arkham/pendingDraws'
 import { customCardDef, isCustomCardCode } from '@/arkham/customCards'
 import * as Message from '@/arkham/types/Message'
 import type { Phase } from '@/arkham/types/Phase'
@@ -564,6 +565,9 @@ const drawSpotlight = ref<DrawSpotlightEntry | null>(null)
 /* Cards an overlay is showing full-screen right now. Their board copies hide so
  * that a card is never on screen twice, and a placeholder holds the slot. */
 const previewedCardIds = ref<ReadonlySet<string>>(new Set())
+/* See `PENDING_DRAWS`. Kept here because only this component sees the update
+ * with its question still on it. */
+const heldPendingDraws = ref<PendingDraw[]>([])
 const flyingCardIds = ref<ReadonlySet<string>>(new Set())
 
 /* Returns whether the overlay actually opened, so a caller holding the lock on
@@ -737,6 +741,7 @@ function dismissDrawSpotlight() {
 /* Undo rewinds past the draw or reveal, so it goes with it. */
 function clearDrawSpotlight() {
   drawSpotlight.value = null
+  heldPendingDraws.value = []
   previewedCardIds.value = new Set()
   flyingCardIds.value = new Set()
   flightPlaceholders.value = []
@@ -1254,8 +1259,13 @@ function entitiesMoved(previous: Arkham.Game, current: Arkham.Game) {
 function applyGameUpdate(updatedGame: Arkham.Game, locked: boolean) {
   const nextGame = locked ? { ...updatedGame, question: {} } : updatedGame
   const previousGame = game.value
+  /* Read before the blanking: a draw lives in the question, and the board needs
+   * it precisely while an overlay has the question hidden -- that is when the
+   * card flying out of the overlay needs a slot laid out to land in. */
+  const draws = pendingDraws(updatedGame, playerId.value ?? '')
   const apply = async () => {
     game.value = nextGame
+    heldPendingDraws.value = draws
     storyAnswerPending.value = false
     await nextTick()
   }
@@ -2571,6 +2581,7 @@ provide('chooseOrdered', chooseOrdered)
 provide('storyAnswerPending', storyAnswerPending)
 provide('uiLock', uiLock)
 provide(CARD_FLIGHT_STATE, { previewed: previewedCardIds, flying: flyingCardIds })
+provide(PENDING_DRAWS, heldPendingDraws)
 provide('skipAllTriggers', skipAllTriggers)
 provide('skipAllAvailable', skipAllAvailable)
 provide('skipAllInProgress', skipAllInProgress)

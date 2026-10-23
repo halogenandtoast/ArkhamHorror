@@ -718,13 +718,7 @@ getIsCommittable a c = runValidT do
             x <- getSkillTestDifficultyDifferenceFromBaseValue a skillTest
             pure $ x >= n
           CanCommitAfterRevealingTokens -> pure True
-        prevented = flip any modifiers' $ \case
-          -- Weaknesses do not interact with the class system (FAQ 1.35)
-          CanOnlyUseCardsInRole role ->
-            isNothing (cdCardSubType $ toCardDef card)
-              && null (intersect (cdClassSymbols $ toCardDef card) (setFromList [Mythos, Neutral, role]))
-          CannotCommitCards matcher -> cardMatch card matcher
-          _ -> False
+        prevented = any (preventsCommit c) modifiers'
 
       guard $ not prevented
 
@@ -757,6 +751,51 @@ getIsCommittable a c = runValidT do
 
 getMustBeCommittableCards :: HasGame m => InvestigatorId -> m [Card]
 getMustBeCommittableCards = filterM (`hasModifier` MustBeCommitted) <=< getCommittableCards
+
+{- | Whether a modifier forbids committing a card outright, leaving icons,
+commit restrictions and cost alone.
+
+The prohibition half of 'getIsCommittable', and the only part of committability
+that is a flat ban rather than a thing that depends on the test in front of you.
+'getCommitProhibitions' hands it to the client as "you cannot commit this, and
+here is what is stopping you", off this same predicate, so the badge cannot
+disagree with whether the card is offered.
+-}
+preventsCommit :: Card -> ModifierType -> Bool
+preventsCommit c = \case
+  -- Weaknesses do not interact with the class system (FAQ 1.35)
+  CanOnlyUseCardsInRole role ->
+    isNothing (cdCardSubType def)
+      && null (cdClassSymbols def `intersect` setFromList [Mythos, Neutral, role])
+  CannotCommitCards matcher -> cardMatch c matcher
+  _ -> False
+ where
+  def = toCardDef c
+
+{- | For each card the investigator could be asked to commit -- their hand, plus
+whatever an effect lets them commit from elsewhere -- the modifiers that forbid
+committing it, in full, so a caller can say which effect is responsible.
+
+A whole zone at a time, because the modifiers are read once rather than per
+card. Empty with no test running: nothing can be committed then, so there is
+nothing to explain, which is also where 'getIsCommittable' starts.
+
+Player cards only: an encounter card is uncommittable unless its own text says
+otherwise, which is not something an effect did.
+-}
+getCommitProhibitions :: HasGame m => InvestigatorId -> m [(Card, [Modifier])]
+getCommitProhibitions iid =
+  getSkillTest >>= \case
+    Nothing -> pure []
+    Just _ -> do
+      hand <- field InvestigatorHand iid
+      asIfInHand <- getAsIfInHandCardsFor NotForPlay iid
+      mods <- getFullModifiers iid
+      pure [(c, prohibiting mods c) | c <- nub (hand <> asIfInHand)]
+ where
+  prohibiting mods = \case
+    c@(PlayerCard _) -> filter (preventsCommit c . modifierType) mods
+    _ -> []
 
 getCommittableCards :: HasGame m => InvestigatorId -> m [Card]
 getCommittableCards iid = do

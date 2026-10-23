@@ -3,6 +3,7 @@ import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref, watch, typ
 import { useI18n } from 'vue-i18n';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
+import { pendingDraws } from '@/arkham/pendingDraws';
 import { choiceRequiresModal } from '@/arkham/types/Message';
 import { formatContent, imgsrc } from '@/arkham/helpers';
 import { cardImage } from '@/arkham/cardImages';
@@ -94,7 +95,11 @@ const focusedCards = computed(() => {
     return []
   }
 
-  return props.game.focusedCards
+  // A card still being drawn is shown in the player's play area, beside the
+  // threat area, so the board stays visible while you decide whether to cancel
+  // it. Leaving it out here is what keeps the modal from opening for it at all.
+  const drawn = new Set(pendingDraws(props.game, props.playerId).map(({ card }) => toCardContents(card).id))
+  return props.game.focusedCards.filter((card) => !drawn.has(toCardContents(card).id))
 })
 
 const cthulhuDeckChoice = computed(() => {

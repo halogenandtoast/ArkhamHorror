@@ -6,6 +6,8 @@ import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Messa
 import { MessageType } from '@/arkham/types/Message'
 import { imgsrc } from '@/arkham/helpers'
 import { cardImage } from '@/arkham/cardImages'
+import { cardProhibition, isProhibited } from '@/arkham/cardProhibitions'
+import ProhibitedBadge from '@/arkham/components/ProhibitedBadge.vue'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import * as ArkhamGame from '@/arkham/types/Game'
@@ -118,9 +120,14 @@ const abilities = computed(() => {
   }, [])
 })
 
+/* Greyed as well as badged, so a card an effect has taken away reads as spent
+ * at a glance rather than only on hover. ProhibitedBadge owns the mark itself. */
+const prohibited = computed(() => isProhibited(cardProhibition(props.game, props.ownerId, id.value)))
+
 const classObject = computed(() => {
   return {
     'card--can-interact': cardAction.value !== -1 || (isMobile.value && abilities.value.length > 0),
+    'card--prohibited': prohibited.value,
   }
 })
 
@@ -296,6 +303,8 @@ function oilPaintEffect(canvas, radius, intensity) {
       @click="handleCardClick"
     />
 
+    <ProhibitedBadge :game="game" :ownerId="ownerId" :cardId="id" />
+
     <button
       v-if="canDebugCustomize"
       class="debug-customize"
@@ -342,6 +351,12 @@ function oilPaintEffect(canvas, radius, intensity) {
 .card--can-interact {
   border: 2px solid var(--select);
   cursor: pointer;
+}
+
+/* Readable at a glance without hiding the card: the art stays identifiable, it
+   just stops looking live. */
+.card--prohibited {
+  filter: grayscale(0.6) brightness(0.8);
 }
 
 .card-container {

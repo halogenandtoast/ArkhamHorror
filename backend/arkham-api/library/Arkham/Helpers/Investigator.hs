@@ -38,6 +38,7 @@ import Arkham.Message (
   pattern HealHorror,
   pattern InvestigatorMulligan,
  )
+import Arkham.Modifier (Modifier, modifierType)
 import Arkham.Name
 import Arkham.Placement
 import Arkham.Prelude
@@ -257,21 +258,59 @@ getCanDiscoverClues isInvestigation iid lid = do
   -- restrict. Player card effects are checked against their own source at the
   -- point they try to expose.
   canExpose <- getCanExposeAt iid (LocationSource lid) lid
-  (&& or [hasClues, hasConcealed && canExpose]) . not <$> anyM match modifiers
+  (&& or [hasClues, hasConcealed && canExpose])
+    . not
+    <$> anyM (preventsDiscoveringClues isInvestigation lid) modifiers
+
+{- | Whether a modifier forbids discovering clues at a location outright, split
+out of 'getCanDiscoverClues' so the same question can be asked for the client's
+benefit -- see 'getCannotDiscoverCluesModifiers'. One predicate for both, so
+what the clue pool says cannot disagree with what the engine allows.
+
+Deliberately not the rest of 'getCanDiscoverClues': whether a clue is actually
+there is not a prohibition, it is the board a moment later.
+-}
+preventsDiscoveringClues :: HasGame m => IsInvestigate -> LocationId -> ModifierType -> m Bool
+preventsDiscoveringClues isInvestigation lid = \case
+  CannotDiscoverClues {} -> pure True
+  CannotDiscoverCluesAt matcher -> elem lid <$> select matcher
+  CannotDiscoverCluesExceptAsResultOfInvestigation matcher
+    | isInvestigation == NotInvestigate -> elem lid <$> select matcher
+  _ -> pure False
+
+{- | The modifiers stopping an investigator from discovering clues where they
+stand, in full, so a caller can name what is responsible.
+
+Asked as though investigating, which is the one route a
+'CannotDiscoverCluesExceptAsResultOfInvestigation' leaves open: only a ban that
+holds either way is reported, since "you cannot discover clues" is a lie while
+investigating still would. An investigator off the map has no location for a
+location-scoped ban to be about, so only the flat one can apply to them.
+-}
+getCannotDiscoverCluesModifiers :: HasGame m => InvestigatorId -> m [Modifier]
+getCannotDiscoverCluesModifiers iid = do
+  mods <- getFullModifiers iid
+  field InvestigatorLocation iid >>= \case
+    Nothing -> pure $ filter (isFlatCannotDiscoverClues . modifierType) mods
+    Just lid -> filterM (preventsDiscoveringClues IsInvestigate lid . modifierType) mods
  where
-  match CannotDiscoverClues {} = pure True
-  match (CannotDiscoverCluesAt matcher) = elem lid <$> select matcher
-  match (CannotDiscoverCluesExceptAsResultOfInvestigation matcher) | isInvestigation == NotInvestigate = elem lid <$> select matcher
-  match _ = pure False
+  isFlatCannotDiscoverClues CannotDiscoverClues {} = True
+  isFlatCannotDiscoverClues _ = False
 
 getCanSpendClues
   :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> m Bool
-getCanSpendClues (asId -> iid) = do
-  modifiers <- getModifiers iid
-  pure $ not (any match modifiers)
- where
-  match CannotSpendClues {} = True
-  match _ = False
+getCanSpendClues (asId -> iid) = not . any preventsSpendingClues <$> getModifiers iid
+
+-- | The spending half of the pair above; see 'preventsDiscoveringClues'.
+preventsSpendingClues :: ModifierType -> Bool
+preventsSpendingClues = \case
+  CannotSpendClues {} -> True
+  _ -> False
+
+-- | As 'getCannotDiscoverCluesModifiers', for spending.
+getCannotSpendCluesModifiers :: HasGame m => InvestigatorId -> m [Modifier]
+getCannotSpendCluesModifiers iid =
+  filter (preventsSpendingClues . modifierType) <$> getFullModifiers iid
 
 providedSlot :: Sourceable source => InvestigatorAttrs -> source -> Bool
 providedSlot attrs source = any (any (isSlotSource source)) $ toList attrs.slots

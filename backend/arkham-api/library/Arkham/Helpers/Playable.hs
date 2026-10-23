@@ -24,6 +24,7 @@ import Arkham.Helpers.Game (withDepthGuard)
 import Arkham.Helpers.Investigator (getAsIfInHandCards)
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (
+  getFullModifiers,
   getModifiers,
   hasModifier,
   toModifiers,
@@ -269,6 +270,49 @@ getOtherPlayersPlayableCards iid costStatus windows' = do
       pure $ guard playable $> c
     _ -> pure Nothing
 
+{- | Whether a modifier forbids playing a card outright, leaving cost, timing,
+criteria and limits alone.
+
+This is the "Play restrictions" check, and the only part of playability that is
+a flat prohibition rather than a thing that changes from moment to moment --
+which is why 'getPlayProhibitions' can hand it to the client as "you cannot play
+this, and here is what is stopping you". One predicate for both, so the badge in
+hand cannot disagree with whether the engine offers the card.
+-}
+preventsPlay :: Card -> ModifierType -> Bool
+preventsPlay c = \case
+  -- Weaknesses do not interact with the class system (FAQ 1.35)
+  CanOnlyUseCardsInRole role ->
+    isNothing (cdCardSubType def)
+      && null (cdClassSymbols def `intersect` setFromList [Mythos, Neutral, role])
+  CannotPlay matcher -> cardMatch c matcher
+  CannotPutIntoPlay matcher -> cardMatch c matcher
+  _ -> False
+ where
+  def = toCardDef c
+
+{- | For each card the investigator could be asked to play -- their hand, plus
+whatever an effect lets them play from elsewhere -- the modifiers that forbid
+playing it, in full, so a caller can say which effect is responsible.
+
+A whole zone at a time, because the modifiers are read once rather than per
+card. The zone is the one 'getPlayableCards' draws from, so a hunch deck's top
+card or a discard an effect opened up is explained like anything in hand.
+
+Player cards only: an encounter card in hand is unplayable by its type, not by
+anything an effect did, and reporting it as forbidden would be a lie.
+-}
+getPlayProhibitions :: HasGame m => InvestigatorId -> m [(Card, [Modifier])]
+getPlayProhibitions iid = do
+  hand <- field InvestigatorHand iid
+  asIfInHand <- getAsIfInHandCards iid
+  mods <- getFullModifiers iid
+  pure [(c, prohibiting mods c) | c <- nub (hand <> asIfInHand)]
+ where
+  prohibiting mods = \case
+    c@(PlayerCard _) -> filter (preventsPlay c . modifierType) mods
+    _ -> []
+
 getPlayabilityChecks
   :: ( HasCallStack
      , HasGame m
@@ -341,15 +385,7 @@ getPlayabilityChecksWithResources
     -- Play restrictions check
     modifiers <- getModifiers iid
     let
-      -- Weaknesses do not interact with the class system (FAQ 1.35)
-      prevents (CanOnlyUseCardsInRole role) =
-        isNothing (cdCardSubType pcDef)
-          && null (intersect (cdClassSymbols pcDef) (setFromList [Mythos, Neutral, role]))
-      prevents (CannotPlay matcher) = cardMatch c matcher
-      prevents (CannotPutIntoPlay matcher) = cardMatch c matcher
-      prevents _ = False
-    let
-      playRestrictionsOk = none prevents modifiers
+      playRestrictionsOk = none (preventsPlay c) modifiers
       playRestrictionsDetail =
         if playRestrictionsOk then Nothing else Just "A modifier is preventing this card from being played"
 

@@ -17,8 +17,8 @@ instance RunMessage HuntingShadow where
   runMessage msg t@(HuntingShadow attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       chooseOrRunOneM iid $ withI18n do
-        whenM (getCanSpendNClues iid 1) do
-          countVar 1 $ labeled "spendClues" $ spendClues iid 1
+        ok <- getCanSpendNClues iid 1
+        countVar 1 $ labeledValidate ok "spendClues" $ spendClues iid 1
         countVar 2 $ labeled "takeDamage" $ assignDamage iid attrs 2
       pure t
     _ -> HuntingShadow <$> liftRunMessage msg attrs

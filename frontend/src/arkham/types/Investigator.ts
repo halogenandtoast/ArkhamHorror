@@ -5,6 +5,7 @@ import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Name, nameDecoder } from '@/arkham/types/Name';
 import { Target, targetDecoder } from '@/arkham/types/Target';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
+import { LogRef, logRefDecoder } from '@/arkham/types/GameLog';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import { Seal, sealDecoder } from '@/arkham/types/Seal';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
@@ -131,6 +132,23 @@ export type Investigator = {
   deckSize?: number;
   connectedLocations: string[];
   modifiers?: Modifier[];
+  /* Cards an effect forbids playing or committing, by card id, each with the
+   * refs of whatever is forbidding them. Prohibitions only -- not cost, not
+   * timing, not icons -- so an entry means the card cannot be used that way at
+   * all until the effect goes away. See cardProhibitions.ts.
+   *
+   * Covers the zone the engine itself draws from, so a hunch deck's top card or
+   * a discard an effect opened up is in here alongside the hand. Commit
+   * prohibitions are sent only while a skill test is running. */
+  playProhibitions?: [string, LogRef[]][];
+  commitProhibitions?: [string, LogRef[]][];
+  /* Set when an effect forbids discovering or spending clues at all, holding the
+   * refs of whatever is doing it -- empty when the source has already left play.
+   * Absent means no such effect, so presence is the whole signal. Only bans that
+   * hold where the investigator stands are sent; one that still allows
+   * investigating is not a ban on discovering. See clueProhibitions.ts. */
+  cannotDiscoverClues?: LogRef[];
+  cannotSpendClues?: LogRef[];
   form: Form;
   name: Name;
   id: string;
@@ -242,6 +260,14 @@ export const investigatorDetailsDecoder = JsonDecoder.object<InvestigatorDetails
   classSymbol: classSymbolDecoder,
 }, 'InvestigatorDetails');
 
+const prohibitionsDecoder = JsonDecoder.array(
+  JsonDecoder.tuple([
+    JsonDecoder.string(),
+    JsonDecoder.array<LogRef>(logRefDecoder, 'LogRef[]'),
+  ], 'CardId, LogRef[]'),
+  'Prohibition[]',
+);
+
 export const investigatorDecoder = JsonDecoder.object({
   name: nameDecoder,
   id: JsonDecoder.string(),
@@ -302,6 +328,10 @@ export const investigatorDecoder = JsonDecoder.object({
   deckSize: v2Optional(JsonDecoder.number()),
   connectedLocations: JsonDecoder.array<string>(JsonDecoder.string(), 'LocationId[]'),
   modifiers: v2Optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
+  playProhibitions: v2Optional(prohibitionsDecoder),
+  commitProhibitions: v2Optional(prohibitionsDecoder),
+  cannotDiscoverClues: v2Optional(JsonDecoder.array<LogRef>(logRefDecoder, 'LogRef[]')),
+  cannotSpendClues: v2Optional(JsonDecoder.array<LogRef>(logRefDecoder, 'LogRef[]')),
   form: formDecoder,
   mutated: v2Optional(JsonDecoder.string()),
   taboo: v2Optional(tabooListDecoder),

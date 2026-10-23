@@ -13,6 +13,7 @@ import { cardArt, cardImage as cardCodeImage, investigatorPortrait } from '@/ark
 import { AmountChoice, QuestionType, amountTargetUnmet } from '@/arkham/types/Question';
 import Card from '@/arkham/components/Card.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
+import { pendingDraws } from '@/arkham/pendingDraws';
 import { tarotCardImage } from '@/arkham/types/TarotCard';
 import { cardImage, toCardContents, type Card as ArkhamCard, type CardContents } from '@/arkham/types/Card';
 import DropDown from '@/components/DropDown.vue';
@@ -255,7 +256,14 @@ const focusedCards = computed(() => {
   const searchedCardIds = new Set(
     searchedCards.value.flatMap((group) => group.cards.map((card) => toCardContents(card).id)),
   )
-  return props.game.focusedCards.filter((card) => !searchedCardIds.has(toCardContents(card).id))
+  // A card still being drawn is rendered in the player's play area instead --
+  // see Player.vue's `drawnCards` -- so it must not also appear here.
+  const drawnCardIds = new Set(
+    pendingDraws(props.game, props.playerId).map(({ card }) => toCardContents(card).id),
+  )
+  return props.game.focusedCards.filter(
+    (card) => !searchedCardIds.has(toCardContents(card).id) && !drawnCardIds.has(toCardContents(card).id),
+  )
 })
 
 function zoneTag(zone: unknown): string | null {
@@ -419,6 +427,9 @@ const cardChoiceHandledElsewhereIds = computed(() => {
       ...cardIds(i.cardsUnderneath),
     ]),
     ...focusedCards.value.map((card) => toCardContents(card).id),
+    // A card mid-draw left the focused list above, but it is still rendered --
+    // and still clickable, through Card.vue -- in the play area.
+    ...pendingDraws(props.game, props.playerId).map(({ card }) => toCardContents(card).id),
     ...searchedCards.value.flatMap((group) => cardIds(group.cards)),
     ...cardIds(props.game.removedFromPlay),
     ...Object.values(props.game.assets).flatMap((asset) => cardIds(asset.cardsUnderneath)),

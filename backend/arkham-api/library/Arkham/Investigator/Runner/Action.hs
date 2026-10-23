@@ -234,6 +234,10 @@ handlePerformAction a@InvestigatorAttrs {..} iid source action = do
       (toTarget iid)
       : msgs
 
+{- Spending nothing is not spending: an X cost that works out to 0 (Lola Santiago at a
+location whose shroud a Flashlight has reduced to 0) must neither open a @SpendsResources@
+window nor ask which pool to take it from. -}
+handleSpendResources a _ n _ | n <= 0 = pure a
 handleSpendResources a@InvestigatorAttrs {..} iid n msg = do
   let defaultFlow = do
         beforeWindowMsg <- checkWindows [mkWhen (Window.SpendsResources iid n)]

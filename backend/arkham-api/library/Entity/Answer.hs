@@ -853,7 +853,9 @@ handleAnswerPure game@Game {..} playerId = \case
       case (mm, msgs') of
         (Just m', []) -> [uiToRun m']
         (Just m', msgs''@(m1 : mrest)) ->
-          if n - 1 == 0
+          -- @<= 0@, not @== 0@: a question that arrived with a non-positive amount would
+          -- otherwise count down forever, taking a payment on every answer.
+          if n - 1 <= 0
             then [uiToRun m']
             else
               -- it is possible that every choice in qs is the same, in which case we can just run them all

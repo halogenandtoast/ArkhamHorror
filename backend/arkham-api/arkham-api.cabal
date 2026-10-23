@@ -9763,6 +9763,7 @@ test-suite spec
       Arkham.Asset.Assets.LeatherCoatSpec
       Arkham.Asset.Assets.LeoDeLuca1Spec
       Arkham.Asset.Assets.LeoDeLucaSpec
+      Arkham.Asset.Assets.LolaSantiago3Spec
       Arkham.Asset.Assets.MacheteSpec
       Arkham.Asset.Assets.MagnifyingGlass1Spec
       Arkham.Asset.Assets.MagnifyingGlassSpec

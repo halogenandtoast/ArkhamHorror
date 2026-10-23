@@ -7081,6 +7081,9 @@ runMessages gameId observers = do
             Ask _ (ChooseOneAtATime []) -> runMessages gameId observers
             Ask _ (ChooseOneAtATimeWithAuto _ []) -> runMessages gameId observers
             Ask _ (ChooseN _ []) -> runMessages gameId observers
+            -- "Choose 0 of these" is nothing to choose. Asking anyway strands the player in a
+            -- question that never counts down (see @ChooseN@ in @Entity.Answer@).
+            Ask _ (ChooseN n _) | n <= 0 -> runMessages gameId observers
             Ask pid q -> do
               -- if we are choosing decks, we do not want to clobber other ChooseDeck
               moreChooseDecks <-

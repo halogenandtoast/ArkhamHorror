@@ -2,6 +2,7 @@ module Arkham.Homebrew.DarkMatter.Enemies.QuantumPhantom (quantumPhantom) where
 
 import Arkham.Ability
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Enemy (insteadOfDiscarding)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
@@ -36,10 +37,12 @@ instance HasAbilities QuantumPhantom where
 instance RunMessage QuantumPhantom where
   runMessage msg (QuantumPhantom attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      cancelEnemyDefeat attrs
-      -- Face-down is out of play, so it rejoins the zone clean: leftover damage
-      -- would re-defeat it the instant it is drawn again.
-      healAllDamage (attrs.ability 1) attrs
-      place attrs (FacedownInThreatArea iid)
+      -- Only the discard is replaced; the phantom is still defeated, so the
+      -- after-defeat windows have to fire (Yorick, Ancestral Token, ...).
+      insteadOfDiscarding attrs do
+        -- Face-down is out of play, so it rejoins the zone clean: leftover damage
+        -- would re-defeat it the instant it is drawn again.
+        healAllDamage (attrs.ability 1) attrs
+        place attrs (FacedownInThreatArea iid)
       pure $ QuantumPhantom $ attrs & exhaustedL .~ False
     _ -> QuantumPhantom <$> liftRunMessage msg attrs

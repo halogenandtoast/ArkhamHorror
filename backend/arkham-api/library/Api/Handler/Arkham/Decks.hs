@@ -23,13 +23,20 @@ import Arkham.Card.CardCode
 import Arkham.Card.CustomCard (arkhamBuildCustomCardCode, isArkhamBuildCardId, lookupCustomCardDef)
 import Arkham.Classes.Entity (attr)
 import Arkham.Classes.HasQueue
-import Arkham.Custom.Overlay (DeckOverlay)
+import Arkham.Custom.Overlay (
+  DeckOverlay (..),
+  applyOverlay,
+  decklistCustomCards,
+  investigatorOverlay,
+  needsOverlayInvestigator,
+ )
 import Arkham.Decklist
 import Arkham.Game
 import Arkham.Game.Diff
 import Arkham.Game.State (isChooseDecks)
 import Arkham.Game.Utils (gameInvestigators)
 import Arkham.Id
+import Arkham.Investigator (decklistInvestigatorError, isKnownInvestigator)
 import Arkham.Investigator.Cards (allInvestigatorCards)
 import Arkham.Investigator.Types (investigatorDeckUrl, investigatorPlayerId)
 import Arkham.Message
@@ -38,6 +45,9 @@ import Arkham.Queue
 import Control.Exception (evaluate)
 import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
+import Data.Aeson.Key qualified as Key
+import Data.Aeson.KeyMap qualified as KeyMap
+import Data.Aeson.Types (parseEither)
 import Data.ByteString.Lazy qualified as BSL
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
@@ -196,6 +206,45 @@ putApiV1ArkhamGameDecksR gameId = do
       Nothing -> pure $ Left (Status.status400, "That investigator is not in this game")
       Just investigatorEntity -> do
         let playerId = attr investigatorPlayerId investigatorEntity
+
+        {- The deck this seat plays may have no investigator of its own: one built at
+        arkham.build on a placeholder, with the real investigator laid over it. The
+        overlay is saved on the deck row, so the upgraded list has to go through it as
+        the original did, or the engine is handed the placeholder and throws from deep
+        inside building it (#5891). Found by owner + the url the game is using, the same
+        link the write-back below walks forward; among rows sharing a url, the one whose
+        deck plays as this investigator. -}
+        deckRows <- case attr investigatorDeckUrl investigatorEntity of
+          Nothing -> pure []
+          Just deckUrl -> select do
+            decks <- from $ table @ArkhamDeck
+            where_ $ decks.userId ==. val userId
+            where_ $ decks.url ==. val (Just deckUrl)
+            pure decks
+        let savedOverlay = do
+              row <-
+                find ((== investigatorId) . (.investigator) . arkhamDeckPlayList . entityVal) deckRows
+                  <|> listToMaybe deckRows
+              arkhamDeckOverlay (entityVal row)
+
+        {- A list that brings no investigator this app can build is never a replacement:
+        an upgrade ask is about this seat, and the caller's whole library is registered
+        above, so there is nothing else it could mean. The seat keeps its investigator --
+        and gets its signatures back, which an arkham.build list cannot name. -}
+        let overlayFor decklist
+              | isJust (savedOverlay >>= overlayInvestigator) = savedOverlay
+              | needsOverlayInvestigator decklist || not (isKnownInvestigator decklist.investigator) =
+                  Just
+                    $ maybe
+                      (investigatorOverlay investigatorId)
+                      (\o -> o {overlayInvestigator = Just investigatorId})
+                      savedOverlay
+              | otherwise = savedOverlay
+
+        -- What the engine loads. The raw list is what the deck row keeps, so the overlay
+        -- stays beside it rather than being folded in (see 'putApiV1ArkhamDeckOverlayR').
+        let mPlayList = (\decklist -> maybe id applyOverlay (overlayFor decklist) decklist) <$> mDecklist
+
         -- A seat is owed a deck exactly while its own deck question is parked: answering
         -- drops it (and re-parks only the seats still waiting). Without this check a
         -- resubmit -- the client's upgrade buttons come back as soon as the request
@@ -208,6 +257,11 @@ putApiV1ArkhamGameDecksR gameId = do
         if
           | not (isChooseDecks gameGameState) -> pure $ Right gameEntity
           | not (maybe False isDeckQuestion $ Map.lookup playerId gameQuestion) -> pure $ Right gameEntity
+          -- Nothing is written yet, so saying no here leaves the upgrade to be retried.
+          -- Without it the engine builds the stand-in for a def it does not have and the
+          -- first read of it is a 500 with a call stack in it (#5891).
+          | Just message <- mPlayList >>= decklistInvestigatorError ->
+              pure $ Left (Status.status400, message)
           | otherwise -> do
               -- The engine can throw (an unimplemented card, an unusable decklist, an
               -- unexpected game state). Keep the whole run -- including the undo diff, which
@@ -222,11 +276,17 @@ putApiV1ArkhamGameDecksR gameId = do
                   unless (Map.null question') (push $ AskMap question')
                   -- No deck at all is the "continue without upgrading" path: push nothing
                   -- and let the parked continuation run.
-                  for_ mDecklist \decklist ->
-                    push
-                      $ if sameInvestigator investigatorId decklist
-                        then UpgradeDecklist investigatorId decklist
-                        else ReplaceInvestigator investigatorId decklist
+                  for_ mPlayList \decklist ->
+                    -- Registering first, so a card the upgrade brings in is recorded on
+                    -- the game as a seated deck's are: the registry it resolved against
+                    -- here is process-global and rebuilt from the game, so a card only in
+                    -- it is a "Missing card" to every other client and after a restart.
+                    pushAll
+                      $ map DebugRegisterCustomCard (decklistCustomCards decklist)
+                      <> [ if sameInvestigator investigatorId decklist
+                             then UpgradeDecklist investigatorId decklist
+                             else ReplaceInvestigator investigatorId decklist
+                         ]
                   runMessages (gameIdToText gameId) noRunObservers
                 ge <- readIORef gameRef
                 updatedQueue <- readIORef (queueToRef queueRef)
@@ -264,9 +324,11 @@ putApiV1ArkhamGameDecksR gameId = do
                   row's url forward too, later upgrades keep matching. A deck imported into two
                   live campaigns therefore tracks whichever upgraded last.
                   Skipped for a replacement investigator -- that is a different deck, not an
-                  upgrade of this one. -}
+                  upgrade of this one. The RAW list is what the row keeps: whether this is
+                  the same investigator is a question about the deck as played, but what
+                  the overlay is laid over has to stay as it arrived. -}
                   for_ mDecklist \decklist ->
-                    when (sameInvestigator investigatorId decklist) do
+                    when (maybe False (sameInvestigator investigatorId) mPlayList) do
                       for_ (attr investigatorDeckUrl investigatorEntity) \oldDeckUrl ->
                         update \d -> do
                           set d
@@ -359,12 +421,25 @@ arkhamBuildDecklistUrl url = do
   guard $ not $ T.null decklistId
   pure $ "https://api.arkham.build/v1/public/arkhamdb/decklist/" <> decklistId
 
+{- | Read a decklist off the wire, translating its arkham.build ids first.
+
+The translation has to happen here, on the raw json, rather than on the decoded
+decklist: 'FromJSON CardCode' strips every leading @c@ (the one 'ToJSON' puts on
+so a code never serializes as a bare number), and an arkham.build id is a raw
+uuid that was never given one. An id beginning with @c@ -- Jane Doe's
+@c13c4114-...@ -- therefore arrives as @13c4114-...@, which is no longer an id
+'isArkhamBuildCardId' recognizes, so it was never translated and the card read as
+one that does not exist (#5891).
+-}
 decodeDeckList :: BSL.ByteString -> Either String ArkhamDBDecklist
-decodeDeckList bytes = case eitherDecode bytes of
-  Right decklist -> Right decklist
-  Left _ -> do
-    decklists <- eitherDecode bytes
-    maybe (Left "No decklist found") Right (listToMaybe decklists)
+decodeDeckList bytes = do
+  value <- eitherDecode bytes
+  -- A url can answer with the deck itself or with a list of them.
+  deckValue <- case value of
+    Json.Array decks -> maybe (Left "No decklist found") Right (listToMaybe $ toList decks)
+    v -> Right v
+  -- 'parseEither' rather than 'fromJSON': this module hides aeson's 'Success'.
+  parseEither parseJSON (normalizeArkhamBuildDeckCodes deckValue)
 
 {- | Rewrite the arkham.build card ids in a decklist to the codes an import of
 that pack gave those cards.
@@ -374,36 +449,55 @@ custom-card lookup unless the code carries the custom prefix, so a deck naming
 those cards reads as a deck of cards that do not exist -- 'UnimplementedCard' --
 even with the pack imported and sitting in the library.
 
-Applied where a decklist is read off the wire rather than only in the client,
-because the client is not the only thing that reads one: syncing a deck fetches
-it here and writes it straight to the row, which without this puts the untranslated
-ids back over the translated ones. A decklist of printed cards comes through
-untouched, and a translated one translates to itself.
+On the json rather than on the decoded decklist, because that is the only place
+an id is still intact -- see 'decodeDeckList' -- and because it is where the
+client does the same rewrite (@normalizeArkhamBuildDeckCodes@ in
+@arkhamBuildImport.ts@), which this has to agree with exactly. Applied wherever a
+decklist is read off the wire rather than only in the client, since the client is
+not the only thing that reads one: syncing a deck fetches it here and writes it
+straight to the row. A decklist of printed cards comes through untouched, and a
+translated one translates to itself.
 -}
-normalizeArkhamBuildDeckCodes :: ArkhamDBDecklist -> ArkhamDBDecklist
-normalizeArkhamBuildDeckCodes decklist =
-  decklist
-    { slots = Map.mapKeys translateCardCode (slots decklist)
-    , sideSlots = Map.mapKeys translateCardCode (sideSlots decklist)
-    , investigator_code =
-        InvestigatorId $ translateCardCode $ unInvestigatorId $ investigator_code decklist
-    , meta = translateMeta <$> meta decklist
-    }
+normalizeArkhamBuildDeckCodes :: Json.Value -> Json.Value
+normalizeArkhamBuildDeckCodes = \case
+  -- Qualified: esqueleto has a `Value` of its own, and this module imports both.
+  Json.Object o ->
+    Json.Object
+      $ rewrite "slots" translateSlots
+      $ rewrite "sideSlots" translateSlots
+      $ rewrite "investigator_code" translateCode
+      $ rewrite "meta" translateMeta o
+  v -> v
  where
-  translateCardCode cc@(CardCode t)
-    | isArkhamBuildCardId t = arkhamBuildCustomCardCode t
-    | otherwise = cc
+  rewrite key f o = maybe o (\v -> KeyMap.insert key (f v) o) (KeyMap.lookup key o)
 
-  -- The alternate front an investigator was built with is named inside `meta`,
-  -- which rides along as its own blob of json. Left exactly as it arrived unless
-  -- there is something in it to rewrite.
-  translateMeta raw = fromMaybe raw do
-    -- Qualified: esqueleto has a `Value` of its own, and this module imports both.
-    m <- decode @(Map Text Json.Value) (BSL.fromStrict $ encodeUtf8 raw)
-    Json.String front <- Map.lookup "alternate_front" m
-    guard $ isArkhamBuildCardId front
-    let code = Json.String $ unCardCode $ arkhamBuildCustomCardCode front
-    pure $ decodeUtf8 $ BSL.toStrict $ encode $ Map.insert "alternate_front" code m
+  translate t
+    | isArkhamBuildCardId t = unCardCode $ arkhamBuildCustomCardCode t
+    | otherwise = t
+
+  translateCode = \case
+    Json.String t -> Json.String (translate t)
+    v -> v
+
+  -- The quantities are the values; the cards are the keys.
+  translateSlots = \case
+    Json.Object slots ->
+      Json.Object
+        $ KeyMap.fromList [(Key.fromText $ translate $ Key.toText k, v) | (k, v) <- KeyMap.toList slots]
+    v -> v
+
+  {- The alternate front an investigator was built with is named inside `meta`,
+  which rides along as its own blob of json -- a string of it, from arkham.build.
+  Left exactly as it arrived unless there is something in it to rewrite. -}
+  translateMeta = \case
+    Json.String raw -> Json.String $ fromMaybe raw do
+      m <- decode @(Map Text Json.Value) (BSL.fromStrict $ encodeUtf8 raw)
+      front <- Map.lookup "alternate_front" m
+      let front' = translateCode front
+      guard $ front' /= front
+      pure $ decodeUtf8 $ BSL.toStrict $ encode $ Map.insert "alternate_front" front' m
+    Json.Object m -> Json.Object $ rewrite "alternate_front" translateCode m
+    v -> v
 
 getDeckList :: MonadIO m => Text -> m (Either String ArkhamDBDecklist)
 getDeckList url = liftIO case arkhamBuildDecklistUrl url of
@@ -411,12 +505,12 @@ getDeckList url = liftIO case arkhamBuildDecklistUrl url of
     request <- parseRequest $ T.unpack fetchUrl
     manager <- newManager tlsManagerSettings
     let request' = request {requestHeaders = ("X-Client-Id", "arkham-horror") : requestHeaders request}
-    second (\d -> (normalizeArkhamBuildDeckCodes d) {url = Nothing})
+    second (\d -> d {url = Nothing})
       . decodeDeckList
       . responseBody
       <$> httpLbs request' manager
   Nothing ->
-    second (\d -> (normalizeArkhamBuildDeckCodes d) {url = Just url})
+    second (\d -> d {url = Just url})
       . decodeDeckList
       <$> simpleHttp (T.unpack url)
 

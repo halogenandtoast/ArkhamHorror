@@ -22,6 +22,7 @@ import Arkham.Entities
 import Arkham.Game
 import Arkham.Helpers.Message (holdsPendingWindowEffects)
 import Arkham.Id
+import Arkham.Investigator (decklistInvestigatorError)
 import Arkham.Investigator.Types (InvestigatorAttrs (investigatorPlayerId))
 import Arkham.Message
 import Arkham.Source
@@ -520,9 +521,15 @@ touchDeck deckId = do
   now <- liftIO getCurrentTime
   update deckId [ArkhamDeckLastUsedAt =. Just now]
 
--- | Seat @playerId@'s chosen deck, unless a mid-campaign join may not play it.
+{- | Seat @playerId@'s chosen deck, unless it may not be played.
+
+A mid-campaign join may be refused the investigator, and a deck may name one the
+engine cannot build at all -- an arkham.build placeholder, or a custom card that is
+not in the library this resolved against. Saying so here is the difference between
+a message and a 500 from inside the engine (#5891).
+-}
 loadChosenDeck :: Game -> PlayerId -> ArkhamDBDecklist -> DB Reply
-loadChosenDeck game playerId dl = case joinDeckRejection game playerId dl.investigator of
+loadChosenDeck game playerId dl = case joinDeckRejection game playerId dl.investigator <|> decklistInvestigatorError dl of
   Just reason -> unhandled reason
   Nothing -> do
     update (coerce playerId) [ArkhamPlayerInvestigatorId =. coerce (investigator_code dl)]

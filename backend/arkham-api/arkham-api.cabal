@@ -9840,10 +9840,12 @@ test-suite spec
       Arkham.CampaignLogKeySpec
       Arkham.Card.CardCodeSpec
       Arkham.ChaosTokenFaceSpec
+      Arkham.Custom.OverlaySpec
       Arkham.Debug.ActionsSpec
       Arkham.Debug.CampaignLogSpec
       Arkham.Debug.SandboxSpec
       Arkham.Debug.SealSpec
+      Arkham.Decklist.ArkhamBuildCodesSpec
       Arkham.DecklistSpec
       Arkham.EncounterSetSpec
       Arkham.Enemy.Cards.BrethrenOfAsh.FlyingTerrors.BatHorrorSpec

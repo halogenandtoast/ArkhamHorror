@@ -291,7 +291,11 @@
     "notConnected": "Connect your arkham.build account to pick from the decks you keep there.",
     "openSettings": "Open settings",
     "arkhamdbUnavailable": "ArkhamDB is unavailable right now, so only your account decks are listed.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "investigatorNotImplemented": "{investigator} is not yet implemented, please use a different deck",
+    "placeholderInvestigator": "This deck is built on an arkham.build placeholder investigator, which stands in for one rather than being one. Choose an investigator overlay.",
+    "chooseYourInvestigator": "Choose an investigator\u2026",
+    "noCustomInvestigators": "You have no investigators of your own to lay over this deck. Build one in the card builder first."
   },
   "deckSyncedSuccessfully": "Deck synced successfully",
   "areYouSureDeleteDeck": "Are you sure you want to delete this deck?",
@@ -563,6 +567,7 @@
     "alreadyPlayedThisCampaign": "This investigator has already played in this campaign",
     "investigatorAlreadyChosen": "This investigator has already been chosen",
     "investigatorInAnotherScenario": "This investigator is already playing another scenario in this campaign",
+    "placeholderInvestigator": "This deck is built on an arkham.build placeholder investigator. Lay one of your own investigators over it to say whose deck it is.",
     "randomBasicWeaknessPoolTooltip": "Adjust which products are used when randomly assigning this deck's basic weakness."
   },
   "campaign": {

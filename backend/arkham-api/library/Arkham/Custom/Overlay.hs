@@ -10,6 +10,8 @@ through "Arkham.Card.CustomCard"'s registry the way it resolves any other.
 module Arkham.Custom.Overlay (
   DeckOverlay (..),
   applyOverlay,
+  investigatorOverlay,
+  needsOverlayInvestigator,
   overlaySignatures,
   overlaySetAside,
   setAsideMetaKey,
@@ -96,9 +98,17 @@ signaturesOf iid = filter restrictedToThem . Map.keys
     Just def -> Signature iid `elem` cdDeckRestrictions def
 
 applyOverlay :: DeckOverlay -> ArkhamDBDecklist -> ArkhamDBDecklist
-applyOverlay overlay decklist = decklist {slots = slots', investigator_code = investigator'}
+applyOverlay overlay decklist =
+  decklist {slots = slots', investigator_code = investigator', meta = meta'}
  where
   investigator' = fromMaybe (investigator_code decklist) (overlayInvestigator overlay)
+
+  {- An alternate front outranks the deck's own investigator ('decklistInvestigatorId'),
+  so leaving one in place would hand the engine the investigator this just swapped away.
+  Only touched when the swap happens, and only to drop that one key. -}
+  meta' = case overlayInvestigator overlay of
+    Nothing -> meta decklist
+    Just _ -> withoutAlternateFront <$> meta decklist
 
   withoutOldSignatures = case overlayInvestigator overlay of
     Nothing -> slots decklist
@@ -125,6 +135,50 @@ applyOverlay overlay decklist = decklist {slots = slots', investigator_code = in
   slots' =
     Map.filter (> 0)
       $ Map.foldrWithKey (\cardCode n m -> Map.adjust (subtract n) cardCode m) added (overlayRemove overlay)
+
+withoutAlternateFront :: Text -> Text
+withoutAlternateFront raw = fromMaybe raw do
+  m <- decodeMeta raw
+  guard $ Map.member "alternate_front" m
+  pure $ encodeMeta (Map.delete "alternate_front" m)
+
+decodeMeta :: Text -> Maybe (Map Text Value)
+decodeMeta raw = decode (encodeUtf8 $ fromStrict raw)
+
+encodeMeta :: Map Text Value -> Text
+encodeMeta = toStrict . decodeUtf8 . encode
+
+{- | A deck built on an arkham.build placeholder investigator -- it has none of
+its own, and plays under whichever one an overlay lays over it.
+
+Read off the deck's own @fan_made_content@ first, so a card the Investigator
+Placeholders pack gains later counts without being listed here; the codes in
+'arkhamBuildPlaceholderCodes' are what a deck arriving without that meta (an
+older import, an upload) is recognized by.
+-}
+needsOverlayInvestigator :: ArkhamDBDecklist -> Bool
+needsOverlayInvestigator decklist =
+  isArkhamBuildPlaceholder cardCode || cardCode `elem` placeholdersInMeta
+ where
+  cardCode = toCardCode decklist.investigator
+  placeholdersInMeta = fromMaybe [] do
+    raw <- meta decklist
+    fanMade <- Map.lookup "fan_made_content" =<< decodeMeta raw
+    cards <- parseMaybe (withObject "fanMadeContent" (.: "cards")) fanMade
+    pure
+      [ arkhamBuildCustomCardCode cardId
+      | (cardId, card) <- Map.toList (cards :: Map Text (Map Text Value))
+      , Map.lookup "pack_code" card == Just (String arkhamBuildPlaceholderPack)
+      ]
+
+{- | The overlay that says only whose deck this is.
+
+What a seat's upgrade carries when the deck it pulled brings no investigator of
+its own: the investigator stays as it was, and its signatures -- which an
+arkham.build list has no way to name -- come back with it.
+-}
+investigatorOverlay :: InvestigatorId -> DeckOverlay
+investigatorOverlay iid = DeckOverlay (Just iid) mempty mempty mempty
 
 {- | The custom cards a decklist names, so they can be recorded on the game.
 

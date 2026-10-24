@@ -367,7 +367,7 @@ chainTips fetched = filter (not . superseded) fetched
     _ -> Nothing
 
 deckJson :: AB.ManifestEntry -> Value -> Maybe Value
-deckJson entry raw = case fromJSON raw of
+deckJson entry raw = case fromJSON (normalizeArkhamBuildDeckCodes raw) of
   Error _ -> Nothing
   Success (decklist :: ArkhamDBDecklist) ->
     Just
@@ -375,7 +375,7 @@ deckJson entry raw = case fromJSON raw of
         [ "source" .= AB.entrySource entry
         , "id" .= AB.entryId entry
         , "updatedAt" .= AB.entryUpdatedAt entry
-        , "decklist" .= withInvestigatorName (normalizeArkhamBuildDeckCodes decklist)
+        , "decklist" .= withInvestigatorName decklist
         ]
 
 {- | arkham.build leaves @investigator_name@ empty on an account deck, so the

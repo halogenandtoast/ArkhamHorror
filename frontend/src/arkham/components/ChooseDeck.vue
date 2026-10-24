@@ -4,7 +4,7 @@ import { computed, ref, inject, watch, nextTick } from 'vue'
 import type { Game } from '@/arkham/types/Game';
 import { fetchDecks } from '@/arkham/api'
 import { cardImg, imgsrc, type InvestigatorClass } from '@/arkham/helpers'
-import { bareCardCode, customCardDef, isCustomCardCode, stripCardCodePrefix } from '@/arkham/customCards'
+import { bareCardCode, customCardDef, isArkhamBuildPlaceholder, isCustomCardCode, stripCardCodePrefix } from '@/arkham/customCards'
 import { overlayIsEmpty } from '@/arkham/deckOverlay'
 import { hasLibraryCards, loadLibrary } from '@/arkham/customCardLibrary'
 import { portraitImage as portraitImageHelper } from '@/arkham/cardImages'
@@ -302,6 +302,14 @@ function deckUnavailableReason(deckList: SelectableDeckList): string | undefined
 function deckError(deckList: SelectableDeckList): string | null {
   if (deckUsedThisCampaign(deckList)) {
     return t('chooseDeck.alreadyPlayedThisCampaign')
+  }
+
+  /* A deck built at arkham.build on one of its placeholder investigators has
+   * none of its own; the overlay is what says whose it is. Asked of the play
+   * list, so the error goes the moment one is laid over. The server refuses the
+   * same deck -- the engine has no investigator to build from it. */
+  if (isArkhamBuildPlaceholder(deckInvestigatorCode(deckList))) {
+    return t('chooseDeck.placeholderInvestigator')
   }
 
   const chosenInvestigatorCodes = Object.values(props.game.investigators).map((i) => i.cardCode)

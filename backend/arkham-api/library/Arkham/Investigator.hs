@@ -11,6 +11,8 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Classes.Entity.TH
 import Arkham.Custom.Investigator (CustomInvestigator, customInvestigator)
+import Arkham.Custom.Overlay (needsOverlayInvestigator)
+import Arkham.Decklist.Type (ArkhamDBDecklist)
 import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Id
 import Arkham.Investigator.Investigators
@@ -27,6 +29,40 @@ lookupInvestigator iid pid = case lookup (toCardCode iid) allInvestigators of
       overAttrs (artL .~ CardCodeExact (toCardCode iid))
         $ toInvestigator (SomeInvestigatorCard (customInvestigator def)) pid
     Nothing -> lookupPromoInvestigator iid pid
+
+{- | Whether 'lookupInvestigator' would build this from something real.
+
+Its three branches and no more: a custom code answers 'lookupCustomCardDefOrMissing'
+whatever the registry holds, so a deck naming a deleted -- or someone else's --
+custom investigator builds the stand-in, and the first thing to read the entity's
+def errors out deep inside the engine. Asked before an investigator is built from
+a decklist, where saying so is still possible (#5891).
+
+Beside 'lookupInvestigator' so the two cannot answer differently.
+-}
+isKnownInvestigator :: InvestigatorId -> Bool
+isKnownInvestigator iid =
+  isJust (lookup (toCardCode iid) allInvestigators)
+    || isJust (lookupCustomCardDef (toCardCode iid))
+    || isJust (lookup iid promoInvestigators)
+
+{- | Why a decklist cannot be seated as it stands, if it cannot.
+
+Said once, for every path that loads a deck: the answer is the same whether the
+deck is being seated, joined with or upgraded, and only the caller differs in what
+it does with it.
+-}
+decklistInvestigatorError :: ArkhamDBDecklist -> Maybe Text
+decklistInvestigatorError decklist
+  | isKnownInvestigator decklist.investigator = Nothing
+  | needsOverlayInvestigator decklist =
+      Just
+        "This deck is built on an arkham.build placeholder investigator (Johnny Anybody or Jane Doe), which stands in for one rather than being one. Lay one of your own investigators over the deck first."
+  | otherwise =
+      Just
+        $ "This deck's investigator ("
+        <> unCardCode (toCardCode decklist.investigator)
+        <> ") is not one this app knows. If it is a custom card, it has to be in your library."
 
 normalizeInvestigatorId :: InvestigatorId -> InvestigatorId
 normalizeInvestigatorId iid = findWithDefault iid iid promoInvestigators

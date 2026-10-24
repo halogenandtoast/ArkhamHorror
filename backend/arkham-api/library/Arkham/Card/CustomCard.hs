@@ -132,6 +132,36 @@ arkhamBuildCustomCardCode :: Text -> CardCode
 arkhamBuildCustomCardCode t =
   CardCode $ customCardPrefix <> T.toLower (T.filter (/= '-') t) <> "0"
 
+{- | arkham.build's "Investigator Placeholders" pack.
+
+Johnny Anybody and Jane Doe: blank investigators the site ships so a deck can be
+built without one. They print no ability, -2 in every skill, and "this front is
+left intentionally blank" -- they are not meant to be played there either. A deck
+built on one is a deck with no investigator of its own, waiting for an overlay to
+say whose it is (see "Arkham.Custom.Overlay"), which is how a deck for a card
+builder investigator gets built on a site that cannot know them.
+
+Recognized by pack wherever the deck carries one, so a card the pack gains later
+counts without being listed here; the two ids are what a deck arriving without
+that meta is recognized by. Mirrored in @customCards.ts@ for the same reason
+'arkhamBuildCustomCardCode' is.
+-}
+arkhamBuildPlaceholderPack :: Text
+arkhamBuildPlaceholderPack = "d12a4d9c-8c65-4df0-be0c-c2e14af65a21"
+
+arkhamBuildPlaceholderCodes :: Set CardCode
+arkhamBuildPlaceholderCodes =
+  setFromList
+    $ map
+      arkhamBuildCustomCardCode
+      [ "347ff5d0-8521-4d9b-a0fe-90c06114057d" -- Johnny Anybody
+      , "c13c4114-0769-410c-864b-e43f5a596c0d" -- Jane Doe
+      ]
+
+isArkhamBuildPlaceholder :: HasCardCode a => a -> Bool
+isArkhamBuildPlaceholder (toCardCode -> cardCode) =
+  sanitizeCustomCardCode cardCode `member` arkhamBuildPlaceholderCodes
+
 -- | The meta key a card records 'arkhamBuildIdOf' under.
 arkhamBuildIdKey :: Text
 arkhamBuildIdKey = "arkhamBuildId"

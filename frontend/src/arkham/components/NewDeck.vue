@@ -17,8 +17,8 @@ import { ArkhamDbDecklist } from '@/arkham/types/Deck';
 import { useCardStore } from '@/stores/cards'
 import { isDevBuild } from '@/arkham/displayRules'
 import { normalizeArkhamBuildDeckCodes } from '@/arkham/arkhamBuildImport'
-import { libraryCard, loadLibrary } from '@/arkham/customCardLibrary'
-import { arkhamBuildCustomCardCode } from '@/arkham/customCards'
+import { libraryCard, libraryCards, loadLibrary } from '@/arkham/customCardLibrary'
+import { arkhamBuildCustomCardCode, isArkhamBuildPlaceholder } from '@/arkham/customCards'
 
 const { t } = useI18n()
 
@@ -166,6 +166,39 @@ const valid = ref(false)
 const saveDeck = computed(() => props.alwaysSave ? true : saveDeckToggle.value)
 const saveDeckToggle = ref(true)
 const investigatorError = ref<string | null>(null)
+
+/* A deck built at arkham.build on one of its placeholder investigators -- Johnny
+ * Anybody, Jane Doe -- has no investigator of its own; the pack exists so an
+ * arbitrary deck can be built there, which is how a deck for an investigator
+ * built HERE gets built on a site that cannot know them. So the deck is not
+ * unimplemented, it is unfinished: it imports with an overlay naming whose deck
+ * it is, and nothing can be seated or upgraded until it has one. */
+const placeholderInvestigator = ref(false)
+const overlayInvestigator = ref<string | null>(null)
+const customInvestigators = computed(() =>
+  libraryCards().filter((c) => c.def.cardType === 'InvestigatorType'),
+)
+const needsInvestigatorChoice = computed(() => placeholderInvestigator.value && !overlayInvestigator.value)
+
+function chooseOverlayInvestigator(code: string) {
+  overlayInvestigator.value = code || null
+  investigator.value = overlayInvestigator.value
+  maybeSetPortrait(investigator.value)
+}
+
+/* Nothing is laid over a deck that brought its own investigator. */
+const deckOverlay = computed(() =>
+  overlayInvestigator.value
+    ? { investigator: overlayInvestigator.value, swaps: {}, add: {}, remove: {} }
+    : null,
+)
+
+async function onPlaceholderInvestigator() {
+  placeholderInvestigator.value = true
+  // The picker is the library, which this page otherwise loads only to name a
+  // card in an error.
+  await loadLibrary()
+}
 const investigator = ref<string | null>(null)
 const deck = ref<string | null>(null)
 const deckId = ref<string | null>(null)
@@ -209,12 +242,15 @@ function loadDeckFromFile(e: Event) {
       deckList.value = data
       investigator.value = null
       investigatorError.value = null
+      placeholderInvestigator.value = false
+      overlayInvestigator.value = null
       if (isInvestigatorImplemented(data.investigator_code)) {
         investigator.value = data.meta?.alternate_front ?? data.investigator_code
         maybeSetPortrait(investigator.value)
-
+      } else if (isArkhamBuildPlaceholder(resolvedInvestigatorCode(data))) {
+        onPlaceholderInvestigator()
       } else {
-        investigatorError.value = `${data.investigator_name} is not yet implemented, please use a different deck ${data}`
+        investigatorError.value = t('newDeck.investigatorNotImplemented', { investigator: data.investigator_name })
       }
       deckId.value = data.id.toString()
       deckName.value = data.name
@@ -233,6 +269,8 @@ async function loadDeck() {
   requestFailed.value = false
   investigator.value = null
   investigatorError.value = null
+  placeholderInvestigator.value = false
+  overlayInvestigator.value = null
 
   const dl = deckList.value
   if (!dl) return
@@ -243,9 +281,10 @@ async function loadDeck() {
   if (invImplemented) {
     investigator.value = invCode
     maybeSetPortrait(invCode)
+  } else if (isArkhamBuildPlaceholder(invCode)) {
+    await onPlaceholderInvestigator()
   } else {
-    investigatorError.value =
-      `${dl.investigator_name} is not yet implemented, please use a different deck ${JSON.stringify(dl)}`
+    investigatorError.value = t('newDeck.investigatorNotImplemented', { investigator: dl.investigator_name })
   }
 
   deckId.value = String(dl.id)
@@ -288,6 +327,8 @@ async function createDeck() {
     deckName.value = null
     deckUrl.value = null
     investigator.value = null
+    placeholderInvestigator.value = false
+    overlayInvestigator.value = null
     deck.value = null
     emit('newDeckList', dl)
     return
@@ -296,11 +337,13 @@ async function createDeck() {
   if (!(deckId.value && deckName.value)) return
 
   try {
-    const created = await newDeck(deckId.value, deckName.value, deckUrl.value, deckList.value)
+    const created = await newDeck(deckId.value, deckName.value, deckUrl.value, deckList.value, deckOverlay.value)
     deckId.value = null
     deckName.value = null
     deckUrl.value = null
     investigator.value = null
+    placeholderInvestigator.value = false
+    overlayInvestigator.value = null
     deck.value = null
     emit('newDeck', created)
   } catch (err: unknown) {
@@ -385,6 +428,20 @@ async function createDeck() {
           accept=".json,application/json"
           @change="loadDeckFromFile"
         />
+        <div v-if="placeholderInvestigator" class="placeholder-investigator">
+          <p class="build-note">{{ t('newDeck.placeholderInvestigator') }}</p>
+          <select
+            v-if="customInvestigators.length"
+            :value="overlayInvestigator ?? ''"
+            @change="chooseOverlayInvestigator(($event.target as HTMLSelectElement).value)"
+          >
+            <option value="">{{ t('newDeck.chooseYourInvestigator') }}</option>
+            <option v-for="card in customInvestigators" :key="card.def.cardCode" :value="card.def.cardCode">
+              {{ card.def.name.title }}
+            </option>
+          </select>
+          <p v-else class="build-note">{{ t('newDeck.noCustomInvestigators') }}</p>
+        </div>
         <input v-if="investigator" v-model="deckName" />
         <div v-if="!alwaysSave" class="save-option" :class="{ active: saveDeck }" @click="saveDeckToggle = !saveDeckToggle" role="checkbox" :aria-checked="saveDeck">
           <div class="save-option-body">
@@ -395,7 +452,7 @@ async function createDeck() {
             <div class="save-option-thumb" />
           </div>
         </div>
-        <button :disabled="!valid" @click.prevent="createDeck" class="primary-action">{{ alwaysSave ? t('newDeck.save') : saveDeck ? t('newDeck.saveAndUse') : t('newDeck.useWithoutSaving') }}</button>
+        <button :disabled="!valid || needsInvestigatorChoice" @click.prevent="createDeck" class="primary-action">{{ alwaysSave ? t('newDeck.save') : saveDeck ? t('newDeck.saveAndUse') : t('newDeck.useWithoutSaving') }}</button>
       </div>
     </div>
     <div class="errors" v-if="investigatorError">
@@ -416,6 +473,13 @@ async function createDeck() {
 </template>
 
 <style scoped>
+.placeholder-investigator {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
 .new-deck {
   :deep(input[type=url]) {
     margin-bottom: 0;

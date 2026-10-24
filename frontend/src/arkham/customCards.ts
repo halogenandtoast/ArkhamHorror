@@ -142,6 +142,28 @@ export function arkhamBuildCustomCardCode(uuid: string): string {
   return `${CUSTOM_CARD_PREFIX}${uuid.replace(/-/g, '').toLowerCase()}0`
 }
 
+/* arkham.build's "Investigator Placeholders" pack: Johnny Anybody and Jane Doe,
+ * blank investigators the site ships so a deck can be built without one. A deck
+ * built on one has no investigator of its own and plays under whichever one is
+ * laid over it -- which is how a deck for an investigator built here gets built
+ * on a site that cannot know them.
+ *
+ * Mirrors `arkhamBuildPlaceholderPack` / `arkhamBuildPlaceholderCodes` in
+ * `Arkham.Card.CustomCard`; the server refuses to seat a deck still naming one,
+ * so both sides have to recognise the same cards. */
+export const ARKHAM_BUILD_PLACEHOLDER_PACK = 'd12a4d9c-8c65-4df0-be0c-c2e14af65a21'
+
+const ARKHAM_BUILD_PLACEHOLDER_CODES = new Set(
+  [
+    '347ff5d0-8521-4d9b-a0fe-90c06114057d', // Johnny Anybody
+    'c13c4114-0769-410c-864b-e43f5a596c0d', // Jane Doe
+  ].map(arkhamBuildCustomCardCode),
+)
+
+export function isArkhamBuildPlaceholder(code: string): boolean {
+  return ARKHAM_BUILD_PLACEHOLDER_CODES.has(stripCardCodePrefix(code))
+}
+
 /* The meta key a card records its arkham.build id under. Mirrors
  * `arkhamBuildIdKey` in `Arkham.Card.CustomCard`. */
 export const ARKHAM_BUILD_ID_KEY = 'arkhamBuildId'

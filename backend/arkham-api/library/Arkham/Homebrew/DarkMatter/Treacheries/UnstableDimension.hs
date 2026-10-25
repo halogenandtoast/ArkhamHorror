@@ -18,9 +18,8 @@ Then, discard this card. / [action] Spend 2 resources: Discard this card."
 -}
 instance HasAbilities UnstableDimension where
   getAbilities (UnstableDimension a) =
-    [ mkAbility a 1 $ forced $ TurnEnds #when You
-    , restricted a 2 (youExist $ InvestigatorWithResources $ atLeast 2)
-        $ actionAbilityWithCost (ResourceCost 2)
+    [ restricted a 1 InYourThreatArea $ forced $ TurnEnds #when You
+    , restricted a 2 OnSameLocation $ actionAbilityWithCost (ResourceCost 2)
     ]
 
 instance RunMessage UnstableDimension where

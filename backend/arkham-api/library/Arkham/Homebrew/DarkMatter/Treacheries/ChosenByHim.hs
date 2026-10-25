@@ -1,12 +1,9 @@
 module Arkham.Homebrew.DarkMatter.Treacheries.ChosenByHim (chosenByHim) where
 
 import Arkham.Ability
-import Arkham.Asset.Types qualified as Asset
-import Arkham.Deck qualified as Deck
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Projection
 import Arkham.Trait (Trait (Ally, Item, Spell))
 import Arkham.Treachery.Import.Lifted
 
@@ -49,9 +46,7 @@ instance RunMessage ChosenByHim where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       directDamage iid (attrs.ability 1) 2
       for_ attrs.attached \case
-        AssetTarget aid -> do
-          card <- field Asset.AssetCard aid
-          push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
+        AssetTarget aid -> shuffleIntoDeck iid aid
         _ -> pure ()
       pure t
     UseThisAbility _ (isSource attrs -> True) 2 -> do

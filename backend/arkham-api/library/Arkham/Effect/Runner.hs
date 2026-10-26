@@ -69,8 +69,18 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     {- The draw itself ends the window, so whatever 'onDisable' carries resolves
     after the drawn card rather than in front of it -- the encounter draw emits
-    only a @#when@ window, so an ability hung on that would go first. -}
+    only a @#when@ window, so an ability hung on that would go first.
+
+    Both spellings, because they are separate constructors and the one an
+    ordinary draw uses is @...From@: `DrewCards` fans out to
+    @InvestigatorDrewEncounterCardFrom@ for every card (`Scenario/Runner.hs`),
+    and the bare message is only pushed by the few cards that hand a specific
+    card to an investigator. Matching the bare one alone meant this window never
+    closed on a real draw, so nothing keyed to it ever fired. -}
     InvestigatorDrewEncounterCard iid _
+      | isEndOfWindow a (EffectNextEncounterDrawWindow iid) -> do
+          a <$ push (DisableEffect effectId)
+    InvestigatorDrewEncounterCardFrom iid _ _
       | isEndOfWindow a (EffectNextEncounterDrawWindow iid) -> do
           a <$ push (DisableEffect effectId)
     EndTurn iid | isEndOfWindow a (EffectTurnWindow iid) -> do

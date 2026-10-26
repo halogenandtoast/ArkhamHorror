@@ -85,6 +85,9 @@ instance RunMessage ExtracurricularActivity where
       gather Set.LockedDoors
       gather Set.AgentsOfYogSothoth
 
+      setAgendaDeck [Agendas.quietHalls, Agendas.deadOfNight, Agendas.theBeastUnleashed]
+      setActDeck [Acts.afterHours, Acts.ricesWhereabouts, Acts.campusSafety]
+
       startAt =<< place Locations.miskatonicQuad
       placeAll
         [ Locations.humanitiesBuilding
@@ -105,9 +108,6 @@ instance RunMessage ExtracurricularActivity where
         , Locations.alchemyLabs
         , Assets.professorWarrenRice
         ]
-
-      setAgendaDeck [Agendas.quietHalls, Agendas.deadOfNight, Agendas.theBeastUnleashed]
-      setActDeck [Acts.afterHours, Acts.ricesWhereabouts, Acts.campusSafety]
     ResolveChaosToken drawnToken ElderThing iid -> do
       let amount = if isEasyStandard attrs then 2 else 3
       discardTopOfDeckAndHandle iid ElderThing amount (ChaosTokenTarget drawnToken)

@@ -14,6 +14,7 @@ import Arkham.Classes.Query
 import Arkham.Constants
 import Arkham.Customization
 import Arkham.ForMovement
+import {-# SOURCE #-} Arkham.Game (abilityMatches)
 import Arkham.Game.Settings
 import Arkham.GameEnv
 import {-# SOURCE #-} Arkham.Helpers.Cost (getAdditionalActionCost, getCanAffordCost)
@@ -189,10 +190,18 @@ preventedByInvestigatorModifiers iid ability = do
       effectiveMatchers
         | isForced = filter explicitlyTargetsForcedAbilities cannotTriggerMatchers
         | otherwise = cannotTriggerMatchers
+  {- 'abilityMatches' and not @elem ability <$> select@: 'getAbilitiesMatching' is
+  wrapped in @guardYourLocation@, so for an investigator with no location it
+  answers @[]@ for EVERY matcher and the ban silently does nothing. That is not
+  a corner case -- /Ritual Circle: A Harnessed Future/ removes a seat from the
+  game (@Placement.Unplaced@) and then bans @AnyAbility@, which was exactly the
+  position where the ban had to hold and did not. Matching the one ability
+  directly also drops the requirement that it be @Eq@-present in the game's
+  ability pool, and is cheaper: @AnyAbility@ is a constant instead of a sweep. -}
   suppressedByMatcher <-
     if null effectiveMatchers
       then pure False
-      else elem ability <$> select (Matcher.AbilityOneOf effectiveMatchers)
+      else abilityMatches ability (Matcher.AbilityOneOf effectiveMatchers)
   if suppressedByMatcher
     then pure True
     else

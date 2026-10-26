@@ -786,6 +786,59 @@ runGameMessage msg g = case msg of
   ForTarget GameTarget (EndOfScenario _) -> do
     persistedAssets <- select $ AssetWithModifier Persist
     let
+      survivingEffects =
+        Map.keysSet
+          $ filterMap (or . sequence [effectIsForResolution, effectIsForNextGame])
+          $ g
+          ^. entitiesL
+          . effectsL
+      sourceGone = \case
+        ActSource _ -> True
+        AgendaSource _ -> True
+        EnemyAttackSource _ -> True
+        EnemyDefeatSource _ -> True
+        EnemySource _ -> True
+        EventSource _ -> True
+        LocationSource _ -> True
+        ScenarioSource -> True
+        SkillSource _ -> True
+        SkillTestSource _ -> True
+        StorySource _ -> True
+        TreacherySource _ -> True
+        AssetSource aid -> aid `notElem` persistedAssets
+        EffectSource eid -> eid `Set.notMember` survivingEffects
+        AbilitySource s _ -> sourceGone s
+        IndexedSource _ s -> sourceGone s
+        PaymentSource s -> sourceGone s
+        UseAbilitySource _ s _ -> sourceGone s
+        BothSource x y -> sourceGone x || sourceGone y
+        ProxySource x y -> sourceGone x || sourceGone y
+        _ -> False
+      targetGone = \case
+        ActTarget _ -> True
+        AgendaTarget _ -> True
+        EnemyTarget _ -> True
+        EventTarget _ -> True
+        LocationTarget _ -> True
+        ScenarioTarget -> True
+        SkillTarget _ -> True
+        SkillTestTarget _ -> True
+        StoryTarget _ -> True
+        TreacheryTarget _ -> True
+        AssetTarget aid -> aid `notElem` persistedAssets
+        EffectTarget eid -> eid `Set.notMember` survivingEffects
+        BothTarget x y -> targetGone x || targetGone y
+        ProxyTarget x y -> targetGone x || targetGone y
+        LabeledTarget _ t -> targetGone t
+        SkillTestInitiatorTarget t -> targetGone t
+        _ -> False
+      keeps m = maybe (not $ sourceGone m.source) (`Set.member` survivingEffects) m.effect
+      -- 'preloadModifiers' will not rebuild this in campaign mode, so a row left
+      -- here outlives the entity that published it for the whole interlude.
+      pruneModifiers =
+        Map.filter notNull
+          . Map.map (filter keeps)
+          . Map.filterWithKey (\target _ -> not (targetGone target))
       update g' =
         g'
           & (entitiesL . assetsL %~ Map.filterWithKey (\k _ -> k `elem` persistedAssets))
@@ -814,6 +867,7 @@ runGameMessage msg g = case msg of
           & (actionRemovedEntitiesL .~ mempty)
           & (tombstonesL .~ mempty)
           & (activeAbilitiesL .~ mempty)
+          & (modifiersL %~ pruneModifiers)
           -- A scenario-ending action (e.g. Resign) leaves the game "in action"
           -- with a revert diff/snapshot pointing at the entities we just tore
           -- down. Clear the action bookkeeping so we don't persist a stale diff

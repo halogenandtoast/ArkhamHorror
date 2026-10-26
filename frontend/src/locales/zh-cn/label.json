@@ -589,5 +589,6 @@
   "addCurseTokensToChaosBag": "向混乱袋中加入{'{'}curse{'}'}标记",
   "doneMovingScientists": "完成移动科学家",
   "doneEngagingEnemies": "完成与敌人交战",
-  "doneDiscoveringClues": "完成发现线索"
+  "doneDiscoveringClues": "完成发现线索",
+  "afterSkillTestOption": "{name}"
 }

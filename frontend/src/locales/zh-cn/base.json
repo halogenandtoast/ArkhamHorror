@@ -245,7 +245,11 @@
     "notConnected": "关联你的 arkham.build 账号，即可从你保存在那里的牌组中选择。",
     "openSettings": "打开设置",
     "arkhamdbUnavailable": "ArkhamDB 当前不可用，因此只列出你账号上的牌组。",
-    "retry": "重试"
+    "retry": "重试",
+    "investigatorNotImplemented": "{investigator}尚未实现，请换用其他牌组",
+    "placeholderInvestigator": "此牌组基于 arkham.build 占位调查员构建。占位调查员只是代表某位调查员，并非真正的调查员。请选择一个调查员覆盖层。",
+    "chooseYourInvestigator": "选择一名调查员……",
+    "noCustomInvestigators": "你没有可用来覆盖此牌组的自有调查员。请先在卡牌构建器中创建一名。"
   },
   "deckSyncedSuccessfully": "牌组同步成功",
   "areYouSureDeleteDeck": "你确定要删除这个牌组吗？",
@@ -400,7 +404,8 @@
     "collapse": "折叠"
   },
   "treachery": {
-    "discard": "弃牌"
+    "discard": "弃牌",
+    "copyOf": "此卡牌为复制品"
   },
   "modifier": {
     "cannotCommitCards": "无法投入卡牌",
@@ -443,6 +448,18 @@
   },
   "player": {
     "viewDeck": "查看牌组",
+    "cannotPlay": "有效果阻止你打出此卡牌",
+    "cannotPlayBecause": "{source}阻止你打出此卡牌",
+    "cannotCommit": "有效果阻止你投入此卡牌",
+    "cannotCommitBecause": "{source}阻止你投入此卡牌",
+    "cannotPlayOrCommit": "有效果阻止你打出或投入此卡牌",
+    "cannotPlayOrCommitBecause": "{source}阻止你打出或投入此卡牌",
+    "cannotDiscoverClues": "有效果阻止你发现线索",
+    "cannotDiscoverCluesBecause": "{source}阻止你发现线索",
+    "cannotSpendClues": "有效果阻止你花费线索",
+    "cannotSpendCluesBecause": "{source}阻止你花费线索",
+    "cannotDiscoverOrSpendClues": "有效果阻止你发现或花费线索",
+    "cannotDiscoverOrSpendCluesBecause": "{source}阻止你发现或花费线索",
     "silenceCard": "静默——此卡隐藏时，跳过其免费触发与反应",
     "unsilenceCard": "取消静默——重新提供此卡的触发时机"
   },
@@ -459,7 +476,23 @@
     "solo": "单人游戏",
     "multiplayer": "多人游戏",
     "soloDescription": "你将控制所有调查员。",
-    "multiplayerDescription": "你将获得一个邀请链接，以便其他人可以加入并认领他们的调查员。"
+    "multiplayerDescription": "你将获得一个邀请链接，以便其他人可以加入并认领他们的调查员。",
+    "chooseFile": "点击选择导出文件…",
+    "trimmed": "此导出文件过大，无法完整上传，因此只会导入其中最新的 {kept} 个（共 {total} 个）已保存步骤。游戏会从上次离开的位置准确接续——只是撤销功能无法回溯到更早之前。",
+    "trimmedAll": "此导出文件过大，无法完整上传，因此其全部 {total} 个已保存步骤都会被丢弃。游戏会从上次离开的位置准确接续——只是撤销功能将没有可回退的内容。",
+    "errors": {
+      "empty": "该文件为空——导出可能尚未下载完成。",
+      "notJson": "无法将该文件作为 JSON 读取，因此它不是 Arkham Horror 的导出文件。",
+      "notAnExport": "该文件是有效的 JSON，但不是 Arkham Horror 的游戏导出文件——其中没有战役数据。",
+      "badGzip": "无法解压该压缩文件。请重新下载导出文件后再试。",
+      "noDecompression": "当前浏览器无法解压压缩的导出文件。请改为上传未压缩的 .json 导出文件。",
+      "tooLarge": "服务器拒绝了此次上传：文件大小 {size} 超出了服务器的接收上限。该游戏保存的历史记录过多，无法导入——请反馈此问题，以便提高上限。",
+      "unreachable": "上传 {size} 时连接中断。请检查网络连接；如果持续失败，说明文件超过了服务器的接收上限。",
+      "notAuthorized": "导入游戏需要先登录。请登录后重试。",
+      "maintenance": "服务器正在维护中。请几分钟后再试。",
+      "rejected": "服务器无法导入该游戏：{reason}",
+      "statusOnly": "服务器无法导入该游戏（错误码 {status}）。请重试。"
+    }
   },
   "questionFilter": {
     "filter": "过滤"
@@ -476,7 +509,8 @@
     "randomBasicWeaknessPoolTooltip": "调整随机分配此牌组基础弱点时使用的产品范围。",
     "alreadyPlayedThisCampaign": "该调查员已在本战役中游玩过",
     "investigatorAlreadyChosen": "该调查员已被选择",
-    "investigatorInAnotherScenario": "该调查员已在本战役的另一剧本中参与游戏"
+    "investigatorInAnotherScenario": "该调查员已在本战役的另一剧本中参与游戏",
+    "placeholderInvestigator": "此牌组基于 arkham.build 占位调查员构建。在其上覆盖你自己的一名调查员，以表明这是谁的牌组。"
   },
   "deckToolbar": {
     "searchDecks": "搜索牌组…",
@@ -563,6 +597,7 @@
     "submissions": "提交",
     "deleteRoom": "删除",
     "dropRoom": "移出",
+    "inspectRoom": "检查",
     "confirmDropRoom": "移出此房间？已连接的 {n} 名玩家将被送回首页。 | 移出此房间？已连接的 {n} 名玩家将被送回首页。",
     "gameStats": "统计",
     "notifications": "通知"
@@ -592,7 +627,9 @@
     "lost": "失败",
     "wonUncertain": "胜利？",
     "outcomeUncertain": "战役指南将此结局印为“调查员赢得战役……？”，并未作进一步说明。",
-    "watch": "观战"
+    "watch": "观战",
+    "inactive": "不活跃",
+    "inactiveTooltip": "至少五分钟内，没有人在此游戏中采取过任何行动。"
   },
   "replay": {
     "restart": "重新开始",

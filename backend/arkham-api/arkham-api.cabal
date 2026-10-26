@@ -10001,6 +10001,7 @@ test-suite spec
       Arkham.Scenario.Scenarios.HemlockValeStandaloneSpec
       Arkham.Scenario.Scenarios.TheThingInTheDepthsSpec
       Arkham.Scenario.Scenarios.TheUnspeakableOathSpec
+      Arkham.Scenario.ShadesOfSufferingSpec
       Arkham.Scenario.SpecHelpers
       Arkham.Scenario.TheMidwinterGalaSpec
       Arkham.ScenarioDeckKeySpec

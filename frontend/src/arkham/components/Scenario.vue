@@ -55,6 +55,7 @@ import KeyToken from '@/arkham/components/Key.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
 import Connections from '@/arkham/components/Connections.vue';
 import RainOverlay from '@/arkham/components/RainOverlay.vue';
+import SmokePuffLayer from '@/arkham/components/SmokePuffLayer.vue';
 import { supportsHtmlInCanvas } from '@/arkham/droplets';
 import { createRainAudio, type RainAudioInstance } from '@/arkham/rainAudio';
 import { useSoundsDisabled } from '@/composable/useSoundsDisabled';
@@ -2367,6 +2368,7 @@ async function addChaosToken(face: any){
     <UpgradeDeck :game="game" :key="playerId" :playerId="playerId" @choose="choose" @update="update"/>
   </div>
   <div v-else-if="!gameOver" id="scenario" class="scenario" :data-scenario="scenario.id">
+    <SmokePuffLayer />
     <div class="scenario-body" :class="{'split-view': splitView, 'scenario-body--notifier-overlays': showScenarioNotifierBar }">
       <Draggable v-if="showOutOfPlay || forcedShowOutOfPlay">
         <template #handle><header><h2>{{ $t('gameBar.outOfPlay') }}</h2></header></template>

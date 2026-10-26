@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Smoke Puff preview</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #1a1d26;
+        color: #d8dbe4;
+        font: 13px/1.4 system-ui, sans-serif;
+      }
+      #board {
+        display: flex;
+        gap: 86px;
+        padding: 190px 70px 40px;
+      }
+      .slot {
+        text-align: center;
+      }
+      .portrait {
+        display: block;
+        width: 72px;
+        height: 110px;
+        border-radius: 3px;
+        object-fit: cover;
+      }
+      .label {
+        margin-top: 220px;
+        opacity: 0.6;
+      }
+      canvas#layer {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+      #controls {
+        position: fixed;
+        left: 16px;
+        bottom: 16px;
+        display: flex;
+        gap: 8px;
+        z-index: 5;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="board"></div>
+    <canvas id="layer"></canvas>
+    <div id="controls">
+      <button id="strip-out">filmstrip: implode</button>
+      <button id="strip-in">filmstrip: return</button>
+      <button id="loop">loop one</button>
+    </div>
+    <script type="module">
+      import { createSmokePuffLayer, parseRgb } from '/src/arkham/smokePuff.ts'
+
+      const SRC = '/img/arkham/portraits/01002.jpg'
+      const STEPS = 8
+      const board = document.getElementById('board')
+      for (let i = 0; i < STEPS; i++) {
+        const slot = document.createElement('div')
+        slot.className = 'slot'
+        slot.innerHTML =
+          `<img class="portrait" id="p${i}" src="${SRC}" alt="" />` +
+          `<div class="label">${(i / (STEPS - 1)).toFixed(2)}</div>`
+        board.append(slot)
+      }
+
+      const layer = createSmokePuffLayer(document.getElementById('layer'))
+      const color = parseRgb('#57e07a', [0.34, 0.88, 0.48])
+
+      function request(el, direction, duration) {
+        const box = el.getBoundingClientRect()
+        return {
+          rect: { left: box.left, top: box.top, width: box.width, height: box.height },
+          direction,
+          image: el.currentSrc || el.src,
+          imageElement: el,
+          color,
+          radius: 3,
+          duration,
+        }
+      }
+
+      /* One puff per slot, started a step apart, so at any instant the row
+         shows the whole arc at once and a single screenshot is the filmstrip. */
+      const DURATION = 16
+      // A return runs duration * (1 + returnDelay), so the strip has to span
+      // further or its tail falls off the end of the row.
+      const RETURN_DELAY = 0.5
+
+      const started = new Array(STEPS).fill(null)
+
+      function filmstrip(direction) {
+        const span = DURATION * (direction === 'in' ? 1 + RETURN_DELAY : 1)
+        const gap = (span / STEPS) * 1000
+        window.__gap = gap
+        for (let i = 0; i < STEPS; i++) {
+          const j = STEPS - 1 - i
+          const el = document.getElementById(`p${j}`)
+          el.style.opacity = '0'
+          setTimeout(() => {
+            started[j] = performance.now()
+            layer.play(request(el, direction, DURATION)).then(() => {
+              started[j] = 'done'
+              el.style.opacity = ''
+            })
+          }, i * gap)
+        }
+        // Labels report MEASURED progress, not the stagger I hoped for: the
+        // loop's delta is clamped per frame, so a throttled tab advances a
+        // puff more slowly than the wall clock.
+        const tick = () => {
+          for (let j = 0; j < STEPS; j++) {
+            const at = started[j]
+            const label = document.querySelectorAll('.label')[j]
+            if (at === null) label.textContent = '-'
+            else if (at === 'done') label.textContent = 'done'
+            else label.textContent = (((performance.now() - at) / 1000 / DURATION)).toFixed(2)
+          }
+          requestAnimationFrame(tick)
+        }
+        tick()
+        return new Promise((r) => setTimeout(r, (STEPS - 1) * gap + 150))
+      }
+
+      document.getElementById('strip-out').onclick = () => filmstrip('out')
+      document.getElementById('strip-in').onclick = () => filmstrip('in')
+      document.getElementById('loop').onclick = async () => {
+        const el = document.getElementById('p0')
+        for (;;) {
+          el.style.opacity = '0'
+          await layer.play(request(el, 'out', 0.85))
+          await new Promise((r) => setTimeout(r, 500))
+          await layer.play(request(el, 'in', 0.85))
+          el.style.opacity = ''
+          await new Promise((r) => setTimeout(r, 800))
+        }
+      }
+      window.__filmstrip = filmstrip
+      /* Screenshotting takes seconds, during which the strip keeps moving. So
+         freeze it: the layer and the labels both drive off rAF, and a canvas
+         keeps displaying its last frame once nothing draws to it. */
+      window.__freezeStrip = async (direction) => {
+        const raf = window.requestAnimationFrame.bind(window)
+        await filmstrip(direction)
+        window.requestAnimationFrame = () => 0
+        return Array.from(document.querySelectorAll('.label')).map((l) => l.textContent)
+      }
+    </script>
+  </body>
+</html>

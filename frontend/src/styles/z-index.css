@@ -65,6 +65,10 @@
   --z-board-location-raised: var(--z-index-30);
 
   /* Semantic aliases */
+  /* The bamf layer (SmokePuffLayer.vue) draws over the whole board, so it has
+     to clear every card on it -- but it is flavour, and must not cover a card
+     preview, a modal or a toast. */
+  --z-board-smoke-puff: var(--z-index-9999);
   --z-card-hover-overlay: var(--z-index-20000);
   --z-tooltip: var(--z-index-25000);
   --z-card-hover-overlay-over-popover: var(--z-index-30000);

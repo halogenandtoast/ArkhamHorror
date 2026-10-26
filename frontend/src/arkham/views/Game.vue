@@ -1573,6 +1573,22 @@ const handleResult = (result: ServerResult) => {
       playAudioFile(result.contents)
       return
     case 'GameUI':
+      /* A bamf: see SmokePuffLayer.vue. Queued like any other blocking result
+       * when something already holds the lock, so the two halves of one
+       * vanishing play in order instead of on top of each other.
+       *
+       * The lock is NOT taken here. SmokePuffLayer takes it, because only it
+       * knows when the animation is over -- and if no layer is listening
+       * (outside a scenario, or the context failed) nothing is taken and
+       * nothing stalls, which is the right way round for a decoration. */
+      if (result.contents.startsWith('smokePuff:')) {
+        if (uiLock.value) {
+          qPush(result)
+          return
+        }
+        emitter.emit('arkham:smoke-puff', result.contents.slice('smokePuff:'.length))
+        return
+      }
       if (result.contents.startsWith('theSilence:')) {
         if (props.spectate) return
         const targetPlayer = result.contents.slice('theSilence:'.length)

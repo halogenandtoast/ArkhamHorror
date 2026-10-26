@@ -41,9 +41,9 @@ instance RunMessage Backfire where
       shuffleSetAsideIntoEncounterDeck
         $ mapOneOf
           cardIs
-          [ Treacheries.unleashedChaosIAccelerationI
-          , Treacheries.unleashedChaosIProliferationI
-          , Treacheries.unleashedChaosIMutationI
+          [ Treacheries.unleashedChaosAcceleration
+          , Treacheries.unleashedChaosProliferation
+          , Treacheries.unleashedChaosMutation
           ]
       shuffleEncounterDiscardBackIn
 

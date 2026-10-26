@@ -13,7 +13,7 @@ newtype UnleashedChaosMutation = UnleashedChaosMutation TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 unleashedChaosMutation :: TreacheryCard UnleashedChaosMutation
-unleashedChaosMutation = treachery UnleashedChaosMutation Cards.unleashedChaosIMutationI
+unleashedChaosMutation = treachery UnleashedChaosMutation Cards.unleashedChaosMutation
 
 {- | "while resolving an ability on the attached card, or while attacking or
 evading the attached enemy"
@@ -34,15 +34,25 @@ attachedTests a = case a.attached of
     Just $ SkillTestSourceMatches (SourceIsTreacheryEffect $ TreacheryWithId tid)
   _ -> Nothing
 
-{- | "Forced - When you would succeed at a skill test while resolving an ability
-on the attached card, or while attacking or evading the attached enemy: Reveal
-and resolve an additional chaos token. (Limit once per test.)"
+{- | "When you would succeed at a skill test while resolving an ability on the
+attached card, or while attacking or evading the attached enemy: Reveal and
+resolve an additional chaos token. (Limit once per test.)"
+
+The card does NOT print __Forced__, so this is 'silent' -- forced in behaviour,
+unprinted, and resolving with no prompt.
+
+Not a modifier, which would be the first choice: the two that come close both say
+the wrong thing. 'DrawAdditionalChaosTokens' adds tokens when the test sets up,
+so it would fire on a test you were going to fail anyway, and
+'RevealAnotherChaosToken' is scenario-specific. The point of this card is that
+the extra token arrives at the moment the test would otherwise have succeeded,
+and can take the success away -- that is a timing point, so it needs a window.
 -}
 instance HasAbilities UnleashedChaosMutation where
   getAbilities (UnleashedChaosMutation a) = case attachedTests a of
     Nothing -> []
     Just stm ->
-      [playerLimit PerTest $ mkAbility a 1 $ forced $ WouldHaveSkillTestResult #when You stm #success]
+      [playerLimit PerTest $ mkAbility a 1 $ silent $ WouldHaveSkillTestResult #when You stm #success]
 
 {- | "Revelation - Draw the top card of the encounter deck and attach Unleashed
 Chaos (Mutation) to it."

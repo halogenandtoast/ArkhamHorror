@@ -90,6 +90,10 @@ export type CardContents = {
   tag: "CardContents"
   id: string
   cardCode: string
+  /* What the card really is, when `cardCode` has been retargeted to make it a
+   * copy of something else (Unleashed Chaos (Proliferation)). Equal to
+   * `cardCode` for every ordinary card. */
+  originalCardCode?: string
   isFlipped?: boolean
   facedown?: boolean
   tokens: Tokens
@@ -123,6 +127,7 @@ export const cardContentsDecoder = JsonDecoder.object<CardContents>(
     tag: JsonDecoder.constant('CardContents'),
     id: JsonDecoder.string(),
     cardCode: JsonDecoder.string(),
+    originalCardCode: v2Optional(JsonDecoder.string()),
     isFlipped: v2Optional(JsonDecoder.boolean()),
     facedown: v2Optional(JsonDecoder.boolean()),
     tokens: JsonDecoder.constant({}),

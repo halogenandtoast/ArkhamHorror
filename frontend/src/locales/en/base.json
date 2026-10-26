@@ -463,7 +463,8 @@
     "collapse": "Collapse"
   },
   "treachery": {
-    "discard": "Discard"
+    "discard": "Discard",
+    "copyOf": "This card is a copy"
   },
   "modifier": {
     "cannotCommitCards": "Cannot Commit Cards",

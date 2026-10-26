@@ -438,21 +438,21 @@ riggedToBlow =
     , cdKeywords = singleton Keyword.Peril
     }
 
-unleashedChaosIAccelerationI :: CardDef
-unleashedChaosIAccelerationI =
-  (treachery ":ages-unwound:253" "Unleashed Chaos <i>(Acceleration)</i>" Set.UnleashedChaos 1)
+unleashedChaosAcceleration :: CardDef
+unleashedChaosAcceleration =
+  (treachery ":ages-unwound:253" ("Unleashed Chaos" <:> "Acceleration") Set.UnleashedChaos 1)
     { cdCardTraits = singleton Power
     }
 
-unleashedChaosIProliferationI :: CardDef
-unleashedChaosIProliferationI =
-  (treachery ":ages-unwound:254" "Unleashed Chaos <i>(Proliferation)</i>" Set.UnleashedChaos 1)
+unleashedChaosProliferation :: CardDef
+unleashedChaosProliferation =
+  (treachery ":ages-unwound:254" ("Unleashed Chaos" <:> "Proliferation") Set.UnleashedChaos 1)
     { cdCardTraits = singleton Power
     }
 
-unleashedChaosIMutationI :: CardDef
-unleashedChaosIMutationI =
-  (treachery ":ages-unwound:255" "Unleashed Chaos <i>(Mutation)</i>" Set.UnleashedChaos 1)
+unleashedChaosMutation :: CardDef
+unleashedChaosMutation =
+  (treachery ":ages-unwound:255" ("Unleashed Chaos" <:> "Mutation") Set.UnleashedChaos 1)
     { cdCardTraits = singleton Power
     }
 

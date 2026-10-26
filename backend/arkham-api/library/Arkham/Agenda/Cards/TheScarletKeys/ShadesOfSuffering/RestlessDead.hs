@@ -6,8 +6,6 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Campaigns.TheScarletKeys.Concealed.Types
-import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
-import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Enemy.CardDefs.TheScarletKeys.ShadesOfSuffering qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Cost (getCanAffordCost, payEffectCost)
@@ -18,6 +16,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Projection
+import Arkham.Scenarios.TheScarletKeys.ShadesOfSuffering.Helpers
 import Arkham.Trait (Trait (Geist))
 
 newtype RestlessDead = RestlessDead AgendaAttrs
@@ -67,8 +66,7 @@ instance RunMessage RestlessDead where
             geists <- selectWithField EnemyCard $ EnemyWithTrait Geist <> NonWeaknessEnemy <> enemyAt loc
             for_ geists \(geist, _) -> removeFromGame geist
             placeUnderneath tzuSanNiang $ map snd geists
-            theShadeReaper <- selectJust $ scarletKeyIs Keys.theShadeReaper
-            unless (null geists) $ placeTokens attrs theShadeReaper #charge 4
+            unless (null geists) $ placeShadeReaperCharges attrs 4
             doStep 1 msg
         else do
           lead <- getLead

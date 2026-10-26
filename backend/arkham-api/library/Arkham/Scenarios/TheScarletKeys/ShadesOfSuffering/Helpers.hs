@@ -18,11 +18,10 @@ scenarioI18n a = campaignI18n $ scope "shadesOfSuffering" a
 
 {- | The charges on The Shade Reaper, or 0 while the key is out of play.
 
-The key leaves play with its bearer: when Tzu San Niang is defeated, or when the
-investigator carrying it is eliminated. The scenario reference still prices
-{skull} and resolves {cultist} after that (the skill-test window lists every
-face's value, and the test that defeated her is still being applied), so a key
-that is not in play simply holds no charges.
+The key is set aside when its bearer Tzu San Niang is defeated. The scenario
+reference is still consulted after that -- the skill-test window prices every
+chaos token face, and the test that defeated her is still being applied -- so a
+key that is not in play simply holds no charges.
 -}
 getShadeReaperCharges :: HasGame m => m Int
 getShadeReaperCharges =

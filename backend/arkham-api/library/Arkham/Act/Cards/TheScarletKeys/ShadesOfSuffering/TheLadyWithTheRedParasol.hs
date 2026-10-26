@@ -9,8 +9,6 @@ import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Campaigns.TheScarletKeys.Key
-import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
-import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Enemy.CardDefs.TheScarletKeys.ShadesOfSuffering qualified as Enemies
 import Arkham.Helpers.Agenda (currentAgendaSequenceIs)
 import Arkham.Helpers.Cost (getCanAffordCost, payEffectCost)
@@ -79,8 +77,7 @@ instance RunMessage TheLadyWithTheRedParasol where
           else do
             crossOut AgentFlintIsMissing
             record AgentFlintIsDead
-            theShadeReaper <- selectJust $ scarletKeyIs Keys.theShadeReaper
-            placeTokens attrs theShadeReaper #charge 2
+            placeShadeReaperCharges attrs 2
             flavor $ setTitle "title" >> p "theBomoh3"
 
         flavor $ setTitle "title" >> p "theBomoh4"

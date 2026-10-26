@@ -1,14 +1,10 @@
 module Arkham.Treachery.Cards.TheScarletKeys.ShadesOfSuffering.Excruciate (excruciate) where
 
-import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
-import Arkham.Campaigns.TheScarletKeys.Key.Matcher
-import Arkham.Campaigns.TheScarletKeys.Key.Types
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Projection
-import Arkham.Token
+import Arkham.Scenarios.TheScarletKeys.ShadesOfSuffering.Helpers
 import Arkham.Treachery.CardDefs.TheScarletKeys.ShadesOfSuffering qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -22,13 +18,11 @@ excruciate = treachery Excruciate Cards.excruciate
 instance RunMessage Excruciate where
   runMessage msg t@(Excruciate attrs) = runQueueT $ case msg of
     Revelation _iid (isSource attrs -> True) -> do
-      theShadeReaper <- selectJust $ scarletKeyIs Keys.theShadeReaper
-      placeTokens attrs theShadeReaper #charge 1
+      placeShadeReaperCharges attrs 1
       doStep 1 msg
       pure t
     DoStep 1 (Revelation iid (isSource attrs -> True)) -> do
-      theShadeReaper <- selectJust $ scarletKeyIs Keys.theShadeReaper
-      charges <- fieldMap ScarletKeyTokens (countTokens #charge) theShadeReaper
+      charges <- getShadeReaperCharges
       sid <- getRandom
       revelationSkillTest sid iid attrs #willpower (Fixed $ if charges >= 8 then 6 else 3)
       pure t

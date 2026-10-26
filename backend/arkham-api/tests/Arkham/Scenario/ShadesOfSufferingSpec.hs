@@ -13,11 +13,11 @@ import Arkham.Token (countTokens)
 import TestImport.New
 
 {- | Shades of Suffering's {skull} is -X, where X is half the charges on The Shade
-Reaper (rounded up), and its {cultist} places a charge on the key. The key leaves
-play with its bearer -- Tzu San Niang defeated, or an eliminated investigator --
-and the scenario reference is still consulted afterwards: the skill-test window
-prices every face, and the test that defeated her is still being resolved. With
-the key out of play there are no charges to count or place.
+Reaper (rounded up), and its {cultist} places a charge on the key. The key is set
+aside when its bearer Tzu San Niang is defeated, and the scenario reference is
+still consulted afterwards: the skill-test window prices every face, and the test
+that defeated her is still being resolved. With the key out of play there are no
+charges to count or place.
 -}
 spec :: Spec
 spec = describe "Shades of Suffering" $ do
@@ -44,7 +44,7 @@ spec = describe "Shades of Suffering" $ do
         revealCultist self
         selectAny ScarletKeyAny `shouldReturn` False
 
--- | The key enters play on the investigator, as it does once taken from Tzu San Niang.
+-- | The scenario attaches the key to Tzu San Niang; these tests only need it in play.
 putTheShadeReaperIntoPlay :: Investigator -> TestAppT ScarletKeyId
 putTheShadeReaperIntoPlay self = do
   card <- genCard Keys.theShadeReaper

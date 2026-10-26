@@ -23,10 +23,17 @@ instance HasModifiersFor TheDarkForest where
 {- | The "Then, discard this card." half of the additional cost, plus
 "[reaction] At the end of your turn: Test [agility] (4). If you succeed, discard
 this card."
+
+The window matches the same thing the cost above does: 'AbilityIsAction'
+@#activate@, which 'abilityActions' adds only to a non-basic ActionAbility. With
+'AnyAbility' the basic move/fight/evade/investigate abilities discarded the card
+without ever paying the draw (#5907).
 -}
 instance HasAbilities TheDarkForest where
   getAbilities (TheDarkForest a) =
-    [ restricted a 1 (InThreatAreaOf You) $ SilentForcedAbility $ ActivateAbility #after You AnyAbility
+    [ restricted a 1 (InThreatAreaOf You)
+        $ SilentForcedAbility
+        $ ActivateAbility #after You (AbilityIsAction #activate)
     , skillTestAbility $ restricted a 2 (InThreatAreaOf You) $ freeReaction $ TurnEnds #when You
     ]
 

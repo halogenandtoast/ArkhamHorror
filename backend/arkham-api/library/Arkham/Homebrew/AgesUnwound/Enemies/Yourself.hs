@@ -13,8 +13,8 @@ import Arkham.Matcher
 import Arkham.Projection
 
 newtype Yourself = Yourself EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 {- | Act 2b: "Put the set-aside Yourself enemy next to the agenda deck. Each
 investigator puts the top card of their deck facedown in their threat area, as a

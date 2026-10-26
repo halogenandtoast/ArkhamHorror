@@ -5,8 +5,8 @@ import Arkham.Helpers.SkillTest.Lifted (revelationSkillTest)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Enemies qualified as Cards
 
 newtype MyriadAssassin = MyriadAssassin EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 myriadAssassin :: EnemyCard MyriadAssassin
 myriadAssassin = enemy MyriadAssassin Cards.myriadAssassin

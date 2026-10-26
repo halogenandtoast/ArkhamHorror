@@ -11,8 +11,8 @@ import Arkham.Matcher
 import Arkham.Placement
 
 newtype BlessedOfAforgomon = BlessedOfAforgomon EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 {- | "__Forced__ - When Blessed of Aforgomon would spawn at any location: Put
 Blessed of Aforgomon into play next to the agenda deck instead."

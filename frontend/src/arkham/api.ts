@@ -1338,9 +1338,6 @@ export const deckErrorMessage = (e: unknown): string | null => {
 export const fileBug = (gameId: string): Promise<{ data: string }> =>
   api.post(`arkham/games/${gameId}/file-bug`)
 
-export const updateGame = (gameId: string, choice: number, investigatorId: string | null): Promise<void> =>
-  api.put(`arkham/games/${gameId}`,  {tag: 'Answer', contents: { choice, investigatorId }})
-
 export const upgradeDeck = (gameId: string, investigatorId: string, deckUrl?: string, deckList?: ArkhamDbDecklist | null): Promise<void> =>
   api.put(`arkham/games/${gameId}/decks`, { deckUrl, investigatorId, deckList });
 

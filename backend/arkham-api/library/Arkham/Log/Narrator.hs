@@ -84,6 +84,7 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Game.Base (Game (..))
 import Arkham.Game.Utils (modeScenario)
 import Arkham.GameEnv (getCardMaybe, getLogBlockStack, getSkillTest)
+import Arkham.Helpers.Modifiers (ModifierType (EntersLocationNarratedAs), getModifiers)
 import Arkham.Helpers.Scenario (getInResolution)
 import Arkham.Helpers.SkillTest (
   calculateSkillTestResultsData,
@@ -433,11 +434,19 @@ oneShot = \case
   EnterLocation iid lid mMovement -> Just do
     who <- investigatorRefFor iid
     loc <- locationRefFor lid
-    {- Forced moves read differently. "Daisy Walker moves to Attic" is something
-    she decided; a card dragging her there is not, and the log saying she did it
-    invites the reader to look for the action she spent. -}
-    let key = if maybe False moveForced mMovement then "log.isMovedTo" else "log.movesTo"
-    pure $ Just $ action [ikeyPart key ["investigator" ~> who, "location" ~> loc]]
+    mods <- getModifiers iid
+    let vars = ["investigator" ~> who, "location" ~> loc]
+    pure $ Just case [k | EntersLocationNarratedAs k <- mods] of
+      {- A card that has said what this arrival actually is, because the default
+      wording would be a lie -- see 'EntersLocationNarratedAs'. Flavour, so it
+      reads as 'narrative' rather than as something the player did. -}
+      (key : _) -> narrative [ikeyPart key vars]
+      {- Forced moves read differently. "Daisy Walker moves to Attic" is something
+      she decided; a card dragging her there is not, and the log saying she did it
+      invites the reader to look for the action she spent. -}
+      [] ->
+        let key = if maybe False moveForced mMovement then "log.isMovedTo" else "log.movesTo"
+         in action [ikeyPart key vars]
   {- An extra cost a card imposed.
 
   Held by 'placeNarration' rather than sent, so it lands under the action it paid for

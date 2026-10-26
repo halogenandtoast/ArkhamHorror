@@ -403,6 +403,22 @@ data ModifierType
   | EnemyFight Int
   | EnemyFightActionCriteria CriteriaOverride
   | EnemyFightWithMin Int (Min Int)
+  | {- | Say this investigator's arrival at a location with this i18n key
+    instead of "moves to" / "is moved to", and as flavour rather than as an
+    action -- see 'Arkham.Log.Narrator'. The key is handed the same
+    @investigator@ and @location@ variables the default line uses.
+
+    For an arrival that is not a move at all. /Ritual Circle: A Harnessed
+    Future/ hands back a seat it had taken out of the game, and "Daisy Walker
+    moves to Ritual Circle" sends the reader looking for an action nobody
+    spent.
+
+    It replaces the line for __every__ arrival while it holds, so it belongs
+    only on a seat that can arrive the one way: the Ritual Circle carries it on
+    a suspended investigator, who is under 'CannotMove' until the card itself
+    puts them back.
+    -}
+    EntersLocationNarratedAs Text
   | EntersPlayWithDoom Int
   | CanEvadeOverride CriteriaOverride
   | ExhaustIfDefeated

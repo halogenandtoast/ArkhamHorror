@@ -249,5 +249,9 @@
   },
   "ritualCircleThePresentFractured": {
     "additionalAction": "Ritual Circle"
+  },
+  "ritualCircleAHarnessedFuture": {
+    "removed": "The circle closes over {investigator}, who is gone from the moment entirely.",
+    "returns": "{investigator} steps back out of the circle at {location}, into the moment they left."
   }
 }

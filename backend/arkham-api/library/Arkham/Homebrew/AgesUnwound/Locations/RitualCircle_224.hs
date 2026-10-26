@@ -8,8 +8,11 @@ import Arkham.GameValue
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelect)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.AgesUnwound.Helpers (campaignI18n)
+import Arkham.I18n (ikey)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Import.Lifted
+import Arkham.Log (ikeyScoped, narrative, sendLog, (~>))
+import Arkham.Log.Refs (investigatorRefFor)
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
@@ -74,6 +77,20 @@ instance FromJSON Meta where
 meta :: LocationAttrs -> Meta
 meta = getLocationMetaDefault (Meta [] [])
 
+{- | What the log says when this card hands a seat back, in place of
+@"Daisy Walker moves to Ritual Circle: A Harnessed Future"@.
+
+A return is not a move -- the investigator was out of the game, and the default
+wording sends the reader hunting for the action that paid for it -- so the seat
+carries 'EntersLocationNarratedAs' while it is suspended and the narrator says
+this instead. A key rather than a sentence because the narrator builds the
+entry; it is handed the same @investigator@ and @location@ variables the
+default line uses. Through 'campaignI18n' rather than written out as a literal
+path, so the campaign's scope stays in one place.
+-}
+returnNarration :: Text
+returnNarration = campaignI18n $ ikey "ritualCircleAHarnessedFuture.returns"
+
 {- | While an investigator is out of the game, nothing may reach them. Several
 core loops iterate investigators without checking placement, so the ban is
 spelled out as modifiers (the approach recorded in
@@ -86,6 +103,11 @@ game does to itself -- doom onto the agenda, an agenda advancing, a treachery's
 own forced text -- still happens; a generic @AnyAbility@ ban deliberately does
 not reach forced abilities (@Helpers/Ability.preventedByInvestigatorModifiers@),
 which is also what keeps ability 2 below able to fire and bring them back.
+
+'EntersLocationNarratedAs' rides along for the same stretch, and only on the
+suspended half: it replaces the log line for /any/ arrival while it holds, and
+the one arrival a suspended seat can have is this card putting it back. See
+'returnNarration'.
 
 'ResumesSuspendedTurn' rides on the seat from suspension until the resumed turn
 ends, which is what makes the turn pick up /at the start of/ the phase and
@@ -115,6 +137,7 @@ instance HasModifiersFor RitualCircle_224 where
         a
         s.investigator
         [ ResumesSuspendedTurn
+        , EntersLocationNarratedAs returnNarration
         , CannotDrawCards
         , CannotDrawEncounterCards
         , CannotGainResources
@@ -197,6 +220,15 @@ instance RunMessage RitualCircle_224 where
       setActions iid (attrs.ability 1) 0
       endYourTurn iid
       push $ PlaceInvestigator iid Unplaced
+      {- The seat leaving the game is the whole point of the ability and the
+      engine narrates none of it: @PlaceInvestigator _ Unplaced@ is silent, so
+      without this the log shows a haunted ability firing and then nothing at
+      all until the investigator turns up again a phase later. Sent here rather
+      than queued so it lands with the ability that caused it. -}
+      who <- investigatorRefFor iid
+      campaignI18n
+        $ sendLog
+        $ narrative [ikeyScoped "ritualCircleAHarnessedFuture.removed" ["investigator" ~> who]]
       let m = meta attrs
       let kept = filter ((/= iid) . (.investigator)) m.suspended
       pure

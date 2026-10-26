@@ -32,6 +32,11 @@ difference is invisible: at 7 doom this agenda advances and defeats everyone
 anyway, and nothing between the two points changes the doom count.
 
 "4 or more doom in play" is total doom, not doom on this agenda.
+
+Ability 2's criterion counts /standard/ actions, which is what the card says;
+ability 1's loss does not, so it is 'loseActions' -- remaining actions go first,
+and an investigator left with only additional actions loses those, whatever
+their limitation (FAQ 1.10).
 -}
 instance HasAbilities RageAgainstTheEnd where
   getAbilities (RageAgainstTheEnd a) =
@@ -44,7 +49,7 @@ instance HasAbilities RageAgainstTheEnd where
 instance RunMessage RageAgainstTheEnd where
   runMessage msg a@(RageAgainstTheEnd attrs) = runQueueT $ scenarioI18n $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      eachInvestigator \iid -> loseStandardActions iid (attrs.ability 1) 1
+      eachInvestigator \iid -> loseActions iid (attrs.ability 1) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       gained <- min 3 <$> getStandardActions iid

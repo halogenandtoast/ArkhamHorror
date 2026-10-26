@@ -1040,6 +1040,13 @@ data Message
   | {- | Like 'LoseActions', but only standard actions can be taken away: the
     investigator's remaining actions and any additional action without a
     limitation on its use (see 'isStandardAdditionalAction').
+
+    This is NOT what "lose N actions" means. Losing follows the core rule --
+    remaining actions go first, and an investigator left with only additional
+    actions loses those, whatever their limitation (FAQ 1.10) -- which is plain
+    'LoseActions'. Use this only for /spending/ actions on an ability a
+    restricted additional action could not be used on, where Ages Unwound's
+    "spend X actions" wording lands.
     -}
     LoseStandardActions InvestigatorId Source Int
   | LoseTokens InvestigatorId Source Token TokenLoss

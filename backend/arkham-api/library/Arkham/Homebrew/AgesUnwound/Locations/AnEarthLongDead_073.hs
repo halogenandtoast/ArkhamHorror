@@ -25,6 +25,11 @@ Deliberately /not/ 'endOfTurnAbility': both An Earth Long Dead printings trigger
 on entry, so /The Endless Fall/ ("trigger the forced ability on your location as
 if it were the end of your turn") finds nothing here, and the index it names
 stays free.
+
+"Lose N actions" is 'loseActions', not 'loseStandardActions': the campaign's
+/standard action/ term governs the effects that *count* actions, while losing
+follows the core rule -- remaining actions go first, and an investigator left
+with only additional actions loses those, whatever their limitation (FAQ 1.10).
 -}
 instance HasAbilities AnEarthLongDead_073 where
   getAbilities (AnEarthLongDead_073 a) =
@@ -33,8 +38,6 @@ instance HasAbilities AnEarthLongDead_073 where
 instance RunMessage AnEarthLongDead_073 where
   runMessage msg l@(AnEarthLongDead_073 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      -- Campaign-wide: an action taken away is a *standard* action, so a
-      -- trait-restricted extra action survives.
-      loseStandardActions iid (attrs.ability 2) 1
+      loseActions iid (attrs.ability 2) 1
       pure l
     _ -> AnEarthLongDead_073 <$> liftRunMessage msg attrs

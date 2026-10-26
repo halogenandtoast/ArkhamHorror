@@ -38,7 +38,12 @@ instance RunMessage TheRitualBegins where
       The mythos phase is after @Do BeginRound@ has already re-derived everyone's
       remaining actions, so this is a plain gain/loss for the round that is
       starting -- no next-turn modifier needed (contrast agendas 2a and 3a, whose
-      Forced fires at the end of a turn). -}
+      Forced fires at the end of a turn).
+
+      "Lose N actions" is 'loseActions', not 'loseStandardActions': the campaign's
+      /standard action/ term governs the effects that *count* actions, while losing
+      follows the core rule -- remaining actions go first, and an investigator left
+      with only additional actions loses those, whatever their limitation (FAQ 1.10). -}
       eachInvestigator \iid -> do
         sid <- getRandom
         beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 4)
@@ -75,6 +80,6 @@ instance RunMessage TheRitualBegins where
       gainActions iid (attrs.ability 1) 1
       pure a
     FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 3 -> do
-      loseStandardActions iid (attrs.ability 1) 1
+      loseActions iid (attrs.ability 1) 1
       pure a
     _ -> TheRitualBegins <$> liftRunMessage msg attrs

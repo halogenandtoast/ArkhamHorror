@@ -12,7 +12,13 @@ newtype Chronophage = Chronophage EnemyAttrs
 chronophage :: EnemyCard Chronophage
 chronophage = enemy Chronophage Cards.chronophage
 
--- | "Forced - After Chronophage attacks you: Lose an action."
+{- | "Forced - After Chronophage attacks you: Lose an action."
+
+"Lose N actions" is 'loseActions', not 'loseStandardActions': the campaign's
+/standard action/ term governs the effects that *count* actions, while losing
+follows the core rule -- remaining actions go first, and an investigator left
+with only additional actions loses those, whatever their limitation (FAQ 1.10).
+-}
 instance HasAbilities Chronophage where
   getAbilities (Chronophage a) =
     extend1 a $ mkAbility a 1 $ forced $ EnemyAttacks #after You AnyEnemyAttack (be a)
@@ -20,6 +26,6 @@ instance HasAbilities Chronophage where
 instance RunMessage Chronophage where
   runMessage msg e@(Chronophage attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      loseStandardActions iid (attrs.ability 1) 1
+      loseActions iid (attrs.ability 1) 1
       pure e
     _ -> Chronophage <$> liftRunMessage msg attrs

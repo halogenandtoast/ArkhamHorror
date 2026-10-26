@@ -19,6 +19,11 @@ rome = symbolLabel $ location Rome Cards.rome 2 (PerPlayer 2)
 2, which is exactly 'ResultOneOf' -- the shape Grand Chamber's identical
 proviso uses. The timing is @#after@ here (Grand Chamber prints "when"), so the
 clues are already discovered by the time the action is taken away.
+
+"Lose N actions" is 'loseActions', not 'loseStandardActions': the campaign's
+/standard action/ term governs the effects that *count* actions, while losing
+follows the core rule -- remaining actions go first, and an investigator left
+with only additional actions loses those, whatever their limitation (FAQ 1.10).
 -}
 instance HasAbilities Rome where
   getAbilities (Rome a) =
@@ -31,6 +36,6 @@ instance HasAbilities Rome where
 instance RunMessage Rome where
   runMessage msg l@(Rome attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      loseStandardActions iid (attrs.ability 1) 1
+      loseActions iid (attrs.ability 1) 1
       pure l
     _ -> Rome <$> liftRunMessage msg attrs

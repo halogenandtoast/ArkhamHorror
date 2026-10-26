@@ -169,10 +169,13 @@ unspent additional action without a limitation on its use.
 > A standard action is any action that does not have a limitation on its use,
 > regardless of its source.
 
-The read-side counterpart of 'Arkham.Message.LoseStandardActions'. Ages Unwound
-is what introduces the term, and several of its cards count them ("for each
-standard action you have remaining"); 'getAdditionalActions' is what makes the
-count exclude the ones already spent.
+Ages Unwound is what introduces the term, and its cards use it only where they
+*count* actions ("for each standard action you have remaining", "if you have any
+standard actions remaining", "X is the number of standard actions you have");
+'getAdditionalActions' is what makes the count exclude the ones already spent.
+
+Its "lose N action(s)" effects are NOT about standard actions -- see
+'Arkham.Message.LoseStandardActions'.
 -}
 getStandardActions :: HasGame m => InvestigatorId -> m Int
 getStandardActions iid = do

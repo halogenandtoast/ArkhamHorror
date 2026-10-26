@@ -21,6 +21,11 @@ The "in Paris" qualifier rides the window ('enemyWasAt'), not a criterion: by
 the @#after@ window the enemy is out of play, so a criterion selecting in-play
 enemies at this location would find nothing and the Forced would silently never
 fire (@project_defeated_enemy_condition_belongs_in_the_window@).
+
+"Lose N actions" is 'loseActions', not 'loseStandardActions': the campaign's
+/standard action/ term governs the effects that *count* actions, while losing
+follows the core rule -- remaining actions go first, and an investigator left
+with only additional actions loses those, whatever their limitation (FAQ 1.10).
 -}
 instance HasAbilities Paris where
   getAbilities (Paris a) =
@@ -39,6 +44,6 @@ instance RunMessage Paris where
       selectForMaybeM (locationIs Cards.arkhamMassachusetts_111) $ moveTo (attrs.ability 1) iid
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      loseStandardActions iid (attrs.ability 2) 1
+      loseActions iid (attrs.ability 2) 1
       pure l
     _ -> Paris <$> liftRunMessage msg attrs

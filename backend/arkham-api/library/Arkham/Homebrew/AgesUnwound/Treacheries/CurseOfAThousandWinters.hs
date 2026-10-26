@@ -23,6 +23,11 @@ curseOfAThousandWinters = treachery CurseOfAThousandWinters Cards.curseOfAThousa
 {- | "__Forced__ - At the start of your turn: Lose 1 action. Remove 1 resource
 from Curse of a Thousand Winters. Then, if there are no resources on Curse of a
 Thousand Winters, discard it."
+
+"Lose N actions" is 'loseActions', not 'loseStandardActions': the campaign's
+/standard action/ term governs the effects that *count* actions, while losing
+follows the core rule -- remaining actions go first, and an investigator left
+with only additional actions loses those, whatever their limitation (FAQ 1.10).
 -}
 instance HasAbilities CurseOfAThousandWinters where
   getAbilities (CurseOfAThousandWinters a) =
@@ -42,7 +47,7 @@ instance RunMessage CurseOfAThousandWinters where
       placeTokens attrs attrs Token.Resource n
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      loseStandardActions iid (attrs.ability 1) 1
+      loseActions iid (attrs.ability 1) 1
       removeTokens (attrs.ability 1) attrs Token.Resource 1
       {- The removal is still queued, so the card's own count is read here: one
       resource is coming off, which leaves none exactly when it had at most one. -}

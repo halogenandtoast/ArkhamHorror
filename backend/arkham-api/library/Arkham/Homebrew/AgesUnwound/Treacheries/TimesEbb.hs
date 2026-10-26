@@ -29,6 +29,13 @@ no longer an entity to hang one on. It is a generic effect instead, scoped to
 window ends on the draw rather than in front of it, so the extra cards come
 after the card that triggered them; an ability could only have fired in the
 @#when@ window, which is the only one an encounter draw emits.
+
+"Lose N actions" is 'loseActions', not 'loseStandardActions': the campaign's
+/standard action/ term governs the effects that *count* actions, while losing
+follows the core rule -- remaining actions go first, and an investigator left
+with only additional actions loses those, whatever their limitation (FAQ 1.10).
+The decline branch is not validated: "if you do not" is a choice the card lets
+you make whether or not there is an action left to forfeit.
 -}
 instance HasAbilities TimesEbb where
   getAbilities (TimesEbb a) =
@@ -43,7 +50,7 @@ instance RunMessage TimesEbb where
       investigators <- select Anyone
       chooseOneM iid $ campaignI18n do
         for_ investigators \i -> targeting i $ handleTarget iid (attrs.ability 1) i
-        labeled "timesEbb.doNotChoose" $ loseStandardActions iid (attrs.ability 1) 1
+        labeled "timesEbb.doNotChoose" $ loseActions iid (attrs.ability 1) 1
       pure t
     HandleTargetChoice _ (isAbilitySource attrs 1 -> True) (InvestigatorTarget who) -> do
       withSource (attrs.ability 1) $ effect who do

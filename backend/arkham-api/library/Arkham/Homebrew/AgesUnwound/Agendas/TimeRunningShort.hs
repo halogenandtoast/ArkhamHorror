@@ -59,14 +59,24 @@ instance RunMessage TimeRunningShort where
       tests until the end of the round."
 
       The mythos phase is after the round's actions have been derived, so these
-      are plain gains and losses. -}
-      if any (.face.isSymbol) tokens
-        then do
-          loseStandardActions iid (attrs.ability 1) 1
-          roundModifier attrs iid (AnySkillValue 1)
-        else do
-          gainActions iid attrs 1
-          roundModifier attrs iid (AnySkillValue (-1))
+      are plain gains and losses. The token is focused and acknowledged so the
+      reveal is actually visible -- see 'TimeRunningOut', which prompts but
+      without the focus had nothing to show.
+
+      "Lose N actions" is 'loseActions', not 'loseStandardActions': the campaign's
+      /standard action/ term governs the effects that *count* actions, while losing
+      follows the core rule -- remaining actions go first, and an investigator left
+      with only additional actions loses those, whatever their limitation (FAQ 1.10). -}
+      focusChaosTokens tokens \unfocus -> do
+        continue_ iid
+        push unfocus
+        if any (.face.isSymbol) tokens
+          then do
+            loseActions iid (attrs.ability 1) 1
+            roundModifier attrs iid (AnySkillValue 1)
+          else do
+            gainActions iid attrs 1
+            roundModifier attrs iid (AnySkillValue (-1))
       push $ ResetChaosTokens (toSource attrs)
       pure a
     _ -> TimeRunningShort <$> liftRunMessage msg attrs

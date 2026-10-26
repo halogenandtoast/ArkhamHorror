@@ -16,7 +16,7 @@ shriekingViolin = treachery ShriekingViolin Cards.shriekingViolin
 
 instance HasAbilities ShriekingViolin where
   -- "At the end of your turn: Randomly discard 1 card from your hand. Then, draw 1 card."
-  getAbilities (ShriekingViolin a) = [mkAbility a 1 $ forced $ TurnEnds #when Anyone]
+  getAbilities (ShriekingViolin a) = [mkAbility a 1 $ forced $ TurnEnds #when You]
 
 instance RunMessage ShriekingViolin where
   runMessage msg t@(ShriekingViolin attrs) = runQueueT $ case msg of

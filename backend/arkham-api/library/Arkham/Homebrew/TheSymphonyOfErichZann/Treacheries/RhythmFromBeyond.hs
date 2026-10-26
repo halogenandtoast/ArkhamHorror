@@ -17,7 +17,7 @@ instance HasAbilities RhythmFromBeyond where
   -- "After you perform a skill test, if no cards were committed to this test:
   -- Take 1 horror."
   getAbilities (RhythmFromBeyond a) =
-    [mkAbility a 1 $ forced $ SkillTestEnded #after Anyone (SkillTestWithCommittedCards NoCards)]
+    [mkAbility a 1 $ forced $ SkillTestEnded #after You (SkillTestWithCommittedCards NoCards)]
 
 instance RunMessage RhythmFromBeyond where
   runMessage msg t@(RhythmFromBeyond attrs) = runQueueT $ case msg of

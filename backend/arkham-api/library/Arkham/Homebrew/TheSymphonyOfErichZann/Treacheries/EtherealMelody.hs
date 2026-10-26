@@ -16,7 +16,7 @@ etherealMelody = treachery EtherealMelody Cards.etherealMelody
 instance HasAbilities EtherealMelody where
   -- "After you perform the same type of action twice in a row: Take 1 damage."
   getAbilities (EtherealMelody a) =
-    [mkAbility a 1 $ forced $ PerformedSameTypeOfAction #after Anyone AnyAction]
+    [mkAbility a 1 $ forced $ PerformedSameTypeOfAction #after You AnyAction]
 
 instance RunMessage EtherealMelody where
   runMessage msg t@(EtherealMelody attrs) = runQueueT $ case msg of

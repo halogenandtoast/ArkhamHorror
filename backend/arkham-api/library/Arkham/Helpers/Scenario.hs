@@ -79,6 +79,9 @@ getIsStandalone = isNothing <$> selectOne TheCampaign
 getEncounterDeck :: HasGame m => m (Deck EncounterCard)
 getEncounterDeck = scenarioField ScenarioEncounterDeck
 
+peekEncounterDeck :: HasGame m => Int -> m [EncounterCard]
+peekEncounterDeck n = take n . unDeck <$> scenarioField ScenarioEncounterDeck
+
 getVictoryDisplay :: HasGame m => m [Card]
 getVictoryDisplay = scenarioField ScenarioVictoryDisplay
 

@@ -591,7 +591,7 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
   transform: translateX(calc(var(--attachment-index, 0) * 50px));
 }
 
-.treachery {
+.treachery :deep(.card) {
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 }
 

@@ -25,10 +25,22 @@ immediately advance."
 The other way out of this act is /Backfire/ (@:ages-unwound:231b@), the warding's
 own reverse, which records "the investigators unleashed chaos" and advances act
 deck 1 itself -- deliberately by deck id, because this scenario runs two act decks.
+
+This act has no @advanceCost@, so its abilities are a bare list: 'actAbilities1'
+would be wrong here. The helper exists to re-publish the clue-spending advance
+that 'ActAttrs' only provides when there IS an advance cost; on an act without
+one it adds nothing and only drags in a side guard the act does not want.
+
+'onlyOnce' is what keeps the Objective from repeating: the criterion stays true
+across the flip, because the warding is not removed from the game until further
+down the advance body and that removal is still queued. Without it the Forced
+fires again and the second pass crashes on
+@placeSetAsideLocation ritualCircle_224@, the first having already taken it out
+of the set-aside zone.
 -}
 instance HasAbilities DoorwayToTheUnknown_162 where
   getAbilities (DoorwayToTheUnknown_162 a) =
-    [restricted a 1 (exists wardedDoorIsSpent) $ Objective $ forced AnyWindow]
+    [onlyOnce $ restricted a 1 (exists wardedDoorIsSpent) $ Objective $ forced AnyWindow]
 
 {- | "if there are 4 resources on Unstable Warding" -- by def, because the warding
 is unique to the @night_of_the_ritual@ set that both Scenario III and Scenario VI

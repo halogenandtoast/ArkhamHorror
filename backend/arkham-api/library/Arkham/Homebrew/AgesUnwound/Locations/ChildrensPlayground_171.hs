@@ -28,11 +28,18 @@ no variable-action constructor and only /standard/ actions may be spent on an
 arbitrary ability -- which is what 'getStandardActions' counts and
 'loseStandardActions' takes. The printed subject is "an investigator", so anyone
 here may chip in on someone else's investigation.
+
+Gated on having a standard action to spend. Only standard actions can pay for an
+arbitrary ability, so an investigator whose last action is a restricted
+additional one (Daisy's Tome-only) cannot use this at all -- and without the
+criterion the reaction was still offered to them, then silently did nothing
+because `chooseAmount` was skipped. 'InvestigatorWithStandardActionsRemaining'
+is the same read 'getStandardActions' makes below.
 -}
 instance HasAbilities ChildrensPlayground_171 where
   getAbilities (ChildrensPlayground_171 a) =
     extendRevealed1 a
-      $ restricted a 1 Here
+      $ restricted a 1 (Here <> youExist (InvestigatorWithStandardActionsRemaining (atLeast 1)))
       $ freeReaction
       $ InitiatedSkillTest #when Anyone AnySkillType AnySkillTestValue (WhileInvestigating (be a))
 

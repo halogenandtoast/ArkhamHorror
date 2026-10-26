@@ -28,6 +28,13 @@ actions": 'Arkham.Cost.Cost' has no variable-action constructor, and only
 /standard/ actions may be spent on an arbitrary ability -- which is exactly what
 'getStandardActions' counts and 'loseStandardActions' takes.
 
+Gated on having a standard action to spend. Only standard actions can pay for an
+arbitrary ability, so an investigator whose last action is a restricted
+additional one (Daisy's Tome-only) cannot use this at all -- and without the
+criterion the reaction was still offered to them, then silently did nothing
+because `chooseAmount` was skipped. 'InvestigatorWithStandardActionsRemaining'
+is the same read 'getStandardActions' makes below.
+
 The printed subject is "an investigator", not "you", so anyone at the Playground
 may chip in on someone else's investigation; the ability is 'Here'-restricted
 because a location's abilities are only available to investigators there.
@@ -35,7 +42,7 @@ because a location's abilities are only available to investigators there.
 instance HasAbilities ChildrensPlayground_058 where
   getAbilities (ChildrensPlayground_058 a) =
     extendRevealed1 a
-      $ restricted a 1 Here
+      $ restricted a 1 (Here <> youExist (InvestigatorWithStandardActionsRemaining (atLeast 1)))
       $ freeReaction
       $ InitiatedSkillTest #when Anyone AnySkillType AnySkillTestValue (WhileInvestigating (be a))
 

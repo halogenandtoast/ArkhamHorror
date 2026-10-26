@@ -213,7 +213,7 @@ instance RunMessage AYearToPlan where
       the six player-card rewards all live in the set-aside pool, which is where
       'Arkham.Helpers.FetchCard' looks first. -}
       setAsideEvery $ CardFromEncounterSet Set.Missions
-      setAsideEvery $ cardIs Treacheries.curseOfAThousandWinters
+      setAsideEveryCopyOf Treacheries.curseOfAThousandWinters
 
       {- "Put the Helping Yourself treachery into play next to the act deck with
       X resources on it. X is the number of marks under Strange Assistance in

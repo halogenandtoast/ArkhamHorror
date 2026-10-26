@@ -832,7 +832,10 @@ getAsIfInHandCardsFor forPlay iid = do
       _ -> False
   cardsAddedViaModifiers <- flip mapMaybeM modifiers $ \case
     AsIfInHand c -> pure $ Just c
-    AsIfInHandFor forPlay' c | forPlay == forPlay' -> Just <$> getCard c
+    -- Tolerant of a card the registry no longer holds: this runs for every
+    -- investigator on every read of the game (see 'getPlayProhibitions'), and a
+    -- card that is not registered is in nobody's hand anyway.
+    AsIfInHandFor forPlay' c | forPlay == forPlay' -> getCardMaybe c
     CanCommitToSkillTestsAsIfInHand c | forPlay == NotForPlay && isSkillTest -> pure $ Just c
     _ -> pure Nothing
   discard <- field InvestigatorDiscard iid
@@ -857,14 +860,15 @@ applied -- otherwise e.g. Marksmanship(1)'s targeting modifier never fires
 while it sits under Stick to the Plan. Cards merely playable from
 discard/deck are deliberately excluded; those load as their own entities.
 -}
-getAsIfInHandEffectCards :: (HasCallStack, HasGame m) => InvestigatorId -> m [Card]
+getAsIfInHandEffectCards :: HasGame m => InvestigatorId -> m [Card]
 getAsIfInHandEffectCards iid = do
   isSkillTest <- isJust <$> getSkillTest
   modifiers <- getModifiers (InvestigatorTarget iid)
   modifiers & mapMaybeM \case
     AsIfInHand c -> pure $ Just c
-    AsIfInHandFor _ c -> Just <$> getCard c
-    AsIfInHandForEffects c -> Just <$> getCard c
+    -- Unregistered means not in hand, as in 'getAsIfInHandCardsFor'.
+    AsIfInHandFor _ c -> getCardMaybe c
+    AsIfInHandForEffects c -> getCardMaybe c
     CanCommitToSkillTestsAsIfInHand c | isSkillTest -> pure $ Just c
     _ -> pure Nothing
 

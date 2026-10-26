@@ -189,7 +189,10 @@ export function cardImgPath(art: string): string {
   // Custom card art is resolved by `imgsrc`, not by path.
   if (isCustomCardCode(art)) return art
 
-  const homebrewMatch = art.match(/^:(.+):(\d+[a-z]*)$/)
+  // The local part is usually the printed number, but a card with no number in
+  // the pack is named instead -- `:ages-unwound:xsoldier`, after the core
+  // engine's `xpolyp`/`xreanimated`.
+  const homebrewMatch = art.match(/^:(.+):([^:]+)$/)
 
   if (homebrewMatch) {
     const [, campaign, cardCode] = homebrewMatch

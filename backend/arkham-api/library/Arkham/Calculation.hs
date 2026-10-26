@@ -74,6 +74,7 @@ data GameCalculation
   | CardCostCalculation InvestigatorId CardId
   | ScenarioInDiscardCountCalculation CardMatcher
   | DoomCountCalculation
+  | CurrentAgendaDoomCountCalculation
   | DistanceFromCalculation InvestigatorId LocationMatcher
   | InvestigatorTokenCountCalculation InvestigatorId Token
   | AssetTokenCountCalculation AssetId Token

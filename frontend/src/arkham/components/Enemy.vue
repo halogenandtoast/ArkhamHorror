@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { Dropdown } from 'floating-vue'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { useI18n } from 'vue-i18n'
@@ -33,6 +33,7 @@ import { Source } from '@/arkham/types/Source'
 import { isManifestedSpiritEnemy } from '@/arkham/spiritVisuals';
 import { type Card as ArkhamCard, toCardContents } from '@/arkham/types/Card';
 import { isUnvaluedCalculation } from '@/arkham/types/Calculation'
+import { useCardStore } from '@/stores/cards'
 
 const props = withDefaults(defineProps<{
   game: Game
@@ -65,9 +66,22 @@ const isTrueForm = computed(() => {
   return cardCode === 'cxnyarlathotep'
 })
 
-const imageId = computed(() => cardArt(props.enemy.cardCode, props.enemy.flipped ? 'b' : ''))
+/* An enemy's art is normally its card code, but a def can name a different one
+ * -- the Roman Soldier has no number in the pack, so its art is
+ * `:ages-unwound:xsoldier` after the core `xpolyp`/`xreanimated`. Read the def
+ * when the store has it; the code is the right answer for every other enemy
+ * and the right fallback before the store loads. */
+const cardStore = useCardStore()
+onMounted(() => {
+  if (!cardStore.loaded) cardStore.fetchCards()
+})
+const artCode = computed(
+  () => cardStore.cards.find((c) => c.cardCode === props.enemy.cardCode)?.art ?? props.enemy.cardCode
+)
 
-const image = computed(() => cardImage(props.enemy.cardCode, props.enemy.flipped ? 'b' : ''))
+const imageId = computed(() => cardArt(artCode.value, props.enemy.flipped ? 'b' : ''))
+
+const image = computed(() => cardImage(artCode.value, props.enemy.flipped ? 'b' : ''))
 
 // A story placed on an enemy is its other side (e.g. the Squamous Parasite's
 // glyph back), so turn it over on the enemy's own <img> rather than swapping

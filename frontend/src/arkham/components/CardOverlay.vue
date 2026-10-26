@@ -36,11 +36,19 @@ const VIEW_W = 1000             // stable viewBox width for percent → px mappi
 
 // Cache natural aspect ratios (width / height) to infer sideways when needed
 const imgARCache = reactive(new Map<string, number>())
+/* Card codes whose art does not exist. An enemy with no printed card -- Flying
+ * Polyp and Reanimated Dead have art drawn for them, Ages Unwound's Roman
+ * Soldier does not -- still carries a real card code, so the magnifier happily
+ * resolved a URL for it and painted the browser's broken-image glyph over the
+ * board. Nothing can be magnified that did not load, so remember the failure
+ * and show no overlay at all. */
+const imgBroken = reactive(new Set<string>())
 const loadAR = (url: string) => {
-  if (!url || imgARCache.has(url)) return
+  if (!url || imgARCache.has(url) || imgBroken.has(url)) return
   const i = new Image()
   i.decoding = 'async'
   i.onload = () => imgARCache.set(url, i.naturalWidth / i.naturalHeight)
+  i.onerror = () => imgBroken.add(url)
   i.src = url
 }
 
@@ -252,6 +260,10 @@ const clippedAt = (el: HTMLElement, x: number, y: number): boolean => {
 const queueHover = (el: HTMLElement) => {
   hoverTimer = clearTimer(hoverTimer)
   const delay = el.dataset.delay ? parseInt(el.dataset.delay, 10) : 0
+  // Probe before the overlay opens rather than after, so a card whose art is
+  // missing is already known broken by the time `card` is read.
+  const probe = getImage(el)
+  if (probe) loadAR(probe)
   hoverTimer = window.setTimeout(() => {
     hoveredElement.value = el
     canDisablePress = true
@@ -440,7 +452,10 @@ onUnmounted(() => { hoveredObserver?.disconnect(); hoveredObserver = null })
 
 const card = computed<string | null>(() => {
   void hoveredVersion.value
-  return hoveredElement.value ? getImage(hoveredElement.value) : null
+  const src = hoveredElement.value ? getImage(hoveredElement.value) : null
+  // Every part of the overlay hangs off this, so a URL known to 404 turns the
+  // whole magnifier off rather than framing a broken image. See `imgBroken`.
+  return src && imgBroken.has(src) ? null : src
 })
 const overlayCardCode = computed<string | null>(() => {
   void hoveredVersion.value

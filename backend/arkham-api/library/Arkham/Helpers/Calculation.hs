@@ -109,6 +109,7 @@ calculate = go
     AssetTokenCountCalculation aid token -> fieldMap AssetTokens (countTokens token) aid
     GameValueCalculation gv -> getGameValue gv
     DoomCountCalculation -> getDoomCount
+    CurrentAgendaDoomCountCalculation -> getDoomOnAgenda
     DistanceFromCalculation iid matcher -> do
       l1 <- getMaybeLocation iid
       l2 <- selectOne matcher

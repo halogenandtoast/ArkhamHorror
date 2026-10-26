@@ -25,7 +25,8 @@
     "name": "Unstuck",
     "campaign": ":ages-unwound",
     "standalone": false,
-    "i18n": "unstuck"
+    "i18n": "unstuck",
+    "allowCurvedPaths": true
   },
   {
     "id": ":ages-unwound:105",

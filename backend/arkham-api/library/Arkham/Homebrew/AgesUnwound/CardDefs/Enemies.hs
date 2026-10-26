@@ -476,4 +476,8 @@ romanSoldier =
     , cdEvade = evade 3
     , cdHealthDamage = healthDamage 1
     , cdCardTraits = singleton Humanoid
+    , -- The art is named for the card rather than numbered, the way the core
+      -- special enemies are (@xpolyp@, @xreanimated@) -- 900 is a slot above
+      -- the printed range, not a card in the pack.
+      cdArt = ":ages-unwound:xsoldier"
     }

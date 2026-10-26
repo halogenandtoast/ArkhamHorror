@@ -146,7 +146,7 @@ instance RunMessage Unstuck where
       (Present Day?) locations, and each copy of the Time Runs Backwards
       weakness aside, out of play." -}
       setAside [Locations.theTimestream, Locations.arkhamMassachusetts_086]
-      setAsideEvery $ cardIs Treacheries.timeRunsBackwards
+      setAsideEveryCopyOf Treacheries.timeRunsBackwards
 
       {- "Remove one of the two copies of each other location from the game, at
       random. Then shuffle the eight remaining locations together and put them

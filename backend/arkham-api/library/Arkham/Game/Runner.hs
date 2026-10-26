@@ -3314,15 +3314,23 @@ runGameMessage msg g = case msg of
   AllDrawEncounterCard -> do
     push $ SetActiveInvestigator $ g ^. activeInvestigatorIdL
     mGloria <- selectOne $ investigatorIs Investigators.gloriaGoldberg
-    investigators <- filterM (fmap not . isEliminated) =<< getInvestigatorsInOrder
+    -- A seat that cannot draw one is dropped from the draw rather than handed one
+    -- that does nothing, so it is also absent from Gloria Goldberg's draw order.
+    investigators <-
+      filterM
+        (\iid -> andM [not <$> isEliminated iid, not <$> hasModifier iid CannotDrawEncounterCards])
+        =<< getInvestigatorsInOrder
     case mGloria of
-      Just gloria -> push $ SendMessage (toTarget gloria) (ForInvestigators investigators AllDrawEncounterCard)
-      Nothing -> do
-        for_ (reverse investigators) \iid -> push $ ForInvestigator iid AllDrawEncounterCard
+      Just gloria | gloria `elem` investigators -> do
+        push $ SendMessage (toTarget gloria) (ForInvestigators investigators AllDrawEncounterCard)
+      _ -> for_ (reverse investigators) \iid -> push $ ForInvestigator iid AllDrawEncounterCard
     pure g
   ForInvestigator iid AllDrawEncounterCard -> do
     iid' <- fromMaybe iid <$> selectOne (InvestigatorWithModifier DrawsEachEncounterCard)
-    whenM (not <$> isEliminated iid) do
+    -- Also guarded here, not only in the fan-out above: a scenario that rebuilds
+    -- the draw pushes these directly (Ages Unwound VI).
+    cannotDraw <- hasModifier iid CannotDrawEncounterCards
+    unless cannotDraw $ whenM (not <$> isEliminated iid) do
       player <- getPlayer iid'
       mods <- getModifiers iid'
       viaTargets <- nub . concat <$> traverse select [tm | DrawEncounterCardsVia tm <- mods]

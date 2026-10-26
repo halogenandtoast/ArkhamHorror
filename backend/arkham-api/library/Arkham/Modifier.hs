@@ -234,6 +234,20 @@ data ModifierType
   | CannotDisengageEnemies
   | CannotDrawCards
   | CannotDrawCardsFromPlayerCardEffects
+  | {- | This investigator is left out of the game's own "each investigator draws
+    an encounter card" entirely -- out of the draw and out of Gloria Goldberg's
+    draw-order choice, rather than handed a draw that then does nothing. Honored
+    by 'Arkham.Message.AllDrawEncounterCard' and its per-investigator
+    @ForInvestigator@, which is the mythos draw and the handful of cards that
+    re-run it.
+
+    It does NOT cover an effect that names this investigator and tells them to
+    draw an encounter card; 'CannotDrawCards' does not either (it gates what may
+    be offered and the opening hand, not a draw the game pushes). An out-of-play
+    seat that must be unreachable by everything needs its own enumerated list of
+    bans -- see /Ritual Circle: A Harnessed Future/.
+    -}
+    CannotDrawEncounterCards
   | {- | "Cannot willingly end their turn". Drops the end-turn button from the
     player window, and nothing else: an effect that ends the turn for you is
     not the investigator choosing to, so it still resolves.

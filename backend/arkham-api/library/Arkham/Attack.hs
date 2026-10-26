@@ -4,8 +4,10 @@ import Arkham.Attack.Types
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query ((<=~>))
 import Arkham.Enemy.Types (EnemyAttrs)
+import Arkham.GameEnv (getPhase)
 import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, hasModifier)
 import Arkham.Id
+import Arkham.Phase (Phase (EnemyPhase))
 import Arkham.Prelude
 import Arkham.Source
 import Arkham.Strategy
@@ -45,12 +47,27 @@ canBeAttackedBy enemyId iid = do
     CannotBeAttackedBy matcher -> enemyId <=~> matcher
     _ -> pure False
 
+{- | Whether an enemy is currently barred from attacking. 'CannotAttack' is
+unconditional; 'CannotAttackDuringEnemyPhase' only bites in the enemy phase,
+since @Do EnemiesAttack@ is also pushed by card effects outside of it.
+-}
+getCannotAttackNow :: HasGame m => [ModifierType] -> m Bool
+getCannotAttackNow mods
+  | CannotAttack `elem` mods = pure True
+  | CannotAttackDuringEnemyPhase `elem` mods = (== EnemyPhase) <$> getPhase
+  | otherwise = pure False
+
+-- | 'getCannotAttackNow' for an enemy's own modifiers.
+enemyCannotAttackNow :: HasGame m => EnemyId -> m Bool
+enemyCannotAttackNow eid = getModifiers eid >>= getCannotAttackNow
+
 attackIsValid :: HasGame m => EnemyAttackDetails -> EnemyAttrs -> m Bool
-attackIsValid details attrs = andM [readyEnough, targetIsValid]
+attackIsValid details attrs = andM [readyEnough, enemyCanAttack, targetIsValid]
  where
   readyEnough
     | attrs.ready || details.despiteExhausted = pure True
     | otherwise = case details.kind of
         RetaliateAttack -> hasModifier details.enemy CanRetaliateWhileExhausted
         _ -> pure False
+  enemyCanAttack = not <$> enemyCannotAttackNow details.enemy
   targetIsValid = maybe (pure True) (canBeAttackedBy details.enemy) details.investigator

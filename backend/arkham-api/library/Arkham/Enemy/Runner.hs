@@ -253,16 +253,6 @@ getCanReady a = do
   phase <- getPhase
   pure $ CannotReady `notElem` mods && (DoesNotReadyDuringUpkeep `notElem` mods || phase /= #upkeep)
 
-{- | Whether an enemy is currently barred from attacking. 'CannotAttack' is
-unconditional; 'CannotAttackDuringEnemyPhase' only bites in the enemy phase,
-since @Do EnemiesAttack@ is also pushed by card effects outside of it.
--}
-getCannotAttackNow :: HasGame m => [ModifierType] -> m Bool
-getCannotAttackNow mods
-  | CannotAttack `elem` mods = pure True
-  | CannotAttackDuringEnemyPhase `elem` mods = (== #enemy) <$> getPhase
-  | otherwise = pure False
-
 getCanEngage :: HasGame m => EnemyAttrs -> m Bool
 getCanEngage a = do
   keywords <- getModifiedKeywords a
@@ -1382,9 +1372,11 @@ instance RunMessage EnemyAttrs where
       mods <- getCombinedModifiers [toTarget iid, toTarget a]
       keywords <- getModifiedKeywords a
       canAttack <- canBeAttackedBy enemyId iid
+      cannotAttack <- enemyCannotAttackNow enemyId
 
       when
         ( canAttack
+            && not cannotAttack
             && (Keyword.Retaliate `elem` keywords)
             && (IgnoreRetaliate `notElem` mods)
             && (not enemyExhausted || CanRetaliateWhileExhausted `elem` mods)
@@ -1523,9 +1515,11 @@ instance RunMessage EnemyAttrs where
       mods <- getCombinedModifiers [toTarget iid, toTarget a]
       keywords <- getModifiedKeywords a
       canAttack <- canBeAttackedBy enemyId iid
+      cannotAttack <- enemyCannotAttackNow enemyId
       pushAll
         [ EnemyAttack $ viaAlert $ (enemyAttack enemyId a iid) {attackDamageStrategy = enemyDamageStrategy}
         | canAttack
+        , not cannotAttack
         , Keyword.Alert `elem` keywords
         , IgnoreAlert `notElem` mods
         ]

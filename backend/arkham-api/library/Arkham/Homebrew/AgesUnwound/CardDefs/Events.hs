@@ -15,12 +15,17 @@ agencyStrikeTeam =
     , cdEncounterSetQuantity = Just 1
     }
 
+{- | Its __Forced__ fires from hand, so it needs 'InHandEffect' to exist as an
+entity there at all -- without it the card has no in-hand entity, nothing asks it
+for abilities, and the Forced never fires (Dark Memory is the same shape).
+-}
 unstableEnergies :: CardDef
 unstableEnergies =
   (event ":ages-unwound:235" "Unstable Energies" 1 Neutral)
     { cdCardTraits = singleton Spell
     , cdActions = #fight
     , cdLevel = Nothing
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdEncounterSet = Just Set.NightOfTheRitual
     , cdEncounterSetQuantity = Just 1
     }

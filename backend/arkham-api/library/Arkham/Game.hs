@@ -6973,33 +6973,11 @@ runMessages gameId observers = do
         InvestigationPhase {} | not (gameRunWindows g) -> pure ()
         InvestigationPhase {} -> do
           mTurnInvestigator <- runWithEnv $ traverse getInvestigator =<< selectOne TurnInvestigator
-          let
-            doneWithRound =
-              or
-                . sequence
-                  [ attr investigatorEndedTurn
-                  , attr investigatorResigned
-                  , attr investigatorDefeated
-                  ]
-          if all doneWithRound mTurnInvestigator
+          if all doneWithTurn mTurnInvestigator
             then do
-              playingInvestigators <-
-                runWithEnv $ filterM (fmap (not . doneWithRound) . getInvestigator) (gamePlayerOrder g)
-              case playingInvestigators of
-                [] -> pushEnd EndInvestigation
-                [x] -> push $ ChoosePlayer x SetTurnPlayer
-                xs -> do
-                  if view leadInvestigatorIdL g == "00000"
-                    then push ChooseLeadInvestigator
-                    else do
-                      player <- runWithEnv $ getPlayer (g ^. leadInvestigatorIdL)
-                      push
-                        $ questionLabel "$label.choosePlayerToTakeTurn" player
-                        $ ChooseOne
-                          [ PortraitLabel iid [ChoosePlayer iid SetTurnPlayer]
-                          | iid <- xs
-                          ]
-
+              -- Who takes the next turn is 'ChooseTurnPlayer''s decision alone, so
+              -- that a turn-order modifier has one place to be honored.
+              push ChooseTurnPlayer
               runMessages gameId observers
             else do
               let turnPlayer = fromJustNote "verified above" mTurnInvestigator

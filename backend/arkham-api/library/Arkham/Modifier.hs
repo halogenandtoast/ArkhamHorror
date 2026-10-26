@@ -543,6 +543,27 @@ data ModifierType
   | MustFight EnemyId
   | MustTakeAction ActionTarget
   | MustPerformAbilityIfCan AbilityRef
+  | {- | This investigator has a turn that was suspended mid-turn and is owed the
+    rest of it. Carried from the moment of suspension until the resumed turn
+    ends, and honored in three places, all in the investigation phase:
+
+    * 'Arkham.Message.ChooseTurnPlayer' narrows the offer to the investigators
+      carrying this while any of them still has a turn coming, so a resumed turn
+      comes before anyone else's. Several of them are still /chosen between/
+      rather than ordered for the players.
+    * that same choice resolves as 'Arkham.Question.ResumeTurnPlayer' rather
+      than @SetTurnPlayer@, so the turn is picked back up instead of begun: no
+      @TurnBegins@ windows, and the investigator lands in 2.2.1.
+    * @Begin InvestigationPhase@ leaves out its own player window between 2.1
+      and 2.2, because a turn that resumes as the phase begins is already in
+      progress -- the phase never reaches a point between turns.
+
+    /Ritual Circle: A Harnessed Future/ is what wants it. What it still cannot
+    carry across the phase boundary is per-turn bookkeeping: @actionsTaken@,
+    @actionsPerformed@ and per-turn ability limits are reset by @Do BeginRound@
+    before the phase is reached.
+    -}
+    ResumesSuspendedTurn
   | NegativeToPositive
   | NoDamageDealt
   | NoInitialSwarm

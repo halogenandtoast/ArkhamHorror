@@ -818,6 +818,18 @@ data Message
   | PreScenarioSetup
   | StandaloneSetup
   | ChoosePlayer InvestigatorId ChoosePlayerChoice
+  | {- | Offer the next investigator's turn in the investigation phase. The one
+    place that decision is made: the phase pushes it for the first turn and the
+    queue-drain fallback in "Arkham.Game" pushes it for every turn after, so a
+    modifier that reorders turns ('Arkham.Modifier.ResumesSuspendedTurn') has a
+    single place to be honored.
+
+    Deferred rather than a pre-built @ChooseOne@ because the phase builds its
+    steps before the "when the investigation phase begins" window runs, and a
+    card in that window (/Ritual Circle: A Harnessed Future/) is what decides
+    who may take the first turn.
+    -}
+    ChooseTurnPlayer
   | SetPlayerOrder
   | ChoosePlayerOrder InvestigatorId [InvestigatorId] [InvestigatorId]
   | ChooseRandomLocation Target [LocationId]

@@ -274,7 +274,14 @@ data ReadChoices msg
   | LeadInvestigatorMustDecide [UI msg]
   deriving stock (Show, Ord, Eq, Data)
 
-data ChoosePlayerChoice = SetLeadInvestigator | SetTurnPlayer
+data ChoosePlayerChoice
+  = SetLeadInvestigator
+  | SetTurnPlayer
+  | {- | Pick a turn that was suspended mid-turn back up, rather than begin one:
+    the same bookkeeping as @BeginTurn@ with no @TurnBegins@ windows, landing
+    the investigator straight in 2.2.1. See 'Arkham.Modifier.ResumesSuspendedTurn'.
+    -}
+    ResumeTurnPlayer
   deriving stock (Show, Ord, Eq, Data)
 
 evadeLabel

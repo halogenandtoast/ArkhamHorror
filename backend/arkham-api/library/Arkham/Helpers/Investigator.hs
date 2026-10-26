@@ -900,6 +900,19 @@ getMaybeCardAttachments iid c = do
   settings <- field InvestigatorSettings iid
   pure $ cardAttachments <$> lookup (toCardCode c) (perCardSettings settings)
 
+{- | Is this investigator's turn for the round already behind them? The filter
+'Arkham.Message.ChooseTurnPlayer' and the queue-drain fallback both offer turns
+by: a seat that ended its turn, resigned or was defeated has none coming.
+-}
+doneWithTurn :: Investigator -> Bool
+doneWithTurn =
+  or
+    . sequence
+      [ attr investigatorEndedTurn
+      , attr investigatorResigned
+      , attr investigatorDefeated
+      ]
+
 getCanLoseActions
   :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId)
   => investigator -> m Bool

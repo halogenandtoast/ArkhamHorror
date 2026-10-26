@@ -1152,6 +1152,8 @@ img.card.source-highlight {
 
 .pool.location-pool {
   position: absolute;
+  /* Objective locations raise the card art to layer 1. Keep tokens above it. */
+  z-index: var(--z-index-2);
   top: 50%;
   align-items: center;
   display: flex;

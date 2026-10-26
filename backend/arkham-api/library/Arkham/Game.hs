@@ -432,6 +432,7 @@ withTreacheryMetadata a = do
     tmPeril = case card of
       EncounterCard ec -> Keyword.Peril `member` card.keywords || ecAddedPeril ec
       _ -> Keyword.Peril `member` card.keywords
+  tmTreacheries <- select $ TreacheryIsAttachedTo (TreacheryTarget $ toId a)
   tmModifiers <- getModifiers' (toTarget a)
   pure $ a `with` TreacheryMetadata {..}
 

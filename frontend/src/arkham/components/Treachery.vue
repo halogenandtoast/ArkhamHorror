@@ -5,6 +5,7 @@ import { CARD_FLIGHT_ATTR, useCardFlight } from '@/arkham/cardFlight'
 import { useDebug } from '@/arkham/debug';
 import { cardDropHandlers, treacheryTarget } from '@/arkham/debugCardDrop';
 import { cardImage } from '@/arkham/cardImages';
+import { toCardContents } from '@/arkham/types/Card';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
@@ -112,6 +113,25 @@ function handleCardClick() {
 
   emits('choose', cardAction.value)
 }
+
+/* A card whose identity has been retargeted is really something else underneath
+ * -- Unleashed Chaos (Proliferation) becomes an exact copy of the card drawn
+ * after it, keeping its own CardId and its real code in `originalCardCode`.
+ * Without this the two copies are indistinguishable on the board. */
+const impersonating = computed(() => {
+  const card = props.game.cards?.[props.treachery.cardId]
+  const original = card && toCardContents(card).originalCardCode
+  return original && original !== props.treachery.cardCode ? original : null
+})
+
+/* Filtered rather than mapped straight off the id list: the ids and the entity
+ * map arrive in the same payload, but a treachery that left play between them
+ * would otherwise render as `undefined`. */
+const attachedTreacheries = computed(() =>
+  (props.treachery.treacheries ?? [])
+    .map((tid) => props.game.treacheries[tid])
+    .filter((t) => !!t),
+)
 </script>
 <template>
   <div
@@ -122,6 +142,13 @@ function handleCardClick() {
     v-bind="cardDrop"
   >
     <MissingCardBadge :card-code="treachery.cardCode" />
+    <img
+      v-if="impersonating"
+      class="impersonating-badge"
+      :src="cardImage(impersonating)"
+      :title="$t('treachery.copyOf')"
+      aria-hidden="true"
+    />
     <AbilityButton
       v-if="isInHand && !canUseMobileAbilityMenu"
       v-for="ability in abilities"
@@ -167,6 +194,18 @@ function handleCardClick() {
       />
       <Token v-for="(sealedToken, index) in treachery.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />
     </div>
+
+    <!-- A treachery attached to this one, drawn as a strip under the host card
+         the way an enemy's attachments are. Recursive by implicit self-reference. -->
+    <Treachery
+      v-for="attached in attachedTreacheries"
+      :key="attached.id"
+      :treachery="attached"
+      :game="game"
+      :playerId="playerId"
+      :attached="true"
+      @choose="$emit('choose', $event)"
+    />
 
     <template v-if="debug.active">
       <button @click="debug.send(game.id, {tag: 'Discard', contents: [null, { tag: 'GameSource' }, { tag: 'TreacheryTarget', contents: id}]})">{{ $t('treachery.discard') }}</button>
@@ -233,6 +272,19 @@ function handleCardClick() {
 .attached .pool {
   top: auto;
   bottom: 5%;
+}
+
+/* The real card, shown small in the corner of the copy it is impersonating, so
+   two identical-looking cards on the board can be told apart. */
+.impersonating-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: calc(var(--card-width) * 0.28);
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+  z-index: 2;
 }
 
 .exhausted {

@@ -717,6 +717,8 @@ img.card.source-highlight {
   isolation: isolate;
   position: relative;
   display: flex;
+  /* Attachment debug controls can widen the stack beyond the card art. */
+  align-self: flex-start;
   align-items: center;
   justify-content: center;
 }

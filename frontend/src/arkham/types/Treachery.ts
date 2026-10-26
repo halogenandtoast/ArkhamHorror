@@ -13,6 +13,9 @@ export type Treachery = {
   placement: Placement;
   sealedChaosTokens: ChaosToken[];
   exhausted: boolean;
+  /* Treacheries attached to this one. Rare, but Unleashed Chaos (Mutation)
+   * attaches to whatever encounter card its revelation turned up. */
+  treacheries: string[];
 }
 
 export const treacheryDecoder = JsonDecoder.object<Treachery>({
@@ -25,4 +28,5 @@ export const treacheryDecoder = JsonDecoder.object<Treachery>({
   peril: JsonDecoder.boolean(),
   sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
   exhausted: JsonDecoder.boolean(),
+  treacheries: JsonDecoder.array<string>(JsonDecoder.string(), 'TreacheryId[]'),
 }, 'Treachery');

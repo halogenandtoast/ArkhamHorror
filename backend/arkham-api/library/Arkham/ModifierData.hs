@@ -72,6 +72,12 @@ instance ToJSON StoryMetadata where
 
 data TreacheryMetadata = TreacheryMetadata
   { tmPeril :: Bool
+  , tmTreacheries :: [TreacheryId]
+  {- ^ Treacheries attached to THIS treachery, so the client can draw them on
+    it. Acts, agendas, assets and enemies all carry the same list; without it a
+    card attached to a treachery (Ages Unwound's /Unleashed Chaos (Mutation)/,
+    which attaches to whatever the draw turned up) is in play and invisible.
+  -}
   , tmModifiers :: [Modifier]
   }
   deriving stock (Show, Eq, Generic)

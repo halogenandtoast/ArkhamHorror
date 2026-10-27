@@ -1,3 +1,13 @@
+/* View-transition snapshots are visual only. Their default full-page hit area
+   otherwise swallows clicks on already-interactive cards until animation ends. */
+:root {
+  view-transition-name: none;
+}
+
+::view-transition {
+  pointer-events: none;
+}
+
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;

@@ -21,7 +21,8 @@ off.
 -}
 theBritishLibrary :: LocationCard TheBritishLibrary
 theBritishLibrary =
-  locationWith TheBritishLibrary Cards.theBritishLibrary 10 (Static 7)
+  symbolLabel
+    $ locationWith TheBritishLibrary Cards.theBritishLibrary 10 (Static 7)
     $ (canBeFlippedL .~ True)
     . (revealedL .~ True)
 

@@ -20,7 +20,8 @@ from the start and flippable, as the Dim Carcosa locations are.
 -}
 anotherRealm :: LocationCard AnotherRealm
 anotherRealm =
-  locationWith AnotherRealm Cards.anotherRealm 4 (PerPlayer 1)
+  symbolLabel
+    $ locationWith AnotherRealm Cards.anotherRealm 4 (PerPlayer 1)
     $ (canBeFlippedL .~ True)
     . (revealedL .~ True)
 

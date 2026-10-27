@@ -247,7 +247,10 @@ const attachedTreacheries = computed(() =>
 
 .treachery-face {
   position: relative;
-  display: flex;
+}
+
+.treachery-face > .card {
+  display: block;
 }
 
 .attached .card {

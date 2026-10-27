@@ -2,8 +2,6 @@ module Arkham.Homebrew.AgesUnwound.Treacheries.GazeOfAforgomon (gazeOfAforgomon)
 
 import Arkham.Ability
 import Arkham.Criteria qualified as Criteria
-import Arkham.GameEnv (getHistory)
-import Arkham.History (History (historyActionsCompleted))
 import Arkham.History.Types
 import Arkham.Homebrew.AgesUnwound.CardDefs.Treacheries qualified as Cards
 import Arkham.Matcher
@@ -19,9 +17,20 @@ gazeOfAforgomon = treachery GazeOfAforgomon Cards.gazeOfAforgomon
 
 instance HasAbilities GazeOfAforgomon where
   getAbilities (GazeOfAforgomon a) =
-    [ -- "Forced - At the end of your turn, if you have taken at least 4 actions
-      -- this turn: Place 1 resource on Gaze of Aforgomon, as an offering."
-      restricted a 1 InYourThreatArea $ forced $ TurnEnds #when You
+    [ {- "Forced - At the end of your turn, if you have taken at least 4 actions
+      this turn: Place 1 resource on Gaze of Aforgomon, as an offering."
+
+      The action count is a criterion and not a guard in the handler: a Forced
+      whose "if" is only checked once it resolves still announces itself and
+      still eats its window, so a turn of three actions reported a trigger that
+      did nothing. 'ActionsCompleted' reads the same 'historyActionsCompleted'
+      the handler used to. -}
+      restricted
+        a
+        1
+        (InYourThreatArea <> Criteria.HasHistory TurnHistory You (ActionsCompleted $ atLeast 4))
+        $ forced
+        $ TurnEnds #when You
     , -- "[action][action]: Place 1 resource on Gaze of Aforgomon, as an offering."
       restricted a 2 InYourThreatArea $ ActionAbility mempty Nothing (ActionCost 2)
     , -- "Forced - At the end of the game, if Gaze of Aforgomon has fewer than 4
@@ -37,9 +46,8 @@ instance RunMessage GazeOfAforgomon where
     Revelation iid (isSource attrs -> True) -> do
       placeInThreatArea attrs iid
       pure t
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      actions <- historyActionsCompleted <$> getHistory TurnHistory iid
-      when (actions >= 4) $ placeTokens (attrs.ability 1) attrs Token.Resource 1
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeTokens (attrs.ability 1) attrs Token.Resource 1
       pure t
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       placeTokens (attrs.ability 2) attrs Token.Resource 1

@@ -575,6 +575,9 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'MayIgnoreLocationEffectsAndKeywords'">
             <span class="text">{{ $t('modifier.mayIgnoreLocationEffects') }}</span>
           </template>
+          <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'ReturnBlessedToChaosBag'">
+            <span class="text" v-html="formatContent($t('modifier.returnBlessedToChaosBag'))"></span>
+          </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'SkillIconsSubtract'">
             <span class="text">{{ $t('modifier.skillIconsSubtract') }}</span>
           </template>

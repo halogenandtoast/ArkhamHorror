@@ -477,6 +477,7 @@
     "doubleDifficulty": "Double Difficulty",
     "automaticallyFailIfSucceedByAtLeast": "Automatically fail if you succeed by {amount} or more",
     "mayIgnoreLocationEffects": "May Ignore Location Effects",
+    "returnBlessedToChaosBag": "Return {bless} to the chaos bag",
     "skillIconsSubtract": "Skill Icons Subtract",
     "skillTestAutomaticallySucceeds": "Skill test automatically succeeds",
     "revealAnotherChaosToken": "Reveal another chaos token",

@@ -1631,6 +1631,24 @@ const encounterDiscardFlightStyle = computed(() =>
 )
 
 const cardStore = useCardStore()
+const locationsAcceptDrop = computed(() =>
+  debug.active && DebugMove.draggedCardAccepted(props.game, cardStore.cards, 'locations') === true
+)
+
+function onDragOverLocations(event: DragEvent) {
+  if (!locationsAcceptDrop.value || cardDropInFlight() || DebugInPlay.draggedInPlay.value) return
+  event.preventDefault()
+  if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy'
+}
+
+function onDropLocation(event: DragEvent) {
+  if (!locationsAcceptDrop.value || cardDropInFlight() || DebugInPlay.draggedInPlay.value) return
+  event.preventDefault()
+  event.stopPropagation()
+  const cardId = DebugMove.draggedCardId.value
+  if (cardId) DebugMove.debugMoveCard(props.game.id, cardId, { tag: 'DebugCardLocation' })
+}
+
 const encounterDiscardDraggedOver = ref(false)
 // null while nothing is in flight, false when the dragged card has the wrong
 // back for an encounter discard.
@@ -3088,6 +3106,8 @@ async function addChaosToken(face: any){
           'location-cards-container--unlocked': locationsUnlocked,
           'location-cards-container--fullscreen': locationsFullscreen,
         }"
+        @dragover="onDragOverLocations"
+        @drop="onDropLocation"
         @dblclick.passive="toggleZoom"
         @wheel.alt="handleZoomScroll"
       >

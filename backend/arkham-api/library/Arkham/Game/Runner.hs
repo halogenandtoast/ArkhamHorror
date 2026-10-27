@@ -3217,6 +3217,10 @@ runGameMessage msg g = case msg of
       -- their first step, so they already pull it out of every other zone.
       DebugCardRemovedFromGame -> push $ RemoveCard cardId
       DebugCardSetAside -> push $ SetAsideCards [card]
+      DebugCardLocation ->
+        when (cdCardType (toCardDef card) `elem` [LocationType, EnemyLocationCardType]) do
+          placement <- placeLocation_ card
+          pushAll [ObtainCard cardId, placement]
       DebugCardHand iid -> push $ DebugAddToHand iid cardId
       DebugCardDiscard -> case card of
         EncounterCard ec -> push $ AddToEncounterDiscard ec

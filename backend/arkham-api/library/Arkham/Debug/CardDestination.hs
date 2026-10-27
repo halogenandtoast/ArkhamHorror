@@ -16,6 +16,7 @@ data DebugDeckPosition = DebugDeckTop | DebugDeckBottom | DebugDeckShuffle
 data DebugCardDestination
   = DebugCardRemovedFromGame
   | DebugCardSetAside
+  | DebugCardLocation
   | DebugCardDiscard
   | DebugCardHand InvestigatorId
   | DebugCardDeck DeckSignifier DebugDeckPosition

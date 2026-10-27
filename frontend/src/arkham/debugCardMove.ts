@@ -27,6 +27,7 @@ export type DebugDeckPosition = 'DebugDeckTop' | 'DebugDeckBottom' | 'DebugDeckS
 export type DebugCardDestination =
   | { tag: 'DebugCardRemovedFromGame' }
   | { tag: 'DebugCardSetAside' }
+  | { tag: 'DebugCardLocation' }
   | { tag: 'DebugCardDiscard' }
   | { tag: 'DebugCardHand'; contents: string }
   | { tag: 'DebugCardDeck'; contents: [DeckSignifier, DebugDeckPosition] }
@@ -46,6 +47,7 @@ export function debugMoveCard(gameId: string, cardId: string, destination: Debug
 /* Where a card is being dropped. Decks and their discards share a back, so they
  * share a rule; a hand accepts anything, which is what debug does today. */
 export type DebugDropTarget =
+  | 'locations'
   | 'hand'
   | 'playerDeck'
   | 'playerDiscard'
@@ -83,6 +85,7 @@ export function isPlayerCardDef(def: CardDef): boolean {
  */
 export function canMoveCardTo(def: CardDef | undefined, target: DebugDropTarget): boolean {
   if (!def) return false
+  if (target === 'locations') return ['LocationType', 'EnemyLocationCardType'].includes(def.cardType)
   if (target === 'hand') return true
   if (def.doubleSided) return false
   const player = isPlayerCardDef(def)

@@ -19,7 +19,7 @@
       <Suspense @resolve="hideAppLoading">
         <router-view v-slot="{ Component }">
           <transition name="fade">
-            <component :is="Component" />
+            <component :is="Component" :key="routeKey" />
           </transition>
         </router-view>
         <template #fallback>
@@ -35,7 +35,8 @@
 
 <script lang="ts" setup>
 import { ModalsContainer } from 'vue-final-modal'
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { useSiteSettingsStore } from '@/stores/site_settings'
 import { maintenanceActive, maintenanceMessage } from '@/maintenance'
 import { checkImageExists } from '@/arkham/helpers'
@@ -45,6 +46,17 @@ import NavBar from '@/components/NavBar.vue'
 import Toasts from '@/components/Toasts.vue'
 
 const settingsStore = useSiteSettingsStore()
+
+/* Vue Router reuses one component instance when only a route param changes, so
+ * opening a second game in the same tab kept the first game's `Game.vue` alive
+ * -- including a full-screen reveal and the `uiLock` it holds. The new game
+ * then came up behind an overlay belonging to the old one, which is
+ * indistinguishable from a stuck board. Keying on the game forces a remount;
+ * routes without one keep a stable key so ordinary navigation is unaffected. */
+const route = useRoute()
+const routeKey = computed(() =>
+  route.params.gameId ? `${String(route.name)}:${route.params.gameId}` : String(route.name)
+)
 
 /* A full reload rather than refetching: the window may have ended a build
  * later, and a client that sat through it holding stale chunks and a dead

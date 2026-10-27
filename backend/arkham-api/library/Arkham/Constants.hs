@@ -69,3 +69,19 @@ pattern NonActivateAbility <- 2001
 
 notPlayerAbilityIndex :: Int -> Bool
 notPlayerAbilityIndex n = n `notElem` [AbilityInvestigate, AbilityEvade, AbilityEngage, AbilityMove, AbilityAttack]
+
+{- | The basic actions are modeled as abilities, but none of them is an [action]
+ability. Resign is not one of these: it prints a Resign designator and is
+taken with the Activate action.
+-}
+basicActionIndex :: Int -> Bool
+basicActionIndex n =
+  n
+    `elem` [ AbilityAttack
+           , AbilityEvade
+           , AbilityEngage
+           , AbilityInvestigate
+           , AbilityMove
+           , PlayAbility
+           , ResourceAbility
+           ]

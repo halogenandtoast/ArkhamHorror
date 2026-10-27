@@ -68,9 +68,10 @@ instance RunMessage StoryAttrs where
     InSearch msg'@(UseAbility _ ab _) | isSource attrs ab.source || isProxySource attrs ab.source -> do
       push $ Do msg'
       pure attrs
-    InDiscard iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource attrs ab.source || isProxySource attrs ab.source) -> do
-      push $ Do msg'
-      pure attrs
+    -- NOTE: No InDiscard UseAbility handler here. In-discard entities also receive the raw
+    -- message (see RunMessage Game in Game/Runner.hs), so the bare handler above already
+    -- fires for them; a second one pushes `Do (UseAbility)` twice and resolves the ability
+    -- (and pays its cost) twice -- see #4764 and Monastic Training's doubled reaction.
     InHand iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource attrs ab.source || isProxySource attrs ab.source) -> do
       push $ Do msg'
       pure attrs

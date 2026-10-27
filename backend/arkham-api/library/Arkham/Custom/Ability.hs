@@ -415,6 +415,10 @@ A card that is not in play is handed its messages wrapped in where it lives, so
 an ability with a @zone@ never sees a bare 'UseThisAbility'. Matching through
 the wrapper keeps the runners from having to know which zones exist.
 
+The discard is the exception: in-discard entities are handed the wrapped /and/
+the raw message (see @RunMessage Game@ in "Arkham.Game.Runner"), so matching
+'InDiscard' here as well ran the ability's steps twice. The raw form covers it.
+
 The windows come along because an ability that says "that many" is talking about
 the one it triggered on, and only the message still knows them.
 -}
@@ -426,7 +430,6 @@ pattern ZonedUseThisAbility iid source idx ws payment <-
 zonedAbilityUse :: Message -> Maybe (InvestigatorId, Source, Int, [Window], Payment)
 zonedAbilityUse = \case
   InHand _ m -> zonedAbilityUse m
-  InDiscard _ m -> zonedAbilityUse m
   InSearch m -> zonedAbilityUse m
   UseCardAbility iid source idx ws payment -> Just (iid, source, idx, ws, payment)
   _ -> Nothing

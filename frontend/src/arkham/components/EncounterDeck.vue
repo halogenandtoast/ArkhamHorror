@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
+import Draggable from '@/components/Draggable.vue'
+import { useEscape } from '@/composable/escape'
 import { Game } from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
 import { cardImage, investigatorPortrait as portraitFor } from '@/arkham/cardImages'
@@ -136,9 +138,17 @@ function onDrop(event: DragEvent) {
 }
 
 const debug = useDebug()
+const debuggingDeck = ref(false)
+useEscape(() => { debuggingDeck.value = false }, debuggingDeck)
+
+const drawCount = ref(1)
+const stepDraw = (by: 1 | -1) => {
+  drawCount.value = Math.min(20, Math.max(1, drawCount.value + by))
+}
+const encounterDeckSize = computed(() => props.spectral ?? props.game.encounterDeckSize)
 
 function drawEncounterCard() {
-  debug.send(props.game.id, {tag: 'DrawCards', contents: [investigatorId.value, {cardDrawSource: {tag: 'GameSource'}, cardDrawDeck: deckSignifier.value, cardDrawAmount: 1, cardDrawState: {tag: 'UnresolvedCardDraw'}, cardDrawTarget: null, cardDrawAction: false, cardDrawKind: 'StandardCardDraw', cardDrawRules: [], cardDrawAndThen: null, cardDrawAlreadyDrawn: [], cardDrawDiscard: null}]})
+  debug.send(props.game.id, {tag: 'DrawCards', contents: [investigatorId.value, {cardDrawSource: {tag: 'GameSource'}, cardDrawDeck: deckSignifier.value, cardDrawAmount: drawCount.value, cardDrawState: {tag: 'UnresolvedCardDraw'}, cardDrawTarget: null, cardDrawAction: false, cardDrawKind: 'StandardCardDraw', cardDrawRules: [], cardDrawAndThen: null, cardDrawAlreadyDrawn: [], cardDrawDiscard: null}]})
 }
 
 function discardEncounterCards(amount: number) {
@@ -146,6 +156,7 @@ function discardEncounterCards(amount: number) {
 }
 
 function selectAndDrawEncounterCard() {
+  debuggingDeck.value = false
   debug.send(props.game.id, {tag: 'FindAndDrawEncounterCardWithDeckKey', contents: [investigatorId.value, {'tag': 'AnyCard', contents: []}, 'ExcludeDiscard', deckKey.value]})
 }
 
@@ -154,6 +165,7 @@ function shuffleEncounterDeck() {
 }
 
 const showDebugAddCard = ref(false)
+useEscape(() => { showDebugAddCard.value = false }, showDebugAddCard)
 const debugEncounterCards = ref<CardDef[]>([])
 const debugCardSearch = ref('')
 const debugAddCardError = ref<string | null>(null)
@@ -281,16 +293,38 @@ async function debugAddCardToDeck(card: CardDef) {
 
 <template>
   <div class="encounter-deck">
-    <div v-if="debug.active" class="debug-buttons">
-      <button @click="drawEncounterCard">{{ $t('encounterDeck.draw') }}</button>
-      <button
-        @click.exact="discardEncounterCards(1)"
-        @click.shift="discardEncounterCards(5)"
-      >{{ $t('treachery.discard') }}</button>
-      <button @click="selectAndDrawEncounterCard">{{ $t('draw.selectDraw') }}</button>
-      <button @click="shuffleEncounterDeck">{{ $t('draw.shuffle') }}</button>
-      <button @click="openDebugAddCard">+ Card to deck</button>
-    </div>
+    <template v-if="debug.active">
+      <button class="debug-open" @click="debuggingDeck = true">{{ $t('enemy.debug') }}</button>
+      <Draggable v-if="debuggingDeck">
+        <template #handle><h2>{{ isSpectral ? 'Spectral encounter deck' : 'Encounter deck' }}</h2></template>
+        <div class="debug-modal debug-window deck-debug">
+          <p class="deck-debug__size">{{ $t('debug.deck.size', { count: encounterDeckSize }) }}</p>
+          <section class="deck-debug__section">
+            <span class="deck-debug__label">{{ $t('debug.deck.draw') }}</span>
+            <div class="deck-debug__row">
+              <div class="deck-debug__stepper">
+                <button type="button" @click="stepDraw(-1)">−</button>
+                <span>{{ drawCount }}</span>
+                <button type="button" @click="stepDraw(1)">+</button>
+                <button type="button" class="deck-debug__stepper-draw" :disabled="encounterDeckSize === 0" @click="drawEncounterCard">{{ $t('debug.deck.drawButton') }}</button>
+              </div>
+              <button type="button" :disabled="encounterDeckSize === 0" @click="selectAndDrawEncounterCard">{{ $t('draw.selectDraw') }}</button>
+              <button type="button" @click="shuffleEncounterDeck">{{ $t('draw.shuffle') }}</button>
+            </div>
+          </section>
+          <section class="deck-debug__section">
+            <span class="deck-debug__label">{{ $t('treachery.discard') }}</span>
+            <div class="deck-debug__row">
+              <button type="button" :disabled="encounterDeckSize === 0" @click.exact="discardEncounterCards(1)" @click.shift="discardEncounterCards(5)">{{ $t('treachery.discard') }}</button>
+            </div>
+          </section>
+          <section class="deck-debug__section">
+            <button type="button" @click="debuggingDeck = false; openDebugAddCard()">+ Card to deck</button>
+          </section>
+          <button class="debug-close" @click="debuggingDeck = false">{{ $t('debug.common.close') }}</button>
+        </div>
+      </Draggable>
+    </template>
 
     <Teleport to="body">
       <div
@@ -391,7 +425,8 @@ async function debugAddCardToDeck(card: CardDef) {
 
 .encounter-deck {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
   gap: 0.35rem;
   position: relative;
 }
@@ -438,18 +473,10 @@ async function debugAddCardToDeck(card: CardDef) {
   background: rgba(255,255,255,0.8);
 }
 
-.debug-buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0.25rem;
-  width: max-content;
-  max-width: 9rem;
-}
-
-.debug-buttons button {
-  font-size: 0.75rem;
-  white-space: nowrap;
+.debug-open {
+  order: 1;
+  align-self: center;
+  flex: 0 0 auto;
 }
 
 .debug-add-card-overlay {
@@ -553,3 +580,5 @@ async function debugAddCardToDeck(card: CardDef) {
   opacity: 0.8;
 }
 </style>
+
+<style scoped src="./debug/deck-debug.css"></style>

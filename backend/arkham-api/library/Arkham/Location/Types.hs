@@ -96,6 +96,7 @@ data instance Field Location :: Type -> Type where
   LocationPrintedShroud :: Field Location (Maybe GameValue)
   LocationShroud :: Field Location (Maybe Int)
   LocationJustShroud :: Field Location Int
+  LocationBaseShroud :: Field Location Int
   LocationTokens :: Field Location Tokens
   LocationTraits :: Field Location (Set Trait)
   LocationUnrevealedName :: Field Location Name
@@ -133,6 +134,7 @@ fieldLens = \case
   LocationPrintedShroud -> shroudL
   LocationShroud -> virtual
   LocationJustShroud -> virtual
+  LocationBaseShroud -> virtual
   LocationConnectedMatchers -> connectedMatchersL
   LocationRevealedConnectedMatchers -> revealedConnectedMatchersL
   LocationRevealed -> revealedL
@@ -209,6 +211,7 @@ instance FromJSON (SomeField Location) where
     "LocationPlacement" -> pure $ SomeField LocationPlacement
     "LocationInvestigateSkill" -> pure $ SomeField LocationInvestigateSkill
     "LocationJustShroud" -> pure $ SomeField LocationJustShroud
+    "LocationBaseShroud" -> pure $ SomeField LocationBaseShroud
     "LocationKeywords" -> pure $ SomeField LocationKeywords
     "LocationLabel" -> pure $ SomeField LocationLabel
     "LocationName" -> pure $ SomeField LocationName

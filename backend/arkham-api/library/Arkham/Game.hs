@@ -4962,6 +4962,7 @@ instance Projection Location where
       LocationSealedChaosTokens -> pure locationSealedChaosTokens
       LocationPlacedChaosTokens -> pure locationPlacedChaosTokens
       LocationJustShroud -> getModifiedShroudValueFor attrs
+      LocationBaseShroud -> getPrintedShroudValueFor attrs
       LocationInvestigateDifficulty -> pure $ LocationMaybeFieldCalculation l.id LocationShroud
       LocationBrazier -> pure locationBrazier
       LocationFloodLevel -> pure locationFloodLevel

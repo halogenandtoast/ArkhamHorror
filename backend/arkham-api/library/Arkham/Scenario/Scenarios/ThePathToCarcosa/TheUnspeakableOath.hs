@@ -70,7 +70,7 @@ instance HasChaosTokenValue TheUnspeakableOath where
       pure $ ChaosTokenValue Cultist (NegativeModifier horror)
     Tablet -> do
       lid <- getJustLocation iid
-      shroud <- fieldJust LocationShroud lid
+      shroud <- field LocationBaseShroud lid
       pure $ ChaosTokenValue Tablet (NegativeModifier shroud)
     ElderThing -> pure $ ChaosTokenValue ElderThing ZeroModifier
     otherFace -> getChaosTokenValue iid otherFace attrs

@@ -17,10 +17,21 @@ module Arkham.Homebrew.AgesUnwound.Scenarios.AYearToPlan (aYearToPlan) where
 
 import Arkham.Act.Types (Field (ActResources))
 import Arkham.Card
-import Arkham.Helpers.FlavorText (flavor, h, li, p, setup, ul)
+import Arkham.Classes.HasGame (HasGame)
+import Arkham.Helpers.FlavorText (
+  FlavorTextBuilder,
+  flavor,
+  h,
+  li,
+  p,
+  resolutionFlavor,
+  setTitle,
+  setup,
+  ul,
+ )
 import Arkham.Helpers.Log (getRecordCount)
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Query (getLead, getSetAsideCardsMatching)
+import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.AgesUnwound.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.AgesUnwound.CardDefs.Assets qualified as Assets
@@ -53,12 +64,32 @@ newtype AYearToPlan = AYearToPlan ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-{- | The year's travel map. All 15 printed connections join grid-adjacent cells
-with no crossings: Arkham and the Americas sit along the bottom row, Europe and
-the Mediterranean in the middle, and the far-flung sites (Tunguska, the
-Himalayas, Shanghai) across the top. Each location carries 'symbolLabel', so its
-cell is its symbol; the two @missions@ locations (Another Realm, The British
-Library) are included because the scenario can put them into play.
+{- | The year's travel map. Columns run west to east by longitude -- San
+Francisco and Mexico City, then Arkham and London, then Paris/Rome/Cairo,
+Istanbul and the Himalayas, and the Pacific rim -- and none of the 15 printed
+connections cross or passes through a third card.
+
+Three rows cannot also encode 95 degrees of latitude, and longitude is the axis
+worth keeping: east-to-west is what makes the board read as a map. So Arkham
+sits directly above London rather than an ocean away. That placement is forced
+rather than chosen -- the Americas need two columns to draw SF/Mexico
+City/Arkham as a triangle at all (in one column San Francisco falls between the
+other two and the Arkham-Mexico City line runs through it), and the eastern
+chain needs three -- and it reads well anyway, because Arkham's printed
+@[action][action]: __Move__@ destinations are London and Paris and it is
+orthogonally adjacent to both. The Atlantic is an ability here, not a line.
+
+/Another Realm/ is an Otherworld with no place on Earth. It attaches only to
+Paris, which prints @Square@, so it takes the one free cell -- immediately right
+of Paris.
+
+Every row and column holds at least one card on purpose. The client's grid
+sizes its tracks @auto@/@max-content@, so a wholly empty column collapses to
+zero width and would bend the connection lines through their neighbours.
+
+Each location carries 'symbolLabel', so its cell is its symbol -- except Sydney,
+which prints no symbol and so takes the label 'Arkham.Name.nameToLabel' derives
+from its title.
 -}
 aYearToPlan :: Difficulty -> AYearToPlan
 aYearToPlan difficulty =
@@ -67,17 +98,18 @@ aYearToPlan difficulty =
     ":ages-unwound:105"
     "A Year to Plan"
     difficulty
-    [ ".         star  moon   equals   ."
-    , "hourglass heart t      squiggle triangle"
-    , "droplet   plus  square circle   diamond"
+    [ "diamond  circle  t        square heart"
+    , "triangle plus    squiggle moon   hourglass"
+    , ".        droplet equals   star   sydney"
     ]
 
 {- | "Put each City and Wilderness location into play." The eleven besides Arkham,
 Massachusetts, which setup places on its own so it can hold the id the
 investigators start at.
 
-No grid: the board is a travel map stitched together by the locations' own
-connection symbols plus the printed @[action][action]: __Move__@ abilities.
+No grid adjacency: the layout above only positions the cards, and the board is
+stitched together by the locations' own connection symbols plus the printed
+@[action][action]: __Move__@ abilities.
 Sydney prints no symbol and no connections at all, so the two move abilities
 that name it are the only way in.
 -}
@@ -98,20 +130,26 @@ cityAndWildernessLocations =
 
 {- | Resolution 1's rewards: "For each of the following completed Tasks, any one
 investigator may choose to add the corresponding player card to their deck."
+
+The leading key is the resolution's bullet for that Task, so the panel's ticks
+and the deck offer walk the same list in the same order.
 -}
-taskRewards :: [(CardDef, CardDef)]
+taskRewards :: [(String, CardDef, CardDef)]
 taskRewards =
-  [ (Treacheries.enemyOfMyEnemy, Skills.monasticTraining)
-  , (Treacheries.aTreasureUnearthed, Assets.chronalAtlas)
-  , (Treacheries.theDevilYouKnow, Assets.ionianPendant)
-  , (Treacheries.higherPowers, Events.agencyStrikeTeam)
-  , (Treacheries.entreatingTheGods, Assets.wingsOfDamakairon)
-  , (Treacheries.upToSomething, Assets.forestallFate)
+  [ ("enemyOfMyEnemy", Treacheries.enemyOfMyEnemy, Skills.monasticTraining)
+  , ("aTreasureUnearthed", Treacheries.aTreasureUnearthed, Assets.chronalAtlas)
+  , ("theDevilYouKnow", Treacheries.theDevilYouKnow, Assets.ionianPendant)
+  , ("higherPowers", Treacheries.higherPowers, Events.agencyStrikeTeam)
+  , ("entreatingTheGods", Treacheries.entreatingTheGods, Assets.wingsOfDamakairon)
+  , ("upToSomething", Treacheries.upToSomething, Assets.forestallFate)
   ]
 
 {- | Resolution 1: "For each copy of A Multitude of Plots in the victory display,
 record one of the following statements of your choice in your Campaign Log, as
 you fail to stop the Myriad from enacting one of their plans."
+
+The key names both the statement as the resolution prints it and, under
+@label@, the button the lead picks it with.
 -}
 myriadPlans :: [(Text, AgesUnwoundKey)]
 myriadPlans =
@@ -266,8 +304,11 @@ instance RunMessage AYearToPlan where
         NoResolution -> do
           resolution "noResolution"
           push R1
-        Resolution 1 -> do
-          resolutionWithXp "resolution1" $ allGainXp' attrs
+        {- Every record and every chaos-bag change the resolution makes, done
+        before a word of it is shown: the panel itself is pushed from the
+        'DoStep' tail below, so each of its bullets can be ticked off against
+        the log it just wrote. -}
+        Resolution 1 -> scope "resolution1" do
           record TheRitualIsNigh
 
           {- "For each investigator that did not resign, record in your Campaign
@@ -301,20 +342,6 @@ instance RunMessage AYearToPlan where
           unlessM (taskCompleted Treacheries.theTunguskaEvent)
             $ record TheMyriadTookControlOfAColourOutOfSpace
 
-          {- "For each of the following completed Tasks, any one investigator may
-          choose to add the corresponding player card to their deck. Each of
-          these cards does not count towards their owner's deck size." -}
-          investigators <- select InvestigatorCanAddCardsToDeck
-          for_ taskRewards \(task, reward) ->
-            whenM (taskCompleted task)
-              $ addCampaignCardToDeckChoice investigators DoNotShuffleIn reward
-
-          {- "For each copy of A Multitude of Plots in the victory display, record
-          one of the following statements of your choice." One choice per copy,
-          so the loop has to be a 'doStep' countdown with its own 'doNextStep'. -}
-          plots <-
-            count (`cardMatch` cardIs Treacheries.aMultitudeOfPlots) <$> getVictoryDisplay
-
           {- The chaos-bag block from the structure notes, not the guide's OCR
           (its token glyphs are unreliable): remove all [cultist], [tablet] and
           [elder_thing]; add 1 [cultist] and 1 [tablet]; add 1 [cultist] per
@@ -326,27 +353,45 @@ instance RunMessage AYearToPlan where
           addChaosToken Cultist
           addChaosToken Tablet
 
-          actResources <- selectOne AnyAct >>= maybe (pure 0) (field ActResources)
+          actResources <- getActResources
           replicateM_ actResources $ addChaosToken Cultist
           when solvedTheRiddle $ replicateM_ 2 $ addChaosToken Tablet
           when violatedCausality $ replicateM_ 2 $ addChaosToken ElderThing
 
-          {- The dread curse is the players' choice above, so it can only be read
-          once the countdown has run out -- hence the @DoStep 0@ tail below
-          rather than a check here. -}
+          void $ allGainXp' attrs
+
+          {- "For each copy of A Multitude of Plots in the victory display, record
+          one of the following statements of your choice." One choice per copy,
+          so the panel is shown once per copy with that choice attached and once
+          more with none left to make. -}
+          plots <-
+            count (`cardMatch` cardIs Treacheries.aMultitudeOfPlots) <$> getVictoryDisplay
           doStep plots msg
           endOfScenario
         _ -> error $ "Unknown resolution: " <> show r
       pure s
+    -- One pass per copy of A Multitude of Plots, each ending in the lead's choice of plan.
     DoStep n (ScenarioResolution (Resolution 1)) | n > 0 -> scope "resolutions" do
-      lead <- getLead
-      chooseOneM lead $ for_ myriadPlans \(key, k) -> labeled key $ record k
+      scope "resolution1" $ resolution1Panel True
       doNextStep msg
       pure s
-    {- "If the Myriad weaved a dread curse, each investigator must add 1 copy of
-    Curse of a Thousand Winters to their deck. This card does not count towards
-    deck size." -}
-    DoStep 0 (ScenarioResolution (Resolution 1)) -> do
+    {- The last pass: the panel with nothing left to choose, and the two deck
+    changes it asks for. Both come after it so the prompts follow the text that
+    explains them. -}
+    DoStep 0 (ScenarioResolution (Resolution 1)) -> scope "resolutions" do
+      scope "resolution1" $ resolution1Panel False
+      investigators <- select InvestigatorCanAddCardsToDeck
+
+      {- "For each of the following completed Tasks, any one investigator may
+      choose to add the corresponding player card to their deck. Each of these
+      cards does not count towards their owner's deck size." -}
+      for_ taskRewards \(_, task, reward) ->
+        whenM (taskCompleted task)
+          $ addCampaignCardToDeckChoice investigators DoNotShuffleIn reward
+
+      {- "If the Myriad weaved a dread curse, each investigator must add 1 copy of
+      Curse of a Thousand Winters to their deck. This card does not count towards
+      deck size." -}
       whenM (getHasRecord TheMyriadWeavedADreadCurse) do
         {- One distinct set-aside copy per investigator.
         'AddCampaignCardToDeck' re-owns the card it is handed and does not
@@ -354,8 +399,63 @@ instance RunMessage AYearToPlan where
         card to everyone and they would all share one card id. Four printed
         copies, at most four investigators: the pairing is exact. -}
         curses <- getSetAsideCardsMatching $ cardIs Treacheries.curseOfAThousandWinters
-        investigators <- select InvestigatorCanAddCardsToDeck
         for_ (zip investigators curses) \(iid, card) ->
           addCampaignCardToDeck iid DoNotShuffleIn card
       pure s
     _ -> AYearToPlan <$> liftRunMessage msg attrs
+
+{- | "For each resource on the current act, add 1 [cultist] token to the chaos
+bag." The Long Game is the only act and nothing removes it before the scenario
+ends, so the 'Nothing' arm is only reachable from a replay that lost the deck.
+-}
+getActResources :: HasGame m => m Int
+getActResources = selectOne AnyAct >>= maybe (pure 0) (field ActResources)
+
+{- | Resolution 1's instruction list.
+
+Pushed once for each copy of /A Multitude of Plots/ in the victory display, with
+the lead's choice of plan attached, and once more when the last copy has been
+spent. Every tick is read back out of the campaign log rather than carried
+along, so a plan recorded on one pass is already marked on the next and the
+final panel shows what the Myriad actually got away with -- which is the only
+way the __dread curse__ bullet, whose condition the players set themselves, can
+be ticked at all.
+-}
+resolution1Panel :: (HasI18n, ReverseQueue m) => Bool -> m ()
+resolution1Panel withPlotChoice = do
+  violatedCausality <- getHasRecord TheInvestigatorsViolatedCausality
+  solvedTheRiddle <- getHasRecord TheMyriadSolvedTheRiddleOfTheSphinx
+  harnessedAnotherRealm <- getHasRecord TheMyriadHarnessedThePowerOfAnotherRealm
+  tookAColour <- getHasRecord TheMyriadTookControlOfAColourOutOfSpace
+  weavedADreadCurse <- getHasRecord TheMyriadWeavedADreadCurse
+  actResources <- getActResources
+  rewards <- for taskRewards \(key, task, _) -> (key,) <$> taskCompleted task
+
+  let
+    body :: HasI18n => FlavorTextBuilder ()
+    body = do
+      setTitle "title"
+      p "body"
+      ul do
+        li "ritualIsNigh"
+        li "returnedToArkhamLate"
+        li.nested.validate violatedCausality "helpingYourselfIncomplete"
+          $ li "violatedCausality"
+        li.nested.validate solvedTheRiddle "keeperOfKnowledgeIncomplete"
+          $ li "solvedTheRiddle"
+        li.nested.validate harnessedAnotherRealm "strangePortalIncomplete"
+          $ li "harnessedAnotherRealm"
+        li.nested.validate tookAColour "theTunguskaEventIncomplete"
+          $ li "tookAColour"
+        li.nested "multitudeOfPlots" $ for_ myriadPlans (li . fst)
+        li.nested "taskRewards" $ for_ rewards \(key, completed) -> li.validate completed key
+        li "chaosTokens"
+        li.validate (actResources > 0) "actResourceTokens"
+        li.validate solvedTheRiddle "sphinxTokens"
+        li.validate violatedCausality "causalityTokens"
+        li.validate weavedADreadCurse "dreadCurse"
+        li "victoryXp"
+
+  if withPlotChoice
+    then resolutionFlavorWithChooseOne body $ for_ myriadPlans \(key, k) -> labeled key $ record k
+    else resolutionFlavor body

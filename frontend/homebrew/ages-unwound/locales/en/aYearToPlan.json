@@ -18,16 +18,43 @@
     "resolutions": {
       "noResolution": {
         "title": "No Resolution",
-        "body": "<p class='basic'>*If no resolution was reached (each investigator resigned or was defeated)*: Read _Resolution 1_.</p>"
-      },
-      "label": {
-        "raisedAPowerfulWarding": "The Myriad raised a powerful warding",
-        "recruitedACruelSorcerer": "The Myriad recruited a cruel sorcerer",
-        "weavedADreadCurse": "The Myriad weaved a dread curse"
+        "body": "<p class='basic'>_If no resolution was reached (each investigator resigned or was defeated):_ Read _Resolution 1_.</p>"
       },
       "resolution1": {
         "title": "Resolution 1",
-        "body": "<p>_Resolution 1_: It's been a long year. It feels like you've been fighting forever, never stopping, never able to relax. One more night, you tell yourself, as you ready to head out. After tonight, whatever happens, your fight will be over.</p><p class='basic'>Record in your Campaign Log that *The ritual is nigh.* For each investigator that did not resign, record that they returned to Arkham late. Then record what the Myriad accomplished with each task you left undone, and each plot you failed to stop.</p>"
+        "body": "<p>_Resolution 1_: It's been a long year. It feels like you've been fighting forever, never stopping, never able to relax. One more night, you tell yourself, as you ready to head out. After tonight, whatever happens, your fight will be over.</p>",
+        "ritualIsNigh": "In your Campaign Log, record *The ritual is nigh*.",
+        "returnedToArkhamLate": "For each investigator that did not resign, record in your Campaign Log that *[investigator name] returned to Arkham late*.",
+        "helpingYourselfIncomplete": "If Helping Yourself is _not_ completed: *As you prepare for your assault on the Myriad's ceremony, you feel time twist and distort around you. For one panicked moment, you think the ritual has started early. Then, you remember: your past self had help from a mysterious benefactor. Help you have failed to provide.*",
+        "violatedCausality": "Record in your Campaign Log that *the investigators violated causality*.",
+        "keeperOfKnowledgeIncomplete": "If Keeper of Knowledge is _not_ completed and Ancient Sphinx is in play: *The sphinx has since disappeared from Egypt. You don't imagine it would deign to fly to Arkham just to assist the cult of Aforgomon, but there's no telling what dark knowledge they may have extracted from it.*",
+        "solvedTheRiddle": "Record in your Campaign Log that *the Myriad solved the riddle of the sphinx.*",
+        "strangePortalIncomplete": "If Strange Portal is _not_ completed: *Paris is quiet for the most part, but if you dig deep enough you find report after report of unexplained disappearances. Possessions, people, even whole buildings on occasion.*",
+        "harnessedAnotherRealm": "Record in your Campaign Log that *the Myriad harnessed the power of another realm*.",
+        "theTunguskaEventIncomplete": "If The Tunguska is _not_ completed: *You still don't know what exactly happened in Tunguska, but some of the Myriad Gentlemen you've encountered recently have been… different. Changed.*",
+        "tookAColour": "Record in your Campaign Log that *the Myriad took control of a colour out of space.*",
+        "multitudeOfPlots": "For each copy of A Multitude of Plots in the victory display, record one of the following statements of your choice in your Campaign Log, as you fail to stop the Myriad from enacting one of their plans:",
+        "raisedAPowerfulWarding": "*The Myriad raised a powerful warding.*",
+        "recruitedACruelSorcerer": "*The Myriad recruited a cruel sorcerer.*",
+        "weavedADreadCurse": "*The Myriad weaved a dread curse.*",
+        "taskRewards": "For each of the following completed _Tasks_, any one investigator may choose to add the corresponding player card to their deck. Each of these cards does not count towards their owner's deck size.",
+        "enemyOfMyEnemy": "If Enemy of My Enemy is completed, one player may add Monastic Training to their deck.",
+        "aTreasureUnearthed": "If A Treasure Unearthed is completed, one player may add Chronal Atlas to their deck.",
+        "theDevilYouKnow": "If The Devil You Know is completed, one player may add Ionian Pendant to their deck.",
+        "higherPowers": "If Higher Powers is completed, one player may add Agency Strike Team to their deck.",
+        "entreatingTheGods": "If Entreating the Gods is completed, one player may add Wings of Damakairon to their deck.",
+        "upToSomething": "If Up to Something is completed, one player may add Forestall Fate to their deck.",
+        "chaosTokens": "Remove all {cultist}, {tablet} and {elderThing} tokens from the chaos bag. Then, add 1 {cultist} token and 1 {tablet} token to the chaos bag.",
+        "actResourceTokens": "For each resource on the current act, add 1 {cultist} token to the chaos bag.",
+        "sphinxTokens": "*If the Myriad solved the riddle of the sphinx*, add 2 {tablet} tokens to the chaos bag.",
+        "causalityTokens": "*If the investigators violated causality*, add 2 {elderThing} tokens to the chaos bag.",
+        "dreadCurse": "*If the Myriad weaved a dread curse*, each investigator must add 1 copy of Curse of a Thousand Winters to their deck. This card does not count towards deck size.",
+        "victoryXp": "Each investigator earns experience equal to the Victory X value of each card in the victory display.",
+        "label": {
+          "raisedAPowerfulWarding": "The Myriad raised a powerful warding",
+          "recruitedACruelSorcerer": "The Myriad recruited a cruel sorcerer",
+          "weavedADreadCurse": "The Myriad weaved a dread curse"
+        }
       }
     }
   }

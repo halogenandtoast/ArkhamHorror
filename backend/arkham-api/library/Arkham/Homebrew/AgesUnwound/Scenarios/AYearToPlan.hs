@@ -247,10 +247,21 @@ instance RunMessage AYearToPlan where
       {- "Set the remainder of the Missions encounter set aside, out of play,
       along with each copy of Curse of a Thousand Winters."
 
-      Every other Task, the locations and enemies the Tasks put into play, and
-      the six player-card rewards all live in the set-aside pool, which is where
-      'Arkham.Helpers.FetchCard' looks first. -}
+      Every other Task, and the locations and enemies the Tasks put into play,
+      live in the set-aside pool, which is where 'Arkham.Helpers.FetchCard'
+      looks first. -}
       setAsideEvery $ CardFromEncounterSet Set.Missions
+
+      {- The six rewards print the Missions set icon, but they are player cards,
+      and a gather cannot supply one: 'gatherEncounterSet' reads
+      'allEncounterCards', which holds no homebrew asset, event or skill --
+      those register into the player aggregates instead. So the gather above
+      never saw them and 'setAsideEvery' pooled nothing, the same silent shape
+      'setAsideEveryCopyOf' exists for with weaknesses. Minting also makes each
+      a 'PlayerCard', which is what lets /Gratitude/ and /Grudging Assistance/
+      set an owner on the copy they hand over. -}
+      for_ taskRewards \(_, _, reward) -> setAsideEveryCopyOf reward
+
       setAsideEveryCopyOf Treacheries.curseOfAThousandWinters
 
       {- "Put the Helping Yourself treachery into play next to the act deck with

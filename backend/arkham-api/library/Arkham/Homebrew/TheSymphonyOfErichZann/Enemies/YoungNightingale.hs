@@ -20,7 +20,7 @@ instance HasAbilities YoungNightingale where
     extend
       a
       [ -- Drawing a Music treachery pulls it to you for an attack.
-        mkAbility a 1 $ forced $ DrawCard #after Anyone (basic $ CardWithTrait Music) AnyDeck
+        mkAbility a 1 $ forced $ DrawCard #after You (basic $ CardWithTrait Music) AnyDeck
       , -- Its attack can be bought off by drawing from the encounter deck.
         restricted a 2 (youExist $ at_ (locationWithEnemy a.id))
           $ freeReaction (EnemyAttacks #when You (CancelableEnemyAttack AnyEnemyAttack) (be a))

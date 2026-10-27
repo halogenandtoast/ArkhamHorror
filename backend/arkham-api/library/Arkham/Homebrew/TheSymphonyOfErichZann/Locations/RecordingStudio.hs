@@ -31,7 +31,7 @@ instance HasAbilities RecordingStudio where
           $ withI18nTooltip "recordingStudio.reveal"
           $ restricted a 1 (exists InEncounterDiscard)
           $ forced
-          $ RevealLocation #after Anyone (be a)
+          $ RevealLocation #after You (be a)
       , scenarioI18n
           $ withI18nTooltip "recordingStudio.searchDiscard"
           $ groupLimit PerRound

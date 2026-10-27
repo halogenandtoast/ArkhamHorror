@@ -2,8 +2,8 @@ module Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.MacabreDancers (macabreDan
 
 import Arkham.Ability
 import Arkham.Enemy.Import.Lifted
-import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Enemies qualified as Cards
 import Arkham.ForMovement
+import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Enemies qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move (enemyMoveTo, moveTo)
@@ -16,9 +16,11 @@ macabreDancers :: EnemyCard MacabreDancers
 macabreDancers = enemy MacabreDancers Cards.macabreDancers
 
 instance HasAbilities MacabreDancers where
-  -- Dealing damage to it drags both of you to a connecting revealed location.
   getAbilities (MacabreDancers a) =
-    extend1 a $ mkAbility a 1 $ forced $ EnemyTakeDamage #after AnyDamageEffect (be a) AnyValue AnySource
+    extend1 a
+      $ mkAbility a 1
+      $ forced
+      $ EnemyTakeDamage #after AnyDamageEffect (be a) AnyValue (SourceUsedBy You)
 
 instance RunMessage MacabreDancers where
   runMessage msg e@(MacabreDancers attrs) = runQueueT $ case msg of

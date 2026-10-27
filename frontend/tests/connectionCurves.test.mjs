@@ -76,3 +76,27 @@ test('one-way arrow keeps its lane until another lane avoids more cards', () => 
   rect.bottom = 60
   assert.equal(context.stableChevronCurve(candidate, -100), -100)
 })
+
+
+test('returns a previously curved connection to straight after an obstruction moves', () => {
+  const r = router()
+  assert.notEqual(r.offsets(), 0)
+  r.obstacle.top = 200
+  assert.equal(r.offsets(), 0)
+})
+
+test('returns a one-way arrow to straight when routing no longer needs a bend', () => {
+  const context = vm.createContext({
+    mapZoom: { value: 1 }, scaled: px => px,
+    svgEl: { getBoundingClientRect: () => ({ left: 0, top: 0 }) },
+    locations: { value: [] }, elementFor: () => null,
+  })
+  const arrows = source.slice(source.indexOf('const previousChevronOffsets'), source.indexOf('function obstructedChevronCurve'))
+  vm.runInContext(ts.transpile(arrows, { target: ts.ScriptTarget.ES2022 }), context)
+  const candidate = {
+    connection: 'a->b', start: { dataset: { id: 'a' } }, end: { dataset: { id: 'b' } },
+    x1: 0, y1: 0, x2: 200, y2: 0,
+  }
+  assert.equal(context.stableChevronCurve(candidate, 100), 100)
+  assert.equal(context.stableChevronCurve(candidate, 0), 0)
+})

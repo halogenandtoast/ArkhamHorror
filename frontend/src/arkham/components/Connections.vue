@@ -444,8 +444,9 @@ function curveOffsets(candidates: ConnectionCandidate[]): Map<string, number> {
     const previous = previousCurveOffsets.get(candidate.connection)
     const proposed = result.get(candidate.connection) ?? 0
     // A new layout may suggest an equally good lane on the opposite side.
-    // Keep the existing curve unless switching actually clears more cards.
-    if (previous !== undefined && previous !== 0) {
+    // Keep the existing curve unless switching clears more cards, or the
+    // layout no longer needs a curve at all (for example after a swap).
+    if (proposed !== 0 && previous !== undefined && previous !== 0) {
       const offset = scaled(previous)
       if (intersectionsForOffset(candidate, offset) <= intersectionsForOffset(candidate, proposed)) {
         result.set(candidate.connection, offset)
@@ -489,8 +490,9 @@ function stableChevronCurve(candidate: ConnectionCandidate, proposed: number): n
       return false
     }).length
   }
-  // Equal-quality alternatives must not flip the arrow on every layout pass.
-  const offset = previous !== undefined && previous !== 0 &&
+  // Equal-quality curves must not flip on every layout pass. A route that
+  // no longer needs a curve should return to straight after a layout change.
+  const offset = proposed !== 0 && previous !== undefined && previous !== 0 &&
     intersections(scaled(previous)) <= intersections(proposed) ? scaled(previous) : proposed
   previousChevronOffsets.set(candidate.connection, offset / mapZoom.value)
   return offset

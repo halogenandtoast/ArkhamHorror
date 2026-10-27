@@ -182,4 +182,9 @@ footer {
    back above the board for the transition, where it is the rest of the time. */
 ::view-transition-group(.modal-window) {
   z-index: 1;
+  /* Chrome copies the window's backdrop filter onto this group separately
+     from its fading snapshot. It otherwise keeps blurring the board at full
+     strength until the group disappears, even after the window has faded. */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }

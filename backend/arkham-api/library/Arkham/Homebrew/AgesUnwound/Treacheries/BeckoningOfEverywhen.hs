@@ -15,21 +15,6 @@ newtype BeckoningOfEverywhen = BeckoningOfEverywhen TreacheryAttrs
 beckoningOfEverywhen :: TreacheryCard BeckoningOfEverywhen
 beckoningOfEverywhen = treachery BeckoningOfEverywhen Cards.beckoningOfEverywhen
 
-{- | "Revelation - If you are not at an [[Adrift]] location, Beckoning of
-Everywhen gains surge. Otherwise, reveal a random token from the chaos bag. If
-you revealed a non-zero number, swap the positions of your location and the
-location X positions clockwise, where X is the modifier of the revealed token.
-If you revealed a [skull], [cultist], [tablet], [elder_thing], [curse] or
-[auto_fail], move to the location across from you."
-
-X is the token's /printed/ modifier, so a @-2@ is minus two positions clockwise
--- two counter-clockwise -- which the ring's modular arithmetic handles. The
-second clause names every symbol in this campaign's bag plus [curse]; a [bless]
-(which no Ages Unwound effect adds, though a blessed player deck can) is
-deliberately not on the list, so it does nothing.
--}
-
--- | The symbols the card's second clause names, verbatim.
 movingSymbols :: [ChaosTokenFace]
 movingSymbols = [Skull, Cultist, Tablet, ElderThing, CurseToken, AutoFail]
 
@@ -42,6 +27,7 @@ instance RunMessage BeckoningOfEverywhen where
         else gainSurge attrs
       pure t
     RequestedChaosTokens (isSource attrs -> True) (Just iid) tokens -> do
+      continue_ iid
       for_ tokens \token -> do
         let face = token.face
         mlid <- selectOne $ locationWithInvestigator iid

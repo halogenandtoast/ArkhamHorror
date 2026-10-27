@@ -41,10 +41,12 @@ instance HasAbilities AWorldAtWar_071 where
 instance RunMessage AWorldAtWar_071 where
   runMessage msg l@(AWorldAtWar_071 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      {- The copy is drawn, so its own Revelation attaches it here. Its
-      end-of-turn Forced is then silenced for the rest of this turn, which is
-      what "do not resolve its forced ability this turn" asks for -- the
-      leave-attached-location Forced is untouched. -}
+      {- The copy is drawn, so its own Revelation attaches it here. "Do not
+      resolve its forced ability this turn" then silences BOTH of the copy's
+      Forced abilities -- the end-of-turn one and the leave-attached-location
+      one -- for the rest of this turn: the matcher is keyed on the card, not on
+      an index. The modifier lapses with the turn, so the copy bombards as
+      normal from the next turn on. -}
       turnModifier iid (attrs.ability 1) iid
         $ CannotTriggerAbilityMatching
           (AbilityIsForcedAbility <> AbilityOnCard (cardIs Treacheries.aerialBombardment))

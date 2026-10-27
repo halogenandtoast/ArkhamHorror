@@ -44,9 +44,20 @@ instance RunMessage MorbidCuriosity where
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       {- "move to An Earth Long Dead *instead*": the move already in flight is
       retargeted rather than cancelled and re-queued, so the leave/enter windows
-      name the destination the investigator actually reaches. -}
-      selectOne anEarthLongDead >>= traverse_ \lid ->
-        replaceMovement iid \m -> m {moveDestination = ToLocation lid}
+      name the destination the investigator actually reaches.
+
+      Standing on An Earth Long Dead there is nowhere to retarget to, but
+      "instead" still takes the move away, so cancel it rather than aim it at
+      the location underfoot: a move to where you already are would raise
+      Leaves/Enters windows for a move that never happened, and
+      /Aerial Bombardment/ reads the leave one. The horror and the discard are
+      not conditional on the move. -}
+      here <- selectAny $ locationWithInvestigator iid <> anEarthLongDead
+      if here
+        then cancelMovement (attrs.ability 1) iid
+        else
+          selectOne anEarthLongDead >>= traverse_ \lid ->
+            replaceMovement iid \m -> m {moveDestination = ToLocation lid}
       assignHorror iid (attrs.ability 1) 1
       toDiscard (attrs.ability 1) attrs
       pure t

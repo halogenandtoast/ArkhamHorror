@@ -10,30 +10,18 @@ newtype AnEarthLongDead_073 = AnEarthLongDead_073 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-{- | /An Earth Long Dead/. The only pair in the ring with no clues and no victory
-point: shroud 6 and nothing to find.
--}
 anEarthLongDead_073 :: LocationCard AnEarthLongDead_073
 anEarthLongDead_073 =
   locationWith AnEarthLongDead_073 Cards.anEarthLongDead_073 6 (Static 0)
     $ connectsToL
     .~ ringConnections
 
-{- | "Forced - After you enter this location: Lose 1 action."
-
-Deliberately /not/ 'endOfTurnAbility': both An Earth Long Dead printings trigger
-on entry, so /The Endless Fall/ ("trigger the forced ability on your location as
-if it were the end of your turn") finds nothing here, and the index it names
-stays free.
-
-"Lose N actions" is 'loseActions', not 'loseStandardActions': the campaign's
-/standard action/ term governs the effects that *count* actions, while losing
-follows the core rule -- remaining actions go first, and an investigator left
-with only additional actions loses those, whatever their limitation (FAQ 1.10).
--}
 instance HasAbilities AnEarthLongDead_073 where
   getAbilities (AnEarthLongDead_073 a) =
-    extendRevealed1 a $ mkAbility a 2 $ forced $ Enters #after You (be a)
+    extendRevealed1 a
+      $ mkAbility a 2
+      $ forced
+      $ Enters #after (You <> InvestigatorWithAnyActionsRemaining) (be a)
 
 instance RunMessage AnEarthLongDead_073 where
   runMessage msg l@(AnEarthLongDead_073 attrs) = runQueueT $ case msg of

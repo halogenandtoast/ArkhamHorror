@@ -13,16 +13,12 @@ newtype ADisquietingFuture_070 = ADisquietingFuture_070 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
--- | /A Disquieting Future/, the higher-shroud printing.
 aDisquietingFuture_070 :: LocationCard ADisquietingFuture_070
 aDisquietingFuture_070 =
   locationWith ADisquietingFuture_070 Cards.aDisquietingFuture_070 5 (PerPlayer 1)
     $ connectsToL
     .~ ringConnections
 
-{- | "Forced - At the end of your turn: Test [intellect] (3). If you succeed,
-heal 1 damage or 1 horror. If you fail, take 1 damage and 1 horror."
--}
 instance HasAbilities ADisquietingFuture_070 where
   getAbilities (ADisquietingFuture_070 a) =
     extendRevealed1 a $ restricted a endOfTurnAbility Here $ forced $ TurnEnds #when You

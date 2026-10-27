@@ -5,7 +5,6 @@ import Arkham.Homebrew.AgesUnwound.Scenarios.Unstuck.Helpers
 import Arkham.Homebrew.AgesUnwound.Traits (pattern Adrift)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move (moveTo)
-import Arkham.Source
 import Arkham.Treachery.Import.Lifted
 
 newtype TheEndlessFall = TheEndlessFall TreacheryAttrs
@@ -15,17 +14,12 @@ newtype TheEndlessFall = TheEndlessFall TreacheryAttrs
 theEndlessFall :: TreacheryCard TheEndlessFall
 theEndlessFall = treachery TheEndlessFall Cards.theEndlessFall
 
-{- | "Revelation - If you are not at an [[Adrift]] location, The Endless Fall
-gains surge. Otherwise, trigger the forced ability on your location as if it
-were the end of your turn. If you fail a skill test by 2 or more while resolving
-this ability, move to the location in the clockwise direction, then repeat this
-process."
-
-The chain is bounded by the ring: each lap moves one position clockwise, and the
-failure that continues it has to come from the location's own Forced. Both /An
-Earth Long Dead/ printings trigger on /entry/ rather than at end of turn, so
-landing on one ends the chain -- there is no end-of-turn Forced to trigger.
+{- | "while resolving this ability" -- true from the Revelation until the
+@After (Revelation …)@ that ends it.
 -}
+resolvingRevelation :: TreacheryAttrs -> Bool
+resolvingRevelation a = toResultDefault False a.meta
+
 instance RunMessage TheEndlessFall where
   runMessage msg t@(TheEndlessFall attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
@@ -33,17 +27,28 @@ instance RunMessage TheEndlessFall where
       case mlid of
         Nothing -> gainSurge attrs
         Just lid -> triggerEndOfTurnForced iid lid
-      pure t
-    {- The location's Forced is a different source, so this watches every failed
-    test the investigator makes while it is resolving. The treachery is still in
-    play only for that stretch, which is what scopes it. -}
-    FailedThisSkillTestBy iid (AbilitySource (LocationSource _) _) n | n >= 2 -> do
-      atAdrift <- selectAny $ locationWithInvestigator iid <> LocationWithTrait Adrift
-      when atAdrift do
-        mlid <- selectOne $ locationWithInvestigator iid
-        for_ mlid \lid ->
-          getClockwise 1 lid >>= traverse_ \next -> do
-            moveTo attrs iid next
-            triggerEndOfTurnForced iid next
-      pure t
+      pure . TheEndlessFall $ setMeta True attrs
+    {- "If you fail a skill test by 2 or more while resolving this ability":
+    /any/ skill test, not just the location ability this triggered -- but only
+    inside the revelation.
+
+    The flag is what bounds it. The card is discarded the instant the revelation
+    ends, and a discarded treachery still receives messages, so on the source
+    matcher alone the copy sitting in the discard pile went on shoving the
+    investigator clockwise every later time they failed a location's end-of-turn
+    test by 2 or more. -}
+    FailedThisSkillTestBy iid _ n
+      | n >= 2
+      , resolvingRevelation attrs -> do
+          atAdrift <- selectAny $ locationWithInvestigator iid <> LocationWithTrait Adrift
+          when atAdrift do
+            mlid <- selectOne $ locationWithInvestigator iid
+            for_ mlid $ getClockwise 1 >=> traverse_ \next -> do
+              moveTo attrs iid next
+              triggerEndOfTurnForced iid next
+          pure t
+    {- Closing the window. Handed on to the runner, which is what discards the
+    card from 'Limbo' here -- swallowing it would leave the treachery in play. -}
+    After (Revelation _ (isSource attrs -> True)) ->
+      TheEndlessFall . setMeta False <$> liftRunMessage msg attrs
     _ -> TheEndlessFall <$> liftRunMessage msg attrs

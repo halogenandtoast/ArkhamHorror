@@ -75,8 +75,16 @@ const cardStore = useCardStore()
 onMounted(() => {
   if (!cardStore.loaded) cardStore.fetchCards()
 })
-const artCode = computed(
-  () => cardStore.cards.find((c) => c.cardCode === props.enemy.cardCode)?.art ?? props.enemy.cardCode
+const enemyCardDef = computed(() => cardStore.cards.find((c) => c.cardCode === props.enemy.cardCode))
+const artCode = computed(() => enemyCardDef.value?.art ?? props.enemy.cardCode)
+
+/* A def naming art other than its own card code is giving an enemy with no
+ * printed card a face of its own, the way the core special enemies have one
+ * (`xpolyp`, `xreanimated`). That face belongs on the table, not just in the
+ * hover magnifier. A swarm card and The Myriad Gentleman's copies name no art
+ * of their own, so they are untouched by this. */
+const hasOwnArt = computed(
+  () => !!enemyCardDef.value && enemyCardDef.value.art !== props.enemy.cardCode.replace(/^c/, '')
 )
 
 const imageId = computed(() => cardArt(artCode.value, props.enemy.flipped ? 'b' : ''))
@@ -151,7 +159,12 @@ const standsOnDeckCard = computed(() => {
   if (!physical) return false
   return physical.tag === 'PlayerCard' && toCardContents(physical).cardCode !== props.enemy.cardCode
 })
-const showsPlayerBack = computed(() => isSwarm.value || standsOnDeckCard.value)
+/* `isSwarm` stands alone and is checked first, so a swarm card keeps its player
+ * back whatever its def says. A deck-card enemy yields the back only when it has
+ * no face of its own -- see `hasOwnArt`. */
+const showsPlayerBack = computed(
+  () => isSwarm.value || (standsOnDeckCard.value && !hasOwnArt.value)
+)
 
 const referenceCards = computed(() => props.enemy.referenceCards)
 const hasSpiritAura = computed(() => isManifestedSpiritEnemy(props.enemy, props.game))

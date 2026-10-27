@@ -95,7 +95,11 @@ const image = computed(() => {
   const revealed = props.revealed && !isEnemyLocationCard.value
   const suffix = !revealed && isFlipped ? 'b' : ''
   const mutatedSuffix = mutated ? `_${mutated}` : ''
-  return cardImage(cardCode, `${suffix}${mutatedSuffix}`)
+  /* A def can name art other than its card code -- the Roman Soldier has no
+   * number in the pack, so its art is `:ages-unwound:xsoldier` after the core
+   * `xpolyp`/`xreanimated`. Art equals the code for all but a handful of cards,
+   * none of them double-sided, so the suffixes above still apply. */
+  return cardImage(cardDef.value?.art ?? cardCode, `${suffix}${mutatedSuffix}`)
 })
 
 const id = computed(() => props.card.tag === 'VengeanceCard' ? props.card.contents.contents.id : cardContents.value.id)

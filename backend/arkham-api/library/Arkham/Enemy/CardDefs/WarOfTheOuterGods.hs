@@ -23,7 +23,6 @@ bringerOfParadiseWarOfTheOuterGods =
     , cdHealth = health 3
     , cdCardTraits = setFromList [Humanoid, Mutated]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Retaliate, #warring]
-    , cdArt = "86044"
     }
 
 discipleOfTheSwarm :: CardDef
@@ -70,7 +69,6 @@ etherealEntityWarOfTheOuterGods =
     , cdHealth = health 3
     , cdCardTraits = setFromList [Monster]
     , cdKeywords = setFromList [#warring]
-    , cdArt = "86038"
     }
 
 ezelZenRezl :: CardDef
@@ -185,7 +183,6 @@ trylogogWarOfTheOuterGods =
     , cdHealth = health 1
     , cdCardTraits = setFromList [Creature, Insect]
     , cdKeywords = setFromList [Keyword.Swarming (Static 2), #warring]
-    , cdArt = "86049"
     }
 
 vileBroodmaster :: CardDef

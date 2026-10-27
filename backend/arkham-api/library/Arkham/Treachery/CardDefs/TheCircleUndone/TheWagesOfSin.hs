@@ -26,7 +26,6 @@ graveLightSpectral :: CardDef
 graveLightSpectral =
   (treachery "x05184" "Grave-Light" TheWagesOfSin 0)
     { cdCardTraits = singleton Curse
-    , cdArt = "05184"
     }
 
 ominousPortents :: CardDef

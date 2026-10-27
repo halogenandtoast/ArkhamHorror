@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Draggable from '@/components/Draggable.vue';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { TokenType, Token } from '@/arkham/types/Token';
 import { cardImg } from '@/arkham/helpers';
@@ -10,6 +10,7 @@ import Modifier from '@/arkham/components/Modifier.vue';
 import SealedTokensSection from '@/arkham/components/debug/SealedTokensSection.vue';
 import * as Arkham from '@/arkham/types/Enemy'
 import { useEscape } from '@/composable/escape'
+import { useCardStore } from '@/stores/cards'
 
 const props = defineProps<{
   game: Game
@@ -62,8 +63,17 @@ const investigatorId = computed(() => Object.values(props.game.investigators).fi
 const id = computed(() => props.enemy.id)
 
 const cardCode = computed(() => props.enemy.cardCode)
+/* Through the def's art, not the card code: an enemy with no printed card names
+ * its own face (the Roman Soldier's `:ages-unwound:xsoldier`, after the core
+ * `xpolyp`/`xreanimated`) and the code resolves to a file that does not exist.
+ * Same lookup Enemy.vue does. */
+const cardStore = useCardStore()
+onMounted(() => {
+  if (!cardStore.loaded) cardStore.fetchCards()
+})
 const image = computed(() => {
-  return cardImg(cardCode.value.replace(/^c/, ''))
+  const def = cardStore.cards.find((c) => c.cardCode === cardCode.value)
+  return cardImg(def?.art ?? cardCode.value.replace(/^c/, ''))
 })
 
 const debug = useDebug()

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Skills qualified as Cards
+import Arkham.Homebrew.AgesUnwound.Helpers (campaignI18n)
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -41,6 +42,8 @@ instance RunMessage MonasticTraining where
       withSkillTest \sid -> afterThisTestResolves sid do
         cards <- select $ inHandOf NotForPlay iid <> basic AnyCard
         chooseOneM iid do
+          campaignI18n $ scope "monasticTraining" $ questionLabeled "discardToReturn"
+          questionLabeledCard attrs
           withI18n skip_
           targets cards \card -> do
             push $ DiscardCard iid (attrs.ability 1) (toCardId card)

@@ -47,6 +47,11 @@
       "doNotSpendCharge": "Do not spend a charge"
     }
   },
+  "monasticTraining": {
+    "label": {
+      "discardToReturn": "Discard a card to add Monastic Training to your hand"
+    }
+  },
   "key": {
     "yourHuntersFoundANewQuarry": "your hunters found a new quarry.",
     "theInvestigatorsSurvivedTheNightOfFire": "the investigators survived the night of fire.",

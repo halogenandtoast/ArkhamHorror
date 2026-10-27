@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.Import.Lifted
 import Arkham.Effect.Builder
 import Arkham.Effect.Window
-import Arkham.Helpers.Action (getStandardActions)
+import Arkham.Helpers.Action (getUnrestrictedActions)
 import Arkham.Helpers.Modifiers (ModifierType (AdditionalActions))
 import Arkham.Homebrew.AgesUnwound.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.AgesUnwound.Scenarios.AWorldTornDown.Helpers
@@ -30,7 +30,7 @@ remaining".
 -}
 instance HasAbilities EndOfTheLine where
   getAbilities (EndOfTheLine a) =
-    [ restricted a 1 (youExist $ InvestigatorWithStandardActionsRemaining (atLeast 1))
+    [ restricted a 1 (youExist $ InvestigatorWithUnrestrictedActionsRemaining (atLeast 1))
         $ forced
         $ TurnEnds #when You
     , grantedAidFromAfarAbility a 2
@@ -39,7 +39,7 @@ instance HasAbilities EndOfTheLine where
 instance RunMessage EndOfTheLine where
   runMessage msg a@(EndOfTheLine attrs) = runQueueT $ scenarioI18n $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      gained <- min 3 <$> getStandardActions iid
+      gained <- min 3 <$> getUnrestrictedActions iid
       {- Same shape as agenda 2a's: 'EffectEndOfNextTurnWindow' is the window that
       lasts from now to the end of this investigator's next turn, which is what
       "for the next round" means once @Do BeginRound@ has thrown away the old

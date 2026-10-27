@@ -294,7 +294,7 @@ instance RunMessage AYearToPlan where
     end your turn."
 
     "All remaining actions" is 'SetActions' to 0 rather than a
-    'LoseStandardActions' count: it also marks every additional action used,
+    'LoseUnrestrictedActions' count: it also marks every additional action used,
     which is what "all" means. -}
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ | token.face == Tablet -> do
       isTurn <- iid <=~> TurnInvestigator

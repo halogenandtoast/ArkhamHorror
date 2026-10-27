@@ -2,7 +2,7 @@ module Arkham.Homebrew.AgesUnwound.Locations.Classroom_228 (classroom_228) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Action (getStandardActions)
+import Arkham.Helpers.Action (getUnrestrictedActions)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isInvestigating)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Cards
@@ -22,7 +22,7 @@ instance HasModifiersFor Classroom_228 where
   getModifiersFor (Classroom_228 a) = whenRevealed a $ maybeModifySelf a do
     iid <- MaybeT getSkillTestInvestigator
     ensure $ isInvestigating iid a
-    n <- lift $ getStandardActions iid
+    n <- lift $ getUnrestrictedActions iid
     guard (n > 0)
     pure [ShroudModifier (negate (2 * n))]
 

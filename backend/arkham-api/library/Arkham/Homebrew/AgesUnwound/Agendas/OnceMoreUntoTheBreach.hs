@@ -30,7 +30,7 @@ instance RunMessage OnceMoreUntoTheBreach where
       fires at the end of a turn. Scenario III's agenda 1a prints the same test
       with a "fails by 3 or more" threshold; this printing has none.
 
-      "Lose N actions" is 'loseActions', not 'loseStandardActions': the campaign's
+      "Lose N actions" is 'loseActions', not 'loseUnrestrictedActions': the campaign's
       /standard action/ term governs the effects that *count* actions, while losing
       follows the core rule -- remaining actions go first, and an investigator left
       with only additional actions loses those, whatever their limitation (FAQ 1.10). -}

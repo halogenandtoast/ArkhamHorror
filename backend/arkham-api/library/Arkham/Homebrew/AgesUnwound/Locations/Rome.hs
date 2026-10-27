@@ -20,17 +20,22 @@ rome = symbolLabel $ location Rome Cards.rome 2 (PerPlayer 2)
 proviso uses. The timing is @#after@ here (Grand Chamber prints "when"), so the
 clues are already discovered by the time the action is taken away.
 
-"Lose N actions" is 'loseActions', not 'loseStandardActions': the campaign's
+"Lose N actions" is 'loseActions', not 'loseUnrestrictedActions': the campaign's
 /standard action/ term governs the effects that *count* actions, while losing
 follows the core rule -- remaining actions go first, and an investigator left
 with only additional actions loses those, whatever their limitation (FAQ 1.10).
+The window's criterion is the matching 'InvestigatorWithActionsRemaining', so
+the forced ability fires on exactly the turns the loss can take something.
 -}
 instance HasAbilities Rome where
   getAbilities (Rome a) =
     extendRevealed1 a
       $ mkAbility a 1
       $ forced
-      $ SkillTestResult #after You (WhileInvestigating $ be a)
+      $ SkillTestResult
+        #after
+        (You <> InvestigatorWithActionsRemaining (atLeast 1))
+        (WhileInvestigating $ be a)
       $ ResultOneOf [#failure, SuccessResult $ LessThan $ Static 2]
 
 instance RunMessage Rome where

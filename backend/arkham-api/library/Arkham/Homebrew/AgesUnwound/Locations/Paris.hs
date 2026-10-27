@@ -22,7 +22,7 @@ the @#after@ window the enemy is out of play, so a criterion selecting in-play
 enemies at this location would find nothing and the Forced would silently never
 fire (@project_defeated_enemy_condition_belongs_in_the_window@).
 
-"Lose N actions" is 'loseActions', not 'loseStandardActions': the campaign's
+"Lose N actions" is 'loseActions', not 'loseUnrestrictedActions': the campaign's
 /standard action/ term governs the effects that *count* actions, while losing
 follows the core rule -- remaining actions go first, and an investigator left
 with only additional actions loses those, whatever their limitation (FAQ 1.10).

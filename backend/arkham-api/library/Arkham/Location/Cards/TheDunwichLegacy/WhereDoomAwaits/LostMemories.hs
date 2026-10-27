@@ -2,11 +2,10 @@ module Arkham.Location.Cards.TheDunwichLegacy.WhereDoomAwaits.LostMemories (lost
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Helpers.Action (getAllRemainingActions)
 import Arkham.Location.CardDefs.TheDunwichLegacy.WhereDoomAwaits qualified as Cards (lostMemories)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Projection
 
 newtype LostMemories = LostMemories LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -25,7 +24,7 @@ instance HasAbilities LostMemories where
 instance RunMessage LostMemories where
   runMessage msg l@(LostMemories attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      actionRemainingCount <- field InvestigatorRemainingActions iid
+      actionRemainingCount <- getAllRemainingActions iid
       assignHorror iid (attrs.ability 1) actionRemainingCount
       pure l
     _ -> LostMemories <$> liftRunMessage msg attrs

@@ -920,10 +920,8 @@ doneWithTurn =
 getCanLoseActions
   :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId)
   => investigator -> m Bool
-getCanLoseActions (asId -> iid) = do
-  remaining <- field InvestigatorRemainingActions iid
-  additional <- fieldLength InvestigatorAdditionalActions iid
-  pure $ remaining + additional > 0
+getCanLoseActions (asId -> iid) =
+  selectAny $ InvestigatorWithId iid <> InvestigatorWithAnyActionsRemaining
 
 selectAffectsOthers
   :: HasGame m => InvestigatorId -> InvestigatorMatcher -> m [InvestigatorId]

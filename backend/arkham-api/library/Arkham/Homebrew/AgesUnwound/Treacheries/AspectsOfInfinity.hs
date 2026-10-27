@@ -19,7 +19,7 @@ of the other: Take 2 damage. / Heal 2 damage. -- Take 2 horror. / Heal 2 horror.
 -- Lose 2 actions. / Gain 2 actions. -- Draw the top card of the encounter deck.
 / This card loses surge."
 
-"Lose N actions" is 'loseActions', not 'loseStandardActions': the campaign's
+"Lose N actions" is 'loseActions', not 'loseUnrestrictedActions': the campaign's
 /standard action/ term governs the effects that *count* actions, while losing
 follows the core rule -- remaining actions go first, and an investigator left
 with only additional actions loses those, whatever their limitation (FAQ 1.10).

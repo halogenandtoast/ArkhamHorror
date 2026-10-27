@@ -2,7 +2,7 @@ module Arkham.Homebrew.AgesUnwound.Locations.ChildrensPlayground_171 (childrensP
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Action (getStandardActions)
+import Arkham.Helpers.Action (getUnrestrictedActions)
 import Arkham.Helpers.Modifiers (ModifierType (ShroudModifier))
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Cards
@@ -25,33 +25,33 @@ investigation."
 Identical to Scenario III's Children's Playground (@:ages-unwound:058@): X is
 chosen in the handler rather than paid as a cost, because 'Arkham.Cost.Cost' has
 no variable-action constructor and only /standard/ actions may be spent on an
-arbitrary ability -- which is what 'getStandardActions' counts and
-'loseStandardActions' takes. The printed subject is "an investigator", so anyone
+arbitrary ability -- which is what 'getUnrestrictedActions' counts and
+'loseUnrestrictedActions' takes. The printed subject is "an investigator", so anyone
 here may chip in on someone else's investigation.
 
 Gated on having a standard action to spend. Only standard actions can pay for an
 arbitrary ability, so an investigator whose last action is a restricted
 additional one (Daisy's Tome-only) cannot use this at all -- and without the
 criterion the reaction was still offered to them, then silently did nothing
-because `chooseAmount` was skipped. 'InvestigatorWithStandardActionsRemaining'
-is the same read 'getStandardActions' makes below.
+because `chooseAmount` was skipped. 'InvestigatorWithUnrestrictedActionsRemaining'
+is the same read 'getUnrestrictedActions' makes below.
 -}
 instance HasAbilities ChildrensPlayground_171 where
   getAbilities (ChildrensPlayground_171 a) =
     extendRevealed1 a
-      $ restricted a 1 (Here <> youExist (InvestigatorWithStandardActionsRemaining (atLeast 1)))
+      $ restricted a 1 (Here <> youExist (InvestigatorWithUnrestrictedActionsRemaining (atLeast 1)))
       $ freeReaction
       $ InitiatedSkillTest #when Anyone AnySkillType AnySkillTestValue (WhileInvestigating (be a))
 
 instance RunMessage ChildrensPlayground_171 where
   runMessage msg l@(ChildrensPlayground_171 attrs) = runQueueT $ campaignI18n $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      spendable <- getStandardActions iid
+      spendable <- getUnrestrictedActions iid
       when (spendable > 0)
         $ chooseAmount iid "childrensPlayground.spendActions" "$actions" 1 spendable attrs
       pure l
     ResolveAmounts iid (getChoiceAmount "$actions" -> n) (isTarget attrs -> True) | n > 0 -> do
-      loseStandardActions iid (attrs.ability 1) n
+      loseUnrestrictedActions iid (attrs.ability 1) n
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) attrs (ShroudModifier (-n))
       pure l
     _ -> ChildrensPlayground_171 <$> liftRunMessage msg attrs

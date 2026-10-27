@@ -29,7 +29,7 @@ at all on a turn that ends with none -- see
 -}
 instance HasAbilities TimeRunningShort where
   getAbilities (TimeRunningShort a) =
-    [ restricted a 1 (youExist $ InvestigatorWithStandardActionsRemaining (atLeast 1))
+    [ restricted a 1 (youExist $ InvestigatorWithUnrestrictedActionsRemaining (atLeast 1))
         $ forced
         $ TurnEnds #when You
     ]
@@ -63,7 +63,7 @@ instance RunMessage TimeRunningShort where
       reveal is actually visible -- see 'TimeRunningOut', which prompts but
       without the focus had nothing to show.
 
-      "Lose N actions" is 'loseActions', not 'loseStandardActions': the campaign's
+      "Lose N actions" is 'loseActions', not 'loseUnrestrictedActions': the campaign's
       /standard action/ term governs the effects that *count* actions, while losing
       follows the core rule -- remaining actions go first, and an investigator left
       with only additional actions loses those, whatever their limitation (FAQ 1.10). -}

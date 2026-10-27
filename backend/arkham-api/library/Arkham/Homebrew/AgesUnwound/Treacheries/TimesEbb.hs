@@ -30,7 +30,7 @@ window ends on the draw rather than in front of it, so the extra cards come
 after the card that triggered them; an ability could only have fired in the
 @#when@ window, which is the only one an encounter draw emits.
 
-"Lose N actions" is 'loseActions', not 'loseStandardActions': the campaign's
+"Lose N actions" is 'loseActions', not 'loseUnrestrictedActions': the campaign's
 /standard action/ term governs the effects that *count* actions, while losing
 follows the core rule -- remaining actions go first, and an investigator left
 with only additional actions loses those, whatever their limitation (FAQ 1.10).

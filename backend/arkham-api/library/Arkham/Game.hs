@@ -1407,12 +1407,9 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
     InvestigatorWithSpendableResources gameValueMatcher ->
       flip runMatchesM as $ (`gameValueMatches` gameValueMatcher) <=< getSpendableResources . toId
     InvestigatorWithActionsRemaining gameValueMatcher ->
-      flip runMatchesM as
-        $ field InvestigatorRemainingActions
-        . toId
-        >=> (`gameValueMatches` gameValueMatcher)
-    InvestigatorWithStandardActionsRemaining gameValueMatcher ->
-      flip runMatchesM as $ getStandardActions . toId >=> (`gameValueMatches` gameValueMatcher)
+      flip runMatchesM as $ getAllRemainingActions . toId >=> (`gameValueMatches` gameValueMatcher)
+    InvestigatorWithUnrestrictedActionsRemaining gameValueMatcher ->
+      flip runMatchesM as $ getUnrestrictedActions . toId >=> (`gameValueMatches` gameValueMatcher)
     InvestigatorWithActionsPerformed gameValueMatcher ->
       flip runMatchesM as
         $ fieldMap InvestigatorActionsPerformed length

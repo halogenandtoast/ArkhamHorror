@@ -24,7 +24,7 @@ curseOfAThousandWinters = treachery CurseOfAThousandWinters Cards.curseOfAThousa
 from Curse of a Thousand Winters. Then, if there are no resources on Curse of a
 Thousand Winters, discard it."
 
-"Lose N actions" is 'loseActions', not 'loseStandardActions': the campaign's
+"Lose N actions" is 'loseActions', not 'loseUnrestrictedActions': the campaign's
 /standard action/ term governs the effects that *count* actions, while losing
 follows the core rule -- remaining actions go first, and an investigator left
 with only additional actions loses those, whatever their limitation (FAQ 1.10).

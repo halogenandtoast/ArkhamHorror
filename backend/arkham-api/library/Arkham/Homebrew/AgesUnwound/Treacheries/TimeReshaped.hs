@@ -23,7 +23,7 @@ timeReshaped = treachery TimeReshaped Cards.timeReshaped
 
 The card prints no __Revelation__ header, but this is its revelation text.
 
-"Lose 1 action" is 'loseActions', not 'loseStandardActions': the campaign's
+"Lose 1 action" is 'loseActions', not 'loseUnrestrictedActions': the campaign's
 /standard action/ term governs the effects that *count* actions, while losing
 follows the core rule -- remaining actions go first, and an investigator left
 with only additional actions loses those, whatever their limitation (FAQ 1.10).

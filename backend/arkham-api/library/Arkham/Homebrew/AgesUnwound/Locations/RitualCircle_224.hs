@@ -159,9 +159,10 @@ The second printed line -- "cannot willingly end their turn while they have
 actions remaining" -- is the same shape, so it rides here too: 'CannotEndTurn'
 only takes the end-turn button off the player window, and the window is rebuilt
 with fresh modifiers after every action, so the button comes back the moment
-the last action is spent. @InvestigatorWithActionsRemaining@ and not the
-@Standard@ variant because the card says "actions remaining", where
-/Classroom/ says "standard action".
+the last action is spent. @InvestigatorWithActionsRemaining@ and not
+@InvestigatorWithUnrestrictedActionsRemaining@ because the card says "actions
+remaining", where /Classroom/ says "standard action": a turn still holding a
+restricted additional action is a turn with actions remaining.
 -}
 instance HasModifiersFor RitualCircle_224 where
   getModifiersFor (RitualCircle_224 a) = do

@@ -2670,8 +2670,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   UseEffectAction iid eid _ | iid == investigatorId -> handleUseEffectAction a iid eid
   LoseActions iid source n | iid == investigatorId -> handleLoseActions a iid source n msg
   Do (LoseActions iid _source n) | iid == investigatorId -> handleDoLoseActions a iid n
-  LoseStandardActions iid source n | iid == investigatorId -> handleLoseActions a iid source n msg
-  Do (LoseStandardActions iid _source n) | iid == investigatorId -> handleDoLoseStandardActions a iid n
+  LoseUnrestrictedActions iid source n | iid == investigatorId -> handleLoseActions a iid source n msg
+  Do (LoseUnrestrictedActions iid _source n) | iid == investigatorId -> handleDoLoseUnrestrictedActions a iid n
   SetActions iid _ 0 | iid == investigatorId -> handleSetActions a iid
   SetActions iid _ n | iid == investigatorId -> handleSetActionsV2 a iid n
   SetAsideCards cards -> do

@@ -32,7 +32,7 @@ instance HasAbilities ForestallFate where
 'onRevealChaosTokenEffect' that defers to 'afterThisTestResolves' -- Rite of
 Seeking's shape, which is the same sentence.
 
-"Lose N actions" is 'loseActions', not 'loseStandardActions': the campaign's
+"Lose N actions" is 'loseActions', not 'loseUnrestrictedActions': the campaign's
 /standard action/ term governs the effects that *count* actions, while losing
 follows the core rule -- remaining actions go first, and an investigator left
 with only additional actions loses those, whatever their limitation (FAQ 1.10).

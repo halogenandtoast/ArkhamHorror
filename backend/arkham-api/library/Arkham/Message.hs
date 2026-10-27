@@ -1037,9 +1037,11 @@ data Message
   | LookAtTopOfDeck InvestigatorId Target Int
   | LoseActions InvestigatorId Source Int
   | LoseResources InvestigatorId Source Int
-  | {- | Like 'LoseActions', but only standard actions can be taken away: the
-    investigator's remaining actions and any additional action without a
-    limitation on its use (see 'isStandardAdditionalAction').
+  | {- | Like 'LoseActions', but only unrestricted actions can be taken away:
+    the investigator's remaining actions and any additional action without a
+    limitation on its use (see 'isUnrestrictedAdditionalAction') -- what Ages
+    Unwound calls a "standard action", which is not the core rules' sense of
+    the word.
 
     This is NOT what "lose N actions" means. Losing follows the core rule --
     remaining actions go first, and an investigator left with only additional
@@ -1048,7 +1050,7 @@ data Message
     restricted additional action could not be used on, where Ages Unwound's
     "spend X actions" wording lands.
     -}
-    LoseStandardActions InvestigatorId Source Int
+    LoseUnrestrictedActions InvestigatorId Source Int
   | LoseTokens InvestigatorId Source Token TokenLoss
   | SpendActions InvestigatorId Source [Action] Int
   | -- | Handles complex movement for a target, triggers Moves windows, and uses MoveFrom, MoveTo messages
@@ -2645,6 +2647,11 @@ mconcat
               pure $ case contents of
                 Right (a, b, c, d, s) -> FindEncounterCard a b c d s
                 Left (a, b, c, d) -> FindEncounterCard a b c d LeadChooses
+            -- Renamed from LoseStandardActions: "standard action" is the base
+            -- three in the core rules, not what this message counts.
+            "LoseStandardActions" -> do
+              (iid, source, n) <- o .: "contents"
+              pure $ LoseUnrestrictedActions iid source n
             -- Legacy: saves written before the details object stored the bare face
             "AddChaosToken" -> AddChaosToken <$> o .: "contents"
             -- Legacy: pre-Message-refactor saves tagged entity-specific removals

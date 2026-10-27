@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.Import.Lifted
 import Arkham.Effect.Builder
 import Arkham.Effect.Window
-import Arkham.Helpers.Action (getStandardActions)
+import Arkham.Helpers.Action (getUnrestrictedActions)
 import Arkham.Helpers.Modifiers (ModifierType (AdditionalActions))
 import Arkham.Homebrew.AgesUnwound.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.AgesUnwound.Scenarios.AWorldTornDownAgain.Helpers
@@ -41,7 +41,7 @@ their limitation (FAQ 1.10).
 instance HasAbilities RageAgainstTheEnd where
   getAbilities (RageAgainstTheEnd a) =
     [ restricted a 1 (DoomCountIs $ atLeast 4) $ forced $ MythosStep AfterCheckDoomThreshold
-    , restricted a 2 (youExist $ InvestigatorWithStandardActionsRemaining (atLeast 1))
+    , restricted a 2 (youExist $ InvestigatorWithUnrestrictedActionsRemaining (atLeast 1))
         $ forced
         $ TurnEnds #when You
     ]
@@ -52,7 +52,7 @@ instance RunMessage RageAgainstTheEnd where
       eachInvestigator \iid -> loseActions iid (attrs.ability 1) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      gained <- min 3 <$> getStandardActions iid
+      gained <- min 3 <$> getUnrestrictedActions iid
       -- Same shape as agenda 2a's: see
       -- 'Arkham.Homebrew.AgesUnwound.Agendas.TimeRunningShort'.
       effectWithSource (attrs.ability 2) iid do

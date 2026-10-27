@@ -377,8 +377,8 @@ handleDoLoseActions a@InvestigatorAttrs {..} iid n = do
   additionalActions <- getAdditionalActions a
   doLoseActionsFrom a iid n additionalActions
 
-handleDoLoseStandardActions a@InvestigatorAttrs {..} iid n = do
-  additionalActions <- filter isStandardAdditionalAction <$> getAdditionalActions a
+handleDoLoseUnrestrictedActions a@InvestigatorAttrs {..} iid n = do
+  additionalActions <- filter isUnrestrictedAdditionalAction <$> getAdditionalActions a
   doLoseActionsFrom a iid n additionalActions
 
 doLoseActionsFrom a iid n additionalActions = do

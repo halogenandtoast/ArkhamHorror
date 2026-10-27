@@ -163,24 +163,52 @@ getAdditionalActions attrs = do
     then pure []
     else pure $ filter (`notElem` investigatorUsedAdditionalActions attrs) additionalActions
 
-{- | An investigator's /standard actions/: their remaining actions plus every
-unspent additional action without a limitation on its use.
+{- | An investigator's /unrestricted/ actions: their remaining actions plus
+every unspent additional action that carries no limitation on its use.
+'getAdditionalActions' is what makes the count exclude the ones already spent.
+
+This is what Ages Unwound calls a "standard action":
 
 > A standard action is any action that does not have a limitation on its use,
 > regardless of its source.
 
-Ages Unwound is what introduces the term, and its cards use it only where they
-*count* actions ("for each standard action you have remaining", "if you have any
-standard actions remaining", "X is the number of standard actions you have");
-'getAdditionalActions' is what makes the count exclude the ones already spent.
+The name deliberately avoids that word. The core rules use "standard action"
+for the opposite side of the split -- the investigator's /three base/ actions,
+as against their additional ones ("not one of Daisy's three standard actions",
+glossary "Action"; FAQ 1.10) -- so an identifier saying /standard/ would read
+as the narrower count to anyone holding the rulebook and the wider one to
+anyone holding the campaign guide. Keep the campaign's wording on the cards and
+out of the engine.
 
-Its "lose N action(s)" effects are NOT about standard actions -- see
-'Arkham.Message.LoseStandardActions'.
+The unqualified count is 'getAllRemainingActions'.
+
+AU uses the term only where it *counts* actions ("for each standard action you
+have remaining", "if you have any standard actions remaining", "X is the number
+of standard actions you have"). Its "lose N action(s)" effects are a different
+thing -- see 'Arkham.Message.LoseUnrestrictedActions'.
 -}
-getStandardActions :: HasGame m => InvestigatorId -> m Int
-getStandardActions iid = do
+
+{- | Every action the investigator still has: their remaining actions plus
+every unspent additional action, whatever limitation it carries.
+
+This is what a card means by "actions remaining" left unqualified -- an
+investigator holding only Finn Edwards's evade-only action does have an action
+remaining -- so it backs 'Arkham.Matcher.InvestigatorWithActionsRemaining', and
+it is the count that losing an action goes by (FAQ 1.10).
+
+'getUnrestrictedActions' is the narrower one, for the cards that say /standard
+action/.
+-}
+getAllRemainingActions :: HasGame m => InvestigatorId -> m Int
+getAllRemainingActions iid = do
   remaining <- field InvestigatorRemainingActions iid
-  additional <- count isStandardAdditionalAction <$> field InvestigatorAdditionalActions iid
+  additional <- length <$> field InvestigatorAdditionalActions iid
+  pure $ remaining + additional
+
+getUnrestrictedActions :: HasGame m => InvestigatorId -> m Int
+getUnrestrictedActions iid = do
+  remaining <- field InvestigatorRemainingActions iid
+  additional <- count isUnrestrictedAdditionalAction <$> field InvestigatorAdditionalActions iid
   pure $ remaining + additional
 
 getActionCost :: HasGame m => InvestigatorAttrs -> [Action] -> m Int

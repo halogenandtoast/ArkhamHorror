@@ -2,11 +2,10 @@ module Arkham.Location.Cards.TheDunwichLegacy.WhereDoomAwaits.EerieGlade (eerieG
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Helpers.Action (getAllRemainingActions)
 import Arkham.Location.CardDefs.TheDunwichLegacy.WhereDoomAwaits qualified as Cards (eerieGlade)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Projection
 
 newtype EerieGlade = EerieGlade LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -25,7 +24,7 @@ instance HasAbilities EerieGlade where
 instance RunMessage EerieGlade where
   runMessage msg l@(EerieGlade attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      actionRemainingCount <- field InvestigatorRemainingActions iid
+      actionRemainingCount <- getAllRemainingActions iid
       discardTopOfDeck iid (attrs.ability 1) (actionRemainingCount * 2)
       pure l
     _ -> EerieGlade <$> liftRunMessage msg attrs

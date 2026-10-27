@@ -40,7 +40,7 @@ instance RunMessage TheRitualBegins where
       starting -- no next-turn modifier needed (contrast agendas 2a and 3a, whose
       Forced fires at the end of a turn).
 
-      "Lose N actions" is 'loseActions', not 'loseStandardActions': the campaign's
+      "Lose N actions" is 'loseActions', not 'loseUnrestrictedActions': the campaign's
       /standard action/ term governs the effects that *count* actions, while losing
       follows the core rule -- remaining actions go first, and an investigator left
       with only additional actions loses those, whatever their limitation (FAQ 1.10). -}

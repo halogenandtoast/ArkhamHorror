@@ -53,12 +53,12 @@ instance RunMessage DenyExistence5 where
             $ \_ -> [TakeResources iid n source False]
         LostActions iid source n -> do
           cancelCostPaymentFrom source
-          -- The LostActions window is shared by LoseActions and LoseStandardActions,
+          -- The LostActions window is shared by LoseActions and LoseUnrestrictedActions,
           -- so cancel either or the event is spent and the actions lost anyway.
           replaceMessageMatching
             ( \case
                 Do (LoseActions iid' source' n') -> (iid', source', n') == (iid, source, n)
-                Do (LoseStandardActions iid' source' n') -> (iid', source', n') == (iid, source, n)
+                Do (LoseUnrestrictedActions iid' source' n') -> (iid', source', n') == (iid, source, n)
                 _ -> False
             )
             $ \_ -> [GainActions iid source n]

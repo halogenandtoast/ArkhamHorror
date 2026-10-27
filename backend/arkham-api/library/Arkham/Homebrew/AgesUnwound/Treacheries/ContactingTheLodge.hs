@@ -1,7 +1,7 @@
 module Arkham.Homebrew.AgesUnwound.Treacheries.ContactingTheLodge (contactingTheLodge) where
 
 import Arkham.Ability
-import Arkham.Helpers.Action (getStandardActions)
+import Arkham.Helpers.Action (getUnrestrictedActions)
 import Arkham.Helpers.Story (readStory)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Stories qualified as Stories
 import Arkham.Homebrew.AgesUnwound.CardDefs.Treacheries qualified as Cards
@@ -36,15 +36,15 @@ instance RunMessage ContactingTheLodge where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       {- The ability's own action is already paid by here, so what is left is what
       can still be added. Only /standard/ actions can be spent on an arbitrary
-      ability, which is exactly what 'getStandardActions' counts and
-      'loseStandardActions' takes. -}
-      spendable <- getStandardActions iid
+      ability, which is exactly what 'getUnrestrictedActions' counts and
+      'loseUnrestrictedActions' takes. -}
+      spendable <- getUnrestrictedActions iid
       if spendable > 0
         then campaignI18n $ chooseAmount iid "contactingTheLodge.extraActions" "$actions" 0 spendable attrs
         else beginTheTest iid attrs 0
       pure t
     ResolveAmounts iid (getChoiceAmount "$actions" -> n) (isTarget attrs -> True) -> do
-      when (n > 0) $ loseStandardActions iid (attrs.ability 1) n
+      when (n > 0) $ loseUnrestrictedActions iid (attrs.ability 1) n
       beginTheTest iid attrs n
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

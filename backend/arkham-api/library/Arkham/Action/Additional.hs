@@ -43,7 +43,11 @@ additionalActionType (AdditionalAction _ _ aType) = aType
 additionalActionSource :: AdditionalAction -> Source
 additionalActionSource (AdditionalAction _ aSource _) = aSource
 
-{- | Is this an additional /standard/ action? Per the Ages Unwound campaign guide:
+{- | Is this additional action free of any limitation on its use? That is only
+true of 'AnyAdditionalAction'; every other 'AdditionalActionType' restricts
+what the action may be spent on.
+
+This is the test behind Ages Unwound's "standard action":
 
 > A standard action is any action that does not have a limitation on its use,
 > regardless of its source. For example, Finn Edwards has a copy of Leo De Luca
@@ -51,12 +55,12 @@ additionalActionSource (AdditionalAction _ aSource _) = aSource
 > additional action from Leo - as well as an additional, non-standard action
 > from his investigator ability that can only be used to evade.
 
-So an investigator's standard actions are their remaining actions plus every
-'AdditionalAction' whose kind is 'AnyAdditionalAction'; every other
-'AdditionalActionType' carries a limitation on its use.
+The campaign's sense of the word is not the core rules' one, which reserves
+"standard action" for the base three, so the engine says /unrestricted/
+instead. See 'Arkham.Helpers.Action.getUnrestrictedActions'.
 -}
-isStandardAdditionalAction :: AdditionalAction -> Bool
-isStandardAdditionalAction a = additionalActionType a == AnyAdditionalAction
+isUnrestrictedAdditionalAction :: AdditionalAction -> Bool
+isUnrestrictedAdditionalAction a = additionalActionType a == AnyAdditionalAction
 
 instance IsLabel "evade" AdditionalActionType where
   fromLabel = ActionRestrictedAdditionalAction #evade

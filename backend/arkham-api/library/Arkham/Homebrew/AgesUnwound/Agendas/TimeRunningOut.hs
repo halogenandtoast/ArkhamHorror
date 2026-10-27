@@ -27,7 +27,7 @@ restricted or not (FAQ 1.10).
 -}
 instance HasAbilities TimeRunningOut where
   getAbilities (TimeRunningOut a) =
-    [ restricted a 1 (youExist $ InvestigatorWithStandardActionsRemaining (atLeast 1))
+    [ restricted a 1 (youExist $ InvestigatorWithUnrestrictedActionsRemaining (atLeast 1))
         $ forced
         $ TurnEnds #when You
     , grantedAidFromAfarAbility a 2

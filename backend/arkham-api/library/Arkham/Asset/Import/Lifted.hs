@@ -303,7 +303,7 @@ replenish :: Token -> Int -> Tokens -> Tokens
 replenish token n tokens = tokens & at token . non 0 %~ max n
 
 replenishN :: Token -> Int -> Int -> Tokens -> Tokens
-replenishN token tokenMax n tokens = tokens & at token . non 0 %~ min tokenMax . (+ n)
+replenishN token tokenMax n tokens = tokens & at token . non 0 %~ \x -> max x (min tokenMax (x + n))
 
 under :: HasField "cardsUnderneath" a [Card] => Card -> a -> Bool
 under c a = c `elem` a.cardsUnderneath

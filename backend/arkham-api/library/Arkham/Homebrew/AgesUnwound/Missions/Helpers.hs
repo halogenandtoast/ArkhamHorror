@@ -25,6 +25,7 @@ module Arkham.Homebrew.AgesUnwound.Missions.Helpers (
 
 import Arkham.Card
 import Arkham.Card.PlayerCard (setPlayerCardOwner)
+import Arkham.Classes.GameLogger (HasGameLogger, sendRevelation)
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
@@ -110,9 +111,12 @@ just drawn" entry point, so the revelation gets its @#when@/@#after@ frame and
 honours 'Arkham.Modifier.IgnoreRevelation'. The Task's own handler moves it to
 'NextToAct' via 'placeThisTask'.
 -}
-putTaskIntoPlayWithRevelation :: (ReverseQueue m, FetchCard card) => InvestigatorId -> card -> m ()
+putTaskIntoPlayWithRevelation
+  :: (ReverseQueue m, HasGameLogger m, FetchCard card) => InvestigatorId -> card -> m ()
 putTaskIntoPlayWithRevelation iid c = do
   card <- fetchCard c
+  -- Resolving a created treachery bypasses the encounter draw's reveal notification.
+  getPlayer iid >>= (`sendRevelation` toJSON card)
   (tid, msg) <- Msg.createTreacheryAt card Limbo
   push msg
   push $ ResolveTreachery iid tid

@@ -5,7 +5,7 @@ import type { Cost } from '@/arkham/types/Cost';
 import type { AbilityLabel, FightLabel, FightLabelWithSkill, EvadeLabel, EvadeLabelWithSkill, EngageLabel } from '@/arkham/types/Message';
 import { SkillType } from '@/arkham/types/SkillType';
 import type { Ability, AbilitySkills, AbilityType } from '@/arkham/types/Ability';
-import { sourceKey, type Source } from '@/arkham/types/Source';
+import { proxyOriginId, sourceKey, type Source } from '@/arkham/types/Source';
 import type { Action } from '@/arkham/types/Action';
 import { actionsToList } from '@/arkham/types/Action';
 import { MessageType } from '@/arkham/types/Message';
@@ -32,6 +32,9 @@ const attributes = computed(() => {
   if (ability.value && ability.value.target) {
     return { 'data-highlight-id': ability.value.target.contents }
   }
+
+  const origin = ability.value && proxyOriginId(ability.value.source)
+  if (origin) return { 'data-source-highlight-id': origin }
 
   return {}
 })

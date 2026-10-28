@@ -12,21 +12,6 @@ newtype Rome = Rome LocationAttrs
 rome :: LocationCard Rome
 rome = symbolLabel $ location Rome Cards.rome 2 (PerPlayer 2)
 
-{- | "__Forced__ - After you investigate Rome, if you did not succeed by at least
-2: Lose an action."
-
-"Did not succeed by at least 2" is a failure /or/ a success with a margin under
-2, which is exactly 'ResultOneOf' -- the shape Grand Chamber's identical
-proviso uses. The timing is @#after@ here (Grand Chamber prints "when"), so the
-clues are already discovered by the time the action is taken away.
-
-"Lose N actions" is 'loseActions', not 'loseUnrestrictedActions': the campaign's
-/standard action/ term governs the effects that *count* actions, while losing
-follows the core rule -- remaining actions go first, and an investigator left
-with only additional actions loses those, whatever their limitation (FAQ 1.10).
-The window's criterion is the matching 'InvestigatorWithActionsRemaining', so
-the forced ability fires on exactly the turns the loss can take something.
--}
 instance HasAbilities Rome where
   getAbilities (Rome a) =
     extendRevealed1 a

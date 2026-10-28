@@ -8,7 +8,6 @@ import { imgsrc } from '@/arkham/helpers'
 import { cardArt, cardImage } from '@/arkham/cardImages'
 import { keyToId } from '@/arkham/types/Key'
 import { useGameChoices, useStickyChoicesSource } from '@/arkham/composables/useGameChoices'
-import { proxyOriginId } from '@/arkham/types/Source'
 import { useGameIndexes } from '@/arkham/composables/useGameIndexes'
 import { useCardFlip } from '@/arkham/composables/useCardFlip'
 import DebugLocation from '@/arkham/components/debug/Location.vue'
@@ -568,18 +567,15 @@ const showCardsUnderneath = () => emits('show', cardsUnderneathToShow, 'Cards Un
 const isAttackTarget = computed(() => props.game.enemyAttackTargets.some((e) => e.target.contents === props.location.id))
 const highlighted = computed(() => highlighter.highlighted.value === props.location.id || isAttackTarget.value)
 
-// Yellow marks the actor/source of what is happening. Two cases put this location there:
-// a pending question wrapped in QuestionWithSource (e.g. the location charging an
-// additional cost to leave it), and an offered proxied ability this location granted to
-// the card it now sits on.
+// Yellow marks the source of a pending question (e.g. an additional move cost).
+// Offered proxied abilities highlight their origin only through button hover.
 const choicesSource = useStickyChoicesSource(() => props.game, () => props.playerId)
 const sourceHighlighted = computed(() => {
+  if (highlighter.sourceHighlighted.value === props.location.id) return true
   const source = choicesSource.value
   if (source !== null && 'contents' in source && source.contents === props.location.id) return true
 
-  return choices.value.some(
-    (c) => c.tag === MessageType.ABILITY_LABEL && proxyOriginId(c.ability.source) === props.location.id
-  )
+  return false
 })
 
 function isVehicleAsset(assetId: string): boolean {

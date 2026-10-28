@@ -175,6 +175,10 @@
     }
   },
   "tooltips": {
+    "distantEntity": {
+      "test": "Test {willpower} (3). If you succeed, place a resource on Distant Entity",
+      "flip": "If there are 3 resources on Distant Entity: Flip it over and resolve its text"
+    },
     "onTheLam": {
       "move": "Move to a new Arkham Streets location"
     },

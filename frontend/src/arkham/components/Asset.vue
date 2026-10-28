@@ -480,7 +480,7 @@ function startDrag(event: DragEvent) {
             :data-is-spirit="isSpirit || undefined"
             :src="displayedImage"
             class="card"
-            :class="{ exhausted, 'ability-target': isHighlighted || isAttackTarget, 'card--flipping': flipping }"
+            :class="{ exhausted, 'ability-target': isHighlighted || isAttackTarget, 'source-highlight': highlighter.sourceHighlighted.value === asset.id, 'card--flipping': flipping }"
             :style="{ '--ui-rotation': `${uiRotation}deg` }"
             :data-rotation="uiRotation || undefined"
             :draggable="debug.active || canTuck"
@@ -806,6 +806,10 @@ img.card {
 
 img.card.ability-target {
   box-shadow: 0 0 0 2px var(--highlight), 0 0 6px 1px var(--highlight), var(--card-shadow);
+}
+
+img.card.source-highlight {
+  box-shadow: 0 0 0 2px var(--important), 0 0 6px 1px var(--important), var(--card-shadow);
 }
 
 .deck-size {

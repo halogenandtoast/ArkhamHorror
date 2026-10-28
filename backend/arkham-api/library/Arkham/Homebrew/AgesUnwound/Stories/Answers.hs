@@ -1,5 +1,6 @@
 module Arkham.Homebrew.AgesUnwound.Stories.Answers (answers) where
 
+import Arkham.Capability
 import Arkham.Helpers.Investigator (getHandCount, getHandSize)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Stories qualified as Cards
 import Arkham.Homebrew.AgesUnwound.CardDefs.Treacheries qualified as Treacheries
@@ -12,62 +13,56 @@ import Arkham.Message.Lifted.Log (record)
 import Arkham.Message.Lifted.Move (moveTo)
 import Arkham.Story.Import.Lifted
 import Arkham.Token (Token (Ammo, Charge, Secret, Supply))
+import Data.List.Extra (nubOrd)
 
 newtype Answers = Answers StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
--- | The reverse of /Ancient Sphinx/ (@:ages-unwound:145@).
 answers :: StoryCard Answers
 answers = story Answers Cards.answers
 
-{- | "You must decide (choose one):
-- /"Knowledge."/ Draw cards until you reach your maximum hand size.
-- /"Power."/ Distribute 5 supplies, ammo, charges or secrets, in any
-  combination, among assets you control.
-- /"Wealth."/ Gain 10 resources.
-- /"Aid."/ Move to any location. Deal 3 damage to an enemy at that location.
-
-In your Campaign Log, record /you solved the riddle of the sphinx./ Complete
-Keeper of Knowledge. Flip this card back over and add it to the victory
-display."
-
-"Distribute 5 ... in any combination" is the one place in this set that needs
-the @doStep@ countdown: each point is its own choice of asset /and/ of use type,
-so each iteration has its own resolution.
--}
 instance RunMessage Answers where
   runMessage msg s@(Answers attrs) = runQueueT $ case msg of
     ResolveThisStory iid (is attrs -> True) -> do
       resources <- getHandSize iid
       inHand <- getHandCount iid
       assets <- select $ assetControlledBy iid
-      locations <- select Anywhere
+      locations <- select $ canEnterLocation iid
+
+      resourceOk <- can.gain.resources iid
+      drawOk <- (resources - inHand > 0 &&) <$> can.draw.cards iid
+
       chooseOneM iid $ campaignI18n do
-        labeled "answers.knowledge" $ drawCardsIfCan iid attrs (resources - inHand)
+        labeledValidate drawOk "answers.knowledge" $ drawCardsIfCan iid attrs (resources - inHand)
         labeledValidate (notNull assets) "answers.power" $ doStep 5 msg
-        labeled "answers.wealth" $ gainResources iid attrs 10
-        labeled "answers.aid" $ chooseTargetM iid locations \lid -> do
+        labeledValidate resourceOk "answers.wealth" $ gainResources iid attrs 10
+        labeledValidate (notNull locations) "answers.aid" $ chooseTargetM iid locations \lid -> do
           moveTo attrs iid lid
           enemies <- select $ enemyAt lid
           chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) attrs 3
-      -- The investigators' own record, distinct from the Myriad's
-      -- ('TheMyriadSolvedTheRiddleOfTheSphinx'), which Scenario V writes when
-      -- the task is left incomplete.
       record YouSolvedTheRiddleOfTheSphinx
       completeTask Treacheries.keeperOfKnowledge
+      removeStory attrs
       for_ (storyOtherSide attrs) (addToVictory iid)
       pure s
     DoStep n (ResolveThisStory iid (is attrs -> True)) | n > 0 -> do
-      assets <- select $ assetControlledBy iid
+      let getUseAssets use = select $ assetControlledBy iid <> AssetCanHaveUses use
+      supplyAssets <- getUseAssets Supply
+      ammoAssets <- getUseAssets Ammo
+      chargeAssets <- getUseAssets Charge
+      secretAssets <- getUseAssets Secret
+      let assets = nubOrd $ supplyAssets <> ammoAssets <> chargeAssets <> secretAssets
       chooseTargetM iid assets \aid ->
         chooseOneM iid $ campaignI18n do
-          labeled "answers.supply" $ placeTokens attrs aid Supply 1
-          labeled "answers.ammo" $ placeTokens attrs aid Ammo 1
-          labeled "answers.charge" $ placeTokens attrs aid Charge 1
-          labeled "answers.secret" $ placeTokens attrs aid Secret 1
-      -- `msg`, not the inner ResolveThisStory: doNextStep matches `DoStep n inner`,
-      -- so handing it the unwrapped message silently ends the loop after one pass.
+          when (aid `elem` supplyAssets) do
+            labeled "answers.supply" $ placeTokens attrs aid Supply 1
+          when (aid `elem` ammoAssets) do
+            labeled "answers.ammo" $ placeTokens attrs aid Ammo 1
+          when (aid `elem` chargeAssets) do
+            labeled "answers.charge" $ placeTokens attrs aid Charge 1
+          when (aid `elem` secretAssets) do
+            labeled "answers.secret" $ placeTokens attrs aid Secret 1
       doNextStep msg
       pure s
     _ -> Answers <$> liftRunMessage msg attrs

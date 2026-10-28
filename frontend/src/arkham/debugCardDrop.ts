@@ -163,6 +163,29 @@ export const beginTokenDrag = (token: PlaceableToken) => beginDrag({ kind: 'toke
 export function removeDragAttrs(target: RemoveTarget, token: string, count: number) {
   return {
     draggable: true,
+    onClickCapture: (event: MouseEvent) => {
+      // The token needs hit testing for native dragging, but a plain click belongs
+      // to the card beneath it. Capture before PoolItem emits its choose event.
+      event.stopPropagation()
+      event.preventDefault()
+      const beneath = document.elementsFromPoint(event.clientX, event.clientY).find(
+        (element) => !element.closest('.poolItem, .token-pool, .token-pool-overlay'),
+      )
+      beneath?.dispatchEvent(new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+        clientX: event.clientX,
+        clientY: event.clientY,
+        button: event.button,
+        buttons: event.buttons,
+        detail: event.detail,
+        ctrlKey: event.ctrlKey,
+        shiftKey: event.shiftKey,
+        altKey: event.altKey,
+        metaKey: event.metaKey,
+      }))
+    },
     onDragstart: (event: DragEvent) => {
       // Stop the card underneath from starting its own move drag instead.
       event.stopPropagation()
@@ -343,6 +366,9 @@ export function cardDropHandlers(
   const over = (event: DragEvent) => {
     const drop = draggedDrop.value
     if (!drop) return
+    // The innermost card owns this drag, even when it rejects it (including
+    // returning a token to its source). Do not offer it to the location behind it.
+    event.stopPropagation()
     if (!accepts(drop, target())) {
       if (event.dataTransfer) event.dataTransfer.dropEffect = 'none'
       if (drop.kind !== 'remove') {
@@ -352,7 +378,6 @@ export function cardDropHandlers(
       return
     }
     event.preventDefault()
-    event.stopPropagation()
     /* Must agree with the drag's `effectAllowed` or the browser cancels the drop
      * without firing it: a remove drag moves, the other two copy. */
     if (event.dataTransfer) {
@@ -378,9 +403,13 @@ export function cardDropHandlers(
     },
     onDrop: (event: DragEvent) => {
       const drop = draggedDrop.value
-      if (!drop || !accepts(drop, target())) return
+      if (!drop) return
       event.preventDefault()
       event.stopPropagation()
+      if (!accepts(drop, target())) {
+        endCardDrag()
+        return
+      }
       const amount = amountForDrop(drop, event)
       const uses = useType()
       endCardDrag()

@@ -61,6 +61,7 @@ const storySpotlight = computed(() => {
       card: read.card,
       index: read.index,
       flip: read.flip,
+      backImage: read.backArt ? cardImage(read.backArt) : undefined,
       choices: [] as { label: string; index: number }[],
     }
 
@@ -344,6 +345,7 @@ const title = computed(() => {
     :cards="[storySpotlight.card]"
     :choices="storySpotlight.choices"
     :flip="storySpotlight.flip"
+    :back-image="storySpotlight.backImage"
     :aria-label="t('Story')"
     :style="{
       '--spotlight-card-width': 'min(420px, 88vw, 55vh)',

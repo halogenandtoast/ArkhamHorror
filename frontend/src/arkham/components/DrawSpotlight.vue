@@ -42,6 +42,7 @@ const props = defineProps<{
      card becomes. The OK waits for the turn to land, so the reader sees the new
      face before being asked to move on. */
   flip?: boolean
+  backImage?: string
 }>()
 
 const emit = defineEmits<{ dismiss: []; choose: [number] }>()
@@ -69,9 +70,9 @@ const cardStyle = (card: Card, i: number) => ({
    turns up from face-down; for a flip it is the card's own other face, which is
    the whole point of showing the turn. */
 const backFor = (card: Card) =>
-  props.flip
+  props.backImage ?? (props.flip
     ? cardImage(toCardContents(card).cardCode, 'b')
-    : imgsrc(card.tag === 'PlayerCard' ? 'backs/back_player.jpg' : 'backs/back_encounter.jpg')
+    : imgsrc(card.tag === 'PlayerCard' ? 'backs/back_player.jpg' : 'backs/back_encounter.jpg'))
 
 /* Nothing to press until the card has finished turning. Matches the 0.3s
    animation plus a beat to take the new face in; with reduced motion there is no
@@ -93,7 +94,7 @@ onMounted(() => {
 <template>
   <div
     class="spotlight"
-    :class="{ 'spotlight--fan': isFan, 'spotlight--flip-over': flip }"
+    :class="{ 'spotlight--fan': isFan, 'spotlight--flip-over': flip && !backImage }"
     role="dialog"
     aria-modal="true"
     @click="hasChoices || !settled || emit('dismiss')"
@@ -248,7 +249,10 @@ onMounted(() => {
   animation-delay: inherit;
 }
 
-/* A turn-over runs the same two animations the other way round: the face you
+/* With an explicit backImage, CardView already holds the destination face, so
+ * the normal reveal turns from backImage to CardView. Legacy flip spotlights
+ * instead use CardView as the starting face and turn onto its derived back.
+ * A turn-over runs the same two animations the other way round: the face you
    were reading turns away and the other side turns in. */
 .spotlight--flip-over .spotlight__card .card.back {
   animation-name: spotlight-flip-front;

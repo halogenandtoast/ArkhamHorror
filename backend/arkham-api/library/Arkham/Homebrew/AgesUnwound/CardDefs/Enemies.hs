@@ -197,6 +197,8 @@ ancientSphinx =
       { cdFight = fight 3
       , cdHealth = healthPerInvestigator 4
       , cdEvade = evade 5
+      , cdHealthDamage = healthDamage 1
+      , cdSanityDamage = sanityDamage 2
       , cdCardTraits = setFromList [Monster, Sphinx, Elite]
       , cdKeywords = singleton Keyword.Alert
       , cdVictoryPoints = Just 1
@@ -209,6 +211,7 @@ brainwashedExpedition =
       { cdFight = fight 3
       , cdHealth = healthPerInvestigator 1
       , cdEvade = evade 4
+      , cdHealthDamage = healthDamage 1
       , cdCardTraits = setFromList [Humanoid, Elite]
       , cdKeywords = setFromList [Keyword.Massive, Keyword.Swarming (Static 2)]
       , cdVictoryPoints = Just 1
@@ -221,6 +224,8 @@ savageYeti =
       { cdFight = fight 3
       , cdHealth = health 6
       , cdEvade = evade 3
+      , cdHealthDamage = healthDamage 2
+      , cdSanityDamage = sanityDamage 1
       , cdCardTraits = setFromList [Monster, Yeti, Elite]
       , cdKeywords = singleton Keyword.Retaliate
       }
@@ -455,19 +460,6 @@ irregulars =
     , cdVictoryPoints = Just 1
     }
 
-{- | /Roman Soldier/ has no printed card. Determined General and Roman Outpost
-both say "put the top card of your deck into play in your threat area, as a
-Roman Soldier enemy with 3 fight, 1 health, 3 evade, 1 damage and the
-[[Humanoid]] trait", so the engine needs a def to mint the copy from.
-
-Quantity 0 keeps it out of every gather, the way the core special enemies
-(@xreanimated@, @xpolyp@ -- 'Arkham.Enemy.Cards.allSpecialEnemyCards') do. The
-code sits above the printed range (001-257) to make clear it is not a card in
-the pack. Build the copy with @lookupEncounterCard romanSoldier pc.id@ carrying
-@ecOwner@, as @Scenarios/TheMyriadGentleman/Helpers@ does -- NOT by rewriting a
-player card's @pcCardCode@, which resolves only against
-@allPlayerCards <> allSpecialEnemyCards@ and so cannot see a homebrew def.
--}
 romanSoldier :: CardDef
 romanSoldier =
   (enemy ":ages-unwound:900" "Roman Soldier" Set.Unstuck 0)
@@ -476,8 +468,5 @@ romanSoldier =
     , cdEvade = evade 3
     , cdHealthDamage = healthDamage 1
     , cdCardTraits = singleton Humanoid
-    , -- The art is named for the card rather than numbered, the way the core
-      -- special enemies are (@xpolyp@, @xreanimated@) -- 900 is a slot above
-      -- the printed range, not a card in the pack.
-      cdArt = ":ages-unwound:xsoldier"
+    , cdArt = ":ages-unwound:xsoldier"
     }

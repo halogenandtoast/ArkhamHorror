@@ -15,9 +15,8 @@ import { toCardContents, type Card as ArkhamCard } from '@/arkham/types/Card'
  * intro, interlude or resolution -- is a `Read` question with no card and no
  * choices of this shape, so it never matches and keeps its text spread.
  *
- * A story that visually replaces a board entity (an enemy, asset or location)
- * targets the story, not a card id, and focuses nothing: it does not match
- * either, and keeps being clicked in place.
+ * A story replacing a board entity targets the story instead of a focused card.
+ * Its published art supplies both faces for the same spotlight.
  */
 const RESOLVE_STORY = 'ResolveStory'
 
@@ -31,7 +30,7 @@ function isResolveStory(message: unknown): boolean {
   return (contents as { tag?: unknown }).tag === RESOLVE_STORY
 }
 
-export type StoryCardRead = { card: ArkhamCard; index: number; flip: boolean }
+export type StoryCardRead = { card: ArkhamCard; index: number; flip: boolean; backArt?: string }
 
 /* Whether this spotlight is a card turning over rather than a card being read.
  *
@@ -55,9 +54,29 @@ export function storyCardRead(game: Game, playerId: string): StoryCardRead | nul
 
   const choice = choices[0]
   if (choice.tag !== MessageType.TARGET_LABEL) return null
-  if (choice.target.tag !== 'CardIdTarget') return null
-  if (typeof choice.target.contents !== 'string') return null
   if (!(choice.messages ?? []).some(isResolveStory)) return null
+  if (typeof choice.target.contents !== 'string') return null
+
+  if (choice.target.tag === 'StoryTarget') {
+    const story = game.stories[choice.target.contents]
+    if (!story) return null
+    return {
+      card: {
+        tag: 'EncounterCard',
+        contents: {
+          tag: 'CardContents',
+          id: story.cardId,
+          cardCode: story.id,
+          art: story.flipped ? story.flippedArt : story.art,
+          tokens: story.tokens,
+        },
+      },
+      index: 0,
+      flip: story.otherSide !== null,
+      backArt: story.flipped ? story.art : story.flippedArt,
+    }
+  }
+  if (choice.target.tag !== 'CardIdTarget') return null
 
   const cardId = choice.target.contents
   const card = game.focusedCards.find((c) => toCardContents(c).id === cardId)

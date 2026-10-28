@@ -35,8 +35,8 @@ instance HasModifiersFor BigAndUgly_161 where
 
 -- | "Objective - If the Hound of Unmaking is defeated, advance."
 instance HasAbilities BigAndUgly_161 where
-  getAbilities (BigAndUgly_161 a) =
-    [mkAbility a 1 $ Objective $ forced $ ifEnemyDefeated Enemies.houndOfUnmaking]
+  getAbilities = actAbilities1 \a ->
+    mkAbility a 1 $ Objective $ forced $ ifEnemyDefeated Enemies.houndOfUnmaking
 
 instance RunMessage BigAndUgly_161 where
   runMessage msg a@(BigAndUgly_161 attrs) = runQueueT $ case msg of

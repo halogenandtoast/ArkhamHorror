@@ -1,9 +1,11 @@
 module Arkham.Investigator.RunnerSpec (spec) where
 
 import Arkham.Agenda.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as Agendas
+import Arkham.CampaignLogKey (CampaignLogKey (HomebrewCampaignLogKey))
 import Arkham.Classes.HasGame (getGame)
 import Arkham.Entities qualified as Entities
 import Arkham.Investigator.Cards qualified as Investigators
+import Arkham.Matcher (InvestigatorMatcher (InvestigatorWithId), investigatorWithRecord)
 import Arkham.Movement
 import Arkham.Token
 import Arkham.Window qualified as Window
@@ -17,6 +19,16 @@ realAgenda def = do
 
 spec :: Spec
 spec = describe "Investigator.Runner" do
+  it "forgets a record only for the specified investigator" . gameTest $ \self -> do
+    other <- addInvestigator Investigators.rolandBanks
+    let key = HomebrewCampaignLogKey "agesUnwound.ReturnedToArkhamLate"
+    run $ RecordForInvestigator (toId self) key
+    run $ RecordForInvestigator (toId other) key
+    run $ ForgetRecordForInvestigator (toId self) key
+
+    selectAny (InvestigatorWithId (toId self) <> investigatorWithRecord key) `shouldReturn` False
+    selectAny (InvestigatorWithId (toId other) <> investigatorWithRecord key) `shouldReturn` True
+
   it "moves one clue between investigators without duplicating it" . gameTest $ \self -> do
     other <- addInvestigator Investigators.rolandBanks
     run $ PlaceTokens (TestSource mempty) (toTarget self) Clue 1

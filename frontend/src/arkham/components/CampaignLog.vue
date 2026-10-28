@@ -22,6 +22,7 @@ import { type ChaosBagChange, type RecordCountChange, chaosBagChangeDecoder, rec
 import * as JsonDecoder from 'ts.data.json'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import CampaignLogSection from '@/arkham/components/CampaignLogSection.vue'
+import { campaignLogEditor } from '@/arkham/campaignLogEditors'
 import CampaignLogDebug from '@/arkham/components/debug/CampaignLogDebug.vue'
 import DebugToggle from '@/arkham/components/debug/DebugToggle.vue'
 import { customLogText } from '@/arkham/debugPlayer'
@@ -130,6 +131,10 @@ const {
   onLeave: onLogLeave,
   toggle: toggleLogDebug,
 } = useShiftHoverDebug()
+
+const customLogEditor = computed(() => campaignLogEditor(homebrewScope.value))
+const campaignEditorOpen = ref(false)
+watch(() => props.game.campaign?.id, () => { campaignEditorOpen.value = false })
 
 const additionalLogSections = computed(() => campaignDefinition.value?.additional ?? [])
 const additionalTabId = (index: number): `additional:${number}` => `additional:${index}`
@@ -1222,6 +1227,34 @@ onUnmounted(() => {
             :rolled="game.settings.settingsRolledUltimatumOrBoon"
           />
 
+          <CampaignLogDebug
+            v-if="logDebugging && showingMain"
+            :game="game"
+            :log="selectedLog"
+            :homebrewScope="homebrewScope"
+          />
+
+          <div v-if="showingMain && (showLogDebugToggle || campaignEditorOpen)" class="log-debug-actions">
+            <DebugToggle
+              v-if="showLogDebugToggle"
+              :active="logDebugging"
+              @click="toggleLogDebug"
+            />
+            <DebugToggle
+              v-if="customLogEditor"
+              :active="campaignEditorOpen"
+              :aria-expanded="campaignEditorOpen"
+              @click="campaignEditorOpen = !campaignEditorOpen"
+            >{{ t('debug.campaign.editCampaignEntries') }}</DebugToggle>
+          </div>
+          <component
+            v-if="customLogEditor && campaignEditorOpen && showingMain"
+            :is="customLogEditor"
+            :game="game"
+            :log="selectedLog"
+            @refresh="emit('refresh')"
+          />
+
           <CampaignLogSection
             v-if="recorded.length > 0 || crossedOut.length > 0"
             :title="t('campaignLog.campaignNotes')"
@@ -1287,19 +1320,6 @@ onUnmounted(() => {
             :cardCodeToTitle="cardCodeToTitle"
           />
 
-          <CampaignLogDebug
-            v-if="logDebugging && showingMain"
-            :game="game"
-            :log="selectedLog"
-            :homebrewScope="homebrewScope"
-          />
-
-          <DebugToggle
-            v-if="showLogDebugToggle && showingMain"
-            :active="logDebugging"
-            class="log-debug-toggle"
-            @click="toggleLogDebug"
-          />
         </div>
         </template>
       </div>
@@ -1504,9 +1524,13 @@ h1 {
   gap: 20px;
 }
 
-.log-debug-toggle {
-  align-self: flex-end;
+.log-debug-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
 }
+
 
 .hemlock-overview {
   display: flex;

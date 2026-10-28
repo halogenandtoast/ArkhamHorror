@@ -677,6 +677,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           TransfiguredForm _ -> RegularForm
           form -> form
     pure $ a & placementL .~ Unplaced & formL %~ resetForm
+  ForgetRecordForInvestigator iid key
+    | iid == toId a ->
+        pure $ a & logL %~ forgetCampaignLogKey key
   RecordForInvestigator iid key | iid == toId a -> do
     send $ "Record \"" <> format investigatorName <> " " <> format key <> "\""
     pure $ a & (logL . recordedL %~ insertSet key) . (logL . orderedKeysL %~ (<> [key]))

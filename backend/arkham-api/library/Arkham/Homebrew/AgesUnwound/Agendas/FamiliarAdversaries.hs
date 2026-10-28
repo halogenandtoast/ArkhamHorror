@@ -21,20 +21,16 @@ discard a treachery sources itself is let through. It protects /Unwritten
 Existence/ and /Aged a Thousand Years/, both of which print their own way off
 the table.
 
-TODO(ages-unwound): the /cancelled/ half is still open. 'EffectsCannotBeCanceled'
-is the right modifier and the cancel matchers read it off the card
-(@Game.hs@'s @CanCancelAllEffects@), but a treachery is cancelled as it is
-drawn, before it is an entity to hang a modifier on -- so it would have to be
-applied to every Fate card wherever it lives, and enumerating those on a
-'HasModifiersFor' pass that runs constantly is the wrong shape. It wants a
-card-matcher-scoped modifier the cancel check consults directly.
+The cancellation modifier targets card IDs, including cards outside play, so
+it is already present when the encounter-draw cancellation window opens.
 -}
 familiarAdversaries :: AgendaCard FamiliarAdversaries
 familiarAdversaries = agenda (2, A) FamiliarAdversaries Cards.familiarAdversaries (Static 7)
 
 instance HasModifiersFor FamiliarAdversaries where
-  getModifiersFor (FamiliarAdversaries a) =
-    modifySelect a (TreacheryWithTrait Fate) [CannotLeavePlay]
+  getModifiersFor (FamiliarAdversaries a) = do
+    modifySelect a (TreacheryWithTrait Fate <> InPlayTreachery) [CannotLeavePlay]
+    modifySelect a (basic $ #treachery <> CardWithTrait Fate) [EffectsCannotBeCanceled]
 
 -- | Agenda 2b /A Broken Eternity/: "(->R1)."
 instance RunMessage FamiliarAdversaries where

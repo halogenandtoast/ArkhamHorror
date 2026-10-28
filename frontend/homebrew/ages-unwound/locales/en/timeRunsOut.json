@@ -14,6 +14,12 @@
       "startAt": "Each investigator begins play in Fulcrum of Possibility.",
       "setAside": "Set The Past, The Present, The Future, and Yourself aside, out of play."
     },
+    "rules": {
+      "locationsOutsideOfTime": {
+        "title": "Locations Outside of Time",
+        "body": "<p class='basic'>Many of the locations in this scenario have no unrevealed side, and therefore enter play with their revealed side faceup. For the best experience, do not look at the reverse of these cards unless an effect instructs you to do so.</p><p class='basic'>During this scenario, you will sometimes be instructed to choose a random location. This should be done by shuffling together the 8 locations removed from the game during setup (the versions of each location in play not currently being used) and drawing 1 at random.</p><p class='basic'>If you are instructed to choose a random location that fits a certain criterion, keep drawing locations until one is drawn that satisfies the effect's requirements.</p>"
+      }
+    },
     "resolutions": {
       "noResolution": {
         "title": "No Resolution",
@@ -86,7 +92,7 @@
     "watchYouBreak": {
       "label": {
         "placeDoom": "Place 1 doom on the current agenda",
-        "drawAWeakness": "Search your collection for a random basic [[Pact]] or [[Madness]] weakness and draw it"
+        "drawAWeakness": "Search your collection for a random basic _Pact_ or _Madness_ weakness and draw it"
       }
     }
   }

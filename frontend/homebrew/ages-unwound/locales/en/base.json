@@ -93,9 +93,14 @@
     "theInvestigatorsPutDownTheHoundOfUnmaking": "the investigators put down the Hound of Unmaking.",
     "theInvestigatorsDispelledTheWard": "the investigators dispelled the ward.",
     "theInvestigatorsBrokeTheFirstCircle": "the investigators broke the first circle.",
-    "damageOnTheHoundOfUnmaking": "Damage on the Hound of Unmaking"
+    "damageOnTheHoundOfUnmaking": "Damage on the Hound of Unmaking",
+    "youSolvedTheRiddleOfTheSphinx": "you solved the riddle of the sphinx.",
+    "youTookTeaWithTheRulerOfAStrangeDimension": "you took tea with the ruler of a strange dimension."
   },
   "recordedTimes": {
+    "agenda": "Agenda",
+    "doom": "Doom",
+    "saveFailed": "Could not save the time. Please try again.",
     "tooltip": "Agenda {agenda}, with {doom} doom on it"
   },
   "label": {
@@ -262,5 +267,54 @@
   "ritualCircleAHarnessedFuture": {
     "removed": "The circle closes over {investigator}, who is gone from the moment entirely.",
     "returns": "{investigator} steps back out of the circle at {location}, into the moment they left."
+  },
+  "logEditor": {
+    "title": "Campaign entries",
+    "entry": "Entry / outcome",
+    "state": "State",
+    "time": "Recorded time",
+    "none": "Not recorded",
+    "recorded": "Recorded",
+    "crossedOut": "Crossed out",
+    "conflict": "Conflicting outcomes are recorded. Choose one to resolve them.",
+    "saveFailed": "Could not save the entries. Please try again.",
+    "counts": "Tallies",
+    "investigators": "Investigator entries",
+    "enemies": "Enemies that disappeared unexpectedly",
+    "addEnemy": "Add enemy",
+    "remove": "Remove",
+    "agenda": "Agenda",
+    "doom": "Doom",
+    "saveTime": "Save time",
+    "clearTime": "Clear time",
+    "hint": "Edit related outcomes together, then save. Invalid combinations must be corrected before saving. Other entries save immediately.",
+    "outcomes": "Outcomes",
+    "search": "Find an entry…",
+    "saving": "Saving…",
+    "saved": "Changes saved",
+    "noMatches": "No entries match your search.",
+    "noEnemies": "No enemies have been recorded here.",
+    "outcomesTab": "Outcomes",
+    "countsTab": "Tallies",
+    "investigatorsTab": "Investigators",
+    "enemiesTab": "Enemies",
+    "invalidTitle": "Invalid campaign history",
+    "invalidHint": "These records conflict. Change or remove the highlighted outcomes before saving.",
+    "showInvalid": "Show affected outcomes",
+    "saveOutcomesFirst": "Save or reset your outcome changes before editing other entries.",
+    "unsavedOutcomes": "Outcome changes have not been saved.",
+    "outcomesSaved": "Outcomes match the saved campaign log.",
+    "saveOutcomes": "Save outcomes",
+    "resetOutcomes": "Reset changes",
+    "validation": {
+      "exclusive": "Only one of these outcomes can be recorded.",
+      "backPast": "The back entrance leads to A Harnessed Future, so it cannot lead to stepping into the past.",
+      "frontFuture": "The front entrance leads to Gateway to the Past, so it cannot lead to stepping into the future.",
+      "backHound": "The Hound outcome belongs to the front-entrance route, not the back entrance.",
+      "futureHound": "The Hound route leads to Gateway to the Past, not stepping into the future.",
+      "frontWard": "Dispelling the ward belongs to the back-entrance route, not the front entrance.",
+      "pastWard": "Dispelling the ward leads to A Harnessed Future, not stepping into the past.",
+      "houndWard": "The Hound and dispelled-ward outcomes belong to different routes through the school."
+    }
   }
 }

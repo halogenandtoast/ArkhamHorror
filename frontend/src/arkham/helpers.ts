@@ -196,6 +196,12 @@ export function cardImgPath(art: string): string {
 
   if (homebrewMatch) {
     const [, campaign, cardCode] = homebrewMatch
+    // The past-selves act deck uses C/D in game, but its art files use
+    // the usual front / b naming convention.
+    if (campaign === 'ages-unwound' && /^16[4-7][cd]$/.test(cardCode)) {
+      const artCode = cardCode.replace(/c$/, '').replace(/d$/, 'b')
+      return `homebrew/${campaign}/cards/${artCode}.avif`
+    }
     return `homebrew/${campaign}/cards/${cardCode}.avif`
   }
 

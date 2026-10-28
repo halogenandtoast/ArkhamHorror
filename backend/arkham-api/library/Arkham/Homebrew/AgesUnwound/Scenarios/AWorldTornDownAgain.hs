@@ -75,8 +75,8 @@ aWorldTornDownAgain difficulty =
     , "classroom2 heart      squiggle equals"
     , ".          star       hourglass moon"
     ]
-    -- Two act decks flanking the agenda deck.
-    (decksLayoutL .~ ["act1 agenda1 act2"])
+    -- Center the agenda beside the two stacked act decks.
+    (decksLayoutL .~ [". act1", "agenda1 act1", "agenda1 act2", ". act2"])
 
 {- | "Based on your difficulty level, add the following chaos token to the chaos
 bag for the remainder of the campaign."
@@ -238,6 +238,8 @@ instance RunMessage AWorldTornDownAgain where
         li "setAside"
         unscoped $ li "shuffleRemainder"
         unscoped $ li "readyToBegin"
+
+      additionalRules "thePastAndThePresent"
 
       {- "Gather all the cards from the following encounter sets: A World Torn Down
       Again, Night of the Ritual, Agents of Aforgomon, Myriad, Nyctophobia, Thugs,
@@ -486,6 +488,9 @@ instance RunMessage AWorldTornDownAgain where
           gameOverLost
         _ -> error $ "Unknown resolution: " <> show res
       pure s
+    Msg.RemoveCompletedActFromGame n _ | n == pastDeck -> do
+      attrs' <- liftRunMessage msg attrs
+      pure $ AWorldTornDownAgain $ attrs' & decksLayoutL .~ ["agenda1 act1"]
     _ -> AWorldTornDownAgain <$> liftRunMessage msg attrs
 
 -- | The starting location remembered by 'Setup'.

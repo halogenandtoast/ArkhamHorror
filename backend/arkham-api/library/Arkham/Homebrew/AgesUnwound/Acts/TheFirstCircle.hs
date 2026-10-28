@@ -3,14 +3,14 @@ module Arkham.Homebrew.AgesUnwound.Acts.TheFirstCircle (theFirstCircle) where
 import Arkham.Ability
 import Arkham.Act.Import.Lifted
 import Arkham.Homebrew.AgesUnwound.CardDefs.Acts qualified as Cards
-import Arkham.Homebrew.AgesUnwound.Helpers (isAtOrPastFor)
 import Arkham.Homebrew.AgesUnwound.Key
+import Arkham.Homebrew.AgesUnwound.Scenarios.AWorldTornDownAgain.Helpers qualified as Scenario
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (Ritual))
 
 newtype TheFirstCircle = TheFirstCircle ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 -- | Act 3c, the last act of the past-selves deck.
@@ -22,15 +22,20 @@ or [agility] (3). Take 1 horror for each point you fail by. /
 Objective - When /the investigators fell to the Myriad,/ advance. /
 Objective - When /the investigators broke the first circle,/ advance."
 
-Ability 1 is the printed Forced. Ability 2 is the past deck's once-a-round poll;
-see 'Arkham.Homebrew.AgesUnwound.Acts.WhatCameBefore' for why it is silent.
+Ability 1 is the printed Forced. Abilities 2 and 3 are the timed Objectives.
 -}
+instance HasModifiersFor TheFirstCircle where
+  getModifiersFor (TheFirstCircle a) = do
+    Scenario.pastObjectiveModifier a TheInvestigatorsFellToTheMyriad
+    Scenario.pastObjectiveModifier a TheInvestigatorsBrokeTheFirstCircle
+
 instance HasAbilities TheFirstCircle where
   getAbilities (TheFirstCircle a) =
     [ restricted a 1 (exists $ YourLocation <> LocationWithTrait Ritual)
         $ forced
         $ TurnEnds #after You
-    , mkAbility a 2 $ SilentForcedAbility $ MythosStep AfterCheckDoomThreshold
+    , Scenario.pastObjective a 2 TheInvestigatorsFellToTheMyriad
+    , Scenario.pastObjective a 3 TheInvestigatorsBrokeTheFirstCircle
     ]
 
 instance RunMessage TheFirstCircle where
@@ -45,13 +50,8 @@ instance RunMessage TheFirstCircle where
     FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       assignHorror iid (attrs.ability 1) n
       pure a
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
-      conditionMet <-
-        orM
-          [ isAtOrPastFor TheInvestigatorsFellToTheMyriad
-          , isAtOrPastFor TheInvestigatorsBrokeTheFirstCircle
-          ]
-      when conditionMet $ advancedWithOther attrs
+    UseThisAbility _ (isSource attrs -> True) abilityIndex | abilityIndex `elem` [2, 3] -> do
+      advancedWithOther attrs
       pure a
     AdvanceAct (isSide D attrs -> True) _ _ -> do
       {- "All Caught Up: Remove the remainder of this act deck from the game."

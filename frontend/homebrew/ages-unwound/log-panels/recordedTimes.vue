@@ -7,7 +7,10 @@
  * notation: the agenda number and the doom on it, in brackets, as in
  * "the boundary is broken (1,5)".
  */
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { useShiftHoverDebug } from '@/composable/shiftHoverDebug'
+import DebugToggle from '@/arkham/components/debug/DebugToggle.vue'
+import { useDebug } from '@/arkham/debug'
 import { logKeyTitle } from '@/arkham/types/Log'
 import type { Game } from '@/arkham/types/Game'
 import { useI18n } from 'vue-i18n'
@@ -15,6 +18,63 @@ import { useI18n } from 'vue-i18n'
 const props = defineProps<{ entries: any[]; game: Game }>()
 
 const { t } = useI18n()
+const debug = useDebug()
+const { active, showToggle, onEnter, onLeave, toggle } = useShiftHoverDebug()
+const editing = ref<string | null>(null)
+const agenda = ref<number | string>(1)
+const doom = ref<number | string>(0)
+const saving = ref(false)
+const saveFailed = ref(false)
+function toggleDebug() {
+  toggle()
+  editing.value = null
+}
+const validTime = computed(
+  () =>
+    typeof agenda.value === 'number' &&
+    Number.isSafeInteger(agenda.value) &&
+    agenda.value >= 1 &&
+    typeof doom.value === 'number' &&
+    Number.isSafeInteger(doom.value) &&
+    doom.value >= 0,
+)
+
+function startEdit(time: (typeof times.value)[number]) {
+  editing.value = time.key
+  agenda.value = time.agenda
+  doom.value = time.doom
+  saveFailed.value = false
+}
+
+async function save(time: (typeof times.value)[number]) {
+  if (!validTime.value || saving.value) return
+  // Log decoding flattens SomeRecorded; restore its wire envelope for the message.
+  const { recordType = 'RecordableGeneric', recordVal, ...flattened } = time.entry
+  const original = recordVal ?? flattened
+  saving.value = true
+  saveFailed.value = false
+  try {
+    await debug.send(props.game.id, {
+      tag: 'RecordSetReplace',
+      contents: [
+        { tag: 'HomebrewCampaignLogKey', contents: 'agesUnwound.RecordedTimes' },
+        { recordType, recordVal: original },
+        {
+          recordType,
+          recordVal: {
+            ...original,
+            contents: { ...original.contents, agenda: agenda.value, doom: doom.value },
+          },
+        },
+      ],
+    })
+    editing.value = null
+  } catch {
+    saveFailed.value = true
+  } finally {
+    saving.value = false
+  }
+}
 
 /* The event is stored as the campaign-log key's own constructor name
  * (`recordTheTimeFor` writes `tshow`), which is the campaign's locale path once
@@ -35,6 +95,7 @@ const times = computed(() =>
     return [
       {
         key: `${event}:${time.agenda}:${time.doom}:${idx}`,
+        entry,
         title: eventTitle(event),
         agenda: Number(time.agenda),
         doom: Number(time.doom),
@@ -46,18 +107,101 @@ const times = computed(() =>
 </script>
 
 <template>
-  <ul class="recorded-times">
-    <li v-for="time in times" :key="time.key" :class="{ 'crossed-out': time.crossedOut }">
-      <span class="event">{{ time.title }}</span>
-      <span
-        class="time"
-        :title="t('agesUnwound.recordedTimes.tooltip', { agenda: time.agenda, doom: time.doom })"
-      >({{ time.agenda }},{{ time.doom }})</span>
-    </li>
-  </ul>
+  <div class="recorded-times-panel" @mouseenter="onEnter" @mouseleave="onLeave">
+    <DebugToggle
+      v-if="showToggle"
+      :active="active"
+      :disabled="saving"
+      @click="toggleDebug"
+    />
+    <ul class="recorded-times">
+      <li v-for="time in times" :key="time.key" :class="{ 'crossed-out': time.crossedOut }">
+        <span class="event">{{ time.title }}</span>
+        <form
+          v-if="active && editing === time.key"
+          class="time-editor"
+          @submit.prevent="save(time)"
+        >
+          <label
+            >{{ t('agesUnwound.recordedTimes.agenda') }}
+            <input
+              v-model.number="agenda"
+              type="number"
+              min="1"
+              step="1"
+              required
+              :disabled="saving"
+            />
+          </label>
+          <label
+            >{{ t('agesUnwound.recordedTimes.doom') }}
+            <input
+              v-model.number="doom"
+              type="number"
+              min="0"
+              step="1"
+              required
+              :disabled="saving"
+            />
+          </label>
+          <button type="submit" :disabled="!validTime || saving">
+            {{ t('debug.campaign.save') }}
+          </button>
+          <button type="button" :disabled="saving" @click="editing = null">
+            {{ t('debug.campaign.cancel') }}
+          </button>
+          <span v-if="saveFailed" role="alert">{{
+            t('agesUnwound.recordedTimes.saveFailed')
+          }}</span>
+        </form>
+        <span
+          v-else
+          class="time"
+          :title="t('agesUnwound.recordedTimes.tooltip', { agenda: time.agenda, doom: time.doom })"
+          >({{ time.agenda }},{{ time.doom }})</span
+        >
+        <button
+          v-if="active && editing !== time.key"
+          type="button"
+          :disabled="saving"
+          @click="startEdit(time)"
+        >
+          {{ t('debug.campaign.edit') }}
+        </button>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <style scoped>
+.recorded-times-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.debug-toggle {
+  align-self: flex-end;
+}
+
+.time-editor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.time-editor label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.time-editor input {
+  width: 5em;
+}
+
 .recorded-times {
   display: flex;
   flex-direction: column;

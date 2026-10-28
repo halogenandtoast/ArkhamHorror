@@ -6,7 +6,7 @@ defineProps<{ active: boolean }>()
 
 <template>
   <button type="button" class="debug-toggle" :class="{ active }" :aria-pressed="active">
-    {{ $t('debug.campaign.debugToggle') }}
+    <slot>{{ $t('debug.campaign.debugToggle') }}</slot>
   </button>
 </template>
 

@@ -9946,6 +9946,7 @@ test-suite spec
       Arkham.Game.PendingGameOptionsSpec
       Arkham.Game.ResetGameSpec
       Arkham.GameSpec
+      Arkham.Helpers.CostSpec
       Arkham.Helpers.EnemySpec
       Arkham.Helpers.InvestigatorSpec
       Arkham.Helpers.QuerySpec

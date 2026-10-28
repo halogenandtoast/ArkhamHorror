@@ -11,16 +11,20 @@ Anything in this scenario that reads "the current act" must name its deck id.
 -}
 module Arkham.Homebrew.AgesUnwound.Scenarios.AWorldTornDownAgain.Helpers where
 
+import Arkham.Ability
 import Arkham.Act.Sequence (ActSide (C))
-import Arkham.Act.Types (ActAttrs, Field (ActDeckId))
+import Arkham.Act.Types (ActAttrs, Field (ActDeckId), onSide)
 import Arkham.Card.CardCode (toCardCode)
 import Arkham.Card.CardDef (CardDef)
 import Arkham.Classes.HasGame
+import Arkham.Classes.HasModifiersFor (HasModifiersM)
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query (select, selectOne)
 import Arkham.Helpers.Act (getActStep)
+import Arkham.Helpers.Modifiers (ModifierType (ScenarioModifier), modifySelfWhenM)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.AgesUnwound.Helpers qualified as AgesUnwound
+import Arkham.Homebrew.AgesUnwound.Key (AgesUnwoundKey)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher
@@ -99,3 +103,19 @@ advanceToActThreeD :: ReverseQueue m => ActAttrs -> m ()
 advanceToActThreeD attrs = do
   advanceToAct attrs Acts.theFirstCircle C
   push $ AdvanceAct (ActId $ toCardCode Acts.theFirstCircle) (toSource attrs) AdvancedWithOther
+
+{- | Publish the recorded-time requirement for the corresponding Objective.
+Abilities can then test eligibility before offering the Forced prompt.
+-}
+pastObjectiveModifier :: HasModifiersM m => ActAttrs -> AgesUnwoundKey -> m ()
+pastObjectiveModifier attrs key =
+  when (onSide C attrs)
+    $ modifySelfWhenM attrs (AgesUnwound.isAtOrPastFor key) [ScenarioModifier (tshow key)]
+
+pastObjective :: ActAttrs -> Int -> AgesUnwoundKey -> Ability
+pastObjective attrs abilityIndex key =
+  onlyOnce
+    $ restricted attrs abilityIndex (ActExists $ ActWithModifier $ ScenarioModifier $ tshow key)
+    $ Objective
+    $ forced
+    $ MythosStep AfterCheckDoomThreshold

@@ -26,6 +26,12 @@
       "removeGatewayToThePast": "If *the investigators stepped into the past*, remove Ritual Circle _(Gateway to the Past)_ from the game.",
       "setAside": "Set each remaining location aside, out of play, along with Estravius Malone, Hound of Unmaking, Unstable Warding, Unstable Energies, The Myriad Gentleman _(The High Priest)_ and each copy of Unleashed Chaos, Stirring Titan and Hired Thugs."
     },
+    "rules": {
+      "thePastAndThePresent": {
+        "title": "The Past and the Present",
+        "body": "<p class='basic'>This scenario has two act decks. The \"a/b\" deck represents the progress of the present investigators, and behaves as normal, while the \"c/d\" act deck tracks the actions of the investigators' past selves.</p><p class='basic'>Each \"c/d\" act has one or more conditions for advancing at least one of which should be recorded in your Campaign Log with a time next to it. After checking the doom threshold each round, compare these times to the current agenda number and amount of doom on the agenda. Advance the act if:</p><ul><li>The current agenda number is equal to the one recorded, and there is at least as much doom on the current agenda as is recorded, or:</li><li>The current agenda number is greater than the one recorded.</li></ul><p class='basic'>For example: Act 1c advances when the boundary is broken. Agnes Baker has this statement in her Campaign Log with (1,5) written next to it. After checking the doom threshold each round, she checks this, and when the agenda has 5 or more doom on it, she advances to act 1d. If, due to her Dark Memory weakness, agenda 1 advanced after having only 4 doom on it the previous round, she would still advance act 1c that round, as the agenda number, 2, is greater than the recorded agenda number, 1.</p>"
+      }
+    },
     "timeRunningShort": {
       "additionalAction": "Time Running Short"
     },
@@ -35,7 +41,7 @@
     "resolutions": {
       "noResolution": {
         "title": "No Resolution",
-        "body": "<p class='basic'>*If no resolution was reached (each investigator was defeated)*: Read _Resolution 2_.</p>"
+        "body": "<p class='basic'>_If no resolution was reached (each investigator was defeated)_: Read _Resolution 2_.</p>"
       },
       "resolution1": {
         "title": "Resolution 1",
@@ -43,7 +49,7 @@
       },
       "resolution2": {
         "title": "Resolution 2",
-        "body": "<p>_Resolution 2_: You run, panting, down an alley. The armed men are still in pursuit&mdash;</p><p>As you explore the manor's garden, a tall man in a fine suit strolls out to meet you&mdash;</p><p>Your family, such as it is, stands at your bedside, awaiting&mdash;</p><p>You let out an ear-piercing wail, unsteady on your tiny legs&mdash;</p><p>&mdash;scratching desperately at the runes painted on the floor, hoping against hope that&mdash;</p><p>“Mama.” Your first word.</p><p>“I'm sorry. I failed you all.” Your last.</p><p class='basic'>In your Campaign Log, record that *all times are one*. Each investigator is driven insane. The investigators lose the campaign.</p>"
+        "body": "<p>_Resolution 2_: You run, panting, down an alley. The armed men are still in pursuit&mdash;</p><p>As you explore the manor's garden, a tall man in a fine suit strolls out to meet you&mdash;</p><p>Your family, such as it is, stands at your bedside, awaiting&mdash;</p><p>You let out an ear-piercing wail, unsteady on your tiny legs&mdash;</p><p>&mdash;scratching desperately at the runes painted on the floor, hoping against hope that&mdash;</p><p>“Mama.” Your first word.</p><p>“I'm sorry. I failed you all.” Your last.</p><ul><li>In your Campaign Log, record that *all times are one*.</li><li>Each investigator is driven _insane_.</li><li>The investigators lose the campaign.</li></ul>"
       }
     }
   }

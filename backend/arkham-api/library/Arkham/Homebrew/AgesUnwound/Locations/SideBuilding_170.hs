@@ -16,7 +16,7 @@ sideBuilding_170 = symbolLabel $ location SideBuilding_170 Cards.sideBuilding_17
 
 {- | "This location's shroud cannot be reduced."
 
-'ShroudCannotBeReduced' floors the 'ShroudModifier' fold at the base value in
+'ShroudCannotBeReduced' blocks negative 'ShroudModifier' values in
 @getModifiedShroudValueFor@, so a Flashlight (or this scenario's own Children's
 Playground ability) cannot lower it while the Forced below can still raise it.
 -}

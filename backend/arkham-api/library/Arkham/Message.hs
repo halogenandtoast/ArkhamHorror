@@ -1125,6 +1125,7 @@ data Message
     No card does this yet; the game crosses entries out instead.
     -}
     ForgetRecord CampaignLogKey
+  | ForgetRecordForInvestigator InvestigatorId CampaignLogKey
   | RecordForInvestigator InvestigatorId CampaignLogKey
   | {- | Adjust a per-investigator tally in that investigator's own campaign log
     (e.g. Dark Matter "Memories"). Negative values cross off tallies; the

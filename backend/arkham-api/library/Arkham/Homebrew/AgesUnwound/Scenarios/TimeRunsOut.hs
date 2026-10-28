@@ -111,6 +111,8 @@ instance RunMessage TimeRunsOut where
         unscoped $ li "shuffleRemainder"
         unscoped $ li "readyToBegin"
 
+      additionalRules "locationsOutsideOfTime"
+
       {- "Gather all cards from the following encounter sets: Time Runs Out,
       Agents of Aforgomon, Paradox, Unravelling Years." -}
       gather Set.TimeRunsOut

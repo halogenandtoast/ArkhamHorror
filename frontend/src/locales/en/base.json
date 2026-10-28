@@ -820,6 +820,7 @@
       "debugToggle": "Debug",
       "xpHint": "Debug: adds experience (reported in the XP breakdown) or spends it",
       "traumaHint": "Debug: + suffers trauma by the rules (reaching the limit kills or drives the investigator insane); − heals it",
+      "editCampaignEntries": "Debug campaign entries",
       "customEntries": "Custom entries (debug)",
       "customEntriesHint": "Notes and counts written by players or custom cards. They are part of the real campaign log and carry into later scenarios.",
       "edit": "Edit",

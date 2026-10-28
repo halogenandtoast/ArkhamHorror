@@ -1,6 +1,7 @@
 -- | The campaign's two printed events.
 module Arkham.Homebrew.AgesUnwound.CardDefs.Events where
 
+import Arkham.Criteria qualified as Criteria
 import Arkham.Event.Cards.Import
 import Arkham.Homebrew.AgesUnwound.Sets qualified as Set
 
@@ -10,6 +11,13 @@ agencyStrikeTeam =
     { cdCardTraits = setFromList [Agency, Favor]
     , cdSkills = [#intellect, #intellect, #combat, #combat]
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+    , cdCriteria =
+        Just
+          $ oneOf
+            [ Criteria.canDiscoverCluesAt (orConnected_ YourLocation)
+            , Criteria.CanDealDamage
+                <> exists (EnemyAt (orConnected_ YourLocation) <> EnemyCanBeDamagedBySource ThisCard)
+            ]
     , cdLevel = Nothing
     , cdEncounterSet = Just Set.Missions
     , cdEncounterSetQuantity = Just 1

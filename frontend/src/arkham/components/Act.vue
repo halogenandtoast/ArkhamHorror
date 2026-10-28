@@ -480,36 +480,55 @@ const chooseFromStoryCollection = (choice: number) => {
   <div class="act-container">
     <div class="act-with-next-to">
       <div class="act-row">
-        <div
-          class="card-container"
-          :class="{
-            'act--objective': hasObjective,
-            'objective-ring': hasObjective,
-            'act--objective-blocked': blockedObjective,
-          }"
-        >
-          <span
-            v-if="blockedObjective"
-            class="objective-blocked-badge"
-            :data-image-id="blockedObjectiveCardCode"
-            v-tooltip="$t('objectiveBlockedByFast')"
-          >
-            <LockClosedIcon />
-          </span>
-          <img
+        <div class="act-main">
+          <div
+            class="card-container"
             :class="{
-              'act--can-progress': interactAction !== -1,
-              'act--can-interact': canInteract,
-              'card--sideways': !isVertical,
-              'card--flipping': flipping,
-              'card--flipping-diagonal': flippingDiagonally,
+              'act--objective': hasObjective,
+              'objective-ring': hasObjective,
+              'act--objective-blocked': blockedObjective,
             }"
-            class="card"
-            @click="clicked"
-            @load="updateOrientation"
-            :src="displayedImage"
-            ref="frame"
-          />
+          >
+            <span
+              v-if="blockedObjective"
+              class="objective-blocked-badge"
+              :data-image-id="blockedObjectiveCardCode"
+              v-tooltip="$t('objectiveBlockedByFast')"
+            >
+              <LockClosedIcon />
+            </span>
+            <img
+              :class="{
+                'act--can-progress': interactAction !== -1,
+                'act--can-interact': canInteract,
+                'card--sideways': !isVertical,
+                'card--flipping': flipping,
+                'card--flipping-diagonal': flippingDiagonally,
+              }"
+              class="card"
+              @click="clicked"
+              @load="updateOrientation"
+              :src="displayedImage"
+              ref="frame"
+            />
+          </div>
+
+          <div class="pool">
+            <PoolItem v-if="clues > 0" type="clue" :amount="clues" />
+            <span v-if="sharedContribution > 0" class="shared-clue-pool" :title="$t('event.sharedClues')">
+              <PoolItem type="clue" :amount="sharedContribution" />
+            </span>
+            <PoolItem v-if="resources > 0" type="resource" :amount="resources" />
+            <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
+            <KeyToken
+              v-for="k in keys"
+              :key="keyToId(k)"
+              :keyToken="k"
+              :game="game"
+              :playerId="playerId"
+              @choose="$emit('choose', $event)"
+            />
+          </div>
         </div>
         <StackIndicator
           label="Act"
@@ -642,23 +661,6 @@ const chooseFromStoryCollection = (choice: number) => {
       :playerId="playerId"
       @choose="$emit('choose', $event)"
     />
-
-    <div class="pool">
-      <PoolItem v-if="clues > 0" type="clue" :amount="clues" />
-      <span v-if="sharedContribution > 0" class="shared-clue-pool" :title="$t('event.sharedClues')">
-        <PoolItem type="clue" :amount="sharedContribution" />
-      </span>
-      <PoolItem v-if="resources > 0" type="resource" :amount="resources" />
-      <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
-      <KeyToken
-        v-for="k in keys"
-        :key="keyToId(k)"
-        :keyToken="k"
-        :game="game"
-        :playerId="playerId"
-        @choose="$emit('choose', $event)"
-      />
-    </div>
   </div>
 </template>
 
@@ -743,6 +745,12 @@ const chooseFromStoryCollection = (choice: number) => {
   gap: 5px;
 }
 
+.act-main {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
 .act-row {
   display: flex;
   flex-direction: row;
@@ -756,8 +764,11 @@ const chooseFromStoryCollection = (choice: number) => {
   gap: 12px;
 }
 
-.act-row :deep(.v-popper) {
-  align-self: center;
+.act-row > :deep(.v-popper) {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  height: var(--card-width);
 }
 
 .next-to-act {

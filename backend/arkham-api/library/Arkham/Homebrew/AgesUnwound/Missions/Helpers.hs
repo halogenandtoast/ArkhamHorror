@@ -163,8 +163,9 @@ takeControlOfSetAsideRewardAsset
   => source -> InvestigatorId -> CardDef -> SlotType -> m ()
 takeControlOfSetAsideRewardAsset source iid def slot = do
   card <- getSetAsideCard def
-  takeControlOfSetAsideAsset iid card
+  -- Install the exemption before entering play triggers the slot-fit check.
   gameModifier source (CardIdTarget $ toCardId card) (DoNotTakeUpSlot slot)
+  takeControlOfSetAsideAsset iid card
 
 {- | "Add the set-aside <card> to your hand. For the remainder of this scenario,
 you are considered to own this card."

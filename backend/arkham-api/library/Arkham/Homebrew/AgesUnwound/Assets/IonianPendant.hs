@@ -4,9 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Import.Lifted
 import Arkham.Homebrew.AgesUnwound.CardDefs.Assets qualified as Cards
 import Arkham.Matcher
-import Arkham.Modifier
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
+import Arkham.Message.SkillTest (FromSkillType (..), ToSkillType (..))
 
 newtype IonianPendant = IonianPendant AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -22,25 +20,24 @@ the listed skill for that test."
 -}
 instance HasAbilities IonianPendant where
   getAbilities (IonianPendant a) =
-    [ restricted a 1 ControlsThis
+    [ restricted
+        a
+        1
+        (ControlsThis <> DuringSkillTest (mapOneOf SkillTestWithSkillType [#willpower, #intellect, #agility]))
         $ triggered
           (WouldPerformRevelationSkillTest #when You)
           (exhaust a <> horrorCost a 1)
     ]
 
-{- | "In place of the listed skill" is 'UseSkillInPlaceOf', one per skill combat
-could stand in for -- the modifier is keyed on the skill being replaced, and it
-offers the swap rather than forcing it, which is the card's "you may".
+{- | The available-skill choices are built before the revelation window opens,
+so adding 'UseSkillInPlaceOf' here is too late to offer combat. Choosing this
+reaction performs the optional replacement directly, including its base value
+and eligible commitment icons.
 -}
 instance RunMessage IonianPendant where
   runMessage msg a@(IonianPendant attrs) = runQueueT $ case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (getRevelationSkillTest -> (iid, sid)) _ -> do
-      skillTestModifiers sid (attrs.ability 1) iid
-        $ map (`UseSkillInPlaceOf` #combat) [#willpower, #intellect, #agility]
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      for_ [#willpower, #intellect, #agility] \skill ->
+        push $ ReplaceSkillTestSkill (FromSkillType skill) (ToSkillType #combat)
       pure a
     _ -> IonianPendant <$> liftRunMessage msg attrs
-
-getRevelationSkillTest :: [Window] -> (InvestigatorId, SkillTestId)
-getRevelationSkillTest [] = error "Invalid call"
-getRevelationSkillTest ((windowType -> Window.WouldPerformRevelationSkillTest iid sid) : _) = (iid, sid)
-getRevelationSkillTest (_ : xs) = getRevelationSkillTest xs

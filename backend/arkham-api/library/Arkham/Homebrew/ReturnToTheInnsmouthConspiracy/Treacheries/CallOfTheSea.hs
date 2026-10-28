@@ -24,7 +24,7 @@ instance HasAbilities CallOfTheSea where
     , -- "If you have the Deep One trait, increase this ability's cost by 1 action."
       -- 'CostWhen', not 'CostOnlyWhen': the extra action is added for a Deep One and
       -- costs nothing for anyone else, who can still use the ability for 1 action.
-      restricted a 2 (InThreatAreaOf You)
+      restricted a 2 OnSameLocation
         $ actionAbilityWithCost (CostWhen (youExist deepOneInvestigator) (ActionCost 1))
     ]
 

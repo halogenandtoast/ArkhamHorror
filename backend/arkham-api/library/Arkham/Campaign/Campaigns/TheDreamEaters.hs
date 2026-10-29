@@ -130,14 +130,14 @@ instance IsCampaign TheDreamEaters where
           BeyondTheGatesOfSleep ->
             case campaignMode meta of
               FullMode ->
-                if WakingNightmare `elem` campaignCompletedSteps (toAttrs a)
+                if hasPlayed (toAttrs a) WakingNightmare
                   then continue $ InterludeStep 1 Nothing
                   else continueNoUpgrade WakingNightmare
               PartialMode _ -> continue $ InterludeStep 1 Nothing
           WakingNightmare ->
             case campaignMode meta of
               FullMode ->
-                if BeyondTheGatesOfSleep `elem` campaignCompletedSteps (toAttrs a)
+                if hasPlayed (toAttrs a) BeyondTheGatesOfSleep
                   then continue $ InterludeStep 1 Nothing
                   else continueNoUpgrade BeyondTheGatesOfSleep
               PartialMode _ -> continue $ InterludeStep 1 Nothing
@@ -146,7 +146,7 @@ instance IsCampaign TheDreamEaters where
             continue
               $ case campaignMode meta of
                 FullMode ->
-                  if AThousandShapesOfHorror `elem` campaignCompletedSteps (toAttrs a)
+                  if hasPlayed (toAttrs a) AThousandShapesOfHorror
                     then InterludeStep 2 Nothing
                     else AThousandShapesOfHorror
                 PartialMode _ -> DarkSideOfTheMoon
@@ -154,7 +154,7 @@ instance IsCampaign TheDreamEaters where
             continue
               $ case campaignMode meta of
                 FullMode ->
-                  if TheSearchForKadath `elem` campaignCompletedSteps (toAttrs a)
+                  if hasPlayed (toAttrs a) TheSearchForKadath
                     then InterludeStep 2 Nothing
                     else TheSearchForKadath
                 PartialMode _ -> PointOfNoReturn
@@ -163,7 +163,7 @@ instance IsCampaign TheDreamEaters where
             continue
               $ case campaignMode meta of
                 FullMode ->
-                  if PointOfNoReturn `elem` campaignCompletedSteps (toAttrs a)
+                  if hasPlayed (toAttrs a) PointOfNoReturn
                     then InterludeStep 3 Nothing
                     else PointOfNoReturn
                 PartialMode _ -> WhereTheGodsDwell
@@ -171,7 +171,7 @@ instance IsCampaign TheDreamEaters where
             continue
               $ case campaignMode meta of
                 FullMode ->
-                  if DarkSideOfTheMoon `elem` campaignCompletedSteps (toAttrs a)
+                  if hasPlayed (toAttrs a) DarkSideOfTheMoon
                     then InterludeStep 3 Nothing
                     else DarkSideOfTheMoon
                 PartialMode _ -> WeaverOfTheCosmos
@@ -180,7 +180,7 @@ instance IsCampaign TheDreamEaters where
             continue
               $ case campaignMode meta of
                 FullMode ->
-                  if WeaverOfTheCosmos `elem` campaignCompletedSteps (toAttrs a)
+                  if hasPlayed (toAttrs a) WeaverOfTheCosmos
                     then EpilogueStep
                     else WeaverOfTheCosmos
                 PartialMode _ -> EpilogueStep
@@ -188,7 +188,7 @@ instance IsCampaign TheDreamEaters where
             continue
               $ case campaignMode meta of
                 FullMode ->
-                  if WhereTheGodsDwell `elem` campaignCompletedSteps (toAttrs a)
+                  if hasPlayed (toAttrs a) WhereTheGodsDwell
                     then EpilogueStep
                     else WhereTheGodsDwell
                 PartialMode _ -> EpilogueStep

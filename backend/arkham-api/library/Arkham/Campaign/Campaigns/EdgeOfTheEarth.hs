@@ -15,7 +15,7 @@ import Arkham.ChaosToken
 import Arkham.EncounterSet (EncounterSet (Tekelili))
 import Arkham.Event.Cards qualified as Events
 import Arkham.FlavorText
-import Arkham.Helpers.Campaign (getOwner)
+import Arkham.Helpers.Campaign (getOwner, hasPlayed)
 import Arkham.Helpers.FlavorText (withTitle)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query (getInvestigators, getLead)
@@ -46,9 +46,9 @@ instance IsCampaign EdgeOfTheEarth where
     IceAndDeathPart3 -> continue $ InterludeStep 1 Nothing
     FatalMirage ->
       if
-        | CityOfTheElderThings `elem` campaignCompletedSteps (toAttrs a) ->
+        | hasPlayed (toAttrs a) CityOfTheElderThings ->
             continue TheHeartOfMadnessPart1
-        | ToTheForbiddenPeaks `elem` campaignCompletedSteps (toAttrs a) ->
+        | hasPlayed (toAttrs a) ToTheForbiddenPeaks ->
             continue CityOfTheElderThings
         | otherwise -> continue ToTheForbiddenPeaks
     ToTheForbiddenPeaks -> continue $ InterludeStep 2 Nothing

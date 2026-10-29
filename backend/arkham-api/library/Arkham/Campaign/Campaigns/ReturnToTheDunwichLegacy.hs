@@ -4,6 +4,7 @@ import Arkham.Campaign.Campaigns.TheDunwichLegacy
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaigns.TheDunwichLegacy.CampaignSteps
 import Arkham.Campaigns.TheDunwichLegacy.Helpers
+import Arkham.Helpers.Campaign (hasPlayed)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Narrative (narrativeBuilder)
 import Arkham.Message.Lifted.Choose
@@ -22,11 +23,11 @@ instance IsCampaign ReturnToTheDunwichLegacy where
   nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> error $ "Unhandled campaign step: " <> show a
     ReturnToExtracurricularActivities ->
-      if ReturnToTheHouseAlwaysWins `elem` (toAttrs a).completedSteps
+      if hasPlayed (toAttrs a) ReturnToTheHouseAlwaysWins
         then continue $ InterludeStep 1 Nothing
         else continue ReturnToTheHouseAlwaysWins
     ReturnToTheHouseAlwaysWins ->
-      if ReturnToExtracurricularActivities `elem` (toAttrs a).completedSteps
+      if hasPlayed (toAttrs a) ReturnToExtracurricularActivities
         then continue $ InterludeStep 1 Nothing
         else continue ReturnToExtracurricularActivities
     InterludeStep 1 _ -> continue ReturnToTheMiskatonicMuseum

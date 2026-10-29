@@ -7,7 +7,7 @@ import Arkham.CampaignLogKey (toCampaignLogKey)
 import Arkham.Card (toCardDef)
 import Arkham.ChaosToken
 import Arkham.Cost (Cost (CrossOffRecordCost))
-import Arkham.Helpers.Campaign (getCampaignStoryCards)
+import Arkham.Helpers.Campaign (getCampaignStoryCards, hasPlayed)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (modifySelect)
 import Arkham.Homebrew.DarkMatter.Achievements (runDarkMatterAchievements)
@@ -244,8 +244,7 @@ been chosen; when every Scenario III is done, skip to Introspection.
 -}
 theSearchForFragment :: (HasI18n, ReverseQueue m) => DarkMatter -> m DarkMatter
 theSearchForFragment c = scope "theSearchForFragment" do
-  let completed = (toAttrs c).completedSteps
-  let remaining = filter (`notElem` completed) [LostQuantum, InTheShadowOfEarth, StrangeMoons]
+  let remaining = filter (not . hasPlayed (toAttrs c)) [LostQuantum, InTheShadowOfEarth, StrangeMoons]
   if null remaining
     then setNextCampaignStep Introspection
     else storyWithChooseOneM

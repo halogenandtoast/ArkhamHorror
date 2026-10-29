@@ -1,10 +1,10 @@
-module Arkham.Homebrew.NightOfVespers.Campaign (nightOfVespers, NightOfVespers (..), hasPlayed) where
+module Arkham.Homebrew.NightOfVespers.Campaign (nightOfVespers, NightOfVespers (..)) where
 
 import Arkham.Campaign.Import.Lifted
 import Arkham.CampaignLogKey (toCampaignLogKey)
 import Arkham.Card
 import Arkham.ChaosToken
-import Arkham.Helpers.Campaign (getCampaignStoryCards)
+import Arkham.Helpers.Campaign (getCampaignStoryCards, hasPlayed)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Helpers.Xp (toBonus)
@@ -26,10 +26,6 @@ newtype NightOfVespers = NightOfVespers CampaignAttrs
 
 nightOfVespers :: Difficulty -> NightOfVespers
 nightOfVespers = campaign NightOfVespers (CampaignId ":night-of-vespers") "Night of Vespers"
-
-hasPlayed :: CampaignAttrs -> CampaignStep -> Bool
-hasPlayed attrs step =
-  attrs.normalizedStep == step || any ((== step) . normalizedCampaignStep) attrs.completedSteps
 
 instance IsCampaign NightOfVespers where
   campaignTokens = chaosBagContents

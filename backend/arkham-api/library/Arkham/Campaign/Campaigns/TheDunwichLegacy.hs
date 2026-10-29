@@ -11,7 +11,7 @@ import Arkham.Campaigns.TheDunwichLegacy.CampaignSteps
 import Arkham.Campaigns.TheDunwichLegacy.Helpers
 import Arkham.Campaigns.TheDunwichLegacy.Import
 import Arkham.Card
-import Arkham.Helpers.Campaign (getOwner)
+import Arkham.Helpers.Campaign (getOwner, hasPlayed)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Narrative
 import Arkham.Helpers.Query
@@ -39,11 +39,11 @@ instance IsCampaign TheDunwichLegacy where
   nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> error $ "Unhandled campaign step: " <> show a
     ExtracurricularActivity ->
-      if TheHouseAlwaysWins `elem` a.attrs.completedSteps
+      if hasPlayed (toAttrs a) TheHouseAlwaysWins
         then continue $ InterludeStep 1 Nothing
         else continue TheHouseAlwaysWins
     TheHouseAlwaysWins ->
-      if ExtracurricularActivity `elem` a.attrs.completedSteps
+      if hasPlayed (toAttrs a) ExtracurricularActivity
         then continue $ InterludeStep 1 Nothing
         else continue ExtracurricularActivity
     InterludeStep 1 _ -> continue TheMiskatonicMuseum

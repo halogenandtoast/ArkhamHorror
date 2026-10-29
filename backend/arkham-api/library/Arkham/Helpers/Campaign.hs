@@ -23,6 +23,11 @@ import Arkham.Scenario.Types (Field (..))
 import Data.Aeson (Result (..))
 import Data.Map.Strict qualified as Map
 
+-- | Whether a step is current or completed, ignoring campaign-step wrappers.
+hasPlayed :: CampaignAttrs -> CampaignStep -> Bool
+hasPlayed attrs step =
+  attrs.normalizedStep == step || any ((== step) . normalizedCampaignStep) attrs.completedSteps
+
 completedScenario :: HasGame m => ScenarioId -> m Bool
 completedScenario cCode = elem cCode <$> getCompletedScenarios
 

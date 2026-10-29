@@ -139,24 +139,24 @@ instance RunMessage TheLairOfDagon where
       selectForMaybeM (InDeckOf Anyone <> basic (cardIs Assets.elinaHarperKnowsTooMuch)) obtainCard
       pure s
     DoStep 2 PreScenarioSetup -> do
-      story $ i18nWithTitle "intro2"
+      flavor $ withHeading "intro2"
       stuckTogether <- hasMemory ADecisionToStickTogether
       if stuckTogether
         then doStep 4 PreScenarioSetup
         else doStep 5 PreScenarioSetup
       pure s
     DoStep 3 PreScenarioSetup -> do
-      story $ i18nWithTitle "intro3"
+      flavor $ withHeading "intro3"
       stuckTogether <- hasMemory ADecisionToStickTogether
       if stuckTogether
         then doStep 4 PreScenarioSetup
         else doStep 5 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> do
-      story $ i18nWithTitle "intro4"
+      flavor $ withHeading "intro4"
       pure s
     DoStep 5 PreScenarioSetup -> do
-      story $ i18nWithTitle "intro5"
+      flavor $ withHeading "intro5"
       pure s
     StandaloneSetup -> do
       {- FOURMOLU_DISABLE -}

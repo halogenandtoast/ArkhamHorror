@@ -201,18 +201,18 @@ instance RunMessage ShatteredAeons where
       doStep (if braziersLit then 1 else 2) PreScenarioSetup
       pure s
     DoStep 1 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro1"
+      flavor $ h "title" >> p "intro1"
       doStep 3 PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro2"
+      flavor $ h "title" >> p "intro2"
       eachInvestigator \iid -> setupModifier attrs iid (StartingHand (-2))
       doStep 3 PreScenarioSetup
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
       foundTheMissingRelic <- getHasRecord TheInvestigatorsFoundTheMissingRelic
       flavor do
-        setTitle "title"
+        h "title"
         scope "intro3" do
           p "body"
           p.basic.right.validate foundTheMissingRelic "foundTheMissingRelic"
@@ -220,10 +220,10 @@ instance RunMessage ShatteredAeons where
       doStep (if foundTheMissingRelic then 4 else 5) PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro4"
+      flavor $ h "title" >> p "intro4"
       pure s
     DoStep 5 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro5"
+      flavor $ h "title" >> p "intro5"
       pure s
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens

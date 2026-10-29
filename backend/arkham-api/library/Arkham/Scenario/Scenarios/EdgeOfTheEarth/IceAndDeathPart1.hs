@@ -10,7 +10,7 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Enemies
 import Arkham.FlavorText
-import Arkham.Helpers.FlavorText (addEntry, withHeading, withTitle)
+import Arkham.Helpers.FlavorText (addEntry, flavor, withHeading)
 import Arkham.Helpers.Investigator (getJustLocation, getMaybeLocation)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Shuffle (getCanShuffleIn)
@@ -61,7 +61,7 @@ instance RunMessage IceAndDeathPart1 where
     PreScenarioSetup -> do
       storyWithChooseOneM (withHeading "intro") $ labeled "proceedToIceAndDeathPart1" nothing
       doStep 1 PreScenarioSetup
-      story $ i18nWithTitle "investigatorSetup"
+      story $ i18nWithHeading "investigatorSetup"
       eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s
     DoStep 1 PreScenarioSetup -> do
@@ -69,7 +69,7 @@ instance RunMessage IceAndDeathPart1 where
 
       storyWithChooseOneM
         do
-          withTitle "intro1"
+          withHeading "intro1"
           scope "setup"
             $ addEntry
             $ rightAlign (validateEntry winifredPresent "winifredPresent")
@@ -79,15 +79,15 @@ instance RunMessage IceAndDeathPart1 where
       doStep (if winifredPresent then 2 else 3) PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> do
-      storyWithChooseOneM (withTitle "intro2") $ labeled "skipToIntro4" nothing
+      storyWithChooseOneM (withHeading "intro2") $ labeled "skipToIntro4" nothing
       doStep 4 PreScenarioSetup
       pure s
     DoStep 3 PreScenarioSetup -> do
-      storyWithChooseOneM (withTitle "intro3") $ labeled "proceedToIntro4" nothing
+      storyWithChooseOneM (withHeading "intro3") $ labeled "proceedToIntro4" nothing
       doStep 4 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> do
-      story $ i18nWithTitle "intro4"
+      flavor $ withHeading "intro4"
       killed <- sample expeditionTeam
       push $ SetPartnerStatus killed.cardCode Eliminated
       recordSetInsert WasKilledInThePlaneCrash [killed.cardCode]

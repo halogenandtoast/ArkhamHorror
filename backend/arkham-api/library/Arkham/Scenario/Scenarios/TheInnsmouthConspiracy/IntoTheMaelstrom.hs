@@ -147,7 +147,7 @@ instance RunMessage IntoTheMaelstrom where
   runMessage msg s@(IntoTheMaelstrom attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
       narrative <- getInnsmouthNarrative
-      storyBuild =<< narrativeBuilder narrative.intoTheMaelstromIntro (setTitle "intro.title" >> h "intro.title" >> p "intro.body")
+      storyBuild =<< narrativeBuilder narrative.intoTheMaelstromIntro (h "intro.title" >> p "intro.body")
       pure s
     StandaloneSetup -> do
       {- FOURMOLU_DISABLE -}

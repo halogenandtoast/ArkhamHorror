@@ -168,7 +168,7 @@ instance RunMessage TheSecretName where
           li.validate learnedNothingOfTheLodgesSchemes "learnedNothingOfTheLodgesSchemes"
           li.validate neverSeenOrHeardFromAgain "neverSeenOrHeardFromAgain"
 
-      let read k = setTitle "title" >> p k
+      let read k = h "title" >> p k
       anyMystic <- selectAny $ InvestigatorWithClass Mystic
       when membersOfTheLodge do
         storyWithChooseOneM (read "intro1") do
@@ -178,7 +178,7 @@ instance RunMessage TheSecretName where
             addChaosToken Cultist
           labeled "lie" do
             flavor do
-              setTitle "title"
+              h "title"
               p "intro3"
               p.validate anyMystic "intro3Mystic"
               p "intro3Part2"

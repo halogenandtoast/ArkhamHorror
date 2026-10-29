@@ -68,7 +68,7 @@ instance RunMessage TheGrandVault where
       withToeTheLine <-
         filterM (`investigatorHasTask` Assets.toeTheLine) =<< select (IncludeEliminated Anyone)
       flavor do
-        setTitle "title"
+        h "title"
         p $ if headedWest then "grandVault1" else "grandVault2"
         p "grandVault3"
         ul do

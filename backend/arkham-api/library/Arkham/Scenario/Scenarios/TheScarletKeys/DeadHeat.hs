@@ -86,13 +86,13 @@ instance RunMessage DeadHeat where
       setupKeys
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro2"
+      flavor $ h "title" >> p "intro2"
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro3"
+      flavor $ h "title" >> p "intro3"
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro4"
+      flavor $ h "title" >> p "intro4"
       push R5
       pure s
     Setup -> runScenarioSetup DeadHeat attrs do

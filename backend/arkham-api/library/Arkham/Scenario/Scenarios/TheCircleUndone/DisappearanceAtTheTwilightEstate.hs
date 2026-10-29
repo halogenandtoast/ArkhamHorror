@@ -141,7 +141,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           allPlayers >>= \case
             [] -> error "no players"
             (player : _) -> do
-              playerStoryWithChooseOneM' player (setTitle "title" >> p "returnToChoice") do
+              playerStoryWithChooseOneM' player (h "title" >> p "returnToChoice") do
                 labeled "returnToSkip" $ doStep 3 msg
                 labeled "playNormally" $ doStep 1 msg
         else doStep 1 msg
@@ -171,7 +171,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           filter
             ((`notElem` taken) . InvestigatorId . cdCardCode)
             allPrologueInvestigators
-      playerStoryWithChooseOneM' player (setTitle "title" >> p "chooseInvestigator") do
+      playerStoryWithChooseOneM' player (h "title" >> p "chooseInvestigator") do
         cardsLabeled availablePrologueInvestigators \card -> do
           -- we load the decklist just to remove the option
           let iid = InvestigatorId (cdCardCode card)
@@ -188,7 +188,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
 
       nameVar card $ playerStoryWithChooseOneM'
         player
-        (setTitle "title" >> tarot arcana >> img card >> p (tshow arcana))
+        (h "title" >> tarot arcana >> img card >> p (tshow arcana))
         do
           unscoped $ labeled "continue" nothing
 
@@ -271,7 +271,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           filter
             ((`notElem` taken) . InvestigatorId . cdCardCode)
             allPrologueInvestigators
-      playerStoryWithChooseOneM' player (setTitle "title" >> p "chooseInvestigator") do
+      playerStoryWithChooseOneM' player (h "title" >> p "chooseInvestigator") do
         cardsLabeled availablePrologueInvestigators \card -> do
           push
             $ LoadDecklist player
@@ -287,7 +287,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
               Nothing
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro"
+      flavor $ h "title" >> p "intro"
       taken <- selectMap unInvestigatorId Anyone
       let
         prologueInvestigatorsNotTaken =
@@ -301,7 +301,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           _ -> error "Invalid prologue investigator"
       crossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
       for_ taken \cardCode ->
-        flavor $ setTitle "title" >> p (readingFor cardCode) >> smallImg cardCode.flipped
+        flavor $ h "title" >> p (readingFor cardCode) >> smallImg cardCode.flipped
       pure $ DisappearanceAtTheTwilightEstate $ attrs & startedL .~ True
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty

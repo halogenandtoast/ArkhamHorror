@@ -121,12 +121,12 @@ instance RunMessage TheTwistedHollow where
     DoStep 2 PreScenarioSetup -> scope "intro" do
       record MotherRachelShowedTheWay
       addChaosToken #cultist
-      flavor $ setTitle "title" >> p "intro2"
+      flavor $ h "title" >> p "intro2"
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
       record TheInvestigatorsLostThePath
       addChaosToken #elderthing
-      flavor $ setTitle "title" >> p "intro3"
+      flavor $ h "title" >> p "intro3"
       pure s
     Setup -> runScenarioSetup TheTwistedHollow attrs do
       setUsesGrid

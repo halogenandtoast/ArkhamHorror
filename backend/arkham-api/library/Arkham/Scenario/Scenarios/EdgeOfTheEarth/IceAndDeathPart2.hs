@@ -141,7 +141,7 @@ instance RunMessage IceAndDeathPart2 where
               <> validateEntry (takada.status == Mia) "takadaMissing"
 
           sv <- fromMaybe 0 <$> getCurrentShelterValue
-          story $ withVars ["shelterValue" .= sv] $ i18nWithTitle "investigatorSetup"
+          story $ withVars ["shelterValue" .= sv] $ i18nWithHeading "investigatorSetup"
           investigators <- zip [0 ..] <$> allInvestigators
           for_ investigators \(idx, investigator) ->
             forInvestigator investigator (DoStep idx PreScenarioSetup)

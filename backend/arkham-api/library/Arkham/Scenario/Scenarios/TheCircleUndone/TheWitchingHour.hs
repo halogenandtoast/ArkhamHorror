@@ -173,7 +173,7 @@ instance RunMessage TheWitchingHour where
         labeled "bullshit" $ doStep 3 PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro2"
+      flavor $ h "title" >> p "intro2"
       record YouHaveAcceptedYourFate
       addChaosToken Tablet
       addChaosToken Tablet
@@ -195,7 +195,7 @@ instance RunMessage TheWitchingHour where
       if isReturnTo
         then do
           leadPlayer <- getLeadPlayer
-          storyWithChooseOneM (setTitle "title" >> p "choose") do
+          storyWithChooseOneM (h "title" >> p "choose") do
             labeled "performTarotReading" do
               push $ SetPerformTarotReadings False
               push
@@ -228,13 +228,13 @@ instance RunMessage TheWitchingHour where
 
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro3"
+      flavor $ h "title" >> p "intro3"
       record YouHaveRejectedYourFate
       addChaosToken ElderThing
       addChaosToken ElderThing
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro4"
+      flavor $ h "title" >> p "intro4"
       pure s
     Setup -> runScenarioSetup TheWitchingHour attrs $ setupTheWitchingHour attrs
     ScenarioResolution r -> scope "resolutions" do

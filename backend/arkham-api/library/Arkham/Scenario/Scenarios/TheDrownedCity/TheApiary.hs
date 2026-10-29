@@ -70,7 +70,7 @@ instance RunMessage TheApiary where
       investigators <- select (IncludeEliminated Anyone)
       withWalkInFaith <- filterM (`investigatorHasTask` Assets.walkInFaith) investigators
       flavor do
-        setTitle "title"
+        h "title"
         if headedWest
           then do
             p "apiary1"

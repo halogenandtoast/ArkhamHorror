@@ -66,7 +66,7 @@ instance RunMessage OneNightOnly where
     PreScenarioSetup -> scope "intro" do
       flavor $ h "title" >> p "body"
       behindTheCurtain <- select behindTheCurtainMatcher
-      storyOnlyBuild behindTheCurtain $ setTitle "title" >> p "behindTheCurtain"
+      storyOnlyBuild behindTheCurtain $ h "title" >> p "behindTheCurtain"
       pure s
     Setup -> runScenarioSetup OneNightOnly attrs do
       gather Set.OneNightOnly

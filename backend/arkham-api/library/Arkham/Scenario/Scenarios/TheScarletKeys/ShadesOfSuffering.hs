@@ -75,12 +75,12 @@ instance RunMessage ShadesOfSuffering where
       pure s
     DoStep 1 PreScenarioSetup -> scope "intro" do
       record FlintRejoinedTheCell
-      flavor $ setTitle "title" >> p "intro1"
+      flavor $ h "title" >> p "intro1"
       iids <- allInvestigators
       addCampaignCardToDeckChoice iids ShuffleIn Assets.inspectorFlintWithPrideAndCare
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro2"
+      flavor $ h "title" >> p "intro2"
       pure s
     Setup -> runScenarioSetup ShadesOfSuffering attrs do
       t <- getTime

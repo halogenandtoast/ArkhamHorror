@@ -58,40 +58,40 @@ instance RunMessage RiddlesAndRain where
       pure s
     PreScenarioSetup -> scope "intro" do
       flavor $ h "title" >> p "intro1"
-      flavor $ setTitle "title" >> p "letter"
+      flavor $ h "title" >> p "letter"
       n <- getPlayerCount
-      storyWithChooseOneM (setTitle "title" >> p "intro1Part2") do
+      storyWithChooseOneM (h "title" >> p "intro1Part2") do
         labeledValidate (n == 1) "onlyOne" $ doStep 2 msg
         labeledValidate (n > 1) "goAlone" $ doStep 3 msg
         labeledValidate (n > 1) "goWithBackup" $ doStep 4 msg
 
-      popScope $ scope "trackingTime" $ flavor $ setTitle "title" >> p "body"
+      popScope $ scope "trackingTime" $ flavor $ h "title" >> p "body"
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro2"
+      flavor $ h "title" >> p "intro2"
       doStep 5 PreScenarioSetup
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro3"
+      flavor $ h "title" >> p "intro3"
       doStep 5 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro4"
+      flavor $ h "title" >> p "intro4"
       doStep 5 PreScenarioSetup
       pure s
     DoStep 5 PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM (setTitle "title" >> p "intro5") do
+      storyWithChooseOneM (h "title" >> p "intro5") do
         labeled "takeHisOffer" $ doStep 6 PreScenarioSetup
         labeled "goToLondonOnYourOwnTerms" $ doStep 7 PreScenarioSetup
       pure s
     DoStep 6 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro6"
+      flavor $ h "title" >> p "intro6"
       removeChaosToken ElderThing
       addChaosToken Tablet
       markTime 1
       pure s
     DoStep 7 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro7"
+      flavor $ h "title" >> p "intro7"
       removeChaosToken Tablet
       addChaosToken ElderThing
       markTime 2

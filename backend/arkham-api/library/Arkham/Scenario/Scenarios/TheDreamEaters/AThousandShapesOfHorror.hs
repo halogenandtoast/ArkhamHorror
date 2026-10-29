@@ -11,7 +11,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.TheDreamEaters.AThousandShapesOfHorror qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
-import Arkham.Helpers.FlavorText (li, setup, ul)
+import Arkham.Helpers.FlavorText (flavor, li, setup, ul, withHeading)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -85,11 +85,11 @@ instance RunMessage AThousandShapesOfHorror where
       story $ i18nWithHeading "intro1"
       atYourSide <- getHasRecord TheBlackCatIsAtYourSide
       story
-        $ i18nWithTitle
+        $ i18nWithHeading
         $ if atYourSide
           then "intro2"
           else "intro3"
-      story $ i18nWithTitle "intro4"
+      flavor $ withHeading "intro4"
       pure s
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens

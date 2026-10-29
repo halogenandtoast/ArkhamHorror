@@ -88,7 +88,7 @@ instance RunMessage TheDoomOfArkhamPartII where
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
       flavor do
-        setTitle "title"
+        h "title"
         p "theDoomOfArkham2"
         ul do
           li "recordStoodTogether"
@@ -100,7 +100,7 @@ instance RunMessage TheDoomOfArkhamPartII where
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
       flavor do
-        setTitle "title"
+        h "title"
         p "theDoomOfArkham3"
         p "theDoomOfArkham3Continued"
         p "theDoomOfArkham3Ruby"

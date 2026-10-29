@@ -112,7 +112,7 @@ instance RunMessage TheWesternWall where
         anyM (`investigatorHasTask` Assets.doNoHarm)
           =<< select (IncludeEliminated Anyone)
       flavor do
-        setTitle "title"
+        h "title"
         p $ if headedWest then "westernWall1" else "westernWall2"
         ul $ li.validate hasDoNoHarm "resolveDoNoHarm"
         p.basic $ if headedWest then "proceedToWesternSetup" else "proceedToEasternSetup"

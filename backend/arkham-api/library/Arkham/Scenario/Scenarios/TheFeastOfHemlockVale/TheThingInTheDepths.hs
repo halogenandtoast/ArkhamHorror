@@ -79,7 +79,7 @@ instance RunMessage TheThingInTheDepths where
           judithLevel <- getRelationshipLevel JudithPark
           let judithHighEnough = judithLevel >= 1
           flavor do
-            setTitle "title"
+            h "title"
             p "intro1"
             p.basic "checkJudith"
             ul do
@@ -89,29 +89,29 @@ instance RunMessage TheThingInTheDepths where
             then doStep 2 PreScenarioSetup
             else doStep 3 PreScenarioSetup
         (Day2, Day) -> doStep 4 PreScenarioSetup
-        (Day3, Day) -> flavor $ setTitle "title" >> p "intro7"
-        _ -> flavor $ setTitle "title" >> p "intro8"
+        (Day3, Day) -> flavor $ h "title" >> p "intro7"
+        _ -> flavor $ h "title" >> p "intro8"
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro2"
+      flavor $ h "title" >> p "intro2"
       increaseRelationshipLevel JudithPark 1
       interludeXpAll (toBonus "bonus" 1)
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro3"
+      flavor $ h "title" >> p "intro3"
       record JudithSharedAGrudge
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM (setTitle "title" >> p "intro4") do
+      storyWithChooseOneM (h "title" >> p "intro4") do
         labeled "push" $ doStep 5 PreScenarioSetup
         labeled "rev" $ doStep 6 PreScenarioSetup
       pure s
     DoStep 5 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro5"
+      flavor $ h "title" >> p "intro5"
       eachInvestigator \iid -> nextSetupModifier attrs.id attrs iid (StartingResources (-2))
       pure s
     DoStep 6 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro6"
+      flavor $ h "title" >> p "intro6"
       eachInvestigator \iid -> nextSetupModifier attrs.id attrs iid (FewerActions 1)
       pure s
     Setup -> runScenarioSetup TheThingInTheDepths attrs do

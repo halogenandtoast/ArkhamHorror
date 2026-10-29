@@ -208,7 +208,7 @@ instance RunMessage UnionAndDisillusion where
       erynnJoinedTheInvestigators <- getHasRecord ErynnJoinedTheInvestigators
       sidedWithTheCoven <- getHasRecord TheInvestigatorsSidedWithTheCoven
       when (sidedWithTheCoven && erynnJoinedTheInvestigators) do
-        flavor $ setTitle "title" >> p "additionalIntro"
+        flavor $ h "title" >> p "additionalIntro"
       pure s
     StandaloneSetup -> do
       push (SetChaosTokens standaloneChaosTokens)

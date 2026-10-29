@@ -27,10 +27,9 @@ newtype NightOfVespers = NightOfVespers CampaignAttrs
 nightOfVespers :: Difficulty -> NightOfVespers
 nightOfVespers = campaign NightOfVespers (CampaignId ":night-of-vespers") "Night of Vespers"
 
--- Include the current scenario: NextCampaignStep asks nextStep before it adds
--- that scenario to completedSteps. Normalize lead-investigator options too.
 hasPlayed :: CampaignAttrs -> CampaignStep -> Bool
-hasPlayed attrs step = attrs.normalizedStep == step || any ((== step) . normalizedCampaignStep) attrs.completedSteps
+hasPlayed attrs step =
+  attrs.normalizedStep == step || any ((== step) . normalizedCampaignStep) attrs.completedSteps
 
 instance IsCampaign NightOfVespers where
   campaignTokens = chaosBagContents
@@ -197,7 +196,7 @@ instance RunMessage NightOfVespers where
   runMessage msg c@(NightOfVespers attrs) = runQueueT $ campaignI18n $ case msg of
     StartCampaign -> do
       scope "intro" $ flavor $ setTitle "title" >> p "body"
-      pure c
+      lift $ defaultCampaignRunner msg c
     CampaignStep PrologueStep -> do
       scope "prologue" $ flavor $ setTitle "title" >> p "body"
       scope "additionalRules" do

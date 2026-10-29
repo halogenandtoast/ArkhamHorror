@@ -152,12 +152,12 @@ instance RunMessage CongressOfTheKeys where
         ul do
           li.validate (t >= 35) "option1"
           li.validate (t < 35) "option2"
-      flavor $ setTitle "title" >> p (if t >= 35 then "intro1" else "intro2")
+      flavor $ h "title" >> p (if t >= 35 then "intro1" else "intro2")
       doStep 1 PreScenarioSetup
       setupKeys
       pure s
     DoStep 1 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "theTrial1"
+      flavor $ h "title" >> p "theTrial1"
 
       theCellAidedTheKnight <- getHasRecord TheCellAidedTheKnight
       theCellFailedToFendOffTheBeast <- getHasRecord TheCellFailedToFendOffTheBeast
@@ -433,7 +433,7 @@ instance RunMessage CongressOfTheKeys where
                 hr
                 p.validate (not tuwileMasaiIsOnYourSide) "tuwileMasaiIsNotOnYourSide"
 
-            storyWithChooseOneM (setTitle "title" >> p "trialResult") do
+            storyWithChooseOneM (h "title" >> p "trialResult") do
               if finalYea >= finalNay
                 then labeled "deemedALiability" $ doStep 2 PreScenarioSetup
                 else do
@@ -528,32 +528,32 @@ instance RunMessage CongressOfTheKeys where
       pure $ CongressOfTheKeys $ attrs & setMetaKey "votes" votes
     DoStep 2 PreScenarioSetup -> scope "intro" do
       record TheCellEscapedTheRedCoterie
-      flavor $ setTitle "title" >> p "theTrial2"
+      flavor $ h "title" >> p "theTrial2"
       pure $ CongressOfTheKeys $ attrs & setMetaKey "version" Version1
     DoStep 3 PreScenarioSetup -> scope "intro" do
       record TheCellOverthrewTheRedCoterie
-      flavor $ setTitle "title" >> p "theTrial3"
+      flavor $ h "title" >> p "theTrial3"
       doStep 8 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
       record TheCellJoinedTheRedCoterie
-      flavor $ setTitle "title" >> p "theTrial4"
+      flavor $ h "title" >> p "theTrial4"
       doStep 8 PreScenarioSetup
       pure s
     DoStep 5 PreScenarioSetup -> scope "intro" do
       record TheRedCoterieSparedTheCell
-      flavor $ setTitle "title" >> p "theTrial5"
+      flavor $ h "title" >> p "theTrial5"
       doStep 8 PreScenarioSetup
       pure s
     DoStep 6 PreScenarioSetup -> scope "intro" do
       record TheRedCoterieSparedTheCell
-      flavor $ setTitle "title" >> p "theTrial6"
+      flavor $ h "title" >> p "theTrial6"
       pure $ CongressOfTheKeys $ attrs & setMetaKey "version" Version3
     DoStep 7 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "theTrial7"
+      flavor $ h "title" >> p "theTrial7"
       pure $ CongressOfTheKeys $ attrs & setMetaKey "version" Version3
     DoStep 8 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "theTrial8"
+      flavor $ h "title" >> p "theTrial8"
       pure $ CongressOfTheKeys $ attrs & setMetaKey "version" Version2
     Setup -> do
       case getMetaKeyDefault "version" Version1 attrs of

@@ -200,7 +200,7 @@ instance RunMessage AWorldTornDownAgain where
       quarry <- getHasRecord YourHuntersFoundANewQuarry
       harnessed <- getHasRecord TheMyriadHarnessedThePowerOfAnotherRealm
       flavor do
-        setTitle "title"
+        h "title"
         when quarry $ p "intro1"
         p (if harnessed then "intro2" else "intro3")
       -- Intro 1: "Each investigator takes 1 direct damage and 1 direct horror."

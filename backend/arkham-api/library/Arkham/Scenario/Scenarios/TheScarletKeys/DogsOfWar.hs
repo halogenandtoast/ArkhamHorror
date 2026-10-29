@@ -75,7 +75,7 @@ instance RunMessage DogsOfWar where
       miskatonicOrScholar <- selectAny $ mapOneOf InvestigatorWithTrait [Miskatonic, Scholar]
       storyWithChooseOneM
         do
-          setTitle "title"
+          h "title"
           p "intro2Part1"
           p.validate miskatonicOrScholar "miskatonicOrScholar"
           p "intro2Part2"
@@ -84,28 +84,28 @@ instance RunMessage DogsOfWar where
           labeled "refuse" $ doStep 5 PreScenarioSetup
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM (setTitle "title" >> p "intro3") do
+      storyWithChooseOneM (h "title" >> p "intro3") do
         labeled "weAccept" $ doStep 6 PreScenarioSetup
         labeled "refuse" $ doStep 7 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
       record TheCellMadeADealWithTheClaretKnight
       swapTokens ElderThing Tablet
-      flavor $ setTitle "title" >> p "intro4"
+      flavor $ h "title" >> p "intro4"
       pure $ DogsOfWar $ attrs & setMetaKey "version" Version1
     DoStep 5 PreScenarioSetup -> scope "intro" do
       swapTokens Tablet ElderThing
       record TheCellIsAssistingAgentSirry
-      flavor $ setTitle "title" >> p "intro5"
+      flavor $ h "title" >> p "intro5"
       pure $ DogsOfWar $ attrs & setMetaKey "version" Version2
     DoStep 6 PreScenarioSetup -> scope "intro" do
       record TheCellMadeADealWithTheClaretKnight
-      flavor $ setTitle "title" >> p "intro6"
+      flavor $ h "title" >> p "intro6"
       pure $ DogsOfWar $ attrs & setMetaKey "version" Version3
     DoStep 7 PreScenarioSetup -> scope "intro" do
       swapTokens Tablet ElderThing
       record TheCellIsAssistingAgentSirry
-      flavor $ setTitle "title" >> p "intro7"
+      flavor $ h "title" >> p "intro7"
       pure $ DogsOfWar $ attrs & setMetaKey "version" Version3
     Setup -> do
       case getMetaKeyDefault "version" Version1 attrs of

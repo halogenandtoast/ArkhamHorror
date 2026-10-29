@@ -72,15 +72,15 @@ instance RunMessage TheSilentHeath where
           li.validate (not isNight && day == Day3) "day3"
       case (day, time) of
         (Day1, Day) -> do
-          story $ i18nWithTitle "intro1"
-          story $ i18nWithTitle "intro5"
+          flavor $ withHeading "intro1"
+          flavor $ withHeading "intro5"
         (Day2, Day) -> do
-          story $ i18nWithTitle "intro2"
-          story $ i18nWithTitle "intro5"
+          flavor $ withHeading "intro2"
+          flavor $ withHeading "intro5"
         (Day3, Day) -> do
-          story $ i18nWithTitle "intro3"
-          story $ i18nWithTitle "intro5"
-        _ -> story $ i18nWithTitle "intro4"
+          flavor $ withHeading "intro3"
+          flavor $ withHeading "intro5"
+        _ -> flavor $ withHeading "intro4"
       pure s
     Setup -> runScenarioSetup TheSilentHeath attrs do
       setScenarioDayAndTime

@@ -66,7 +66,7 @@ instance RunMessage CourtOfTheAncients where
       investigators <- select (IncludeEliminated Anyone)
       withPlumbTheDepths <- filterM (`investigatorHasTask` Assets.plumbTheDepths) investigators
       flavor do
-        setTitle "title"
+        h "title"
         if headedWest
           then p "courtOfTheAncients1"
           else do

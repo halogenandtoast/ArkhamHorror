@@ -63,7 +63,7 @@ instance RunMessage TheDrownedQuarter where
       investigators <- select (IncludeEliminated Anyone)
       withNoPlaceLikeHome <- filterM (`investigatorHasTask` Assets.noPlaceLikeHome) investigators
       flavor do
-        setTitle "title"
+        h "title"
         p $ if headedWest then "drownedQuarter2" else "drownedQuarter3"
         p $ if headedWest then "drownedQuarter2Conclusion" else "drownedQuarter3Conclusion"
         ul $ li.validate (notNull withNoPlaceLikeHome) "resolveNoPlaceLikeHome"

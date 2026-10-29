@@ -161,7 +161,7 @@ moveNearestEnemyTowardInvestigator iid = withLocationOf iid \lid -> do
 instance RunMessage RedSunrise where
   runMessage msg s@(RedSunrise attrs) = runQueueT $ scenarioI18n "redSunrise" $ case msg of
     PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM (setTitle "title" >> p "body1" >> p "body2") do
+      storyWithChooseOneM (h "title" >> p "body1" >> p "body2") do
         labeled "timeIsOfTheEssence" $ addChaosToken Cultist
         labeled "easyDoesIt" $ addChaosToken Tablet
       pure s

@@ -20,7 +20,7 @@ import Arkham.Game.Base
 import {-# SOURCE #-} Arkham.Game.Utils
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.Campaign
-import Arkham.Helpers.FlavorText (addEntry, setup)
+import Arkham.Helpers.FlavorText (addEntry, flavor, setup, withHeading)
 import Arkham.Helpers.Game (withAlteredGame)
 import Arkham.Helpers.Log hiding (crossOutRecordSetEntries, recordSetInsert)
 import Arkham.Helpers.Query
@@ -129,7 +129,7 @@ instance RunMessage FatalMirage where
             when (recorded Assets.drAmyKenslerProfessorOfBiology.cardCode `elem` killedInThePlaneCrash) do
               blueStory $ i18nEntry "kenslerWasKilledInThePlaneCrash"
           else do
-            story $ i18nWithTitle "intro2"
+            flavor $ withHeading "intro2"
 
       eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s

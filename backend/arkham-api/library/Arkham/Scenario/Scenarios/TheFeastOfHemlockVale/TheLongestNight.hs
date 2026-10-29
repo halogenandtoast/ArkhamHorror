@@ -104,12 +104,12 @@ instance RunMessage TheLongestNight where
             labeled "keepHidden" $ doStep 3 PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro2"
+      flavor $ h "title" >> p "intro2"
       addChaosToken #tablet
       doStep 4 PreScenarioSetup
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro3"
+      flavor $ h "title" >> p "intro3"
       addChaosToken #skull
       doStep 4 PreScenarioSetup
       pure s
@@ -128,7 +128,7 @@ instance RunMessage TheLongestNight where
             , toCampaignLogKey HelenSharedADance
             ]
       flavor do
-        setTitle "title"
+        h "title"
         p "intro4"
         p.basic "checkDance"
         ul do
@@ -143,24 +143,24 @@ instance RunMessage TheLongestNight where
             else doStep 7 PreScenarioSetup
       pure s
     DoStep 5 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro5"
+      flavor $ h "title" >> p "intro5"
       addChaosToken #cultist
       doStep 8 PreScenarioSetup
       pure s
     DoStep 6 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro6"
+      flavor $ h "title" >> p "intro6"
       addChaosToken #cultist
       addChaosToken #elderthing
       doStep 8 PreScenarioSetup
       pure s
     DoStep 7 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro7"
+      flavor $ h "title" >> p "intro7"
       record TheInvestigatorsFacedTheLongestNightAlone
       addChaosToken #elderthing
       doStep 8 PreScenarioSetup
       pure s
     DoStep 8 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro8"
+      flavor $ h "title" >> p "intro8"
       pure s
     Setup -> runScenarioSetup TheLongestNight attrs do
       facedAlone <- getHasRecord TheInvestigatorsFacedTheLongestNightAlone

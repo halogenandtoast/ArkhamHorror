@@ -81,10 +81,10 @@ instance RunMessage HemlockHouse where
           li.validate (not isNight && day == Day2) "day2"
           li.validate (not isNight && day == Day3) "day3"
       case (day, time) of
-        (Day1, Day) -> story $ i18nWithTitle "intro1"
-        (Day2, Day) -> story $ i18nWithTitle "intro2"
-        (Day3, Day) -> story $ i18nWithTitle "intro3"
-        _ -> story $ i18nWithTitle "intro4"
+        (Day1, Day) -> flavor $ withHeading "intro1"
+        (Day2, Day) -> flavor $ withHeading "intro2"
+        (Day3, Day) -> flavor $ withHeading "intro3"
+        _ -> flavor $ withHeading "intro4"
       pure s
     Setup -> runScenarioSetup HemlockHouse attrs do
       setScenarioDayAndTime

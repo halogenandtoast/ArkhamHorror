@@ -195,7 +195,7 @@ instance RunMessage FortuneAndFolly where
 
       c <- selectOne TheCampaign
       flavor do
-        setTitle "title"
+        h "title"
         p "intro1"
         p.basic.right.validate (c == Just "09") "scarletKeys"
         p.basic.right.validate (c /= Just "09") "notScarletKeys"
@@ -212,12 +212,12 @@ instance RunMessage FortuneAndFolly where
       doStep 4 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM (setTitle "title" >> p "intro4") do
+      storyWithChooseOneM (h "title" >> p "intro4") do
         labeled "skip" $ doStep (-1) PreScenarioSetup
         labeled "doNotSkip" $ doStep 5 PreScenarioSetup
       pure s
     DoStep 5 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro5"
+      flavor $ h "title" >> p "intro5"
       let opts =
             scenarioOptions attrs
               `orElse` defaultScenarioOptions

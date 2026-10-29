@@ -89,7 +89,7 @@ instance RunMessage DarkSideOfTheMoon where
       story $ i18nWithHeading "theDreamEaters.darkSideOfTheMoon.intro"
       captured <- selectAny $ investigatorWithRecord WasCaptured
       story
-        $ i18nWithTitle
+        $ i18nWithHeading
         $ if captured
           then "theDreamEaters.darkSideOfTheMoon.intro1"
           else "theDreamEaters.darkSideOfTheMoon.intro2"

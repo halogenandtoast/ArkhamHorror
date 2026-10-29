@@ -13,7 +13,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Enemies
 import Arkham.Exception
 import Arkham.FlavorText
-import Arkham.Helpers.FlavorText (addEntry, setup)
+import Arkham.Helpers.FlavorText (addEntry, flavor, setup, withHeading)
 import Arkham.Helpers.Log ()
 import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier, modifySelect)
 import Arkham.Helpers.Query
@@ -133,11 +133,11 @@ instance RunMessage TheHeartOfMadnessPart2 where
           pure $ TheHeartOfMadnessPart2 $ foldl' (flip addPartner) attrs expeditionTeam
         else pure s
     DoStep 2 PreScenarioSetup -> do
-      story $ i18nWithTitle "intro2"
+      flavor $ withHeading "intro2"
       record DrKenslerHasAPlan
       pure s
     DoStep 3 PreScenarioSetup -> do
-      story $ i18nWithTitle "intro3"
+      flavor $ withHeading "intro3"
       record TheTruthOfTheMirageEludesYou
       pure s
     ForInvestigator iid PreScenarioSetup -> do

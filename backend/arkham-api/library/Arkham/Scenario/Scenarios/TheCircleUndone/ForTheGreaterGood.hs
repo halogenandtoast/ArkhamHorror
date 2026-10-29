@@ -192,19 +192,19 @@ instance RunMessage ForTheGreaterGood where
     DoStep 2 PreScenarioSetup -> scope "intro" do
       showSidebar <- getHasRecord TheInvestigatorsAreDeceivingTheLodge
       flavor do
-        setTitle "title"
+        h "title"
         p "intro2"
         p.validate showSidebar "deceivingTheLodge"
         p "intro2Skip"
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro3"
+      flavor $ h "title" >> p "intro3"
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro4"
+      flavor $ h "title" >> p "intro4"
       pure s
     DoStep 5 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro5"
+      flavor $ h "title" >> p "intro5"
       pure s
     StandaloneSetup -> scope "standalone" do
       setChaosTokens standaloneChaosTokens

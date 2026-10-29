@@ -98,7 +98,7 @@ instance HasChaosTokenValue TimeRunsOut where
 instance RunMessage TimeRunsOut where
   runMessage msg s@(TimeRunsOut attrs) = runQueueT $ timeRunsOutI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "body"
+      flavor $ h "title" >> p "body"
       pure s
     Setup -> runScenarioSetup TimeRunsOut attrs do
       setup $ ul do

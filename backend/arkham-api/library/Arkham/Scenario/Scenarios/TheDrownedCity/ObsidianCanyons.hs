@@ -74,10 +74,10 @@ instance RunMessage ObsidianCanyons where
         filterM (`investigatorHasTask` Assets.dreamsOfDestruction) investigators
       withProveYourWorth <- filterM (`investigatorHasTask` Assets.proveYourWorth) investigators
       flavor do
-        setTitle "title"
+        h "title"
         p $ if headedWest then "obsidianCanyons1" else "obsidianCanyons2"
       flavor do
-        setTitle "title"
+        h "title"
         p "obsidianCanyons3"
         ul do
           li.validate (notNull withDreamsOfDestruction || notNull withProveYourWorth) "resolveTasks"

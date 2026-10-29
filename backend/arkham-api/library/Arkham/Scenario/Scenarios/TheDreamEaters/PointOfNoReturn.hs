@@ -11,7 +11,7 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Enemies
 import Arkham.Exception
-import Arkham.Helpers.FlavorText (additionalRules, li, setup, ul)
+import Arkham.Helpers.FlavorText (additionalRules, flavor, li, setup, ul, withHeading)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario
@@ -82,8 +82,8 @@ instance RunMessage PointOfNoReturn where
       story $ i18nWithHeading "theDreamEaters.pointOfNoReturn.intro"
       randolphDidNotSurvive <- getHasRecord RandolphDidNotSurviveTheDescent
       if randolphDidNotSurvive
-        then story $ i18nWithTitle "theDreamEaters.pointOfNoReturn.intro1"
-        else story $ i18nWithTitle "theDreamEaters.pointOfNoReturn.intro2"
+        then flavor $ withHeading "theDreamEaters.pointOfNoReturn.intro1"
+        else flavor $ withHeading "theDreamEaters.pointOfNoReturn.intro2"
       pure s
     StandaloneSetup -> do
       record RandolphDidNotSurviveTheDescent

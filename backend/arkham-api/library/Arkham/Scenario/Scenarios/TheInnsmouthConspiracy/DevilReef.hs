@@ -134,10 +134,10 @@ instance RunMessage DevilReef where
 
       pure s
     DoStep 2 PreScenarioSetup -> do
-      story $ i18nWithTitle "intro2"
+      flavor $ withHeading "intro2"
       pure s
     DoStep 3 PreScenarioSetup -> do
-      story $ i18nWithTitle "intro3"
+      flavor $ withHeading "intro3"
       pure s
     StandaloneSetup -> do
       setChaosTokens standaloneTokens

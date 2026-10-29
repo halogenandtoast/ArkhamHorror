@@ -189,7 +189,7 @@ instance RunMessage ThousandToOne where
       monstrous <- deckCardHolder "Monstrous Transformation"
       esprit <- deckCardHolder "Lady Esprit"
       let
-        page1 = setTitle "title" >> p "body1" >> p.green.validate (isJust monstrous) "pureLunacy"
+        page1 = h "title" >> p "body1" >> p.green.validate (isJust monstrous) "pureLunacy"
         page2 = p.green.validate (isJust esprit) "atTheCrossroads"
         page3 = do
           p "body2"
@@ -200,12 +200,12 @@ instance RunMessage ThousandToOne where
       for_ monstrous \(iid, card) -> do
         flavor page1
         beginWithCardInHand iid card
-      let carried1 = if isJust monstrous then setTitle "title" else page1
+      let carried1 = if isJust monstrous then h "title" else page1
 
       for_ esprit \(iid, card) -> do
         flavor (carried1 >> page2)
         beginWithCardInHand iid card
-      let carried2 = if isJust esprit then setTitle "title" else carried1 >> page2
+      let carried2 = if isJust esprit then h "title" else carried1 >> page2
 
       storyWithChooseOneM (carried2 >> page3) do
         labeled "focusDefenses" $ whenM (selectAny $ ChaosTokenFaceIs Tablet) do

@@ -76,7 +76,7 @@ instance RunMessage IceAndDeathPart3 where
         story $ i18nWithHeading "intro"
         whenM hasRemainingFrostTokens $ addChaosToken #frost
         sv <- fromMaybe 0 <$> getCurrentShelterValue
-        story $ withVars ["shelterValue" .= sv] $ i18nWithTitle "investigatorSetup"
+        story $ withVars ["shelterValue" .= sv] $ i18nWithHeading "investigatorSetup"
 
       when (not isStandalone || attrs.hasOption IncludePartners) do
         eachInvestigator (`forInvestigator` PreScenarioSetup)

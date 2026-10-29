@@ -19,7 +19,7 @@ import Arkham.Trait qualified as Trait
 import Arkham.Zone (Zone (FromDeck))
 
 readIntro :: (HasI18n, ReverseQueue m) => Int -> m ()
-readIntro n = flavor $ setTitle "intro.title" >> p ("intro.part" <> tshow n)
+readIntro n = flavor $ h "intro.title" >> p ("intro.part" <> tshow n)
 
 introStep :: ReverseQueue m => Int -> m ()
 introStep n = doStep n PreScenarioSetup
@@ -30,7 +30,7 @@ rememberIntro n = remember $ HomebrewScenarioLogKey ("nightOfVespers.intro" <> t
 chooseLead :: (HasI18n, ReverseQueue m) => [(Int, NightOfVespersKey)] -> m ()
 chooseLead leads = do
   available <- filterM (getHasRecord . snd) leads
-  storyWithChooseOneM (setTitle "intro.title" >> p.basic "intro.chooseLead") do
+  storyWithChooseOneM (h "intro.title" >> p.basic "intro.chooseLead") do
     for_ available \(n, _) -> labeled (tshow n) do
       rememberIntro n
       introStep n
@@ -46,7 +46,7 @@ runScenarioIntro sid step = case sid of
       unless (null readers) $ leadChooseOneM do
         questionLabeled "reader"
         targets readers \iid -> do
-          storyOnlyBuild [iid] $ setTitle "intro.title" >> p "intro.underworld" >> p.basic "intro.bonus"
+          storyOnlyBuild [iid] $ h "intro.title" >> p "intro.underworld" >> p.basic "intro.bonus"
           n <- getPlayerCount
           setupModifier ScenarioSource iid $ StartingClues n
       introStep 2
@@ -74,7 +74,7 @@ runScenarioIntro sid step = case sid of
       unless (null readers) $ leadChooseOneM do
         questionLabeled "reader"
         targets readers \iid -> do
-          storyOnlyBuild [iid] $ setTitle "intro.title" >> p "intro.dejaVu" >> p.basic "intro.bonus"
+          storyOnlyBuild [iid] $ h "intro.title" >> p "intro.dejaVu" >> p.basic "intro.bonus"
           -- The guide says put into play, not play: defer the search so the
           -- selected card bypasses playing restrictions and additional costs.
           search
@@ -113,7 +113,7 @@ runScenarioIntro sid step = case sid of
         ]
     6 -> do
       readIntro 6
-      storyWithChooseOneM (setTitle "intro.title" >> p.basic "intro.chooseStart") do
+      storyWithChooseOneM (h "intro.title" >> p.basic "intro.chooseStart") do
         for_
           [ ("city", "nightOfVespers.startCity")
           , ("mountain", "nightOfVespers.startMountain")
@@ -146,7 +146,7 @@ runScenarioIntro sid step = case sid of
   ":night-of-vespers:257" -> readIntro step >> when (step == 1) (introStep 2)
   _ -> pure ()
  where
-  pEffect key = flavor $ setTitle "intro.title" >> p.basic ("intro.effects." <> key)
+  pEffect key = flavor $ h "intro.title" >> p.basic ("intro.effects." <> key)
 
 {- | The Teachings of Aradia's optional asset. Returning zero targets (an empty
 deck or no arcane asset) leaves a normal empty search, not an empty prompt.

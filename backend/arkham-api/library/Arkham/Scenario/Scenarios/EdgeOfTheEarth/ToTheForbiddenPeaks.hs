@@ -16,7 +16,7 @@ import Arkham.Exception
 import Arkham.Field
 import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag
-import Arkham.Helpers.FlavorText (addEntry, setup)
+import Arkham.Helpers.FlavorText (addEntry, flavor, setup, withHeading)
 import Arkham.Helpers.Location
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.Text
@@ -143,7 +143,7 @@ instance RunMessage ToTheForbiddenPeaks where
         <> hr
         <> validateEntry (not scoutedTheMountainPass) "theMountainPass.otherwise"
 
-      story $ i18nWithTitle "intro2"
+      flavor $ withHeading "intro2"
       eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s
     ForInvestigator iid PreScenarioSetup -> do

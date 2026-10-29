@@ -203,9 +203,9 @@ instance RunMessage AtDeathsDoorstep where
   runMessage msg s@(AtDeathsDoorstep attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
       flavor $ h "title" >> p "introPart1"
-      flavor $ setTitle "title" >> p "introPart2"
-      flavor $ setTitle "title" >> p "introPart3"
-      flavor $ setTitle "title" >> p "introPart4"
+      flavor $ h "title" >> p "introPart2"
+      flavor $ h "title" >> p "introPart3"
+      flavor $ h "title" >> p "introPart4"
       pure s
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens

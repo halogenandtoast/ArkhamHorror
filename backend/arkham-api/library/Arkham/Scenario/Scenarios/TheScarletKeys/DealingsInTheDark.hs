@@ -80,16 +80,16 @@ instance RunMessage DealingsInTheDark where
     DoStep 2 PreScenarioSetup -> scope "intro" do
       record TheCellIsWorkingWithEce
       swapTokens ElderThing Tablet
-      flavor $ setTitle "title" >> p "intro2"
+      flavor $ h "title" >> p "intro2"
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
       record TheCellIsDecievingEce
       swapTokens Tablet ElderThing
-      flavor $ setTitle "title" >> p "intro3"
+      flavor $ h "title" >> p "intro3"
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
       record TheCellRefusedEcesOffer
-      flavor $ setTitle "title" >> p "intro4"
+      flavor $ h "title" >> p "intro4"
       pure s
     Setup -> runScenarioSetup DealingsInTheDark attrs do
       n <- getTime

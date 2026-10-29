@@ -79,8 +79,7 @@ instance RunMessage QueenOfAsh where
       difficulty <- getDifficulty
       discovered <- getHasRecord InvestigatorsDiscoveredTheCultsWhereabouts
       flavor do
-        setTitle "title"
-        h_ "title"
+        h "title"
         p "intro1"
         ul do
           li.nested "addTokens" do
@@ -108,7 +107,7 @@ instance RunMessage QueenOfAsh where
           addChaosToken Skull
 
       flavor do
-        setTitle "title"
+        h "title"
         p $ if discovered then "intro2" else "intro3"
 
       pure s

@@ -114,9 +114,9 @@ instance RunMessage TheVanishingOfElinaHarper where
   runMessage msg s@(TheVanishingOfElinaHarper attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
       narrative <- getInnsmouthNarrative
-      storyBuild =<< narrativeBuilder narrative.theVanishingOfElinaHarperIntro1 (setTitle "intro1.title" >> h "intro1.title" >> p "intro1.body")
+      storyBuild =<< narrativeBuilder narrative.theVanishingOfElinaHarperIntro1 (h "intro1.title" >> p "intro1.body")
       story $ i18n "townInfo"
-      unless narrative.omitsTheVanishingOfElinaHarperIntro2 $ story $ i18nWithTitle "intro2"
+      unless narrative.omitsTheVanishingOfElinaHarperIntro2 $ flavor $ withHeading "intro2"
       standalone <- getIsStandalone
       unless standalone do
         chooseUpgradeDecks

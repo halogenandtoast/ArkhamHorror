@@ -15,5 +15,5 @@ congressChamberLair = location CongressChamberLair Cards.congressChamberLair 3 (
 
 instance HasModifiersFor CongressChamberLair where
   getModifiersFor (CongressChamberLair a) = do
-    whenAny (ReadyEnemy <> EnemyWithTrait Coterie) do
+    whenAny (ReadyEnemy <> EnemyWithTrait Coterie <> enemyAt a) do
       modifySelect a (InvestigatorAt $ be a) [IncreaseCostOf #asset 2]

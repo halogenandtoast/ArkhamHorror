@@ -9989,6 +9989,7 @@ test-suite spec
       Arkham.Location.Cards.DreamGateWondrousJourneySpec
       Arkham.Location.Cards.TheDreamEaters.BeyondTheGatesOfSleep.EnchantedWoodsVillageOfZoogsSpec
       Arkham.Location.Cards.TheInnsmouthConspiracy.FloodedCaverns.UndergroundRiverSpec
+      Arkham.Location.Cards.TheScarletKeys.CongressOfTheKeys.CongressChamberLairSpec
       Arkham.Location.TypesSpec
       Arkham.Log.NarratorSpec
       Arkham.Matcher.AlternatePrintingSpec

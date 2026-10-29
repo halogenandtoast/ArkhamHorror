@@ -10,7 +10,7 @@ newtype StockCar = StockCar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stockCar :: LocationCard StockCar
-stockCar = symbolLabel $ location StockCar Cards.stockCar 2 (Static 1)
+stockCar = symbolLabel $ location StockCar Cards.stockCar 2 (PerPlayer 1)
 
 instance HasAbilities StockCar where
   getAbilities (StockCar a) =

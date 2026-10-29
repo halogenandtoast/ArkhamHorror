@@ -13,7 +13,7 @@ newtype SecludedTent_053 = SecludedTent_053 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 secludedTent_053 :: LocationCard SecludedTent_053
-secludedTent_053 = location SecludedTent_053 Cards.secludedTent_053 3 (Static 2)
+secludedTent_053 = location SecludedTent_053 Cards.secludedTent_053 3 (PerPlayer 2)
 
 instance HasAbilities SecludedTent_053 where
   getAbilities (SecludedTent_053 a) =

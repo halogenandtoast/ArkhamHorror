@@ -10,7 +10,7 @@ newtype RingmastersTrailer = RingmastersTrailer LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ringmastersTrailer :: LocationCard RingmastersTrailer
-ringmastersTrailer = location RingmastersTrailer Cards.ringmastersTrailer 3 (Static 1)
+ringmastersTrailer = location RingmastersTrailer Cards.ringmastersTrailer 3 (PerPlayer 1)
 
 instance HasAbilities RingmastersTrailer where
   getAbilities (RingmastersTrailer a) =

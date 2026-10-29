@@ -17,7 +17,7 @@ moonlitForestFogBank =
     MoonlitForestFogBank
     Cards.moonlitForestFogBank
     3
-    (Static 2)
+    (PerPlayer 2)
 
 instance HasModifiersFor MoonlitForestFogBank where
   getModifiersFor (MoonlitForestFogBank a) = do

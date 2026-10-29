@@ -18,7 +18,7 @@ moonlitForestLabyrinthOfTrees =
     MoonlitForestLabyrinthOfTrees
     Cards.moonlitForestLabyrinthOfTrees
     3
-    (Static 2)
+    (PerPlayer 2)
 
 instance HasAbilities MoonlitForestLabyrinthOfTrees where
   getAbilities (MoonlitForestLabyrinthOfTrees a) =

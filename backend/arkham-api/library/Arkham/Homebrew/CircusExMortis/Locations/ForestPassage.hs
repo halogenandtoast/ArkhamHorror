@@ -11,7 +11,7 @@ newtype ForestPassage = ForestPassage LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 forestPassage :: LocationCard ForestPassage
-forestPassage = location ForestPassage Cards.forestPassage 2 (Static 1)
+forestPassage = location ForestPassage Cards.forestPassage 2 (PerPlayer 1)
 
 instance HasAbilities ForestPassage where
   getAbilities (ForestPassage a) =

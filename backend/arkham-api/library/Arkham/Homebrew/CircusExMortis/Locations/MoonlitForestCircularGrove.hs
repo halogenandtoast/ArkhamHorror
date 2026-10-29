@@ -17,7 +17,7 @@ moonlitForestCircularGrove =
     MoonlitForestCircularGrove
     Cards.moonlitForestCircularGrove
     3
-    (Static 2)
+    (PerPlayer 2)
 
 instance HasModifiersFor MoonlitForestCircularGrove where
   getModifiersFor (MoonlitForestCircularGrove a) =

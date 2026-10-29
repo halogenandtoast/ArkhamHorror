@@ -18,7 +18,7 @@ newtype SecludedTent_055 = SecludedTent_055 LocationAttrs
 
 secludedTent_055 :: LocationCard SecludedTent_055
 secludedTent_055 =
-  locationWith SecludedTent_055 Cards.secludedTent_055 4 (Static 2) (setMeta $ Meta 0)
+  locationWith SecludedTent_055 Cards.secludedTent_055 4 (PerPlayer 2) (setMeta $ Meta 0)
 
 instance HasAbilities SecludedTent_055 where
   getAbilities (SecludedTent_055 a) =

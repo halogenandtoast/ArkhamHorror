@@ -12,7 +12,7 @@ newtype CrowdedRow_049 = CrowdedRow_049 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crowdedRow_049 :: LocationCard CrowdedRow_049
-crowdedRow_049 = location CrowdedRow_049 Cards.crowdedRow_049 1 (Static 2)
+crowdedRow_049 = location CrowdedRow_049 Cards.crowdedRow_049 1 (PerPlayer 2)
 
 instance HasAbilities CrowdedRow_049 where
   getAbilities (CrowdedRow_049 a) =

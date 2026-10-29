@@ -18,7 +18,7 @@ moonlitForestShadowedPath =
     MoonlitForestShadowedPath
     Cards.moonlitForestShadowedPath
     3
-    (Static 2)
+    (PerPlayer 2)
 
 instance HasAbilities MoonlitForestShadowedPath where
   getAbilities (MoonlitForestShadowedPath a) =

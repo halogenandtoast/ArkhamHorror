@@ -14,7 +14,7 @@ newtype WoodlandOverlook = WoodlandOverlook LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 woodlandOverlook :: LocationCard WoodlandOverlook
-woodlandOverlook = location WoodlandOverlook Cards.woodlandOverlook 4 (Static 1)
+woodlandOverlook = location WoodlandOverlook Cards.woodlandOverlook 4 (PerPlayer 1)
 
 instance HasModifiersFor WoodlandOverlook where
   getModifiersFor (WoodlandOverlook a) = do

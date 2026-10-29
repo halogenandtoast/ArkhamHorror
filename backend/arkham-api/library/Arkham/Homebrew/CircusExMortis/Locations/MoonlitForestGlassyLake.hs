@@ -19,7 +19,7 @@ moonlitForestGlassyLake =
     MoonlitForestGlassyLake
     Cards.moonlitForestGlassyLake
     1
-    (Static 1)
+    (PerPlayer 1)
 
 instance HasModifiersFor MoonlitForestGlassyLake where
   getModifiersFor (MoonlitForestGlassyLake a) =

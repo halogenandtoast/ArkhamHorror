@@ -18,7 +18,7 @@ moonlitForestShallowRiver =
     MoonlitForestShallowRiver
     Cards.moonlitForestShallowRiver
     2
-    (Static 1)
+    (PerPlayer 1)
 
 instance HasModifiersFor MoonlitForestShallowRiver where
   getModifiersFor (MoonlitForestShallowRiver a) =

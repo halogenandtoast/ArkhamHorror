@@ -24,7 +24,7 @@ moonlitForestSmolderingCampfire =
     MoonlitForestSmolderingCampfire
     Cards.moonlitForestSmolderingCampfire
     1
-    (Static 1)
+    (PerPlayer 1)
 
 instance HasModifiersFor MoonlitForestSmolderingCampfire where
   getModifiersFor (MoonlitForestSmolderingCampfire a) =

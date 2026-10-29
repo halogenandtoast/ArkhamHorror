@@ -19,7 +19,7 @@ moonlitForestQuietValley =
     MoonlitForestQuietValley
     Cards.moonlitForestQuietValley
     2
-    (Static 1)
+    (PerPlayer 1)
 
 instance HasModifiersFor MoonlitForestQuietValley where
   getModifiersFor (MoonlitForestQuietValley a) =

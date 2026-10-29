@@ -13,7 +13,7 @@ newtype RefrigeratorCar = RefrigeratorCar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 refrigeratorCar :: LocationCard RefrigeratorCar
-refrigeratorCar = symbolLabel $ location RefrigeratorCar Cards.refrigeratorCar 4 (Static 2)
+refrigeratorCar = symbolLabel $ location RefrigeratorCar Cards.refrigeratorCar 4 (PerPlayer 2)
 
 instance HasModifiersFor RefrigeratorCar where
   getModifiersFor (RefrigeratorCar a) = do

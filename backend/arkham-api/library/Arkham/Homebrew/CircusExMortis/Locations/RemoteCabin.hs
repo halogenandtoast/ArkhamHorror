@@ -15,7 +15,7 @@ newtype RemoteCabin = RemoteCabin LocationAttrs
 
 remoteCabin :: LocationCard RemoteCabin
 remoteCabin =
-  location RemoteCabin Cards.remoteCabin 4 (Static 1)
+  location RemoteCabin Cards.remoteCabin 4 (PerPlayer 1)
 
 instance HasModifiersFor RemoteCabin where
   getModifiersFor (RemoteCabin a) = do

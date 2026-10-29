@@ -22,7 +22,7 @@ moonlitForestMistyMarsh =
     MoonlitForestMistyMarsh
     Cards.moonlitForestMistyMarsh
     3
-    (Static 2)
+    (PerPlayer 2)
 
 instance HasModifiersFor MoonlitForestMistyMarsh where
   getModifiersFor (MoonlitForestMistyMarsh a) = do

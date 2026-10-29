@@ -16,7 +16,7 @@ newtype ReinforcedCar = ReinforcedCar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 reinforcedCar :: LocationCard ReinforcedCar
-reinforcedCar = symbolLabel $ location ReinforcedCar Cards.reinforcedCar 3 (Static 2)
+reinforcedCar = symbolLabel $ location ReinforcedCar Cards.reinforcedCar 3 (PerPlayer 2)
 
 instance HasAbilities ReinforcedCar where
   getAbilities (ReinforcedCar a) =

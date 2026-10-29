@@ -10,7 +10,7 @@ newtype CoalHopperCar = CoalHopperCar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 coalHopperCar :: LocationCard CoalHopperCar
-coalHopperCar = symbolLabel $ location CoalHopperCar Cards.coalHopperCar 3 (Static 2)
+coalHopperCar = symbolLabel $ location CoalHopperCar Cards.coalHopperCar 3 (PerPlayer 2)
 
 instance HasModifiersFor CoalHopperCar where
   getModifiersFor (CoalHopperCar a) = do

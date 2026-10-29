@@ -6,7 +6,6 @@ import Arkham.Helpers.Message (pattern R3)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Cards
 import Arkham.Investigator.Types (Field (InvestigatorDiscard, InvestigatorHand))
 import Arkham.Location.Import.Lifted
-import Arkham.Location.Types (revealedL)
 import Arkham.Matcher
 import Arkham.Projection
 
@@ -15,8 +14,7 @@ newtype ThePast = ThePast LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thePast :: LocationCard ThePast
-thePast =
-  symbolLabel $ locationWith ThePast Cards.thePast 4 (PerPlayer 1) $ revealedL .~ True
+thePast = symbolLabel $ location ThePast Cards.thePast 4 (PerPlayer 1)
 
 instance HasAbilities ThePast where
   getAbilities (ThePast a) =

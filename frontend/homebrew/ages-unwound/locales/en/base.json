@@ -37,9 +37,20 @@
   },
   "epilogue": {
     "title": "Epilogue",
-    "bound": "<p>TODO(ages-unwound): the epilogue read when the investigators bound Aforgomon (guide p19).</p>",
-    "allTimesAreOne": "<p>TODO(ages-unwound): the epilogue read when all times are one (guide p19).</p>",
-    "silverTwilight": "<p>TODO(ages-unwound): the extra epilogue paragraph for a campaign log that advanced the schemes of the Silver Twilight Lodge.</p>"
+    "instructions": "<p>Check Campaign Log. In order, read each of the following entries only if the investigators won the campaign and the related campaign log entry is true.</p>",
+    "waning": {
+      "condition": "Read the following only if at least one investigator's existence is waning:",
+      "body": "<p>You're tired. This isn't exactly surprising: you just fought a god. As you wend your way through the early-morning Arkham streets, though, you feel surprisingly light on your feet &mdash; if fatigue weighs you down, this feeling lifts you up, until you're practically floating. You feel yourself drift off, still walking, into a cozy, endless sleep&hellip;</p>",
+      "effect": "<p class='basic'>Each investigator whose *existence is waning* is erased from reality. Remove that investigator's entry from your Campaign Log as thoroughly as possible, as that investigator never existed.</p>"
+    },
+    "marked": {
+      "condition": "Read the following only if at least one surviving investigator still bears Aforgomon's mark:",
+      "body": "<p>In the years that follow, you remain fascinated with time. After all, you understand spacetime perhaps better than anyone else alive. You try to share your findings a few times; each time, your theories are shot down as outlandish and unfounded. There's so much you could teach the world &mdash; you could advance the field of physics by decades with what you know &mdash; but nobody wants to listen.</p><p>Four years after your final confrontation with Aforgomon, you knock three times on the front door of an elegant manor on the outskirts of Arkham. A silent butler leads you to a bedchamber, where thick velvet curtains block out all light and the smell of death hangs heavy in the air. The room's occupant stirs slightly.</p><p>&ldquo;I'm so, so glad that you accepted my invitation.&rdquo; The voice is barely more than a whisper. The withered form of Joseph Baxter, the Myriad Gentleman, looks at least a hundred years old. He smiles at you, the predatory smile looking rather out of place on the old man's face. &ldquo;We have much work to do.&rdquo;</p>"
+    },
+    "silverTwilight": {
+      "condition": "Read the following only if you have advanced the schemes of the Silver Twilight Lodge:",
+      "body": "<p>&ldquo;And we're quite certain it's real?&rdquo; Carl Sanford's eyes rest on the slight man sat nervously before him. Mr. Sanford was an intimidating man at the best of times, but the intensity he was focusing on the messenger made the man want to shrink into nothingness.</p><p>&ldquo;Y-yes sir,&rdquo; he managed, &ldquo;Our trials were conclusive. We now only miss one component&mdash;&rdquo;</p><p>&ldquo;Not quite. Our new friends helped us with that as well.&rdquo; Eyes twinkling, Sanford produces a loose array of singed papers from his desk. &ldquo;After helping dispatch Baxter's operation, one of our agents recovered some of his research. We have everything we need.</p><p>&ldquo;Let the great work begin.&rdquo;</p>"
+    }
   },
   "aforgomonsBlade": {
     "label": {

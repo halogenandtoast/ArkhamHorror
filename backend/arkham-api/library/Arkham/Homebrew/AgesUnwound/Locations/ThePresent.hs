@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (FewerActions))
 import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Location.Types (revealedL)
 import Arkham.Matcher
 
 newtype ThePresent = ThePresent LocationAttrs
@@ -12,7 +11,7 @@ newtype ThePresent = ThePresent LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thePresent :: LocationCard ThePresent
-thePresent = symbolLabel $ locationWith ThePresent Cards.thePresent 3 (PerPlayer 2) $ revealedL .~ True
+thePresent = symbolLabel $ location ThePresent Cards.thePresent 3 (PerPlayer 2)
 
 instance HasAbilities ThePresent where
   getAbilities (ThePresent a) =

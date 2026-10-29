@@ -1,6 +1,7 @@
 module Arkham.Homebrew.AgesUnwound.Campaign (agesUnwound) where
 
 import Arkham.Campaign.Import.Lifted
+import Arkham.Campaign.Types qualified as Campaign
 import Arkham.CampaignLog (CampaignLog (..))
 import Arkham.CampaignLogKey (toCampaignLogKey)
 import Arkham.Card (toCard)
@@ -11,8 +12,11 @@ import Arkham.Homebrew.AgesUnwound.CampaignSteps
 import Arkham.Homebrew.AgesUnwound.DummyDeck (isDummyDeckCard)
 import Arkham.Homebrew.AgesUnwound.Import
 import Arkham.Homebrew.AgesUnwound.ScenarioDeckKeys (pattern DummyDeck)
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Xp
+import Data.Map.Strict qualified as Map
 
 newtype AgesUnwound = AgesUnwound CampaignAttrs
   deriving anyclass HasModifiersFor
@@ -86,19 +90,54 @@ instance RunMessage AgesUnwound where
           addChaosToken Cultist
       nextCampaignStep
       pure c
-    {- TODO(ages-unwound): the epilogue's full text. It branches three ways on
-    what Scenario VII recorded -- an investigator whose existence is waning, an
-    investigator who still bears Aforgomon's mark, and whether the Silver
-    Twilight Lodge's schemes were advanced (a key written by a *different*
-    campaign's log). The branches below are the real shape; only the flavour
-    is missing. -}
     CampaignStep EpilogueStep -> scope "epilogue" do
-      bound <- getHasRecord TheInvestigatorsBoundAforgomonInAPrisonOfTime
+      won <- getHasRecord TheInvestigatorsBoundAforgomonInAPrisonOfTime
+      waning <- select $ IncludeEliminated $ investigatorWithRecord ExistenceIsWaning
+      marked <-
+        selectAny
+          $ investigatorWithRecord StillBearsAforgomonsMark
+          <> not_ KilledInvestigator
+          <> not_ InsaneInvestigator
+          <> not_ (investigatorWithRecord ExistenceIsWaning)
       silverTwilight <- getHasRecord YouHaveAdvancedTheSchemesOfTheSilverTwilightLodge
-      flavor $ setTitle "title" >> p (if bound then "bound" else "allTimesAreOne")
-      when silverTwilight $ flavor $ setTitle "title" >> p "silverTwilight"
+      flavor do
+        setTitle "title"
+        p.basic "instructions"
+        compose.green.validate (won && notNull waning) do
+          p.basic "waning.condition"
+          p "waning.body"
+          p.basic "waning.effect"
+        compose.green.validate (won && marked) do
+          p.basic "marked.condition"
+          p "marked.body"
+        compose.green.validate (won && silverTwilight) do
+          p.basic "silverTwilight.condition"
+          p "silverTwilight.body"
+      when won $ for_ waning $ push . RemoveInvestigatorFromCampaign
       gameOverWon
       pure c
+    -- Erasure in the epilogue forgets the campaign entry without the normal
+    -- roster-change handler restarting the current campaign step.
+    RemoveInvestigatorFromCampaign iid | (toAttrs c).normalizedStep == EpilogueStep -> do
+      let forgetXp (Campaign.XpBreakdownStep step iids (XpBreakdown entries)) =
+            Campaign.XpBreakdownStep step (filter (/= iid) iids) $ XpBreakdown $ filter keepEntry entries
+          keepEntry = \case
+            InvestigatorGainXp who _ -> who /= iid
+            InvestigatorLoseXp who _ -> who /= iid
+            TallyGained _ owner _ -> owner /= Just iid
+            TallyLost _ owner _ -> owner /= Just iid
+            AllGainXp _ -> True
+      pure
+        $ AgesUnwound
+        $ toAttrs c
+        & Campaign.decksL
+        %~ Map.delete iid
+        & Campaign.storyCardsL
+        %~ Map.delete iid
+        & Campaign.modifiersL
+        %~ Map.delete iid
+        & Campaign.xpBreakdownL
+        %~ map forgetXp
     {- "When a card from the dummy deck would leave play, instead shuffle it back
     into the dummy deck." Every player card that leaves play funnels through
     'AddToDiscard', and the campaign entity is handed in-scenario messages too,

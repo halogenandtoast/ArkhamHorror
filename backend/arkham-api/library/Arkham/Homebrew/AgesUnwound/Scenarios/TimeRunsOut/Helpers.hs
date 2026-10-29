@@ -274,10 +274,9 @@ The engine has no collection search with a /choice/: 'SearchCollectionForRandom'
 is built on the deck-building weakness sampler and can only ever return a basic
 weakness. The one official precedent for reaching into the collection at all is
 /Memories of Another Life (5)/, which offers every matching 'CardDef' in
-@allPlayerCards@ as a card choice, and this is that shape. Each candidate is
-generated only to carry an image into the prompt and is deregistered again
-straight away; the choice travels as a 'CardCodeTarget', and the caller's
-@HandleTargetChoice@ generates the real copy.
+@allPlayerCards@ as a card choice, and this is that shape. A card label only
+needs the definition's card code; the choice travels as a 'CardCodeTarget',
+and the caller's @HandleTargetChoice@ generates the real copy.
 
 TODO(ages-unwound): a shared @searchCollection@ seam with a chooser would be the
 right home for this; it is deliberately not invented here.
@@ -286,10 +285,8 @@ chooseCollectionCard
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> (CardDef -> Bool) -> m ()
 chooseCollectionCard iid source p = do
   let defs = filter p (toList allPlayerCards)
-  unless (null defs) $ chooseOneM iid $ for_ defs \def -> do
-    card <- genCard def
-    removeCard card.id
-    cardLabeled card $ handleTarget iid source (CardCodeTarget card.cardCode)
+  unless (null defs) $ chooseOneM iid $ for_ defs \def ->
+    cardLabeled def $ handleTarget iid source (CardCodeTarget def.cardCode)
 
 {- | "a non-exceptional player card of level at most X" -- /Days That Never Were/.
 

@@ -49,13 +49,10 @@ instance RunMessage DaysThatNeverWere_192 where
       exileable <- select $ inHandOf NotForPlay iid <> basic (NonWeakness <> levelOneOrHigher)
       chooseOneM iid $ for_ exileable \card -> targeting card do
         exile card
-        {- "of level at most X, where X is the level of the exiled card" -- read
-        off the card the investigator just gave up, so a higher-level exile buys
-        a wider search. -}
-        chooseCollectionCard
-          iid
-          (attrs.ability 1)
-          (nonExceptionalPlayerCardAtMost (fromMaybe 0 (toCardDef card).level))
+        doStep (fromMaybe 0 (toCardDef card).level) msg
+      pure l
+    DoStep level (UseThisAbility iid (isSource attrs -> True) 1) -> do
+      chooseCollectionCard iid (attrs.ability 1) (nonExceptionalPlayerCardAtMost level)
       pure l
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (CardCodeTarget code) -> do
       for_ (lookupCardDef code) \def -> do

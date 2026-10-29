@@ -1,4 +1,6 @@
 {
+    "expandPanel": "Expand skill test",
+    "collapsePanel": "Collapse skill test",
     "fastPlayerWindow": "{'{'}fast{'}'} PLAYER WINDOW",
 
     "determineSkillOfTestStep": "Determine skill of test. Skill test of that type begins.",

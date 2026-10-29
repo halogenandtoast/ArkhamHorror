@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useDbCardStore } from '@/stores/dbCards'
 import type { ArkhamDBCard } from '@/stores/dbCards'
 import * as Arkham from '@/arkham/types/CardDef'
+import { cardImage } from '@/arkham/cardImages'
 import { isCustomCardCode } from '@/arkham/customCards'
 import { localizeArkhamDBBaseUrl } from '@/arkham/helpers'
 import { cardCost, cardGroupKey as groupKey, cardIcons, cardName, cardSetText, cardTraits, cardType, groupCards, levelText } from '@/arkham/cardDetails'
@@ -11,6 +12,7 @@ const props = withDefaults(defineProps<{
   cards: Arkham.CardDef[],
   attachments?: Record<string, Arkham.CardDef[]>,
   showCounts?: boolean,
+  selectable?: boolean,
   /* Editing an overlay: each card gets take-one/put-one-back controls right
    * where it is listed, rather than in a separate pane. */
   overlayEditing?: boolean,
@@ -21,6 +23,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   attachments: () => ({}),
   showCounts: true,
+  selectable: false,
   overlayEditing: false,
   overlayRemoved: () => () => 0,
   overlayCount: () => () => null,
@@ -29,7 +32,7 @@ const props = withDefaults(defineProps<{
 const shownCount = (card: Arkham.CardDef, count: number) => props.overlayCount(card) ?? count
 const isOut = (card: Arkham.CardDef) => props.overlayCount(card) === 0
 
-const emit = defineEmits<{ 'overlay-take': [card: Arkham.CardDef]; 'overlay-restore': [card: Arkham.CardDef] }>()
+const emit = defineEmits<{ choose: [index: number]; 'overlay-take': [card: Arkham.CardDef]; 'overlay-restore': [card: Arkham.CardDef] }>()
 
 const store = useDbCardStore()
 
@@ -42,7 +45,7 @@ const setText = (card: Arkham.CardDef) => {
   return cardSetText(card, match?.pack_name)
 }
 
-const groupedCards = computed(() => groupCards(props.cards))
+const groupedCards = computed(() => props.selectable ? props.cards.map(card => ({ card, count: 1 })) : groupCards(props.cards))
 
 const attachedCards = (card: Arkham.CardDef) => props.attachments[card.art] ?? []
 
@@ -112,8 +115,8 @@ const attachmentHeading = (card: Arkham.CardDef) => {
         </tr>
       </thead>
       <tbody>
-        <template v-for="{ card, count } in groupedCards" :key="groupKey(card)">
-          <tr :class="{ 'card-row--out': isOut(card) }">
+        <template v-for="({ card, count }, index) in groupedCards" :key="selectable ? index : groupKey(card)">
+          <tr :class="{ 'card-row--out': isOut(card), 'card-row--selectable': selectable }" @click="selectable && emit('choose', index)">
             <td>
               <div class="card-name-cell">
                 <span v-if="overlayEditing" class="overlay-controls">
@@ -126,7 +129,8 @@ const attachmentHeading = (card: Arkham.CardDef) => {
                   >+</button>
                 </span>
                 <span v-if="showCounts" class="deck-card-count">x {{ shownCount(card, count) }}</span>
-                <span v-if="isCustomCardCode(card.art)" class="card-name">{{ cardName(card) }}{{ levelText(card) }}</span>
+                <button v-if="selectable" type="button" class="card-choice-name" :data-image="cardImage(card.cardCode)" @click.stop="emit('choose', index)">{{ cardName(card) }}{{ levelText(card) }}</button>
+                <span v-else-if="isCustomCardCode(card.art)" class="card-name">{{ cardName(card) }}{{ levelText(card) }}</span>
                 <a v-else target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">{{ cardName(card) }}{{ levelText(card) }}</a>
                 <span v-if="isUnderworldMarketCard(card)" class="market-badge" v-tooltip="marketTooltip(card)" :aria-label="marketTooltip(card)">
                   <font-awesome-icon icon="store" />
@@ -210,6 +214,19 @@ const attachmentHeading = (card: Arkham.CardDef) => {
 </template>
 
 <style scoped>
+.card-row--selectable { cursor: pointer; }
+.card-choice-name {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--spooky-green);
+  font: inherit;
+  font-weight: 500;
+  text-align: left;
+  &:hover:not(:disabled) { background: transparent; text-decoration: underline; }
+  &:focus-visible { outline: 2px solid var(--spooky-green); outline-offset: 3px; }
+}
 .card-table-wrapper {
   flex: 1;
   overflow-x: auto;

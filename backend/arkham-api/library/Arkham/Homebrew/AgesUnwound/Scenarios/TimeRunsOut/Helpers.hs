@@ -74,7 +74,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move (moveTo)
 import Arkham.Message.Lifted.Story (resolveStory)
 import Arkham.Placement (Placement (InThreatArea))
-import Arkham.PlayerCard (allPlayerCards)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (ScenarioCardsUnderAgendaDeck, ScenarioMeta))
@@ -270,23 +269,18 @@ levelOneOrHigher = mapOneOf CardWithLevel [1 .. 5]
 
 {- | "Search your collection for ... Add that card to your hand."
 
-The engine has no collection search with a /choice/: 'SearchCollectionForRandom'
-is built on the deck-building weakness sampler and can only ever return a basic
-weakness. The one official precedent for reaching into the collection at all is
-/Memories of Another Life (5)/, which offers every matching 'CardDef' in
-@allPlayerCards@ as a card choice, and this is that shape. A card label only
-needs the definition's card code; the choice travels as a 'CardCodeTarget',
-and the caller's @HandleTargetChoice@ generates the real copy.
-
-TODO(ages-unwound): a shared @searchCollection@ seam with a chooser would be the
-right home for this; it is deliberately not invented here.
+The shared collection pool includes printed cards, the answering player's custom
+library, and custom cards recorded on the game. Each candidate only needs its
+card code for display. The choice travels as a 'CardCodeTarget', and the caller's
+@HandleTargetChoice@ generates the real copy. 'collectionCardLabeled' records a
+chosen custom definition before that handler runs, so it survives a reload.
 -}
 chooseCollectionCard
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> (CardDef -> Bool) -> m ()
 chooseCollectionCard iid source p = do
-  let defs = filter p (toList allPlayerCards)
+  defs <- filter p <$> collectionCardDefs
   unless (null defs) $ chooseOneM iid $ for_ defs \def ->
-    cardLabeled def $ handleTarget iid source (CardCodeTarget def.cardCode)
+    collectionCardLabeled def $ handleTarget iid source (CardCodeTarget def.cardCode)
 
 {- | "a non-exceptional player card of level at most X" -- /Days That Never Were/.
 

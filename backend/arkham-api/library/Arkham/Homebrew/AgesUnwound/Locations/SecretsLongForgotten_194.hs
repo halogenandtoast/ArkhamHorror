@@ -38,7 +38,10 @@ instance RunMessage SecretsLongForgotten_194 where
         labeled "drawACard" $ drawCards iid (attrs.ability 1) 1
         labeled "searchForASkill" do
           assignHorror iid (attrs.ability 1) 1
-          chooseCollectionCard iid (attrs.ability 1) levelZeroSkill
+          doStep 1 msg
+      pure l
+    DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
+      chooseCollectionCard iid (attrs.ability 1) levelZeroSkill
       pure l
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (CardCodeTarget code) -> do
       for_ (lookupCardDef code) \def -> do

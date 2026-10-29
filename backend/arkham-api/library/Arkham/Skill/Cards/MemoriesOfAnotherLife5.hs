@@ -5,7 +5,6 @@ import Arkham.Cost.Status
 import Arkham.Helpers.Playable
 import Arkham.I18n
 import Arkham.Message.Lifted.Choose
-import Arkham.PlayerCard
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted hiding (PaidCost)
 import Arkham.Window (defaultWindows)
@@ -32,10 +31,7 @@ instance RunMessage MemoriesOfAnotherLife5 where
               && (def.level == Just 0)
               && not def.permanent
               && isJust def.cost
-      let cards =
-            filter filterIt
-              $ mapMaybe lookupCardDef
-              $ toList allPlayerCards
+      cards <- filter filterIt <$> collectionCardDefs
 
       chooseOneM attrs.owner do
         for_ cards \def -> do
@@ -43,7 +39,7 @@ instance RunMessage MemoriesOfAnotherLife5 where
           playable <- getIsPlayable iid attrs PaidCost (defaultWindows iid) card
           removeCard card.id
           when playable do
-            cardLabeled card $ handleTarget iid attrs (CardCodeTarget card.cardCode)
+            collectionCardLabeled def $ handleTarget iid attrs (CardCodeTarget card.cardCode)
       pure s
     HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
       removeFromGame attrs

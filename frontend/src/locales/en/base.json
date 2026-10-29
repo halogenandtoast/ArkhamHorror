@@ -555,7 +555,36 @@
     }
   },
   "questionFilter": {
-    "filter": "Filter"
+    "filter": "Filter",
+    "title": "Choose a card",
+    "view": "Card view",
+    "gridView": "Grid view",
+    "listView": "List view",
+    "collectionTitle": "Search your collection",
+    "results": "{count} / {total} cards",
+    "clear": "Reset filters",
+    "search": "Search",
+    "searchPlaceholder": "Search cards…",
+    "sort": "Sort by",
+    "name": "Name",
+    "level": "Level",
+    "original": "Original order",
+    "class": "Class",
+    "type": "Type",
+    "trait": "Trait",
+    "pack": "Expansion",
+    "allClasses": "All classes",
+    "allTypes": "All types",
+    "allLevels": "All levels",
+    "allTraits": "All traits",
+    "allPacks": "All expansions",
+    "includeCustom": "Include custom cards",
+    "customCards": "Custom cards",
+    "custom": "Custom",
+    "eligibleOnly": "Only eligible cards are shown",
+    "choose": "Choose {name}",
+    "noResults": "No matching cards",
+    "tryFilters": "Try another search or adjust your filters."
   },
   "resourcesAria": {
     "assignAllHorror": "Assign all horror"

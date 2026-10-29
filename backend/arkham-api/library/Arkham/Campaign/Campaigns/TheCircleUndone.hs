@@ -23,7 +23,6 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
-import Arkham.PlayerCard (allPlayerCards)
 import Arkham.Projection
 import Arkham.Question (Question (..))
 import Arkham.Source
@@ -279,7 +278,7 @@ instance RunMessage TheCircleUndone where
               if playerCount < 2
                 then notElem MultiplayerOnly . cdDeckRestrictions . toCardDef
                 else const True
-          let collection = map (`lookupPlayerCard` nullCardId) (toList allPlayerCards)
+          collection <- map (`lookupPlayerCard` nullCardId) <$> collectionCardDefs
           for_ investigators \iid -> do
             chooseOneM iid do
               campaignI18n $ scope "returnTo" $ questionLabeled "anetteTaughtYouTheSpellsOfOld"
@@ -303,7 +302,8 @@ instance RunMessage TheCircleUndone where
                         ]
                   cards = filter cardFilter collection
                 chooseOneM iid do
-                  cardsLabeled cards $ addCampaignCardToDeck iid DoNotShuffleIn
+                  for_ cards \card ->
+                    collectionCardLabeled (toCardDef card) $ addCampaignCardToDeck iid DoNotShuffleIn card
 
               withI18n $ labeled "no" nothing
 

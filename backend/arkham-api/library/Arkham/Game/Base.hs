@@ -166,6 +166,8 @@ data Game = Game
     gameActionSnapshot :: Transient Game
   , gameInAction :: Bool
   , gameCards :: Map CardId Card
+  , gameCollectionCards :: Transient (Map CardCode CustomCard)
+  -- ^ The answering player's library, available to collection searches only at runtime.
   , gameCustomCards :: Map CardCode CustomCard
   {- ^ Cards invented at runtime from the debug menu. The engine's def and
   builder maps are compile-time, so these are the authority for any card code

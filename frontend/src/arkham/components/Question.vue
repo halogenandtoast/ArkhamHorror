@@ -2,7 +2,6 @@
 import { useDbCardStore } from '@/stores/dbCards'
 import { chaosTokenImage, type ChaosToken } from '@/arkham/types/ChaosToken';
 import { useI18n } from 'vue-i18n';
-import { useDebouncedRef } from '@/composable/debouncedRef';
 import { handleEmbeddedI18n, parseInput } from '@/arkham/i18n';
 import { formatCost } from '@/arkham/cost';
 import { abilityNeedsGhostModal } from '@/arkham/ghostAbility';
@@ -25,6 +24,7 @@ import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 import QuestionChoices from '@/arkham/components/QuestionChoices.vue';
 import CardImage from '@/arkham/components/CardImage.vue';
 import CardPoolPicker from '@/arkham/components/CardPoolPicker.vue';
+import CardChoicePicker from '@/arkham/components/CardChoicePicker.vue';
 import { cardPoolForLabelKey } from '@/arkham/cardPools';
 import { putBackInAnyOrderPicks } from '@/arkham/putBackInAnyOrder';
 import PutBackInAnyOrder from '@/arkham/components/PutBackInAnyOrder.vue';
@@ -866,19 +866,16 @@ const flippableCard = (cardCode: string) => {
   }
 }
 
-const cardFilter = useDebouncedRef('')
 const store = useDbCardStore()
-
-const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
-  const q = cardFilter.value.trim().toLowerCase()
-  if (q === '') return cardLabels.value
-
-  return cardLabels.value.filter(({ choice }) => {
-    const card = store.getDbCard(cardArt(choice.cardCode))
-    if (!card) return false
-    return card.name.toLowerCase().includes(q)
-  })
+const isCollectionQuestion = computed(() => {
+  let q: typeof question.value | undefined = question.value
+  while (q) {
+    if (q.label === '$questionFilter.collectionTitle') return true
+    q = q.question
+  }
+  return false
 })
+const useCardPicker = computed(() => cardLabels.value.every(({ choice }) => !choice.flippable) && (cardLabels.value.length > 10 || isCollectionQuestion.value))
 
 </script>
 
@@ -911,11 +908,9 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
       </div>
     </div>
 
-    <div v-if="cardLabels.length > 0" class="cardLabels">
-      <div v-if="cardLabels.length > 10" class="filter">
-        <input v-model="cardFilter" @keydown.stop :placeholder="$t('questionFilter.filter')" />
-      </div>
-      <template v-for="{choice, index} in filteredCards" :key="index">
+    <CardChoicePicker v-if="useCardPicker" :entries="cardLabels" :collection="isCollectionQuestion" @choose="choose" />
+    <div v-else-if="cardLabels.length > 0" class="cardLabels">
+      <template v-for="{choice, index} in cardLabels" :key="index">
         <CardImage v-if="choice.flippable" :card="flippableCard(choice.cardCode)" />
         <img v-else class="card" :src="cardLabelImage(choice.cardCode)" @click="choose(index)" />
       </template>

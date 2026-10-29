@@ -636,7 +636,7 @@ updateGame customCards response gameId mRoom = do
             [SetActivePlayer playerId | activePlayer /= playerId]
               <> answerMessages
               <> [SetActivePlayer activePlayer | activePlayer /= playerId]
-        gameRef <- newIORef gameJson
+        gameRef <- newIORef $ gameJson {gameCollectionCards = Transient (Just customCards)}
         queueRef <- newQueue ((ClearUI : syncMsgs <> messages) <> currentQueue)
         genRef <- newIORef $ mkStdGen gameSeed
 

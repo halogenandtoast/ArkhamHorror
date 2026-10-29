@@ -2,7 +2,8 @@
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Question from '@/arkham/components/Question.vue';
 import { useDebug } from '@/arkham/debug'
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { skillTestHasCollectionSearch } from '@/arkham/skillTestPanel';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
 import * as Cards from '@/arkham/types/Card';
 import { chaosTokenImage, customTokenKey, type TokenFace } from '@/arkham/types/ChaosToken';
@@ -102,6 +103,10 @@ const modifiers = computed(() =>
     filter(shouldRender), ...yourModifiers.value, ...(props.skillTest.modifiers ?? []).filter(shouldRenderSkillTestModifier)]) 
 const committedCards = computed(() => props.skillTest.committedCards)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const collectionSearch = computed(() => skillTestHasCollectionSearch(props.game, props.playerId))
+const collapsed = ref(false)
+watch([collectionSearch, () => props.skillTest.id], () => { collapsed.value = collectionSearch.value }, { immediate: true })
+
 const skipTriggersAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.SKIP_TRIGGERS_BUTTON))
 
 const currentInvestigator = computed(() =>
@@ -369,6 +374,7 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
       <h2>{{ $t('skillTestTitle') }}</h2>
     </template>
     <div class="skill-test">
+      <div v-show="!collectionSearch || !collapsed" :id="`test-details-${skillTest.id}`">
       <div class="steps">
         <div v-tooltip="$t('skillTest.determineSkillOfTestStep')" class="step" :class="{ active: skillTest.step === 'DetermineSkillOfTestStep' }">ST.1</div>
         <div v-tooltip="{content: formatContent($t('skillTest.fastPlayerWindow')), html: true }" class="step" :class="{ active: skillTest.step === 'SkillTestFastWindow1' }" v-html="formatContent('{fast}')" />
@@ -619,6 +625,12 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
         @click="$emit('choose', skipTriggersAction)"
         class="skip-triggers-button"
       >{{ $t('investigator.skipTriggers') }}</button>
+      </div>
+      <button v-if="collectionSearch" type="button" class="test-summary" :class="{ 'test-summary--expanded': !collapsed, 'test-summary--success': collapsed && skillTestResults?.skillTestResultsSuccess, 'test-summary--failure': collapsed && skillTestResults && !skillTestResults.skillTestResultsSuccess }" :aria-label="collapsed ? t('skillTest.expandPanel') : t('skillTest.collapsePanel')" :title="collapsed ? t('skillTest.expandPanel') : t('skillTest.collapsePanel')" :aria-expanded="!collapsed" :aria-controls="`test-details-${skillTest.id}`" @click="collapsed = !collapsed">
+        <img v-if="collapsed && investigatorPortrait" :src="investigatorPortrait" alt="" />
+        <span v-if="collapsed" class="test-summary-values"><span v-for="skill in skills" :key="skill" :class="`${skill}-icon`" :style="{ color: `var(--${skill})`, backgroundColor: `var(--${skill}-light)` }" aria-hidden="true"></span> {{ skillValue }} <small>vs</small> {{ skillTest.modifiedDifficulty }}</span>
+        <span class="test-summary-toggle"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" :class="{ expanded: !collapsed }"><path d="m5 7 5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" /></svg></span>
+      </button>
       <Question :game="game" :playerId="playerId" @choose="choose" :isSkillTest="true" />
       <button
         class="apply-results"
@@ -630,11 +642,59 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
 </template>
 
 <style lang="scss" scoped>
+.test-summary {
+  --preview-accent: #bad8ec;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  margin: 0;
+  color: #eee8d8;
+  background: rgba(0,0,0,.15);
+  border: 0;
+  border-radius: 0;
+  border-bottom: 1px solid rgba(214,205,174,.2);
+  text-align: left;
+  cursor: pointer;
+  &:hover:not(:disabled) { background: rgba(255,255,255,.06); border-color: rgba(214,205,174,.2); color: #eee8d8; }
+  &:active:not(:disabled) { background: rgba(255,255,255,.1); }
+  img { width: 26px; height: 32px; object-fit: cover; border-radius: 3px; }
+  &:focus-visible { outline: 2px solid var(--preview-accent); outline-offset: -3px; }
+}
+.test-summary--success { --preview-accent: #b5e0bf; }
+.test-summary--failure { --preview-accent: #f1bcc1; }
+.test-summary--expanded {
+  justify-content: center;
+  padding: 5px 12px;
+  background: transparent;
+  .test-summary-toggle { margin-left: 0; }
+}
+.test-summary-values {
+  color: var(--preview-accent);
+  white-space: nowrap;
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+  [class$='-icon'] { display: inline-flex; align-items: center; justify-content: center; width: 1.6em; height: 1.6em; border-radius: 50%; vertical-align: middle; }
+  small { color: #eee8d8; font-size: .7rem; opacity: .7; margin: 0 4px; }
+}
+.test-summary-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  font-size: .7rem;
+  white-space: nowrap;
+  svg { transition: transform .15s ease; }
+  svg.expanded { transform: rotate(180deg); }
+}
 .skill-test {
   backdrop-filter: blur(0px);
   -webkit-backdrop-filter: blur(0px); /* Safari support */
   background: #75968600;
-  min-width: fit-content;
+  min-width: 0;
+  max-width: 100%;
   text-align: center;
   z-index: var(--z-index-10);
   overflow: auto;

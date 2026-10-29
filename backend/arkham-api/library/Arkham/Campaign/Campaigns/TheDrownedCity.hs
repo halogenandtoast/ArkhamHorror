@@ -15,7 +15,6 @@ import Arkham.I18n (ikey)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.PlayerCard (allPlayerCards)
 import Arkham.Source (Source (CampaignSource))
 import Arkham.Trait (Trait (Agency, Criminal, Detective, Injury))
 import Arkham.Window qualified as Window
@@ -364,6 +363,7 @@ instance RunMessage TheDrownedCity where
                   -- surviving printing the lowest card code (the original) rather
                   -- than whichever happened to come first.
                   taken <- getTakenBasicWeaknesses iid
+                  collection <- collectionCardDefs
                   let weaknesses =
                         nubOrdOn (canonicalCardCode . toCardDef)
                           $ sortOn toCardCode
@@ -371,11 +371,11 @@ instance RunMessage TheDrownedCity where
                           $ filter
                             (`cardMatch` (BasicWeaknessCard <> mapOneOf CardWithTrait [Injury, Criminal]))
                           $ map (`lookupPlayerCard` nullCardId)
-                          $ toList allPlayerCards
+                          $ collection
                   unless (null weaknesses)
                     $ chooseOneM iid
-                    $ cardsLabeled weaknesses
-                    $ addCampaignCardToDeck iid DoNotShuffleIn
+                    $ for_ weaknesses \card ->
+                      collectionCardLabeled (toCardDef card) $ addCampaignCardToDeck iid DoNotShuffleIn card
                 DreamsOfDestruction -> do
                   sufferMentalTrauma iid 1
                   removeChaosToken ElderSign

@@ -248,6 +248,7 @@ instance FromJSON Game where
     gameActionCanBeUndone <- o .: "gameActionCanBeUndone"
     gameActionDiff <- o .: "gameActionDiff"
     let gameActionSnapshot = Transient Nothing
+        gameCollectionCards = Transient Nothing
     gameInAction <- o .: "gameInAction"
     gameCards <- o .: "gameCards"
     gameCardUses <-

@@ -480,6 +480,11 @@ function moveUp() {
     }
   }
 
+  &:has(.card-picker) {
+    width: min(900px, 92vw);
+    max-width: 92vw;
+  }
+
   &:has(> .content > .settings),
   &:has(> .content > .shortcuts-modal) {
     width: min(640px, 92vw);

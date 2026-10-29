@@ -10,6 +10,7 @@ import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.Campaign (getCompletedSteps, getMaybeCampaignStoryCard, getOwner)
 import Arkham.Helpers.Doom (getDoomCount)
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Query (getLead, getPlayerCount)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
@@ -308,12 +309,14 @@ instance RunMessage AllPointsWest where
           TestOption {} -> pure True
           IconTax _ n ts -> do
             cards <- iconTaxCandidates
+            owed <- perPlayer n
             reduction <- countTraits ts
-            pure $ sum (map (iconCount . snd) cards) >= n - reduction
+            pure $ sum (map (iconCount . snd) cards) >= owed - 2 * reduction
           AssetTax _ n ts -> do
             assets <- selectCount $ DiscardableAsset <> NonWeaknessAsset <> AssetControlledBy Anyone
+            owed <- perPlayer n
             reduction <- countTraits ts
-            pure $ assets >= n - reduction
+            pure $ assets >= owed - reduction
 
         storyWithChooseOneM (setTitle "title" >> scope interlude.interludeKey (p.green "body")) do
           scope interlude.interludeKey do
@@ -329,10 +332,12 @@ instance RunMessage AllPointsWest where
             setScenarioMetaKey interludeFailureKey failResources
             investigators <- select UneliminatedInvestigator
             chooseOrRunOneM lead $ targets investigators (`forInvestigator` msg)
-          IconTax _ owed traits -> do
+          IconTax _ n traits -> do
+            owed <- perPlayer n
             reduction <- countTraits traits
             scenarioSpecific iconTaxKey $ max 0 (owed - 2 * reduction)
-          AssetTax _ owed traits -> do
+          AssetTax _ n traits -> do
+            owed <- perPlayer n
             reduction <- countTraits traits
             scenarioSpecific assetTaxKey $ max 0 (owed - reduction)
       pure s

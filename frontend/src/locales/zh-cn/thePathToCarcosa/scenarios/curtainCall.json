@@ -24,6 +24,11 @@
     "placeLocations": {
       "instructions": "将剧院、前厅、楼座、后台地点放置入场。每位调查员从剧院开始游戏。",
       "lola": "如果萝拉·海耶斯作为调查员参与剧本，她改为从后台开始游戏。"
+    },
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返谢幕*、*疯狂妄想*与*神经质的恐惧*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-curtain-call.png' /><img src='{setImgPath}/maddening-delusions.png' /><img src='{setImgPath}/neurotic-fear.png' /></section>*疯狂妄想*替代*妄想*，*神经质的恐惧*替代*打击恐惧*。将被替代的遭遇牌组移出游戏。",
+      "actDeck": "使用全部六张场景2a——*陌生人*组建场景牌库。",
+      "royalEmissary": "将此剧本参考卡附着于王室使者上，作为提醒：_强制_——王室使者被加入胜利区后：在此牌上放置1个资源作为警告。此牌上每有1个警告，王室使者的生命值便增加每位调查员1点。"
     }
   },
   "resolutions": {

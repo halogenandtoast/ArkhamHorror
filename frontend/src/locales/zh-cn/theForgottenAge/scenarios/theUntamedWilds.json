@@ -33,7 +33,12 @@
     "gatherSets": "收齐以下遭遇组的所有卡牌：*荒莽密林*、*雨林*、*蛇族*、*探险*、*时间守卫者*、*伊格的使徒*、*毒药*、*远古恶魔*。这些遭遇组的图标为：<section class='encounter-sets'><img src='{setImgPath}/the-untamed-wilds.png' /><img src='{setImgPath}/rainforest.png' /><img src='{setImgPath}/serpents.png' /><img src='{setImgPath}/expedition.png' /><img src='{setImgPath}/guardians-of-time.png' /><img src='{setImgPath}/agents-of-yig.png' /><img src='{setImgPath}/poison.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
     "placeLocations": "将探险营地放置入场。每位调查员从探险营地开始游戏。",
     "explorationDeck": "构建探索牌库。拿取5张单面的_丛林_地点，与下列诡计卡各1张混洗，组成探索牌库：迷失荒野、疯狂生长、毒蛇噬咬、补给短缺、林中暗箭。",
-    "setAside": "将下列卡牌放在一边，位于场外: 3张单面的_遗迹_地点、伊格的使徒遭遇组、4张中毒弱点、亚历山卓·维拉支援、伊塔卡敌人。伊格的使徒遭遇组以此图标表示：<section class='encounter-sets'><img src='{setImgPath}/agents-of-yig.png' /></section>"
+    "setAside": "将下列卡牌放在一边，位于场外: 3张单面的_遗迹_地点、伊格的使徒遭遇组、4张中毒弱点、亚历山卓·维拉支援、伊塔卡敌人。伊格的使徒遭遇组以此图标表示：<section class='encounter-sets'><img src='{setImgPath}/agents-of-yig.png' /></section>",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返雨林*与*注定的远征*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-the-rainforest.png' /><img src='{setImgPath}/doomed-expedition.png' /></section>*注定的远征*替代*远征*。将被替代的遭遇牌组移出游戏。",
+      "explorationDeck": "组建探索牌库时，仅随机从以下每种连接图标的两个地点中各选择一个纳入：紫色月亮、蓝色三角、红色方块与橙色心形。将其余4个_丛林_地点移出游戏，且不要查看它们。不要纳入原准备说明中列出的任何其他遭遇牌。（总共应有5张牌。）",
+      "additionalRule": "在本剧本期间，适用以下附加规则：远征营地上的“检查你的补给”能力可以在任何地点使用；并且_强制_——探索成功结束后：将遭遇牌库顶部的一张牌洗入探索牌库。"
+    }
   },
   "resolutions": {
     "noResolution": {

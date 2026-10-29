@@ -29,7 +29,13 @@
     "placeLocations": "在3张车头中，随机选择一张放置入场，将另外两张同名卡牌移出游戏。然后，将8张车厢卡混洗后，随机移除两张，剩余六张排成一直线放在车头左边。",
     "revealTrainCar": "揭示最左侧的车厢。每位调查员从该地点开始游戏。（如果该地点具有在进入时触发的“强制”效果，忽略该效果。）",
     "setAside": "将4张跨越时空放在一边",
-    "adjustChaosBag": "根据剧本难度，将下列混乱标记放入混乱袋，直到剧本结束:<div class='columns'><ul><li>_简单_: -2</li><li>_普通_: -3</li></ul><ul><li>_困难_: -4</li><li>_专家_: -5</li></ul></div>"
+    "adjustChaosBag": "根据剧本难度，将下列混乱标记放入混乱袋，直到剧本结束:<div class='columns'><ul><li>_简单_: -2</li><li>_普通_: -3</li></ul><ul><li>_困难_: -4</li><li>_专家_: -5</li></ul></div>",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返艾塞克斯郡快车*、*门槛之外*、*不稳定的恐惧*与*复苏的邪恶*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-the-essex-county-express.png' /><img src='{setImgPath}/beyond-the-threshold.png' /><img src='{setImgPath}/erratic-fear.png' /><img src='{setImgPath}/resurgent-evils.png' /></section>*门槛之外*替代*彼岸*，*不稳定的恐惧*替代*打击恐惧*，*复苏的邪恶*替代*远古邪恶*。将被替代的遭遇牌组移出游戏。",
+      "agendaDeck": "将密谋1a——*现实的裂缝*移出游戏，并以新的密谋0a——*无火不起烟*与新的密谋1a——*现实的裂缝（版本II）*取代它。组建密谋牌库时，密谋0a应位于顶部。",
+      "placeLocations": "随机选择6个车厢地点放入游戏中时，将本遭遇牌组中的2个新车厢地点也纳入，共计10张可能的牌。随机选择一个机车车厢地点放入游戏中时，将新的机车车厢地点也纳入，共计4张可能的牌。",
+      "setAside": "同时将司机故事支援放到一旁，不放入游戏中。"
+    }
   },
   "moving": {
     "title": "在列车上移动：“左边” 与 “右边”",

@@ -68,5 +68,27 @@
   "label": {
     "shuffleThomasDawsonInto": "选择一位调查员，将托马斯·道森混洗入其牌堆",
     "addThomasDawsonToHand": "选择一位调查员，将托马斯·道森加入其手牌"
+  },
+  "setup": {
+    "gatherSets": "收集以下遭遇牌组中的所有卡牌：*魔鬼礁*、*九头蛇的特工*、*深海生物*、*淹没的洞穴*、*故障*与*涨潮*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/devil-reef.png' /><img src='{setImgPath}/agents-of-hydra.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/flooded-caves.png' /><img src='{setImgPath}/malfunction.png' /><img src='{setImgPath}/rising-tide.png' /></section>",
+    "placeKeys": "按以下方式将每把钥匙放到一旁：",
+    "faceupKeys": "将紫色、白色与黑色钥匙以正面朝上的方式放到一旁。",
+    "facedownKeys": "将黄色、绿色、红色与蓝色钥匙以背面朝下的方式放到一旁。将它们洗匀，使你无法分辨哪把是哪把。",
+    "churningWaters": "将翻腾之水地点放入游戏中。（它以完全被淹没的状态进入游戏。）",
+    "fishingVessel": "将渔船故事支援放入游戏中，放在翻腾之水处。",
+    "startInVessel": "每位调查员从渔船中开始游戏。",
+    "setAsideRelics": "将以下故事支援放到一旁，不放入游戏中：觉醒的披风、伊哈-恩赛的头饰，以及被海浪侵蚀的神像。",
+    "devilReefLocations": "将5个魔鬼礁地点洗匀，并将每一个以未揭示面朝上放入游戏中。",
+    "notAdjacent": "不要将它们放在翻腾之水的相邻位置——这些地点不是通过相邻关系连接的，而是通过它们的连接图标连接的。",
+    "unfathomableDepths": "按以下步骤准备深不可测的深渊：",
+    "removeThree": "首先，在不看的情况下，将以下每个地点各移出游戏一张：巨石废墟、深潜者洞穴与联合神殿。每个地点都是一张深不可测的深渊地点的已揭示面。",
+    "setAsideThree": "将剩余的3张深不可测的深渊地点放到一旁，不放入游戏中。",
+    "tidalTunnelsDeck": "将8个潮汐隧道地点洗匀，组成潮汐隧道牌库。",
+    "unrevealedSide": "潮汐隧道牌库中的每张牌都应以未揭示面朝上，使其只显示“潮汐隧道”一面。",
+    "placeNearEncounterDeck": "将该牌库放在遭遇牌库附近。",
+    "checkCampaignLog": "查看战役日志中的“已恢复的记忆”部分。根据以下情况，本剧本应使用密谋1的另一版本。将密谋1的另一版本移出游戏。",
+    "secretsOfTheSeaV1": "若“已恢复的记忆”下列出了_与一个骇人的恶魔的战斗_，使用密谋1a——“海洋的秘密”（版本I）。",
+    "secretsOfTheSeaV2": "否则，使用密谋1a——“海洋的秘密”（版本II）。",
+    "floodTokens": "将洪水标记加入筹码库。"
   }
 }

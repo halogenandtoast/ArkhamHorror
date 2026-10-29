@@ -1,0 +1,48 @@
+{
+  "title": "历史记录",
+  "round": "轮",
+  "phase": "阶段",
+  "turn": "回合",
+  "empty": "此范围内尚无记录。",
+  "section": {
+    "counts": "计数",
+    "playedCards": "打出的卡牌",
+    "treacheriesDrawn": "抽到的诡计",
+    "enemiesDrawn": "抽到的敌人",
+    "enemiesDefeated": "击败的敌人",
+    "enemiesAttackedBy": "被攻击的敌人",
+    "dealtDamageTo": "造成伤害的对象",
+    "locationsInvestigated": "调查过的地点",
+    "cluesDiscovered": "发现的线索",
+    "skillTests": "技能检定"
+  },
+  "field": {
+    "actionsCompleted": "完成的行动",
+    "actionsSpent": "花费的行动",
+    "moved": "移动",
+    "cardsDrawn": "抽取的卡牌",
+    "resourcesGained": "获得的资源",
+    "attacksOfOpportunity": "借机攻击",
+    "successfulAttacks": "成功的攻击",
+    "successfulEvasions": "成功的躲避",
+    "successfulInvestigations": "成功的调查",
+    "successfulExplore": "成功的探索"
+  },
+  "playedCard": {
+    "at": "在{location}",
+    "target": "目标：{target}",
+    "paid": "支付了{n}点资源"
+  },
+  "skillResult": {
+    "unrun": "未进行",
+    "succeededBy": "成功，超过{n}",
+    "failedBy": "失败，差{n}"
+  },
+  "enemy": {
+    "health": "生命值：{n}",
+    "defeated": "已击败"
+  },
+  "clues": {
+    "count": "线索：{n}"
+  }
+}

@@ -28,6 +28,110 @@
     "noResolution": {
       "title": "未达成结局",
       "body": "<p>_若未达成任何结局：_淹没的道路夺走了你们。海洋的重压逼近，古老城市又一次将整支探险队吞没。</p>"
+    },
+    "label": {
+      "resolution3": {
+        "drownedQuarter": "前往_淹没城区_。",
+        "apiary": "前往_养育场_。"
+      }
+    },
+    "doNoHarmResolution": {
+      "title": "任务：无害",
+      "instructions": "_仅当你持有“无害”任务时阅读：_",
+      "checkCampaignLog": "查看你的战役日志。",
+      "helpedThePilgrim": "若远征队帮助了这位朝圣者，前往任务1。",
+      "otherwise": "否则，跳至任务2。",
+      "task1": "_任务1：_ 男人的病情迅速恶化。到你们穿越这段危险路程的尽头时，他已经咳出了腐臭的黄色痰液。就在你们刚刚走出险峻的小径时，他尖叫一声弯下腰去，用指甲抓挠自己的胸口与脸。他的颈部和肩膀周围的皮肤上冒出小孔，随后像烂水果一样裂开，一大群扭动的蠕虫状寄生虫涌了出来。每条蠕虫的口中都满是细小的锯齿状牙齿，并不断滴下与受害者身体里流出的同样恶心的黄色胆汁。那人身上残存的部分慢慢站起身，像一具可怕的木偶，朝你伸出一只血淋淋的手。一条橡胶状的蠕虫从他的手臂里钻出，颤抖着，仿佛在品尝空气的味道。",
+      "task1HuntingParasite": "找到放到一旁的猎食寄生虫弱点，并将其永久加入你的牌组。该牌不计入你的调查员的牌组张数。",
+      "task1Progress": "你已尽了最大努力去帮助这位受害者。在你的战役日志中，在“无害”下标记2个进度。",
+      "task2": "_任务2：_ 即使已经穿越了城墙，你仍无法停止想着那个被你抛下的男人。他恳求的眼神、喘息的咳嗽声，将永远萦绕在你的梦中。你本可以救他吗？或者至少让他的离去多一些尊严？",
+      "task2Trauma": "你抛弃了一个需要帮助的人。承受1点精神创伤。",
+      "task2Progress": "在你的战役日志中，擦除“无害”下的1个进度。"
+    },
+    "resolution3": {
+      "title": "结算3",
+      "body": "<p>_结算3_：一座古代穹顶在海床上诱人地闪烁着。你正惊叹于这些奇异的景象时，一块黑曜石从上方松动，坠向海底的穹顶。穹顶没有破碎，而是柔韧地荡起涟漪，巨石则伴着雷鸣般的轰响穿了过去。穹顶中央有某种东西投射出一道屏障，能够排开海水，却允许固体物质通过。</p><p>无论穹顶里是什么奇异的科技，蒂林哈斯特很可能都会感兴趣。不过，你也可以继续深入拉莱耶：城墙底部有一扇圆门，与穹顶处于同一片闪烁的力场之下，它正召唤你进入这座城市。</p><ul><li>调查员必须做出决定（选择一项）：<ul><li>若要揭开海底穹顶的秘密，前往_淹没城区_。</li><li>若要继续深入拉莱耶的地下，前往_养育场_。</li></ul></li></ul>"
     }
-  }
+  },
+  "intro": {
+    "title": "西墙",
+    "checkCampaignLog": "查看你的战役日志。",
+    "headedWest": "若远征队向西前进，前往_西墙1_。",
+    "headedEast": "若远征队向东前进，跳至_西墙2_。",
+    "westernWall1": "_西墙1_：随着你向西前进，越来越清楚地发现，你正沿着的这片海滩是一道古老环墙的顶部。在数英寻深的下方，城墙形成一道陡峭的悬崖，通向海底一座圆形广场。若事先筹划得当，你可以借助旧遗迹中一个个被困的空气囊，安全地下降到海底。只要足够小心，你或许真能活着抵达海床。",
+    "westernWall2": "_西墙2_：随着拉莱耶持续上升，这座古城摇摇欲坠的地基不停震颤。坍塌的层层碎石砌体与暴露的走廊，形成了一条通往水面的危险小径。为了安全地上升，你需要借助一个个被困的空气囊，攀上古墙陡峭的表面。考虑到压力病的危险，你不能简单地漂浮上去。只要足够小心，你或许真能活着抵达水面。",
+    "resolveDoNoHarm": "若某位调查员持有“无害”任务，则在右侧结算其各自的故事。",
+    "proceedToWesternSetup": "前往_准备（版本I）——西线远征_。",
+    "proceedToEasternSetup": "前往_准备（版本II）——东线远征_。",
+    "doNoHarm": {
+      "title": "任务：无害",
+      "instructions": "_仅当你持有“无害”任务时阅读：_",
+      "body": "当你准备穿越城墙时，你发现一具尸体俯卧在黑色的沙滩上。那是一个身披破烂拼布斗篷的男人。你先把他是怎么来到这里的疑问放到一边，走上前去探他的脉搏。他还活着，不过伤势严重。黄色的脓液从他脖子、手臂与胸口上一个个圆形的吸盘状伤口中渗出。你尽力替他包扎伤口，然后用嗅盐把他弄醒。他睁开眼，用沙哑的声音吐出一个词：“母亲。”你看向其他人。这个人显然需要帮助。",
+      "choose": "你必须做出决定（选择一项）：",
+      "bringAlong": "“带上他。我们还能救他。”在准备本剧本后，在密谋上放置1个毁灭标记。在你的战役日志中记录_远征队帮助了这位朝圣者_。",
+      "leaveBehind": "“把他留下。”在下一个剧本中揭示起始地点时，不要在该地点上放置线索。在你的战役日志中记录_远征队把朝圣者留在了身后_。"
+    },
+    "label": {
+      "doNoHarm": {
+        "bringAlong": "“带上他。我们还能救他。”",
+        "leaveBehind": "“把他留下。”"
+      }
+    }
+  },
+  "setup": {
+    "west": {
+      "title": "准备（版本I）——西线远征",
+      "setLocationsAside": "将黑曜石地基、淹没棚屋、沉没阶梯、破碎废墟{'{'}runeV{'}'}与海底密库{'{'}runeZ{'}'}放到一旁，不放入游戏中。",
+      "placeUpperWalkways": "将其余5个通道地点与放到一旁的淹没棚屋、沉没阶梯和破碎废墟{'{'}runeV{'}'}洗在一起。将其中6个以未揭示面朝上放入游戏中，放在西墙下方的2至4层。",
+      "buildActDeck": "使用场景1a——“下潜深渊”组成场景牌库。将另一个场景移出游戏。",
+      "chooseExpeditionAsset": "按玩家顺序，每位玩家可以选择1张来自_远征_遭遇牌组的_道具_支援，使其在游戏开始时由其控制。该遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/tdc_expedition.png' /></section>",
+      "placeBottomWalkways": "将其余2个通道地点与放到一旁的黑曜石地基洗在一起，使你无法得知哪一张是哪一张，然后以未揭示面朝上放入游戏中，放在第5层。",
+      "floodLevels": "提高第2至5层每个地点的洪水水位。",
+      "fullyFloodLevels": "提高第4层和第5层的洪水水位，使它们完全被淹没。"
+    },
+    "east": {
+      "title": "准备（版本II）——西线远征",
+      "setLocationsAside": "将西墙、淹没棚屋、沉没阶梯、破碎废墟{'{'}runeV{'}'}与海底密库{'{'}runeZ{'}'}放到一旁，不放入游戏中。",
+      "placeUpperWalkways": "将其余5个通道地点与放到一旁的淹没棚屋、沉没阶梯和破碎废墟{'{'}runeV{'}'}洗在一起。将其中6个以未揭示面朝上放入游戏中，放在黑曜石地基下方的2至4层。",
+      "buildActDeck": "使用场景1a——“攀上高墙”组成场景牌库。将另一个场景移出游戏。",
+      "chooseExpeditionAsset": "按玩家顺序，每位玩家可以选择1张已获得的_神器_支援，或来自_远征_遭遇牌组的1张_道具_支援，使其在游戏开始时由其控制。该遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/tdc_expedition.png' /></section>",
+      "placeBottomWalkways": "将其余2个通道地点与放到一旁的西墙洗在一起，使你无法得知哪一张是哪一张，然后以未揭示面朝上放入游戏中，放在第5层。",
+      "floodLevels": "提高第1至4层每个地点的洪水水位。",
+      "fullyFloodLevels": "提高第1层和第2层的洪水水位，使它们完全被淹没。"
+    },
+    "gatherSets": "收集以下遭遇牌组中的所有卡牌：_西墙_、_宇宙遗产_、_深潜者_、_洪水_、_拉莱耶_、_星之眷族_、_穷途异魔_、_海底生物_与_克苏鲁的特工_。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/the-western-wall.png' /><img src='{setImgPath}/cosmic-legacy.png' /><img src='{setImgPath}/tdc_deep-ones.png' /><img src='{setImgPath}/flood.png' /><img src='{setImgPath}/rlyeh.png' /><img src='{setImgPath}/star-spawn.png' /><img src='{setImgPath}/the-inescapable.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/agents-of-cthulhu.png' /></section>",
+    "gatherLocations": "收集_西墙_遭遇牌组中的每个地点。",
+    "placeWesternWall": "如图所示，将西墙放入游戏中，位于第1层。",
+    "placeObsidianFoundations": "如图所示，将黑曜石地基放入游戏中，位于第1层。",
+    "removeWalkways": "收集其余每个通道地点，并随机将其中两个移出游戏。",
+    "beginAtWesternWall": "每位调查员从西墙开始游戏。",
+    "beginAtObsidianFoundations": "每位调查员从黑曜石地基开始游戏。",
+    "setCardsAside": "将穷途异魔敌人、猎食寄生虫弱点，以及双面的海床饰带{'{'}runeW{'}'}诡计放到一旁，不放入游戏中。",
+    "setAsideCoralStarSpawn": "在_星之眷族_遭遇牌组中搜寻珊瑚星之眷族敌人，并将其放到一旁，不放入游戏中。将_星之眷族_遭遇牌组中的其他每张牌移出游戏。",
+    "addFloodTokens": "将洪水标记加入筹码库。",
+    "buildEncounterDeck": "将剩余的遭遇牌洗匀，组成遭遇牌库。",
+    "readyToBegin": "现在你已准备好开始。"
+  },
+  "label": {
+    "chooseExpeditionAssetQuestion": "选择一张支援，使其在游戏开始时由你控制。",
+    "noExpeditionAsset": "不获取神器或远征支援。"
+  },
+  "sunkenStairway": {
+    "label": {
+      "above": "将海底密库放在沉没阶梯上方的一行。",
+      "below": "将海底密库放在沉没阶梯下方的一行。"
+    }
+  },
+  "rules": {
+    "locationAdjacency": {
+      "title": "西墙中的地点相邻关系",
+      "body": "<p class='basic'>在本剧本中，地点按照固定的5层结构排列。</p><ul><li>每个地点的位置都有其自身的层级，从1至5：西墙位于第1层，最下方的地点位于第5层。</li><li>任何提及地点层级的牌效果，都指其编号的行，如地点摆放图所示。</li><li>在本剧本中，每个地点都与其上一行和下一行的每个地点相连。同一行中的地点彼此不相连。</li></ul>"
+    }
+  },
+  "specialRules": [
+    {
+      "title": "@:theDrownedCity.theWesternWall.rules.locationAdjacency.title",
+      "body": "@:theDrownedCity.theWesternWall.rules.locationAdjacency.body"
+    }
+  ]
 }

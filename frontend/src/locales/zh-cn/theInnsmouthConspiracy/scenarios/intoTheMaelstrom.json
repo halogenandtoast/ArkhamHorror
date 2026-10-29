@@ -114,5 +114,28 @@
       "continuePlaying": "继续游戏",
       "proceedToR1": "进入结局1"
     }
+  },
+  "setup": {
+    "gatherSets": "收集以下遭遇牌组中的所有卡牌：*深入漩涡*、*九头蛇的特工*、*深海生物*、*淹没的洞穴*、*破碎的记忆*、*朔望*与*远古邪恶*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/into-the-maelstrom.png' /><img src='{setImgPath}/agents-of-hydra.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/flooded-caves.png' /><img src='{setImgPath}/shattered-memories.png' /><img src='{setImgPath}/syzygy.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
+    "placeKeys": "查看战役日志。按以下方式放置每把钥匙（蓝色、红色、绿色与黄色）：",
+    "blueKey": "若_调查员持有伊哈-恩赛的钥匙_，则选择一名调查员，使其获得蓝色钥匙的控制权。否则，将其背面朝下放到一旁。",
+    "redKey": "若_调查员持有伊哈-恩赛的地图_，则选择一名调查员，使其获得红色钥匙的控制权。否则，将其背面朝下放到一旁。",
+    "greenKey": "若_伊哈-恩赛的守护者已被消灭_，则选择一名调查员，使其获得绿色钥匙的控制权。否则，将其背面朝下放到一旁。",
+    "yellowKey": "若_伊哈-恩赛之门认可你为其合法的守护者_，则选择一名调查员，使其获得黄色钥匙的控制权。否则，将其背面朝下放到一旁。",
+    "fewerThanFour": "若放到一旁的钥匙少于4把，则将紫色、白色与黑色钥匙背面朝下洗匀。然后，逐一将这些钥匙放到一旁，直到放到一旁的钥匙不超过4把为止。将超出放到一旁钥匙数量的其余每把钥匙移出游戏。被移出的钥匙在本剧本中不会被使用。",
+    "shuffleKeys": "将每把放到一旁的钥匙洗匀，使你无法分辨哪把是哪把。",
+    "placeLocations": "将伊哈-恩赛之门放入游戏中。（它以部分被淹没的状态进入游戏。）然后将全部8个潮汐隧道地点放入游戏中，环绕在它周围。",
+    "startAt": "每位调查员从伊哈-恩赛之门开始游戏。",
+    "setAsideOtherLocations": "将其他每个地点放到一旁，不放入游戏中。",
+    "checkCampaignLog": "查看战役日志。",
+    "divingSuits": "每位_持有潜水服_的调查员，都在其游戏区域中带着一张潜水服故事支援开始游戏。",
+    "removeUnusedDivingSuits": "将每一张未使用的潜水服移出游戏。",
+    "actDeck": "在组建场景牌库时，只使用场景2a——“深渊之城（版本I）”。将“深渊之城（版本II）”与“深渊之城（版本III）”放到一旁，不放入游戏中。",
+    "setAsideCards": "将洛伊格敌人、水中憎物敌人、双面的九头蛇敌人以及双面的达贡敌人放到一旁，不放入游戏中。",
+    "floodTokens": "将洪水标记加入筹码库。"
+  },
+  "label": {
+    "helpAgentHarper": "帮助哈珀特工完成她的任务。将放到一旁的“深渊之城（版本II）”放入游戏中，放在当前场景旁边。它提供了一个新的替代目标。",
+    "defyAgentHarper": "违抗哈珀特工。在每位玩家的手牌、牌库、弃牌堆以及所有游戏区域中搜寻伊丽娜·哈珀，并将她移出游戏。将放到一旁的“深渊之城（版本III）”放入游戏中，放在当前场景旁边。它提供了一个新的替代目标。"
   }
 }

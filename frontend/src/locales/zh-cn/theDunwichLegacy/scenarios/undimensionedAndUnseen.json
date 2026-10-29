@@ -42,7 +42,12 @@
     },
     "setAside": "将4张深奥的咒文放在一边。",
     "powderOfIbnGhazi": "牌组中带有伊本巴奇之粉末的调查员，可以查找其牌堆，将该卡放置入场。",
-    "randomBasicWeakness": "每位调查员从收藏中，随机抽取一张_*疯狂*_, _*损伤*_, 或 _*契约*_ 弱点卡，并加入其牌组中，直到剧本结束。"
+    "randomBasicWeakness": "每位调查员从收藏中，随机抽取一张_*疯狂*_, _*损伤*_, 或 _*契约*_ 弱点卡，并加入其牌组中，直到剧本结束。",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返无维度与不可见*与*不稳定的恐惧*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-undimensioned-and-unseen.png' /><img src='{setImgPath}/erratic-fear.png' /></section>*不稳定的恐惧*替代*打击恐惧*。将被替代的遭遇牌组移出游戏。",
+      "broodOfYogSothoth": "从原版剧本中移除4个犹格-索托斯的后代，并以*重返无维度与不可见*遭遇牌组中的4个新版本犹格-索托斯的后代取代它们。",
+      "additionalRule": "在本剧本期间，适用以下附加规则：若将要放入游戏的是犹格-索托斯的后代，则从放到一旁的各个版本的犹格-索托斯的后代中随机选择。"
+    }
   },
   "choosingARandomLocation": {
     "title": "随机选择一个地点",

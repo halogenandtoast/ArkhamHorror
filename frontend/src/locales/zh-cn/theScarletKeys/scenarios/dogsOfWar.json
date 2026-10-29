@@ -37,13 +37,15 @@
       "reduceDifficulty": "将此次检定的难度降低2点且少抽取1张卡牌",
       "doNotReduce": "不降低难度",
       "pay": "花费1{'{'}perPlayer{'}'}线索",
-      "doNotPay": "不花费线索"
+      "doNotPay": "不花费线索",
+      "investigate": "抽牌"
     },
     "theBourse": {
       "reduceDifficulty": "将此次检定的难度降低2点且少获得2资源",
       "doNotReduce": "不降低难度",
       "pay": "花费1{'{'}perPlayer{'}'}线索",
-      "doNotPay": "不花费线索"
+      "doNotPay": "不花费线索",
+      "investigate": "获得资源"
     }
   },
   "intro": {

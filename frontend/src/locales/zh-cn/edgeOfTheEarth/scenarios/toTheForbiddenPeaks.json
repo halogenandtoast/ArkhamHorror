@@ -78,5 +78,17 @@
       "discardEnemy": "弃掉1个非精英敌人",
       "discardTreachery": "弃掉1张诡计"
     }
+  },
+  "setup": {
+    "gatherSets": "收集以下遭遇牌组中的所有卡牌：*前往禁忌山峰*、*致命天气*、*远古之物*、*南极险境*、*无名恐怖*与*忒咳哩-哩*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/to-the-forbidden-peaks.png' /><img src='{setImgPath}/deadly-weather.png' /><img src='{setImgPath}/elder-things.png' /><img src='{setImgPath}/hazards-of-antarctica.png' /><img src='{setImgPath}/nameless-horrors.png' /><img src='{setImgPath}/tekeli-li.png' /></section>",
+    "placeLocations": "将七张山腰地点洗匀，并将其中五张排成一条对角线放入游戏中。将其余两张地点放到一旁，不放入游戏中。将峰顶地点放在对角线的顶端。每个地点的位置都有其自身的层级，从0至5：最下方的地点位于第0层，一直向上延伸到第5层的峰顶。",
+    "revealLevel0": "揭示第0层的地点。每位调查员从该地点开始游戏。",
+    "addElderThingToken": "向混乱袋中加入1个{'{'}elderThing{'}'}标记。",
+    "suppliesRecovered": "查看战役日志中的“找回的补给”部分，并将其中列出的每张远征故事支援放入游戏中，放在第0层的地点。将其他每张远征故事支援移出游戏。",
+    "setTerrorOfTheStarsAside": "将星辰的恐怖敌人放到一旁，不放入游戏中。",
+    "checkDifficulty": "查看难度等级。",
+    "hard": "若你在困难难度下游玩，在密谋1a上加入1个毁灭标记。",
+    "expert": "若你在专家难度下游玩，在密谋1a上加入2个毁灭标记。",
+    "tekelili": "将每张尚未成为任何调查员牌组一部分的“忒咳哩-哩！”弱点牌洗在一起，组成忒咳哩-哩牌库。将该牌库放在密谋牌库附近。"
   }
 }

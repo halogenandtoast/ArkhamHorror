@@ -1,6 +1,8 @@
 import base from '@/locales/zh-cn/base.json'
 import { homebrewMessages } from '@/locales/homebrew'
 import log from '@/locales/zh-cn/log.json'
+import event from '@/locales/zh-cn/event.json'
+import cardOption from '@/locales/zh-cn/cardOption.json'
 import cards from '@/locales/zh-cn/cards.json'
 import label from '@/locales/zh-cn/label.json'
 import investigators from '@/locales/zh-cn/investigators.json'
@@ -20,11 +22,15 @@ import theDrownedCity from '@/locales/zh-cn/theDrownedCity'
 import standalone from '@/locales/zh-cn/standalone'
 import gameBoard from '@/locales/zh-cn/gameBoard/gameBoard'
 import xp from '@/locales/zh-cn/xp.json'
+import theLabyrinthsOfLunacy from '@/locales/zh-cn/theLabyrinthsOfLunacy.json'
+import childrenOfBlood from '@/locales/zh-cn/childrenOfBlood'
 
 export default 
 { ...base,
   ...campaignLog, 
   ...gameBoard, 
+  ...cardOption,
+  ...event,
   cards,
   investigators,
   label: { ...label, cards: cards["label"] },
@@ -42,7 +48,9 @@ export default
   theScarletKeys, 
   theFeastOfHemlockVale,
   brethrenOfAsh, 
+  childrenOfBlood,
   ...homebrewMessages('zh-cn'),
   theDrownedCity,
-  standalone
+  standalone,
+  theLabyrinthsOfLunacy
 }

@@ -71,7 +71,13 @@
     "explorationDeck": "构建探索牌库。从放在一边的剩余单面地点中争取幽嘶的阶梯和另外4张单面地点卡牌，将其一同混洗形成探索牌库。",
     "currentDepth": "在冒险参考卡牌的“当前深度”下方放置1个资源标记。直到冒险结束，“当前深度”下方的资源数量表示着当前深度等级。",
     "setOutOfPlay": "将古代遗物*(重拾往昔)*放在一边，位于场外。",
-    "poisoned": "将不在调查员牌库中的所有中毒弱点放在一边。"
+    "poisoned": "将不在调查员牌库中的所有中毒弱点放在一边。",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返尤斯之渊*、*毒液之恨*与*注定的远征*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-the-depths-of-yoth.png' /><img src='{setImgPath}/venomous-hate.png' /><img src='{setImgPath}/doomed-expedition.png' /></section>*毒液之恨*替代*伊格的毒液*，*注定的远征*替代*远征*。将被替代的遭遇牌组移出游戏。",
+      "harbinger": "准备完成后，在收藏中搜寻新的瓦卢西亚的先驱（*沉睡者归来*），并将其放到一旁，不放入游戏中。若瓦卢西亚的先驱会在本剧本中进入游戏，则使用这个版本而非原版。",
+      "explorationDeck": "在准备期间组建探索牌库后，将尤斯的危险诡计洗入探索牌库。",
+      "additionalRule": "在本剧本期间，适用以下附加规则：_强制_——在场景1b期间组建新的探索牌库后：在遭遇牌库、弃牌堆以及所有游戏外区域中搜寻尤斯的危险，并将其洗入探索牌库。若搜寻过遭遇牌库，则将其洗匀。"
+    }
   },
   "depthLevel": {
     "title": "深度等级",

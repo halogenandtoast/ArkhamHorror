@@ -96,6 +96,59 @@
     "theInvestigatorsStoodTogether": "调查员同心协力。",
     "cthulhuWasDrivenAway": "克苏鲁被赶跑了。",
     "cthulhuAnnihilatedTheExpedition": "克苏鲁毁灭了探险队。",
-    "cthulhuWasBanished": "克苏鲁被放逐。"
+    "cthulhuWasBanished": "克苏鲁被放逐。",
+    "theCreatureWasDefeated": "生物被击败了。",
+    "discoveredGlyphs": "外星符文",
+    "rlyehMap": "拉莱耶地图",
+    "thePilgrimsWereSaved": "朝圣者得救了。",
+    "thePilgrimsWereDevoured": "朝圣者被吞噬了。",
+    "theInvestigatorsExterminatedTheAlienParasites": "调查员消灭了外星寄生虫。",
+    "helpedWithTheRopes": "帮忙拉绳索",
+    "wasHelpedWithTheRopes": "得到了拉绳索的帮助",
+    "isStrongInTheirFaith": "信仰坚定。",
+    "madeBank": "赚了大钱。",
+    "understandsTheFuture": "理解了未来。",
+    "foundTheirTrueHome": "找到了真正的归宿。",
+    "sworeAnOathToProtectOthers": "立下了保护他人的誓言。",
+    "foundNewWork": "找到了新工作。",
+    "pulledTheirWeight": "尽了自己的一份力。",
+    "learnedTheSecretTruth": "得知了秘密真相。",
+    "lostTheirFaith": "失去了信仰。",
+    "theInvestigatorsDidNotConfrontTheNightmare": "调查员没有直面梦魇。",
+    "theInvestigatorsHaltedCthulhusAwakening": "调查员阻止了克苏鲁的苏醒。",
+    "floodedNeighborhoods": "被淹没的街区",
+    "cthulhuAnnihilatedTheCityOfArkham": "克苏鲁毁灭了阿卡姆市。",
+    "arkhamWasDestroyed": "阿卡姆被毁灭了。"
+  },
+  "label": {
+    "noAir": "你没有找到空气。直接承受5点伤害。",
+    "walkInFaith": {
+      "drawFromDeck": "改为从你的牌库抽1张牌",
+      "drawEncounter": "照常从遭遇牌库抽牌"
+    },
+    "naomiOBannion": {
+      "preventReadying": "承受1点伤害，以阻止娜奥米·欧班农重整",
+      "doNotTakeDamage": "不承受1点伤害"
+    },
+    "dreamingMigration": {
+      "moveNearestEnemy": "将最近的敌人移动到你的地点，它攻击你",
+      "drawTopmostEnemy": "抽取遭遇弃牌堆顶端的敌人"
+    },
+    "horrorInClay": {
+      "blankPrintedText": "在本轮结束前，将此支援印刷的文本框视为空白",
+      "moveStarSpawn": "将一个_星之眷族_敌人向任意方向移动一次"
+    }
+  },
+  "rlyehMap": {
+    "rlyehWesternWall": "西墙",
+    "rlyehDrownedQuarter": "淹没城区",
+    "rlyehApiary": "养育场",
+    "rlyehGrandVault": "大秘库",
+    "rlyehCourtOfTheAncients": "古代议庭",
+    "rlyehObsidianCanyons": "黑曜石峡谷",
+    "rlyehSepulchreOfTheSleeper": "沉睡者墓穴"
+  },
+  "artifactsEarned": {
+    "title": "获得的神器"
   }
 }

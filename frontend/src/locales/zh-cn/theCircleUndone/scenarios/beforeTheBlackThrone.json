@@ -99,7 +99,13 @@
     "placeLocations": "拿取放在一边的“憎恶宫殿”和“宇宙”顶上的1张卡牌，将其混洗至无法分辨。然后，将这些卡牌与调查员队长牌堆顶上正面朝下的若干张玩家卡一同放置入场，如“冒险设置/地点摆放位置 - 第1部分”所示。正面朝下的玩家卡表示虚空格子(*详见“虚空格子”*)。",
     "setAside": "将阿撒托斯的吹笛手敌人放在一边，位于场外。",
     "placeAzathoth": "将阿撒托斯放置入场，放在密谋牌库旁。直到冒险结束，阿撒托斯视为在场，但不在任何地点上。",
-    "thePathWindsBeforeYou": "检查剧本日志。*你面前的道路蜿蜒曲折*旁边每有1次记录，在冒险参考卡牌上放置1资源。"
+    "thePathWindsBeforeYou": "检查剧本日志。*你面前的道路蜿蜒曲折*旁边每有1次记录，在冒险参考卡牌上放置1资源。",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返黑王座之前*、*不可言说的命运*与*迫近的邪恶*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-before-the-black-throne.png' /><img src='{setImgPath}/unspeakable-fate.png' /><img src='{setImgPath}/impending-evils.png' /></section>*不可言说的命运*替代*无情的命运*，*迫近的邪恶*替代*远古邪恶*。将被替代的遭遇牌组移出游戏。",
+      "actDeck": "组建场景牌库时，以本遭遇牌组中的新版本场景3取代原版场景3。将原版移出游戏。",
+      "cosmos": "组建宇宙时，纳入*重返黑王座之前*遭遇牌组中的3个新的宇宙地点。",
+      "nightgauntSteed": "游戏开始时，调查员可以从剧本参考卡上移除2个资源，使每位调查员以一张夜魇坐骑故事支援开始游戏。将其余每张夜魇坐骑移出游戏。"
+    }
   },
   "theCosmos": {
     "title": "宇宙",

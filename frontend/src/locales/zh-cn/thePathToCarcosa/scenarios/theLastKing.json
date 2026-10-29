@@ -29,6 +29,13 @@
     "sickeningReality": {
       "instructions": "将5张“令人作呕的现实”剧情卡放在冒险参考卡牌下方。",
       "note": "*_注意：_这些卡牌是双面的，其背面为遭遇卡。为了获得最佳的游戏体验，请勿翻开背面内容，除非有效果指示你如此做。*"
+    },
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返最后的国王*、*腐朽的现实*与*迷惑之恶*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-the-last-king.png' /><img src='{setImgPath}/decaying-reality.png' /><img src='{setImgPath}/delusory-evils.png' /></section>*腐朽的现实*替代*腐朽与污秽*，*迷惑之恶*替代*远古邪恶*。将被替代的遭遇牌组移出游戏。",
+      "agendaDeck": "将密谋1a——*故意迟到*移出游戏，并以新的密谋1a——*迟到不如不到*取代它。",
+      "dianneDevine": "将原有的黛安·戴文（*善变且调皮*）移出游戏，并以新版本的黛安·戴文（*隐藏未言之誓*）取代她。",
+      "sickeningReality": "将3张新的恶心的现实牌连同原有的5张一起放在剧本参考卡之下，共计8张。",
+      "setAside": "同时将惊人的展示诡计放到一旁，不放入游戏中。"
     }
   },
   "resolutions": {

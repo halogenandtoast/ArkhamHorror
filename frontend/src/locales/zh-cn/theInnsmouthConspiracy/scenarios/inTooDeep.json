@@ -79,5 +79,19 @@
     "railroadStation": {
       "resign": "你逃离了被淹没的城镇。"
     }
+  },
+  "setup": {
+    "gatherSets": "收集以下遭遇牌组中的所有卡牌：*陷得太深*、*深海生物*、*涨潮*、*朔望*、*当地人*与*克苏鲁的特工*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/in-too-deep.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/rising-tide.png' /><img src='{setImgPath}/syzygy.png' /><img src='{setImgPath}/locals.png' /><img src='{setImgPath}/agents-of-cthulhu.png' /></section>",
+    "placeLocations": "将全部15个地点放入游戏中。",
+    "barriers": "如图所示，在这些地点之间放置24个屏障（使用资源标记）。",
+    "startAt": "每位调查员从荒凉海岸线开始游戏。",
+    "placeKeys": "按以下方式放置每把钥匙：",
+    "blackKey": "查看战役日志中“可能的藏身处”部分被圈出的地点。将黑色钥匙放在该地点上。（若没有圈出的地点，则跳过此步骤。）",
+    "otherKeys": "将其他每把钥匙背面朝下放到一旁。将它们洗匀，使你无法分辨哪把是哪把。",
+    "outForBlood": "查看战役日志中每一个渴望血债的_嫌疑人_敌人，并结算它们各自的启示能力，但不要在它们身上放置线索。",
+    "setAsideCards": "将以下牌放到一旁，不放入游戏中：2个来自深渊的劫掠者敌人、2个幼年深潜者敌人、乔·萨金特故事支援、教团的教义故事支援，以及印斯茅斯修格斯敌人。",
+    "angryMob": "在收藏中搜寻愤怒的暴民（《印斯茅斯阴谋》第62b号牌），并将其放到一旁，不放入游戏中。（该牌位于“寻找哈珀特工”故事牌的背面。）",
+    "floodTokens": "将洪水标记加入筹码库。",
+    "increaseFloodLevel": "提高以下每个地点的洪水水位：水街的房子、印斯茅斯港与荒凉海岸线。"
   }
 }

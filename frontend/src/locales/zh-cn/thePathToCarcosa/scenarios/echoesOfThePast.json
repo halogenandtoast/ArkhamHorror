@@ -37,7 +37,14 @@
       "exactly4": "如果有4位玩家，从已找出的遭遇组中找出3张卡尔克萨探求者。这3张卡分别生成在不同的_二楼_或_三楼_历史协会地点。"
     },
     "fledTheDinnerParty": "查看剧本日志。如果“你逃离晚宴”：你到达历史协会时，时间还很充裕；每位调查员可以在本场游戏的第一个回合执行1个额外的行动。",
-    "fledDinnerPartyAdditionalAction": "逃离晚宴"
+    "fledDinnerPartyAdditionalAction": "逃离晚宴",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返过往回响*与*疯狂妄想*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-echoes-of-the-past.png' /><img src='{setImgPath}/maddening-delusions.png' /></section>*疯狂妄想*替代*妄想*。将被替代的遭遇牌组移出游戏。",
+      "chooseLocations": "随机选择一个_地下室_历史学会地点并将其移出游戏，且不要查看其已揭示面。",
+      "placeLocations": "放入地点时，将三张寂静走廊连同其余8个历史学会地点一起放入游戏中。（三个_地下室_地点应排成一行，位于三个_一楼_地点的下方。）",
+      "setAside": "同时将两个誓约守护者敌人放到一旁，不放入游戏中。",
+      "additionalRule": "在本剧本期间，适用以下附加规则：_强制_——调查员推进至场景2或场景3之后：在任一空的历史学会地点中生成一个放到一旁的誓约守护者。"
+    }
   },
   "resolutions": {
     "xp": {
@@ -72,6 +79,9 @@
     "ledAstray": {
       "placeClue": "将你的1个线索放置在一个异教徒敌人上",
       "placeClues": "在1个*异教徒*敌人身上放置1个线索"
+    },
+    "historicalSocietyReadingRoom": {
+      "investigate": "从一个敌人上取下1个毁灭标记作为线索"
     }
   },
   "tooltips": {

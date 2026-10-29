@@ -29,7 +29,13 @@
   "setup": {
     "gatherSets": "在所有遭遇组中，找出以下遭遇卡: *迷失时空*、*巫术*、*异世界*、*丑陋异形*，以及*犹格索·托斯的使徒*。这些遭遇组的图标为:<section class='encounter-sets'><img src='{setImgPath}/lost-in-time-and-space.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/agents-of-yog.png' /></section>",
     "placeLocations": "将另一个次元放置入场，每位调查员从另一个次元开始游戏。",
-    "setAside": "将下列卡牌放在一边: 宇宙的边缘、时间缝隙、犹格·索托斯。"
+    "setAside": "将下列卡牌放在一边: 宇宙的边缘、时间缝隙、犹格·索托斯。",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返迷失于时空之中*、*门槛之外*与*犹格-索托斯的使者*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-lost-in-time-and-space.png' /><img src='{setImgPath}/beyond-the-threshold.png' /><img src='{setImgPath}/yog-sothoths-emissaries.png' /></section>*门槛之外*替代*彼岸*，*犹格-索托斯的使者*替代*犹格-索托斯的特工*。将被替代的遭遇牌组移出游戏。",
+      "placeLocations": "同时将单面的彼岸界地点放入游戏中，并在其上生成犹格-索托斯。",
+      "setAside": "同时将塞斯·毕晓普（*犹格-索托斯的奴仆*）放到一旁，不放入游戏中。",
+      "actAndAgenda": "以新的密谋3a——*突破（版本II）*取代密谋3a——*突破*。查看战役日志：若*仪式已完成*，同时以新的场景2a——*进入彼岸（版本II）*取代场景2a——*进入彼岸*。"
+    }
   },
   "locationsInTheEncounterDeck": {
     "title": "遭遇牌库中的地点卡",

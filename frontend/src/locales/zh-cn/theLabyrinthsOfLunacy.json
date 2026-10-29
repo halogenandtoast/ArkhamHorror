@@ -1,0 +1,22 @@
+{
+  "key": {
+    "[groupA]": {
+      "orderKey": "a",
+      "title": "A组",
+      "theGroupEscapedTheLabyrinth": "成功逃出迷宫",
+      "theGroupPerished": "在迷宫中殒命"
+    },
+    "[groupB]": {
+      "orderKey": "b",
+      "title": "B组",
+      "theGroupEscapedTheLabyrinth": "成功逃出迷宫",
+      "theGroupPerished": "在迷宫中殒命"
+    },
+    "[groupC]": {
+      "orderKey": "c",
+      "title": "C组",
+      "theGroupEscapedTheLabyrinth": "成功逃出迷宫",
+      "theGroupPerished": "在迷宫中殒命"
+    }
+  }
+}

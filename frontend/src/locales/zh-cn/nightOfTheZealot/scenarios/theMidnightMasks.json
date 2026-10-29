@@ -46,6 +46,13 @@
     },
     "burnedToTheGround": "检查剧本日志，如果*房屋已烧毁*: 将你的房子移出游戏。每位调查员从河岸城开始游戏。",
     "houseStillStanding": "检查剧本日志，如果*房屋还在*: 每位调查员从你的房子开始游戏。",
-    "ghoulPriest": "检查剧本日志，如果 *食尸鬼祭司还活着*: 将食尸鬼祭司与遭遇牌库混洗。"
+    "ghoulPriest": "检查剧本日志，如果 *食尸鬼祭司还活着*: 将食尸鬼祭司与遭遇牌库混洗。",
+    "returnTo": {
+      "gatherSets": "同时收集以下遭遇牌组中的所有卡牌：*重返午夜假面*与*吞噬者的教团*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/return-to-the-midnight-masks.png' /><img src='{setImgPath}/the-devourers-cult.png' /></section>*吞噬者的教团*替代*黑暗邪教*。将被替代的遭遇牌组移出游戏。",
+      "cultistDeck": "<div class='columns simple'><p class='basic'>组建邪教徒牌库时，纳入本扩展中新的3张*乌莫尔德之教团*牌。将邪教徒牌库洗匀，并在不看的情况下随机移出其中3张。（最终应只剩下一副5张牌的邪教徒牌库。）新牌以下列图标表示：</p><section class='encounter-sets'><img src='{setImgPath}/return-cult.png' /></section></div>",
+      "predatorOrPrey": "组建密谋牌库时，随机使用两张密谋1a——*捕食者或猎物*中的一张，且不要查看它们的另一面。将密谋1a的另一版本移出游戏。",
+      "placeLocations": "同时随机选择东镇的两个地点之一、北区的两个地点之一、河镇的两个地点之一，以及米斯卡塔尼克大学的两个地点之一，并将它们放入游戏中。将东镇、北区、河镇与米斯卡塔尼克大学的其他版本移出游戏。",
+      "acolytes": "若你被指示在遭遇牌库中搜寻一名侍僧，则改为在遭遇牌库中搜寻任一生命值为1的_邪教徒_敌人。"
+    }
   }
 }

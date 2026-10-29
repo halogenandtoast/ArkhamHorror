@@ -141,6 +141,17 @@
       "xp": {
         "insight": "洞悉了居住在南极的存在"
       }
+    },
+    "setup": {
+      "gatherSets": "收集以下遭遇牌组中的所有卡牌：*冰与死亡*、*渗透的噩梦*、*冰中生物*、*致命天气*、*南极险境*、*寂静与神秘*、*忒咳哩-哩*与*远古邪恶*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/ice-and-death.png' /><img src='{setImgPath}/seeping-nightmares.png' /><img src='{setImgPath}/creatures-in-the-ice.png' /><img src='{setImgPath}/deadly-weather.png' /><img src='{setImgPath}/hazards-of-antarctica.png' /><img src='{setImgPath}/silence-and-mystery.png' /><img src='{setImgPath}/tekeli-li.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
+      "buildAgendaDecks": "使用密谋7–8组建密谋牌库，并使用场景3组建场景牌库。（这些牌可以在*渗透的噩梦*遭遇牌组中找到。）",
+      "placeLocations": "在战役日志的“冰与死亡”部分中，找到“已揭示的地点”下列出的每个地点。将这些地点放入游戏中，并以已揭示面朝上放置（*每个地点放置与其线索值相等数量的线索*）。",
+      "unrevealed": "将其他每个地点以未揭示面朝上放入游戏中。",
+      "beginAtCamp": "每位调查员从营地开始游戏。",
+      "removeClues": "将营地上的所有线索移出。它在游戏开始时不放置任何线索。",
+      "seepingNightmares": "找到{'{'}perPlayer{'}'}个渗透的噩梦敌人。这些敌人可以在*渗透的噩梦*遭遇牌组中找到。根据“渗透的噩梦”侧边栏，将每个敌人生成在不同的地点。将剩余的所有渗透的噩梦敌人移出游戏。",
+      "eidolons": "从*冰与死亡*与*冰中生物*遭遇牌组中找到八个幻影敌人。将它们洗匀，并尽可能平均地背面朝下放在每个在游戏中的渗透的噩梦敌人之下。",
+      "tekelili": "将每张尚未成为任何调查员牌组一部分的“忒咳哩-哩！”弱点牌洗在一起，组成忒咳哩-哩牌库。将该牌库放在密谋牌库附近。"
     }
   },
   "tokens": {

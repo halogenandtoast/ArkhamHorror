@@ -5,7 +5,9 @@
     },
     "aethericCurrentYuggoth": {
       "exhaust": "横置该敌人并将其移动到任意地点",
-      "skip": "不横置敌人"
+      "skip": "不横置敌人",
+      "exhaustEnemyAndMove": "横置该敌人并将其移动",
+      "doNotExhaustEnemy": "不横置该敌人"
     },
     "agathaCrane": {
       "cancel": "取消此标记并从其位置抽取另一个标记，如果你这么做，抽取1张卡牌",
@@ -265,7 +267,9 @@
     },
     "devilFriendOrFoe2": {
       "damageConcealedCard": "对隐蔽卡牌造成伤害",
-      "doNotDamageConcealedCard": "不对隐蔽卡牌造成伤害"
+      "doNotDamageConcealedCard": "不对隐蔽卡牌造成伤害",
+      "damageConcealed": "对隐藏卡牌造成伤害",
+      "doNotDamageConcealed": "不对隐藏卡牌造成伤害"
     },
     "dexterDrake": {
       "skip": "不返回支援"
@@ -519,7 +523,8 @@
       "shuffleItInto": "结算后不弃掉，改为将其洗回你的牌库"
     },
     "handCrankFlashlight": {
-      "discardForDamage": "弃掉手摇式手电筒，以使你的地点得到隐藏值-1，直到本轮结束"
+      "discardForDamage": "弃掉手摇式手电筒，以使你的地点得到隐藏值-1，直到本轮结束",
+      "discardForShroud": "弃掉以使你所在地点在本轮结束前的隐蔽值-1"
     },
     "handHook": {
       "discardForDamage": "弃掉1张手牌以造成+1伤害"
@@ -641,7 +646,8 @@
       "remove1Charge": "移除传神佳墨的1充能"
     },
     "localMap": {
-      "exhaust": "横置本地地图以移动到调查的地点"
+      "exhaust": "横置本地地图以移动到调查的地点",
+      "exhaustAndMove": "横置本地地图，并移动到已调查的地点"
     },
     "logicalReasoning": {
       "discardTerror": "弃掉一张_恐怖_卡牌"
@@ -954,7 +960,9 @@
     "searchForTheTruthAdvanced": {
       "draw": "抽取1张卡牌",
       "place": "将你的1个线索放回你的所在地点，然后从你的弃牌堆将任意一张牌返回手中",
-      "skip": "不采取任何行动 (结束此卡牌)"
+      "skip": "不采取任何行动 (结束此卡牌)",
+      "placeClueAndReturnCard": "将该线索放置在你所在地点，并将你弃牌堆中的任意一张卡牌放回手牌",
+      "doNothingFinish": "什么也不做（结束此卡牌）"
     },
     "secondSight": {
       "spendChargeForClue": "花费1充能以发现你所在地点额外1个线索"
@@ -1014,7 +1022,8 @@
       "useOriginalLocationsShroud": "使用原地点的隐藏值"
     },
     "sledgehammer3": {
-      "exhaustSledgehammer": "横置长柄大锤"
+      "exhaustSledgehammer": "横置长柄大锤",
+      "exhaustForDamage": "横置长柄大锤"
     },
     "smuggledGoods": {
       "deck": "查找牌库顶",
@@ -1037,7 +1046,8 @@
       "fail": "本次技能检定自动失败，治愈1点伤害和1点恐惧"
     },
     "stickToThePlan3": {
-      "chooseNoMoreEvents": "结束找出事件"
+      "chooseNoMoreEvents": "结束找出事件",
+      "chooseCards": "从你的牌库中移出至多3张_战术_或_补给_事件，放在一旁。"
     },
     "stormRuler": {
       "exhaust": "横置风暴御主，对你所在地点的一个敌人造成额外{count}点伤害"
@@ -1074,7 +1084,10 @@
     "taskForce": {
       "ability": "...结算其控制的支援上的一个{'{'}action{'}'}能力，不支付其{'{'}action{'}'}费用",
       "move": "...移动到一个连接地点",
-      "discover": "...发现其所在地点的1个线索"
+      "discover": "...发现其所在地点的1个线索",
+      "resolveAbilityNoCost": "……对其控制的一张支援上的{'{'}action{'}'}能力进行结算，且不支付其{'{'}action{'}'}代价。",
+      "moveToConnecting": "……移动到一个相连的地点。",
+      "discoverClueAtTheirLocation": "……在其所在地点发现1个线索"
     },
     "teachingsOfTheOrder": {
       "defeatANon_elite_EnemyAtYourLocation": "击败一个你所在地点的非_精英_敌人",
@@ -1146,7 +1159,9 @@
       "useIntellect": "使用{'{'}intellect{'}'}"
     },
     "throwTheBookAtThem": {
-      "afterAttack": "在攻击结束后结算所选支援上的一个{'{'}action{'}'}或{'{'}fast{'}'}能力(忽略其{'{'}action{'}'}费用，如有)"
+      "afterAttack": "在攻击结束后结算所选支援上的一个{'{'}action{'}'}或{'{'}fast{'}'}能力(忽略其{'{'}action{'}'}费用，如有)",
+      "automaticallyEvade": "自动躲避被攻击的敌人",
+      "resolveAbilityOnTome": "攻击结束后，你可以对所选支援上的{'{'}action{'}'}或{'{'}fast{'}'}能力进行结算（如有{'{'}action{'}'}代价，则忽略该代价）"
     },
     "tinker": {
       "hand": "手部",
@@ -1183,7 +1198,8 @@
       "doNotChooseLocation": "不选择其他地点"
     },
     "trustyBullwhipAdvanced": {
-      "deal1DamageFor": "自动躲避受到攻击的敌人并使本次攻击+1伤害"
+      "deal1DamageFor": "自动躲避受到攻击的敌人并使本次攻击+1伤害",
+      "dealDamageAndEvade": "本次攻击造成+1伤害，并自动躲避该敌人"
     },
     "twentyOneOrBust": {
       "stopWith": "以{total}停下",
@@ -1191,7 +1207,8 @@
     },
     "underworldMarket2": {
       "placeTheRestOnTheBottomInAnyOrder": "将其余卡牌以任意顺序放回市场牌库底",
-      "spend1ResourceToDraw1OfThem": "花费1资源以抽取其中1张"
+      "spend1ResourceToDraw1OfThem": "花费1资源以抽取其中1张",
+      "chooseMarketDeck": "从你的牌库中移出10张_非法_卡牌，组成你的地下市场牌库。"
     },
     "unrelenting1": {
       "doneSealingTokens": "结束封印标记"
@@ -1226,6 +1243,120 @@
     },
     "zeal": {
       "putIntoPlayFromDiscard": "从你的弃牌堆放置入场"
+    },
+    "abyssalTome2": {
+      "placeDoom": "在深渊典籍上放置1个毁灭标记",
+      "doNotPlaceDoom": "不在深渊典籍上放置毁灭标记"
+    },
+    "ajax": {
+      "moveTwice": "移动两次",
+      "moveToField": "移动到任意田野地点"
+    },
+    "alienWhispers": {
+      "damageAsset": "你控制的一张支援承受1点伤害",
+      "horrorAsset": "你控制的一张支援承受1点恐惧"
+    },
+    "baitAndSwitch": {
+      "evadeAndMove": "躲避。若成功且该敌人为非精英，则躲避该敌人，并将其移动到一个相连的地点。",
+      "evadeAndSwitch": "躲避。仅可对相连地点上的非精英敌人使用。若成功，则躲避该敌人，并与其交换地点。"
+    },
+    "brokenBottle": {
+      "discardForDamage": "弃掉以造成+1伤害"
+    },
+    "callForBackup2": {
+      "rogueOption": "{'{'}rogue{'}'}卡牌：你可以移动到一个相连的地点",
+      "guardianOption": "{'{'}guardian{'}'}卡牌：对你所在地点的一个敌人造成1点伤害",
+      "seekerOption": "{'{'}seeker{'}'}卡牌：在你所在地点发现1个线索",
+      "mysticOption": "{'{'}mystic{'}'}卡牌：从任意卡牌上治疗1点恐惧",
+      "survivorOption": "{'{'}survivor{'}'}卡牌：从任意卡牌上治疗1点伤害"
+    },
+    "callOfMadness": {
+      "shuffleTekelili": "将忒咳哩-哩牌库顶的3张卡牌洗入你的牌库"
+    },
+    "corrosiveSlime": {
+      "devourResource": "个体代号8L-08吞噬你的1点资源",
+      "devourRandomCardFromHand": "个体代号8L-08吞噬你手牌中的一张随机卡牌"
+    },
+    "denyExistence": {
+      "cancelDiscardFromHand": "取消从你的手牌中弃牌",
+      "cancelLoseResources": "取消失去1点资源 | 取消失去{count}点资源",
+      "cancelLoseActions": "取消失去1个行动 | 取消失去{count}个行动"
+    },
+    "denyExistence5": {
+      "drawInstead": "改为抽取同样数量的卡牌，而不是弃牌",
+      "gainResourcesInstead": "改为获得1点资源 | 改为获得{count}点资源",
+      "gainActionsInstead": "改为获得1个行动 | 改为获得{count}个行动",
+      "healDamageInstead": "改为治疗1点伤害 | 改为治疗{count}点伤害",
+      "healHorrorInstead": "改为治疗1点恐惧 | 改为治疗{count}点恐惧"
+    },
+    "doppelganger1": {
+      "moveToLocationOfDoppelganger": "移动到分身者所在的地点",
+      "evadeEnemy": "躲避敌人"
+    },
+    "doubleDown2": {
+      "spendResources": "在翻倍下注上花费资源"
+    },
+    "empiricalHypothesis": {
+      "failBy2": "你的检定失败了2点或更多。",
+      "succeedBy3": "你的检定成功了3点或更多。",
+      "runOutOfCards": "你的手牌用尽了。",
+      "dealtDamageOrHorror": "你受到了伤害或恐惧。",
+      "discardTreacheryOrEnemy": "你从场上弃掉了一张诡计或敌人。",
+      "enterLocationWithShroud3": "你进入了隐蔽值为3或更高的地点。"
+    },
+    "enervation": {
+      "discardHighestCost": "选择手牌中印刷费用最高的卡牌，并将其弃掉"
+    },
+    "georgeBarnaby": {
+      "donePlacingCards": "完成在乔治·巴纳比下方放置卡牌"
+    },
+    "icebreakerLanding": {
+      "removeFrost": "从混乱袋中移除1个{'{'}frost{'}'}标记",
+      "recordSmallRadio": "在战役日志的“已回收物资”部分记录“小型收音机”"
+    },
+    "ltWilsonStewart": {
+      "healDamage": "从威尔逊·斯图尔特中尉身上治疗1点伤害",
+      "healHorror": "从威尔逊·斯图尔特中尉身上治疗1点恐惧",
+      "plus1SkillValue": "你的下一次技能检定获得+1技能值",
+      "drawCard": "抽1张卡牌",
+      "gainResource": "获得1点资源"
+    },
+    "manifestationsOfEvil": {
+      "addFrost": "向混乱袋中加入1个{'{'}frost{'}'}标记",
+      "shuffleTekelili": "按玩家顺序，每位调查员将忒咳哩-哩牌库顶的2张卡牌洗入自己的牌库"
+    },
+    "miasmaticTorment": {
+      "damage": "附着的支援承受1点伤害",
+      "horror": "附着的支援承受1点恐惧"
+    },
+    "onTheTrail1": {
+      "moveTwiceTowardsEnemy": "向该敌人的方向移动两次",
+      "discoverClueBetween": "在你与所选敌人之间的任意空地点发现1个线索"
+    },
+    "parlorHemlockHouse": {
+      "testForAdditionalDamage": "进行{'{'}intellect{'}'}（4）检定，若成功则额外造成1点伤害"
+    },
+    "songOfTheMagahBird": {
+      "resistTheCall": "抵抗召唤",
+      "driveAwayTheBirds": "驱散群鸟"
+    },
+    "stringOfCurses": {
+      "evadeAndPlaceDoom": "自动躲避该敌人，并在其身上放置1个毁灭标记。它在本轮剩余时间内不能受到伤害。在你所在地点发现1个线索。",
+      "defeatForResources": "若该敌人身上有1个或更多毁灭标记，则击败它。每有1个原本在其身上的毁灭标记，获得1点资源。"
+    },
+    "throughTheCracks": {
+      "disengage": "与每个与你交战的敌人脱离。",
+      "move": "移动到一个已翻开的相连地点。",
+      "disengageAndMove": "与每个与你交战的敌人脱离，并移动到一个已翻开的相连地点。"
+    },
+    "throughTheCracks2": {
+      "disengage": "与每个与你交战的敌人脱离。",
+      "move": "移动到一个已翻开的相连地点。",
+      "disengageAndMove": "与每个与你交战的敌人脱离，并移动到一个已翻开的相连地点。"
+    },
+    "untimelyTransaction1": {
+      "noOnePays": "无人支付",
+      "playCard": "打出卡牌"
     }
   },
   "tooltips": {
@@ -1597,6 +1728,22 @@
     "yaotl1": {
       "fastDiscardThe": "{'{'}fast{'}'}: 弃掉你牌库顶的一张卡牌。(每阶段仅限一次。)",
       "fastExhaustYaotl": "{'{'}fast{'}'}横置雅沃托：在本次技能检定期间，你每项技能得到加成，加成的点数等于你弃牌堆顶上的一张卡牌的对应技能图标数({'{'}skillWild{'}'}图标不计算在内)."
+    },
+    "obsidianClaw": {
+      "move": "{'{'}fast{'}'} 在你的回合中，横置此卡，并选择一个相距至多2个连接的地点：移动到所选地点。",
+      "flip": "{'{'}fast{'}'} 翻面此卡。（每轮至多一次。）"
+    }
+  },
+  "title": {
+    "joeDiamond": {
+      "chooseHunchCards": "直觉牌库",
+      "chooseHunch": "直觉牌库"
+    },
+    "stickToThePlan3": {
+      "chooseCards": "原定计划"
+    },
+    "underworldMarket2": {
+      "chooseMarketDeck": "地下市场"
     }
   }
 }

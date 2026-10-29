@@ -1,0 +1,67 @@
+{
+  "intro": {
+    "title": "剧本I：血之河",
+    "body": "“不管你得做什么，才能阻止她，阻止那个东西，”你准备出发去寻找朱莉娅时，克里斯托弗对你说，“去做就是了。”你整晚都在滨水区焦急地搜寻，却找不到任何确凿的线索。你带着不安的心情入睡，希望第二天会有更好的运气。"
+  },
+  "setup": {
+    "gatherSets": "收集以下遭遇牌组中的所有卡牌：<section class='encounter-sets grid'><div><img src='{setImgPath}/river-of-blood.png' /><span>血之河</span></div><div><img src='{setImgPath}/blood-blight.png' /><span>鲜血瘟疫</span></div><div><img src='{setImgPath}/blood-moon.png' /><span>血月</span></div><div><img src='{setImgPath}/children-of-blood.png' /><span>血之子女</span></div><div><img src='{setImgPath}/hunted.png' /><span>被追猎</span></div><div><img src='{setImgPath}/infected.png' /><span>感染</span></div><div><img src='{setImgPath}/misinformation.png' /><span>虚假信息</span></div><div><img src='{setImgPath}/preyed-upon.png' /><span>被猎食</span></div><div><img src='{setImgPath}/vermin.png' /><span>害虫</span></div><div><img src='{setImgPath}/dead-ends.png' /><span>死胡同{'{'}asterisk{'}'}</span></div><div><img src='{setImgPath}/flying-terrors.png' /><span>飞行恐惧{'{'}asterisk{'}'}</span></div></section><div class='center'>{'{'}asterisk{'}'}此遭遇牌组可在《诡镇奇谈：卡牌版》核心游戏中找到。</div><br><div class='center'>若在困难或专家难度下游玩，则不要收集_被猎食_与_害虫_遭遇牌组。改为收集以下遭遇牌组中的所有卡牌：</div><section class='encounter-sets grid'><div><img src='{setImgPath}/agents-of-zburamoarte.png' /><span>泽布拉莫阿拉的特工</span></div><div><img src='{setImgPath}/mongrels.png' /><span>杂种</span></div></section>",
+    "gatherAdditionalSets": "此外，若有3或4名调查员，则收集以下遭遇牌组中的所有卡牌：<section class='encounter-sets grid'><div><img src='{setImgPath}/afflicted.png' /><span>患病</span></div></section>",
+    "placeLocations": "按以下方式将每个地点放入游戏中：",
+    "dawn": "若在简单或标准难度下游玩，将每个_黎明_地点放入游戏中。将每个_黄昏_地点移出游戏。",
+    "dusk": "若在困难或专家难度下游玩，将每个_黄昏_地点放入游戏中。将每个_黎明_地点移出游戏。",
+    "startAt": "每位调查员从水街开始游戏。",
+    "waterfrontCivilians": "在大街出现1个滨水区平民敌人。",
+    "additionalWaterfrontCivilians": "若游戏中有3或4名调查员，则另在卫戍街出现1个滨水区平民敌人。",
+    "juliaStern": "收集朱莉娅·斯特恩敌人的每个副本。",
+    "onTheRun": "若在简单难度下游玩，将朱莉娅·斯特恩（*逃亡中*）放到一旁，不放入游戏中。将朱莉娅·斯特恩的其他每个副本移出游戏。",
+    "stalkingTheStreets": "若在标准难度下游玩，将朱莉娅·斯特恩（*街头潜伏*）放到一旁，不放入游戏中。将朱莉娅·斯特恩的其他每个副本移出游戏。",
+    "preyingUponArkham": "若在困难或专家难度下游玩，将朱莉娅·斯特恩（*猎食阿卡姆*）放到一旁，不放入游戏中。将朱莉娅·斯特恩的其他每个副本移出游戏。",
+    "setOutOfPlay": "将以下卡牌放到一旁，不放入游戏中：每个剩余的滨水区平民敌人、每个夜间捕食者敌人（若在困难或专家难度下游玩，则改为每个泽布拉莫阿拉之子敌人）、_感染_遭遇牌组中的每张卡牌、雷诺兹侦探故事支援，以及泽布拉莫阿拉的獠牙故事支援。",
+    "lairs": "将遭遇牌组顶部的2张卡牌与放到一旁的朱莉娅·斯特恩敌人一起洗匀。随机将其中1张背面朝下放在每个_巢穴_地点之下。"
+  },
+  "label": {
+    "r1": "“她或许还有希望。”（→ _结算1_）",
+    "r2": "“我们必须结束这个怪物。”（→ _结算2_）",
+    "spendExperienceToRemoveBlood": "<p>以小组为单位，共花费2个{'{'}perPlayer{'}'}经验，从混乱袋中移除1个{'{'}blood{'}'}标记<p>",
+    "doNotSpendExperience": "不花费经验"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "无结算",
+      "body": "<p>_若未达成结算（每位调查员都被击败）_：没过多久你就明白，夜里潜伏的不只是朱莉娅·斯特恩这一只怪物。它们无休止的追猎把你逼到了极限。你最后记得的，是那些生物俯视着你的样子，随后你幸运地失去了意识。你在黎明燃烧的黄色光线中醒来。收拾好心情后，你再次与雷诺兹侦探会合。</p><ul><li>在你的战役日志中记录*调查员没能阻止朱莉娅·斯特恩*。</li><li>在本战役剩余时间内，向混乱袋中加入1个{'{'}blood{'}'}标记。</li><li>每位调查员成为一张放到一旁的“鲜血瘟疫”弱点的持有者。</li><li>每位调查员获得等于胜利区中每张卡牌_胜利 X_ 值之和的经验。每位调查员还因为从错误中吸取了教训，额外获得3点经验。<ul><li>_经验_：{xp}</li></ul></li><li>跳至_结算4_。</li></ul>"
+    },
+    "resolution1": {
+      "title": "结算1",
+      "body": "<p>_结算1_：经过一场艰苦的战斗，你终于制服了你的猎物。你没有夺走她的性命，而是把朱莉娅打晕，准备与雷诺兹侦探重新会合，心里仍抱着或许有办法救她的希望。然而，当你回来带走她时，却发现她又一次消失在了阴影之中。你希望自己做的是正确的选择。不过眼下，你唯一的出路就是与雷诺兹侦探重新联络，查明最初到底是什么引发了这一切的流血事件。</p><ul><li>在你的战役日志中记录*调查员饶过了朱莉娅·斯特恩*。</li><li>每位调查员获得等于胜利区中每张卡牌_胜利 X_ 值之和的经验。<ul><li>_经验_：{xp}</li></ul></li><li>调查员可以决定以小组为单位，共花费2个{'{'}perPlayer{'}'}经验，从混乱袋中移除1个{'{'}blood{'}'}标记。</li><li>跳至_结算4_。</li></ul>"
+    },
+    "resolution2": {
+      "title": "结算2",
+      "body": "<p>_结算2_：你的追猎终于结束了。结束朱莉娅以及她那些受害者的性命，是一个令人遗憾的选择，但为了让滨水区重新恢复安全，这必须做。经过米斯卡塔尼克河岸上三个血腥的夜晚，你希望能与雷诺兹侦探重新联络，查明最初到底是什么引发了这一切。</p><ul><li>在你的战役日志中记录*调查员杀死了朱莉娅·斯特恩*。</li><li>在本战役剩余时间内，从混乱袋中移除1个{'{'}blood{'}'}标记。</li><li>每位调查员获得等于胜利区中每张卡牌_胜利 X_ 值之和的经验。<ul><li>_经验_：{xp}</li></ul></li><li>跳至_结算4_。</li></ul>"
+    },
+    "resolution3": {
+      "title": "结算3",
+      "body": "<p>_结算3_：彻夜的追猎漫长而艰辛，但朱莉娅太狡猾、也太迅捷，你的努力始终无功而返。搜查的第三天清晨，你担心只能等她下一次出手。不过眼下，你唯一的出路就是与雷诺兹侦探重新联络，查明最初到底是什么引发了这一切的流血事件。</p><ul><li>在你的战役日志中记录*调查员没能阻止朱莉娅·斯特恩*。</li><li>每位调查员获得等于胜利区中每张卡牌_胜利 X_ 值之和的经验。</li><li>每位调查员因为对即将到来的事情准备得更充分，额外获得2点经验。<ul><li>_经验_：{xp}</li></ul></li><li>前往_结算4_。</li></ul>"
+    },
+    "resolution4": {
+      "title": "结算4",
+      "body": "<p>_结算4_：你回到雷诺兹侦探的办公室，说明你所了解到的情况。他告诉你，他掌握的线索同样指向新地平线肉类加工厂，以及在大楼附近看到的一群可疑人员，他们穿着长袍，而不是工人们通常穿的围裙与连体工装。“正是朱莉娅工作的地方，”雷诺兹说，“看来那地方值得走一趟。”</p><ul><li>雷诺兹侦探加入调查！选择一名调查员，成为一张放到一旁的雷诺兹侦探故事支援的持有者。</li><li>若“调查员找到了一把献祭匕首”，则选择一名调查员，成为一张放到一旁的泽布拉莫阿拉的獠牙故事支援的持有者。</li><li>每位在剧本结束时身上封印着3个{'{'}blood{'}'}标记的调查员，若尚未成为“鲜血瘟疫”弱点的持有者，则成为一张放到一旁的“鲜血瘟疫”弱点的持有者。</li><li>释放每一个被封印的{'{'}blood{'}'}标记，并将它们放回混乱袋。</li><li>前往_剧本II：新地平线_。</li></ul>"
+    },
+    "xp": {
+      "noResolution": "因为从错误中吸取了教训",
+      "resolution3": "因为对即将到来的事情准备得更充分"
+    }
+  },
+  "spendExperience": "以小组为单位，共花费2个{'{'}perPlayer{'}'}经验，从混乱袋中移除1个{'{'}blood{'}'}标记",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X。X为当前的密谋编号。",
+      "tablet": "-2。若失败且你处于_巢穴_地点，则承受1点恐惧。",
+      "elderThing": "-3。若失败且你的调查员身上封印着1个或以上{'{'}blood{'}'}（*鲜血*）标记，则在本次检定结算后，释放其中1个标记，并承受1点伤害。"
+    },
+    "hardExpert": {
+      "skull": "-X。X比当前的密谋编号多1。",
+      "tablet": "-3。若你处于_巢穴_地点，则承受1点恐惧。",
+      "elderThing": "-4。若你的调查员身上封印着1个或以上{'{'}blood{'}'}（*鲜血*）标记，则在本次检定结算后，释放其中1个标记，并承受1点直接伤害。"
+    }
+  }
+}

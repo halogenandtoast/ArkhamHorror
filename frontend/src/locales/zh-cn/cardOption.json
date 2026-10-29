@@ -1,0 +1,29 @@
+{
+  "cardOption": {
+    "title": "卡牌选项",
+    "configure": "卡牌选项",
+    "filterPlaceholder": "筛选带有选项的卡牌…",
+    "clear": "清除",
+    "c11582": {
+      "abilities": {
+        "1": "{'{'}fast{'}'} 横置骇人“面具”：与每个敌人脱离。直到你的下个回合开始前，你不能移动，也不能对敌人造成伤害或与之交战。"
+      },
+      "onlyWhenEngaged": {
+        "label": "仅在交战时提供"
+      }
+    },
+    "c11756a": {
+      "abilities": {
+        "1": "{'{'}reaction{'}'} 当你获得1点或更多资源时：将其中1点资源放置在好钱上。"
+      },
+      "stopAtFiveResources": {
+        "label": "放置资源达到5点时停止提供"
+      }
+    },
+    "c11764": {
+      "treatAsPartiallyFlooded": {
+        "label": "将完全被淹没视为部分被淹没"
+      }
+    }
+  }
+}

@@ -60,5 +60,28 @@
       "drive": "如果你是此载具的驾驶员：抽取遭遇牌库顶的卡牌。然后，将此载具移动到一个连接的_道路_地点。（每轮最多一次。）",
       "stop": "如果你是此载具的驾驶员：停车。将此载具翻面。"
     }
+  },
+  "setup": {
+    "gatherSets": "收集以下遭遇牌组中的所有卡牌：*高速中的恐怖*、*印斯茅斯上空的迷雾*、*故障*、*破碎的记忆*与*远古邪恶*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/horror-in-high-gear.png' /><img src='{setImgPath}/fog-over-innsmouth.png' /><img src='{setImgPath}/malfunction.png' /><img src='{setImgPath}/shattered-memories.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
+    "roadDeck": "组建道路牌库。按以下步骤进行：",
+    "findRoadLocations": "找到猎鹰角接近路，以及全部6张绕远路。它们各自是一张老印斯茅斯路地点的已揭示面。将它们各自放到一旁，不放入游戏中。",
+    "bottomThree": "将放到一旁的猎鹰角接近路与两张老印斯茅斯路地点洗在一起，组成道路牌库底部的三张牌。",
+    "remainingOnTop": "将其余所有老印斯茅斯路地点以随机顺序放在牌库顶部。",
+    "unrevealedSide": "道路牌库中的所有牌都应只显示老印斯茅斯路的一面，使玩家无法分辨哪张是哪张。",
+    "putRoadIntoPlay": "将道路牌库顶部的3张牌从左到右排成一条直线放入游戏中，其中左侧为“后方”，右侧为“前方”。",
+    "chooseVehicles": "选择载具。本剧本中调查员可以使用两辆载具：托马斯·道森的汽车与伊丽娜·哈珀的汽车。每位调查员必须选择一辆载具乘坐。同一辆载具最多可以搭乘两名调查员。",
+    "vehiclesBeginAtFront": "每辆至少有一名调查员乘坐的载具，都从前方的老印斯茅斯路地点开始游戏。将其他每辆载具移出游戏。",
+    "runningSide": "每辆载具都以其行驶中一面朝上开始游戏。",
+    "beginInVehicle": "每位调查员从其选择乘坐的载具中开始游戏。",
+    "triggerRoad": "该地点被揭示时，结算其道路X关键词。",
+    "chooseDrivers": "选择司机。每辆载具中必须指定一名调查员为该载具的司机。",
+    "driverNote": "每辆有至少一名调查员乘坐的载具，都必须始终有一名司机。若司机离开载具或被淘汰，则从该载具中选择另一名调查员成为新的司机。",
+    "playerCount": "根据游戏中的玩家人数：",
+    "onePlayer": "若游戏中恰有1名玩家，不做任何改动。",
+    "twoOrThreePlayers": "若游戏中有2–3名玩家，在已收集的遭遇牌组中随机搜寻1个_载具_敌人，并将其生成在最后方的地点。",
+    "fourPlayers": "若游戏中恰有4名玩家，在已收集的遭遇牌组中随机搜寻2个_载具_敌人，并将它们各自生成在最后方的地点。",
+    "checkCampaignLog": "查看战役日志。根据以下情况，本剧本应使用密谋1的另一版本。将密谋1的另一版本移出游戏。",
+    "theChaseIsOnV2": "若_魔鬼礁的恐怖已死亡_，使用密谋1a——“追逐开始！”（版本II）。",
+    "theChaseIsOnV1": "否则，使用密谋1a——“追逐开始！”（版本I）。"
   }
 }

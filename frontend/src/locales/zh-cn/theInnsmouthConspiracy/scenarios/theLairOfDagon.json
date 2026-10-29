@@ -101,5 +101,27 @@
     "grandEntryway": {
       "resign": "你逃离了达贡巢穴。"
     }
+  },
+  "setup": {
+    "gatherSets": "收集以下遭遇牌组中的所有卡牌：*达贡的巢穴*、*达贡的特工*、*淹没的洞穴*、*朔望*、*黑暗邪教*与*锁闭之门*。这些遭遇牌组以下列图标表示：<section class='encounter-sets'><img src='{setImgPath}/lair-of-dagon.png' /><img src='{setImgPath}/agents-of-dagon.png' /><img src='{setImgPath}/flooded-caves.png' /><img src='{setImgPath}/syzygy.png' /><img src='{setImgPath}/dark-cult.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
+    "placeKeys": "按以下方式放置每把钥匙：",
+    "faceupKeys": "将黑色、蓝色、绿色、紫色与红色钥匙以正面朝上的方式放到一旁。",
+    "facedownKeys": "将白色与黄色钥匙以背面朝下的方式放到一旁。将它们洗匀，使你无法分辨哪把是哪把。",
+    "placeLocations": "将以下地点放入游戏中：大门廊、污秽走廊、两张一楼大厅、两张二楼大厅，以及三楼大厅。",
+    "startAt": "每位调查员从大门廊开始游戏。",
+    "setAsideOtherLocations": "将其他每个地点放到一旁，不放入游戏中。",
+    "setAsideCards": "将以下牌放到一旁，不放入游戏中：两张朔望诡计、两张潮汐排列诡计、双面的伊哈-恩赛雕像故事支援、达贡的使徒敌人，以及双面的达贡敌人。",
+    "checkMemories": "查看战役日志中的“已恢复的记忆”部分。若其中……",
+    "fourOrFewer": "……记录的记忆为4条或更少，向混乱袋中加入5个{'{'}bless{'}'}标记。",
+    "fiveToSeven": "……记录的记忆为5–7条，向混乱袋中加入2个{'{'}curse{'}'}标记。",
+    "eightOrMore": "……记录的记忆为8条或更多，向混乱袋中加入5个{'{'}curse{'}'}标记。",
+    "jailbreak": "查看战役日志中的“已恢复的记忆”部分。若“已恢复的记忆”下列出了_一次越狱_，则在收藏中搜寻在“可能的嫌疑人”下被圈出的_嫌疑人_敌人，并将其放到一旁，不放入游戏中。",
+    "checkSecretCult": "查看战役日志中的“已恢复的记忆”部分。",
+    "theInitiationV1": "若“已恢复的记忆”下列出了_一次与秘密邪教的遭遇_，则在组建密谋牌库时，使用密谋1a——“入会仪式（版本I）”，并将密谋1a——“入会仪式（版本II）”移出游戏。",
+    "theInitiationV2": "否则，在组建密谋牌库时，使用密谋1a——“入会仪式（版本II）”，并将密谋1a——“入会仪式（版本I）”移出游戏。",
+    "checkStickTogether": "查看战役日志中的“已恢复的记忆”部分。",
+    "whatLurksBelowV1": "若“已恢复的记忆”下列出了_一个决定：同舟共济_，则在收藏中搜寻托马斯·道森，并使其在任一调查员的控制下放入游戏中。在组建密谋牌库时，使用密谋2a——“潜伏于下的存在（版本I）”，并将密谋2a——“潜伏于下的存在（版本II）”移出游戏。",
+    "whatLurksBelowV2": "否则，将托马斯·道森放到一旁，不放入游戏中。在组建密谋牌库时，使用密谋2a——“潜伏于下的存在（版本II）”，并将密谋2a——“潜伏于下的存在（版本I）”移出游戏。",
+    "floodTokens": "将洪水标记加入筹码库。"
   }
 }

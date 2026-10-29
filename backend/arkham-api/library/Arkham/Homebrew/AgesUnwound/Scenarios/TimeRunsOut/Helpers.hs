@@ -213,6 +213,7 @@ resolveFlippedLocation :: ReverseQueue m => Card -> m ()
 resolveFlippedLocation card = do
   obtainCard card
   let flipped = forceFlipCard card
+  replaceCard (toCardId card) flipped
   lead <- getLead
   case toCardType flipped of
     StoryType -> resolveStory lead flipped

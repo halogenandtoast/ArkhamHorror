@@ -31,6 +31,7 @@ import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Actions (actionsToList)
 import Arkham.Asset.Types (Asset, Field (..))
+import Arkham.Attack.Types (AttackTarget (..), EnemyAttackDetails (..))
 import Arkham.Campaign.Option
 import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
@@ -284,9 +285,26 @@ handleInvestigatorEliminated a@InvestigatorAttrs {..} iid = do
     isNotEliminatedChoice = \case
       TargetLabel _ msgs -> none isAttackingThisInvestigator msgs && none isSelfDiscard msgs
       _ -> True
-  let removeEliminatedChoices = filter isNotEliminatedChoice
+    -- A massive attack still has work to do when one of its targets leaves.
+    -- Keep the attack (and its when-attacks abilities), removing only that
+    -- investigator from its targets instead of dropping the whole choice.
+    keepEliminatedChoice choice = case choice of
+      TargetLabel target [EnemyAttack details] -> case details.target of
+        MassiveAttackTargets targets -> do
+          let remaining = filter (not . isTarget iid) targets
+          guard $ notNull remaining
+          pure $ TargetLabel target [EnemyAttack details {attackTarget = MassiveAttackTargets remaining}]
+        _ -> guard (isNotEliminatedChoice choice) $> choice
+      _ -> guard (isNotEliminatedChoice choice) $> choice
+    removeEliminatedChoices = mapMaybe keepEliminatedChoice
+    isAttackChoice = \case
+      TargetLabel _ [EnemyAttack _] -> True
+      _ -> False
+  leadPlayer <- getLeadPlayer
   lift $ mapQueue \case
-    Ask who (ChooseOneAtATime choices) -> Ask who (ChooseOneAtATime $ removeEliminatedChoices choices)
+    Ask who (ChooseOneAtATime choices) ->
+      let owner = if who == investigatorPlayerId && any isAttackChoice choices then leadPlayer else who
+       in Ask owner (ChooseOneAtATime $ removeEliminatedChoices choices)
     Ask who (ChooseN n choices) -> Ask who (ChooseN n $ removeEliminatedChoices choices)
     other -> other
   pure

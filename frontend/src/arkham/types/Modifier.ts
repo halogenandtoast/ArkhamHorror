@@ -37,6 +37,7 @@ export function cannotCommitCardsToWords(m: { tag: 'CannotCommitCards', contents
 
 export type ModifierType
   = ActionSkillModifier
+  | { tag: 'CannotSpendLastActions', contents: number }
   | AddKeyword
   | AddSkillValue
   | AnySkillValue
@@ -540,6 +541,10 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
         }, 'GridOffset'),
       ], 'UIModifierType')
     }, 'UIModifier'),
+  JsonDecoder.object({
+    tag: JsonDecoder.literal('CannotSpendLastActions'),
+    contents: JsonDecoder.number(),
+  }, 'CannotSpendLastActions'),
   JsonDecoder.object({
     tag: JsonDecoder.string()
   }, 'OtherModifier').map(({tag}) => ({ tag: 'OtherModifier', contents: tag})),

@@ -417,8 +417,9 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
       AdditionalActionsCost {} -> pure True
       AdditionalActionsCostThatReducesResourceCostBy n cost -> do
         spendableActions <- field InvestigatorRemainingActions iid
+        blockedActions <- getUnspendableActionCount iid
         let totalActions = totalActionCost cost
-        let reduction = max 0 ((spendableActions - totalActions) * n)
+        let reduction = max 0 ((spendableActions - blockedActions - totalActions) * n)
         withModifiers iid (toModifiers source [ExtraResources reduction]) do
           getCanAffordCost_ iid source actions windows' canModify cost
       RevealCost {} -> pure True
@@ -506,7 +507,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
             additionalActions <- field InvestigatorAdditionalActions iid
             additionalActionCount <- countM (additionalActionCovers source actions) additionalActions
             actionCount <- field InvestigatorRemainingActions iid
-            pure $ actionCount + additionalActionCount >= modifiedActionCost
+            blockedActions <- getUnspendableActionCount iid
+            pure $ max 0 (actionCount + additionalActionCount - blockedActions) >= modifiedActionCost
       AdditionalActionCost -> getCanAffordCost_ iid source actions windows' canModify (ActionCost 1)
       AssetClueCost _ aMatcher gv -> do
         totalClueCost <- getPlayerCountValue gv

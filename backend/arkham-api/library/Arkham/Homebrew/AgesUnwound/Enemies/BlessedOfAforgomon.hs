@@ -1,10 +1,12 @@
 module Arkham.Homebrew.AgesUnwound.Enemies.BlessedOfAforgomon (blessedOfAforgomon) where
 
+import Arkham.Ability
+import Arkham.Classes.HasQueue (overMessagesM)
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (
-  ModifierType (FewerActions),
-  interactAsOneOf,
+  ModifierType (CanBeFoughtAsIfAtYourLocation, CannotBeEvaded, CannotSpendLastActions),
   modifySelect,
+  modifySelf,
  )
 import Arkham.Homebrew.AgesUnwound.CardDefs.Enemies qualified as Cards
 import Arkham.Matcher
@@ -12,35 +14,49 @@ import Arkham.Placement
 
 newtype BlessedOfAforgomon = BlessedOfAforgomon EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-{- | "__Forced__ - When Blessed of Aforgomon would spawn at any location: Put
-Blessed of Aforgomon into play next to the agenda deck instead."
-
-That is the whole of its spawn instruction, so it is 'SpawnPlaced' rather than a
-__Forced__ ability: the card never reaches a location, and expressing it as a
-spawn means nothing has to cancel a spawn that has already happened.
--}
 blessedOfAforgomon :: EnemyCard BlessedOfAforgomon
-blessedOfAforgomon =
-  enemyWith BlessedOfAforgomon Cards.blessedOfAforgomon
-    $ spawnAtL
-    ?~ SpawnPlaced NextToAgenda
+blessedOfAforgomon = enemy BlessedOfAforgomon Cards.blessedOfAforgomon
 
-{- | "You may fight or evade Blessed of Aforgomon as if it were at your location
-(it is not engaged with you). /
-While Blessed of Aforgomon is ready, each investigator must take one fewer action
-during each of their turns."
+instance HasAbilities BlessedOfAforgomon where
+  getAbilities (BlessedOfAforgomon a) =
+    map allowUnengagedEvade
+      $ extend1 a
+      $ mkAbility a 1
+      $ forced
+      $ EnemyWouldSpawnAt (be a) Anywhere
+   where
+    allowUnengagedEvade ability
+      | abilityIs ability #evade =
+          overrideAbilityCriteria
+            (CriteriaOverride $ EnemyCriteria $ ThisEnemy $ EnemyWithEvade <> EnemyWithoutModifier CannotBeEvaded)
+            ability
+      | otherwise = ability
 
-'interactAsOneOf' is the engine's shape for "fight or evade it as if it were
-here": it closes the ordinary routes and reopens them through the matcher, so the
-enemy stays unengaged.
--}
+-- Fight and evade permissions do not move or engage the enemy.
 instance HasModifiersFor BlessedOfAforgomon where
   getModifiersFor (BlessedOfAforgomon a) = do
-    interactAsOneOf a (be a)
-    unless a.exhausted $ modifySelect a Anyone [FewerActions 1]
+    modifySelf a [CanBeFoughtAsIfAtYourLocation]
+    unless a.exhausted $ modifySelect a Anyone [CannotSpendLastActions 1]
 
 instance RunMessage BlessedOfAforgomon where
-  runMessage msg (BlessedOfAforgomon attrs) =
-    BlessedOfAforgomon <$> runQueueT (liftRunMessage msg attrs)
+  runMessage msg e@(BlessedOfAforgomon attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      -- The first would-spawn window precedes EnemySpawn, so its details
+      -- still live on the queue. The later window uses stored spawn details.
+      lift $ overMessagesM $ pure . singleton . redirectSpawn
+      updateSpawnDetails attrs.id \details ->
+        details {spawnDetailsSpawnAt = SpawnPlaced NextToAgenda}
+      pure e
+    _ -> BlessedOfAforgomon <$> liftRunMessage msg attrs
+   where
+    redirectSpawn = \case
+      EnemySpawn details
+        | details.enemy == attrs.id ->
+            EnemySpawn details {spawnDetailsSpawnAt = SpawnPlaced NextToAgenda}
+      Do inner -> Do $ redirectSpawn inner
+      When inner -> When $ redirectSpawn inner
+      After inner -> After $ redirectSpawn inner
+      Will inner -> Will $ redirectSpawn inner
+      other -> other

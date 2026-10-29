@@ -71,7 +71,16 @@ getCardCodeAliases =
     Just subs -> mapFromList [(new, old) | (old, new) <- mapToList subs]
 
 getInResolution :: HasGame m => m Bool
-getInResolution = fromMaybe False <$> scenarioFieldMaybe ScenarioInResolution
+getInResolution = fromMaybe False <$> getInResolutionMaybe
+
+{- | 'Nothing' when there is no scenario at all: a campaign step, interlude or
+prelude. Callers that only want to know whether a resolution is running can read
+'getInResolution', but anything reading per-scenario state -- the elimination
+flags above all -- needs to tell "mid-scenario" from "no scenario", because that
+state is a leftover of the scenario that just ended rather than a fact about now.
+-}
+getInResolutionMaybe :: HasGame m => m (Maybe Bool)
+getInResolutionMaybe = scenarioFieldMaybe ScenarioInResolution
 
 getIsStandalone :: HasGame m => m Bool
 getIsStandalone = isNothing <$> selectOne TheCampaign

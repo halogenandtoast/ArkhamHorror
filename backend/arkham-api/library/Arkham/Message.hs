@@ -2029,6 +2029,10 @@ pattern EnemyAttackIfEngaged eid miid = EnemyAttackMessage (EnemyAttackIfEngaged
 pattern EnemyAttacks :: [Message] -> Message
 pattern EnemyAttacks msgs = EnemyAttackMessage (EnemyAttacks_ msgs)
 
+-- | The entire attack batch has resolved, including attacks that were skipped.
+pattern FinishedEnemyAttacks :: [EnemyId] -> Message
+pattern FinishedEnemyAttacks eids = EnemyAttackMessage (FinishedEnemyAttacks_ eids)
+
 pattern ChangeEnemyAttackTarget :: EnemyId -> Target -> Message
 pattern ChangeEnemyAttackTarget eid t = EnemyAttackMessage (ChangeEnemyAttackTarget_ eid t)
 

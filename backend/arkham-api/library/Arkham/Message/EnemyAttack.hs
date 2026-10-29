@@ -11,16 +11,17 @@ import Arkham.Source
 import Arkham.Target
 import Data.Aeson.TH
 
--- | Messages that originate from / coordinate an enemy attack.
---
--- Re-exported by "Arkham.Message"; call sites should refer to the bidirectional
--- pattern synonyms in "Arkham.Message" (e.g. 'EnemyAttack', 'InitiateEnemyAttack',
--- 'PerformEnemyAttack', 'EnemiesAttack', etc.) rather than the raw constructors
--- below. The trailing underscore is what lets the pattern synonyms preserve the
--- pre-extraction public names.
---
--- Note: the wrapper type is named 'EnemyAttackMessage' rather than 'AttackMessage'
--- because 'AttackMessage' already exists as a value in "Arkham.Message.Type".
+{- | Messages that originate from / coordinate an enemy attack.
+
+Re-exported by "Arkham.Message"; call sites should refer to the bidirectional
+pattern synonyms in "Arkham.Message" (e.g. 'EnemyAttack', 'InitiateEnemyAttack',
+'PerformEnemyAttack', 'EnemiesAttack', etc.) rather than the raw constructors
+below. The trailing underscore is what lets the pattern synonyms preserve the
+pre-extraction public names.
+
+Note: the wrapper type is named 'EnemyAttackMessage' rather than 'AttackMessage'
+because 'AttackMessage' already exists as a value in "Arkham.Message.Type".
+-}
 data EnemyAttackMessage
   = EnemiesAttack_
   | RelentlessEnemiesAttack_
@@ -32,6 +33,7 @@ data EnemyAttackMessage
   | EnemyAttackFromDiscard_ InvestigatorId Source Card
   | EnemyAttackIfEngaged_ EnemyId (Maybe InvestigatorId)
   | EnemyAttacks_ [Message]
+  | FinishedEnemyAttacks_ [EnemyId]
   | ChangeEnemyAttackTarget_ EnemyId Target
   | ChangeEnemyAttackDetails_ EnemyId EnemyAttackDetails
   deriving stock (Show, Ord, Eq, Data)

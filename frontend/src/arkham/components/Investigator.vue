@@ -309,6 +309,14 @@ watch(() => choices.value, () => {
 
 const modifiers = computed(() => props.investigator.modifiers)
 
+const blockedActions = computed(() => modifiers.value?.reduce((total, modifier) =>
+  total + (modifier.type.tag === 'CannotSpendLastActions' ? Math.max(0, modifier.type.contents) : 0), 0) ?? 0)
+
+const blockedActionSources = computed(() => modifiers.value?.flatMap(modifier =>
+  modifier.type.tag === 'CannotSpendLastActions'
+    ? Array.from({ length: Math.max(0, modifier.type.contents) }, () => sourceCardCode(modifier.source, props.game))
+    : []) ?? [])
+
 const blankedModifier = computed(() => {
   return modifiers.value?.find(
     (m) =>
@@ -474,7 +482,7 @@ const spadeInjury = computed(() => {
 <template>
   <div v-if="portrait" class="portrait-container" :data-id="investigator.id" v-bind="cardDrop">
     <span v-if="isMobile">
-      <i class="action" v-for="n in investigator.remainingActions" :key="n"></i>
+      <i class="action" v-for="n in investigator.remainingActions" :key="n" :class="{ 'action--blocked': n <= blockedActions }" :data-image-id="n <= blockedActions ? blockedActionSources[n - 1] : undefined" :title="n <= blockedActions ? 'This action cannot be spent while the restriction is active' : undefined"></i>
       <template v-for="(action, actionIndex) in investigator.additionalActions" :key="actionIndex">
         <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigatorClass.toLowerCase()}ActionButton`]">
           <i class="action"></i>
@@ -584,7 +592,7 @@ const spadeInjury = computed(() => {
               <i class="heart" v-if="heartInjury"></i>
               <i class="diamond" v-if="diamondInjury"></i>
               <i class="club" v-if="clubInjury"></i>
-              <i class="action" v-for="n in investigator.remainingActions" :key="n"></i>
+              <i class="action" v-for="n in investigator.remainingActions" :key="n" :class="{ 'action--blocked': n <= blockedActions }" :data-image-id="n <= blockedActions ? blockedActionSources[n - 1] : undefined" :title="n <= blockedActions ? 'This action cannot be spent while the restriction is active' : undefined"></i>
               <template v-for="(action, actionIndex) in investigator.additionalActions" :key="actionIndex">
                 <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigatorClass.toLowerCase()}ActionButton`]">
                   <i class="action"></i>
@@ -631,7 +639,7 @@ const spadeInjury = computed(() => {
               @click="$emit('choose', ability.index)"
               />
             <button
-            :class="{ active: endTurnAction !== -1 && investigator.remainingActions === 0 }"
+            :class="{ active: endTurnAction !== -1 && investigator.remainingActions <= blockedActions }"
             :disabled="endTurnAction == -1"
             :data-game-actionable="endTurnAction !== -1 || undefined"
             @click="$emit('choose', endTurnAction)"
@@ -707,6 +715,10 @@ const spadeInjury = computed(() => {
 </template>
 
 <style scoped>
+i.action--blocked {
+  opacity: 0.3;
+}
+
 i.action {
   font-family: 'Arkham';
   font-style: normal;

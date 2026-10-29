@@ -1,9 +1,14 @@
 module Arkham.Enemy.EngagementSpec (spec) where
 
+import Arkham.Attack qualified as Attack
 import Arkham.Enemy.CardDefs.NightOfTheZealot.Rats qualified as Cards
 import Arkham.Enemy.Types (Field (..))
+import Arkham.Exhaust (mkExhaustion)
+import Arkham.Helpers.Cost (getCanAffordCost)
+import Arkham.Homebrew.AgesUnwound.CardDefs.Enemies qualified as AgesUnwound
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher qualified as Matcher
+import Arkham.Phase (Phase (EnemyPhase))
 import Arkham.Placement
 import Arkham.Projection
 import TestImport.New
@@ -23,6 +28,129 @@ swarmingEnemyEngagedWith self location = do
 
 spec :: Spec
 spec = describe "Enemy engagement" do
+  for_ [(True, 1), (False, 1), (True, 3)] \(swarmFirst, swarmCount) ->
+    it
+      ( "splits The Myriad attacks with swarm first "
+          <> show swarmFirst
+          <> " and "
+          <> show swarmCount
+          <> " swarm cards"
+      )
+      . gameTest
+      $ \self -> do
+        other <- addInvestigator Investigators.rolandBanks
+        location <- testLocation
+        self `moveTo` location
+        other `moveTo` location
+        host <- testEnemyWithDef AgesUnwound.theMyriad id & prop @"healthDamage" 1
+        run $ PlaceEnemy (toId host) (AtLocation $ toId location)
+        replicateM_ swarmCount do
+          card <- genCard Cards.swarmOfRats
+          run $ PlacedSwarmCard (toId host) card
+        swarm <- select $ Matcher.SwarmOf (toId host)
+        let
+          attackers = if swarmFirst then swarm <> [toId host] else toId host : swarm
+          half = length attackers `div` 2
+        run $ SetPhase EnemyPhase
+        for_ [1 :: Int, 2] \batch -> do
+          when (batch > 1) $ run $ Ready (toTarget host)
+          run EnemiesAttack
+          for_ (zip [0 :: Int ..] attackers) \(n, attacker) -> do
+            chooseTarget attacker
+            when (n == 0) useForcedAbilityAcrossQuestions
+            -- Consecutive attacks on the same investigator are legal when the
+            -- remaining attacks can still complete an even split.
+            when (n < half) $ chooseTarget self
+            applyAllDamage
+          -- A new batch in the same phase must ask for the Forced again and
+          -- allocate its own even split, rather than retaining the old record.
+          field EnemyMeta (toId host) `shouldReturn` toJSON (False, [] :: [InvestigatorId])
+          self.damage `shouldReturn` (batch * half)
+          other.damage `shouldReturn` (batch * half)
+
+  it "continues The Myriad swarm silently when an investigator is defeated during its attacks" . gameTest $ \self -> do
+    other <- addInvestigator Investigators.rolandBanks
+    withProp @"health" 2 self
+    location <- testLocation
+    self `moveTo` location
+    other `moveTo` location
+    host <- testEnemyWithDef AgesUnwound.theMyriad id & prop @"healthDamage" 1
+    run $ PlaceEnemy (toId host) (AtLocation $ toId location)
+    replicateM_ 4 do
+      card <- genCard Cards.swarmOfRats
+      run $ PlacedSwarmCard (toId host) card
+    swarm <- select $ Matcher.SwarmOf (toId host)
+    run $ SetPhase EnemyPhase
+    run EnemiesAttack
+    for_ (zip [0 :: Int ..] (toId host : swarm)) \(n, attacker) -> do
+      chooseTarget attacker
+      when (n == 0) useForcedAbilityAcrossQuestions
+      case n of
+        0 -> chooseTarget self
+        1 -> chooseTarget other
+        2 -> chooseTarget self
+        _ -> pure () -- Only the survivor remains: no Forced or target click.
+      applyAllDamage
+    self.defeated `shouldReturn` True
+    other.damage `shouldReturn` 3
+    assertNone $ Matcher.enemyIs AgesUnwound.theMyriad <> Matcher.ReadyEnemy
+    field EnemyMeta (toId host) `shouldReturn` toJSON (False, [] :: [InvestigatorId])
+
+  it "finishes The Myriad attack batch when a pending swarm card is exhausted" . gameTest $ \self -> do
+    other <- addInvestigator Investigators.rolandBanks
+    location <- testLocation
+    self `moveTo` location
+    other `moveTo` location
+    host <- testEnemyWithDef AgesUnwound.theMyriad id & prop @"healthDamage" 1
+    run $ PlaceEnemy (toId host) (AtLocation $ toId location)
+    card <- genCard Cards.swarmOfRats
+    run $ PlacedSwarmCard (toId host) card
+    swarm <- selectJust $ Matcher.SwarmOf (toId host)
+    run $ SetPhase EnemyPhase
+    run
+      $ EnemyAttacks
+        [ EnemyAttack
+            $ (Attack.enemyAttack host host self)
+              { Attack.attackAfter = [Exhaust $ mkExhaustion GameSource $ toTarget swarm]
+              }
+        , EnemyAttack $ Attack.enemyAttack swarm host self
+        ]
+    chooseTarget host
+    useForcedAbilityAcrossQuestions
+    chooseTarget self
+    applyAllDamage
+    -- The queued swarm attack is skipped because it is now exhausted, but
+    -- the batch's completion message must still reach the host.
+    assertAny $ Matcher.EnemyWithId swarm <> Matcher.ExhaustedEnemy
+    chooseTarget swarm
+    field EnemyMeta (toId host) `shouldReturn` toJSON (False, [] :: [InvestigatorId])
+    self.damage `shouldReturn` 1
+    other.damage `shouldReturn` 0
+
+  it "keeps Blessed of Aforgomon beside the agenda and allows fighting and evading it" . gameTest $ \self -> do
+    location <- testLocation
+    self `moveTo` location
+    enemy <- testEnemyWithDef AgesUnwound.blessedOfAforgomon id
+    enemy `spawnAt` location
+    useForcedAbility
+    field EnemyPlacement (toId enemy) `shouldReturn` NextToAgenda
+    duringTurn self do
+      assertAny $ Matcher.enemyIs AgesUnwound.blessedOfAforgomon <> Matcher.CanFightEnemy (toSource self)
+      assertAny $ Matcher.enemyIs AgesUnwound.blessedOfAforgomon <> Matcher.CanEvadeEnemy (toSource self)
+    withProp @"remainingActions" 2 self
+    getCanAffordCost self.id (TestSource mempty) [] [] (ActionCost 1) `shouldReturn` True
+    getCanAffordCost self.id (TestSource mempty) [] [] (ActionCost 2) `shouldReturn` False
+    withProp @"remainingActions" 1 self
+    getCanAffordCost self.id (TestSource mempty) [] [] (ActionCost 1) `shouldReturn` False
+    run $ Exhaust (mkExhaustion GameSource $ toTarget enemy)
+    getCanAffordCost self.id (TestSource mempty) [] [] (ActionCost 1) `shouldReturn` True
+    self.remainingActions `shouldReturn` 1
+    run $ Ready (toTarget enemy)
+    assertAny $ Matcher.EnemyWithId (toId enemy) <> Matcher.ReadyEnemy
+    getCanAffordCost self.id (TestSource mempty) [] [] (ActionCost 1) `shouldReturn` False
+    getCanAffordCost self.id (TestSource mempty) [] [] (ActionCost 0) `shouldReturn` True
+    self.remainingActions `shouldReturn` 1
+
   -- Regression for issue #5292 (Redeem a Former Colleague moving an engaged
   -- Edwin Bennet). `EnemyEntered` used to preserve an `InThreatArea` placement
   -- and let `Do (EnemyMove)` rewrite it, but that write runs *after* the

@@ -133,13 +133,14 @@ const marketDeckSlots = computed(() => {
   })
 })
 
-// A flipped asset shows its real back only when that back has published art —
-// which is exactly the cards the database carries a "<code>b" entry for. Assets
-// flipped to *hide* them (Sophie, the Hemlock allies) have no such entry, so they
-// keep the generic player back and cannot leak what they are.
-const hasBackArt = computed(() =>
-  dbCardStore.getDbCard(`${cardArt(cardCode.value)}b`) !== null
-)
+// The database aliases every front under its "b" code for overlay lookups.
+// Only an explicit back record or a double-sided card implies printed back art.
+// Facedown single-sided assets use the player back and retain their front hover.
+const hasBackArt = computed(() => {
+  const backCode = `${cardArt(cardCode.value)}b`
+  const back = dbCardStore.getDbCard(backCode)
+  return back !== null && (back.code === backCode || back.double_sided)
+})
 
 const image = computed(() => {
   if (props.asset.flipped) {

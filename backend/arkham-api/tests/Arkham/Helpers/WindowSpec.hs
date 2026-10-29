@@ -20,6 +20,22 @@ import TestImport.New
 -- is the normal outcome rather than an edge case.
 spec :: Spec
 spec = describe "after-attack windows with a removed enemy" do
+  it "matches a Massive attack before it is split into individual targets" . gameTest $ \self -> do
+    location <- testLocation
+    enemy <- testEnemy
+    self `moveTo` location
+    enemy `spawnAt` location
+    let details =
+          (Attack.enemyAttack (toId enemy) (toId enemy) (toId self))
+            { Attack.attackTarget = Attack.MassiveAttackTargets [toTarget self]
+            }
+    windowMatches
+      (toId self)
+      (TestSource mempty)
+      (Window.mkWhen $ Window.EnemyAttacks details)
+      (Matcher.EnemyAttacksWithAnyTarget #when Matcher.AnyEnemyAttack $ Matcher.EnemyWithId $ toId enemy)
+      `shouldReturn` True
+
   it "EnemyAttacks matches an attacker defeated during its own attack" . gameTest $ \self -> do
     location <- testLocation
     enemy <- testEnemy

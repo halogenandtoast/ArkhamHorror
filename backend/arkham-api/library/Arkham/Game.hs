@@ -7015,6 +7015,9 @@ runMessages gameId observers = do
             ClearUI {} -> False
             ExhaustMessage m | isSwarmExhaust g m -> False
             After {} -> False
+            -- Ready applies its state change inside the cancellable batch,
+            -- after the outer Ready message's modifier refresh has run.
+            DoBatch _ (ExhaustMessage m) -> not (isSwarmExhaust g m)
             DoBatch {} -> False
             CreatedCost {} -> False
             EndCheckWindow {} -> False
@@ -7466,7 +7469,12 @@ handleDefeatedByModifiers beforeMap g = flip runReaderT g $ do
   -- removing a story asset that granted health. Neither may defeat anyone -- with
   -- Charon's Obol in play it killed the investigator outright (#5829). A
   -- resolution that means to defeat someone pushes InvestigatorDefeated itself.
-  inResolution <- getInResolution
+  -- A MISSING scenario counts as past the resolution too: in campaign mode
+  -- 'ForTarget GameTarget (EndOfScenario _)' drops the scenario out of the mode in
+  -- the same message that wipes every non-Persist asset, so the guard above read
+  -- False at the single biggest maximum drop in the game and a permanent Directive's
+  -- +3 sanity leaving play defeated whoever it was holding up (#5918).
+  inResolution <- fromMaybe True <$> scenarioFieldMaybe ScenarioInResolution
   unless inResolution do
     for_ (mapToList beforeMap) \(iid, (beforeHealth, beforeSanity)) -> do
       whenJustM (getInvestigatorMaybe iid) \_ -> do

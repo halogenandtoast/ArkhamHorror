@@ -77,6 +77,11 @@ getModifiers (toTarget -> target) = do
     filterF = if ignoreCanModifiers then notCanModifier else const True
   filter filterF . map modifierType <$> getModifiers' target
 
+getUnspendableActionCount :: HasGame m => InvestigatorId -> m Int
+getUnspendableActionCount iid = do
+  modifiers <- getModifiers iid
+  pure $ sum [max 0 n | CannotSpendLastActions n <- modifiers]
+
 getFullModifiers :: forall a m. (HasGame m, Targetable a) => a -> m [Modifier]
 getFullModifiers (toTarget -> target) = do
   ignoreCanModifiers <- getIgnoreCanModifiers

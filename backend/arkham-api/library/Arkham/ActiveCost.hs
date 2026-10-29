@@ -1121,8 +1121,9 @@ payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
       withPayment $ ResourcePayment payment
     AdditionalActionsCost -> do
       actionRemainingCount <- field InvestigatorRemainingActions iid
+      blockedActions <- getUnspendableActionCount iid
       let currentlyPaid = countAdditionalActionPayments c.payments
-      pushWhen (actionRemainingCount > 0)
+      pushWhen (actionRemainingCount > blockedActions)
         $ chooseOne
           player
           [ Label
@@ -1136,6 +1137,7 @@ payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
       pure c
     AdditionalActionsCostThatReducesResourceCostBy n nested -> do
       actionRemainingCount <- field InvestigatorRemainingActions iid
+      blockedActions <- getUnspendableActionCount iid
       let currentlyPaid = countAdditionalActionPayments c.payments
       case c.target of
         ForCard _ _ -> do
@@ -1147,7 +1149,7 @@ payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
             lockedActions = totalActionCost nested
           canAffordNested <-
             withAlteredGame withoutCanModifiers $ getCanAffordCost iid c.source actions c.windows nested
-          if actionRemainingCount > lockedActions
+          if actionRemainingCount - blockedActions > lockedActions
             then
               push
                 $ chooseOrRunOne player

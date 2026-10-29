@@ -201,6 +201,8 @@ data WindowMatcher
   | SpendsResources Timing Who ValueMatcher
   | EnemyWouldAttack Timing Who EnemyAttackMatcher EnemyMatcher
   | EnemyAttacks Timing Who EnemyAttackMatcher EnemyMatcher
+  | -- Includes the initial Massive attack, before per-investigator delegation.
+    EnemyAttacksWithAnyTarget Timing EnemyAttackMatcher EnemyMatcher
   | EnemyAttacksEvenIfCancelled Timing Who EnemyAttackMatcher EnemyMatcher
   | EnemyAttacked Timing Who SourceMatcher EnemyMatcher
   | EnemyAttackedSuccessfully Timing Who SourceMatcher EnemyMatcher

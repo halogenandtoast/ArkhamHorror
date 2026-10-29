@@ -76,7 +76,7 @@ import Arkham.Helpers.Message.Discard qualified as HandDiscard
 import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref (sourceToTarget)
-import Arkham.Helpers.Scenario (getEncounterDeckKey, getInResolution)
+import Arkham.Helpers.Scenario (getEncounterDeckKey, getInResolutionMaybe)
 import Arkham.Helpers.Shuffle qualified as Shuffle
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.UI qualified as Msg
@@ -864,8 +864,15 @@ drawAnotherChaosToken iid = do
 
 eachInvestigator :: HasGame m => (InvestigatorId -> m ()) -> m ()
 eachInvestigator f = do
-  inResolution <- getInResolution
-  investigators <- if inResolution then allInvestigators else getInvestigators
+  investigators <-
+    getInResolutionMaybe >>= \case
+      -- Outside a scenario -- campaign steps, interludes, preludes -- the
+      -- elimination flags belong to the scenario that just ended, so reading them
+      -- here skips whoever was defeated or resigned when it did. That cost an
+      -- investigator all four XP from Innsmouth's Interlude I (#5917).
+      Nothing -> campaignInvestigators
+      Just True -> allInvestigators
+      Just False -> getInvestigators
   for_ investigators f
 
 forInvestigator :: ReverseQueue m => InvestigatorId -> Message -> m ()

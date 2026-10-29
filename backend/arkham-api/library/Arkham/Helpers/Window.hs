@@ -1810,6 +1810,15 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
               ]
           _ -> noMatch
         _ -> noMatch
+    Matcher.EnemyAttacksWithAnyTarget timing enemyAttackMatcher enemyMatcher ->
+      guardTiming timing $ \case
+        Window.EnemyAttacks details ->
+          andM
+            [ not <$> isAttackCancelled details
+            , enemyMatches (attackEnemy details) enemyMatcher
+            , enemyAttackMatches iid details enemyAttackMatcher
+            ]
+        _ -> noMatch
     -- tolerate removed enemies, the attacker can be defeated mid-attack
     Matcher.EnemyAttacks timing whoMatcher enemyAttackMatcher enemyMatcher ->
       guardTiming timing $ \case

@@ -139,6 +139,7 @@ import Arkham.Message as X (
   pattern FailedThisSkillTestBy,
   pattern FightEnemy,
   pattern FinalizeRequestedChaosTokens,
+  pattern FinishedEnemyAttacks,
   pattern FinishedEvent,
   pattern FinishedSearch,
   pattern FlipClues,

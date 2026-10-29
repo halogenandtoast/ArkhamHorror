@@ -2733,7 +2733,15 @@ runGameMessage msg g = case msg of
         player <- case allAttacked of
           [iid] -> getPlayer iid
           _ -> getPlayer (gameLeadInvestigatorId g)
-        push $ chooseOneAtATime player $ map toUI as
+        -- Capture hosts before resolving the attacks: a swarm card may leave
+        -- play before the completion message reaches its host.
+        hosts <-
+          catMaybes <$> for attackingEnemies \eid -> do
+            fieldMay EnemyPlacement eid <&> \case
+              Just (AsSwarm host _) -> Just host
+              _ -> Nothing
+        pushAll
+          [chooseOneAtATime player $ map toUI as, FinishedEnemyAttacks $ nub (attackingEnemies <> hosts)]
         pure
           $ g
           & entitiesL

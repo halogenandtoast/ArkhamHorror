@@ -89,6 +89,7 @@ windowTable =
   , ("EnemyAttackedSuccessfully", ["SuccessfulAttackEnemy"])
   , ("EnemyAttacks", ["EnemyAttacks"])
   , ("EnemyAttacksEvenIfCancelled", ["EnemyAttacksEvenIfCancelled"])
+  , ("EnemyAttacksWithAnyTarget", ["EnemyAttacks"])
   , ("EnemyAttemptsToSpawnAt", ["EnemyAttemptsToSpawnAt"])
   , ("EnemyDealsDamage", ["DealtDamage"])
   , ("EnemyDealtDamage", ["DealtDamage"])

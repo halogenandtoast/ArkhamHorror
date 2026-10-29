@@ -307,6 +307,7 @@ data ModifierType
   | CannotLeavePlay
   | CannotLeaveYourHand
   | CannotTakeAction ActionTarget
+  | CannotSpendLastActions Int
   | CannotPerformAction ActionTarget
   | CannotTakeControlOfClues
   | CannotTriggerAbilityMatching AbilityMatcher

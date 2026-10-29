@@ -74,6 +74,16 @@ getInvestigators = inTurnOrder =<< select UneliminatedInvestigator
 allInvestigators :: HasGame m => m [InvestigatorId]
 allInvestigators = inTurnOrder =<< select Anyone
 
+{- | Every investigator still in the campaign, ignoring the elimination flags.
+
+For use between scenarios, where @defeated@ and @resigned@ say what happened in
+the scenario that just ended rather than anything about now. Killed and driven
+insane are the lasting exclusion: those investigators leave the campaign.
+-}
+campaignInvestigators :: HasGame m => m [InvestigatorId]
+campaignInvestigators =
+  inTurnOrder =<< select (IncludeEliminated $ not_ KilledInvestigator <> not_ InsaneInvestigator)
+
 allPlayers :: HasGame m => m [PlayerId]
 allPlayers = getAllPlayers
 

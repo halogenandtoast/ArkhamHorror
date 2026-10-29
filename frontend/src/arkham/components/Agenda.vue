@@ -248,6 +248,9 @@ const attachedEnemies = computed(() => Object.values(props.game.enemies).
   filter((t) => t.placement.tag === "AttachedToAgenda" && t.placement.contents === id.value).
   map((t) => t.id))
 
+const nextToEnemies = computed(() => Object.values(props.game.enemies).
+  filter((enemy) => enemy.placement.tag === "NextToAgenda"))
+
 // Blood on the Line parks a defeated investigator's mini-card beneath the agenda
 // until the act advances.
 const investigatorsUnder = computed(() => Object.values(props.game.investigators).
@@ -309,7 +312,7 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
 <template>
   <div class="agenda-container">
     <div
-      v-if="cardsNextTo.length || nextToEvents.length || nextToStories.length || nextToAgendaRow.length"
+      v-if="cardsNextTo.length || nextToEvents.length || nextToStories.length || nextToAgendaRow.length || nextToEnemies.length"
       class="next-to-agenda"
     >
       <img
@@ -321,6 +324,14 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
       <Event
         v-for="eventId in nextToEvents"
         :event="game.events[eventId]"
+        :game="game"
+        :playerId="playerId"
+        @choose="$emit('choose', $event)"
+      />
+      <Enemy
+        v-for="enemy in nextToEnemies"
+        :key="enemy.id"
+        :enemy="enemy"
         :game="game"
         :playerId="playerId"
         @choose="$emit('choose', $event)"

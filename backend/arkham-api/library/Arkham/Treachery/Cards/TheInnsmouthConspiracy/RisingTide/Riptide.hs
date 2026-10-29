@@ -1,9 +1,8 @@
 module Arkham.Treachery.Cards.TheInnsmouthConspiracy.RisingTide.Riptide (riptide, Riptide (..)) where
 
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Location.FloodLevel
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.RisingTide qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -17,14 +16,12 @@ riptide = treachery Riptide Cards.riptide
 instance RunMessage Riptide where
   runMessage msg t@(Riptide attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      selectOne (locationWithInvestigator iid <> FloodedLocation) >>= \case
-        Just lid -> do
+      getFloodLevelFor iid >>= \case
+        Unflooded -> gainSurge attrs
+        floodLevel -> do
           sid <- getRandom
-          fieldWithDefault Unflooded LocationFloodLevel lid >>= \case
-            Unflooded -> gainSurge attrs -- should be covered below
-            PartiallyFlooded -> revelationSkillTest sid iid attrs #agility (Fixed 3)
-            FullyFlooded -> revelationSkillTest sid iid attrs #agility (Fixed 4)
-        Nothing -> gainSurge attrs
+          revelationSkillTest sid iid attrs #agility
+            $ Fixed (if floodLevel == FullyFlooded then 4 else 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       hasAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid

@@ -1,4 +1,10 @@
 {
+  "difficulty": {
+    "Easy": "I want to drift",
+    "Standard": "I want to dream",
+    "Hard": "I want to dive",
+    "Expert": "I want R’lyeh"
+  },
   "specialRules": [
     {
       "title": "Flood Tokens",

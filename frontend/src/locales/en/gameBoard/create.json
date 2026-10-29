@@ -1,4 +1,10 @@
 {
+  "difficultyFlavor": {
+    "Easy": "I want to experience the story",
+    "Standard": "I want a challenge",
+    "Hard": "I want a true nightmare",
+    "Expert": "I want Arkham Horror"
+  },
   "newGame": "New Game",
   "numberOfPlayers": "Number of Players",
   "withFriends": "With Friends",

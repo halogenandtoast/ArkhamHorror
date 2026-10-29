@@ -536,6 +536,24 @@ say it outright. It preselects the Chapter 1/Chapter 2 rules toggle (currently
 the "as if" ruling) on the new-game screen; players can still override it there
 and in game settings. Omit it and you get Chapter 1.
 
+Campaigns can customize the new-game chaos bag difficulty blurbs by adding a
+`difficulty` object to `locales/en/base.json`:
+
+```json
+"difficulty": {
+  "Easy": "I want to go to the Moon",
+  "Standard": "I want to go to Mars",
+  "Hard": "I want interstellar travel",
+  "Expert": "I want to go where no one has ever gone before"
+}
+```
+
+Each key is optional and falls back to the default new-game wording. Translations
+can supply the same keys in their own locale; missing translations use English.
+Official campaigns use the same keys in their campaign locale namespace, and
+Return To campaigns share the original campaign's blurbs. The selected blurb appears above the chaos tokens;
+Easy/Standard/Hard/Expert remain the option labels, and the difficulty values and chaos bags stay the same.
+
 `fonts.json` covers the whole job of using your own typeface: the family is
 registered and a class is generated, so you never write `@font-face` yourself.
 The class works on a wrapper as well as a single element, because the generated

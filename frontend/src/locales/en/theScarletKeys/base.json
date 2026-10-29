@@ -1,4 +1,10 @@
 {
+  "difficulty": {
+    "Easy": "I want to wield the Keys",
+    "Standard": "I want to be bound in Red",
+    "Hard": "I want to face the Outside",
+    "Expert": "I want to be Hollowed"
+  },
   "specialRules": [
     {
       "title": "New Cardtype: Keys",

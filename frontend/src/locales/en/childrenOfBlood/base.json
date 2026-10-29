@@ -1,4 +1,10 @@
 {
+  "difficulty": {
+    "Easy": "I want the brightest day",
+    "Standard": "I want the orange light of sunset",
+    "Hard": "I want the violet skies of twilight",
+    "Expert": "I want the darkest night"
+  },
   "intro": {
     "title": "A Powerful Hunger",
     "body": "<p>“To say that we actually believed in vampires or werewolves would be a carelessly inclusive statement. Rather must it be said that we were not prepared to deny the possibility of certain unfamiliar and unclassified modifications of vital force and attenuated matter; existing very infrequently in three-dimensional space because of its more intimate connexion with other spatial units, yet close enough to the boundary of our own to furnish us occasional manifestations which we, for lack of a proper vantage-point, may never hope to understand.”</p><p class='basic right'>— H.P. Lovecraft, “The Shunned House”</p>"

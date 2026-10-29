@@ -1,4 +1,10 @@
 {
+  "difficulty": {
+    "Easy": "I want to go to the Moon",
+    "Standard": "I want to go to Mars",
+    "Hard": "I want interstellar travel",
+    "Expert": "I want to go where no one has ever gone before"
+  },
   "name": "Dark Matter",
   "about": {
     "sections": [

@@ -1,4 +1,10 @@
 {
+  "difficulty": {
+    "Easy": "I want to explore",
+    "Standard": "I want a tough journey",
+    "Hard": "I want to be forgotten",
+    "Expert": "I want Yig’s vengeance"
+  },
   "vengeance": {
     "investigatorsDefeated": "One or more investigators were defeated",
     "ruinsDestroyed": "The ruins of Eztli were destroyed",

@@ -18,7 +18,7 @@ import { filterDisplayable, type DisplayRuleOptions } from '@/arkham/displayRule
 import { campaignIdToI18n } from '@/arkham/types/Scenario'
 import { useI18n } from 'vue-i18n'
 
-const { locale } = useI18n()
+const { locale, t, te } = useI18n()
 
 type FullCampaignOption = {
   key: string
@@ -226,6 +226,16 @@ const difficultyLevels = computed<Record<Difficulty, TokenFace[]> | null>(() => 
 
   return null
 })
+
+// Campaigns opt in through their own locale namespace, including homebrew.
+// Check English too so untranslated campaigns still use their authored wording.
+function difficultyBlurb(difficulty: Difficulty): string {
+  const scope = props.selectedCampaign ? campaignIdToI18n(props.selectedCampaign) : null
+  const key = scope ? `${scope}.difficulty.${difficulty}` : null
+  return key && (te(key, locale.value) || te(key, 'en'))
+    ? t(key)
+    : t(`create.difficultyFlavor.${difficulty}`)
+}
 
 const chaosTokensForDifficulty = computed<TokenFace[]>(() => {
   const levels = difficultyLevels.value
@@ -665,9 +675,10 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
               :value="difficulty"
               :id="`difficulty${difficulty}`"
             />
-            <label :for="`difficulty${difficulty}`">{{ $t('create.' + difficulty) }}</label>
+            <label :for="`difficulty${difficulty}`">{{ $t(`create.${difficulty}`) }}</label>
           </template>
         </div>
+        <p class="difficulty-blurb">{{ difficultyBlurb(selectedDifficulty) }}</p>
         <div v-if="chaosTokensForDifficulty.length > 0" class="token-preview callout">
           <img
             v-for="(tokenFace, idx) in chaosTokensForDifficulty"
@@ -1194,6 +1205,20 @@ input[type='radio']:checked + label {
     color: var(--select); /* Glowing color */
     text-shadow: 0 0 10px var(--select);
   }
+}
+
+.difficulty-blurb {
+  margin: 16px auto 4px;
+  padding: 0 12px;
+  max-width: 42ch;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 15px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: center;
+  text-wrap: balance;
 }
 
 .token-preview {

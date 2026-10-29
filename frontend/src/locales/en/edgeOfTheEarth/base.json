@@ -1,4 +1,10 @@
 {
+  "difficulty": {
+    "Easy": "I want to return from the expedition",
+    "Standard": "I want to struggle against the elements",
+    "Hard": "I want to delve into the lost city",
+    "Expert": "I want to know the name of true madness"
+  },
   "specialRules": [
     {
       "title": "Checkpoints",

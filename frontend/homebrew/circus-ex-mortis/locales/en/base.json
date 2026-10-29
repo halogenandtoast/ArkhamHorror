@@ -1,4 +1,10 @@
 {
+  "difficulty": {
+    "Easy": "I want to spend a day at the circus",
+    "Standard": "I want to entertain the audience",
+    "Hard": "I want to perform death-defying feats",
+    "Expert": "I want to run a three-ring circus"
+  },
   "name": "Circus Ex Mortis",
   "about": {
     "sections": [

@@ -1,4 +1,10 @@
 {
+  "difficulty": {
+    "Easy": "I want to dance!",
+    "Standard": "I want to feast!",
+    "Hard": "I want to be transfigured!",
+    "Expert": "I want the Abyss!"
+  },
   "specialRules": [
     {
       "title": "The Codex",

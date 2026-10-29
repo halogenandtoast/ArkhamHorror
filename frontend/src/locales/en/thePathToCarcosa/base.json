@@ -1,4 +1,10 @@
 {
+  "difficulty": {
+    "Easy": "I want to watch the play",
+    "Standard": "I want to read the signs",
+    "Hard": "I want to speak the oath",
+    "Expert": "I want The King in Yellow"
+  },
   "specialRules": [
     {
       "title": "New Keyword: Hidden",

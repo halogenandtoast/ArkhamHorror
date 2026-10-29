@@ -10,7 +10,7 @@ function router() {
   const zoom = { value: 1 }
   const obstacle = { left: 90, top: -10.01, width: 20, height: 20 }
   const context = vm.createContext({
-    mapZoom: zoom, scaled: px => px * zoom.value, segmentsConflict: () => false,
+    mapZoom: zoom, scaled: px => px * zoom.value, segmentsConflict: () => false, routesNeedSeparation: () => false,
     svgEl: { getBoundingClientRect: () => ({ left: 0, top: 0 }) },
     locations: { value: [{ id: 'obstacle' }] },
     document: { querySelector: () => ({ getBoundingClientRect: () => obstacle }) },
@@ -99,4 +99,35 @@ test('returns a one-way arrow to straight when routing no longer needs a bend', 
   }
   assert.equal(context.stableChevronCurve(candidate, 100), 100)
   assert.equal(context.stableChevronCurve(candidate, 0), 0)
+})
+
+
+test('keeps steep-angle crossings straight and separates shallow crossings and shared lanes', () => {
+  const context = vm.createContext({
+    scaled: px => px, mapZoom: { value: 1 }, svgEl: null,
+  })
+  const conflicts = source.slice(source.indexOf('function segmentsConflict'), source.indexOf('const previousCurveOffsets'))
+  const lanes = source.slice(source.indexOf('function distanceToSegment'), source.indexOf('function makeOrUpdateConnectionPath'))
+  vm.runInContext(ts.transpile(conflicts + '\n' + routing + '\n' + lanes, { target: ts.ScriptTarget.ES2022 }), context)
+  const route = (connection, x1, y1, x2, y2) => ({
+    connection, x1, y1, x2, y2,
+    start: { dataset: { id: connection + '-start' } },
+    end: { dataset: { id: connection + '-end' } },
+  })
+  const horizontal = route('a', -100, 0, 100, 0)
+  for (const angle of [30, 45, 90]) {
+    const radians = angle * Math.PI / 180
+    const crossing = route('b', -100 * Math.cos(radians), -100 * Math.sin(radians), 100 * Math.cos(radians), 100 * Math.sin(radians))
+    assert.equal(context.routesNeedSeparation(horizontal, crossing), false)
+    assert.equal(context.curveOffsets([horizontal, crossing]).size, 0)
+    assert.equal(context.overlappingRouteCurve(crossing, [horizontal, crossing]), 0)
+  }
+  assert.equal(context.routesNeedSeparation(horizontal, route('b', 0, -5, 0, 5)), false)
+  const shallow = route('b', -100, -10, 100, 10)
+  assert.equal(context.routesNeedSeparation(horizontal, shallow), true)
+  assert.notEqual(context.curveOffsets([horizontal, shallow]).size, 0)
+  const overlapping = route('b', -50, 0, 150, 0)
+  assert.equal(context.routesNeedSeparation(horizontal, overlapping), true)
+  const parallel = route('b', -100, 50, 100, 50)
+  assert.equal(context.routesNeedSeparation(horizontal, parallel), false)
 })

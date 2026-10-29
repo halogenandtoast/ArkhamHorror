@@ -9983,16 +9983,20 @@ test-suite spec
       Arkham.Investigator.Cards.WendyAdamsSpec
       Arkham.Investigator.Cards.ZoeySamarasSpec
       Arkham.Investigator.RunnerSpec
+      Arkham.Location.Cards.AgesUnwound.ThePresentSpec
+      Arkham.Location.Cards.AgesUnwound.WhatCouldBeSpec
       Arkham.Location.Cards.DreamGatePointlessRealitySpec
       Arkham.Location.Cards.DreamGateWondrousJourneySpec
       Arkham.Location.Cards.TheDreamEaters.BeyondTheGatesOfSleep.EnchantedWoodsVillageOfZoogsSpec
       Arkham.Location.Cards.TheInnsmouthConspiracy.FloodedCaverns.UndergroundRiverSpec
       Arkham.Location.TypesSpec
+      Arkham.Log.NarratorSpec
       Arkham.Matcher.AlternatePrintingSpec
       Arkham.Matcher.CoveredByAnyInPlayEnemySpec
       Arkham.Matcher.LegacyJSONSpec
       Arkham.Matcher.NearestLocationToMostSpec
       Arkham.Matcher.OutOfPlayEnemySpec
+      Arkham.Matcher.YetToTakeTurnSpec
       Arkham.MissingCustomCardSpec
       Arkham.Modifier.CannotAttackDuringEnemyPhaseSpec
       Arkham.Modifier.SearchAllInvestigatorsSpec

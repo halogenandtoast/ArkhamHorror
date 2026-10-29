@@ -28,7 +28,13 @@ off the location it modifies, so one modifier on this place and one on every
 other is what makes the edge two-way.
 -}
 instance HasAbilities WhatCouldBe_197 where
-  getAbilities (WhatCouldBe_197 a) = extendRevealed1 a $ mkAbility a 1 actionAbility
+  getAbilities (WhatCouldBe_197 a) =
+    extendRevealed1 a
+      $ restricted
+        a
+        1
+        (exists $ not_ (be a) <> not_ (connectedFrom (be a) <> connectedTo (be a)))
+        actionAbility
 
 instance RunMessage WhatCouldBe_197 where
   runMessage msg l@(WhatCouldBe_197 attrs) = runQueueT $ case msg of

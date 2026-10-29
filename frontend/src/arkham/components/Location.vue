@@ -4,6 +4,7 @@ import { onBeforeUnmount, ComputedRef, ref, computed, watch, nextTick } from 'vu
 import { useDebug } from '@/arkham/debug'
 import { CARD_FLIGHT_ATTR, useCardFlight } from '@/arkham/cardFlight'
 import { Game } from '@/arkham/types/Game'
+import { investigatorMovementName } from '@/arkham/investigatorMovement'
 import { imgsrc } from '@/arkham/helpers'
 import { cardArt, cardImage } from '@/arkham/cardImages'
 import { keyToId } from '@/arkham/types/Key'
@@ -460,9 +461,9 @@ const breaches = computed(() => {
   return 0
 })
 const investigators = computed(() => {
-  return props.location.investigators
+  return [...new Set(props.location.investigators)]
     .map((i) => props.game.investigators[i])
-    .filter((i) => i.placement.tag === 'AtLocation')
+    .filter((i) => i && i.placement.tag === 'AtLocation')
 })
 
 
@@ -605,7 +606,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
           v-for="investigator in investigators"
           :key="investigator.id"
           :data-investigator-mini="investigator.id"
-          :style="{ viewTransitionName: `investigator-${investigator.id}` }"
+          :style="{ viewTransitionName: investigatorMovementName(investigator, location.id) }"
           class="investigator-mini-mover"
         >
           <Investigator
@@ -950,6 +951,16 @@ img.card.source-highlight {
   color: #fff;
   border-radius: 4px;
   padding: 5px 10px;
+}
+
+.location-column > .debug-open {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding-inline: 0;
+  text-align: center;
 }
 
 .location-column {

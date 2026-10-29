@@ -269,10 +269,12 @@ let pointerMoveHandler: ((e: PointerEvent) => void) | null = null
 // expanded so the names aren't duplicated.
 function setExpanded(open: boolean) {
   const startViewTransition = (document as Document & {
-    startViewTransition?: (cb: () => Promise<void> | void) => void
+    startViewTransition?: (cb: () => Promise<void> | void) => { ready: Promise<void>; finished: Promise<void> }
   }).startViewTransition
   if (typeof startViewTransition === 'function') {
-    startViewTransition.call(document, async () => { expanded.value = open; await nextTick() })
+    const transition = startViewTransition.call(document, async () => { expanded.value = open; await nextTick() })
+    void transition.ready.catch(() => {})
+    void transition.finished.catch(() => {})
   } else {
     expanded.value = open
   }

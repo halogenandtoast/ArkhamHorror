@@ -2644,8 +2644,14 @@ gainActions
 gainActions (asId -> iid) (toSource -> source) n = push $ Msg.GainActions iid source n
 
 takeActionAsIfTurn :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
-takeActionAsIfTurn iid (toSource -> source) = do
+takeActionAsIfTurn iid source = do
   gainActions iid source 1
+  takeActionAsIfTurnFromCurrentPool iid source
+
+-- Use an action already in the investigator's pool instead of granting an extra one.
+takeActionAsIfTurnFromCurrentPool
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
+takeActionAsIfTurnFromCurrentPool iid (toSource -> source) = do
   mactive <- selectOne ActiveInvestigator
   temporaryModifier iid source (AsIfTurn iid) do
     push $ SetActiveInvestigator iid

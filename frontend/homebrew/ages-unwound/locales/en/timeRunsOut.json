@@ -23,7 +23,7 @@
     "resolutions": {
       "noResolution": {
         "title": "No Resolution",
-        "body": "<p class='basic'>*If no resolution was reached (each investigator was defeated)*: Read _Resolution 1_.</p>"
+        "body": "<p class='basic'>_If no resolution was reached (each investigator was defeated)_: Read _Resolution 1_.</p>"
       },
       "resolution1": {
         "title": "Resolution 1",

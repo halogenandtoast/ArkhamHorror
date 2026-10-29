@@ -5,7 +5,7 @@ import { ghostCardCode } from '@/arkham/ghostAbility'
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue'
 import { MessageType, Message } from '@/arkham/types/Message';
 import { formatContent } from '@/arkham/helpers';
-import { handleEmbeddedI18n } from '@/arkham/i18n';
+import { handleEmbeddedI18n, parseInput } from '@/arkham/i18n';
 import { costSkill, formatCost } from '@/arkham/cost';
 import { useI18n } from 'vue-i18n';
 import type { Game } from '@/arkham/types/Game';
@@ -35,6 +35,11 @@ const label = function(body: string) {
 const skillCostClass = (cost: Parameters<typeof formatCost>[0]) => {
   const skill = costSkill(cost)
   return skill ? ['skill-cost', `skill-cost-${skill}`] : []
+}
+
+const skillLabelClass = (body: string) => {
+  const match = parseInput(body).key.match(/(?:^|\.)test(Willpower|Intellect|Combat|Agility)$/)
+  return match ? ['skill-cost', `skill-cost-${match[1].toLowerCase()}`] : []
 }
 
 const drownedCityTaskCards: Record<string, string> = {
@@ -114,7 +119,7 @@ const drownedCityTaskRecommendation = (body: string) => {
         <img :src="connectionImage(choice.connection)" alt="" />
       </button>
       <template v-else-if="choice.tag === MessageType.TOOLTIP_LABEL">
-        <button @click="choose(index)" v-tooltip="choice.tooltip">{{ t(choice.label) }}</button>
+        <button :class="skillLabelClass(choice.label)" @click="choose(index)" v-tooltip="choice.tooltip">{{ t(choice.label) }}</button>
       </template>
       <div v-else-if="choice.tag === MessageType.LABEL" class="message-label">
         <button v-if="choice.label == 'Choose {skull}'" @click="choose(index)">
@@ -143,7 +148,7 @@ const drownedCityTaskRecommendation = (body: string) => {
             ></span>
           </span>
         </button>
-        <button v-else @click="choose(index)" v-html="label(choice.label)"></button>
+        <button v-else :class="skillLabelClass(choice.label)" @click="choose(index)" v-html="label(choice.label)"></button>
       </div>
       <div v-else-if="choice.tag === MessageType.COST_LABEL" class="message-label">
         <button
@@ -170,7 +175,7 @@ const drownedCityTaskRecommendation = (body: string) => {
             ></span>
           </span>
         </button>
-        <button v-else v-html="label(choice.label)" disabled></button>
+        <button v-else :class="skillLabelClass(choice.label)" v-html="label(choice.label)" disabled></button>
       </div>
       <div v-else-if="choice.tag === MessageType.INFO" class="message-label">
         <FormattedEntry v-for="(entry, entryIndex) in choice.flavor.body" :key="entryIndex" :entry="entry" />

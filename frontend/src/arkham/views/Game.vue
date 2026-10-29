@@ -581,7 +581,7 @@ function showDrawSpotlight(entry: DrawSpotlightEntry): boolean {
 }
 
 type TransitionDocument = Document & {
-  startViewTransition?: (callback: () => Promise<void>) => { finished: Promise<void> }
+  startViewTransition?: (callback: () => Promise<void>) => { ready: Promise<void>; finished: Promise<void> }
 }
 
 /* The on-screen element a card would fly to, or null if it has none.
@@ -717,6 +717,7 @@ function flyThenDismiss(cards: Card[], hide: () => void) {
     })
     // `finished` rejects when the transition is skipped. Either way the overlay
     // is already gone and the lock has to come off, or the board stays frozen.
+    void transition.ready.catch(() => {})
     transition.finished.then(settle, settle)
   } catch (e) {
     console.error(e)
@@ -1306,11 +1307,14 @@ function applyGameUpdate(updatedGame: Arkham.Game, locked: boolean) {
     await nextTick()
   }
   const transitionDocument = document as Document & {
-    startViewTransition?: (callback: () => Promise<void>) => unknown
+    startViewTransition?: (callback: () => Promise<void>) => { ready: Promise<void>; finished: Promise<void> }
   }
 
   if (previousGame && entitiesMoved(previousGame, nextGame) && transitionDocument.startViewTransition) {
-    transitionDocument.startViewTransition(apply)
+    const transition = transitionDocument.startViewTransition(apply)
+    // A skipped animation must not reject an otherwise successful game update.
+    void transition.ready.catch(() => {})
+    void transition.finished.catch(() => {})
   } else {
     void apply()
   }

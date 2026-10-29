@@ -359,7 +359,7 @@ function curveOffsets(candidates: ConnectionCandidate[]): Map<string, number> {
     for (let j = i + 1; j < candidates.length; j++) {
       const a = candidates[i]
       const b = candidates[j]
-      if (!segmentsConflict(a, b)) continue
+      if (!routesNeedSeparation(a, b)) continue
       // Keep the shorter/local connection straight and bend the connection
       // spanning more of the board. Ties are resolved by the stable id.
       const curved = lengthSquared(a) === lengthSquared(b)
@@ -581,6 +581,20 @@ function routesShareALane(a: ConnectionCandidate, b: ConnectionCandidate): boole
   return alongside / (samples + 1) >= 0.5
 }
 
+/** A clear crossing is readable; only shallow crossings or shared lanes need a bend. */
+function routesNeedSeparation(a: ConnectionCandidate, b: ConnectionCandidate): boolean {
+  const ax = a.x2 - a.x1
+  const ay = a.y2 - a.y1
+  const bx = b.x2 - b.x1
+  const by = b.y2 - b.y1
+  const lengths = Math.hypot(ax, ay) * Math.hypot(bx, by)
+  if (lengths === 0) return false
+  // Treat the lines as undirected: 170 degrees is the same shallow crossing as 10.
+  const cosine = Math.abs(ax * bx + ay * by) / lengths
+  if (cosine <= Math.cos(20 * Math.PI / 180)) return false
+  return routesShareALane(a, b) || segmentsConflict(a, b)
+}
+
 /* Two arrows can share a lane without either crossing a card, which 'obstructedChevronCurve'
  * is the only other reason to bend one: a row's printed connection down to the row below and
  * the single location a Path Forward connects back up both run between the same two boxes.
@@ -591,7 +605,7 @@ function overlappingRouteCurve(candidate: ConnectionCandidate, others: Connectio
   let conflicts = 0
   for (const other of others) {
     if (other.connection === candidate.connection) continue
-    if (!segmentsConflict(candidate, other) && !routesShareALane(candidate, other)) continue
+    if (!routesNeedSeparation(candidate, other)) continue
     const bend = lengthSquared(candidate) === lengthSquared(other)
       ? candidate.connection > other.connection
       : lengthSquared(candidate) > lengthSquared(other)

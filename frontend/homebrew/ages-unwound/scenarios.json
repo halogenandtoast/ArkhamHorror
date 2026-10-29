@@ -47,6 +47,7 @@
     "name": "Time Runs Out",
     "campaign": ":ages-unwound",
     "standalone": false,
-    "i18n": "timeRunsOut"
+    "i18n": "timeRunsOut",
+    "allowCurvedPaths": true
   }
 ]

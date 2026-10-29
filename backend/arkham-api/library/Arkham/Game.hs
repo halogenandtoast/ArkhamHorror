@@ -1339,9 +1339,8 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
       activeId <- view activeInvestigatorIdL <$> getGame
       pure $ runMatches ((== activeId) . toId) as
     YetToTakeTurn -> do
-      getTurnInvestigator <&> \case
-        Nothing -> asMatch as
-        Just (toId -> turnId) -> runMatches (\i -> toId i /= turnId && not (investigatorEndedTurn $ toAttrs i)) as
+      turnId <- fmap toId <$> getTurnInvestigator
+      pure $ runMatches (\i -> Just (toId i) /= turnId && not (investigatorEndedTurn $ toAttrs i)) as
     LeadInvestigator -> do
       leadId <- gameLeadInvestigatorId <$> getGame
       pure $ runMatches ((== leadId) . toId) as

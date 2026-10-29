@@ -319,7 +319,9 @@ function minimize() {
     return
   }
 
-  document.startViewTransition(() => doMinimize())
+  const transition = document.startViewTransition(() => doMinimize())
+  void transition.ready.catch(() => {})
+  void transition.finished.catch(() => {})
 }
 
 onMounted(async () => {

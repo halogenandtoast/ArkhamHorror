@@ -18,6 +18,7 @@ data ActiveCost = ActiveCost
   , activeCostPayments :: Payment
   , activeCostTarget :: ActiveCostTarget
   , activeCostWindows :: [Window]
+  , activeCostInitiationTick :: Maybe Int
   , activeCostInvestigator :: InvestigatorId
   , activeCostSealedChaosTokens :: [ChaosToken]
   , activeCostCancelled :: Bool
@@ -34,6 +35,7 @@ instance FromJSON ActiveCost where
     activeCostPayments <- o .: "activeCostPayments"
     activeCostTarget <- o .: "activeCostTarget"
     activeCostWindows <- o .: "activeCostWindows"
+    activeCostInitiationTick <- o .:? "activeCostInitiationTick"
     activeCostInvestigator <- o .: "activeCostInvestigator"
     activeCostSealedChaosTokens <- o .: "activeCostSealedChaosTokens"
     activeCostCancelled <- o .:? "activeCostCancelled" .!= False

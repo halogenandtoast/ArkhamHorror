@@ -4,6 +4,7 @@ import { type Game } from '@/arkham/types/Game'
 import { useDebug } from '@/arkham/debug'
 import { useI18n } from 'vue-i18n';
 import { updateGameRaw } from '@/arkham/api'
+import CustomWeaknessPool from '@/arkham/components/CustomWeaknessPool.vue'
 import { gameLocalStorageKey, getGameLocalStorageItem, removeGameLocalStorageItem, setGameLocalStorageItem } from '@/arkham/localStorage'
 import campaignJSON from '@/arkham/data/campaigns.json'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
@@ -475,6 +476,7 @@ onBeforeUnmount(() => {
         aria-labelledby="settings-tab-cards"
         v-show="activeTab === 'cards'"
       >
+        <CustomWeaknessPool v-if="settings.customCardsEnabled" :game="game" :playerId="playerId" />
         <CardOptionsSettings :game="game" :playerId="playerId" />
       </div>
 

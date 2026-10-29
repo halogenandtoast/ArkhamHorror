@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { pendingDraws } from '@/arkham/pendingDraws';
+import { isCollectionSearch } from '@/arkham/collectionSearch';
 import { choiceRequiresModal } from '@/arkham/types/Message';
 import { formatContent, imgsrc } from '@/arkham/helpers';
 import { cardImage } from '@/arkham/cardImages';
@@ -33,6 +34,7 @@ async function choose(idx: number) {
   emit('choose', idx)
 }
 
+const collectionSearch = computed(() => isCollectionSearch(props.game, props.playerId))
 const inSkillTest = computed(() => props.game.skillTest !== null)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const cthulhuDeckCardCodes = new Set([
@@ -227,6 +229,7 @@ const requiresModal = computed(() => {
   if (question.value?.tag === QuestionType.READ) {
     return true
   }
+  if (collectionSearch.value) return true
   if (inSkillTest.value) {
     return false
   }
@@ -402,11 +405,14 @@ const title = computed(() => {
   </div>
   <Draggable
     v-else-if="requiresModal"
+    :key="collectionSearch ? 'collection-search' : 'choice'"
+    :flush="collectionSearch"
+    :width="collectionSearch ? 'min(1100px, calc(100vw - 32px))' : undefined"
     center-in-selector=".scenario-body"
     avoid-selector=".location-cell--can-interact, .location-cell--can-interact .location-wrapper, .location-cell--can-interact .card-frame"
     click-through-chrome
   >
-    <template #handle><h1 v-html="label(title)"></h1></template>
+    <template #handle><h1 v-html="collectionSearch ? t('questionFilter.collectionTitle') : label(title)"></h1></template>
     <div class="choice-modal-wrapper" :class="{ 'choice-modal-wrapper--processing': isProcessing }">
       <p class="body" v-if="body" v-html="label(body)"></p>
       <Question v-if="question" :game="game" :playerId="playerId" @choose="choose" />

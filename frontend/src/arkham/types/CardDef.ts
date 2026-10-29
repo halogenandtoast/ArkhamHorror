@@ -36,6 +36,7 @@ export type CardDef = {
   doubleSided: boolean;
   classSymbols: string[];
   cardType: string;
+  cardSubType?: string | null;
   art: string;
   artVariants?: Record<string, string>;
   backArtVariants?: Record<string, string>;
@@ -102,6 +103,7 @@ export const cardDefDecoder = JsonDecoder.object<CardDef>(
     ], 'optional stage'),
     otherSide: withDefault(null, JsonDecoder.string()),
     cardType: JsonDecoder.string(),
+    cardSubType: withDefault(null, JsonDecoder.string()),
     cardCode: JsonDecoder.string(),
     doubleSided: withDefault(false, JsonDecoder.boolean()),
     classSymbols: withDefault([], JsonDecoder.array<string>(JsonDecoder.string(), 'string[]')),

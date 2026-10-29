@@ -33,6 +33,14 @@
     "viewSettingShowOtherPlayersHandsTitle": "Show Other Players' Hands",
 
     "settings": {
+        "customWeaknessTitle": "Custom random weaknesses",
+        "customWeaknessDescription": "Include basic weaknesses from selected custom sets in random draws and deck setup.",
+        "customWeaknessSets": "Included sets",
+        "customWeaknessUnsorted": "Unsorted custom cards",
+        "customWeaknessEmpty": "Your library has no custom basic weaknesses.",
+        "customWeaknessSelect": "Select sets to add their basic weaknesses to the pool.",
+        "customWeaknessSaveFailed": "Could not save the weakness pool. Try again.",
+        "customWeaknessLoadFailed": "Could not load custom weakness sets. Reopen settings to try again.",
         "tabs": {
             "table": "Table",
             "pacing": "Pacing",

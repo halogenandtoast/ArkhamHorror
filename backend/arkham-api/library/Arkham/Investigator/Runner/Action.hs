@@ -269,9 +269,11 @@ handleLoseResources a@InvestigatorAttrs {..} iid source n msg = do
   pure a
 
 handleTakeResources a@InvestigatorAttrs {..} iid n source = do
+  initiationTick <- getWindowTick
   let ability = restricted iid ResourceAbility (Self <> Never) (ActionAbility #resource Nothing $ ActionCost 1)
   whenActivateAbilityWindow <- checkWhen $ Window.ActivateAbility iid [] ability
-  afterActivateAbilityWindow <- checkAfter $ Window.ActivateAbility iid [] ability
+  afterActivateAbilityWindow <-
+    Helpers.checkWindowsAt initiationTick [mkAfter $ Window.ActivateAbility iid [] ability]
   beforeWindowMsg <- checkWhen $ Window.PerformAction iid #resource
   afterWindowMsg <- checkAfter $ Window.PerformAction iid #resource
   canGain <- can.gain.resources (sourceToFromSource source) iid

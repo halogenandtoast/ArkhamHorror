@@ -1,6 +1,7 @@
 module Arkham.Game.Settings where
 
 import Arkham.Card.CardCode (CardCode)
+import Arkham.Id (PlayerId)
 import Arkham.Prelude
 import Arkham.UltimatumsAndBoons.Types
 import Control.Monad.Fail
@@ -27,22 +28,28 @@ data Settings = Settings
   { settingsAbilitiesCannotReactToThemselves :: Bool -- Grotesque Statue FAQ (September 2023)
   , settingsAsIfRuling :: AsIfRuling
   , settingsUltimatumsAndBoons :: Set UltimatumOrBoon
-  -- ^ Variant rules selected at game creation; permanent for the campaign or
-  -- standalone scenario per the FAQ, so nothing mutates this after creation.
+  {- ^ Variant rules selected at game creation; permanent for the campaign or
+  standalone scenario per the FAQ, so nothing mutates this after creation.
+  -}
   , settingsUltimatumsAndBoonsEnabled :: Bool
-  -- ^ Runtime kill switch: when False, selected entries behave as if nothing
-  -- were selected. Every effect hook reads through 'activeUltimatumsAndBoons'.
-  -- Deckbuilding-time entries are validated at deck construction and are NOT
-  -- re-validated when this flips.
+  {- ^ Runtime kill switch: when False, selected entries behave as if nothing
+  were selected. Every effect hook reads through 'activeUltimatumsAndBoons'.
+  Deckbuilding-time entries are validated at deck construction and are NOT
+  re-validated when this flips.
+  -}
   , settingsRolledUltimatumOrBoon :: Maybe UltimatumOrBoon
-  -- ^ Ultimatum of Ultimatums: the entry rolled for the CURRENT game only.
-  -- Re-rolled (or cleared) at each StartScenario.
+  {- ^ Ultimatum of Ultimatums: the entry rolled for the CURRENT game only.
+  Re-rolled (or cleared) at each StartScenario.
+  -}
   , settingsScreamedAllies :: Set CardCode
-  -- ^ Ultimatum of The Scream: allies removed from the game for the rest of
-  -- the campaign.
+  {- ^ Ultimatum of The Scream: allies removed from the game for the rest of
+  the campaign.
+  -}
+  , settingsCustomRandomWeaknessPools :: Map PlayerId (Bool, Set Text)
   , settingsAchievementsEnabled :: Bool
-  -- ^ Above-the-table achievement tracking for this game. Defaults on;
-  -- only shown at creation for campaigns with an achievement list.
+  {- ^ Above-the-table achievement tracking for this game. Defaults on;
+  only shown at creation for campaigns with an achievement list.
+  -}
   }
   deriving stock (Eq, Show, Generic, Data)
 
@@ -81,32 +88,40 @@ defaultSettings =
     , settingsUltimatumsAndBoonsEnabled = True
     , settingsRolledUltimatumOrBoon = Nothing
     , settingsScreamedAllies = mempty
+    , settingsCustomRandomWeaknessPools = mempty
     , settingsAchievementsEnabled = True
     }
 
 instance ToJSON Settings where
-  toJSON settings = object
-    [ "settingsAbilitiesCannotReactToThemselves" .= settingsAbilitiesCannotReactToThemselves settings
-    , "settingsAsIfRuling" .= settingsAsIfRuling settings
-    , "settingsStrictAsIfAt" .= settingsStrictAsIfAt settings -- legacy/client compatibility
-    , "settingsUltimatumsAndBoons" .= settingsUltimatumsAndBoons settings
-    , "settingsUltimatumsAndBoonsEnabled" .= settingsUltimatumsAndBoonsEnabled settings
-    , "settingsRolledUltimatumOrBoon" .= settingsRolledUltimatumOrBoon settings
-    , "settingsScreamedAllies" .= settingsScreamedAllies settings
-    , "settingsAchievementsEnabled" .= settingsAchievementsEnabled settings
-    ]
+  toJSON settings =
+    object
+      [ "settingsAbilitiesCannotReactToThemselves" .= settingsAbilitiesCannotReactToThemselves settings
+      , "settingsAsIfRuling" .= settingsAsIfRuling settings
+      , "settingsStrictAsIfAt" .= settingsStrictAsIfAt settings -- legacy/client compatibility
+      , "settingsUltimatumsAndBoons" .= settingsUltimatumsAndBoons settings
+      , "settingsUltimatumsAndBoonsEnabled" .= settingsUltimatumsAndBoonsEnabled settings
+      , "settingsRolledUltimatumOrBoon" .= settingsRolledUltimatumOrBoon settings
+      , "settingsScreamedAllies" .= settingsScreamedAllies settings
+      , "settingsCustomRandomWeaknessPools" .= settingsCustomRandomWeaknessPools settings
+      , "settingsAchievementsEnabled" .= settingsAchievementsEnabled settings
+      ]
 
 instance FromJSON Settings where
   parseJSON = withObject "Settings" \o -> do
     abilitiesCannotReactToThemselves <-
-      o .:? "settingsAbilitiesCannotReactToThemselves" .!= defaultSettings.settingsAbilitiesCannotReactToThemselves
+      o
+        .:? "settingsAbilitiesCannotReactToThemselves"
+        .!= defaultSettings.settingsAbilitiesCannotReactToThemselves
     legacyStrictAsIfAt <- o .:? "settingsStrictAsIfAt"
     asIfRuling <-
-      o .:? "settingsAsIfRuling" .!= maybe defaultSettings.settingsAsIfRuling asIfRulingFromStrictAsIfAt legacyStrictAsIfAt
+      o
+        .:? "settingsAsIfRuling"
+        .!= maybe defaultSettings.settingsAsIfRuling asIfRulingFromStrictAsIfAt legacyStrictAsIfAt
     ultimatumsAndBoons <- o .:? "settingsUltimatumsAndBoons" .!= mempty
     ultimatumsAndBoonsEnabled <- o .:? "settingsUltimatumsAndBoonsEnabled" .!= True
     rolledUltimatumOrBoon <- o .:? "settingsRolledUltimatumOrBoon" .!= Nothing
     screamedAllies <- o .:? "settingsScreamedAllies" .!= mempty
+    customRandomWeaknessPools <- o .:? "settingsCustomRandomWeaknessPools" .!= mempty
     achievementsEnabled <- o .:? "settingsAchievementsEnabled" .!= True
     pure
       Settings
@@ -116,5 +131,6 @@ instance FromJSON Settings where
         , settingsUltimatumsAndBoonsEnabled = ultimatumsAndBoonsEnabled
         , settingsRolledUltimatumOrBoon = rolledUltimatumOrBoon
         , settingsScreamedAllies = screamedAllies
+        , settingsCustomRandomWeaknessPools = customRandomWeaknessPools
         , settingsAchievementsEnabled = achievementsEnabled
         }

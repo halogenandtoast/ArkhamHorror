@@ -45,6 +45,7 @@ import Arkham.Enemy.Helpers (cancelEnemyDefeat)
 import Arkham.Enemy.Types (Field (EnemyCard))
 import Arkham.Game.Base
 import Arkham.Game.Settings
+import Arkham.GameEnv (withCustomRandomWeaknessPool)
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.Campaign (stored)
 import Arkham.Helpers.ChaosToken (cancelChaosToken)
@@ -404,7 +405,10 @@ runUltimatumsAndBoonsMessage msg = case msg of
             <*> field InvestigatorTaboo iid
             <*> field InvestigatorCardPool iid
             <*> getIsStandalone
-        weakness <- genCard =<< sampleRandomBasicWeakness ctx
+            <*> pure []
+        pid <- getPlayer iid
+        ctxWithCustom <- withCustomRandomWeaknessPool pid ctx
+        weakness <- genCard =<< sampleRandomBasicWeakness ctxWithCustom
         push $ AddCampaignCardToDeck iid DoNotShuffleIn weakness
   -- Ultimatum of The Scream: a defeated unique non-story, non-weakness ally
   -- is removed from the game and banned for the rest of the campaign.

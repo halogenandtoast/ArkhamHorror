@@ -1,0 +1,7 @@
+.debug-stepper-button {
+  flex-shrink: 0;
+  width: auto;
+  height: min-content;
+  min-width: 0;
+  min-height: 0;
+}

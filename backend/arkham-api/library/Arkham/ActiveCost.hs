@@ -1942,6 +1942,8 @@ instance RunMessage ActiveCost where
     PaidCost acId _ _ payment | acId == c.id -> do
       pure $ c & costPaymentsL <>~ payment
     PayCostFinished acId | acId == c.id -> do
+      currentTick <- getWindowTick
+      let initiationTick = fromMaybe currentTick c.activeCostInitiationTick
       case c.target of
         ForAbility ability -> do
           if ability.index == NonActivateAbility
@@ -1971,7 +1973,8 @@ instance RunMessage ActiveCost where
                   if isFastAbility ability then filter (== Action.Parley) ability.actions else []
                 iid = c.investigator
               whenActivateAbilityWindow <- checkWindows [mkWhen (Window.ActivateAbility iid c.windows ability)]
-              afterActivateAbilityWindow <- checkWindows [mkAfter (Window.ActivateAbility iid c.windows ability)]
+              afterActivateAbilityWindow <-
+                checkWindowsAt initiationTick [mkAfter (Window.ActivateAbility iid c.windows ability)]
               afterMsgs <-
                 if isAction
                   then do
@@ -1997,7 +2000,8 @@ instance RunMessage ActiveCost where
           let iid = c.investigator
           let ability = restricted iid PlayAbility (Self <> Never) (ActionAbility #play Nothing $ ActionCost 1)
           whenActivateAbilityWindow <- checkWindows [mkWhen (Window.ActivateAbility iid c.windows ability)]
-          afterActivateAbilityWindow <- checkWindows [mkAfter (Window.ActivateAbility iid c.windows ability)]
+          afterActivateAbilityWindow <-
+            checkWindowsAt initiationTick [mkAfter (Window.ActivateAbility iid c.windows ability)]
           let actions = c.actions
           afterWindowMsgs <- checkWindows [mkAfter (Window.PerformAction iid action) | action <- actions]
           pushAll

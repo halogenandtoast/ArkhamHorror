@@ -79,7 +79,7 @@ test('card picker filters and sorts without changing answer indices', async (t) 
   )
 })
 
-test('only collection searches collapse the skill test', async (t) => {
+test('collection searches use a separate modal during and outside skill tests', async (t) => {
   const server = await createServer({
     root: resolve('.'),
     server: { middlewareMode: true },
@@ -87,8 +87,8 @@ test('only collection searches collapse the skill test', async (t) => {
     logLevel: 'silent',
   })
   t.after(() => server.close())
-  const { skillTestHasCollectionSearch } = await server.ssrLoadModule(
-    '/src/arkham/skillTestPanel.ts',
+  const { isCollectionSearch } = await server.ssrLoadModule(
+    '/src/arkham/collectionSearch.ts',
   )
   const prompt = {
     tag: 'ChooseOne',
@@ -103,29 +103,29 @@ test('only collection searches collapse the skill test', async (t) => {
     skillTest: { step: 'ApplySkillTestResultsStep' },
     question: { player: collection },
   }
-  assert.equal(skillTestHasCollectionSearch(game, 'player'), true)
-  assert.equal(skillTestHasCollectionSearch(game, 'other'), false)
-  assert.equal(skillTestHasCollectionSearch({ ...game, skillTest: null }, 'player'), false)
+  assert.equal(isCollectionSearch(game, 'player'), true)
+  assert.equal(isCollectionSearch(game, 'other'), false)
+  assert.equal(isCollectionSearch({ ...game, skillTest: null }, 'player'), true)
   assert.equal(
-    skillTestHasCollectionSearch({ ...game, question: { player: prompt } }, 'player'),
+    isCollectionSearch({ ...game, question: { player: prompt } }, 'player'),
     false,
   )
   assert.equal(
-    skillTestHasCollectionSearch(
+    isCollectionSearch(
       { ...game, question: { player: { ...collection, label: '$another.effect' } } },
       'player',
     ),
     false,
   )
   assert.equal(
-    skillTestHasCollectionSearch(
+    isCollectionSearch(
       { ...game, question: { player: { tag: 'QuestionWithSource', question: collection } } },
       'player',
     ),
     true,
   )
   assert.equal(
-    skillTestHasCollectionSearch(
+    isCollectionSearch(
       { ...game, question: { player: { tag: 'PayCostQuestion', question: collection } } },
       'player',
     ),
@@ -138,7 +138,7 @@ test('only collection searches collapse the skill test', async (t) => {
     [{ tag: 'ChaosTokenLabel' }],
   ]) {
     assert.equal(
-      skillTestHasCollectionSearch(
+      isCollectionSearch(
         { ...game, question: { player: { ...collection, question: { ...prompt, choices } } } },
         'player',
       ),
@@ -157,8 +157,8 @@ test('compact collection questions decode into indexed card choices and retain s
   t.after(() => server.close())
   const { questionDecoder } = await server.ssrLoadModule('/src/arkham/types/Question.ts')
   const { choices, choicesSource } = await server.ssrLoadModule('/src/arkham/types/Game.ts')
-  const { skillTestHasCollectionSearch } = await server.ssrLoadModule(
-    '/src/arkham/skillTestPanel.ts',
+  const { isCollectionSearch } = await server.ssrLoadModule(
+    '/src/arkham/collectionSearch.ts',
   )
   const source = { tag: 'LocationSource', contents: '71278af9-d064-48b6-801b-7a83d8599be5' }
   const question = await questionDecoder.decodePromise({
@@ -174,9 +174,9 @@ test('compact collection questions decode into indexed card choices and retain s
   )
   assert.ok(choices(game, 'player').every((c) => c.tag === 'CardLabel' && !c.flippable))
   assert.deepEqual(choicesSource(game, 'player'), question.source)
-  assert.equal(skillTestHasCollectionSearch(game, 'player'), true)
+  assert.equal(isCollectionSearch(game, 'player'), true)
   assert.equal(
-    skillTestHasCollectionSearch(
+    isCollectionSearch(
       { ...game, question: { player: { ...question, cardCodes: [] } } },
       'player',
     ),

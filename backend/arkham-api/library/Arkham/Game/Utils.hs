@@ -192,6 +192,7 @@ createActiveCostForAdditionalCardCosts
   -> m (Maybe ActiveCost)
 createActiveCostForAdditionalCardCosts iid card = do
   acId <- getRandom
+  initiationTick <- gameWindowTick <$> getGame
   mods <- getModifiers (CardIdTarget $ toCardId card)
   let
     additionalCosts = flip mapMaybe mods $ \case
@@ -219,6 +220,7 @@ createActiveCostForAdditionalCardCosts iid card = do
             , activeCostPayments = Cost.NoPayment
             , activeCostTarget = ForCost card
             , activeCostWindows = []
+            , activeCostInitiationTick = Just initiationTick
             , activeCostInvestigator = iid
             , activeCostSealedChaosTokens = []
             , activeCostCancelled = False
@@ -404,6 +406,7 @@ createActiveCostForCard
   -> m ActiveCost
 createActiveCostForCard iid card isPlayAction windows' = do
   acId <- getRandom
+  initiationTick <- gameWindowTick <$> getGame
   cost <- getCostForCard iid card isPlayAction
   pure
     ActiveCost
@@ -412,6 +415,7 @@ createActiveCostForCard iid card isPlayAction windows' = do
       , activeCostPayments = Cost.NoPayment
       , activeCostTarget = ForCard isPlayAction card
       , activeCostWindows = windows'
+      , activeCostInitiationTick = Just initiationTick
       , activeCostInvestigator = iid
       , activeCostSealedChaosTokens = []
       , activeCostCancelled = False

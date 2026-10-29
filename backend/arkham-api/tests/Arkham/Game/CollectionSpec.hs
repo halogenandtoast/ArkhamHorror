@@ -1,7 +1,17 @@
 module Arkham.Game.CollectionSpec (spec) where
 
+import Arkham.ClassSymbol (ClassSymbol (Guardian))
 import Arkham.Classes.HasGame (getGame)
+import Arkham.Decklist.RandomBasicWeakness (
+  ArkhamBuildCardPool (..),
+  RandomBasicWeaknessContext (..),
+  decklistWeaknessContext,
+  randomBasicWeaknessCandidates,
+  randomBasicWeaknessSamplingCandidates,
+ )
 import Arkham.Game.Diff qualified as GameDiff
+import Arkham.Game.Settings qualified as Settings
+import Arkham.GameEnv (getCustomRandomWeaknessCards)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Locations
 import Arkham.Message.Lifted.Choose (chooseCollectionCards, collectionCardDefs)
 import Data.Aeson qualified as Aeson
@@ -11,6 +21,9 @@ import TestImport.New
 
 spec :: Spec
 spec = describe "collection card pool" do
+  it "defaults old saved settings to a disabled custom weakness pool" . gameTest $ \_ -> do
+    Aeson.fromJSON (Aeson.object []) `shouldBe` Aeson.Success Settings.defaultSettings
+
   it
     "includes only this player's library and the game's recorded custom cards, with aliases deduplicated"
     . gameTest
@@ -82,6 +95,58 @@ spec = describe "collection card pool" do
     liftIO (handleAnswerPure legacy pid (Answer $ QuestionResponse 0 (Just pid) Nothing)) >>= \case
       Handled msgs -> msgs `shouldSatisfy` elem (Run [HandleTargetChoice self.id source $ CardCodeTarget code])
       Unhandled err -> expectationFailure $ show err
+
+  it "keeps custom random weaknesses disabled until enabled with selected sets" . gameTest $ \self -> do
+    pid <- getPlayer self.id
+    otherPlayer <- getRandom
+    let
+      make code setName =
+        CustomCard
+          ( (emptyCardDef code "Custom weakness" PlayerTreacheryType)
+              { cdCardSubType = Just BasicWeakness
+              , cdMeta = singletonMap "set" (String setName)
+              }
+          )
+          Nothing
+      a = make "*weakness-a0" "Set A"
+      b = make "*weakness-b0" "Set B"
+      ordinary = CustomCard (emptyCardDef "*ordinary0" "Ordinary card" SkillType) Nothing
+      pool = mapFromList [(toCardCode card.customCardDef, card) | card <- [a, b, ordinary]]
+    overTest \g -> g {gameCollectionCards = Transient (Just pool)}
+    getCustomRandomWeaknessCards pid `shouldReturn` []
+    run $ SetPlayerCustomRandomWeaknessPool pid True []
+    getCustomRandomWeaknessCards pid `shouldReturn` []
+    run $ SetPlayerCustomRandomWeaknessPool pid True ["Set A"]
+    defs <- getCustomRandomWeaknessCards pid
+    map toCardCode defs `shouldBe` [toCardCode a.customCardDef]
+    getCustomRandomWeaknessCards otherPlayer `shouldReturn` []
+    run $ SetPlayerCustomRandomWeaknessPool otherPlayer True ["Set B"]
+    map toCardCode
+      <$> getCustomRandomWeaknessCards otherPlayer
+      `shouldReturn` [toCardCode b.customCardDef]
+    getCustomRandomWeaknessCards pid `shouldReturn` defs
+    -- A different player's library must not change the game's configured pool.
+    overTest \g -> g {gameCollectionCards = Transient (Just mempty)}
+    getCustomRandomWeaknessCards pid `shouldReturn` defs
+    let weaknessContext = (decklistWeaknessContext Guardian 1 False Nothing) {rbwCustomCards = defs}
+    map toCardCode (randomBasicWeaknessCandidates weaknessContext)
+      `shouldBe` [toCardCode a.customCardDef]
+    map toCardCode (randomBasicWeaknessSamplingCandidates weaknessContext)
+      `shouldBe` [toCardCode a.customCardDef]
+    let mixedContext = weaknessContext {rbwCardPool = Just $ ArkhamBuildCardPool ["cycle:core"]}
+        mixedCodes = map toCardCode $ randomBasicWeaknessCandidates mixedContext
+    mixedCodes `shouldSatisfy` elem (toCardCode a.customCardDef)
+    mixedCodes `shouldSatisfy` any (/= toCardCode a.customCardDef)
+    map toCardCode (randomBasicWeaknessCandidates weaknessContext)
+      `shouldSatisfy` notElem (toCardCode b.customCardDef)
+    let multiplayer = a.customCardDef {cdDeckRestrictions = [MultiplayerOnly]}
+        multiplayerContext = weaknessContext {rbwCustomCards = [multiplayer]}
+    randomBasicWeaknessCandidates multiplayerContext `shouldBe` []
+    randomBasicWeaknessSamplingCandidates multiplayerContext `shouldBe` []
+    map toCardCode (randomBasicWeaknessCandidates $ multiplayerContext {rbwPlayerCount = 2})
+      `shouldSatisfy` elem (toCardCode multiplayer)
+    run $ SetPlayerCustomRandomWeaknessPool pid False ["Set A"]
+    getCustomRandomWeaknessCards pid `shouldReturn` []
 
   for_ [Locations.secretsLongForgotten_193, Locations.secretsLongForgotten_194] \def ->
     it ("defers the collection search until horror is assigned: " <> show (toCardCode def)) . gameTest $ \self -> do

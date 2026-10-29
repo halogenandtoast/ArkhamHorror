@@ -27,8 +27,8 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Campaign.Types (
   Field (..),
   basicWeaknessCodes,
-  getRandomBasicWeakness,
-  getRandomBasicWeaknessExcluding,
+  getRandomBasicWeaknessExcludingWithCustom,
+  getRandomBasicWeaknessWithCustom,
  )
 import Arkham.CampaignLog hiding (optionsL)
 import Arkham.CampaignLogKey
@@ -245,15 +245,22 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
                       CardLabel c False [UpdateCardSetting iid "11080" (SetCardSetting CardAttachments [c])]
                   Just _ -> pure Nothing
               else pure Nothing
+          customWeaknesses <- getCustomRandomWeaknessCards =<< getPlayer iid
           (deck', baseRandomWeaknesses) <-
-            addRandomBasicWeaknessIfNeeded investigatorClass playerCount mDecklist deck
+            addRandomBasicWeaknessIfNeededWithCustom
+              customWeaknesses
+              investigatorClass
+              playerCount
+              mDecklist
+              deck
           -- Ultimatum of Disaster: 1 additional random basic weakness.
           disaster <- hasUltimatumOrBoon (Ultimatum UltimatumOfDisaster)
           extraWeakness <-
             if disaster
               then
                 (: [])
-                  <$> getRandomBasicWeaknessExcluding
+                  <$> getRandomBasicWeaknessExcludingWithCustom
+                    customWeaknesses
                     (basicWeaknessCodes baseRandomWeaknesses)
                     investigatorClass
                     playerCount
@@ -268,7 +275,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
                   concat <$> for randomWeaknesses \_ ->
                     morriganWeaknessMessages
                       iid
-                      (genCard =<< getRandomBasicWeakness investigatorClass playerCount mDecklist)
+                      ( genCard
+                          =<< getRandomBasicWeaknessWithCustom customWeaknesses investigatorClass playerCount mDecklist
+                      )
                 pure ([], msgs)
               else do
                 ws <- traverse (`genPlayerCardWith` setPlayerCardOwner iid) randomWeaknesses

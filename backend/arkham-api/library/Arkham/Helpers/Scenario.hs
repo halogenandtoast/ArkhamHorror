@@ -1,7 +1,10 @@
 module Arkham.Helpers.Scenario where
 
 import Arkham.Calculation
-import Arkham.Campaign.Types
+import Arkham.Campaign.Types hiding (
+  addRandomBasicWeaknessIfNeeded,
+  addRandomBasicWeaknessIfNeededWithCustom,
+ )
 import Arkham.Card
 import Arkham.ChaosToken.Types
 import Arkham.ClassSymbol
@@ -106,7 +109,17 @@ since only one physical copy of each exists (#5424).
 addRandomBasicWeaknessIfNeeded
   :: MonadRandom m
   => ClassSymbol -> Int -> Maybe ArkhamDBDecklist -> Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
-addRandomBasicWeaknessIfNeeded investigatorClass playerCount mDecklist deck = do
+addRandomBasicWeaknessIfNeeded = addRandomBasicWeaknessIfNeededWithCustom []
+
+addRandomBasicWeaknessIfNeededWithCustom
+  :: MonadRandom m
+  => [CardDef]
+  -> ClassSymbol
+  -> Int
+  -> Maybe ArkhamDBDecklist
+  -> Deck PlayerCard
+  -> m (Deck PlayerCard, [CardDef])
+addRandomBasicWeaknessIfNeededWithCustom custom investigatorClass playerCount mDecklist deck = do
   let (placeholders, rest) = partition ((== randomWeakness) . toCardDef) (unDeck deck)
   weaknesses <- foldM drawWeakness [] placeholders
   pure (Deck rest, weaknesses)
@@ -115,7 +128,7 @@ addRandomBasicWeaknessIfNeeded investigatorClass playerCount mDecklist deck = do
   drawWeakness acc _ = do
     cardDef <- sampleRandomBasicWeaknessExcluding (inDeck <> basicWeaknessCodes acc) context
     pure $ acc <> [cardDef]
-  context = decklistWeaknessContext investigatorClass playerCount True mDecklist
+  context = (decklistWeaknessContext investigatorClass playerCount True mDecklist) {rbwCustomCards = custom}
 
 toChaosTokenValue :: ScenarioAttrs -> ChaosTokenFace -> Int -> Int -> ChaosTokenValue
 toChaosTokenValue attrs t esVal heVal =

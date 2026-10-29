@@ -14,6 +14,7 @@ import Arkham.Decklist.RandomBasicWeakness (
   sampleRandomBasicWeakness,
  )
 import Arkham.Enemy.CardDefs.TheDreamEaters.BeyondTheGatesOfSleep qualified as Enemies
+import Arkham.GameEnv (withCustomRandomWeaknessPool)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers hiding (setupModifier)
 import Arkham.Helpers.Query
@@ -251,7 +252,10 @@ instance RunMessage BeyondTheGatesOfSleep where
           <*> field InvestigatorTaboo iid
           <*> field InvestigatorCardPool iid
           <*> getIsStandalone
-      newWeakness <- genCard =<< sampleRandomBasicWeakness ctx
+          <*> pure []
+      pid <- getPlayer iid
+      ctxWithCustom <- withCustomRandomWeaknessPool pid ctx
+      newWeakness <- genCard =<< sampleRandomBasicWeakness ctxWithCustom
       focusCards cards do
         chooseOneM iid do
           questionLabeled "replaceWeaknessQuestion"

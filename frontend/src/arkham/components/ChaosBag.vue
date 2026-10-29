@@ -9,6 +9,7 @@ import { MessageType } from '@/arkham/types/Message';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
 import Token from '@/arkham/components/Token.vue';
 import ChaosBagChoice from '@/arkham/components/ChaosBagChoice.vue';
+import SkillTestDraw from '@/arkham/components/debug/SkillTestDraw.vue';
 import { chaosTokenEffectKey } from '@/arkham/types/Scenario';
 import { useI18n } from 'vue-i18n';
 import { Dropdown } from 'floating-vue';
@@ -195,68 +196,71 @@ const choose = (idx: number) => emit('choose', idx)
       </div>
     </div>
 
-    <Dropdown
-      v-if="showStatsBar"
-      class="stats-bar-anchor"
-      placement="top"
-      :distance="6"
-      theme="chaos-bag-stats-popover"
-    >
-      <div class="stats-bar" role="button" tabindex="0">
-        <span class="stats-bar__count">{{ $t('gameBar.chaosBagStats.tokens', { count: allTokenFaces.length }) }}</span>
-        <span v-if="showOdds" class="stats-bar__odds" :class="{ 'stats-bar__odds--whatif': isModified }">{{ oddsPercent }}%</span>
-        <button v-else type="button" class="stats-bar__reveal" @click.stop="showOdds = true">
-          {{ $t('gameBar.chaosBagStats.showOdds') }}
-        </button>
-        <span class="stats-bar__caret" aria-hidden="true">&#9652;</span>
-      </div>
-
-      <template #popper>
-        <div class="stats">
-          <div class="stats__headline">
-            <template v-if="showOdds">
-              <span class="stats__percent">{{ oddsPercent }}%</span>
-              <span class="stats__label">{{ $t('gameBar.chaosBagStats.chanceOfSuccess') }}</span>
-            </template>
-            <button v-else type="button" class="stats__reveal" @click="showOdds = true">
-              {{ $t('gameBar.chaosBagStats.showOdds') }}
-            </button>
-          </div>
-
-          <div class="stats__whatif">
-            <label>
-              {{ $t('gameBar.chaosBagStats.skill') }}
-              <input v-model.number="whatIfSkill" type="number" />
-            </label>
-            <label>
-              {{ $t('gameBar.chaosBagStats.difficulty') }}
-              <input v-model.number="whatIfDifficulty" type="number" />
-            </label>
-            <button v-if="isModified" type="button" class="stats__reset" @click="seedWhatIf">
-              {{ $t('gameBar.chaosBagStats.reset') }}
-            </button>
-          </div>
-
-          <div class="stats__table">
-            <div v-for="entry in bagRows" :key="entry.face" class="stats__row">
-              <img class="stats__token" :src="chaosTokenImage(entry.face)" />
-              <span class="stats__multiplier">&times;{{ entry.count }}</span>
-              <span class="stats__value">{{ entryValueLabel(entry) }}</span>
-            </div>
-          </div>
-
-          <div v-if="breakdownEffects.length" class="stats__effects">
-            <div v-for="(effect, idx) in breakdownEffects" :key="`${effect.face}${idx}`" class="stats__effect">
-              <img class="stats__effect-token" :src="chaosTokenImage(effect.face)" />
-              <span v-if="effect.name" class="stats__effect-name">{{ effect.name }}</span>
-              <span class="stats__effect-detail" v-html="effect.detail"></span>
-            </div>
-          </div>
-
-          <p class="stats__caveat">{{ $t('gameBar.chaosBagStats.caveat') }}</p>
+    <div v-if="showStatsBar || (debug.active && skillTest)" class="bag-toolbar">
+      <SkillTestDraw v-if="debug.active && skillTest" :gameId="game.id" :skillTest="skillTest" :chaosBag="chaosBag" />
+      <Dropdown
+        v-if="showStatsBar"
+        class="stats-bar-anchor"
+        placement="top"
+        :distance="6"
+        theme="chaos-bag-stats-popover"
+      >
+        <div class="stats-bar" role="button" tabindex="0">
+          <span class="stats-bar__count">{{ $t('gameBar.chaosBagStats.tokens', { count: allTokenFaces.length }) }}</span>
+          <span v-if="showOdds" class="stats-bar__odds" :class="{ 'stats-bar__odds--whatif': isModified }">{{ oddsPercent }}%</span>
+          <button v-else type="button" class="stats-bar__reveal" @click.stop="showOdds = true">
+            {{ $t('gameBar.chaosBagStats.showOdds') }}
+          </button>
+          <span class="stats-bar__caret" aria-hidden="true">&#9652;</span>
         </div>
-      </template>
-    </Dropdown>
+
+        <template #popper>
+          <div class="stats">
+            <div class="stats__headline">
+              <template v-if="showOdds">
+                <span class="stats__percent">{{ oddsPercent }}%</span>
+                <span class="stats__label">{{ $t('gameBar.chaosBagStats.chanceOfSuccess') }}</span>
+              </template>
+              <button v-else type="button" class="stats__reveal" @click="showOdds = true">
+                {{ $t('gameBar.chaosBagStats.showOdds') }}
+              </button>
+            </div>
+
+            <div class="stats__whatif">
+              <label>
+                {{ $t('gameBar.chaosBagStats.skill') }}
+                <input v-model.number="whatIfSkill" type="number" />
+              </label>
+              <label>
+                {{ $t('gameBar.chaosBagStats.difficulty') }}
+                <input v-model.number="whatIfDifficulty" type="number" />
+              </label>
+              <button v-if="isModified" type="button" class="stats__reset" @click="seedWhatIf">
+                {{ $t('gameBar.chaosBagStats.reset') }}
+              </button>
+            </div>
+
+            <div class="stats__table">
+              <div v-for="entry in bagRows" :key="entry.face" class="stats__row">
+                <img class="stats__token" :src="chaosTokenImage(entry.face)" />
+                <span class="stats__multiplier">&times;{{ entry.count }}</span>
+                <span class="stats__value">{{ entryValueLabel(entry) }}</span>
+              </div>
+            </div>
+
+            <div v-if="breakdownEffects.length" class="stats__effects">
+              <div v-for="(effect, idx) in breakdownEffects" :key="`${effect.face}${idx}`" class="stats__effect">
+                <img class="stats__effect-token" :src="chaosTokenImage(effect.face)" />
+                <span v-if="effect.name" class="stats__effect-name">{{ effect.name }}</span>
+                <span class="stats__effect-detail" v-html="effect.detail"></span>
+              </div>
+            </div>
+
+            <p class="stats__caveat">{{ $t('gameBar.chaosBagStats.caveat') }}</p>
+          </div>
+        </template>
+      </Dropdown>
+    </div>
   </div>
 </template>
 
@@ -354,8 +358,16 @@ const choose = (idx: number) => emit('choose', idx)
   gap: 10px;
 }
 
-.stats-bar-anchor {
+.bag-toolbar {
+  display: flex;
+  align-items: center;
   margin: -6px -10px -10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.35);
+}
+.stats-bar-anchor {
+  flex: 1;
+  min-width: 0;
 }
 
 .stats-bar {
@@ -363,8 +375,6 @@ const choose = (idx: number) => emit('choose', idx)
   align-items: center;
   gap: 8px;
   padding: 5px 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(0, 0, 0, 0.35);
   color: rgba(255, 255, 255, 0.7);
   font-family: sans-serif;
   font-size: 11px;

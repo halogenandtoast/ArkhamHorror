@@ -22,12 +22,15 @@ import UltimatumsAndBoonsQuestion from '@/arkham/components/UltimatumsAndBoonsQu
 import LogIcons from '@/arkham/components/LogIcons.vue'
 import NewDeck from '@/arkham/components/NewDeck.vue'
 import DeckToolbar from '@/arkham/components/DeckToolbar.vue'
+import CustomWeaknessPool from '@/arkham/components/CustomWeaknessPool.vue'
 import { useI18n } from 'vue-i18n'
 import { handleEmbeddedI18n } from '@/arkham/i18n'
 
 const { t } = useI18n()
 const dbCards = useDbCardStore()
 
+let customWeaknessSave: Promise<boolean> = Promise.resolve(true)
+function trackCustomWeaknessSave(save: Promise<boolean>) { customWeaknessSave = save }
 const decks = ref<Arkham.Deck[]>([])
 const ready = ref(false)
 const deckId = ref<string | null>(null)
@@ -138,10 +141,13 @@ const currentDeckList = computed(() => {
   if (!selectedDeck.value) return null
   return deckToArkhamDbDecklist(selectedDeck.value)
 })
+const playerCustomWeaknessPool = computed(() => props.game.settings.settingsCustomRandomWeaknessPools[props.playerId] ?? [false, []] as [boolean, string[]])
 const weaknessPoolSummary = computed(() => {
-  if (selectedWeaknessPool.value.length === 0) return 'All basic weaknesses'
+  const [enabled, sets] = playerCustomWeaknessPool.value
+  const customSummary = enabled && sets.length ? ` · ${sets.length} custom set${sets.length === 1 ? '' : 's'}` : ''
+  if (selectedWeaknessPool.value.length === 0) return enabled && sets.length ? sets.join(', ') : 'All printed basic weaknesses'
   const names = selectedWeaknessPool.value.map((token) => weaknessPoolOptions.find((o) => o.token === token)?.label ?? token)
-  return names.length <= 2 ? names.join(', ') : `${names.length} products selected`
+  return (names.length <= 2 ? names.join(', ') : `${names.length} products selected`) + customSummary
 })
 
 function deckToArkhamDbDecklist(deck: Arkham.Deck): ArkhamDbDecklist {
@@ -417,6 +423,7 @@ const emit = defineEmits(['choose'])
 const chooseChoice = (idx: number) => emit('choose', idx)
 
 async function choose() {
+  if (!await customWeaknessSave) return
   if (unsavedDeckList.value && chooseDeckList && unsavedDeckError.value === null) {
     await chooseDeckList(deckListWithWeaknessPool(unsavedDeckList.value))
   } else if (deckId.value && error.value === null) {
@@ -623,7 +630,7 @@ const needsReply = computed(() => {
                       <button
                         type="button"
                         class="deck-item-weakness-button"
-                        :class="{ active: deckId === deck.id && (weaknessPoolOpen || selectedWeaknessPool.length > 0) }"
+                        :class="{ active: deckId === deck.id && (weaknessPoolOpen || selectedWeaknessPool.length > 0 || playerCustomWeaknessPool[0]) }"
                         v-tooltip="$t('chooseDeck.randomBasicWeaknessPoolTooltip')"
                         :aria-label="$t('chooseDeck.randomBasicWeaknessPoolTooltip')"
                         @click.stop.prevent="toggleWeaknessPoolForDeck(deck)"
@@ -650,7 +657,7 @@ const needsReply = computed(() => {
                           <span class="weakness-pool-summary">{{ weaknessPoolSummary }}</span>
                         </div>
                         <p class="weakness-pool-help">
-                          Limit random basic weaknesses to selected products. Leave empty to use the full pool.
+                          Select printed or custom sets. Leave all sets unselected to use the full printed pool.
                         </p>
                         <div class="weakness-pool-actions">
                           <button type="button" @click.prevent="setWeaknessPool(weaknessPoolOptions.map((o) => o.token))">Select all</button>
@@ -662,6 +669,7 @@ const needsReply = computed(() => {
                             <span>{{ option.label }}</span>
                           </label>
                         </div>
+                        <CustomWeaknessPool v-if="customCardsEnabled" :game="game" :playerId="playerId" @saving="trackCustomWeaknessSave" />
                       </div>
                     </div>
                   </template>
@@ -687,7 +695,7 @@ const needsReply = computed(() => {
                       </button>
                       <div v-if="weaknessPoolOpen" class="weakness-pool-body">
                         <p class="weakness-pool-help">
-                          Limit random basic weaknesses to selected products. Leave empty to use the full pool.
+                          Select printed or custom sets. Leave all sets unselected to use the full printed pool.
                         </p>
                         <div class="weakness-pool-actions">
                           <button type="button" @click.prevent="setWeaknessPool(weaknessPoolOptions.map((o) => o.token))">Select all</button>
@@ -699,6 +707,7 @@ const needsReply = computed(() => {
                             <span>{{ option.label }}</span>
                           </label>
                         </div>
+                        <CustomWeaknessPool v-if="customCardsEnabled" :game="game" :playerId="playerId" @saving="trackCustomWeaknessSave" />
                       </div>
                     </div>
                     <button type="submit" class="primary-action" :disabled="!!unsavedDeckError">{{$t('create.choose')}}</button>
@@ -1356,6 +1365,13 @@ const needsReply = computed(() => {
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
+}
+
+.weakness-pool-panel .custom-weakness-pool {
+  margin: 8px 12px 0;
+  --weakness-pool-surface: color-mix(in srgb, currentColor 4%, transparent);
+  --weakness-pool-border: color-mix(in srgb, currentColor 20%, transparent);
+  --weakness-pool-text: currentColor;
 }
 
 .weakness-pool-panel {

@@ -10041,6 +10041,7 @@ test-suite spec
       Arkham.Treachery.Cards.HypochondriaSpec
       Arkham.Treachery.Cards.LegInjurySpec
       Arkham.Treachery.Cards.NightOfTheZealot.DarkCult.MysteriousChantingSpec
+      Arkham.Treachery.Cards.PanicSpec
       Arkham.Treachery.Cards.ParanoiaSpec
       Arkham.Treachery.Cards.PsychosisSpec
       Arkham.Treachery.Cards.PursuedSpec

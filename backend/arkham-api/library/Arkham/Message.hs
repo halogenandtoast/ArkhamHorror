@@ -579,6 +579,8 @@ data Message
     window triggers. Set from the hidden-cards stack.
     -}
     SetCardSilenced InvestigatorId CardCode Bool
+  | SetCustomRandomWeaknessPool Bool [Text]
+  | SetPlayerCustomRandomWeaknessPool PlayerId Bool [Text]
   | SetAsIfRuling AsIfRuling
   | SetUltimatumsAndBoonsEnabled Bool
   | -- | Ultimatum of The Scream: ban this ally for the rest of the campaign

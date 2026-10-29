@@ -3,6 +3,7 @@ import { computed, nextTick, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDbCardStore } from '@/stores/dbCards'
 import { useCardStore } from '@/stores/cards'
+import { useSettings } from '@/stores/settings'
 import { cardImage, cardArt } from '@/arkham/cardImages'
 import { customCardDef, isCustomCardCode } from '@/arkham/customCards'
 import { cardText } from '@/arkham/customText'
@@ -23,6 +24,7 @@ const emit = defineEmits<{ choose: [index: number] }>()
 const { t, locale } = useI18n()
 const db = useDbCardStore()
 const cards = useCardStore()
+const settings = useSettings()
 const grid = ref<HTMLElement | null>(null)
 const view = ref<'grid' | 'list'>('grid')
 const defaults = (): CardChoiceFilters => ({
@@ -38,7 +40,9 @@ const defaults = (): CardChoiceFilters => ({
 const filters = reactive(defaults())
 const defsByCode = computed(() => new Map(cards.cards.map((c) => [cardArt(c.cardCode), c])))
 const candidates = computed<CardChoiceCandidate[]>(() =>
-  props.entries.map(({ choice, index }) => {
+  props.entries.filter(({ choice }) =>
+    !props.collection || settings.customCardsEnabled || !isCustomCardCode(choice.cardCode)
+  ).map(({ choice, index }) => {
     const code = cardArt(choice.cardCode)
     const printed = db.getDbCard(code)
     const def = customCardDef(code) ?? defsByCode.value.get(code)
@@ -141,17 +145,17 @@ function reset() {
     @keydown.stop
   >
     <header class="picker-heading">
-      <div>
-        <h3>
-          {{ t(props.collection ? 'questionFilter.collectionTitle' : 'questionFilter.title') }}
-        </h3>
+      <h3>
+        {{ t(props.collection ? 'questionFilter.collectionTitle' : 'questionFilter.title') }}
+      </h3>
+      <div class="picker-heading-actions">
+        <button v-if="hasFilters" type="button" class="text-button" @click="reset">
+          {{ t('questionFilter.clear') }}
+        </button>
         <p aria-live="polite">
           {{ t('questionFilter.results', { count: filtered.length, total: candidates.length }) }}
         </p>
       </div>
-      <button v-if="hasFilters" type="button" class="text-button" @click="reset">
-        {{ t('questionFilter.clear') }}
-      </button>
     </header>
     <div class="picker-tools">
       <label class="picker-search"
@@ -208,7 +212,7 @@ function reset() {
       >
     </div>
     <div class="picker-source">
-      <label class="custom-toggle"
+      <label v-if="settings.customCardsEnabled" class="custom-toggle"
         ><input v-model="filters.includeCustom" type="checkbox" /><span>{{
           t('questionFilter.includeCustom')
         }}</span
@@ -294,11 +298,13 @@ function reset() {
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 8px;
-  > div {
+  > .picker-heading-actions {
     display: flex;
-    align-items: baseline;
+    align-items: center;
+    justify-content: flex-end;
     gap: 12px;
-    flex-wrap: wrap;
+    margin-left: auto;
+    text-align: right;
   }
   h3 {
     color: var(--title);
@@ -436,6 +442,7 @@ button:focus-visible {
   }
 }
 .view-toggle {
+  margin-left: auto;
   display: flex;
   gap: 2px;
   button {

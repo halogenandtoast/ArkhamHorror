@@ -2,10 +2,8 @@ import type { Game } from '@/arkham/types/Game'
 import { choices } from '@/arkham/types/Game'
 import type { Question } from '@/arkham/types/Question'
 
-/** Fold test details only for an explicitly marked collection search.
- * The collection question remains visible outside the folded details. */
-export function skillTestHasCollectionSearch(game: Game, playerId: string): boolean {
-  if (!game.skillTest) return false
+/** Detect collection searches so they render in their own modal, even during a skill test. */
+export function isCollectionSearch(game: Game, playerId: string): boolean {
   let question: Question | undefined = game.question[playerId]
   let collectionSearch = false
   while (question) {

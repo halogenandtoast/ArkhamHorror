@@ -5,6 +5,8 @@ module Arkham.Decklist.RandomBasicWeakness (
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
+import Arkham.Card.CardType (CardSubType (BasicWeakness))
+import Arkham.Card.CustomCard (isCustomCardCode)
 import Arkham.ClassSymbol
 import Arkham.Decklist.CardPool
 import Arkham.Decklist.Type
@@ -20,6 +22,7 @@ data RandomBasicWeaknessContext = RandomBasicWeaknessContext
   , rbwTaboo :: Maybe TabooList
   , rbwCardPool :: Maybe ArkhamBuildCardPool
   , rbwStandalone :: Bool
+  , rbwCustomCards :: [CardDef]
   }
   deriving stock (Show, Eq, Ord)
 
@@ -35,6 +38,7 @@ decklistWeaknessContext investigatorClass playerCount standalone mDecklist =
     , rbwTaboo = mDecklist >>= fromTabooId . taboo_id
     , rbwCardPool = mDecklist >>= parseArkhamBuildCardPool
     , rbwStandalone = standalone
+    , rbwCustomCards = []
     }
 
 newtype ArkhamBuildDecklistMeta = ArkhamBuildDecklistMeta
@@ -56,6 +60,14 @@ parseArkhamBuildCardPool decklist = do
   guard (notNull tokens)
   pure $ ArkhamBuildCardPool tokens
 
+-- Selecting custom sets without printed sets means a custom-only pool.
+-- Apply this before both filtering and fallback, so an ineligible custom card
+-- cannot silently widen the selection back to every printed weakness.
+randomBasicWeaknessPool :: RandomBasicWeaknessContext -> [CardDef]
+randomBasicWeaknessPool ctx =
+  let printed = if notNull (rbwCustomCards ctx) && isNothing (rbwCardPool ctx) then [] else allBasicWeaknesses
+   in printed <> filter ((== Just BasicWeakness) . cdCardSubType) (rbwCustomCards ctx)
+
 randomBasicWeaknessCandidates :: RandomBasicWeaknessContext -> [CardDef]
 randomBasicWeaknessCandidates = randomBasicWeaknessCandidatesMatching (const True)
 
@@ -67,7 +79,7 @@ randomBasicWeaknessCandidatesMatching
 randomBasicWeaknessCandidatesMatching f ctx =
   filter (\cardDef -> weaknessFilter ctx cardDef && f cardDef)
     $ tabooMutate ctx
-    <$> allBasicWeaknesses
+    <$> randomBasicWeaknessPool ctx
 
 randomBasicWeaknessSamplingCandidates :: RandomBasicWeaknessContext -> [CardDef]
 randomBasicWeaknessSamplingCandidates = randomBasicWeaknessSamplingCandidatesMatching (const True)
@@ -138,7 +150,7 @@ randomBasicWeaknessCandidatesIgnoringCardPool
 randomBasicWeaknessCandidatesIgnoringCardPool f ctx =
   filter (\cardDef -> weaknessFilterIgnoringCardPool ctx cardDef && f cardDef)
     $ tabooMutate ctx
-    <$> allBasicWeaknesses
+    <$> randomBasicWeaknessPool ctx
 
 weaknessFilter :: RandomBasicWeaknessContext -> CardDef -> Bool
 weaknessFilter ctx cardDef =
@@ -146,7 +158,7 @@ weaknessFilter ctx cardDef =
     [ multiplayerAllowed ctx cardDef
     , classAllowed ctx cardDef
     , standaloneAllowed ctx cardDef
-    , cardPoolAllowed ctx cardDef
+    , isCustomCardCode cardDef || cardPoolAllowed ctx cardDef
     ]
 
 weaknessFilterIgnoringCardPool :: RandomBasicWeaknessContext -> CardDef -> Bool

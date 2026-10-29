@@ -56,6 +56,7 @@ import Arkham.Game.Outcome
 import Arkham.Game.Settings (
   activeUltimatumsAndBoons,
   settingsAsIfRuling,
+  settingsCustomRandomWeaknessPools,
   settingsRolledUltimatumOrBoon,
   settingsScreamedAllies,
   settingsUltimatumsAndBoons,
@@ -438,6 +439,21 @@ runGameMessage msg g = case msg of
   SetAsIfAtIgnored iid True -> pure $ g & asIfAtIgnoredL %~ insertSet iid
   SetAsIfAtIgnored iid False -> pure $ g & asIfAtIgnoredL %~ deleteSet iid
   SetLocationOffset lid x y -> pure $ g & locationOffsetsL %~ insertMap lid (x, y)
+  SetCustomRandomWeaknessPool enabled sets -> do
+    pid <- getActivePlayer
+    push $ SetPlayerCustomRandomWeaknessPool pid enabled sets
+    pure g
+  SetPlayerCustomRandomWeaknessPool pid enabled sets -> do
+    let updated =
+          g & settingsL %~ \settings ->
+            settings
+              { settingsCustomRandomWeaknessPools =
+                  insertMap pid (enabled, setFromList sets) settings.settingsCustomRandomWeaknessPools
+              }
+    let available = fromMaybe mempty (getTransient $ gameCollectionCards g) <> gameCustomCards g
+    defs <- runReaderT (getCustomRandomWeaknessCards pid) $ updated & customCardsL .~ available
+    let snapshots = Map.restrictKeys available (setFromList $ map toCardCode defs)
+    pure $ updated & customCardsL %~ (snapshots <>)
   SetAsIfRuling ruling -> do
     currentWindows <- concat <$> getWindowStack
     when (any (\w -> Window.windowType w == Window.FastPlayerWindow) currentWindows) do
@@ -1108,6 +1124,7 @@ runGameMessage msg g = case msg of
           , activeCostPayments = Cost.NoPayment
           , activeCostTarget = ForAdditionalCost batchId
           , activeCostWindows = []
+          , activeCostInitiationTick = Just (gameWindowTick g)
           , activeCostInvestigator = iid
           , activeCostSealedChaosTokens = []
           , activeCostCancelled = False
@@ -1217,6 +1234,7 @@ runGameMessage msg g = case msg of
           , activeCostPayments = Cost.NoPayment
           , activeCostTarget = ForAbility ability
           , activeCostWindows = windows'
+          , activeCostInitiationTick = Just (gameWindowTick g)
           , activeCostInvestigator = iid
           , activeCostSealedChaosTokens = []
           , activeCostCancelled = False
@@ -3870,9 +3888,15 @@ runGameMessage msg g = case msg of
         <*> field Investigator.InvestigatorTaboo iid
         <*> field Investigator.InvestigatorCardPool iid
         <*> getIsStandalone
+        <*> pure []
+    pid <- getPlayer iid
+    ctxWithCustom <- withCustomRandomWeaknessPool pid ctx
     mcard <-
       traverse genPlayerCard
-        =<< sampleRandomBasicWeaknessMatching ((`cardMatch` matcher) . (`lookupPlayerCard` nullCardId)) [] ctx
+        =<< sampleRandomBasicWeaknessMatching
+          ((`cardMatch` matcher) . (`lookupPlayerCard` nullCardId))
+          []
+          ctxWithCustom
     g <$ push (RequestedPlayerCard iid source mcard [])
   CancelSurge _ -> do
     ems <- effectModifiers GameSource [NoSurge]

@@ -13,6 +13,7 @@
  * for choices the game is waiting on.
  */
 import { computed, ref, watch } from 'vue'
+import { Dropdown } from 'floating-vue'
 import { useDebug } from '@/arkham/debug'
 import { chaosTokenImage, compareTokenFaces, type TokenFace } from '@/arkham/types/ChaosToken'
 import type { ChaosBag } from '@/arkham/types/ChaosBag'
@@ -101,8 +102,8 @@ const applyRevealRule = () => {
 </script>
 
 <template>
-  <details class="draw-debug">
-    <summary class="draw-debug__summary">
+  <Dropdown class="draw-debug" placement="top-start" :distance="6" theme="chaos-bag-stats-popover">
+    <button type="button" class="draw-debug__summary">
       <span class="draw-debug__caret" aria-hidden="true" />
       <span class="draw-debug__title">{{ $t('debug.skillTestDraw.title') }}</span>
       <span class="count-pill draw-debug__badge" v-tooltip="$t('debug.skillTestDraw.currentHint')">
@@ -111,90 +112,91 @@ const applyRevealRule = () => {
       <span v-if="queue.length > 0" class="count-pill">
         {{ $t('debug.skillTestDraw.forcedCount', { count: queue.length }) }}
       </span>
-    </summary>
-
-    <div class="draw-debug__body">
-      <section class="draw-debug__section">
-        <header class="draw-debug__legend">
-          <span>{{ $t('debug.skillTestDraw.revealRule') }}</span>
-          <span class="draw-debug__legend-value">
-            <span :class="{ 'draw-debug__superseded': dirty }">{{ currentLabel }}</span>
-            <template v-if="dirty"> &rArr; <span class="draw-debug__pending">{{ pendingLabel }}</span></template>
-          </span>
-        </header>
-        <div class="draw-debug__controls">
-          <div class="stepper" v-tooltip="$t('debug.skillTestDraw.revealHint')">
-            <span class="stepper__label">{{ $t('debug.skillTestDraw.reveal') }}</span>
-            <button class="stepper__button" @click="step('reveal', -1)">&minus;</button>
-            <span class="stepper__value">{{ reveal }}</span>
-            <button class="stepper__button" @click="step('reveal', 1)">+</button>
+    </button>
+    <template #popper>
+      <div class="draw-debug__body">
+        <section class="draw-debug__section">
+          <header class="draw-debug__legend">
+            <span>{{ $t('debug.skillTestDraw.revealRule') }}</span>
+            <span class="draw-debug__legend-value">
+              <span :class="{ 'draw-debug__superseded': dirty }">{{ currentLabel }}</span>
+              <template v-if="dirty"> &rArr; <span class="draw-debug__pending">{{ pendingLabel }}</span></template>
+            </span>
+          </header>
+          <div class="draw-debug__controls">
+            <div class="stepper" v-tooltip="$t('debug.skillTestDraw.revealHint')">
+              <span class="stepper__label">{{ $t('debug.skillTestDraw.reveal') }}</span>
+              <button type="button" class="debug-stepper-button" @click="step('reveal', -1)">&minus;</button>
+              <span class="stepper__value">{{ reveal }}</span>
+              <button type="button" class="debug-stepper-button" @click="step('reveal', 1)">+</button>
+            </div>
+            <div class="stepper" v-tooltip="$t('debug.skillTestDraw.chooseHint')">
+              <span class="stepper__label">{{ $t('debug.skillTestDraw.choose') }}</span>
+              <button type="button" class="debug-stepper-button" @click="step('choose', -1)">&minus;</button>
+              <span class="stepper__value">{{ choose === 0 ? $t('debug.skillTestDraw.all') : choose }}</span>
+              <button type="button" class="debug-stepper-button" @click="step('choose', 1)">+</button>
+            </div>
+            <button class="draw-debug__apply" :disabled="!beforeReveal || !dirty" @click="applyRevealRule">
+              {{ $t('debug.skillTestDraw.apply') }}
+            </button>
           </div>
-          <div class="stepper" v-tooltip="$t('debug.skillTestDraw.chooseHint')">
-            <span class="stepper__label">{{ $t('debug.skillTestDraw.choose') }}</span>
-            <button class="stepper__button" @click="step('choose', -1)">&minus;</button>
-            <span class="stepper__value">{{ choose === 0 ? $t('debug.skillTestDraw.all') : choose }}</span>
-            <button class="stepper__button" @click="step('choose', 1)">+</button>
+          <p v-if="!beforeReveal" class="draw-debug__note">{{ $t('debug.skillTestDraw.tooLate') }}</p>
+        </section>
+
+        <section class="draw-debug__section">
+          <header class="draw-debug__legend">
+            <span>{{ $t('debug.skillTestDraw.forced') }}</span>
+            <button v-if="queue.length > 0" class="draw-debug__clear" @click="setQueue([])">
+              {{ $t('debug.skillTestDraw.clear') }}
+            </button>
+          </header>
+
+          <ol class="draw-debug__queue">
+            <li
+              v-for="(face, idx) in queue"
+              :key="`${face}${idx}`"
+              class="draw-debug__slot draw-debug__slot--filled"
+              v-tooltip="$t('debug.skillTestDraw.removeToken')"
+              @click="setQueue(queue.filter((_, i) => i !== idx))"
+            >
+              <img class="draw-debug__token" :src="chaosTokenImage(face)" />
+              <span class="draw-debug__order">{{ idx + 1 }}</span>
+            </li>
+            <li class="draw-debug__slot draw-debug__slot--empty">
+              <span>{{ $t('debug.skillTestDraw.empty') }}</span>
+            </li>
+          </ol>
+
+          <div class="draw-debug__palette">
+            <img
+              v-for="face in bagFaces"
+              :key="face"
+              class="draw-debug__token draw-debug__token--pick"
+              :src="chaosTokenImage(face)"
+              v-tooltip="$t('debug.skillTestDraw.addToken')"
+              @click="setQueue([...queue, face])"
+            />
           </div>
-          <button class="draw-debug__apply" :disabled="!beforeReveal || !dirty" @click="applyRevealRule">
-            {{ $t('debug.skillTestDraw.apply') }}
-          </button>
-        </div>
-        <p v-if="!beforeReveal" class="draw-debug__note">{{ $t('debug.skillTestDraw.tooLate') }}</p>
-      </section>
-
-      <section class="draw-debug__section">
-        <header class="draw-debug__legend">
-          <span>{{ $t('debug.skillTestDraw.forced') }}</span>
-          <button v-if="queue.length > 0" class="draw-debug__clear" @click="setQueue([])">
-            {{ $t('debug.skillTestDraw.clear') }}
-          </button>
-        </header>
-
-        <ol class="draw-debug__queue">
-          <li
-            v-for="(face, idx) in queue"
-            :key="`${face}${idx}`"
-            class="draw-debug__slot draw-debug__slot--filled"
-            v-tooltip="$t('debug.skillTestDraw.removeToken')"
-            @click="setQueue(queue.filter((_, i) => i !== idx))"
-          >
-            <img class="draw-debug__token" :src="chaosTokenImage(face)" />
-            <span class="draw-debug__order">{{ idx + 1 }}</span>
-          </li>
-          <li class="draw-debug__slot draw-debug__slot--empty">
-            <span>{{ $t('debug.skillTestDraw.empty') }}</span>
-          </li>
-        </ol>
-
-        <div class="draw-debug__palette">
-          <img
-            v-for="face in bagFaces"
-            :key="face"
-            class="draw-debug__token draw-debug__token--pick"
-            :src="chaosTokenImage(face)"
-            v-tooltip="$t('debug.skillTestDraw.addToken')"
-            @click="setQueue([...queue, face])"
-          />
-        </div>
-      </section>
-    </div>
-  </details>
+        </section>
+      </div>
+    </template>
+  </Dropdown>
 </template>
+
+<style scoped src="./stepper.css"></style>
 
 <style scoped>
 .draw-debug {
   --draw-debug-line: rgba(255, 255, 255, 0.14);
-  align-self: stretch;
-  margin-top: 4px;
-  border: 1px solid var(--draw-debug-line);
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: min(12px, 2vw);
-  overflow: hidden;
 }
 
 .draw-debug__summary {
+  border: 0;
+  background: transparent;
+  font: inherit;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -203,11 +205,6 @@ const applyRevealRule = () => {
   list-style: none;
   user-select: none;
   color: rgba(255, 255, 255, 0.7);
-}
-
-/* Safari still paints its own disclosure triangle without this. */
-.draw-debug__summary::-webkit-details-marker {
-  display: none;
 }
 
 .draw-debug__summary:hover {
@@ -224,7 +221,7 @@ const applyRevealRule = () => {
   transition: transform 120ms ease;
 }
 
-.draw-debug[open] .draw-debug__caret {
+.draw-debug.v-popper--shown .draw-debug__caret {
   transform: rotate(90deg);
 }
 
@@ -241,6 +238,12 @@ const applyRevealRule = () => {
 }
 
 .draw-debug__body {
+  --draw-debug-line: rgba(255, 255, 255, 0.14);
+  width: min(360px, 85vw);
+  max-height: 65vh;
+  overflow-y: auto;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 12px;
   display: flex;
   flex-direction: column;
   border-top: 1px solid var(--draw-debug-line);
@@ -301,7 +304,6 @@ const applyRevealRule = () => {
   border: 1px solid var(--draw-debug-line);
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.35);
-  overflow: hidden;
 }
 
 .stepper__label {
@@ -316,18 +318,6 @@ const applyRevealRule = () => {
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
-}
-
-.stepper__button {
-  padding: 0 7px;
-  border: 0;
-  border-radius: 0;
-  background: rgba(255, 255, 255, 0.06);
-  line-height: 1.6;
-}
-
-.stepper__button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.16);
 }
 
 .draw-debug__apply {

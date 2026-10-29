@@ -663,6 +663,8 @@ handleAnswerPure game@Game {..} playerId = \case
           let handleCost (cId, n) = combinePaymentAmounts n $ Map.findWithDefault Noop cId costMap
           handled $ concatMap handleCost $ Map.toList (parAmounts response)
         _ -> unhandled "Wrong question type"
+  Raw message@(SetCustomRandomWeaknessPool {}) -> handled [message, AskMap gameQuestion]
+  Raw message@(SetPlayerCustomRandomWeaknessPool {}) -> handled [message, AskMap gameQuestion]
   Raw message -> do
     let inFastWindow =
           maybe

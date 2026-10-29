@@ -315,9 +315,18 @@ getRandomBasicWeakness = getRandomBasicWeaknessExcluding []
 -- | 'getRandomBasicWeakness', skipping weaknesses whose canonical card code is excluded.
 getRandomBasicWeaknessExcluding
   :: MonadRandom m => [CardCode] -> ClassSymbol -> Int -> Maybe ArkhamDBDecklist -> m CardDef
-getRandomBasicWeaknessExcluding excluded investigatorClass playerCount mDecklist =
+getRandomBasicWeaknessExcluding = getRandomBasicWeaknessExcludingWithCustom []
+
+getRandomBasicWeaknessWithCustom
+  :: MonadRandom m => [CardDef] -> ClassSymbol -> Int -> Maybe ArkhamDBDecklist -> m CardDef
+getRandomBasicWeaknessWithCustom custom = getRandomBasicWeaknessExcludingWithCustom custom []
+
+getRandomBasicWeaknessExcludingWithCustom
+  :: MonadRandom m
+  => [CardDef] -> [CardCode] -> ClassSymbol -> Int -> Maybe ArkhamDBDecklist -> m CardDef
+getRandomBasicWeaknessExcludingWithCustom custom excluded investigatorClass playerCount mDecklist =
   sampleRandomBasicWeaknessExcluding excluded
-    $ decklistWeaknessContext investigatorClass playerCount False mDecklist
+    $ (decklistWeaknessContext investigatorClass playerCount False mDecklist) {rbwCustomCards = custom}
 
 {- | Replace every random basic weakness placeholder in the deck with an actual weakness.
 Each draw excludes what the earlier draws produced, and the basic weaknesses already in
@@ -326,7 +335,17 @@ the deck, since only one physical copy of each exists (#5424).
 addRandomBasicWeaknessIfNeeded
   :: CardGen m
   => ClassSymbol -> Int -> Maybe ArkhamDBDecklist -> Deck PlayerCard -> m (Deck PlayerCard, [Card])
-addRandomBasicWeaknessIfNeeded investigatorClass playerCount mDecklist deck = do
+addRandomBasicWeaknessIfNeeded = addRandomBasicWeaknessIfNeededWithCustom []
+
+addRandomBasicWeaknessIfNeededWithCustom
+  :: CardGen m
+  => [CardDef]
+  -> ClassSymbol
+  -> Int
+  -> Maybe ArkhamDBDecklist
+  -> Deck PlayerCard
+  -> m (Deck PlayerCard, [Card])
+addRandomBasicWeaknessIfNeededWithCustom custom investigatorClass playerCount mDecklist deck = do
   let (placeholders, rest) = partition ((== randomWeakness) . toCardDef) (unDeck deck)
   weaknesses <- foldM drawWeakness [] placeholders
   pure (Deck rest, weaknesses)
@@ -334,7 +353,8 @@ addRandomBasicWeaknessIfNeeded investigatorClass playerCount mDecklist deck = do
   inDeck = basicWeaknessCodes $ unDeck deck
   drawWeakness acc _ = do
     cardDef <-
-      getRandomBasicWeaknessExcluding
+      getRandomBasicWeaknessExcludingWithCustom
+        custom
         (inDeck <> basicWeaknessCodes acc)
         investigatorClass
         playerCount

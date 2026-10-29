@@ -5,7 +5,6 @@ import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Enemies qualified as Cards
 import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Locations
 import Arkham.Matcher
-import Arkham.Message (ShuffleIn (..))
 import Arkham.Trait (Trait (Madness))
 
 newtype Truth = Truth EnemyAttrs
@@ -26,9 +25,6 @@ instance RunMessage Truth where
       placeDoomOnAgenda 1
       pure e
     RequestedPlayerCard iid (isSource attrs -> True) (Just card) _ -> do
-      focusCards [card] do
-        continue_ iid
-        addCampaignCardToDeck iid DoNotShuffleIn card
-        drawCard iid card
+      drawCard iid card
       pure e
     _ -> Truth <$> liftRunMessage msg attrs

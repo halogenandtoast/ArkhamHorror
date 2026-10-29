@@ -1,0 +1,35 @@
+{
+  "mothersMercy": {
+    "title": "Scenario V: Mother’s Mercy",
+    "intro": {
+      "title": "Scenario V: Mother’s Mercy",
+      "part1": "<p>It’s difficult to say when or how you arrive, as the concept of time slipped from your grasp at some point while you drifted through liminal space. The dark, empty void outside of your train compartment's window hasn't changed in hours—or is it days?</p><p>But as she lazily watches the smoke curl from the end of her cigar and into the ceiling, Maddalena continues to assure you that your destination is close. Finally, she rises and strides toward the compartment’s door. “We are here,” she announces. She crushes the stub of her cigar beneath her shoe and steps out the door; you follow behind her and are surprised to find manicured grass beneath your feet instead of the familiar corridor outside of your compartment. You're struck by the impossible sight towering before you: a palace of gargantuan proportions, its architecture unfathomable and nonsensical -yet unmistakably beautiful, nonetheless. Countless dark, twisting spires rise in coils from the parapets towards a starry sky. The image is a stark contrast to the roiling storms and distorted landscapes you passed through during your previous sojourn in the Astral realm, so long ago.</p><p>“The Palace of Sorrows,” Maddalena says, her expression hardening. “Where our journey ends.”</p>",
+      "part2": "<p>Maddalena’s cryptic explanations, her evasive half-answers—they’ve pushed you to your limit. Where has she been all this time? Where have the Three Mothers taken your friend? What is her plan, now that you've come all this way?</p><p>She turns to face you, her usual haughtiness tinged with something sharper, darker—confidence, yes, but also a gnawing hunger. “For centuries, I've waited, watched as Aradia’s name faded from memory. Bided my time while the Sorrows bled the world dry,” she finally responds, her voice low and venomous. “Now, with their attention fully fixed on you, I have the chance I've been waiting for. I will kill the Three Mothers, each one of them.” Maddalena’s mad declaration leaves you standing in stunned silence as she turns on her heel and begins to march toward the palace. You've spent what feels like a lifetime struggling to weaken the Three Mothers, to prepare yourself for an encounter with their unimaginable power, but Maddalena has made one glaring omission that means to throw all of your careful preparation to the winds—how does she intend to kill them?</p><p>You call out to her, pressing for an answer. “Be careful once we're inside,” she says without slowing her pace, tossing you an indifferent glance over her shoulder. “The bound souls of those the Mothers have claimed are here, too. Do yourself a kindness; ignore them. They'll only slow us down.”</p><p>Her silhouette begins to fade into the inky gloom ahead. “Now, follow closely, or I'll leave you behind. And then what chance will you have?”</p>",
+      "chooseLead": "Choose one lead from your campaign log to follow."
+    },
+    "scaffold": {
+      "title": "Scenario V: Mother’s Mercy",
+      "body": "The introduction is complete. Scenario board setup, encounter cards, token effects, and resolutions are not implemented yet."
+    },
+    "rules": {
+      "title": "The Palace of Sorrows",
+      "body": "<p>The Bound story assets in this scenario are double-sided, with story cards on their reverse sides. For the best experience, do not read the reverse side of these cards unless instructed.</p>",
+      "fadingPalace": {
+        "title": "Location Adjacency in The Fading Palace",
+        "body": "<p>During this version of act 2, locations will be arranged in a set pattern, with new locations from the Fading Palace deck being placed in Empty Space, unrevealed side faceup. During this scenario, adjacent locations are connected to one another.</p>",
+        "emptySpace": {
+          "title": "Empty Space",
+          "body": "<p>During this version of Act 2, you will sometimes be instructed to place “empty space” into play. This is done by taking the top card of the active investigator’s deck and putting it into play facedown, in the indicated position. If there is no active investigator, the top card(s) of the lead investigator’s deck should be used, instead. Empty space is not a location, and only becomes a location after being replaced by a card from the Fading Palace deck. Should this happen, the empty space card is shuffled back into its owner’s deck. It does, however, count as a location for the purposes of determining the distance between two locations.</p>"
+        },
+        "erasingLocations": {
+          "title": "Erasing Locations",
+          "body": "<p>During this version of Act 2, Hekate will unmake the Palace of Sorrows by Erasing locations from play. This is done by placing a location in play at the bottom of the Fading Palace deck and replacing it with Empty Space. If a location with an investigator is Erased, deal 1 direct damage and 1 horror to that investigator and immediately move them to the nearest remaining location in play. Once a location is Erased, all non-Elite enemy, treachery, and player cards that were attached to that location are immediately discarded. Move each Elite enemy that was at that location to the nearest remaining location.</p>"
+        }
+      }
+    },
+    "label": {
+      "reader": "Choose an investigator to read this passage.",
+      "declineAsset": "Do not put an asset into play."
+    }
+  }
+}

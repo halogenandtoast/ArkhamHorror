@@ -1,0 +1,25 @@
+{
+  "theTeachingsOfAradia": {
+    "title": "Scenario III: The Teachings of Aradia",
+    "intro": {
+      "title": "Scenario III: The Teachings of Aradia",
+      "part1": "<p>The bleak, alien expanse that stretches out before you is something out of a nightmare. Icy winds lash against your face as you struggle to orient yourself in this barren, rain-slick wasteland. Your ability to see through the darkness comes in flashes, illuminated only by the distant flicker of lightning from the empty sky above. Maddalena, who stood beside you only moments ago in the comfort of your room, is nowhere to be found.</p>",
+      "part2": "<p>Another flash of lightning illuminates the sky, and you see it —the unmistakable silhouette of a white owl, perched atop an outcropping of jagged stone nearby. As you strain to get a better look at it, the first sign of life in this desolate place, Maddalena’s voice rings out in your mind as clearly as a bell.</p><p>“Ah, good. I’ve found you,” she says. “Follow the owl.”</p>",
+      "dejaVu": "<p>There’s something about this strange place that strikes » you as oddly familiar. You're no stranger to the otherworldly, and there's a strange quality in the tension of the air that reminds you of the lands just beyond the veil of sleep—similar, somehow, but distinct enough to make you deeply uncomfortable. You're experienced enough in the occult arts to know when you've crossed that particular threshold, and you're quite sure that you're awake.</p><p>But if you aren't in the Dreamlands, then where?</p>",
+      "bonus": "Search your deck for an asset that takes up at least 1 arcane slot. You may put that asset into play, at no cost.",
+      "chooseLead": "Choose one lead from your campaign log to follow."
+    },
+    "scaffold": {
+      "title": "Scenario III: The Teachings of Aradia",
+      "body": "The introduction is complete. Scenario board setup, encounter cards, token effects, and resolutions are not implemented yet."
+    },
+    "rules": {
+      "title": "Veiled",
+      "body": "<p>Many of the locations in both The Teachings of Aradia and subsequent scenarios in the campaign will have the veiled keyword. Instead of an unrevealed side, these locations have story cards on their reverse sides. Whenever a location with the veiled keyword enters play (including during setup), place clues on that location equal to its clue value, as normal. This keyword represents that a location contains unknown lore or assistance that must be sought out by the investigators before it can be of use to them.</p><p>As a {fast} ability, an investigator at a veiled location with no clues on it may flip that location over, resolving the text on its other side.</p><p>Once a veiled location has been flipped over and its story text has been read, it cannot be flipped over again for the remainder of the game unless otherwise noted.</p>"
+    },
+    "label": {
+      "reader": "Choose an investigator to read this passage.",
+      "declineAsset": "Do not put an asset into play."
+    }
+  }
+}

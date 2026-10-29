@@ -5383,6 +5383,32 @@ library
       Arkham.Homebrew.DefsEntries
       Arkham.Homebrew.Generate
       Arkham.Homebrew.Import
+      Arkham.Homebrew.NightOfVespers.Assets.FinlayODoyle
+      Arkham.Homebrew.NightOfVespers.Assets.GigiGiuliano
+      Arkham.Homebrew.NightOfVespers.Assets.LachrymarumsFavor
+      Arkham.Homebrew.NightOfVespers.Assets.SuspiriorumsFavor
+      Arkham.Homebrew.NightOfVespers.Assets.TenebrarumsFavor
+      Arkham.Homebrew.NightOfVespers.Campaign
+      Arkham.Homebrew.NightOfVespers.CampaignSteps
+      Arkham.Homebrew.NightOfVespers.CardDefEntries
+      Arkham.Homebrew.NightOfVespers.CardDefs.Assets
+      Arkham.Homebrew.NightOfVespers.CardEntries
+      Arkham.Homebrew.NightOfVespers.ChaosBag
+      Arkham.Homebrew.NightOfVespers.Content
+      Arkham.Homebrew.NightOfVespers.Defs
+      Arkham.Homebrew.NightOfVespers.Helpers
+      Arkham.Homebrew.NightOfVespers.Intros
+      Arkham.Homebrew.NightOfVespers.Jinx
+      Arkham.Homebrew.NightOfVespers.Key
+      Arkham.Homebrew.NightOfVespers.Scenarios.AChorusOfSuffering
+      Arkham.Homebrew.NightOfVespers.Scenarios.BehindClosedDoors
+      Arkham.Homebrew.NightOfVespers.Scenarios.DancingWithDeath
+      Arkham.Homebrew.NightOfVespers.Scenarios.MothersMercy
+      Arkham.Homebrew.NightOfVespers.Scenarios.TheCityOfFog
+      Arkham.Homebrew.NightOfVespers.Scenarios.TheEndOfSeasons
+      Arkham.Homebrew.NightOfVespers.Scenarios.TheGardenOfBones
+      Arkham.Homebrew.NightOfVespers.Scenarios.TheTeachingsOfAradia
+      Arkham.Homebrew.NightOfVespers.Sets
       Arkham.Homebrew.Registry
       Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.AchievementDefs
       Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Achievements
@@ -9958,6 +9984,8 @@ test-suite spec
       Arkham.Homebrew.DarkMatter.Treacheries.ReminiscenceCovenantSpec
       Arkham.Homebrew.DarkMatter.Treacheries.ReminiscencePledgeSpec
       Arkham.Homebrew.DarkMatter.Treacheries.ReminiscenceSecretsSpec
+      Arkham.Homebrew.NightOfVespers.CampaignSpec
+      Arkham.Homebrew.NightOfVespers.JinxSpec
       Arkham.HomebrewRegistrySpec
       Arkham.Investigator.Cards.AgnesBakerSpec
       Arkham.Investigator.Cards.AshcanPeteSpec

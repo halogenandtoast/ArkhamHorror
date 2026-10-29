@@ -1,0 +1,81 @@
+{
+  "source": "Night of Vespers Campaign Guide.pdf",
+  "pages": 51,
+  "rules": 2,
+  "prologue": 3,
+  "scenarios": [
+    {
+      "number": "1",
+      "name": "The End of Seasons",
+      "id": ":night-of-vespers:001",
+      "page": 3
+    },
+    {
+      "number": "2A",
+      "name": "Behind Closed Doors",
+      "id": ":night-of-vespers:037",
+      "page": 8
+    },
+    {
+      "number": "2B",
+      "name": "Dancing with Death",
+      "id": ":night-of-vespers:075",
+      "page": 13
+    },
+    {
+      "number": "3",
+      "name": "The Teachings of Aradia",
+      "id": ":night-of-vespers:105",
+      "page": 18
+    },
+    {
+      "number": "4A",
+      "name": "The City of Fog",
+      "id": ":night-of-vespers:136",
+      "page": 24
+    },
+    {
+      "number": "4B",
+      "name": "The Garden of Bones",
+      "id": ":night-of-vespers:168",
+      "page": 29
+    },
+    {
+      "number": "4C",
+      "name": "A Chorus of Suffering",
+      "id": ":night-of-vespers:214",
+      "page": 33
+    },
+    {
+      "number": "5",
+      "name": "Mother's Mercy",
+      "id": ":night-of-vespers:257",
+      "page": 40
+    }
+  ],
+  "interludes": [
+    {
+      "number": 1,
+      "name": "Two Messages",
+      "page": 6
+    },
+    {
+      "number": 2,
+      "name": "The Rose of Tuscany",
+      "page": 17
+    },
+    {
+      "number": 3,
+      "name": "The Three Mothers",
+      "page": 21
+    },
+    {
+      "number": 4,
+      "name": "Our Ladies of Sorrow",
+      "page": 39
+    }
+  ],
+  "epilogue": 49,
+  "achievements": 50,
+  "encounterIcons": 51
+}

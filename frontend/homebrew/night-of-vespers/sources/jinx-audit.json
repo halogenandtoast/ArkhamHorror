@@ -1,0 +1,1331 @@
+[
+  {
+    "code": ":night-of-vespers:007",
+    "name": "Into the Fire",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "<b>Forced</b> - After you move to a new location: Remove each unrevealed location in play from the game.\n<b>Jinx</b> -- You must either place 1 clue on your location from the token bank or ready the nearest exhausted enemy.\n<b>Objective</b> - If each undefeated investigator is at the Conservatory, Hedge Maze, or Hotel Rooftop, they may spend the requisite number of clues as a group to advance."
+  },
+  {
+    "code": ":night-of-vespers:031",
+    "name": "Declan O'Doyle",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Hunter. Retaliate. Jinxed.\nDeclan O'Doyle gets +1 [per_investigator] health.\n<b>Forced</b> - If Declan O'Doyle would be defeated: Set his health to 1 [per_investigator] and exhaust him, instead. Declan O'Doyle does not ready during the next upkeep phase."
+  },
+  {
+    "code": ":night-of-vespers:037",
+    "name": "Behind Closed Doors",
+    "type": "scenario",
+    "roles": [
+      "grants-jinxed"
+    ],
+    "text": "Easy / Standard\n[skull]: Reveal another token. If you succeed, exhaust Miss Lila Starett.\n[cultist]: –1. If you fail, your location gains the jinxed keyword until the end of the round.\n[tablet]: –2. If this test fails, move Miss Lila Starett 1 location closer to you.\n[elder_thing]: –X. X is the shroud of your current location.\n"
+  },
+  {
+    "code": ":night-of-vespers:037b",
+    "name": "Behind Closed Doors",
+    "type": "scenario",
+    "roles": [
+      "grants-jinxed"
+    ],
+    "text": "Hard / Expert\n[skull]: –1. Reveal another token.\n[cultist]: –2. Your location gains the jinxed keyword until the end of the round.\n[tablet]: –4. If this test fails, move Miss Lila Starett 1 location closer to you.\n[elder_thing]: –X. X is one more than the shroud of your current location.\n"
+  },
+  {
+    "code": ":night-of-vespers:039",
+    "name": "The Strange Vice of Elizabeth Salmon",
+    "type": "agenda",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "<b>Forced</b> - The Hag cannot be damaged unless she is at The Third Floor.\n<b>Jinx --</b> Test [agility] (3). If you fail, lose 1 action."
+  },
+  {
+    "code": ":night-of-vespers:040",
+    "name": "Collecting the Debt",
+    "type": "agenda",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "<b>Jinx --</b> Test [agility] (3). If you fail, move Miss Lila Starett to your location. (Limit once per round.)\n<b>Forced</b> - If an effect would cause Ana Giuliano to leave The Third Floor: Cancel that effect and add 1 doom to the agenda, instead."
+  },
+  {
+    "code": ":night-of-vespers:041",
+    "name": "Behind Closed Doors (v. I)",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "<b>Jinx --</b> Test [agility] (3). If you fail, resolve Miss Lila Starett's hunter keyword.\n<b>Objective</b> - If both Crime Scene cards are in the victory display: Advance."
+  },
+  {
+    "code": ":night-of-vespers:044",
+    "name": "Behind Closed Doors (v. II)",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "<b>Jinx --</b> Test [agility] (3). If you fail, move Miss Lila Starett to the copy of Tenement Corridors closest to you.\n<b>Objective</b> - Make sense of what is happening inside the Three Conies Apartments. At the end of the round, investigators may spend the requisite amount of clues as a group to advance."
+  },
+  {
+    "code": ":night-of-vespers:048",
+    "name": "Musty Apartment",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n<b>Forced</b> - When you would move out of Musty Apartment, test [willpower] (3). If you fail, lose 1 action."
+  },
+  {
+    "code": ":night-of-vespers:052",
+    "name": "Threadbare Apartment",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\nActions that test [intellect] and/or [combat] get +2 difficulty while at Threadbare Apartment."
+  },
+  {
+    "code": ":night-of-vespers:054",
+    "name": "Dreary Apartment",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\nActions that test [willpower] and/or [agility] get +2 difficulty while at Dreary Apartment."
+  },
+  {
+    "code": ":night-of-vespers:060",
+    "name": "The Third Floor",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n[action]: <b>Investigate</b>. This test gets +1 difficulty and tests [agility] instead of [intellect]. If you succeed, you may either discover a clue at this location, or exhaust a [[Witch]] enemy at any location."
+  },
+  {
+    "code": ":night-of-vespers:062",
+    "name": "Hand of the Hag",
+    "type": "asset",
+    "roles": [],
+    "text": "Uses (2 charges)\n[action] Spend 1 charge and exhaust Hand of the Hag: Exhaust up to two non-[[Elite]] enemies at your location. If a card at your location has the jinxed keyword, you may deal 1 damage to an exhausted enemy at your location. "
+  },
+  {
+    "code": ":night-of-vespers:063",
+    "name": "The Hag",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed. Elusive.\nAt the end of the enemy phase, if The Hag is both ready and unengaged at a location with a [[Tenant]] story asset: She deals 1 damage to that asset.\n<b>Forced</b> - At the end of the round, disengage The Hag from all investigators and move her to the closest location with a [[Tenant]] story asset (and no investigators, if possible.) "
+  },
+  {
+    "code": ":night-of-vespers:072",
+    "name": "Beckoning",
+    "type": "treachery",
+    "roles": [
+      "triggers-or-observes-jinx"
+    ],
+    "text": "<b>Revelation</b> - Test [willpower] (5). This test gets –1 difficulty for each [[Tenant]] story asset in play.\nIf you fail, you must decide (choose one):\n- Take 1 horror and Beckoning gains surge.\n- Resolve the current Jinx. You automatically fail  any tests triggered by this Jinx.\n- Deal 1 damage to a [[Tenant]] asset of your choice."
+  },
+  {
+    "code": ":night-of-vespers:076",
+    "name": "The Danse Macabre",
+    "type": "agenda",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "<b>Jinx --</b> Spin the Performance Hall X times in a direction of your choice, where X is the amount you failed by. (Limit once per round.)\n<b>Forced</b> - When a story asset, story card, or non-weakness enemy with Victory 0 or higher enters the victory display: Remove 1 doom from this agenda (<i>to a minimum of 1</i>)."
+  },
+  {
+    "code": ":night-of-vespers:084",
+    "name": "Performance Hall",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\nThe Performance Hall is connected to the locations immediately above and below its top and bottom sides, and vice versa.\nWhen an enemy would move clockwise from the Performance Hall, it does so from its top exit; if it would move counter-clockwise, it does so from the bottom."
+  },
+  {
+    "code": ":night-of-vespers:087",
+    "name": "Greenhouse",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n[free]: Each investigator at the Greenhouse immediately takes 1 mental trauma. Reduce the amount of doom on the agenda by 1. (Limit once per game.)\nWhile Greenhouse is connected to Performance Hall, as an additional cost to take a move action at Greenhouse, randomly discard a card from your hand."
+  },
+  {
+    "code": ":night-of-vespers:093",
+    "name": "Chamber of Sighs",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n<b>Forced</b> - While an investigator is in the Chamber of Sighs, each [[Bewitched]] enemy loses any hunter and patrol keywords and gains \"Patrol (Chamber of Sighs).\""
+  },
+  {
+    "code": ":night-of-vespers:097",
+    "name": "Glass Peacock",
+    "type": "asset",
+    "roles": [],
+    "text": "You get +1 [willpower].\n[action] If an enemy with the jinxed keyword is at your location, discard Glass Peacock: Exhaust that enemy. If the enemy is non-[[Elite]], deal 2 damage to it. This action does not trigger attacks of opportunity."
+  },
+  {
+    "code": ":night-of-vespers:098",
+    "name": "Gigi Giuliano",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed. Hunter.\n<b>Spawn</b> - Performance Hall."
+  },
+  {
+    "code": ":night-of-vespers:101",
+    "name": "Enthralled Student",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "<b>Spawn</b> - Connecting Location.\nAloof. Jinxed. Patrol (Counterclockwise.)\nAs an additional cost to enter Enthralled Student's location, you must either (choose one):\n- Spend 1 additional action\n- Place 1 doom on Enthralled Student and    resolve her patrol keyword."
+  },
+  {
+    "code": ":night-of-vespers:106",
+    "name": "Stars and Rain",
+    "type": "agenda",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "* This agenda gets +1 [per_investigator] doom threshold.\n<b>Jinx --</b> Put a clue on your location from the token bank.\n"
+  },
+  {
+    "code": ":night-of-vespers:109",
+    "name": "Primordial Chaos",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed. Veiled.\nIncrease the cost of the first card you play at Primordial Chaos during your turn by 1."
+  },
+  {
+    "code": ":night-of-vespers:110",
+    "name": "Antediluvean Waters",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed. Veiled.\nIncrease the difficulty to fight or evade enemies at Antediluvean Waters by 1.\n[free] During your turn, draw the top card of the encounter deck. After resolving its effects, discover 1 clue at Antediluvean Waters. (Limit once per turn.)"
+  },
+  {
+    "code": ":night-of-vespers:111",
+    "name": "The Yawning Void",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed. Veiled.\n<b>Forced</b> - When you fail an Investigation test at The Yawning Void, in addition to resolving the current Jinx: Draw the top card of the encounter deck. (Limit once per round.)"
+  },
+  {
+    "code": ":night-of-vespers:113",
+    "name": "Benevento",
+    "type": "location",
+    "roles": [
+      "printed-jinxed",
+      "triggers-or-observes-jinx"
+    ],
+    "text": "Jinxed.\n<b>Forced</b> - If you trigger a Jinx while at Benevento: Resolve the effects of the Jinx a second time. (Limit once per phase.)"
+  },
+  {
+    "code": ":night-of-vespers:115",
+    "name": "Semnai Theai",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n[action]: Take 1 damage or horror. Discover a clue at Semnai Theai.\nClues may not be discovered at Semnai Theai except by the [action] action above."
+  },
+  {
+    "code": ":night-of-vespers:117",
+    "name": "The Bridge of Sighs",
+    "type": "location",
+    "roles": [
+      "printed-jinxed",
+      "triggers-or-observes-jinx"
+    ],
+    "text": "Jinxed.\n<b>Forced</b> - If you trigger a Jinx while at The Bridge of Sighs: Immediately move to the nearest [[Primordial]] location."
+  },
+  {
+    "code": ":night-of-vespers:118",
+    "name": "The Faraway Tsardom",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\nThe Faraway Tsardom gets +X shroud. X is the total number of enemies at [[Primordial]] locations."
+  },
+  {
+    "code": ":night-of-vespers:123",
+    "name": "Great Prince Stolas",
+    "type": "asset",
+    "roles": [],
+    "text": "You get +1 [intellect].\n<b>Forced</b> - If Great Prince Stolas would enter your discard pile: Shuffle him into your deck, instead.\n[reaction] If a non-[[Elite]] enemy with the jinxed keyword is in play at your location, shuffle Great Prince Stolas into your deck: Discard that enemy."
+  },
+  {
+    "code": ":night-of-vespers:124",
+    "name": "Lachrymarum's Favor",
+    "type": "asset",
+    "roles": [
+      "triggers-or-observes-jinx"
+    ],
+    "text": "<b>Revelation</b> - Put Lachrymarum's Favor into play under your control.\n<b>Forced</b> - When you draw or reveal a [elder_thing] token from the chaos bag: Trigger the current Jinx and discard Lachrymarum's Favor."
+  },
+  {
+    "code": ":night-of-vespers:125",
+    "name": "Suspiriorum's Favor",
+    "type": "asset",
+    "roles": [
+      "triggers-or-observes-jinx"
+    ],
+    "text": "<b>Revelation</b> - Put Suspiriorum's Favor into play under your control.\n<b>Forced</b> - When you draw or reveal a [tablet] token from the chaos bag: Trigger the current Jinx and discard Suspiriorum's Favor."
+  },
+  {
+    "code": ":night-of-vespers:126",
+    "name": "Tenebrarum's Favor",
+    "type": "asset",
+    "roles": [
+      "triggers-or-observes-jinx"
+    ],
+    "text": "<b>Revelation</b> - Put Tenebrarum's Favor into play under your control.\n<b>Forced</b> - When you draw or reveal a [cultist] token from the chaos bag: Trigger the current Jinx and discard Tenebrarum's Favor."
+  },
+  {
+    "code": ":night-of-vespers:127",
+    "name": "Thomas De Quincey",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "<b>Spawn</b> - The Bridge of Sighs (Otherwise, nearest [[Primordial]] location.) \nJinxed.\nThomas De Quincey gets +1 [per_investigator] health.\n<b>Forced</b> - When Thomas De Quincey enters play: If The Bridge of Sighs is in play, put 2 clues on it."
+  },
+  {
+    "code": ":night-of-vespers:128",
+    "name": "Sorrowful Handmaiden",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "<b>Spawn</b> - The Palace at Mount Kunlun (Otherwise, nearest [[Primordial]] location.) \nJinxed."
+  },
+  {
+    "code": ":night-of-vespers:129",
+    "name": "Daughter of Maleventum",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "<b>Spawn</b> - Benevento (Otherwise, nearest [[Primordial]] location.) \nJinxed."
+  },
+  {
+    "code": ":night-of-vespers:130",
+    "name": "Geas-Bound Bocánaigh",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "<b>Spawn</b> - The Battle of Clontarf (Otherwise, nearest [[Primordial]] location.) \nJinxed."
+  },
+  {
+    "code": ":night-of-vespers:131",
+    "name": "Baba's Servant",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "<b>Spawn</b> - The Faraway Tsardom (Otherwise, nearest [[Primordial]] location.) \nJinxed."
+  },
+  {
+    "code": ":night-of-vespers:132",
+    "name": "Priestess of Alecto",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "<b>Spawn</b> - Semnai Theai (Otherwise, nearest [[Primordial]] location.) \nJinxed."
+  },
+  {
+    "code": ":night-of-vespers:133",
+    "name": "Bound Vetala of Mahakali",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "<b>Spawn</b> - Tridevi Marg (Otherwise, nearest [[Primordial]] location.) \nJinxed."
+  },
+  {
+    "code": ":night-of-vespers:134",
+    "name": "Urd-Sworn Draugr",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "<b>Spawn</b> - L'Anse Aux Meadows (Otherwise, nearest [[Primordial]] location.) \nJinxed."
+  },
+  {
+    "code": ":night-of-vespers:140",
+    "name": "The City of Fog",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "<b>Jinx --</b> Place a Fog Token on Land's End, The Embarcadero, or Corona Heights. (Limit once per phase.)\n<b>Objective</b> - If the Tenebrarum Lodge is revealed: Advance."
+  },
+  {
+    "code": ":night-of-vespers:141",
+    "name": "Murder in the Mist",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "<b>Jinx --</b> Move a Fog Token from a connecting location to your current location.\n<b>Objective</b> - At the end of the round, if there are 4 or more locations in play with Fog Tokens on them: The investigators may spend the requisite number of clues as a group to advance."
+  },
+  {
+    "code": ":night-of-vespers:142",
+    "name": "Stop the Tenebrarum Killer!",
+    "type": "act",
+    "roles": [
+      "defines-jinx",
+      "grants-jinxed"
+    ],
+    "text": "<b>Forced</b> - Locations with a Fog Token on them gain the jinxed keyword. \n<b>Jinx --</b> Put a Fog Token on your current location.\n<b>Objective</b> - If Pietro Spadarotto is defeated: Advance."
+  },
+  {
+    "code": ":night-of-vespers:143",
+    "name": "The Shadow of the Queen",
+    "type": "act",
+    "roles": [
+      "defines-jinx",
+      "grants-jinxed"
+    ],
+    "text": "<b>Forced</b> - Locations with a Fog Token on them gain the jinxed keyword. \n[reaction] If there are at least 1 [per_investigator] Fog Tokens on Corona Heights: Until the end of the round, you may treat the text box on the back of Corona Heights as if it is blank (except for traits.)\n<b>Jinx --</b> Place a Fog Token on Corona Heights.\n<b>Objective</b> - If Milly Mercer is defeated: →R2."
+  },
+  {
+    "code": ":night-of-vespers:157",
+    "name": "De Castries' Grand Cipher",
+    "type": "asset",
+    "roles": [
+      "suppresses-one-clause"
+    ],
+    "text": "You get +1 [intellect].\n[free] Take 1 direct horror and exhaust De Castries' Grand Cipher: Choose either the current Act or Agenda. Until the end of the round, each investigator may treat that card as if it does not contain a Jinx."
+  },
+  {
+    "code": ":night-of-vespers:164",
+    "name": "Her Dark Influence",
+    "type": "treachery",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n<b>Revelation</b> - Attach Her Dark Influence to the nearest [[San Francisco]] location.</t>\nAttached location gets +1 shroud for each Fog Token on it.\n<b>Forced</b> - At the end of the round, if there are no Fog Tokens on Her Dark Influence's location: Move Her Dark Influence once towards the nearest location with 1 or more Fog Tokens."
+  },
+  {
+    "code": ":night-of-vespers:170",
+    "name": "One Foot on the Threshold",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "<b>Jinx --</b> Replenish 1 clue on The Cathedral of Our Lady (to its maximum clue value). \n<b>Objective</b> - If \"<i>you discovered the way forward,</i>\" Advance."
+  },
+  {
+    "code": ":night-of-vespers:170b",
+    "name": "Inspector Zimmermann",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "<b>Spawn</b> - Freiburg im Breisgau.\nHunter. Jinxed. Inspector Zimmermann gets +1 [per_investigator] health.\n<b>Forced</b> - At the end of the enemy phase, if Inspector Zimmermann is engaged with an investigator: Add 1 doom to the agenda."
+  },
+  {
+    "code": ":night-of-vespers:171",
+    "name": "What Lies Beneath",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "<b>Jinx --</b> You take 1 horror. (Limit once per phase.)\n<b>Objective</b> - If \"<i>you unearthed a secret</i>\", advance."
+  },
+  {
+    "code": ":night-of-vespers:172",
+    "name": "Walpurgis Night",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "<b>Jinx --</b> Choose one: (Limit once per round.)\n- Take 1 horror.\n- Take 1 damage.\n- Draw the top card of the encounter deck. \n<b>Objective</b> - Find what you came here for. You will be instructed when to advance."
+  },
+  {
+    "code": ":night-of-vespers:173",
+    "name": "Dawn Breaks",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "[action]: <b>Resign.</b> You've found the missing townspeople. There's nothing more for you to do here. \n<b>Jinx --</b> Choose one: (Limit once per round.)\n- Take 1 horror.\n- Take 1 damage.\n- Draw the top card of the encounter deck. \n<b>Objective</b> - If any investigator resigns: <b>→R1</b>.\n<b>Objective</b> - If \"<i>blood has been spilled on sacred ground</i>\", advance."
+  },
+  {
+    "code": ":night-of-vespers:174",
+    "name": "The Other Side of the World",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "<b>Jinx --</b> Put 1 clue on The Midwife's Tunnel from the token bank. \n<b>Objective</b> - If \"<i>you opened the path,</i>\" Advance."
+  },
+  {
+    "code": ":night-of-vespers:174b",
+    "name": "Schiachpercht",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed",
+      "triggers-or-observes-jinx"
+    ],
+    "text": "<b>Spawn</b> - The Schauinsland\nJinxed.\nDuring the enemy phase, Schiachpercht is considered to be at each [[Mountain]] location.\n<b>Forced</b> - At the end of the enemy phase, if Schiachpercht is ready and unengaged: Each investigator at a [[Hexenweg]] location triggers the current Jinx."
+  },
+  {
+    "code": ":night-of-vespers:175",
+    "name": "Hexenweg",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "<b>Jinx --</b> Test [willpower] (3). If you fail, draw the top card of the encounter deck. (Limit once per round.)\n<b>Objective</b> - If \"<i>you unearthed a secret,</i>\" Advance."
+  },
+  {
+    "code": ":night-of-vespers:176",
+    "name": "Into the Woods",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "<b>Jinx --</b> Test [agility] (2). If you fail, disengage from all enemies at your location and immediately move to The Black Forest. \n<b>Objective</b> - If \"<i>you made a troubling discovery,</i>\" Advance."
+  },
+  {
+    "code": ":night-of-vespers:176b",
+    "name": "Schrätelhexe",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "<b>Spawn</b> - Ritual Tangle\nElusive. Jinxed. Schrätelhexe gets +1 [per_investigator] health.\nSchrätelhexe takes 1 less damage from cards without the [[Relic]], [[Blessed]], or [[Spell]] traits.\n<b>Forced</b> - While Schrätelhexe is not engaged with an investigator, you may not trigger the veiled keyword on locations."
+  },
+  {
+    "code": ":night-of-vespers:177",
+    "name": "Dark Hearts",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "<b>Jinx --</b> Take 1 damage. (Limit once per phase.)\n<b>Objective</b> - If \"<i>you unearthed a secret,</i>\" Advance."
+  },
+  {
+    "code": ":night-of-vespers:182",
+    "name": "The Whale House",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed. Veiled.\nThe Whale House gets +X shroud. X is the number of clues remaining on The Cathedral of Our Lady."
+  },
+  {
+    "code": ":night-of-vespers:184",
+    "name": "The Midwife's Tunnel",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed. Veiled.\n<b>Forced</b> - When you would discover one or more clues at The Midwife's Tunnel: Cancel that discovery."
+  },
+  {
+    "code": ":night-of-vespers:187",
+    "name": "Lake Titisee",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed. Veiled.\n<b>Forced</b> - After you move to Lake Titisee: You cannot discover more than 1 clue at this or any connecting location until the end of the round."
+  },
+  {
+    "code": ":night-of-vespers:188",
+    "name": "Ravenna Gorge",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Veiled. Jinxed.\nRavenna Gorge gets +1 shroud for each clue below its maximum clue threshold.\nAs an additional cost to take a move action at Ravenna Gorge, spend 1 additional action."
+  },
+  {
+    "code": ":night-of-vespers:190",
+    "name": "Forgotten Ossuary",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n<b>Forced</b> - If you fail an investigate action at this location: Flip this card over. (Limit once per round.)"
+  },
+  {
+    "code": ":night-of-vespers:191",
+    "name": "Sealed Crypt",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed. Veiled.\nSealed Crypt gets –X shroud. X is the number of failed investigation attempts at this location this round."
+  },
+  {
+    "code": ":night-of-vespers:192",
+    "name": "Mother's Cradle",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n[reaction] Discard a non-weakness card from your hand or play area worth a minimum of 3 resources: Put a horror token on Mother's Cradle from the token bank, as an offering.\nWhile there are 1 [per_investigator] offerings on this location, it gains veiled."
+  },
+  {
+    "code": ":night-of-vespers:193",
+    "name": "Stone of Sacrament",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Veiled. Jinxed.\n[reaction] When you investigate this location, increase the shroud of Stone of Sacrament by 2 for this attempt: Look at the top card of either the encounter deck or any player deck. You may choose to put that card on the bottom of its deck."
+  },
+  {
+    "code": ":night-of-vespers:194",
+    "name": "The Witch's Way",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n<b>Forced</b> - When you attempt to leave The Witch's Way, if there are any clues remaining on it: Test [willpower] or [agility] (3). If you fail, flip this card over and resolve the text on its other side."
+  },
+  {
+    "code": ":night-of-vespers:195",
+    "name": "Bannwald Feldberg",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n<b>Forced</b> - If you fail an fight, evade or parley action at this location: Flip this card over. (Limit once per round.)"
+  },
+  {
+    "code": ":night-of-vespers:197",
+    "name": "Ritual Tangle",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Veiled. Jinxed.\n[action]: Exile a single card in your deck worth a minimum of 3 experience. Defeat the Schrätelhexe. (Limit once per scenario.)"
+  },
+  {
+    "code": ":night-of-vespers:198",
+    "name": "The Altar of Sighs",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n[action]: Add 1 doom to the agenda. This doom may cause the agenda to advance. Discover all clues at The Altar of Sighs. (Limit once per game.)"
+  },
+  {
+    "code": ":night-of-vespers:199",
+    "name": "Anchoress' Cell",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n<b>Forced</b> - When Anchoress' Cell is revealed: Put the set-aside Mother Helena card into play at this location and advance to Act 3b."
+  },
+  {
+    "code": ":night-of-vespers:205",
+    "name": "Triad Figurine",
+    "type": "asset",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n[reaction] When you initiate an investigate action, exhaust Triad Figurine and choose a revealed location connected to your current location: Move a clue from that location to your location. You get +2 to this investigation attempt."
+  },
+  {
+    "code": ":night-of-vespers:209",
+    "name": "Sister Brigitte",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Aloof. Jinxed. Elusive.\n[reaction] If you evade Sister Brigitte by 2 or more or Sister Brigitte is defeated: Remember that \"<i>you found the key to the anchorite cells</i>.\""
+  },
+  {
+    "code": ":night-of-vespers:210",
+    "name": "Sister Ingrid",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Aloof. Jinxed. Retaliate.\n<b>Forced</b> - If Sister Ingrid is ready and a clue is discovered at her location: Put 1 doom on Sister Ingrid."
+  },
+  {
+    "code": ":night-of-vespers:211",
+    "name": "Tisiphone",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Hunter. Massive. Jinxed.\n<b>Prey</b> - Lowest remaining health.\nTisiphone gets +2 [per_investigator] health. "
+  },
+  {
+    "code": ":night-of-vespers:212",
+    "name": "Binding Incantation",
+    "type": "treachery",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed. \n<b>Revelation</b> - Put Binding Incantation into play in your threat area.\n<b>Forced</b> - After you investigate: You cannot take move actions for the remainder of the round.\n[reaction] At the end of your turn, test [willpower] (4). If you succeed, discard Binding Incantation. You may take 1 direct damage to automatically succeed this test."
+  },
+  {
+    "code": ":night-of-vespers:215",
+    "name": "Threnody for Our Lady: First Verse",
+    "type": "agenda",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "[action]: If a face down [[Burden]] weakness is attached to your location, spend any combination of 1 [per_investigator] clues or resources: Draw it. \n<b>Jinx --</b> Test [agility] (2). This test gets +X Difficulty, where X is the current level of The Deluge. If you fail, put 1 resource token (<i>from the token bank</i>) on the [[Chorus]] enemy with the least amount of resource tokens. (Limit once per round.)"
+  },
+  {
+    "code": ":night-of-vespers:216",
+    "name": "Threnody for Our Lady: Second Verse",
+    "type": "agenda",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "[action]: If a face down [[Burden]] weakness is attached to your location, spend any combination of 1 [per_investigator] clues or resources: Draw it. \n<b>Jinx --</b> Test [agility] (3). This test gets +X Difficulty, where X is the current level of The Deluge. If you fail, put 1 resource token (<i>from the token bank</i>) on the [[Chorus]] enemy with the least amount of resource tokens. (Limit once per round.)"
+  },
+  {
+    "code": ":night-of-vespers:217",
+    "name": "Threnody for Our Lady: Third Verse",
+    "type": "agenda",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "[action]: If a face down [[Burden]] weakness is attached to your location, spend any combination of 1 [per_investigator] clues or resources: Draw it.\n<b>Jinx --</b> Test [agility] (X). X is the current level of The Deluge. If you fail, put 1 resource token (<i>from the token bank</i>) on the [[Chorus]] enemy with the least amount of resource tokens. (Limit once per round.)"
+  },
+  {
+    "code": ":night-of-vespers:218",
+    "name": "Threnody for Our Lady: Chorus",
+    "type": "agenda",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "[action]: If a face down [[Burden]] weakness is attached to your location, spend any combination of 1 [per_investigator] clues or resources: Draw it. \n<b>Forced</b> - After an this Agenda reaches an odd amount of doom: Spawn the [[Chorus]] enemy in The Depths with the least amount of resources on them at The Monument to the Mother. If you cannot, the first treachery drawn during the mythos phase gains Surge.\n<b>Jinx --</b> Test [agility] (X). X is the current level of The Deluge. If you fail, locate the enemy in The Depths with the lowest amount of resource tokens and spawn her in your threat area. (Limit once per round.)"
+  },
+  {
+    "code": ":night-of-vespers:219",
+    "name": "Threnody for Our Lady: Grand Finale",
+    "type": "agenda",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "[action]: If a face down [[Burden]] weakness is attached to your location, spend any combination of 1 [per_investigator] clues or resources: Draw it. \n<b>Forced</b> - After doom is placed on this agenda: Spawn the [[Chorus]] enemy in The Depths with the least amount of resources on them at the Monument to the Mother. If you cannot, the first treachery drawn during the mythos phase gains Surge.\n<b>Jinx --</b> Test [agility] (X). X is the current level of The Deluge. If you fail, locate the enemy in The Depths with the lowest amount of resource tokens and spawn her in your threat area. If you cannot, the nearest [[Chorus]] enemy attacks you. (Limit once per round.)"
+  },
+  {
+    "code": ":night-of-vespers:223",
+    "name": "Sunken Theatre",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n[free] Play a card from your hand, paying its cost. (Max once per game per player.)\n[free] If The Deluge is level 4 or higher: Read Vision IV in the campaign guide (page 36.)"
+  },
+  {
+    "code": ":night-of-vespers:224",
+    "name": "The Monument to the Mother",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\nYou may attach any number of [[Burden]] weaknesses to The Monument to the Mother. The Monument to the Mother gets +X shroud. X is the number of [[Burden]] weaknesses attached to this location.\n<b>Forced</b> - After a [[Burden]] weakness is attached to this location: Replenish clues on The Monument to the Mother to its maximum clue value."
+  },
+  {
+    "code": ":night-of-vespers:230",
+    "name": "Orchestra Pit",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n[free] Reveal the top 3 cards of the encounter deck. Choose 1 to draw and discard the others. Then, draw the face down [[Burden]] attached to this location. \n[free] If The Deluge is level 2 or higher: Read Vision II in the campaign guide (page 36.)"
+  },
+  {
+    "code": ":night-of-vespers:232",
+    "name": "Sinking Flight",
+    "type": "location",
+    "roles": [
+      "printed-jinxed",
+      "triggers-or-observes-jinx"
+    ],
+    "text": "Jinxed.\nIf you trigger a Jinx while at Sinking Flight, test \n[agility] (2). If you succeed, cancel the effects of that Jinx. If you fail, take 1 damage."
+  },
+  {
+    "code": ":night-of-vespers:245",
+    "name": "Flosshilde",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Hunter. Jinxed.\n<b>Forced</b> - When Flosshilde exits the Depths: Each investigator must either discard X cards from their hand or play area, or Flosshilde makes an immediate attack against them (<i>regardless of her location.</i>) X is the number of resource tokens on Flosshilde."
+  },
+  {
+    "code": ":night-of-vespers:246",
+    "name": "Wellgunde",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Hunter. Jinxed.\n<b>Forced</b> - When Wellgunde exits the Depths: Each investigator must either pay X resources, or Wellgunde makes an immediate attack against them (<i>regardless of her location.</i>) X is the number of resource tokens on Wellgunde."
+  },
+  {
+    "code": ":night-of-vespers:247",
+    "name": "Woglinde",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Hunter. Jinxed.\n<b>Forced</b> - When Woglinde exits the Depths: Each investigator must remove the top X non-weakness cards of their deck from the game, or Woglinde makes an immediate attack against them (<i>regardless of her location.</i>) X is the number of resource tokens on Woglinde."
+  },
+  {
+    "code": ":night-of-vespers:248",
+    "name": "Amalia Verdi",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed. \n<b>Forced</b> - If Amalia Verdi is ready: You may not play or commit cards to tests at Amalia Verdi's location."
+  },
+  {
+    "code": ":night-of-vespers:249",
+    "name": "Rusalka",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Hunter. Elusive. Jinxed.\n<b>Spawn</b> - Connecting Location (Empty, if Possible)\n<b>Forced</b> - When Rusalka engages you: Attach any [[Burden]] weaknesses in your threat area to the nearest location other than The Monument to the Mother without an attached [[Burden]]."
+  },
+  {
+    "code": ":night-of-vespers:257",
+    "name": "Mother's Mercy",
+    "type": "scenario",
+    "roles": [
+      "triggers-or-observes-jinx"
+    ],
+    "text": "Easy / Standard\n[skull]: –X. X is half the number of cards tucked beneath the Act deck, rounded up. \n[cultist]: –2. If you fail, ready the nearest exhausted enemy in play.\n[tablet]: –3. You may discard a random card from your hand to treat this token as a –1.\n[elder_thing]: –2. If you fail, resolve the current Jinx. (Limit once per round.)\n"
+  },
+  {
+    "code": ":night-of-vespers:257b",
+    "name": "Mother's Mercy",
+    "type": "scenario",
+    "roles": [
+      "triggers-or-observes-jinx"
+    ],
+    "text": "Hard / Expert\n[skull]: –X. X is the number of cards tucked beneath the Act deck. \n[cultist]: –4. If you fail, ready the nearest exhausted enemy in play.\n[tablet]: –5. You may discard a random card from your hand to treat this token as a –2.\n[elder_thing]: –3. Resolve the current Jinx. (Limit once per round.)\n"
+  },
+  {
+    "code": ":night-of-vespers:261",
+    "name": "Promises to Keep",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "[action] Investigators at your location spend 1 [per_investigator]+X clues, as a group: <b>Parley.</b> Flip over a [[Bound]] story asset at your location and resolve the story text on that card's reverse side. X is the number of resource tokens on that story asset.\n<b>Jinx --</b> Find the [[Bound]] story asset closest to you and put 1 resource token on it from the token bank. \n<b>Objective</b> - If an investigator enters The Spire of Levana: Advance. (<i>Beware---you may wish to free as many captive souls as you can before advancing the act.</i>)"
+  },
+  {
+    "code": ":night-of-vespers:264",
+    "name": "Dark Crossing",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n<b>Forced</b> - At the end of the round, if Dark Crossing has no clues on it: Replenish clues on this location to its maximum clue value.\n[action]: Choose another investigator at this location. Give that investigator 1 [per_investigator] of your clues."
+  },
+  {
+    "code": ":night-of-vespers:266",
+    "name": "Hall of Forgotten Faces",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n[action][action]: Take 1 mental trauma. Discard all non-weakness treachery cards in your threat area. (Limit once per game.)"
+  },
+  {
+    "code": ":night-of-vespers:268",
+    "name": "The Court of Sorrows",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\nThe Court of Sorrows gets +1 shroud for each clue on it.\n[action][action] If there are no clues on The Court of Sorrows, spend 3 resources: Put 1 [per_investigator] clues on The Court of Sorrows (from the token bank). (Limit once per round.)"
+  },
+  {
+    "code": ":night-of-vespers:269",
+    "name": "Parlor of Tears",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\nThis location gets +1 shroud for each [[Bound]] story asset attached to an [[Astral]] location."
+  },
+  {
+    "code": ":night-of-vespers:270",
+    "name": "Flight of Sighs",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n[action]: Choose a [[Humanoid]] enemy at Flight of Sighs and test [combat] or [agility] (5). If you succeed, defeat the chosen enemy (if that enemy is [[Elite]], deal 2 damage to it instead.)"
+  },
+  {
+    "code": ":night-of-vespers:272",
+    "name": "Subliminal Steps",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n[reaction] When you enter this location, spend 1 resource: Immediately move to a revealed connecting location. (Limit once per round.)"
+  },
+  {
+    "code": ":night-of-vespers:273",
+    "name": "Umbral Oubliette",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n[reaction] If this location has no clues or enemies on it, investigators at this location spend 2 [per_investigator] clues as a group: Draw the card underneath this location and put it into play under your control. This card does not take up a slot for the remainder of the scenario."
+  },
+  {
+    "code": ":night-of-vespers:283",
+    "name": "Daughter of Sorrows",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed. Hunter. \n<b>Revelation</b> - Put 1 doom on Daughter of Sorrows.\n<b>Forced</b> - When Daughter of Sorrows attacks you: The nearest enemy [[Witch]] other than Daughter of Sorrows also attacks you, regardless of her location."
+  },
+  {
+    "code": ":night-of-vespers:285",
+    "name": "The Succession of Witches",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "<b>Forced</b> - If you would deal any amount of damage to one of the [[Three Mothers]], choose one instead: Either reveal an equal amount of chaos tokens from the chaos bag and choose a non-[auto_fail] token to seal on her, or exhaust her. \n<b>Jinx --</b> Find which of the [[Three Mothers]] has the most tokens sealed on her. Either return one of those tokens to the chaos bag, or she immediately attacks you.\n<b>Objective</b> - If all of the following are true, advance:\n- Mater Tenebrarum has 1 [per_investigator] [cultist] tokens sealed on her.\n- Mater Suspiriorum has 1 [per_investigator] [tablet] tokens sealed on her.\n- Mater Lachrymarum has 1 [per_investigator] [elder_thing] tokens sealed on her.\n"
+  },
+  {
+    "code": ":night-of-vespers:286",
+    "name": "Your Ladies of Sorrow",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "<b>Forced</b> - Each of the [[Three Mothers]] loses aloof and gains hunter. Each of the [[Three Mothers]] has X total health instead of ?. X is the number of cards tucked beneath the act deck.\n<b>Jinx --</b> Ready the nearest of the [[Three Mothers.]] If she is at your location, she attacks you. \n<b>Objective</b> - If all [[Three Mothers]] are in the victory display, advance."
+  },
+  {
+    "code": ":night-of-vespers:290",
+    "name": "Mater Lachrymarum",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Aloof. Jinxed.\n<b>Forced</b> - When a [bless] or [curse] is sealed here: Release it and take 1 damage and 1 horror.\n<b>Forced</b> - At the beginning of the enemy phase, if there are any [tablet] or [cultist] tokens sealed here: Mater Lachrymarum immediately attacks the investigator with the lowest [willpower], regardless of her location."
+  },
+  {
+    "code": ":night-of-vespers:291",
+    "name": "Mater Suspiriorum",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Aloof. Jinxed.\n<b>Forced</b> - When a [bless] or [curse] is sealed here: Release it and take 1 horror.\n<b>Forced</b> - At the beginning of the enemy phase, if there are any [elder_thing] or [cultist] tokens sealed here: Mater Suspiriorum immediately attacks the investigator with the lowest [agility], regardless of her location."
+  },
+  {
+    "code": ":night-of-vespers:292",
+    "name": "Mater Tenebrarum",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Aloof. Jinxed.\n<b>Forced</b> - When a [bless] or [curse] is sealed here: Release it and take 1 damage.\n<b>Forced</b> - At the beginning of the enemy phase, if there are any [elder_thing] or [tablet] tokens sealed here: Mater Tenebrarum immediately attacks the investigator with the lowest [combat], regardless of her location."
+  },
+  {
+    "code": ":night-of-vespers:299",
+    "name": "Wayward Daughter",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "Mater Personarum is considered to be at each location with a chaos token sealed on it. \n<b>Jinx</b> -- Release a token sealed on Mater Personarum. You must release a symbol token, if possible.\n<b>Objective</b> - If Mater Personarum has at least 1 [cultist], \n1 [tablet], 1 [elder_thing], and X other chaos tokens sealed on her: Advance. X is the number of cards tucked underneath the Act."
+  },
+  {
+    "code": ":night-of-vespers:300",
+    "name": "Perfection Undone",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "Mater Personarum is considered to be at each location with a chaos token sealed on it. \n<b>Jinx</b> -- Release a token sealed on Mater Personarum. You must release a symbol token, if possible.\n<b>Objective</b> - If Mater Personarum is defeated: Advance."
+  },
+  {
+    "code": ":night-of-vespers:305",
+    "name": "Great Daemon Stolas",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Hunter. Elusive. Jinxed.\n<b>Spawn</b> - Golgothan Depths\n<b>Forced</b> - At the beginning of the enemy phase, if Great Daemon Stolas is ready: Return the lowest-modifier token sealed on Mater Personarum to the chaos bag."
+  },
+  {
+    "code": ":night-of-vespers:307",
+    "name": "Deceitful Dancer",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Hunter. Elusive. Jinxed.\n[reaction] If a test you are taking defeats Deceitful Dancer: Shuffle her back into the encounter deck and seal a non-[auto_fail] chaos token you revealed during that test on Mater Personarum."
+  },
+  {
+    "code": ":night-of-vespers:310",
+    "name": "Katabasis",
+    "type": "act",
+    "roles": [
+      "defines-jinx"
+    ],
+    "text": "<b>Forced</b> - Agenda 3a gets +1 [per_investigator] total doom threshold.\n<b>Forced</b> - When your location is <b>Erased</b>: Deal 1 direct damage and 1 direct horror to each investigator at that location, then move to the nearest remaining location in play. Then, if the Court of Sorrows is the only remaining location in play: Each remaining investigator is defeated.\n[free] Investigators at your location spend 1 [per_investigator] clues, as a group: Replace an Empty Space connected to your location with the top card of the Fading Palace deck.\n<b>Jinx</b> -- Test [willpower] (4). If you fail, Hekate Enodia <b>Erases</b> the furthest location from the Court of Sorrows. \n(Limit once per round.)\n<b>Objective</b> - If each investigator has resigned: Advance."
+  },
+  {
+    "code": ":night-of-vespers:314",
+    "name": "Vault of Contracts",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n[action] If there are no clues on this location: Search your play area, hand, deck, and discard pile for the Great Prince Stolas story asset. Then, take 1 direct damage, 1 direct horror, and exile him from your deck. Remember that \"<i>you broke a daemon's shackles.</i>\""
+  },
+  {
+    "code": ":night-of-vespers:316",
+    "name": "Frostbitten Balcony",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n[action]: Test [willpower] or [intellect] (10). You may exile any number of non-weakness cards from your hand or play area to reduce the difficulty of this test by 3 per card exiled. If you succeed, remember that \"<i>you paid tribute to the Night.</i>\""
+  },
+  {
+    "code": ":night-of-vespers:317",
+    "name": "Altar of Fading Sorrow",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n[action]: Investigators at your location take a combined total of 3 damage and 3 horror, distributed as you wish. Remember that \"<i>you paid tribute to the Hunt.</i>\""
+  },
+  {
+    "code": ":night-of-vespers:318",
+    "name": "Shrine of Mirrors",
+    "type": "location",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n[action]: Test [willpower](6). If you succeed, remember that \"<i>you scryed a way home.</i>\" You may spend 2 additional actions for this test to automatically succeed."
+  },
+  {
+    "code": ":night-of-vespers:321",
+    "name": "Hekatoncheir",
+    "type": "enemy",
+    "roles": [
+      "source-ambiguity-bare-Jinx-without-clause"
+    ],
+    "text": "<b>Spawn</b> - Astral Crossroads. Otherwise, Furthest location in play.\nRetaliate. Massive. Jinx.\n<b>Forced</b> - When a location is <b>Erased</b>: Move Hekatoncheir once toward that location.\n[reaction]When Hekatoncheir is defeated: Remember that \"<i>you defeated the Crossroads' Guardian.</i>\""
+  },
+  {
+    "code": ":night-of-vespers:322",
+    "name": "Hound of Hekate",
+    "type": "enemy",
+    "roles": [
+      "grants-jinxed"
+    ],
+    "text": "<b>Spawn</b> - The Court of Sorrows\nHunter. Massive.\nHound of Hekate can enter Empty Space as if it were a location.\nLocations adjacent to Hound of Hekate's location gain the jinxed keyword."
+  },
+  {
+    "code": ":night-of-vespers:328",
+    "name": "Lightless Supplicant",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Hunter. Jinxed. \n<b>Forced</b> - If Lightless Supplicant is at a location with a shroud of 4 or higher: He gains retaliate, \n+1 fight, and +1 damage."
+  },
+  {
+    "code": ":night-of-vespers:329",
+    "name": "Death's Head Familiar",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "<b>Spawn</b> - Empty location. (No clues, if possible.)\nAloof. Jinxed. \n<b>Forced</b> - After Death's Head Familiar enters play: Place 1 doom on it."
+  },
+  {
+    "code": ":night-of-vespers:331",
+    "name": "Twining Supplicant",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Elusive. Jinxed. \n<b>Forced</b> - You cannot commit a single card to tests against Twining Supplicant."
+  },
+  {
+    "code": ":night-of-vespers:332",
+    "name": "Lissome Familiar",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Aloof. Jinxed. \n<b>Spawn</b> - Connecting location. (Unrevealed, if possible.)\n<b>Forced</b> - When you enter Lissome Familiar's location: It attacks you."
+  },
+  {
+    "code": ":night-of-vespers:334",
+    "name": "Keening Supplicant",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Hunter. Jinxed.\n<b>Forced</b> - When you defeat Keening Supplicant: Choose a non-weakness card under your control in your hand or in your play-area. Remove it from the game."
+  },
+  {
+    "code": ":night-of-vespers:335",
+    "name": "Weeping Familiar",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Hunter. Jinxed.\n<b>Forced</b> - When Weeping Familiar is defeated: Draw the topmost [[Hex]] treachery in the encounter discard pile."
+  },
+  {
+    "code": ":night-of-vespers:336",
+    "name": "One For Sorrow",
+    "type": "treachery",
+    "roles": [
+      "triggers-or-observes-jinx",
+      "adds-to-each-clause"
+    ],
+    "text": "<b>Revelation</b> - Put One For Sorrow into play next to the Agenda deck.\nWhile One For Sorrow is in play, the current <b>Jinx</b> gains the following text: \"Remove an asset under your control from the game.\"\n[action]: Test (3) [willpower]. If you succeed, discard One For Sorrow. If you fail, trigger the current Jinx. This test automatically succeeds if an exhausted enemy is at your location."
+  },
+  {
+    "code": ":night-of-vespers:343",
+    "name": "Exquisite Fear",
+    "type": "treachery",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n<b>Revelation</b> - Put Exquisite Fear in your threat area.\n<b>Forced</b> - Each time you take 1 or more horror : You take 1 additional horror.\n[action]: Take 1 horror. Discard Exquisite Fear."
+  },
+  {
+    "code": ":night-of-vespers:344",
+    "name": "Object of Obsession",
+    "type": "treachery",
+    "roles": [],
+    "text": "Peril.\n<b>Revelation</b> - Place this treachery in the threat area of an investigator of your choice without an existing copy of Object of Obsession.\n<b>Forced</b> - While Object of Obsession is in your threat area, whenever another investigator resolves the effects of a failed test on a treachery card with the jinxed keyword: You must decide (choose one):\n- You also resolve the effects of the failed test.\n- Put 1 doom on Object of Obsession.\n<b>Forced</b> - When the act or agenda advances: Discard Object of Obsession."
+  },
+  {
+    "code": ":night-of-vespers:345",
+    "name": "Finlay O'Doyle",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed. Hunter."
+  },
+  {
+    "code": ":night-of-vespers:346",
+    "name": "Frankie Mulligan",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed. Hunter."
+  },
+  {
+    "code": ":night-of-vespers:347",
+    "name": "Rufus Johnson",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed. Hunter."
+  },
+  {
+    "code": ":night-of-vespers:360",
+    "name": "Dark Silhouette",
+    "type": "treachery",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n<b>Revelation</b> - Put Dark Silhouette in your threat area.\n<b>Forced</b> - If you fail an investigate or evade action, discard cards from the top of the encounter deck until a non-[[Elite]] enemy is revealed. Spawn it at your location and discard Dark Silhouette."
+  },
+  {
+    "code": ":night-of-vespers:361",
+    "name": "Grasping Shadow",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Hunter. Jinxed.\n<b>Forced</b> - After you evade Grasping Shadow: This enemy is defeated."
+  },
+  {
+    "code": ":night-of-vespers:364",
+    "name": "Haunting",
+    "type": "treachery",
+    "roles": [
+      "triggers-or-observes-jinx"
+    ],
+    "text": "<b>Revelation</b> - Test [willpower] (4). If you fail, resolve the effects of the Jinx on the current act or agenda.\nIf you fail by 3 or more, resolve the current Jinx twice."
+  },
+  {
+    "code": ":night-of-vespers:365",
+    "name": "Malevolent Presence",
+    "type": "treachery",
+    "roles": [],
+    "text": "<b>Revelation</b> - Test [willpower] (2). For each point you fail by, take 1 damage. If a Jinxed card is at your location, Malevolent Presence gains surge unless two or more cards are committed to this test."
+  },
+  {
+    "code": ":night-of-vespers:366",
+    "name": "Daughter of Whispers",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Alert. Jinxed.\n<b>Spawn</b> - Location with most non-[[Elite]] enemies.\n<b>Forced</b> - At the end of the round, move each enemy not named Daughter of Whispers at this card’s location to a connecting location."
+  },
+  {
+    "code": ":night-of-vespers:367",
+    "name": "Analeptic Jinx",
+    "type": "treachery",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n<b>Revelation</b> - Test [willpower] (4). If you fail, put Analeptic Jinx in your threat area.\n<b>Forced</b> - When any number of clues are discovered at your location: Heal an equal amount of damage from the nearest eligible enemy.\n[action]: Remove the top non-weakness card of your deck from the game. Discard Analeptic Jinx."
+  },
+  {
+    "code": ":night-of-vespers:368",
+    "name": "Hexentanz",
+    "type": "treachery",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n<b>Revelation</b> - Put Hexentanz into play in your threat area.\n<b>Forced</b> - If you perform a move action while Hexentanz is in your threat area: For the remainder of your turn, take 1 damage each time you take a non-move action.\n[action][action]: Discard Hexentanz."
+  },
+  {
+    "code": ":night-of-vespers:370",
+    "name": "Witches' Sabbath",
+    "type": "treachery",
+    "roles": [
+      "triggers-or-observes-jinx"
+    ],
+    "text": "<b>Revelation</b> - Choose one of the following actions (investigate, fight, evade, or parley) and put Witches' Sabbath into play next to the agenda deck. You cannot choose an action that has already been chosen by a copy of this effect in play.\n<b>Forced</b> - When any investigator succeeds at the chosen action: That investigator triggers the current Jinx.\n[free]: Take 1 direct damage and 1 direct horror. Discard 1 copy of Witches' Sabbath. Any investigator may trigger this action."
+  },
+  {
+    "code": ":night-of-vespers:372",
+    "name": "Daughter of Darkness",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Aloof. Jinxed.\n<b>Spawn</b> - Location with most remaining clues (no enemies, if possible).\n<b>Forced</b> - While Daughter of Darkness is ready, enemies with hunter resolve their hunter keyword twice."
+  },
+  {
+    "code": ":night-of-vespers:373",
+    "name": "Malignant Jinx",
+    "type": "treachery",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n<b>Revelation</b> - Test [agility] (3). If you fail, put Malignant Jinx in your threat area.\n<b>Forced</b> - When any investigator draws an enemy from the encounter deck: Take 1 damage.\n<b>Forced</b> - At the end of your turn, test [willpower] (2). If you succeed, discard Malignant Jinx. If there is an exhausted enemy at your location, this test automatically succeeds."
+  },
+  {
+    "code": ":night-of-vespers:374",
+    "name": "Murrain",
+    "type": "treachery",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n<b>Revelation</b> - Put Murrain into play next to the agenda deck.\n<b>Forced</b> - While Murrain is in play, each non-[[Elite]] enemy in play gets an additional +1 fight, +1 evade and gains hunter.\n[action] Discard any number of cards from your hand with a minimum of 3 matching icons: Discard Murrain. Any investigator may trigger this ability."
+  },
+  {
+    "code": ":night-of-vespers:376",
+    "name": "Daughter of Grief",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "<b>Spawn</b> - Revealed location with least clues.\nJinxed. Retaliate.\n<b>Forced</b> - When a [[Hex]] or [[Curse]] card is drawn from the encounter deck, Daughter of Grief attacks the investigator closest to her, regardless of their location. (Limit once per round.)"
+  },
+  {
+    "code": ":night-of-vespers:377",
+    "name": "Profane Jinx",
+    "type": "treachery",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n<b>Revelation</b> - Test [willpower] (3). If you fail, put Profane Jinx in your threat area.\nYou get –1 [willpower], –1 [intellect], –1 [combat], and –1[agility].\n<b>Forced</b> - At the end of your turn, test your lowest stat (3). If you succeed, discard Profane Jinx. If there is an exhausted enemy at your location, this test automatically succeeds."
+  },
+  {
+    "code": ":night-of-vespers:379",
+    "name": "Darkening Skies",
+    "type": "treachery",
+    "roles": [
+      "triggers-or-observes-jinx"
+    ],
+    "text": "<b>Revelation</b> - Attach Darkening Skies to your location.\nThis location gets +2 shroud. Each connecting location gets +1 shroud.\n[free] Resolve the current Jinx: Discard Darkening Skies."
+  },
+  {
+    "code": ":night-of-vespers:380",
+    "name": "Downpour",
+    "type": "treachery",
+    "roles": [
+      "triggers-or-observes-jinx"
+    ],
+    "text": "<b>Revelation</b> - Attach Downpour to your location.\nAs an additional cost to take a non-move action at this location: Spend 1 resource.\n[free] Resolve the current Jinx: Discard \nDownpour."
+  },
+  {
+    "code": ":night-of-vespers:381",
+    "name": "Winds of Fate",
+    "type": "treachery",
+    "roles": [
+      "triggers-or-observes-jinx"
+    ],
+    "text": "<b>Revelation</b> - Attach Winds of Fate to the nearest location without an existing copy of Winds of Fate.\n<b>Forced</b> - After you leave this location: Discard cards from the top of the encounter deck until an enemy is discarded. You must either spawn that enemy at this location, or that enemy attacks you (<i>from the discard pile</i>). If no enemy is discarded, take 1 damage instead.\n[free] Resolve the current Jinx: Discard Winds of Fate."
+  },
+  {
+    "code": ":night-of-vespers:382",
+    "name": "Ana Giuliano",
+    "type": "enemy",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed. Retaliate.\n<b>Forced</b> - When Ana Giuliano would take any amount of damage, if she has any Barrier tokens on her: Cancel that damage and remove 1 Barrier token from her, instead.\n<b>Forced</b> - At the end of the round, if Ana Giuliano has less than her maximum Barrier tokens on her: Place X Barrier tokens on her, to her maximum Barrier value. X is Ana Giuliano's maximum Barrier value minus the number of Binding Charms in the victory display."
+  },
+  {
+    "code": ":night-of-vespers:383",
+    "name": "Binding Charm",
+    "type": "treachery",
+    "roles": [
+      "printed-jinxed"
+    ],
+    "text": "Jinxed.\n<b>Forced</b> - If a card that Binding Charm is attached to is defeated: Remove this card from the game. Do not put it in the victory display. \n[action]: Test any skill (5). If you succeed, add Binding Charm to the victory display. You may spend any combination of 2 [per_investigator] clues or resources to automatically succeed."
+  }
+]

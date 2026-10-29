@@ -1,0 +1,94 @@
+{
+  "difficulty": {
+    "Easy": "A Pleasant Evening",
+    "Standard": "A Night on the Town",
+    "Hard": "A Night to Remember",
+    "Expert": "A Night to Forget"
+  },
+  "campaign": {
+    "title": "Night of Vespers"
+  },
+  "name": "Night of Vespers",
+  "about": {
+    "sections": [
+      {
+        "rows": [
+          {
+            "role": "Designed by",
+            "names": "Alex // Exhaled Innards (aughhhh)"
+          },
+          {
+            "role": "Campaign guide cover art",
+            "names": "Vanessa Lemen"
+          },
+          {
+            "role": "Export banner art",
+            "names": "Betty Jiang"
+          }
+        ],
+        "text": [
+          "Inspired by Thomas De Quincey’s Suspiria de Profundis, Dario Argento’s Three Mothers trilogy, and Kevin Ross’s Our Ladies of Sorrow.",
+          "Development version: campaign narrative and progression are implemented; scenario boards, encounter cards, and resolutions are still under development."
+        ]
+      }
+    ]
+  },
+  "additionalRules": {
+    "title": "Additional Rules and Clarifications",
+    "jinx": {
+      "title": "New Keywords: Jinx & Jinxed",
+      "body": "<ul><li>Investigators will encounter the pervasive and unpredictable effects of ancient witchcraft throughout the Night of Vespers campaign in the form of the <b>Jinx</b> and <b>Jinxed</b> keywords.</li><li>_When an investigator fails a fight, evade, or investigate test when a card with the jinxed keyword is at their location, players at that location must refer to the current act or agenda and resolve the forced effect connected to the bolded <b>Jinx</b> text._<ul><li>*_Example:_ During the mythos phase, _Sebastian Benitez_ draws a treachery that enters play at his location with the jinxed keyword. During the following investigation phase, he takes an Investigate action at that location and fails. The current agenda features the text “_Jinx_ — Increase the shroud of your location by 1 until the end of the round.” Because Sebastian failed an investigate test while the treachery with the jinxed keyword was in play at his location, his location’s shroud is increased by 1 until the end of the round.*</li></ul></li><li>If a card with the jinxed keyword enters play but its effects are not defined by either the current act or agenda, _failed fight_, _evade_, _or investigate tests do not trigger the jinxed keyword_.<ul><li>*_Example:_ An enemy with the jinxed keyword enters _Elsie Malone’_s location and engages her. Neither the current act or agenda define any specific ruling for the jinxed keyword; therefore, if Elsie fails a fight or evade test against this enemy, it will not trigger any additional effects.*</li></ul></li><li>_The effects of multiple Jinxed cards in play at the same location are not cumulative unless otherwise specified._<ul><li>*_Example: Simone Toussaint_ is engaged with 2 enemies with the jinxed keyword. The current act has the text _Jinx — Increase the difficulty of all tests at this card’s location by 1 until the end of the round._ If Simone fails a fight test against one of those enemies, the difficulty of all tests performed at her location is increased by _1 until the end of the round, and not 2._*</li></ul></li></ul>"
+    }
+  },
+  "intro": {
+    "title": "When Man first began to dream, they were there to plague Him. When the last Man on Earth dies, they will be there to mourn him.",
+    "body": "<p>\"Banish the frailties of hope, wither the relenting of love, scorch the fountain of tears, curse him as only thou canst curse. So shall he be accomplished in the furnace, so shall he see the things that ought not to be seen, sights that are abominable, and secrets that are unutterable.\"</p><p class='right'>-Thomas De Quincy, Levana and Our Ladies of Sorrow</p>"
+  },
+  "prologue": {
+    "title": "Prologue",
+    "body": "<p>You find the envelope placed strategically atop your daily clutter. Someone clearly intended for you to find it. There was no chance you wouldn’t have noticed it throughout the routine of your day; no chance you'd ignore something so unusual.</p><p>You flip the small thing back and forth in your hand, appreciating the weight of it against your fingers. You've yet to solve the puzzle of who might have left it for you, but the delicate blend of woodsmoke and lavender that scents the paper does much to pique your curiosity. With a touch of excitement, you break open the nondescript wax seal of the envelope and begin to read the handwritten message addressed to you within.</p><p>Join me for a lovely Italian dinner at Trattoria del Parche, Hotel Seasons. 8:00 P.M., the evening of September 10th. No questions. Don’t be late. Dress your best. It will be worth it.</p><p>The message provides no clues about its sender, but that only adds to the growing sense of mystique. Ever since the Varelli family mansion was reinvented as the Hotel Seasons last year, it has swiftly risen to become a jewel among Massachusetts’ finest destination hotels. If your mysterious host has chosen the glamorous hotel for your eventual meeting, you're certain to be in for quite a captivating evening. Today is September the 9th. You have just enough time to find something to wear.</p>"
+  },
+  "headings": {
+    "prologue": "Prologue",
+    "interlude1": "Two Messages",
+    "interlude2": "The Rose of Tuscany",
+    "interlude3": "The Three Mothers",
+    "interlude4": "Our Ladies of Sorrow",
+    "travel": "The Three Mothers — Choose Your Next Destination",
+    "epilogue": "Epilogue"
+  },
+  "key": {
+    "finlayODoyleIsAssistingTheInvestigation": "Finlay O’Doyle is assisting the investigation.",
+    "gigiGiulianoIsAssistingTheInvestigation": "Gigi Giuliano is assisting the investigation.",
+    "knowsTheNameOfTheRose": "knows the Name of the Rose.",
+    "youLearnedAboutTheTenebrarumMurders": "You learned about the Tenebrarum Murders.",
+    "drArmitageTaughtYouAboutTheThreeMothers": "Dr. Armitage taught you about the Three Mothers.",
+    "youHadAPropheticDream": "You had a prophetic dream.",
+    "youLearnedWhereToFindHelenaNussbaum": "You learned where to find Helena Nussbaum.",
+    "youDiscoveredAnaGiulianosConnectionToAmaliaVerdi": "You discovered Ana Giuliano’s connection to Amalia Verdi.",
+    "youWereInvitedToJoinTheTenebrarumLodge": "You were invited to join the Tenebrarum Lodge.",
+    "youReadSgtMandelsFile": "You read Sgt. Mandel’s file.",
+    "annaKaslowDirectedYouTowardAnOldColleague": "Anna Kaslow directed you toward an old colleague.",
+    "maddalenaGuidesYourPath": "Maddalena guides your path.",
+    "youVisitedSanFrancisco": "You visited San Francisco.",
+    "youVisitedFreiburgImBreisgau": "You visited Freiburg im Breisgau.",
+    "youVisitedTheGulfOfNaples": "You visited the Gulf of Naples.",
+    "youDecidedToBeginTheSearchInTheCityOfFreiburg": "You decided to begin the search in the city of Freiburg.",
+    "youDecidedToBeginTheSearchInTheSchauinsland": "You decided to begin the search in The Schauinsland.",
+    "youDecidedToBeginTheSearchInTheBlackForest": "You decided to begin the search in the Black Forest.",
+    "theInvestigatorsDefeatedTheThreeMothersAndEscapedThePalaceOfSorrows": "The investigators defeated the Three Mothers and escaped the Palace of Sorrows.",
+    "theInvestigatorsDefeatedANewbornGoddessAndEscapedThePalaceOfSorrows": "The investigators defeated a newborn goddess and escaped the Palace of Sorrows.",
+    "theInvestigatorsUnboundAFracturedGoddess": "The investigators unbound a fractured goddess.",
+    "finlaySurvived": "Finlay survived.",
+    "gigiSurvived": "Gigi survived.",
+    "naomiOBannionIsAssistingTheInvestigation": "Naomi O’Bannion is assisting the investigation.",
+    "aBargainWasMade": "A bargain was made.",
+    "stolasIsUnbound": "Stolas is unbound."
+  },
+  "interludes": {
+    "1": "Two Messages",
+    "2": "The Rose of Tuscany",
+    "3": "The Three Mothers",
+    "4": "Our Ladies of Sorrow"
+  }
+}

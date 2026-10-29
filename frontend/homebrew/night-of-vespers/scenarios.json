@@ -1,0 +1,66 @@
+[
+  {
+    "id": ":night-of-vespers:001",
+    "name": "The End of Seasons",
+    "campaign": ":night-of-vespers",
+    "dev": true,
+    "standalone": false,
+    "i18n": "theEndOfSeasons"
+  },
+  {
+    "id": ":night-of-vespers:037",
+    "name": "Behind Closed Doors",
+    "campaign": ":night-of-vespers",
+    "dev": true,
+    "standalone": false,
+    "i18n": "behindClosedDoors"
+  },
+  {
+    "id": ":night-of-vespers:075",
+    "name": "Dancing with Death",
+    "campaign": ":night-of-vespers",
+    "dev": true,
+    "standalone": false,
+    "i18n": "dancingWithDeath"
+  },
+  {
+    "id": ":night-of-vespers:105",
+    "name": "The Teachings of Aradia",
+    "campaign": ":night-of-vespers",
+    "dev": true,
+    "standalone": false,
+    "i18n": "theTeachingsOfAradia"
+  },
+  {
+    "id": ":night-of-vespers:136",
+    "name": "The City of Fog",
+    "campaign": ":night-of-vespers",
+    "dev": true,
+    "standalone": false,
+    "i18n": "theCityOfFog"
+  },
+  {
+    "id": ":night-of-vespers:168",
+    "name": "The Garden of Bones",
+    "campaign": ":night-of-vespers",
+    "dev": true,
+    "standalone": false,
+    "i18n": "theGardenOfBones"
+  },
+  {
+    "id": ":night-of-vespers:214",
+    "name": "A Chorus of Suffering",
+    "campaign": ":night-of-vespers",
+    "dev": true,
+    "standalone": false,
+    "i18n": "aChorusOfSuffering"
+  },
+  {
+    "id": ":night-of-vespers:257",
+    "name": "Mother's Mercy",
+    "campaign": ":night-of-vespers",
+    "dev": true,
+    "standalone": false,
+    "i18n": "mothersMercy"
+  }
+]

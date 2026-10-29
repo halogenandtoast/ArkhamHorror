@@ -1,0 +1,24 @@
+{
+  "behindClosedDoors": {
+    "title": "Scenario II-A: Behind Closed Doors",
+    "intro": {
+      "title": "Scenario II-A: Behind Closed Doors",
+      "part1": "<p>The Three Conies is a weary-looking tenement building in the underbelly of lower Southside, a part of town kept squarely under the O’Bannions’ thumb. Named for the recurring visual motif of tinner’s rabbits that appears throughout its architecture, the six-story building still wears its scars from a terrible fire a decade ago. While repairs have been slow, many of its tenants have continued to eke out a comfortable living on its first and second floors for years with the assistance of its devoted landlady, Miss Lila Starett. You aren't surprised to spot the police loitering around the entrance, given the escalated tension between the O’Bannions and their rivals after the Hotel Seasons bloodbath—but after overhearing a pair of officers discussing a series of grisly murders that took place in the building overnight, you quickly realize that their presence is anything but routine.</p>",
+      "part2": "<p>Finlay ushers you into the Three Conies through a maintenance entrance in a nearby alleyway, bypassing the police crowding the building’s entryway. “Easy does it,” he whispers as he holds open the side door for you. “Stick close and keep your head low. If anyone gets nosy, tell them you live here. Act like you own the joint.”</p><p>As you slink through the dimly lit corridors, the shuffling sound of distant footsteps keeps time with your nerves. It sounds like the building’s caretaker is performing her nightly rounds. If you're to find information on Madame Giuliano, you'll need to tread carefully to avoid rousing the tenants’ suspicions—and if she turns out to have had anything to do with the murders that took place here, you'll have your work cut out for you.</p>",
+      "part3": "<p>You've found yourself jumping at shadows since the moment you stepped off the train at Northside Station. Your journey through Nussbaum Academy left you with an unshakeable feeling of unease— after leaving the bloodbath at the Hotel Seasons behind her, what could Ana Giuliano stand to gain by coming back to Arkham? What could her link to the ramshackle Three Conies apartments possibly be?</p><p>The sensation of dread that hits you the second you slip through the building's main entryway nearly sends you reeling. Gigi shoots you a sidelong glance, silently acknowledging the discomfort neither of you can quite put into words. Something is terribly wrong in this place.</p><p>“Stop,” a nearby voice commands, shocking you back into reality. “I forbid you from entering this building.” Miss Lila Starett, the building’s caretaker, stands in the center of the foyer before you. You've long understood Miss Lila to be a well-respected and charitable member of Arkham’s local community, but the look of sheer hatred on her face stops you in your tracks. “This is not the place for your meddling. You fools think you know everything now, but you have no idea,” She hisses, shifting her gaze manically between each of you. Gigi attempts to interject, managing to squeak out an indignant “Listen here, lady-” before she is drowned out by Miss Lila’s screaming.</p><p>“You see only the shadow of the smoke, not the smoke itself. Not the fire that it comes from, nor what fueled the fire. Let alone who set that fire in the first place.” As the building's caretaker continues to rave at you, the sound of gunfire from the floor above you cuts through the night. Lila takes a deep breath and, with all of the strength her tiny frame can muster, lets out one last defiant shriek.</p><p>“YOU KNOW NOTHING.”</p><p>With a speed she shouldn't possibly be capable of, Miss Lila Starett produces a small pistol from her clutch, presses it to her own temple, and pulls the trigger.</p>",
+      "chooseLead": "Choose one lead from your campaign log to follow."
+    },
+    "scaffold": {
+      "title": "Scenario II-A: Behind Closed Doors",
+      "body": "The introduction is complete. Scenario board setup, encounter cards, token effects, and resolutions are not implemented yet."
+    },
+    "rules": {
+      "title": "Additional Rules",
+      "body": "<p>Resolve the Jinx on the current act and/or agenda when an investigator fails a fight, evade, or investigate test while a Jinxed card is at their location. Multiple Jinxed cards at the same location do not multiply this effect.</p>"
+    },
+    "label": {
+      "reader": "Choose an investigator to read this passage.",
+      "declineAsset": "Do not put an asset into play."
+    }
+  }
+}

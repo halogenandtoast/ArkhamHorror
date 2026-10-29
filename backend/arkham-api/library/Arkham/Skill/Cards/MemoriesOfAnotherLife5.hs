@@ -33,13 +33,16 @@ instance RunMessage MemoriesOfAnotherLife5 where
               && isJust def.cost
       cards <- filter filterIt <$> collectionCardDefs
 
-      chooseOneM attrs.owner do
-        for_ cards \def -> do
-          card <- genCard def
-          playable <- getIsPlayable iid attrs PaidCost (defaultWindows iid) card
-          removeCard card.id
-          when playable do
-            collectionCardLabeled def $ handleTarget iid attrs (CardCodeTarget card.cardCode)
+      playable <-
+        filterM
+          ( \def -> do
+              card <- genCard def
+              canPlay <- getIsPlayable iid attrs PaidCost (defaultWindows iid) card
+              removeCard card.id
+              pure canPlay
+          )
+          cards
+      chooseCollectionCards iid attrs playable
       pure s
     HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
       removeFromGame attrs

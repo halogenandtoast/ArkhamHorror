@@ -870,7 +870,7 @@ const store = useDbCardStore()
 const isCollectionQuestion = computed(() => {
   let q: typeof question.value | undefined = question.value
   while (q) {
-    if (q.label === '$questionFilter.collectionTitle') return true
+    if (q.tag === 'ChooseFromCollection' || q.label === '$questionFilter.collectionTitle') return true
     q = q.question
   }
   return false

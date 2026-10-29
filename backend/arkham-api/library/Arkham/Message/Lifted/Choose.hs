@@ -646,14 +646,12 @@ collectionCardDefs = do
       , def.kind `elem` [AssetType, EventType, SkillType, PlayerTreacheryType, PlayerEnemyType]
       ]
 
-{- | Record a chosen custom definition before the effect creates its card. The
-unselected library stays transient, and undo/reloads retain the selected def.
+{- | A fixed collection pool, represented by codes rather than repeated
+continuations. Eligible custom definitions are recorded once on the game before
+asking; gameCustomCards is excluded from undo diffs and served separately to
+clients. This also makes the question self-contained after a library deletion.
 -}
-collectionCardLabeled :: ReverseQueue m => CardDef -> QueueT Message m () -> ChooseT m ()
-collectionCardLabeled def action = do
-  modify \s -> s {Arkham.Message.Lifted.Choose.label = s.label <|> Just "$questionFilter.collectionTitle"}
-  g <- getGame
-  let custom = fromMaybe mempty (getTransient $ gameCollectionCards g) <> gameCustomCards g
-  cardLabeled def do
-    for_ (lookup (toCardCode def) custom) $ push . Msg.DebugRegisterCustomCard
-    action
+chooseCollectionCards
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> [CardDef] -> m ()
+chooseCollectionCards iid (toSource -> source) defs = unless (null defs) do
+  push $ Msg.AskCollection iid source (ordNub $ map toCardCode defs)

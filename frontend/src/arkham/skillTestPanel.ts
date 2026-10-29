@@ -10,6 +10,7 @@ export function skillTestHasCollectionSearch(game: Game, playerId: string): bool
   let collectionSearch = false
   while (question) {
     if (question.tag === 'PayCostQuestion') return false
+    if (question.tag === 'ChooseFromCollection') return question.cardCodes.length > 0
     if (question.label === '$questionFilter.collectionTitle') collectionSearch = true
     question = question.question
   }

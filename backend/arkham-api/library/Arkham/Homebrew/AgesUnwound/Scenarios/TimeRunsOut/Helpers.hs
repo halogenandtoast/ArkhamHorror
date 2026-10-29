@@ -272,15 +272,14 @@ levelOneOrHigher = mapOneOf CardWithLevel [1 .. 5]
 The shared collection pool includes printed cards, the answering player's custom
 library, and custom cards recorded on the game. Each candidate only needs its
 card code for display. The choice travels as a 'CardCodeTarget', and the caller's
-@HandleTargetChoice@ generates the real copy. 'collectionCardLabeled' records a
-chosen custom definition before that handler runs, so it survives a reload.
+@HandleTargetChoice@ generates the real copy. 'chooseCollectionCards' records eligible
+custom definitions separately so the question stays small and survives a reload.
 -}
 chooseCollectionCard
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> (CardDef -> Bool) -> m ()
 chooseCollectionCard iid source p = do
   defs <- filter p <$> collectionCardDefs
-  unless (null defs) $ chooseOneM iid $ for_ defs \def ->
-    collectionCardLabeled def $ handleTarget iid source (CardCodeTarget def.cardCode)
+  chooseCollectionCards iid source defs
 
 {- | "a non-exceptional player card of level at most X" -- /Days That Never Were/.
 

@@ -26,6 +26,7 @@ import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Question (Question (..))
 import Arkham.Source
+import Arkham.Target (Target (CardCodeTarget))
 import Arkham.Trait (Trait (Curse, Omen, Pact, SilverTwilight))
 
 newtype TheCircleUndone = TheCircleUndone CampaignAttrs
@@ -301,9 +302,7 @@ instance RunMessage TheCircleUndone where
                           )
                         ]
                   cards = filter cardFilter collection
-                chooseOneM iid do
-                  for_ cards \card ->
-                    collectionCardLabeled (toCardDef card) $ addCampaignCardToDeck iid DoNotShuffleIn card
+                chooseCollectionCards iid CampaignSource (map toCardDef cards)
 
               withI18n $ labeled "no" nothing
 
@@ -332,5 +331,8 @@ instance RunMessage TheCircleUndone where
         TakePuzzleBox -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.puzzleBox
         ProceedToInterlude3 -> pure ()
         _ -> error $ "Unhandled option: " <> show option
+      pure c
+    HandleTargetChoice iid CampaignSource (CardCodeTarget code) -> do
+      for_ (lookupCardDef code) $ addCampaignCardToDeck iid DoNotShuffleIn
       pure c
     _ -> lift $ defaultCampaignRunner msg c

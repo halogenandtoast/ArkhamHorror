@@ -3113,6 +3113,19 @@ runGameMessage msg g = case msg of
     let card = lookupCard cardCode cardId
     replaceCard cardId card
     pure g
+  AskCollection iid source codes -> do
+    let
+      available = fromMaybe mempty (getTransient $ gameCollectionCards g) <> gameCustomCards g
+      custom =
+        Map.restrictKeys
+          (Map.fromList [(toCardCode card.customCardDef, card) | card <- toList available])
+          (setFromList codes)
+      offered = filter (\code -> not (isCustomCardCode code) || Map.member code custom) codes
+    registerCustomCards custom
+    unless (null offered) do
+      player <- getPlayer iid
+      push $ Ask player $ ChooseFromCollection iid source offered
+    pure $ g & customCardsL %~ (custom <>)
   DebugRegisterCustomCard customCard -> do
     let def = (customCardDef customCard) {cdCardCode = cardCode, cdArt = unCardCode cardCode}
         cardCode = sanitizeCustomCardCode (toCardCode $ customCardDef customCard)

@@ -1440,6 +1440,8 @@ data Message
   | -- Debug: register a runtime-authored card (see "Arkham.Card.CustomCard") on
     -- the game, so its def resolves for every player and survives a reload.
     DebugRegisterCustomCard CustomCard
+  | -- Open a fixed collection pool and snapshot its custom definitions once.
+    AskCollection InvestigatorId Source [CardCode]
   | DebugRemoveCustomCard CardCode
   | -- Debug: resolve an already-created card the way drawing it would --
     -- spawn an enemy, reveal a treachery, put a location on the board, deal a

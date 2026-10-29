@@ -15,6 +15,7 @@ type QuestionCommon = {
 
 export type Question = QuestionCommon & (
   | ChooseOne 
+  | ChooseFromCollection
   | ChooseUpToN 
   | ChooseSome 
   | ChooseSome1 
@@ -45,6 +46,7 @@ export type Question = QuestionCommon & (
 
 export enum QuestionType {
   CHOOSE_ONE = 'ChooseOne',
+  CHOOSE_FROM_COLLECTION = 'ChooseFromCollection',
   PLAYER_WINDOW_CHOOSE_ONE = 'PlayerWindowChooseOne',
   // A reaction/forced window ask. Renders as a plain ChooseOne; the distinct tag
   // exists so the backend can drop stale seats of a multi-player window AskMap.
@@ -79,6 +81,13 @@ export enum QuestionType {
 
 export type ContinueCampaign = {
   tag: QuestionType.CONTINUE_CAMPAIGN;
+}
+
+export type ChooseFromCollection = {
+  tag: QuestionType.CHOOSE_FROM_COLLECTION
+  investigatorId: string
+  source: Source
+  cardCodes: string[]
 }
 
 export type ChooseExchangeAmounts = {
@@ -561,6 +570,13 @@ export const dropDownDecoder = JsonDecoder.object<DropDown>(
   'DropDown',
 );
 
+export const chooseFromCollectionDecoder = JsonDecoder.object<ChooseFromCollection>({
+  tag: JsonDecoder.literal(QuestionType.CHOOSE_FROM_COLLECTION),
+  investigatorId: JsonDecoder.string(),
+  source: sourceDecoder,
+  cardCodes: JsonDecoder.array(JsonDecoder.string(), 'CollectionCardCode[]'),
+}, 'ChooseFromCollection')
+
 export const chooseOneDecoder = JsonDecoder.object<{ tag: QuestionType, choices: Message[] }>(
   {
     tag: JsonDecoder.oneOf(
@@ -647,6 +663,7 @@ export const continueCampaignDecoder = JsonDecoder.object<ContinueCampaign>(
 export const questionDecoder = JsonDecoder.oneOf<Question>(
   [
     chooseOneDecoder,
+    chooseFromCollectionDecoder,
     chooseOneFromEachDecoder,
     chooseNDecoder,
     chooseSomeDecoder,

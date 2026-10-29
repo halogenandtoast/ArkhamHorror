@@ -235,6 +235,8 @@ function questionChoices(question: Question): Message[] {
   switch (question.tag) {
     case 'ChooseOne':
       return question.choices;
+    case 'ChooseFromCollection':
+      return question.cardCodes.map(cardCode => ({ tag: MessageType.CARD_LABEL, cardCode, flippable: false }));
     case 'ChooseN':
       return question.choices;
     case 'ChooseUpToN':
@@ -308,7 +310,7 @@ export function choicesSource(game: Game, playerId: string): Source | null {
     let question: Question | undefined = game.question[playerId];
 
     while (question) {
-      if (question.tag === 'QuestionWithSource') return question.source;
+      if (question.tag === 'QuestionWithSource' || question.tag === 'ChooseFromCollection') return question.source;
       question = 'question' in question ? question.question : undefined;
     }
 

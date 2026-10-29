@@ -150,6 +150,7 @@ filterOutEnemyMessages eid ask'@(Ask pid q) = case q of
   QuestionWithSource {} -> Just ask'
   Read {} -> Just ask'
   ChooseOneWizard {} -> Just ask'
+  ChooseFromCollection {} -> Just ask'
   DropDown {} -> Just ask'
   PickSupplies {} -> Just ask'
   PickDestiny {} -> Just ask'

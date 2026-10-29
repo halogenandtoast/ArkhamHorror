@@ -146,3 +146,48 @@ test('only collection searches collapse the skill test', async (t) => {
     )
   }
 })
+
+test('compact collection questions decode into indexed card choices and retain source highlighting', async (t) => {
+  const server = await createServer({
+    root: resolve('.'),
+    server: { middlewareMode: true },
+    appType: 'custom',
+    logLevel: 'silent',
+  })
+  t.after(() => server.close())
+  const { questionDecoder } = await server.ssrLoadModule('/src/arkham/types/Question.ts')
+  const { choices, choicesSource } = await server.ssrLoadModule('/src/arkham/types/Game.ts')
+  const { skillTestHasCollectionSearch } = await server.ssrLoadModule(
+    '/src/arkham/skillTestPanel.ts',
+  )
+  const source = { tag: 'LocationSource', contents: '71278af9-d064-48b6-801b-7a83d8599be5' }
+  const question = await questionDecoder.decodePromise({
+    tag: 'ChooseFromCollection',
+    investigatorId: 'c01002',
+    source,
+    cardCodes: ['c01039', 'c*custom0', 'c01039'],
+  })
+  const game = { question: { player: question }, skillTest: { step: 'ApplySkillTestResultsStep' } }
+  assert.deepEqual(
+    choices(game, 'player').map((c) => c.cardCode),
+    ['c01039', 'c*custom0', 'c01039'],
+  )
+  assert.ok(choices(game, 'player').every((c) => c.tag === 'CardLabel' && !c.flippable))
+  assert.deepEqual(choicesSource(game, 'player'), question.source)
+  assert.equal(skillTestHasCollectionSearch(game, 'player'), true)
+  assert.equal(
+    skillTestHasCollectionSearch(
+      { ...game, question: { player: { ...question, cardCodes: [] } } },
+      'player',
+    ),
+    false,
+  )
+  const oldQuestion = await questionDecoder.decodePromise({
+    tag: 'ChooseOne',
+    choices: [{ tag: 'CardLabel', cardCode: 'c01039', flippable: false }],
+  })
+  assert.equal(
+    choices({ ...game, question: { player: oldQuestion } }, 'player')[0].cardCode,
+    'c01039',
+  )
+})

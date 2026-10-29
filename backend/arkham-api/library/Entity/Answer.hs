@@ -833,6 +833,9 @@ handleAnswerPure game@Game {..} playerId = \case
     ChooseOneWizard flavor qs confirm back -> case qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ ChooseOneWizard flavor qs confirm back]
       Just WizardChoice {messages} -> [Run messages]
+    ChooseFromCollection iid source codes -> case codes !!? qrChoice response of
+      Nothing -> [Ask playerId $ f q]
+      Just code -> [HandleTargetChoice iid source (CardCodeTarget code)]
     ChooseOne qs -> case qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ ChooseOne qs]
       Just msg -> [uiToRun msg]

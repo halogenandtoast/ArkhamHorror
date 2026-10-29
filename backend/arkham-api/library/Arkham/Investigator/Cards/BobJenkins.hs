@@ -9,6 +9,7 @@ import Arkham.GameEnv
 import Arkham.Helpers.Cost (getCanAffordCost)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf, withModifiersOf)
 import Arkham.Helpers.Playable (getPlayableCardsMatch)
+import Arkham.History
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
@@ -65,6 +66,11 @@ instance HasChaosTokenValue BobJenkins where
 instance RunMessage BobJenkins where
   runMessage msg i@(BobJenkins attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      -- Bob's additional action is consumed here instead of through
+      -- SpendActions (BobJenkinsAction is excluded from
+      -- additionalActionCovers), so the spend is recorded by hand or
+      -- HistoryActionsSpent under-counts the turn.
+      updateHistory iid (HistoryItem HistoryActionsSpent 1)
       let windows' = defaultWindows iid
       investigators <- select (affectsColocated iid)
       playableCards <- concatForM investigators \iid' -> do

@@ -201,10 +201,6 @@ function selectGameMode(mode: 'Campaign' | 'SideStory') {
     </div>
   </template>
   <template v-else>
-    <div v-if="campaignGroup === 'homebrew'" class="homebrew-warning">
-      Fan-made campaigns, unofficial and still in testing. Expect rough edges.
-    </div>
-
     <div class="campaigns">
       <template v-for="c in activeCampaigns" :key="c.id">
         <div class="campaign">

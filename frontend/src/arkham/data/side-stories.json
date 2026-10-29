@@ -633,7 +633,7 @@
     "id": "73001",
     "name": "Traces to Nowhere",
     "group": "chapter2",
-    "dev": true,
+    "beta": true,
     "standaloneDifficulties": [
       "Easy",
       "Standard",

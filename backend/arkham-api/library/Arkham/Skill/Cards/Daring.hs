@@ -2,8 +2,10 @@ module Arkham.Skill.Cards.Daring (daring) where
 
 import Arkham.Helpers.SkillTest
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
+import Arkham.Zone
 
 newtype Daring = Daring SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -19,7 +21,7 @@ instance RunMessage Daring where
         withSkillTest \stid -> do
           skillTestModifiers stid attrs enemy [#retaliate, #alert]
       Daring <$> liftRunMessage msg attrs
-    SkillTestEnds {} -> do
+    SkillTestEnds {} | attrs.placement /= OutOfPlay RemovedZone -> do
       drawCards attrs.owner attrs 1
       pure s
     _ -> Daring <$> liftRunMessage msg attrs

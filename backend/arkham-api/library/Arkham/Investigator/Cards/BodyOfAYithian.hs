@@ -47,7 +47,19 @@ instance RunMessage BodyOfAYithian where
     SetupInvestigator iid | iid == toId attrs -> do
       let prophecies = filterCards (cardIs Treacheries.prophecyOfTheEnd) (unDeck attrs.deck)
       for_ prophecies (removeCard . toCardId)
-      let cardFilter = not_ $ oneOf [cardIs Treacheries.prophecyOfTheEnd, #unique <> #item <> #asset]
+      -- Setting aside unique Item assets is The City of Archives' own setup instruction
+      -- ("they do not exist in this time period"), not anything Body of a Yithian prints.
+      -- The scenario removes them at DrawingStartingHand; we pull them from the deck
+      -- first so a Permanent like Charon's Obol (1) never enters play and strands its
+      -- KilledIfDefeated modifier. Unscoped, this also deleted the Relic of Ages in
+      -- Shattered Aeons, leaving act 3 unadvanceable (#5929).
+      inTheCityOfArchives <- any (`elem` ["04237", "53053"]) <$> selectOne TheScenario
+      let
+        cardFilter =
+          not_
+            $ oneOf
+            $ cardIs Treacheries.prophecyOfTheEnd
+            : [#unique <> #item <> #asset | inTheCityOfArchives]
       attrs' <- liftRunMessage msg (attrs & (deckL %~ withDeck (filterCards cardFilter)))
       pure $ BodyOfAYithian $ attrs' `with` meta
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do

@@ -5383,6 +5383,12 @@ library
       Arkham.Homebrew.DefsEntries
       Arkham.Homebrew.Generate
       Arkham.Homebrew.Import
+      Arkham.Homebrew.NightOfVespers.Acts.AFamilyAffair
+      Arkham.Homebrew.NightOfVespers.Acts.IntoTheFire
+      Arkham.Homebrew.NightOfVespers.Acts.ThusWithAKiss
+      Arkham.Homebrew.NightOfVespers.Agendas.CallingItANight
+      Arkham.Homebrew.NightOfVespers.Agendas.OpenSeason
+      Arkham.Homebrew.NightOfVespers.Agendas.TooSwiftArrives
       Arkham.Homebrew.NightOfVespers.Assets.FinlayODoyle
       Arkham.Homebrew.NightOfVespers.Assets.GigiGiuliano
       Arkham.Homebrew.NightOfVespers.Assets.LachrymarumsFavor
@@ -5391,15 +5397,48 @@ library
       Arkham.Homebrew.NightOfVespers.Campaign
       Arkham.Homebrew.NightOfVespers.CampaignSteps
       Arkham.Homebrew.NightOfVespers.CardDefEntries
+      Arkham.Homebrew.NightOfVespers.CardDefs.Acts
+      Arkham.Homebrew.NightOfVespers.CardDefs.Agendas
       Arkham.Homebrew.NightOfVespers.CardDefs.Assets
+      Arkham.Homebrew.NightOfVespers.CardDefs.Enemies
+      Arkham.Homebrew.NightOfVespers.CardDefs.Locations
+      Arkham.Homebrew.NightOfVespers.CardDefs.Treacheries
       Arkham.Homebrew.NightOfVespers.CardEntries
       Arkham.Homebrew.NightOfVespers.ChaosBag
       Arkham.Homebrew.NightOfVespers.Content
       Arkham.Homebrew.NightOfVespers.Defs
+      Arkham.Homebrew.NightOfVespers.Enemies.DeclanODoyle
+      Arkham.Homebrew.NightOfVespers.Enemies.HiredTriggermen
+      Arkham.Homebrew.NightOfVespers.Enemies.SkulkingHooligan
+      Arkham.Homebrew.NightOfVespers.Enemies.SyndicateFiringSquad
       Arkham.Homebrew.NightOfVespers.Helpers
       Arkham.Homebrew.NightOfVespers.Intros
       Arkham.Homebrew.NightOfVespers.Jinx
       Arkham.Homebrew.NightOfVespers.Key
+      Arkham.Homebrew.NightOfVespers.Locations.BarLAmmaliatrice_013
+      Arkham.Homebrew.NightOfVespers.Locations.BarLAmmaliatrice_014
+      Arkham.Homebrew.NightOfVespers.Locations.Conservatory
+      Arkham.Homebrew.NightOfVespers.Locations.GalerieLavandiere_015
+      Arkham.Homebrew.NightOfVespers.Locations.GalerieLavandiere_016
+      Arkham.Homebrew.NightOfVespers.Locations.GrandBallroom
+      Arkham.Homebrew.NightOfVespers.Locations.HedgeMaze
+      Arkham.Homebrew.NightOfVespers.Locations.HotelLobby_019
+      Arkham.Homebrew.NightOfVespers.Locations.HotelLobby_020
+      Arkham.Homebrew.NightOfVespers.Locations.HotelRooftop
+      Arkham.Homebrew.NightOfVespers.Locations.HotelWineCellar_029
+      Arkham.Homebrew.NightOfVespers.Locations.HotelWineCellar_030
+      Arkham.Homebrew.NightOfVespers.Locations.LuxurySuites_021
+      Arkham.Homebrew.NightOfVespers.Locations.LuxurySuites_022
+      Arkham.Homebrew.NightOfVespers.Locations.MezzanineElevators_023
+      Arkham.Homebrew.NightOfVespers.Locations.MezzanineElevators_024
+      Arkham.Homebrew.NightOfVespers.Locations.PleasureGardens_025
+      Arkham.Homebrew.NightOfVespers.Locations.PleasureGardens_026
+      Arkham.Homebrew.NightOfVespers.Locations.PresidentialSuite_027
+      Arkham.Homebrew.NightOfVespers.Locations.PresidentialSuite_028
+      Arkham.Homebrew.NightOfVespers.Locations.TrattoriaDelParcheLaBruttaVita
+      Arkham.Homebrew.NightOfVespers.Locations.TrattoriaDelParcheLaDolceVita
+      Arkham.Homebrew.NightOfVespers.Locations.TrattoriaKitchens_017
+      Arkham.Homebrew.NightOfVespers.Locations.TrattoriaKitchens_018
       Arkham.Homebrew.NightOfVespers.Scenarios.AChorusOfSuffering
       Arkham.Homebrew.NightOfVespers.Scenarios.BehindClosedDoors
       Arkham.Homebrew.NightOfVespers.Scenarios.DancingWithDeath
@@ -5409,6 +5448,15 @@ library
       Arkham.Homebrew.NightOfVespers.Scenarios.TheGardenOfBones
       Arkham.Homebrew.NightOfVespers.Scenarios.TheTeachingsOfAradia
       Arkham.Homebrew.NightOfVespers.Sets
+      Arkham.Homebrew.NightOfVespers.Treacheries.Backdraft
+      Arkham.Homebrew.NightOfVespers.Treacheries.CatastrophicDrop
+      Arkham.Homebrew.NightOfVespers.Treacheries.Conflagration
+      Arkham.Homebrew.NightOfVespers.Treacheries.CrumblingFoundations
+      Arkham.Homebrew.NightOfVespers.Treacheries.InHotPursuit
+      Arkham.Homebrew.NightOfVespers.Treacheries.Kenophobia
+      Arkham.Homebrew.NightOfVespers.Treacheries.LiminalDread
+      Arkham.Homebrew.NightOfVespers.Treacheries.RainOfBullets
+      Arkham.Homebrew.NightOfVespers.Treacheries.SecondThoughts
       Arkham.Homebrew.Registry
       Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.AchievementDefs
       Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Achievements

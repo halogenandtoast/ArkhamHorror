@@ -5,6 +5,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Homebrew.NightOfVespers.Helpers
 import Arkham.Homebrew.NightOfVespers.Intros
 import Arkham.Homebrew.NightOfVespers.Jinx (runJinx)
+import Arkham.Homebrew.NightOfVespers.Key
 import Arkham.Scenario.Import.Lifted
 
 newtype DancingWithDeath = DancingWithDeath ScenarioAttrs
@@ -18,10 +19,14 @@ instance RunMessage DancingWithDeath where
   runMessage msg s@(DancingWithDeath attrs) =
     runQueueT $ scenarioI18n "dancingWithDeath" $ runJinx msg *> case msg of
       PreScenarioSetup -> do
-        runScenarioIntro attrs.id 1
+        readIntro 1
+        gigi <- getHasRecord GigiGiulianoIsAssistingTheInvestigation
+        let branch = if gigi then 2 else 3
+        rememberIntro branch
+        introStep branch
         pure s
       DoStep n PreScenarioSetup -> do
-        runScenarioIntro attrs.id n
+        readIntro n
         pure s
       Setup -> do
         flavor $ scope "rules" $ h "title" >> p "body"

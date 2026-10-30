@@ -25,7 +25,7 @@ newtype NightOfVespers = NightOfVespers CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 nightOfVespers :: Difficulty -> NightOfVespers
-nightOfVespers = campaign NightOfVespers (CampaignId ":night-of-vespers") "Night of Vespers"
+nightOfVespers = campaign NightOfVespers ":night-of-vespers" "Night of Vespers"
 
 instance IsCampaign NightOfVespers where
   campaignTokens = chaosBagContents
@@ -57,9 +57,6 @@ instance IsCampaign NightOfVespers where
           continue OurLadiesOfSorrow
       | otherwise = continue ChooseDestination
 
-{- | Every bag token is sampled without replacement, until a specified symbol
-appears or the bag is exhausted. No matching symbol means no award.
--}
 researchFavor :: (HasI18n, ReverseQueue m) => CampaignAttrs -> InvestigatorId -> m ()
 researchFavor attrs iid = do
   shuffled <- shuffle attrs.chaosBag
@@ -194,9 +191,9 @@ instance RunMessage NightOfVespers where
       scope "intro" $ flavor $ setTitle "title" >> p "body"
       lift $ defaultCampaignRunner msg c
     CampaignStep PrologueStep -> do
-      scope "prologue" $ flavor $ setTitle "title" >> p "body"
       scope "additionalRules" do
         flavor $ setTitle "title" >> compose (scope "jinx" $ h3 "title" >> p "body")
+      scope "prologue" $ flavor $ setTitle "title" >> p "body"
       nextCampaignStep
       pure c
     CampaignStep (InterludeStep 1 _) -> scope "twoMessages" do

@@ -18,10 +18,11 @@ instance RunMessage MothersMercy where
   runMessage msg s@(MothersMercy attrs) =
     runQueueT $ scenarioI18n "mothersMercy" $ runJinx msg *> case msg of
       PreScenarioSetup -> do
-        runScenarioIntro attrs.id 1
+        readIntro 1
+        introStep 2
         pure s
       DoStep n PreScenarioSetup -> do
-        runScenarioIntro attrs.id n
+        readIntro n
         pure s
       Setup -> do
         flavor $ scope "rules" $ h "title" >> p "body"

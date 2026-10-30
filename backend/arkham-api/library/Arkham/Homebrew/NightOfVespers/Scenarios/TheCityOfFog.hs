@@ -5,6 +5,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Homebrew.NightOfVespers.Helpers
 import Arkham.Homebrew.NightOfVespers.Intros
 import Arkham.Homebrew.NightOfVespers.Jinx (runJinx)
+import Arkham.Homebrew.NightOfVespers.Key
 import Arkham.Scenario.Import.Lifted
 
 newtype TheCityOfFog = TheCityOfFog ScenarioAttrs
@@ -18,10 +19,22 @@ instance RunMessage TheCityOfFog where
   runMessage msg s@(TheCityOfFog attrs) =
     runQueueT $ scenarioI18n "theCityOfFog" $ runJinx msg *> case msg of
       PreScenarioSetup -> do
-        runScenarioIntro attrs.id 1
+        readIntro 1
+        chooseLead
+          [ (2, YouLearnedAboutTheTenebrarumMurders)
+          , (3, YouWereInvitedToJoinTheTenebrarumLodge)
+          , (4, DrArmitageTaughtYouAboutTheThreeMothers)
+          , (5, AnnaKaslowDirectedYouTowardAnOldColleague)
+          , (6, MaddalenaGuidesYourPath)
+          ]
+        pure s
+      DoStep 7 PreScenarioSetup -> do
+        readIntro 7 >> pEffect "companion"
         pure s
       DoStep n PreScenarioSetup -> do
-        runScenarioIntro attrs.id n
+        readIntro n
+        when (n `elem` [2, 3]) $ pEffect ("lead" <> tshow n)
+        whenM (getHasRecord FinlayODoyleIsAssistingTheInvestigation) $ introStep 7
         pure s
       Setup -> do
         flavor $ scope "rules" $ h "title" >> p "body"

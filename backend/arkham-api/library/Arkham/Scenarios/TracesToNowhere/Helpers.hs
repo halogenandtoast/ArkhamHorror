@@ -414,9 +414,8 @@ Darkness into the encounter deck."
 descendToEtherealPerch
   :: (ReverseQueue m, Sourceable source) => source -> CardDef -> m ()
 descendToEtherealPerch source from = do
-  placeLocationIfNotInPlay_ Locations.etherealPerch
-  selectForMaybeM (locationIs Locations.etherealPerch) \perch ->
-    selectEach (investigatorAt (locationIs from)) \iid -> moveTo source iid perch
+  perch <- placeLocationIfNotInPlay Locations.etherealPerch
+  selectEach (investigatorAt (locationIs from)) \iid -> moveTo source iid perch
   shuffleCardsIntoDeck Deck.EncounterDeck
     =<< getSetAsideCardsMatching (cardIs Treacheries.lostToTheDarkness)
 

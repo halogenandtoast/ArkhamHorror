@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Location.CardDefs.TracesToNowhere qualified as Locations
-import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
 import Arkham.Scenarios.TracesToNowhere.Helpers
 
@@ -23,10 +22,8 @@ instance HasAbilities GladysWashingtonCuriousCoroner where
 instance RunMessage GladysWashingtonCuriousCoroner where
   runMessage msg a@(GladysWashingtonCuriousCoroner attrs) = runQueueT $ scenarioI18n $ case msg of
     Revelation _ (isSource attrs -> True) -> do
-      placeLocationIfNotInPlay_ Locations.duterteFuneralHomeAfterHours
-      selectForMaybeM (locationIs Locations.duterteFuneralHomeAfterHours)
-        $ place attrs
-        . AtLocation
+      lid <- placeLocationIfNotInPlay Locations.duterteFuneralHomeAfterHours
+      place attrs (AtLocation lid)
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom

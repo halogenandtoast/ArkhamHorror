@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Location.CardDefs.TracesToNowhere qualified as Locations
-import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Placement
 import Arkham.ScenarioLogKey
@@ -27,8 +26,8 @@ instance HasAbilities AlbrechtHusserlRecklessGambler where
 instance RunMessage AlbrechtHusserlRecklessGambler where
   runMessage msg a@(AlbrechtHusserlRecklessGambler attrs) = runQueueT $ scenarioI18n $ case msg of
     Revelation _ (isSource attrs -> True) -> do
-      placeLocationIfNotInPlay_ Locations.tickTockClub
-      selectForMaybeM (locationIs Locations.tickTockClub) $ place attrs . AtLocation
+      lid <- placeLocationIfNotInPlay Locations.tickTockClub
+      place attrs (AtLocation lid)
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       {- "If the investigators found record of Matilde's bribe, continue reading.

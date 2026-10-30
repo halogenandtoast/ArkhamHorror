@@ -24,8 +24,8 @@ instance HasAbilities EliasHusserlJrFleeingTheCity where
 instance RunMessage EliasHusserlJrFleeingTheCity where
   runMessage msg a@(EliasHusserlJrFleeingTheCity attrs) = runQueueT $ scenarioI18n $ case msg of
     Revelation _ (isSource attrs -> True) -> do
-      placeLocationIfNotInPlay_ Locations.trainStation
-      selectForMaybeM (locationIs Locations.trainStation) $ place attrs . AtLocation
+      lid <- placeLocationIfNotInPlay Locations.trainStation
+      place attrs (AtLocation lid)
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       codexEntry "codex.eliasHusserlJr"

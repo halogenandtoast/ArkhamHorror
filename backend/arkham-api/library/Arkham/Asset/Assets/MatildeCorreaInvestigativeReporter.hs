@@ -37,8 +37,8 @@ instance RunMessage MatildeCorreaInvestigativeReporter where
   runMessage msg a@(MatildeCorreaInvestigativeReporter attrs) =
     runQueueT $ scenarioI18n $ case msg of
       Revelation _ (isSource attrs -> True) -> do
-        placeLocationIfNotInPlay_ Locations.arkhamAdvertiser
-        selectForMaybeM (locationIs Locations.arkhamAdvertiser) $ place attrs . AtLocation
+        lid <- placeLocationIfNotInPlay Locations.arkhamAdvertiser
+        place attrs (AtLocation lid)
         pure a
       UseThisAbility _ (isSource attrs -> True) 1 -> do
         codexEntry "codex.matildeCorrea"

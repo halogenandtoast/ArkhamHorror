@@ -11,7 +11,6 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.TracesToNowhere qualified as Enemies
 import Arkham.Exception
-import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue
@@ -150,6 +149,10 @@ instance RunMessage TracesToNowhere where
         , Locations.duterteFuneralHomeSomethingInTheBasement
         , Locations.meigerEstateUnderNewOwnership
         , Locations.meigerEstateBeyondTheBlackDoor
+        , Assets.adeleHusserlEstrangedDaughter
+        , Assets.josephineHusserlMiffedMatriarch
+        , Assets.charlesTammJustHereToGetPaid
+        , Assets.gladysWashingtonCuriousCoroner
         ]
 
       witnesses <-
@@ -168,8 +171,7 @@ instance RunMessage TracesToNowhere where
       along with the top 2 cards of the encounter deck (top 3 cards instead if
       there are 3 or 4 investigators in the game)." -}
       n <- getPlayerCount
-      top <- take (if n >= 3 then 3 else 2) . map toCard . unDeck <$> getEncounterDeck
-      for_ top obtainCard
+      top <- map toCard <$> sampleEncounterDeck (if n >= 3 then 3 else 2)
       push . SetScenarioDeck LeadsDeck =<< shuffle (witnesses <> top)
     ResolveChaosToken _ Cultist iid -> do
       whenAny (EnemyWithTrait Syndicate <> at_ (locationWithInvestigator iid))
@@ -327,7 +329,7 @@ culpritBranch attrs sect storyAsset culpritEnemy act = scope sect do
   and each card in the Leads deck." -}
   selectEach (AssetWithTrait Suspect <> AssetAt (LocationWithTrait Arkham)) abductAsset
   leads <- getLeadsDeck
-  for_ leads \card -> push $ RemoveCardFromScenarioDeck LeadsDeck card
+  for_ leads $ push . RemoveCardFromScenarioDeck LeadsDeck
   abduct leads
 
   {- "Gather all abducted cards and shuffle them together. Attach 1 [per player]

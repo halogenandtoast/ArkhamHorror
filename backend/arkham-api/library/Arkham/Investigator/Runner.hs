@@ -1563,10 +1563,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   FlipDoom target n | isTarget a target -> do
     pure $ a & tokensL %~ flipDoom n
   DiscoverClues iid d | iid == investigatorId && d.location == DiscoverYourLocation -> do
-    lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d
-    push $ DiscoverClues iid (d {discoverLocation = DiscoverAtLocation lid})
+    -- the queued discover can outlive the investigator being at a location (#5926)
+    whenJustM (getDiscoverLocation iid d) \lid ->
+      push $ DiscoverClues iid (d {discoverLocation = DiscoverAtLocation lid})
     pure a
-  DoStep 1 (DiscoverClues iid d) | iid == investigatorId -> do
+  DoStep 1 (DiscoverClues iid d) | iid == investigatorId && not investigatorEliminated -> do
     mods <- getModifiers iid
     dmods <- getModifiers $ DiscoverTarget d.id
     let additionalDiscoveredAt = Map.fromListWith (<>) [(olid, Sum x) | DiscoveredCluesAt olid x <- mods]

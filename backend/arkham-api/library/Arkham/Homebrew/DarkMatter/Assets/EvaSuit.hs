@@ -16,7 +16,7 @@ newtype EvaSuit = EvaSuit AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 evaSuit :: AssetCard EvaSuit
-evaSuit = asset EvaSuit Cards.evaSuit
+evaSuit = assetWith EvaSuit Cards.evaSuit (healthL ?~ 2)
 
 instance HasAbilities EvaSuit where
   getAbilities (EvaSuit a) =

@@ -11,7 +11,9 @@ newtype TrattoriaDelParcheLaDolceVita = TrattoriaDelParcheLaDolceVita LocationAt
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 trattoriaDelParcheLaDolceVita :: LocationCard TrattoriaDelParcheLaDolceVita
-trattoriaDelParcheLaDolceVita = location TrattoriaDelParcheLaDolceVita Cards.trattoriaDelParcheLaDolceVita 2 (Static 0)
+trattoriaDelParcheLaDolceVita =
+  symbolLabel
+    $ location TrattoriaDelParcheLaDolceVita Cards.trattoriaDelParcheLaDolceVita 2 (Static 0)
 
 instance RunMessage TrattoriaDelParcheLaDolceVita where
   runMessage msg l@(TrattoriaDelParcheLaDolceVita attrs) = runQueueT $ case msg of

@@ -21,7 +21,18 @@ newtype TheEndOfSeasons = TheEndOfSeasons ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasChaosTokenValue)
 
 theEndOfSeasons :: Difficulty -> TheEndOfSeasons
-theEndOfSeasons difficulty = scenario TheEndOfSeasons ":night-of-vespers:001" "The End of Seasons" difficulty []
+theEndOfSeasons difficulty =
+  scenario
+    TheEndOfSeasons
+    ":night-of-vespers:001"
+    "The End of Seasons"
+    difficulty
+    [ ".        .        .        plus    ."
+    , ".        square   hourglass heart   ."
+    , "circle   diamond  star     trefoil t"
+    , "triangle moon     droplet  .       equals"
+    , ".        squiggle .        .       ."
+    ]
 
 instance RunMessage TheEndOfSeasons where
   runMessage msg s@(TheEndOfSeasons attrs) =

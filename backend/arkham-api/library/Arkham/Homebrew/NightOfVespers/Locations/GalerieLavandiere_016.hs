@@ -9,7 +9,7 @@ newtype GalerieLavandiere_016 = GalerieLavandiere_016 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 galerieLavandiere_016 :: LocationCard GalerieLavandiere_016
-galerieLavandiere_016 = location GalerieLavandiere_016 Cards.galerieLavandiere_016 3 (PerPlayer 1)
+galerieLavandiere_016 = symbolLabel $ location GalerieLavandiere_016 Cards.galerieLavandiere_016 3 (PerPlayer 1)
 
 instance RunMessage GalerieLavandiere_016 where
   runMessage msg (GalerieLavandiere_016 attrs) = GalerieLavandiere_016 <$> runMessage msg attrs

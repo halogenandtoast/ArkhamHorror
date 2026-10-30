@@ -9,7 +9,7 @@ newtype Conservatory = Conservatory LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 conservatory :: LocationCard Conservatory
-conservatory = location Conservatory Cards.conservatory 3 (PerPlayer 2)
+conservatory = symbolLabel $ location Conservatory Cards.conservatory 3 (PerPlayer 2)
 
 instance RunMessage Conservatory where
   runMessage msg (Conservatory attrs) = Conservatory <$> runMessage msg attrs

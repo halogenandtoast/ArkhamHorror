@@ -437,7 +437,10 @@ setAsideWith f as0 = do
 
 -- does not handle other encounter decks
 removeEvery :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
-removeEvery defs = attrsL . encounterDeckL %= flip removeEveryFromDeck defs
+removeEvery defs = do
+  let codes = map toCardCode defs
+  attrsL . encounterDeckL %= flip removeEveryFromDeck defs
+  otherCardsL %= filter ((`notElem` codes) . toCardCode)
 
 -- does not handle other encounter decks
 removeOneOf :: ReverseQueue m => CardDef -> ScenarioBuilderT m ()

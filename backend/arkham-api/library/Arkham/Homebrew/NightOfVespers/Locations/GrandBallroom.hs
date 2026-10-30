@@ -9,7 +9,7 @@ newtype GrandBallroom = GrandBallroom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 grandBallroom :: LocationCard GrandBallroom
-grandBallroom = location GrandBallroom Cards.grandBallroom 4 (PerPlayer 2)
+grandBallroom = symbolLabel $ location GrandBallroom Cards.grandBallroom 4 (PerPlayer 2)
 
 instance RunMessage GrandBallroom where
   runMessage msg (GrandBallroom attrs) = GrandBallroom <$> runMessage msg attrs

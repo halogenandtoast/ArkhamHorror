@@ -631,6 +631,10 @@ data ModifierType
   | SanityModifier Int
   | CampaignModifier Text
   | InvestigatorModifier Text
+  | {- | Only while an encounter card (including a player-deck treachery) asks
+    for a nearest/furthest location. Does not change movement connections.
+    -}
+    EncounterCardDistancesAreBidirectional
   | ScenarioModifier Text
   | ScenarioModifierValue Text Value
   | SearchDepth Int

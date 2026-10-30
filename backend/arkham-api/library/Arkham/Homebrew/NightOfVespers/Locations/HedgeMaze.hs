@@ -9,7 +9,7 @@ newtype HedgeMaze = HedgeMaze LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 hedgeMaze :: LocationCard HedgeMaze
-hedgeMaze = location HedgeMaze Cards.hedgeMaze 4 (PerPlayer 2)
+hedgeMaze = symbolLabel $ location HedgeMaze Cards.hedgeMaze 4 (PerPlayer 2)
 
 instance RunMessage HedgeMaze where
   runMessage msg (HedgeMaze attrs) = HedgeMaze <$> runMessage msg attrs

@@ -9,7 +9,7 @@ newtype HotelRooftop = HotelRooftop LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 hotelRooftop :: LocationCard HotelRooftop
-hotelRooftop = location HotelRooftop Cards.hotelRooftop 4 (PerPlayer 2)
+hotelRooftop = symbolLabel $ location HotelRooftop Cards.hotelRooftop 4 (PerPlayer 2)
 
 instance RunMessage HotelRooftop where
   runMessage msg (HotelRooftop attrs) = HotelRooftop <$> runMessage msg attrs

@@ -10,8 +10,8 @@ trattoriaDelParcheLaDolceVita =
       ":night-of-vespers:008"
       ("Trattoria del Parche" <:> "La Dolce Vita")
       [HomebrewTrait "Hotel", HomebrewTrait "Restaurant"]
-      NoSymbol
-      []
+      Circle
+      [Square, Triangle]
       Set.TheEndOfSeasons
 
 trattoriaDelParcheLaBruttaVita :: CardDef
@@ -21,8 +21,8 @@ trattoriaDelParcheLaBruttaVita =
       ":night-of-vespers:008b"
       ("Trattoria del Parche" <:> "La Brutta Vita")
       [HomebrewTrait "Hotel", HomebrewTrait "Restaurant"]
-      NoSymbol
-      []
+      Circle
+      [Square, Triangle]
       Set.TheEndOfSeasons
 
 conservatory :: CardDef
@@ -31,8 +31,8 @@ conservatory =
     ":night-of-vespers:009"
     "Conservatory"
     [HomebrewTrait "Hotel"]
-    NoSymbol
-    []
+    Star
+    [Trefoil]
     Set.TheEndOfSeasons
 
 hotelRooftop :: CardDef
@@ -41,8 +41,8 @@ hotelRooftop =
     ":night-of-vespers:010"
     "Hotel Rooftop"
     [HomebrewTrait "Hotel"]
-    NoSymbol
-    []
+    Droplet
+    [Trefoil]
     Set.TheEndOfSeasons
 
 hedgeMaze :: CardDef
@@ -51,8 +51,8 @@ hedgeMaze =
     ":night-of-vespers:011"
     "Hedge Maze"
     [HomebrewTrait "Hotel"]
-    NoSymbol
-    []
+    Heart
+    [Trefoil]
     Set.TheEndOfSeasons
 
 grandBallroom :: CardDef
@@ -62,7 +62,7 @@ grandBallroom =
       ":night-of-vespers:012"
       "Grand Ballroom"
       [HomebrewTrait "Hotel"]
-      NoSymbol
+      Trefoil
       []
       Set.TheEndOfSeasons
 
@@ -72,8 +72,8 @@ barLAmmaliatrice_013 =
     ":night-of-vespers:013"
     "Bar L'Ammaliatrice"
     [HomebrewTrait "Hotel"]
-    NoSymbol
-    []
+    Triangle
+    [Diamond, Squiggle]
     Set.TheEndOfSeasons
 
 barLAmmaliatrice_014 :: CardDef
@@ -82,8 +82,8 @@ barLAmmaliatrice_014 =
     ":night-of-vespers:014"
     "Bar L'Ammaliatrice"
     [HomebrewTrait "Hotel"]
-    NoSymbol
-    []
+    Triangle
+    [Diamond, Squiggle]
     Set.TheEndOfSeasons
 
 galerieLavandiere_015 :: CardDef
@@ -92,8 +92,8 @@ galerieLavandiere_015 =
     ":night-of-vespers:015"
     ("Galerie Lavandière" <:> "Fine Art Gallery")
     [HomebrewTrait "Hotel"]
-    NoSymbol
-    []
+    Diamond
+    [Hourglass, Moon]
     Set.TheEndOfSeasons
 
 galerieLavandiere_016 :: CardDef
@@ -102,8 +102,8 @@ galerieLavandiere_016 =
     ":night-of-vespers:016"
     ("Galerie Lavandière" <:> "Fine Art Gallery")
     [HomebrewTrait "Hotel"]
-    NoSymbol
-    []
+    Diamond
+    [Hourglass, Moon]
     Set.TheEndOfSeasons
 
 trattoriaKitchens_017 :: CardDef
@@ -112,8 +112,8 @@ trattoriaKitchens_017 =
     ":night-of-vespers:017"
     "Trattoria Kitchens"
     [HomebrewTrait "Hotel", HomebrewTrait "Restaurant"]
-    NoSymbol
-    []
+    Square
+    [Plus, Diamond]
     Set.TheEndOfSeasons
 
 trattoriaKitchens_018 :: CardDef
@@ -122,8 +122,8 @@ trattoriaKitchens_018 =
     ":night-of-vespers:018"
     "Trattoria Kitchens"
     [HomebrewTrait "Hotel", HomebrewTrait "Restaurant"]
-    NoSymbol
-    []
+    Square
+    [Plus, Diamond]
     Set.TheEndOfSeasons
 
 hotelLobby_019 :: CardDef
@@ -133,8 +133,8 @@ hotelLobby_019 =
       ":night-of-vespers:019"
       "Hotel Lobby"
       [HomebrewTrait "Hotel"]
-      NoSymbol
-      []
+      Hourglass
+      [Heart, Star]
       Set.TheEndOfSeasons
 
 hotelLobby_020 :: CardDef
@@ -144,8 +144,8 @@ hotelLobby_020 =
       ":night-of-vespers:020"
       "Hotel Lobby"
       [HomebrewTrait "Hotel"]
-      NoSymbol
-      []
+      Hourglass
+      [Heart, Star]
       Set.TheEndOfSeasons
 
 luxurySuites_021 :: CardDef
@@ -155,8 +155,8 @@ luxurySuites_021 =
       ":night-of-vespers:021"
       "Luxury Suites"
       [HomebrewTrait "Hotel"]
-      NoSymbol
-      []
+      Moon
+      [Star, Droplet]
       Set.TheEndOfSeasons
 
 luxurySuites_022 :: CardDef
@@ -166,8 +166,8 @@ luxurySuites_022 =
       ":night-of-vespers:022"
       "Luxury Suites"
       [HomebrewTrait "Hotel"]
-      NoSymbol
-      []
+      Moon
+      [Star, Droplet]
       Set.TheEndOfSeasons
 
 mezzanineElevators_023 :: CardDef
@@ -176,8 +176,8 @@ mezzanineElevators_023 =
     ":night-of-vespers:023"
     "Mezzanine Elevators"
     [HomebrewTrait "Hotel"]
-    NoSymbol
-    []
+    Squiggle
+    [Moon, Equals]
     Set.TheEndOfSeasons
 
 mezzanineElevators_024 :: CardDef
@@ -186,8 +186,8 @@ mezzanineElevators_024 =
     ":night-of-vespers:024"
     "Mezzanine Elevators"
     [HomebrewTrait "Hotel"]
-    NoSymbol
-    []
+    Squiggle
+    [Moon, Equals]
     Set.TheEndOfSeasons
 
 pleasureGardens_025 :: CardDef
@@ -197,8 +197,8 @@ pleasureGardens_025 =
       ":night-of-vespers:025"
       "Pleasure Gardens"
       [HomebrewTrait "Hotel"]
-      NoSymbol
-      []
+      T
+      [Heart, Droplet]
       Set.TheEndOfSeasons
 
 pleasureGardens_026 :: CardDef
@@ -208,8 +208,8 @@ pleasureGardens_026 =
       ":night-of-vespers:026"
       "Pleasure Gardens"
       [HomebrewTrait "Hotel"]
-      NoSymbol
-      []
+      T
+      [Heart, Droplet]
       Set.TheEndOfSeasons
 
 presidentialSuite_027 :: CardDef
@@ -219,8 +219,8 @@ presidentialSuite_027 =
       ":night-of-vespers:027"
       "Presidential Suite"
       [HomebrewTrait "Hotel"]
-      NoSymbol
-      []
+      Equals
+      [Droplet, Heart]
       Set.TheEndOfSeasons
 
 presidentialSuite_028 :: CardDef
@@ -230,8 +230,8 @@ presidentialSuite_028 =
       ":night-of-vespers:028"
       "Presidential Suite"
       [HomebrewTrait "Hotel"]
-      NoSymbol
-      []
+      Equals
+      [Droplet, Heart]
       Set.TheEndOfSeasons
 
 hotelWineCellar_029 :: CardDef
@@ -240,8 +240,8 @@ hotelWineCellar_029 =
     ":night-of-vespers:029"
     "Hotel Wine Cellar"
     [HomebrewTrait "Hotel"]
-    NoSymbol
-    []
+    Plus
+    [T, Hourglass]
     Set.TheEndOfSeasons
 
 hotelWineCellar_030 :: CardDef
@@ -250,6 +250,6 @@ hotelWineCellar_030 =
     ":night-of-vespers:030"
     "Hotel Wine Cellar"
     [HomebrewTrait "Hotel"]
-    NoSymbol
-    []
+    Plus
+    [T, Hourglass]
     Set.TheEndOfSeasons

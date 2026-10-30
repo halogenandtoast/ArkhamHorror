@@ -10032,6 +10032,7 @@ test-suite spec
       Arkham.Homebrew.DarkMatter.Treacheries.ReminiscenceCovenantSpec
       Arkham.Homebrew.DarkMatter.Treacheries.ReminiscencePledgeSpec
       Arkham.Homebrew.DarkMatter.Treacheries.ReminiscenceSecretsSpec
+      Arkham.Homebrew.NightOfVespers.Agendas.OpenSeasonSpec
       Arkham.Homebrew.NightOfVespers.CampaignSpec
       Arkham.Homebrew.NightOfVespers.JinxSpec
       Arkham.HomebrewRegistrySpec

@@ -9,7 +9,7 @@ newtype PleasureGardens_026 = PleasureGardens_026 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 pleasureGardens_026 :: LocationCard PleasureGardens_026
-pleasureGardens_026 = location PleasureGardens_026 Cards.pleasureGardens_026 3 (PerPlayer 2)
+pleasureGardens_026 = symbolLabel $ location PleasureGardens_026 Cards.pleasureGardens_026 3 (PerPlayer 2)
 
 instance RunMessage PleasureGardens_026 where
   runMessage msg (PleasureGardens_026 attrs) = PleasureGardens_026 <$> runMessage msg attrs

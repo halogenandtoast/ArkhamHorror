@@ -2,6 +2,7 @@ module Arkham.Homebrew.NightOfVespers.CardDefs.Enemies where
 
 import Arkham.Enemy.CardDefs.Import
 import Arkham.Homebrew.NightOfVespers.Sets qualified as Set
+import Arkham.Keyword qualified as Keyword
 
 declanODoyle :: CardDef
 declanODoyle =
@@ -18,6 +19,7 @@ skulkingHooligan :: CardDef
 skulkingHooligan =
   (enemy ":night-of-vespers:036" "Skulking Hooligan" Set.TheEndOfSeasons 3)
     { cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
+    , cdKeywords = singleton Keyword.Hunter
     , cdFight = fight 2
     , cdHealth = health 2
     , cdEvade = evade 3

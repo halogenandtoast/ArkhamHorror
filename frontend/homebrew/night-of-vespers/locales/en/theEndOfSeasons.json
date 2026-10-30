@@ -27,7 +27,11 @@
     },
     "label": {
       "reader": "Choose an investigator to read this passage.",
-      "declineAsset": "Do not put an asset into play."
+      "declineAsset": "Do not put an asset into play.",
+      "skulkingHooligan": {
+        "returnClues": "Return half your clues (rounded up) and refill your location's clues",
+        "placeDoom": "Place 1 doom on the agenda (this may advance the agenda)"
+      }
     }
   }
 }

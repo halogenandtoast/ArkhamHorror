@@ -9,7 +9,7 @@ newtype HotelLobby_020 = HotelLobby_020 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 hotelLobby_020 :: LocationCard HotelLobby_020
-hotelLobby_020 = location HotelLobby_020 Cards.hotelLobby_020 3 (PerPlayer 2)
+hotelLobby_020 = symbolLabel $ location HotelLobby_020 Cards.hotelLobby_020 3 (PerPlayer 2)
 
 instance RunMessage HotelLobby_020 where
   runMessage msg (HotelLobby_020 attrs) = HotelLobby_020 <$> runMessage msg attrs

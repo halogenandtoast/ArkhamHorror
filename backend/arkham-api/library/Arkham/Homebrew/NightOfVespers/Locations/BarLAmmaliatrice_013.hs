@@ -9,7 +9,7 @@ newtype BarLAmmaliatrice_013 = BarLAmmaliatrice_013 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 barLAmmaliatrice_013 :: LocationCard BarLAmmaliatrice_013
-barLAmmaliatrice_013 = location BarLAmmaliatrice_013 Cards.barLAmmaliatrice_013 2 (PerPlayer 1)
+barLAmmaliatrice_013 = symbolLabel $ location BarLAmmaliatrice_013 Cards.barLAmmaliatrice_013 2 (PerPlayer 1)
 
 instance RunMessage BarLAmmaliatrice_013 where
   runMessage msg (BarLAmmaliatrice_013 attrs) = BarLAmmaliatrice_013 <$> runMessage msg attrs

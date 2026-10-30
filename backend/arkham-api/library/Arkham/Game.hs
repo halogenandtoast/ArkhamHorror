@@ -2362,8 +2362,13 @@ getLocationsMatching lmatcher = do
     else runCacheReaderT (g {gameAllowEmptySpaces = doAllowEmpty}) (go ls lmatcher')
  where
   go :: forall n. HasGame n => [Location] -> LocationMatcher -> n [Location]
-  go [] = const (pure [])
-  go ls = \case
+  go [] _ = pure []
+  go ls matcher
+    | isEncounterDistanceMatcher matcher = withEncounterDistanceConnections $ goUnscoped ls matcher
+    | otherwise = goUnscoped ls matcher
+
+  goUnscoped :: forall n. HasGame n => [Location] -> LocationMatcher -> n [Location]
+  goUnscoped ls = \case
     OutOfGameLocation -> pure [] -- Handled above
     ThatLocation -> error "ThatLocation must be resolved in criteria"
     IncludeEmptySpace inner -> go ls inner
@@ -6264,6 +6269,62 @@ instance HasModifiersFor Entities where
     traverse_ getModifiersFor (e ^. treacheriesL)
     traverse_ getModifiersFor (e ^. investigatorsL)
     traverse_ getModifiersFor (e ^. storiesL)
+
+-- Scope Open Season's connection change to distance queries, rather than the
+-- entire revelation/ability: an encounter effect may also move an investigator
+-- or resolve hunter, both of which must keep the ordinary directed connections.
+isEncounterDistanceMatcher :: LocationMatcher -> Bool
+isEncounterDistanceMatcher = \case
+  NearestLocationToYou _ -> True
+  NearestLocationTo _ _ -> True
+  NearestLocationToLocation _ _ -> True
+  NearestLocationToAny _ -> True
+  NearestLocationToMost _ -> True
+  FarthestLocationFromInvestigator _ _ -> True
+  FarthestLocationFromLocation _ _ -> True
+  FarthestLocationFromLocationMatching _ _ -> True
+  FarthestLocationFromAll _ -> True
+  _ -> False
+
+withEncounterDistanceConnections :: HasGame m => (forall n. HasGame n => n a) -> m a
+withEncounterDistanceConnections body = do
+  enabled <- hasModifier GameTarget EncounterCardDistancesAreBidirectional
+  if not enabled
+    then body
+    else do
+      g <- getGame
+      mcard <- case gameActiveAbilities g of
+        ability : _ -> sourceToMaybeCard (abilitySource ability)
+        [] -> pure $ gameResolvingCard g <|> gameActiveCard g
+      let encounter = case mcard of
+            Just (EncounterCard _) -> True
+            -- A weakness treachery/enemy remains an encounter card even though its
+            -- backing representation may be PlayerCard and isEncounterCard excludes
+            -- weaknesses for encounter-deck filtering.
+            Just card ->
+              toCardType card
+                `elem` [ TreacheryType
+                       , PlayerTreacheryType
+                       , EnemyType
+                       , PlayerEnemyType
+                       , LocationType
+                       , EnemyLocationCardType
+                       ]
+            Nothing -> False
+      if not encounter
+        then body
+        else do
+          locations <- select Anywhere
+          reverseEdges <-
+            concat <$> for locations \lid -> do
+              outgoing <- select $ connectedFrom (LocationWithId lid)
+              for outgoing \destination -> do
+                mods <- toModifiers GameSource [ConnectedToWhen Anywhere (LocationWithId lid)]
+                pure (LocationTarget destination, mods)
+          let extra = Map.fromListWith (<>) reverseEdges
+          -- ReaderT deliberately has an uncached query environment: reverse edges
+          -- must never reuse or populate the ordinary directed connection cache.
+          runReaderT body g {gameModifiers = Map.unionWith (<>) extra (gameModifiers g)}
 
 -- FAQ: an eligible location with no valid path counts as "nearest" only when no
 -- eligible location has one.

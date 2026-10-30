@@ -17,7 +17,7 @@ theSilverMoth :: AssetCard TheSilverMoth
 theSilverMoth = assetWith TheSilverMoth Cards.theSilverMoth (canLeavePlayByNormalMeansL .~ False)
 
 instance HasAbilities TheSilverMoth where
-  getAbilities (TheSilverMoth attrs) = [restricted attrs 1 OnSameLocation doubleActionAbility]
+  getAbilities (TheSilverMoth attrs) = [controlled_ attrs 1 doubleActionAbility]
 
 instance HasModifiersFor TheSilverMoth where
   getModifiersFor (TheSilverMoth a) = case a.placement of

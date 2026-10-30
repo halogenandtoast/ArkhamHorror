@@ -936,12 +936,24 @@ const outcomeNote = computed(() => {
   if (o?.certainty === 'Uncertain') return t('outcomeUncertain')
   return null
 })
+// Seats pending a question, in table order. game.question is a server-side Map
+// keyed by PlayerId, so its JSON key order is UUID order, not seat order: taking
+// its head routes deck selection to a seat further down the table and leaves the
+// rows between it and the last answered one empty (#5925). IsChooseDecks carries
+// the seat list, which is also what ChooseDeck.vue orders its rows by.
+function pendingQuestionPlayers(g: Arkham.Game): string[] {
+  const asked = Object.keys(g.question).filter((pid) => !!g.question[pid])
+  const seats = g.gameState.tag === 'IsChooseDecks' ? g.gameState.contents : []
+  const ordered = seats.filter((pid) => asked.includes(pid))
+  return [...ordered, ...asked.filter((pid) => !ordered.includes(pid))]
+}
+
 const questionPlayerId = computed(() => {
   const currentGame = game.value
   if (!currentGame) return playerId.value
   if (playerId.value && currentGame.question[playerId.value]) return playerId.value
   if (solo.value && currentGame.gameState.tag === 'IsChooseDecks') {
-    return Object.keys(currentGame.question)[0] ?? playerId.value
+    return pendingQuestionPlayers(currentGame)[0] ?? playerId.value
   }
   return playerId.value
 })
@@ -998,7 +1010,7 @@ function followPendingUpgradeQuestion(g: Arkham.Game) {
   // Replacement investigators can produce follow-up trauma and setup questions
   // after ChooseUpgradeDeck has been answered. Keep following whichever solo
   // investigator owns the continuation instead of remaining on the answered tab.
-  const pendingPlayer = Object.keys(g.question)[0]
+  const pendingPlayer = pendingQuestionPlayers(g)[0]
   if (pendingPlayer) playerId.value = pendingPlayer
 }
 
@@ -1364,8 +1376,13 @@ function scheduleApplyUpdate(payload: string, queued: boolean) {
           questionTag(currentQuestion) === 'Read' &&
           ArkhamGame.choices(updatedGame, currentPlayer).length === 0 &&
           actionableQuestionPlayers.length > 0
+        // The server names the seat it parked on; fall back to seat order rather
+        // than the question map's UUID key order (#5925).
+        const activeIsAsked = !!updatedGame.question[updatedGame.activePlayerId]
         const nextQuestionPlayer = !questionPlayers.includes(currentPlayer)
-          ? questionPlayers[0]
+          ? activeIsAsked
+            ? updatedGame.activePlayerId
+            : pendingQuestionPlayers(updatedGame)[0]
           : currentReadIsWaiting
             ? actionableQuestionPlayers[0]
             : null

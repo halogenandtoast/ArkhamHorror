@@ -7124,7 +7124,11 @@ runMessages gameId observers = do
                 -- unanswerable question.
                 [] -> runMessages gameId observers
                 _ -> do
-                  let activePid = fromMaybe current $ find (`elem` activePids) (current : keys askMap)
+                  -- `keys askMap` is UUID order, not seat order, so its head sends the
+                  -- client to whichever pending seat happens to sort first (#5925).
+                  -- Walk the table's seats instead.
+                  let seatOrder = filter (`Map.member` askMap) (g ^. playersL) <> keys askMap
+                  let activePid = fromMaybe current $ find (`elem` activePids) (current : seatOrder)
                   runWithEnv
                     ( toExternalGame
                         (g & activePlayerIdL .~ activePid & scenarioStepsL +~ 1 & retainedQuestionL .~ retained)

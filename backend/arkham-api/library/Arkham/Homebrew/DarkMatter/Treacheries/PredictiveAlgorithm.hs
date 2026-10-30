@@ -26,9 +26,17 @@ instance HasModifiersFor PredictiveAlgorithm where
       lift $ modifySelect a (InvestigatorWithId iid) [SkillModifier sk (-1) | sk <- [minBound ..]]
     _ -> pure ()
 
+{- | "[action] Choose and discard 2 cards from your hand: Discard Predictive
+Algorithm."
+
+"Your hand" is whoever performs the action, so an investigator at the same
+location may discard this copy too (FAQ 1.2).
+-}
 instance HasAbilities PredictiveAlgorithm where
   getAbilities (PredictiveAlgorithm a) =
-    [restricted a 1 (InThreatAreaOf You) $ actionAbilityWithCost (HandDiscardCost 2 #any)]
+    [ restricted a 1 (OnSameLocation <> InThreatAreaOf Anyone)
+        $ actionAbilityWithCost (HandDiscardCost 2 #any)
+    ]
 
 instance RunMessage PredictiveAlgorithm where
   runMessage msg t@(PredictiveAlgorithm attrs) = runQueueT $ case msg of

@@ -29,10 +29,16 @@ instance HasModifiersFor TheColorsOfSpace where
         cards <- fieldMap InvestigatorHand (filter ((== SkillType) . toCardType)) iid
         modifyEach a cards [MustBeCommitted]
 
--- | "[action] Take 1 horror: Discard The Colors of Space."
+{- | "[action] Take 1 horror: Discard The Colors of Space."
+
+The horror lands on whoever performs the action, so an investigator at the same
+location may discard this copy too (FAQ 1.2).
+-}
 instance HasAbilities TheColorsOfSpace where
   getAbilities (TheColorsOfSpace a) =
-    [restricted a 1 (InThreatAreaOf You) $ actionAbilityWithCost (HorrorCost (toSource a) YouTarget 1)]
+    [ restricted a 1 (OnSameLocation <> InThreatAreaOf Anyone)
+        $ actionAbilityWithCost (HorrorCost (toSource a) YouTarget 1)
+    ]
 
 instance RunMessage TheColorsOfSpace where
   runMessage msg t@(TheColorsOfSpace attrs) = runQueueT $ case msg of

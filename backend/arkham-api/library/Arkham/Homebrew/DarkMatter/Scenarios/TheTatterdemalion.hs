@@ -18,6 +18,7 @@ import Arkham.Homebrew.DarkMatter.Sets qualified as Set
 import Arkham.Homebrew.DarkMatter.Traits (pattern AI)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
+import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 
@@ -48,10 +49,18 @@ location") is handled by the 'FailedSkillTest' case in 'RunMessage' below.
 instance HasChaosTokenValue TheTatterdemalion where
   getChaosTokenValue iid tokenFace (TheTatterdemalion attrs) = case tokenFace of
     Skull -> do
+      {- An [[AI]] *encounter card* is a treachery or an enemy, so both have to be
+      counted; see Electric Surge, which sums the same two queries. -}
       n <-
         if isEasyStandard attrs
-          then selectCount $ TreacheryWithTrait AI <> TreacheryInThreatAreaOf (InvestigatorWithId iid)
-          else selectCount $ TreacheryWithTrait AI <> InPlayTreachery
+          then
+            (+)
+              <$> selectCount (TreacheryWithTrait AI <> TreacheryInThreatAreaOf (InvestigatorWithId iid))
+              <*> selectCount (EnemyWithTrait AI <> EnemyWithPlacement (InThreatArea iid))
+          else
+            (+)
+              <$> selectCount (TreacheryWithTrait AI <> InPlayTreachery)
+              <*> selectCount (EnemyWithTrait AI)
       pure $ ChaosTokenValue Skull (NegativeModifier n)
     Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
     otherFace -> getChaosTokenValue iid otherFace attrs

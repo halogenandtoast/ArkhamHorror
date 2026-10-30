@@ -14,7 +14,10 @@ uplA21Demhe :: EnemyCard UplA21Demhe
 uplA21Demhe =
   enemy UplA21Demhe Cards.uplA21Demhe
     & setSpawnAt (locationIs Locations.cargoHold)
-    & setOnlyPrey (HasMatchingTreachery $ TreacheryWithTrait AI)
+    {- An [[AI]] *encounter card* is a treachery or an enemy, so the prey criterion
+    has to look at both halves of the threat area. -}
+    & setOnlyPrey
+      (oneOf [HasMatchingTreachery (TreacheryWithTrait AI), InvestigatorEngagedWith (EnemyWithTrait AI)])
 
 instance RunMessage UplA21Demhe where
   runMessage msg (UplA21Demhe attrs) = UplA21Demhe <$> runMessage msg attrs

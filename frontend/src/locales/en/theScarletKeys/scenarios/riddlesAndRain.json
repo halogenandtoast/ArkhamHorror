@@ -61,7 +61,7 @@
   "resolutions": {
     "noResolution": {
       "title": "No Resolution",
-      "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: As the night goes on, the feeling that you are being watched—hunted—only grows. Recalling the photos Inspector Flint showed you of vanished and forgotten people all over the world, you decide that perhaps caution would be best. You head back to your meeting place in Trafalgar Square, keeping your head down the entire time. You might not have much to report to Inspector Flint, but it’s better than the alternative.</p><ul><li>Skip to _Resolution 4_.</li><ul>"
+      "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: As the night goes on, the feeling that you are being watched—hunted—only grows. Recalling the photos Inspector Flint showed you of vanished and forgotten people all over the world, you decide that perhaps caution would be best. You head back to your meeting place in Trafalgar Square, keeping your head down the entire time. You might not have much to report to Inspector Flint, but it’s better than the alternative.</p><ul><li>Skip to _Resolution 4_.</li></ul>"
     },
     "resolution1": {
       "title": "Resolution 1",

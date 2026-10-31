@@ -43,3 +43,39 @@ test('locale message links keep ASCII key paths', () => {
 
   assert.deepEqual(localizedLinks, [])
 })
+
+/* A PDF-extraction artefact: the FFG bullet glyph survives text extraction as a
+ * standalone "Æ", and the campaign-log entry that should have opened the <ul>
+ * ends up stranded inside the preceding <p> next to it (issue #5939, The
+ * Devourer Below resolution 1). Matched only when whitespace-delimited, so a
+ * legitimate ligature inside a word is never flagged. */
+test('locale markup has no stray bullet-glyph artifacts', () => {
+  const artifacts = []
+  const strandedGlyph = /(?<=\s)Æ(?=\s)/g
+
+  for (const file of jsonFilesUnder(localeRoot)) {
+    const contents = readFileSync(file, 'utf8')
+    for (const match of contents.matchAll(strandedGlyph)) {
+      artifacts.push(`${relative(localeRoot, file)}:${match.index}`)
+    }
+  }
+
+  assert.deepEqual(artifacts, [])
+})
+
+/* The other half of #5939: a <ul> whose first child is bare text, either because
+ * the opening <li> is missing or because a </ul> was typed as <ul>. The entry
+ * then renders outside its bullet, which is what the player sees. */
+test('locale markup opens every list with a list item', () => {
+  const strayText = []
+  const listOpeningWithText = /<ul>(?!\s*(?:<li|<ul))/g
+
+  for (const file of jsonFilesUnder(localeRoot)) {
+    const contents = readFileSync(file, 'utf8')
+    for (const match of contents.matchAll(listOpeningWithText)) {
+      strayText.push(`${relative(localeRoot, file)}:${match.index}`)
+    }
+  }
+
+  assert.deepEqual(strayText, [])
+})

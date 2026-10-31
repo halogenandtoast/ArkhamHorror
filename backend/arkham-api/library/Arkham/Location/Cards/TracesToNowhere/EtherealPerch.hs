@@ -19,7 +19,7 @@ instance HasAbilities EtherealPerch where
     extendRevealed
       a
       [ mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
-      , mkAbility a 2 $ forced $ RoundEnds #when
+      , restricted a 2 (thisIs a LocationNotAtClueLimit) $ forced $ RoundEnds #when
       ]
 
 instance RunMessage EtherealPerch where

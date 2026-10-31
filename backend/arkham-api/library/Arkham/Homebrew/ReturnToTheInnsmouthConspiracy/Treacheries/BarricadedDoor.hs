@@ -15,10 +15,6 @@ newtype BarricadedDoor = BarricadedDoor TreacheryAttrs
 barricadedDoor :: TreacheryCard BarricadedDoor
 barricadedDoor = treachery BarricadedDoor Cards.barricadedDoor
 
-{- | "Instead of discovering clues" is a standing ban on the attached location rather
-than a replacement effect: while Barricaded Door is attached nobody can discover a
-clue there at all, so a successful investigation yields only the Forced ability below.
--}
 instance HasModifiersFor BarricadedDoor where
   getModifiersFor (BarricadedDoor a) = case a.placement of
     AttachedToLocation lid -> modifySelect a Anyone [CannotDiscoverCluesAt (LocationWithId lid)]
@@ -36,7 +32,7 @@ instance RunMessage BarricadedDoor where
   runMessage msg t@(BarricadedDoor attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       selectWhenNotNull
-        (LocationWithMostClues $ LocationWithoutTreachery AnyTreachery)
+        (LocationWithMostClues $ LocationWithoutTreachery (TreacheryAttachedToLocation Anywhere))
         \locations -> chooseOrRunOneM iid $ targets locations $ attachTreachery attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do

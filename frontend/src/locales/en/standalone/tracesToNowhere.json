@@ -13,6 +13,14 @@
       "elderThing": "-5. If you fail, choose an _Ally_ or _Witness_ asset. Something abducts that asset."
     }
   },
+  "remembered": {
+    "theInvestigatorsFoundRecordOfMatildesBribe": "The investigators found record of Matilde's bribe",
+    "theInvestigatorsFoundSomethingStrangeInTheFuneralHomeBasement": "The investigators found something strange in the funeral home basement",
+    "theInvestigatorsGlimpsedAnotherWorld": "The investigators glimpsed another world",
+    "albrechtIsTheCulprit": "Albrecht is the culprit",
+    "linaOpenedTheDoor": "Lina opened the door",
+    "eugeneIsNotWhatHeSeems": "Eugene is not what he seems"
+  },
   "intro": {
     "title": "Traces to Nowhere",
     "body": "<p>Ever since their arrival in Arkham, the Husserl family has been the center of one scandal or another, with each member of the family intent on making waves. Josephine Husserl, matriarch of the family, threw swanky parties for the real movers and shakers of the city. While she entertained guests from all walks of life, her husband Elias would hold secret meetings with mob bosses, local politicians, and even members of the police force. The Husserls had money to invest, and they saw Arkham as rife with opportunity.</p><p>Each of Elias and Josephine's children ran afoul of other influential people in Arkham, however. Whether it was Albrecht gambling his family's wealth away, Elias Jr. forging bad deals, Lina's paintings failing to garner any interest in high society, or Adele struggling and failing to distance herself from them all, the rumors about the Husserls swirled through the streets.</p><p>Surprisingly, however, the Arkham Advertiser only ever commented on the more positive parts of their public image—stretching every meager humanitarian effort as far as they could to make a story.</p><p>But the controversy came to a head when Elias Husserl Sr. went missing one evening. He had been on his way to a private meeting in French Hill, and he never returned. Frustrated by the lack of initiative from the police force, Josephine hired private detective Aziza Steer, who wasted no time in digging into Elias's many contacts. After a couple of weeks with little progress, Aziza reached out to you for assistance in the investigation.</p><p>But once you arrived, Aziza was nowhere to be found. Now, alone in her office, it is up to you to discover what happened to Aziza and Elias Sr.</p>"

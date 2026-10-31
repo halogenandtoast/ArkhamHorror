@@ -2594,6 +2594,9 @@ instance RunMessage EnemyAttrs where
       pure a
     PlaceUnderneath (isTarget a -> True) cards -> do
       pure $ a & cardsUnderneathL %~ (nubBy ((==) `on` toCardId) . (<> cards))
+    RemoveFromUnderneath (isTarget a -> True) cards -> do
+      let removedIds = map toCardId cards
+      pure $ a & cardsUnderneathL %~ filter ((`notElem` removedIds) . toCardId)
     PlaceUnderneath _ cards -> do
       -- Going underneath something is leaving play, so route through
       -- RemoveFromPlay for the leave-play windows and attachment cleanup.

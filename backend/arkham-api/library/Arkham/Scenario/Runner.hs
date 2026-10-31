@@ -866,6 +866,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure $ a & setAsideCardsL %~ filter (`notElem` cards)
   PlaceUnderneath ScenarioTarget cards -> do
     pure $ a & cardsUnderScenarioReferenceL <>~ cards & setAsideCardsL %~ filter (`notElem` cards)
+  RemoveFromUnderneath ScenarioTarget cards -> do
+    let removedIds = map toCardId cards
+    pure $ a & cardsUnderScenarioReferenceL %~ filter ((`notElem` removedIds) . toCardId)
   {- Chaos tokens sealed on the scenario reference card. Mirrors the asset,
   enemy, location and investigator seal targets: a token sealed elsewhere is
   dropped from here, and releasing one raises the usual released windows. -}

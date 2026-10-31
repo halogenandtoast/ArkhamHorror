@@ -1,9 +1,7 @@
 module Arkham.Scenario.Scenarios.TracesToNowhere (tracesToNowhere) where
 
 import Arkham.Act.CardDefs.TracesToNowhere qualified as Acts
-import Arkham.Act.Sequence qualified as Act
 import Arkham.Agenda.CardDefs.TracesToNowhere qualified as Agendas
-import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Types (Field (..))
 import Arkham.CampaignLogKey
@@ -220,9 +218,11 @@ instance RunMessage TracesToNowhere where
           createEnemyAt_ card bonePit
 
       {- "Add the set-aside agenda 4a to the agenda deck. Advance directly to
-      agenda 4a (do not resolve any other agendas)." -}
-      push . AddAgenda 4 =<< genCard Agendas.intoThePit
-      push $ AdvanceToAgenda 4 Agendas.intoThePit Agenda.A (toSource attrs)
+      agenda 4a (do not resolve any other agendas)." The 1 is the agenda DECK
+      id, not the stage; the card def carries the stage. 'AdvanceToAgenda'
+      replaces the current agenda with the set-aside one, so there is no
+      'AddAgenda' to do first. -}
+      advanceToAgendaA attrs Agendas.intoThePit
 
       doStep 1 msg
       pure s
@@ -343,6 +343,7 @@ culpritBranch attrs sect storyAsset culpritEnemy act = scope sect do
   placeUnderneath shambler attached
   placeUnderneath bonePit beneath
 
-  -- "Advance directly to act 4a (do not resolve act 3b)."
-  push . AddAct 4 =<< genCard act
-  push $ AdvanceToAct 4 act Act.A (toSource attrs)
+  {- "Advance directly to act 4a (do not resolve act 3b)." The 1 is the act DECK
+  id, not the stage. 'AdvanceToAct' replaces the current act with this one, so
+  there is no 'AddAct' to do first. -}
+  advanceToActA attrs act

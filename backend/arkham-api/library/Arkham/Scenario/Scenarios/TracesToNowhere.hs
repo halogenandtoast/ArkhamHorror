@@ -273,32 +273,31 @@ instance RunMessage TracesToNowhere where
           resolution "resolution4"
           record TheCulpritIsStillAtLarge
           push R5
+        {- Resolution 5 is the one closing step that every other resolution feeds
+        into, so its text, the experience and the campaign bookkeeping all resolve
+        on a single screen rather than handing off to a second one. -}
         Resolution 5 -> do
-          resolution "resolution5"
-          do_ msg
+          {- "Each investigator earns experience equal to the victory X value of each
+          card in the victory display. For each story asset in the victory display
+          when the scenario ended, choose an investigator to earn 1 bonus experience." -}
+          stories <-
+            selectCount $ VictoryDisplayCardMatch $ basic (#asset <> mapOneOf CardWithTrait [Suspect, Witness])
+          resolutionWithXp "resolution5" $ allGainXpWithBonus' attrs (toBonus "bonus.storyAssets" stories)
+
+          {- "If the Aziza Steer story asset was under an investigator's control when
+          the scenario ended, the investigators have earned the Aziza Steer
+          (Hardboiled) campaign reward card." -}
+          rescued <- selectAny $ AssetControlledBy Anyone <> assetIs Assets.azizaSteerHasABoneToPick
+          when rescued do
+            investigators <- allInvestigators
+            addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.azizaSteerHardboiled
+
+          unlessStandalone do
+            stored @[ChaosTokenFace] "tracesToNowhereSavedChaosBag"
+              >>= traverse_ (push . SetCampaignChaosBag)
+
+          endOfScenario
         _ -> throw $ UnknownResolution r
-      pure s
-    Do (ScenarioResolution _) -> scope "resolutions" do
-      {- "If the Aziza Steer story asset was under an investigator's control when
-      the scenario ended, the investigators have earned the Aziza Steer
-      (Hardboiled) campaign reward card." -}
-      rescued <- selectAny $ AssetControlledBy Anyone <> assetIs Assets.azizaSteerHasABoneToPick
-      when rescued do
-        investigators <- allInvestigators
-        addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.azizaSteerHardboiled
-
-      {- "Each investigator earns experience equal to the victory X value of each
-      card in the victory display. For each story asset in the victory display
-      when the scenario ended, choose an investigator to earn 1 bonus experience." -}
-      stories <-
-        selectCount $ VictoryDisplayCardMatch $ basic (#asset <> mapOneOf CardWithTrait [Suspect, Witness])
-      resolutionWithXp "fin" $ allGainXpWithBonus' attrs (toBonus "bonus.storyAssets" stories)
-
-      unlessStandalone do
-        stored @[ChaosTokenFace] "tracesToNowhereSavedChaosBag"
-          >>= traverse_ (push . SetCampaignChaosBag)
-
-      endOfScenario
       pure s
     _ -> TracesToNowhere <$> liftRunMessage msg attrs
 

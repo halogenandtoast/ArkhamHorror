@@ -107,16 +107,34 @@
     }
   },
   "resolutions": {
-    "xp": "Experience",
-    "noResolution": "<p>The strength of the many threats arrayed against the Husserl family prove too much for you. Despite your best efforts, you succumb to the will of the Dimensional Shambler as you are dragged into the bone pit of the otherworld.</p><ul><li>In your campaign log, record *the investigators failed to solve the case*.</li><li>The investigators lose the campaign.</li></ul>",
-    "resolution1": "<p>It took every ounce of strength you could muster, but you were able to convince Lina Husserl to face her deepest fears and defeat the monster of her nightmares. You don't know how her paintings reached across the veil between worlds to call the Shambler to Arkham, but you suggest she maybe stop painting the things she sees in her dreams.</p><ul><li>In your campaign log, record *the investigators saved Lina Husserl*.</li></ul>",
-    "resolution2": "<p>Despite being just one man, Eugene Peel was a leader among his peers in the occult. With him removed, the cult has gone quiet.</p><ul><li>In your campaign log, record *the investigators stopped Eugene Peel*.</li></ul>",
-    "resolution3": "<p>You return to Arkham with Albrecht Husserl in tow, and are quick to hand him over to the authorities. You can only hope that the Husserl family doesn't have the entire Arkham Police Force in their pocket.</p><ul><li>In your campaign log, record *the investigators stopped Albrecht Husserl*.</li></ul>",
-    "resolution4": "<p>Despite your best efforts, you are unable to keep the Dimensional Shambler from claiming its next victim. You escape back to Arkham, where you can only hope that these events are well and truly done.</p><ul><li>In your campaign log, record *the culprit is still at large*.</li></ul>",
-    "resolution5": "<p>You weren't able to locate and recover Elias, but the progress you did make seems to have satisfied the city. Arkham is quick to recover, the city seemingly eager to forget all of the business of the investigation of the Husserl family. Josephine steps into the position of power and authority left vacant by her missing husband, and the leadership of the Husserl family continues to thrive in the city, albeit with a bit more caution.</p>",
-    "fin": "Fin",
-    "bonus": {
-      "storyAssets": "Story assets in the victory display"
+    "xp": {
+      "bonus": {
+        "storyAssets": "Story assets in the victory display"
+      }
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>The strength of the many threats arrayed against the Husserl family prove too much for you. Despite your best efforts, you succumb to the will of the Dimensional Shambler as you are dragged into the bone pit of the otherworld.</p><ul><li>In your campaign log, record *the investigators failed to solve the case*.</li><li>The investigators lose the campaign.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: It took every ounce of strength you could muster, but you were able to convince Lina Husserl to face her deepest fears and defeat the monster of her nightmares. You don't know how her paintings reached across the veil between worlds to call the Shambler to Arkham, but you suggest she maybe stop painting the things she sees in her dreams.</p><ul><li>In your campaign log, record *the investigators saved Lina Husserl*.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: Despite being just one man, Eugene Peel was a leader among his peers in the occult. With him removed, the cult has gone quiet.</p><ul><li>In your campaign log, record *the investigators stopped Eugene Peel*.</li><li>Skip to _Resolution 5_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: You return to Arkham with Albrecht Husserl in tow, and are quick to hand him over to the authorities. You can only hope that the Husserl family doesn't have the entire Arkham Police Force in their pocket.</p><ul><li>In your campaign log, record *the investigators stopped Albrecht Husserl*.</li><li>Skip to _Resolution 5_.</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_Resolution 4_: Despite your best efforts, you are unable to keep the Dimensional Shambler from claiming its next victim. You escape back to Arkham, where you can only hope that these events are well and truly done.</p><ul><li>In your campaign log, record *the culprit is still at large*.</li><li>Proceed to _Resolution 5_.</li></ul>"
+    },
+    "resolution5": {
+      "title": "Resolution 5",
+      "body": "<p>_Resolution 5_: You weren't able to locate and recover Elias, but the progress you did make seems to have satisfied the city. Arkham is quick to recover, the city seemingly eager to forget all of the business of the investigation of the Husserl family. Josephine steps into the position of power and authority left vacant by her missing husband, and the leadership of the Husserl family continues to thrive in the city, albeit with a bit more caution.</p><ul><li>If the Aziza Steer story asset was under an investigator's control when the scenario ended, the investigators have earned the Aziza Steer (*Hardboiled*) campaign reward card.</li><li>Each investigator earns experience equal to the victory X value of each card in the victory display.<ul><li>For each story asset in the victory display when the scenario ended, choose an investigator to earn 1 bonus experience.</li><li>_Experience_: {xp}</li></ul></li><li>If you are playing in Campaign Mode, reset your campaign chaos bag.</li></ul>"
     }
   },
   "label": {

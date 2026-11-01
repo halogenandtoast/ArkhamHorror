@@ -401,6 +401,9 @@
     "set": "Set"
   },
   "scenarioSettings": {
+    "submitting": "Preparing investigator selection…",
+    "submitFailed": "Could not finish loading setup. Try again to check the saved game and continue.",
+    "retry": "Try again",
     "title": "Standalone Settings",
     "noSettings": "There are currently no standalone settings available for this scenario.",
     "begin": "Begin"

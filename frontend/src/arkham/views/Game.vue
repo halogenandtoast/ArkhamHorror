@@ -1469,12 +1469,60 @@ function skipAllTriggers() {
   sendSkipFor(first.playerId, first.choiceIdx)
 }
 
-const { send, close } = useWebSocket(websocketUrl, {
+const { send, close, status: socketStatus } = useWebSocket(websocketUrl, {
   autoReconnect: true,
   onError,
   onConnected,
   onMessage,
 })
+
+// Give normal loading transitions time to settle. Log a serialised snapshot,
+// rather than a reactive object that DevTools may display with later values.
+// No tokens, deck contents or full game state belong in these diagnostics.
+watch(
+  () => JSON.stringify({
+    gameId: props.gameId,
+    ready: ready.value,
+    playerId: playerId.value,
+    gameState: game.value?.gameState,
+    phase: game.value?.phase,
+    scenarioId: game.value?.scenario?.id,
+    campaignStep: game.value?.scenario?.campaignStep?.tag,
+    activePlayerId: game.value?.activePlayerId,
+    questions: Object.fromEntries(Object.entries(game.value?.question ?? {}).map(
+      ([pid, q]) => [pid, questionTag(q)],
+    )),
+  }),
+  (snapshot, _previous, onCleanup) => {
+    const timer = window.setTimeout(() => {
+      const g = game.value
+      let reason: string | null = null
+      if (!ready.value || !g || !playerId.value) {
+        reason = 'Game view is still waiting for its initial game or player'
+      } else if (!g.campaign && g.gameState.tag !== 'IsPending' && g.gameState.tag !== 'IsOver') {
+        const tags = Object.values(g.question).map(questionTag)
+        const ownsQuestion = !!g.question[playerId.value]
+        if (questionTag(g.question[playerId.value]) === 'PickScenarioSettings') {
+          reason = 'Standalone settings have not advanced; an automatic submission or refresh may be pending'
+        } else if (!g.scenario && !ownsQuestion) {
+          reason = 'No scenario or current-player question is available to render'
+        } else if (g.gameState.tag !== 'IsActive' && tags.length === 0) {
+          reason = 'Standalone view has no active game or questions to render'
+        } else if (g.phase === 'CampaignPhase' && !ownsQuestion && !tags.includes('ChooseDeck')) {
+          reason = 'Standalone setup has no question for the current player'
+        }
+      }
+      if (reason) console.warn('[Arkham setup] Game view may be blank or waiting', JSON.stringify({
+        reason,
+        ...JSON.parse(snapshot),
+        socketStatus: socketStatus.value,
+        spectating: props.spectate,
+      }))
+    }, 5000)
+    onCleanup(() => window.clearTimeout(timer))
+  },
+  { immediate: true },
+)
 
 /* Put up in place of leaving at once when the players have gone: a watcher
  * whose board vanished mid-scenario is owed the reason, and a toast on the way
@@ -3414,6 +3462,7 @@ onUnmounted(() => {
           :game="game"
           :scenario="game.scenario"
           :playerId="playerId"
+          @update="update"
         />
         <StandaloneScenario
           v-else-if="game.scenario && !gameOver"

@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import { watch, ref, computed } from 'vue'
+import { watch, ref, computed, onScopeDispose } from 'vue'
 import scenarioJSON from '@/arkham/data/scenarios'
-import {updateStandaloneSettings} from '@/arkham/api'
+import {fetchGame, updateStandaloneSettings} from '@/arkham/api'
+import { createStandaloneSettingsSubmission } from '@/arkham/standaloneSettingsSubmission'
 import { Game } from '../types/Game'
 import { Scenario } from '../types/Scenario'
-import { StandaloneSetting, RecordedContent, SettingCondition } from '../types/StandaloneSetting'
+import { StandaloneSetting, SettingCondition } from '../types/StandaloneSetting'
 import ScenarioSetting from '@/arkham/components/ScenarioSetting.vue'
 
 const props = defineProps<{
@@ -12,6 +13,16 @@ const props = defineProps<{
   scenario: Scenario
   playerId: string
 }>()
+const emit = defineEmits<{ update: [game: Game] }>()
+const submitting = ref(false)
+const submissionFailed = ref(false)
+let disposed = false
+onScopeDispose(() => { disposed = true })
+const saveSettings = createStandaloneSettingsSubmission({
+  playerId: props.playerId,
+  save: (settings) => updateStandaloneSettings(props.game.id, settings),
+  fetch: async () => (await fetchGame(props.game.id)).game,
+})
 const standaloneSettings = ref<StandaloneSetting[]>([])
 
 const flattenedSettings = computed(() => {
@@ -50,22 +61,38 @@ watch(computedStandaloneSettings, (newSettings) => {
 }, { immediate: true })
 
 const submit = async () => {
-  // When we submit we want to remove any settings which won't be active
-  // because of how we set settings for standalone scenarios, the selected
-  // element is in the reactive data. So we create a deep copy and then remove
-  // anything that is inactive
-  let settings = JSON.parse(JSON.stringify(standaloneSettings.value))
+  if (submitting.value) return
+  submitting.value = true
+  submissionFailed.value = false
+  try {
+    // Copy before removing inactive settings so the editor stays intact if
+    // saving fails and the player needs to retry.
+    let settings = JSON.parse(JSON.stringify(standaloneSettings.value))
 
-  settings = settings.filter((setting: StandaloneSetting) => {
-    const {ifRecorded} = setting
-    if (ifRecorded) {
-      return !ifRecorded.some((cond) => inactive(cond))
-    }
+    settings = settings.filter((setting: StandaloneSetting) => {
+      const {ifRecorded} = setting
+      if (ifRecorded) {
+        return !ifRecorded.some((cond) => inactive(cond))
+      }
 
-    return true
-  })
+      return true
+    })
 
-  updateStandaloneSettings(props.game.id, settings)
+    const game = await saveSettings(settings)
+    // A websocket update may already have moved us past this screen. Do not
+    // overwrite the newer view with a fetch from a component that has left.
+    if (!disposed) emit('update', game)
+  } catch (error) {
+    console.error('[Arkham setup] Standalone settings submission or refresh failed', {
+      gameId: props.game.id,
+      scenarioId: props.scenario.id,
+      playerId: props.playerId,
+      error,
+    })
+    submissionFailed.value = true
+  } finally {
+    submitting.value = false
+  }
 }
 
 const inactive = (cond: SettingCondition): boolean => {
@@ -137,22 +164,40 @@ const submitted = ref(false)
 watch(activeSettings, (settings) => {
   if (settings.length === 0 && !submitted.value) {
     submitted.value = true
+    console.info('[Arkham setup] No standalone settings; submitting an empty settings list', {
+      gameId: props.game.id,
+      scenarioId: props.scenario.id,
+      playerId: props.playerId,
+    })
     submit()
   }
 }, { immediate: true })
 </script>
 
 <template>
-  <div v-if="activeSettings.length > 0" class="container scroll-container">
+  <div class="container scroll-container" :aria-busy="submitting">
     <h2>{{ $t('scenarioSettings.title') }}</h2>
-    <div v-for="setting in activeSettings" :key="setting.key">
-      <ScenarioSetting :setting="setting" :scenario="scenario" :game="game" :playerId="playerId" />
-    </div>
-    <button @click="submit">{{ $t('scenarioSettings.begin') }}</button>
+    <fieldset :disabled="submitting">
+      <div v-for="setting in activeSettings" :key="setting.key">
+        <ScenarioSetting :setting="setting" :scenario="scenario" :game="game" :playerId="playerId" />
+      </div>
+    </fieldset>
+    <p v-if="submitting" role="status">{{ $t('scenarioSettings.submitting') }}</p>
+    <p v-if="submissionFailed" role="alert">{{ $t('scenarioSettings.submitFailed') }}</p>
+    <button :disabled="submitting" @click="submit">
+      {{ $t(submissionFailed ? 'scenarioSettings.retry' : 'scenarioSettings.begin') }}
+    </button>
   </div>
 </template>
 
 <style scoped>
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
 .container {
   width: 100%;
   height: fit-content;

@@ -22,16 +22,16 @@ instance RunMessage BurdenOfLeadership where
 
       if null allies
         then shuffleIntoDeck iid attrs
-        else do
-          chooseOneAtATimeM iid do
-            targets allies \ally -> do
-              chooseOneM iid do
-                whenMatch ally AssetReady $ labeledI "exhaust" $ exhaustWith attrs ally
-                whenMatch ally (oneOf [AssetWithHealth, AssetWithSanity]) do
-                  withI18n
-                    $ numberVar "damage" 1
-                    $ numberVar "horror" 1
-                    $ labeled "dealDirectDamageAndHorror"
-                    $ dealAssetDirectDamageAndHorror ally attrs 1 1
+        else chooseOneAtATimeM iid $ targets allies $ handleTarget iid attrs
+      pure t
+    HandleTargetChoice iid (isSource attrs -> True) (AssetTarget ally) -> do
+      chooseOneM iid do
+        whenMatch ally AssetReady $ labeledI "exhaust" $ exhaustWith attrs ally
+        whenMatch ally (oneOf [AssetWithHealth, AssetWithSanity]) do
+          withI18n
+            $ numberVar "damage" 1
+            $ numberVar "horror" 1
+            $ labeled "dealDirectDamageAndHorror"
+            $ dealAssetDirectDamageAndHorror ally attrs 1 1
       pure t
     _ -> BurdenOfLeadership <$> liftRunMessage msg attrs

@@ -411,6 +411,17 @@ discardableCards InvestigatorAttrs {..} =
     then investigatorHand
     else filter (not . cardIsWeakness) investigatorHand
 
+{- | Cards in hand that can actually be discarded for hand size: player cards
+only, no weaknesses, and nothing modified @CannotLeaveYourHand@ -- otherwise the
+check asks for a discard that can never happen.
+-}
+handSizeDiscardable :: HasGame m => InvestigatorAttrs -> m [Card]
+handSizeDiscardable InvestigatorAttrs {..} =
+  filterM (fmap (notElem CannotLeaveYourHand) . getModifiers . toCardId)
+    $ map toCard
+    $ filter (isNothing . cdCardSubType . toCardDef)
+    $ onlyPlayerCards investigatorHand
+
 getAttrStats :: InvestigatorAttrs -> Stats
 getAttrStats InvestigatorAttrs {..} =
   Stats

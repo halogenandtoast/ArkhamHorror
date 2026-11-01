@@ -287,6 +287,16 @@ handleDoDiscardFromHand a@InvestigatorAttrs {..} handDiscard = do
                 | c <- cs'
                 ]
             pushDiscardedCards cs'
+      DiscardDownToHandSize -> do
+        {- One pick at a time, with the excess re-read before each: discarding a
+        card that was itself reducing the hand size restores it immediately, and
+        the check must end there. The loop re-enters this handler, which keeps
+        it inside the single batch opened below. -}
+        excess <- getExcessInHandCount a
+        viable <- handSizeDiscardable a
+        let cs' = filterCards handDiscard.filter viable
+        pushWhen (excess > 0 && notNull cs')
+          $ chooseOne player [targetLabel c [mkMsg c, Do (DiscardFromHand handDiscard)] | c <- cs']
       DiscardAll -> do
         let cards' = filterCards handDiscard.filter cs
         cards <- cards' & filterM (`matches` CardWithoutModifier CannotLeaveYourHand)
@@ -306,8 +316,20 @@ handleDoDiscardFromHand a@InvestigatorAttrs {..} handDiscard = do
           cards <- sampleN handDiscard.amount targets
           pushAll $ map mkMsg cards
           pushDiscardedCards cards
-  push $ DoneDiscarding investigatorId
-  pure $ a & discardingL ?~ handDiscard
+  {- A `DiscardDownToHandSize` loop re-enters this handler for each pick. Only
+  the first entry opens the batch: the re-entries push their choice ahead of the
+  `DoneDiscarding` already queued behind them, so the whole upkeep discard still
+  raises one `DiscardedFromHandBatch` window and keeps accumulating into one
+  `discardBatchCards`. -}
+  let
+    continuing = case investigatorDiscarding of
+      Just open -> open.strategy == DiscardDownToHandSize && handDiscard.strategy == DiscardDownToHandSize
+      Nothing -> False
+  if continuing
+    then pure a
+    else do
+      push $ DoneDiscarding investigatorId
+      pure $ a & discardingL ?~ handDiscard
 
 handleDiscard a@InvestigatorAttrs {..} source cardId = do
   push (DiscardCard investigatorId source cardId)
@@ -371,8 +393,10 @@ handleDoneDiscarding a@InvestigatorAttrs {..} iid = case investigatorDiscarding 
         checkWindows
           [mkAfter (Window.DiscardedFromHandBatch iid handDiscard.source (discardBatchCards handDiscard))]
       push batchWindowMsg
-    when (discardAmount handDiscard == 0)
-      $ for_ (discardThen handDiscard) push
+    -- A hand-size discard that stops early (the hand came back under the limit)
+    -- is complete even with amount left over, so its `then` still runs.
+    let complete = discardAmount handDiscard == 0 || handDiscard.strategy == DiscardDownToHandSize
+    when complete $ for_ (discardThen handDiscard) push
     pure $ a & discardingL .~ Nothing
 
 handleRemoveCardFromHand a@InvestigatorAttrs {..} iid cardId = do

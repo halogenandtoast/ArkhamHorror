@@ -8,7 +8,7 @@ import Arkham.Source
 import Arkham.Target
 import GHC.Records
 
-data DiscardStrategy = DiscardChoose | DiscardRandom | DiscardAll
+data DiscardStrategy = DiscardChoose | DiscardRandom | DiscardAll | DiscardDownToHandSize
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 

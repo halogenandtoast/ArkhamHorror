@@ -44,7 +44,7 @@ import Arkham.Classes.HasGame
 import Arkham.CommitRestriction
 import Arkham.Deck qualified as Deck
 import Arkham.DefeatedBy
-import Arkham.Discard (DiscardStrategy (DiscardChoose))
+import Arkham.Discard (DiscardStrategy (DiscardDownToHandSize))
 import Arkham.Discover
 import Arkham.Draw.Types
 import Arkham.Enemy.Types qualified as Field
@@ -1096,13 +1096,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure a
   Do (CheckHandSize iid) | iid == investigatorId -> do
     excess <- getExcessInHandCount a
-    -- investigatorHand: can only discard cards actually in hand, and only ones
-    -- that are allowed to leave it -- otherwise the re-check below asks again
-    -- for a discard that can never happen.
-    viable <-
-      filterM (fmap (notElem CannotLeaveYourHand) . getModifiers . toCardId)
-        $ filter (isNothing . cdCardSubType . toCardDef)
-        $ onlyPlayerCards investigatorHand
+    viable <- handSizeDiscardable a
 
     {- Through the ordinary discard-from-hand machinery, in one batch of the
     whole excess, rather than a bare choice of `DiscardCard`. That machinery
@@ -1111,6 +1105,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     of the round, and a card that replaces such a discard had nowhere to stand.
     One batch, because a card that speaks of "those cards" means all of them.
 
+    `DiscardDownToHandSize`, not `DiscardChoose`: the rule is to discard *until*
+    you are at your hand size, so the excess is re-read between picks. A card
+    that was itself shrinking the hand (Pelt Shipment) restores the hand size
+    the moment it is discarded, and the check ends there rather than collecting
+    the count it opened with. The loop lives inside the one batch.
+
     The re-check is pushed behind it rather than carried as the discard's
     `then`, which only fires once the discard has actually counted down. A
     replaced discard never counts down, so the `then` would never come and the
@@ -1118,7 +1118,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     when (excess > 0 && notNull viable)
       $ pushAll
         [ Msg.DiscardFromHand
-            $ discardFromHand iid GameSource DiscardChoose (min excess (length viable))
+            $ discardFromHand iid GameSource DiscardDownToHandSize (min excess (length viable))
         , Do (CheckHandSize iid)
         ]
     pure a

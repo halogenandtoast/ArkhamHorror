@@ -22,7 +22,7 @@ instance HasAbilities CrystallizerOfDreams where
   getAbilities (CrystallizerOfDreams a) =
     [ controlled a 1 cardRestriction
         $ freeReaction
-        $ PlayEventDiscarding #after You (EventWithoutModifier RemoveFromGameInsteadOfDiscard)
+        $ PlayEventDiscarding #after You EventWillNotBeRemoved
     ]
    where
     cardRestriction = mwhen (length (assetCardsUnderneath a) >= 5) Never

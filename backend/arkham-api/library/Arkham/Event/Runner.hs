@@ -250,7 +250,10 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
             c <- field EventCard a.id
             push $ Devoured iid' c
             push $ RemovedFromPlay (toSource a)
-          _ -> pushAll [after]
+          -- A placement other than Limbo means the event stayed in play (it
+          -- attached, or sits in a play/threat area), so it is never discarded
+          -- here and the discard-replacement window must not open. #5942
+          _ -> pure ()
     pure a
   After (Revelation _iid (isSource a -> True)) -> do
     result <- liftRunMessage (FinishedEvent a.id) a

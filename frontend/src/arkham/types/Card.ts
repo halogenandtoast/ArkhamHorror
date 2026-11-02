@@ -6,6 +6,16 @@ import { v2Optional } from '@/arkham/parser';
 
 export type Card = PlayerCard | EncounterCard | VengeanceCard;
 
+// A display-only copy for piles whose facedown cards may be referenced.
+// Keep the stored card facedown and preserve its printed side.
+export function referenceCard(card: Card): Card {
+  if (card.tag === 'VengeanceCard') {
+    const inner = card.contents
+    return { ...card, contents: { ...inner, contents: { ...inner.contents, facedown: false } } }
+  }
+  return { ...card, contents: { ...card.contents, facedown: false } }
+}
+
 function cardIsFlipped(card: Card | CardContents) {
   switch (card.tag) {
     case 'CardContents':

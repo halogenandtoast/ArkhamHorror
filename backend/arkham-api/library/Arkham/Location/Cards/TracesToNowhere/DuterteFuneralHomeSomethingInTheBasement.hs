@@ -26,7 +26,7 @@ instance HasAbilities DuterteFuneralHomeSomethingInTheBasement where
   getAbilities (DuterteFuneralHomeSomethingInTheBasement a) =
     extendRevealed
       a
-      [restricted a 1 (Here <> thisIs a LocationWithoutClues) actionAbility, hireACab a 2]
+      [onlyOnce $ restricted a 1 (Here <> thisIs a LocationWithoutClues) actionAbility, hireACab a 2]
 
 instance RunMessage DuterteFuneralHomeSomethingInTheBasement where
   runMessage msg l@(DuterteFuneralHomeSomethingInTheBasement attrs) = runQueueT $ case msg of

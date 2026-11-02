@@ -26,7 +26,7 @@ import { type Enemy } from '@/arkham/types/Enemy';
 import { type ConcealedCard } from '@/arkham/types/ConcealedCard';
 import ConcealedCardView from '@/arkham/components/ConcealedCard.vue';
 import { type Position } from '@/arkham/types/Placement';
-import { type Card, cardId, cardImage } from '@/arkham/types/Card';
+import { type Card, cardId, cardImage, referenceCard } from '@/arkham/types/Card';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import { TokenType } from '@/arkham/types/Token';
 import { ModifierType, Hollow } from '@/arkham/types/Modifier';
@@ -1726,7 +1726,11 @@ const globalStoryKey = (story: StoryAttrs) => [story.art, story.flippedArt].sort
 const globalAssets = computed(() => Object.values(props.game.assets).filter((asset) => 
   asset.placement.tag === "OtherPlacement" && asset.placement.contents === "Global"
 ))
-const cardsUnderScenarioReference = computed(() => props.scenario.cardsUnderScenarioReference)
+const cardsUnderScenarioReference = computed(() =>
+  props.scenario.id.replace(/^c/, '') === '73001'
+    ? props.scenario.cardsUnderScenarioReference.map(referenceCard)
+    : props.scenario.cardsUnderScenarioReference
+)
 /* Tokens sealed on the scenario reference card itself (Traces to Nowhere's codex entries). */
 const scenarioSealedChaosTokens = computed(() => props.scenario.sealedChaosTokens)
 const cardsUnderAgenda = computed(() => props.scenario.cardsUnderAgendaDeck)

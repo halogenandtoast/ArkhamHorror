@@ -517,7 +517,6 @@ azizaSteerHasABoneToPick =
     { cdCardTraits = setFromList [Ally, Detective]
     , cdUnique = True
     , cdCost = Nothing
-    , cdCardType = EncounterAssetType
     , cdSlots = [#ally]
     }
 

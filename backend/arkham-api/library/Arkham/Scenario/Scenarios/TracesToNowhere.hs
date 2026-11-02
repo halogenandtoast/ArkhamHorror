@@ -123,7 +123,7 @@ instance RunMessage TracesToNowhere where
       createEnemyAt_ Enemies.hiredEnforcer merchantDistrict
 
       -- "Aziza Steer has been abducted!"
-      abduct . only =<< fetchCard Assets.azizaSteerHasABoneToPick
+      abduct . only =<< genCard Assets.azizaSteerHasABoneToPick
 
       setAside
         [ Assets.albrechtHusserlRecklessGambler
@@ -231,25 +231,41 @@ instance RunMessage TracesToNowhere where
       where none was remembered runs nothing instead of the wrong culprit. -}
       whenM (remembered AlbrechtIsTheCulprit)
         $ culpritBranch
-          attrs
           "theCulprit2"
           Assets.albrechtHusserlRecklessGambler
           Enemies.albrechtHusserlDesperateGambler
-          Acts.albrechtsGamble
       whenM (remembered LinaOpenedTheDoor)
         $ culpritBranch
-          attrs
           "theCulprit3"
           Assets.linaHusserlTheNextBigThing
           Enemies.linaHusserlVisionsOfHerOwnDemise
-          Acts.linasNightmare
       whenM (remembered EugeneIsNotWhatHeSeems)
         $ culpritBranch
-          attrs
           "theCulprit4"
           Assets.eugenePeelHidingSomething
           Enemies.eugenePeelDoubleCrossingCultist
-          Acts.mrPeelsScheme
+      pure s
+    DoStep 2 msg'@(ScenarioSpecific "theCulprit" _) -> do
+      -- The culprit has left play before selecting the remaining Suspects.
+      selectEach (AssetWithTrait Suspect <> AssetAt (LocationWithTrait Arkham)) abductAsset
+      leads <- getLeadsDeck
+      for_ leads $ push . RemoveCardFromScenarioDeck LeadsDeck
+      abduct leads
+      doStep 3 msg'
+      pure s
+    DoStep 3 (ScenarioSpecific "theCulprit" _) -> do
+      -- Read the pile only after every queued abduction has resolved.
+      gathered <- shuffle =<< getAbductedCards
+      n <- perPlayer 1
+      let (attached, beneath) = splitAt n gathered
+      shambler <- selectJust $ enemyIs Enemies.dimensionalShamblerDraggingThemBelow
+      bonePit <- selectJust $ locationIs Locations.bonePit
+      push $ RemoveFromUnderneath ScenarioTarget gathered
+      placeUnderneath shambler attached
+      placeUnderneath bonePit beneath
+      whenM (remembered AlbrechtIsTheCulprit) $ advanceToActA attrs Acts.albrechtsGamble
+      whenM (remembered LinaOpenedTheDoor) $ advanceToActA attrs Acts.linasNightmare
+      whenM (remembered EugeneIsNotWhatHeSeems) $ advanceToActA attrs Acts.mrPeelsScheme
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of
@@ -315,8 +331,8 @@ is advanced to.
 -}
 culpritBranch
   :: (HasI18n, ReverseQueue m)
-  => ScenarioAttrs -> Scope -> CardDef -> CardDef -> CardDef -> m ()
-culpritBranch attrs sect storyAsset culpritEnemy act = scope sect do
+  => Scope -> CardDef -> CardDef -> m ()
+culpritBranch sect storyAsset culpritEnemy = scope sect do
   flavor $ h "title" >> p "body"
 
   bonePit <- selectJust $ locationIs Locations.bonePit
@@ -324,25 +340,5 @@ culpritBranch attrs sect storyAsset culpritEnemy act = scope sect do
   culpritCard <- fetchCard culpritEnemy
   createEnemyAt_ culpritCard bonePit
 
-  {- "Something abducts each Suspect story asset in play at an Arkham location,
-  and each card in the Leads deck." -}
-  selectEach (AssetWithTrait Suspect <> AssetAt (LocationWithTrait Arkham)) abductAsset
-  leads <- getLeadsDeck
-  for_ leads $ push . RemoveCardFromScenarioDeck LeadsDeck
-  abduct leads
-
-  {- "Gather all abducted cards and shuffle them together. Attach 1 [per player]
-  of these cards, at random, to Dimensional Shambler. Place the remaining cards
-  facedown beneath Bone Pit." -}
-  gathered <- shuffle =<< getAbductedCards
-  n <- perPlayer 1
-  let (attached, beneath) = splitAt n gathered
-  shambler <- selectJust $ enemyIs Enemies.dimensionalShamblerDraggingThemBelow
-  push $ RemoveFromUnderneath ScenarioTarget gathered
-  placeUnderneath shambler attached
-  placeUnderneath bonePit beneath
-
-  {- "Advance directly to act 4a (do not resolve act 3b)." The 1 is the act DECK
-  id, not the stage. 'AdvanceToAct' replaces the current act with this one, so
-  there is no 'AddAct' to do first. -}
-  advanceToActA attrs act
+  -- Defer selection until the culprit's queued removal has completed.
+  doStep 2 $ ScenarioSpecific "theCulprit" Null

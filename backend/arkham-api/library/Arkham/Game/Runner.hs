@@ -3649,6 +3649,23 @@ runGameMessage msg g = case msg of
       Just cost -> do
         pushAll [PutCardIntoPlay iid card mTarget payment ws, CreatedCost (activeCostId cost)]
         pure $ g & (activeCostL %~ insertMap (activeCostId cost) cost)
+  RescuedCard iid card -> do
+    afterRescue <- checkAfter $ Window.CardRescued iid card
+    if cardMatch card CardIsStoryAsset
+      then do
+        -- Create only the temporary entity: CreateAssetAt also removes its card
+        -- from the victory display, where a rescued story asset must remain.
+        aid <- getRandom
+        let asset =
+              overAttrs (\attrs -> attrs {assetPlacement = OutOfPlay VictoryDisplayZone}) $ createAsset card aid
+        pushAll [afterRescue, Do (RescuedCard iid card)]
+        pure $ g & entitiesL . assetsL . at aid ?~ asset
+      else g <$ push afterRescue
+  Do (RescuedCard _ card) -> do
+    for_ (toList $ g ^. entitiesL . assetsL) \asset -> do
+      when (toCardId asset == card.id && asset.placement == OutOfPlay VictoryDisplayZone) do
+        push $ RemoveAsset (toId asset)
+    pure g
   CreateAssetAt assetId card placement -> do
     let asset = createAsset card assetId
     iid <- getActiveInvestigatorId

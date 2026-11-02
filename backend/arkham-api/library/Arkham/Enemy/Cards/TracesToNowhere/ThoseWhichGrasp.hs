@@ -21,7 +21,7 @@ instance HasAbilities ThoseWhichGrasp where
 instance RunMessage ThoseWhichGrasp where
   runMessage msg e@(ThoseWhichGrasp attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      assets <- select $ assetControlledBy iid
+      assets <- select $ assetControlledBy iid <> AssetCanLeavePlayByNormalMeans
       chooseTargetM iid assets abductAsset
       pure e
     _ -> ThoseWhichGrasp <$> liftRunMessage msg attrs

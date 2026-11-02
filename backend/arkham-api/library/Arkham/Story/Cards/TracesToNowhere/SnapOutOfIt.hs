@@ -16,6 +16,7 @@ instance RunMessage SnapOutOfIt where
     ResolveThisStory _ (is attrs -> True) -> do
       culpritParleyBegin attrs #willpower
       pure s
+    BeforeRevealChaosTokens -> SnapOutOfIt <$> culpritParleySpendClues attrs
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       culpritParleySuccess attrs iid
       pure s

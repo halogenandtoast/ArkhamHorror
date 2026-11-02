@@ -16,6 +16,7 @@ instance RunMessage YoureComingWithMe where
     ResolveThisStory _ (is attrs -> True) -> do
       culpritParleyBegin attrs #combat
       pure s
+    BeforeRevealChaosTokens -> YoureComingWithMe <$> culpritParleySpendClues attrs
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       culpritParleySuccess attrs iid
       pure s

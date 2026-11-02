@@ -19,6 +19,7 @@ import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (Difficulty))
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.SkillTest (getSkillTest, isSkillTestSource)
 import Arkham.Helpers.Window (getAsset)
 import Arkham.I18n
 import Arkham.Id
@@ -37,7 +38,8 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Story.Types (StoryAttrs)
+import Arkham.Story.Types (StoryAttrs (..))
+import Arkham.Story.Types qualified as Story
 import Arkham.Target
 import Arkham.Trait (Trait (Arkham, Witness))
 import Arkham.Treachery.CardDefs.TracesToNowhere qualified as Treacheries
@@ -163,11 +165,12 @@ rescue iid = rescueFrom iid ScenarioTarget =<< getAbductedCards
 resolveRescued :: ReverseQueue m => InvestigatorId -> Card -> m ()
 resolveRescued iid card = do
   card' <- setFacedown False card
-  if card'.kind == EncounterAssetType
+  if cardMatch card' CardIsStoryAsset
     then addToVictory_ card'
     else case card' of
       PlayerCard _ -> addToHand iid [card']
       _ -> resolveAsEncounterCard iid card'
+  push $ RescuedCard iid card'
 
 {- | "Something abducts <an asset in play>": the asset leaves play and its card
 joins the abducted pile beneath the scenario reference card.
@@ -181,8 +184,8 @@ abductAsset aid = do
 {- | "Forced - When a story asset would be defeated: Something abducts that asset,
 instead." Printed on agendas 1a, 2a and 3a, so it is built once.
 
-Story assets here are encounter-backed, which is what distinguishes them from a
-player's Ally; the defeat itself is cancelled by cancelling its window batch.
+Story assets are identified by their encounter-set membership, including Aziza
+with her player back; the defeat is cancelled by cancelling its window batch.
 -}
 abductInsteadOfDefeat :: AgendaAttrs -> Int -> Ability
 abductInsteadOfDefeat a n =
@@ -249,27 +252,45 @@ skill: "Choose an investigator at <X>'s location to test <skill> (4). Before
 revealing chaos tokens, investigators at <X>'s location may spend 1-4 clues, as
 a group. For each clue spent this way, reduce the difficulty of this test by 1."
 
-Split across three calls because the clue spend happens before the test and the
-two branches resolve after it; the story module wires them to its own
+The clue spend runs before revealing tokens, and the two result branches run
+after the test; the story module wires them to its own
 'ResolveThisStory', 'PassedThisSkillTest' and 'FailedThisSkillTest'.
 -}
 culpritParleyBegin :: ReverseQueue m => StoryAttrs -> SkillType -> m ()
 culpritParleyBegin attrs skill = do
   culpritOf attrs >>= traverse_ \enemy -> withLocationOf enemy \lid -> do
     here <- select (investigatorAt lid)
-    spendable <- getSpendableClueCount here
     leadChooseOrRunOneM $ targets here \iid -> do
       sid <- getRandom
-      chooseOneM iid $ scenarioI18n do
-        for_ [0 .. min 4 spendable] \n ->
-          countVar n $ labeled "culprit.spendClues" do
-            when (n > 0) $ push $ SpendClues n here
-            beginSkillTest sid iid attrs enemy skill (Fixed $ 4 - n)
+      beginSkillTest sid iid attrs enemy skill (Fixed 4)
+
+{- | Offer the group clue spend after committing cards, before the first reveal.
+Further token draws in the same test must not offer another reduction.
+-}
+culpritParleySpendClues :: ReverseQueue m => StoryAttrs -> m StoryAttrs
+culpritParleySpendClues attrs = do
+  active <- isSkillTestSource attrs
+  if not active || attrs.meta == Bool True
+    then pure attrs
+    else do
+      getSkillTest >>= traverse_ \st -> do
+        culpritOf attrs >>= traverse_ \enemy -> withLocationOf enemy \lid -> do
+          here <- select (investigatorAt lid)
+          spendable <- getSpendableClueCount here
+          when (spendable > 0) do
+            chooseOneM st.investigator $ scenarioI18n do
+              for_ [0 .. min 4 spendable] \n ->
+                countVar n $ labeled "culprit.spendClues" do
+                  when (n > 0) do
+                    push $ SpendClues n here
+                    skillTestModifier st.id attrs st.id (Difficulty (-n))
+      pure $ attrs & Story.metaL .~ Bool True
 
 -- | "flip this card over and move <X> to The Portal (or to any Arkham location, if he is at The Portal)."
 culpritParleySuccess :: ReverseQueue m => StoryAttrs -> InvestigatorId -> m ()
 culpritParleySuccess attrs iid =
   culpritOf attrs >>= traverse_ \enemy -> do
+    push $ StoryMessage $ RemoveStory attrs.id
     atPortal <- enemy <=~> EnemyAt (locationIs Locations.thePortal)
     destinations <-
       select $ if atPortal then LocationWithTrait Arkham else locationIs Locations.thePortal
@@ -281,14 +302,18 @@ investigators, and moves directly to the Dimensional Shambler's location."
 culpritParleyFailure :: ReverseQueue m => StoryAttrs -> InvestigatorId -> m ()
 culpritParleyFailure attrs iid =
   culpritOf attrs >>= traverse_ \enemy -> do
+    push $ StoryMessage $ RemoveStory attrs.id
     initiateEnemyAttack enemy attrs iid
-    selectEach (investigatorEngagedWith enemy) (`disengageEnemy` enemy)
-    shambler <- selectJust $ enemyIs Enemies.dimensionalShamblerDraggingThemBelow
-    withLocationOf shambler $ enemyMoveTo attrs enemy
+    disengageFromAll enemy
+    enemyMoveToMatch attrs enemy
+      $ LocationWithEnemy
+      $ enemyIs Enemies.dimensionalShamblerDraggingThemBelow
 
 -- | The enemy whose back this story is.
 culpritOf :: HasGame m => StoryAttrs -> m (Maybe EnemyId)
-culpritOf attrs = selectOne $ EnemyWithCardId attrs.cardId
+culpritOf attrs = case storyOtherSide attrs of
+  Just (EnemyTarget enemy) -> selectOne $ EnemyWithId enemy
+  _ -> pure Nothing
 
 {- | The chaos token faces currently sealed on the scenario reference card. Act 2b
 branches on which pair of symbols the codex entries sealed there.

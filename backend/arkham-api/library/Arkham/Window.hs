@@ -250,6 +250,7 @@ data WindowType
   | AttachCard (Maybe InvestigatorId) Card Target
   | ActAdvance ActId
   | ActivateAbility InvestigatorId [Window] Ability
+  | CardRescued InvestigatorId Card
   | AddedToVictory (Maybe InvestigatorId) Card
   | AgendaAdvance AgendaId
   | AgendaWouldAdvance AgendaAdvancementReason AgendaId

@@ -33,7 +33,7 @@ import PoolItem from '@/arkham/components/PoolItem.vue'
 import TokenPool from '@/arkham/components/TokenPool.vue'
 import * as Arkham from '@/arkham/types/Location'
 import { TokenType } from '@/arkham/types/Token'
-import { cardFacedown, Card } from '../types/Card'
+import { cardFacedown, referenceCard, Card } from '../types/Card'
 import useHighlighter from '@/composable/useHighlighter'
 import { IsMobile } from '@/arkham/isMobile'
 import { useDbCardStore } from '@/stores/dbCards'
@@ -551,14 +551,19 @@ function onDrop(event: DragEvent) {
   }
 }
 
-const cardsUnderneathToShow = computed(() =>
-  debug.active || isTillinghastEsoterica.value
+const canReferenceAbductedCards = computed(() =>
+  props.game.scenario?.id.replace(/^c/, '') === '73001' &&
+  ['73050', '73052'].includes(props.location.cardCode.replace(/^c/, ''))
+)
+const cardsUnderneathToShow = computed(() => {
+  if (canReferenceAbductedCards.value) return props.location.cardsUnderneath.map(referenceCard)
+  return debug.active || isTillinghastEsoterica.value
     ? props.location.cardsUnderneath
     : playerCardsUnderneath.value
-)
+})
 const hasFacedownCardsUnderneath = computed(() => props.location.cardsUnderneath.some(cardFacedown))
 const canShowCardsUnderneath = computed(() => {
-  if (debug.active) return props.location.cardsUnderneath.length > 0
+  if (debug.active || canReferenceAbductedCards.value) return props.location.cardsUnderneath.length > 0
   if (isTillinghastEsoterica.value) {
     return props.location.cardsUnderneath.length > 0 && !hasFacedownCardsUnderneath.value
   }

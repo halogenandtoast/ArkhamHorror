@@ -1109,6 +1109,7 @@ data Message
     next card you play" needs it to bind itself to that card.
     -}
     NextCardPlayed InvestigatorId Card
+  | RescuedCard InvestigatorId Card
   | CardEnteredPlay InvestigatorId Card
   | CardIsEnteringPlay InvestigatorId Card
   | ResolvedCard InvestigatorId Card

@@ -1111,6 +1111,7 @@ allPlayerAssetCards =
       , alienInstruments
       , --- Traces to Nowhere
         azizaSteerHardboiled
+      , azizaSteerHasABoneToPick
       ]
 
 -- with encounter backs
@@ -1253,7 +1254,6 @@ allEncounterAssetCards =
       , adeleHusserlEstrangedDaughter
       , gladysWashingtonCuriousCoroner
       , charlesTammJustHereToGetPaid
-      , azizaSteerHasABoneToPick
       ]
 
 allSpecialPlayerAssetCards :: Map CardCode CardDef

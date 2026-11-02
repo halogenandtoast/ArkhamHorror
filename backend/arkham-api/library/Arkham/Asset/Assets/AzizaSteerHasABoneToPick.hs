@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Trait (Trait (Otherworld))
 
 newtype AzizaSteerHasABoneToPick = AzizaSteerHasABoneToPick AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -16,13 +17,22 @@ azizaSteerHasABoneToPick = ally AzizaSteerHasABoneToPick Cards.azizaSteerHasABon
 
 instance HasAbilities AzizaSteerHasABoneToPick where
   getAbilities (AzizaSteerHasABoneToPick a) =
-    [ controlled a 1 (exists $ oneOf [HealableAsset (a.ability 1) dt (be a) | dt <- [#damage, #horror]])
+    [ restricted a 2 (exists $ InvestigatorAt $ LocationWithTrait Otherworld)
+        $ forced
+        $ CardRescued #after You (CardWithId a.cardId)
+    , controlled a 1 (exists $ oneOf [HealableAsset (a.ability 1) dt (be a) | dt <- [#damage, #horror]])
         $ freeReaction
         $ AssetDealtDamageOrHorror #after (SourceIsEnemyAttack AnyEnemy) (be a)
     ]
 
 instance RunMessage AzizaSteerHasABoneToPick where
   runMessage msg a@(AzizaSteerHasABoneToPick attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      investigators <- select $ InvestigatorAt $ LocationWithTrait Otherworld
+      chooseTargetM iid investigators \recipient -> do
+        obtainCard attrs
+        takeControlOfAsset recipient attrs
+      pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       exhaustThis attrs
       chooseOneM iid $ withI18n do

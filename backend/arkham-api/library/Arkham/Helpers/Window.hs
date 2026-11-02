@@ -2012,6 +2012,10 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         Window.ChaosTokenReleased target token ->
           andM [targetMatches target targetMatcher, matchChaosToken iid token tokenMatcher]
         _ -> noMatch
+    Matcher.CardRescued timing whoMatcher cardMatcher -> guardTiming timing $ \case
+      Window.CardRescued who card ->
+        andM [matchWho iid who whoMatcher, pure $ cardMatch card cardMatcher]
+      _ -> noMatch
     Matcher.AddedToVictory timing mWhoMatcher cardMatcher -> guardTiming timing $ \case
       Window.AddedToVictory mWho card ->
         andM

@@ -100,6 +100,7 @@ data WindowMatcher
   | AttackOrEffectSpentLastUse Timing SourceMatcher TargetMatcher UseType
   | WouldPayCardCost Timing Who CardMatcher
   | WouldBeShuffledIntoDeck DeckMatcher CardMatcher
+  | CardRescued Timing Who CardMatcher
   | AddedToVictory Timing (Maybe Who) CardMatcher
   | PerformAction Timing Who ActionMatcher
   | PerformedSameTypeOfAction Timing Who ActionMatcher

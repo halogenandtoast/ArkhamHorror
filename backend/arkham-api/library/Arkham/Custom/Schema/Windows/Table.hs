@@ -33,6 +33,7 @@ windowTable =
   [ ("ActAdvances", ["ActAdvance"])
   , ("ActivateAbility", ["ActivateAbility"])
   , ("AddedToVictory", ["AddedToVictory"])
+  , ("CardRescued", ["CardRescued"])
   , ("AddingToCurrentDepth", ["AddingToCurrentDepth"])
   , ("AgendaAdvances", ["AgendaAdvance"])
   , ("AgendaEntersPlay", ["EnterPlay"])

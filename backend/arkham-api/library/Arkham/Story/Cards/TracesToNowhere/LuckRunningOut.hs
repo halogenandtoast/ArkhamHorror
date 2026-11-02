@@ -16,6 +16,7 @@ instance RunMessage LuckRunningOut where
     ResolveThisStory _ (is attrs -> True) -> do
       culpritParleyBegin attrs #agility
       pure s
+    BeforeRevealChaosTokens -> LuckRunningOut <$> culpritParleySpendClues attrs
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       culpritParleySuccess attrs iid
       pure s

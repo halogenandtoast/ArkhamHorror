@@ -29,6 +29,7 @@ instance RunMessage ApproachingShadow where
       placeInThreatArea attrs iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 (drawnCard -> drawn) _ -> do
+      quietCancelCardDraw drawn.card
       enemy <- createEnemy drawn.card (SpawnEngagedWith iid)
       initiateEnemyAttack enemy (attrs.ability 1) iid
       toDiscard (attrs.ability 1) attrs

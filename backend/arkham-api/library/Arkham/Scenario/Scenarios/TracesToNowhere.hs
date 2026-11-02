@@ -198,11 +198,14 @@ instance RunMessage TracesToNowhere where
     ScenarioSpecific "theCulprit" _ -> scope "interlude" do
       flavor $ h "theCulprit1.title" >> p "theCulprit1.body"
 
-      -- "Put each set-aside Otherworld location into play."
-      traverse_ placeLocation_
-        =<< getSetAsideCardsMatching (#location <> CardWithTrait Otherworld)
-
-      bonePit <- selectJust $ locationIs Locations.bonePit
+      {- "Put each set-aside Otherworld location into play." The id comes back from
+      the placement, since the PlaceLocation is still queued here and Bone Pit
+      cannot be selected by name yet. -}
+      otherworld <- getSetAsideCardsMatching (#location <> CardWithTrait Otherworld)
+      placed <- for otherworld \card -> (toCardCode card,) <$> placeLocation card
+      bonePit <-
+        maybe (selectJust $ locationIs Locations.bonePit) pure
+          $ lookup (toCardCode Locations.bonePit) placed
       eachInvestigator \iid -> moveTo attrs iid bonePit
 
       {- "Flip Abductor to its Dimensional Shambler side and move it to Bone Pit

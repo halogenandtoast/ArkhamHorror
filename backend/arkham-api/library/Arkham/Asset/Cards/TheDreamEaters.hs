@@ -105,7 +105,7 @@ crystallizerOfDreams =
   (asset "06024" "Crystallizer of Dreams" 1 Rogue)
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Item, Relic]
-    , cdBondedWith = [(1, "06025")]
+    , cdBondedWith = [(2, "06025")]
     , cdAdditionalCost = Just (ShuffleBondedCost 1 "06025")
     , cdSlots = [#accessory]
     }
@@ -495,7 +495,7 @@ summonedHound1 =
     , cdSlots = [#ally, #arcane]
     , cdAdditionalCost = Just (ShuffleBondedCost 1 "06283")
     , cdLevel = Just 1
-    , cdBondedWith = [(1, "06283")]
+    , cdBondedWith = [(2, "06283")]
     , cdTags = ["dog"]
     }
 

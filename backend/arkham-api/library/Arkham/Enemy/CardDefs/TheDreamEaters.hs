@@ -40,7 +40,7 @@ guardianOfTheCrystallizer =
     , cdEvade = evade 3
     , cdHealth = health 3
     , cdCardTraits = singleton Monster
-    , cdKeywords = setFromList [Keyword.Bonded 1 "06024", Keyword.Hunter]
+    , cdKeywords = setFromList [Keyword.Bonded 2 "06024", Keyword.Hunter]
     }
 
 yourWorstNightmare :: CardDef

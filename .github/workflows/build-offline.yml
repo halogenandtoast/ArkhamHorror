@@ -43,7 +43,7 @@ jobs:
           #   artifact: ArkhamHorror-macos-x86_64
 
           - name: Linux x86_64
-            os: ubuntu-latest
+            os: ubuntu-24.04
             artifact: ArkhamHorror-linux-x86_64
 
           # - name: Linux ARM64

@@ -20,7 +20,7 @@ instance HasAbilities RitualDagger3 where
     [ controlled_ a 1 fightAction_
     , controlled_ a 2
         $ triggered
-          (PlayEventDiscarding #after You (EventWithTrait Spell))
+          (PlayEventDiscarding #after You (EventWithTrait Spell <> EventWillNotBeRemoved))
           (InvestigatorDamageCost (toSource a) You DamageAny 1 <> exhaust a)
     ]
 

@@ -160,7 +160,9 @@
     "butterflySwords5": {
       "doNotFightAgain": "不再次进行攻击",
       "exhaustToDo1Damage": "横置蝴蝶对剑，以造成+1伤害",
-      "fightAgain": "再次进行攻击"
+      "fightAgain": "再次进行攻击",
+      "doNotExhaust": "不横置",
+      "exhaustForDamage": "横置蝴蝶对剑，以造成+1伤害"
     },
     "callForBackup": {
       "rogue": "{'{'}rogue{'}'}卡牌，你可以移动到一个连接地点",
@@ -736,7 +738,7 @@
       "top": "牌库顶{count}张"
     },
     "mysteriesRemain": {
-      "placeClue": "在你的所在地点上放置1个线索(从供应堆拿取。)"
+      "placeClue": "在你的所在地点上放置1个线索*(从供应堆拿取。)*"
     },
     "nathanielCho": {
       "elderSign": "{'{'}elderSign{'}'}:将你弃牌堆的一张事件卡返回你的手牌"
@@ -869,6 +871,10 @@
       "return": "将该_盟友_支援返回其拥有者手中",
       "draw": "其拥有者抽取3张卡牌"
     },
+    "protectingTheAnirniq2": {
+      "returnAssetToOwner": "将该_盟友_支援返回其拥有者手中",
+      "ownerDraws3": "其拥有者抽取3张卡牌"
+    },
     "protectiveIncantation1": {
       "discardProtectiveIncantation": "弃掉保护咒语",
       "spend1Resource": "花费1资源"
@@ -899,7 +905,9 @@
     },
     "ravenousMyconidNurturingStrain4": {
       "heal": "治愈饥饿霉菌上同等数量的伤害和/或恐惧",
-      "moveThatMuch": "从你所在地点的调查员或_盟友_支援身上，将同等数量的伤害和/或恐惧移动到饥饿霉菌上"
+      "moveThatMuch": "从你所在地点的调查员或_盟友_支援身上，将同等数量的伤害和/或恐惧移动到饥饿霉菌上",
+      "healFromMyconid": "治愈饥饿霉菌上同等数量的伤害和/或恐惧",
+      "moveDamageToMyconid": "从你所在地点的调查员或盟友支援身上，将同等数量的伤害和/或恐惧移动到饥饿霉菌上"
     },
     "rexMurphy": {
       "fail": "本次技能检定自动失败，以抽取3张卡牌"
@@ -1272,10 +1280,6 @@
       "fastAdd1Doom": "{'{'}fast{'}'}在鲜血盟约上增加1个毁灭标记：你本次技能检定得到+3{'{'}combat{'}'}(每次检定仅限一次。)",
       "fastAdd1Doom2": "{'{'}fast{'}'}在鲜血盟约上增加1个毁灭标记：你本次技能检定得到+3{'{'}willpower{'}'}(每次检定仅限一次。)"
     },
-    "butterflySwords5": {
-      "doNotExhaust": "不横置",
-      "exhaustForDamage": "横置蝴蝶对剑，以造成+1伤害"
-    },
     "combatTraining1": {
       "spendForCombat": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}",
       "spendForAgility": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
@@ -1430,10 +1434,6 @@
       "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}intellect{'}'}",
       "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}"
     },
-    "protectingTheAnirniq2": {
-      "returnAssetToOwner": "将该_盟友_支援返回其拥有者手中",
-      "ownerDraws3": "其拥有者抽取3张卡牌"
-    },
     "quickdrawHolster4": {
       "fastChooseA": "{'{'}fast{'}'}：选择一张在你游戏区域，只占据1个手部槽位的_枪械_支援，将其附属到快拔枪套，或与已附属的支援交换。附属的支援不占用手部槽位。(附属的支援仅限1张)",
       "fastExhaustQuickdraw": "{'{'}fast{'}'}横置快拔枪套：执行一次已附属支援的攻击行动且无需支付其{'{'}action{'}'}费用"
@@ -1441,8 +1441,6 @@
     "ravenousMyconidNurturingStrain4": {
       "searchForUncannyGrowth": "查找你的绑定卡牌，找出诡异疯长，并将其加入你的手牌",
       "healOrMoveDamageHorror": "治愈饥饿霉菌上同等数量的伤害和/或恐惧，或者从你所在地点的调查员或_盟友_支援身上，将同等数量的伤害和/或恐惧移动到饥饿霉菌上",
-      "healFromMyconid": "治愈饥饿霉菌上同等数量的伤害和/或恐惧",
-      "moveDamageToMyconid": "从你所在地点的调查员或盟友支援身上，将同等数量的伤害和/或恐惧移动到饥饿霉菌上",
       "eitherHealThat": "治愈饥饿霉菌上同等数量的伤害和/或恐惧，或者从你所在地点的调查员或_盟友_支援身上，将同等数量的伤害和/或恐惧移动到饥饿霉菌上",
       "search": "查找你的绑定卡牌，找出诡异疯长，并将其加入你的手牌"
     },

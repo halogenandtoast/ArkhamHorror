@@ -176,7 +176,9 @@
     "butterflySwords5": {
       "doNotFightAgain": "Do not fight again",
       "exhaustToDo1Damage": "Exhaust to do +1 damage",
-      "fightAgain": "Fight again"
+      "fightAgain": "Fight again",
+      "doNotExhaust": "Do not exhaust",
+      "exhaustForDamage": "Exhaust to do +1 damage"
     },
     "callForBackup": {
       "rogue": "{'{'}rogue{'}'} card, you may move to a connecting location",
@@ -811,7 +813,7 @@
       "top": "Top {count}"
     },
     "mysteriesRemain": {
-      "placeClue": "Place 1 clue (from the token bank) on your location"
+      "placeClue": "Place 1 clue *(from the token bank)* on your location"
     },
     "nathanielCho": {
       "elderSign": "{'{'}elderSign{'}'}: return an event from your discard pile to your hand."
@@ -947,6 +949,10 @@
       "return": "Return that asset to its owner's hand",
       "draw": "Its owner draws 3 cards"
     },
+    "protectingTheAnirniq2": {
+      "returnAssetToOwner": "Return that asset to its owner's hand",
+      "ownerDraws3": "Its owner draws 3 cards"
+    },
     "protectiveIncantation1": {
       "discardProtectiveIncantation": "Discard Protective Incantation",
       "spend1Resource": "Spend 1 resource"
@@ -977,7 +983,9 @@
     },
     "ravenousMyconidNurturingStrain4": {
       "heal": "Heal that much damage/horror from Ravenous Myconid",
-      "moveThatMuch": "Move that much damage/horror from investigator or Ally assets at your location to Ravenous Myconid"
+      "moveThatMuch": "Move that much damage/horror from investigator or Ally assets at your location to Ravenous Myconid",
+      "healFromMyconid": "Heal that much damage/horror from Ravenous Myconid",
+      "moveDamageToMyconid": "Move that much damage/horror from investigator or Ally assets at your location to Ravenous Myconid"
     },
     "rexMurphy": {
       "fail": "Automatically fail to draw 3"
@@ -1382,10 +1390,6 @@
       "fastAdd1Doom": "{'{'}fast{'}'} Add 1 doom to Blood Pact: You get +3 {'{'}combat{'}'} for this skill test. (Limit once per test.)",
       "fastAdd1Doom2": "{'{'}fast{'}'} Add 1 doom to Blood Pact: You get +3 {'{'}willpower{'}'} for this skill test. (Limit once per test.)"
     },
-    "butterflySwords5": {
-      "doNotExhaust": "Do not exhaust",
-      "exhaustForDamage": "Exhaust to do +1 damage"
-    },
     "combatTraining1": {
       "spendForCombat": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test.",
       "spendForAgility": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
@@ -1540,10 +1544,6 @@
       "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test.",
       "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
     },
-    "protectingTheAnirniq2": {
-      "returnAssetToOwner": "Return that asset to its owner's hand",
-      "ownerDraws3": "Its owner draws 3 cards"
-    },
     "quickdrawHolster4": {
       "fastChooseA": "{'{'}fast{'}'}: Choose a _Firearm_ asset taking up only 1 hand slot in your play area. Attach it to Quickdraw Holster, or switch it with the attached asset. The attached asset takes up no hand slots. (Limit 1 attached asset.)",
       "fastExhaustQuickdraw": "{'{'}fast{'}'} Exhaust Quickdraw Holster: Perform a fight action on the attached asset without paying its {'{'}action{'}'} cost."
@@ -1551,8 +1551,6 @@
     "ravenousMyconidNurturingStrain4": {
       "searchForUncannyGrowth": "Search your bonded cards for Uncanny Growth and add it to your hand.",
       "healOrMoveDamageHorror": "Either heal that much damage/horror from Ravenous Myconid, or move that much damage/horror from investigators or _Ally_ assets at your location to Ravenous Myconid",
-      "healFromMyconid": "Heal that much damage/horror from Ravenous Myconid",
-      "moveDamageToMyconid": "Move that much damage/horror from investigator or Ally assets at your location to Ravenous Myconid",
       "eitherHealThat": "Either heal that much damage/horror from Ravenous Myconid, or move that much damage/horror from investigators or _Ally_ assets at your location to Ravenous Myconid",
       "search": "Search your bonded cards for Uncanny Growth and add it to your hand."
     },

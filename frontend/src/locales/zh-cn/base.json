@@ -496,7 +496,8 @@
     }
   },
   "questionFilter": {
-    "filter": "过滤"
+    "filter": "过滤",
+    "custom": "定制"
   },
   "resourcesAria": {
     "assignAllHorror": "分配所有恐惧"

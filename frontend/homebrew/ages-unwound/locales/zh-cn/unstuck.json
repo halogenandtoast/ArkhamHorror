@@ -1,0 +1,18 @@
+{
+  "unstuck": {
+    "heading": "冒险IV",
+    "eagerSphinx": {
+      "label": {
+        "gainThreeResources": "获得3资源。"
+      }
+    },
+    "resolutions": {
+      "investigatorDefeat": {
+        "title": "调查员被击败"
+      },
+      "resolution1": {
+        "title": "结局1"
+      }
+    }
+  }
+}

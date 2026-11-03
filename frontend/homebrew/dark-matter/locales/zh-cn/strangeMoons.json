@@ -1,0 +1,15 @@
+{
+  "strangeMoons": {
+    "resolutions": {
+      "noResolution": {
+        "title": "未达成任何结局"
+      },
+      "resolution1": {
+        "title": "结局1"
+      },
+      "resolution2": {
+        "title": "结局2"
+      }
+    }
+  }
+}

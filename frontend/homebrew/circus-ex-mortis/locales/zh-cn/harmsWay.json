@@ -1,0 +1,16 @@
+{
+  "harmsWay": {
+    "heading": "冒险III",
+    "resolutions": {
+      "resolution1": {
+        "title": "结局1"
+      },
+      "resolution2": {
+        "title": "结局2"
+      },
+      "resolution3": {
+        "title": "结局3"
+      }
+    }
+  }
+}

@@ -1150,5 +1150,11 @@
     "marquezSacrificedHerself": "如果马奎兹博士为毒堇谷牺牲了自己，进入_尾声1_。",
     "investigatorsSacrificedThemselves": "如果调查员为山谷牺牲了自己，跳转到_尾声2_。",
     "otherwise": "否则，跳至_尾声3_。"
+  },
+  "difficulty": {
+    "Easy": "只想尽情起舞！",
+    "Standard": "一心享受盛宴！",
+    "Hard": "渴望体无完肤！",
+    "Expert": "一同堕入深渊！"
   }
 }

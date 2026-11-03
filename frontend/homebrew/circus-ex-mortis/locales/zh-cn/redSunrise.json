@@ -1,0 +1,20 @@
+{
+  "redSunrise": {
+    "heading": "冒险VII",
+    "setup": {
+      "checkAgenda": "检查剧本日志。",
+      "checkAct": "检查剧本日志。"
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "未达成任何结局"
+      },
+      "resolution1": {
+        "title": "结局1"
+      },
+      "resolution2": {
+        "title": "结局2"
+      }
+    }
+  }
+}

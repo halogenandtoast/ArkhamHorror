@@ -1,0 +1,25 @@
+{
+  "headings": {
+    "interludes": {
+      "1": "幕间故事 I"
+    }
+  },
+  "additionalRulesAndClarifications": {
+    "alert": {
+      "body": "<p class='basic'>每当调查员在试图躲避一名带有警戒关键词的敌人时技能检定失败，在结算该技能检定带来的所有后果之后，该敌人对进行躲避的调查员执行一次攻击。敌人执行警戒攻击后不被消耗。不论该敌人是否与进行躲避的调查员交战，此类攻击均会发生。</p>"
+    },
+    "storyCards": {
+      "title": "剧情卡",
+      "body": "<p class='basic'>剧情卡牌通常只出现在一张冒险卡的背面，用于补充剧情叙述。在你收到指示要结算一张剧情卡时，阅读该卡上的剧情文本然后结算其游戏文本。</p>"
+    },
+    "swarming": {
+      "title": "蜂拥X"
+    }
+  },
+  "prologue": {
+    "title": "引导故事"
+  },
+  "epilogue": {
+    "title": "尾声故事"
+  }
+}

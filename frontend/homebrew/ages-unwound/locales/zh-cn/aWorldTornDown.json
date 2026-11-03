@@ -1,0 +1,33 @@
+{
+  "aWorldTornDown": {
+    "heading": "冒险III",
+    "rules": {
+      "haunted": {
+        "body": "<p class='basic'>闹鬼是出现在某些地点卡牌上的一种新能力。每当调查员在调查一个地点时技能检定失败，在结算该技能检定带来的所有后果后，该调查员必须结算该地点上的所有“闹鬼 –”能力。</p><p class='basic'>卡牌效果指向的“闹鬼”地点即为带有至少一个“闹鬼 –”能力的地点(包括但不限于打印有“闹鬼 –”字样的地点)。</p>"
+      }
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "未达成任何结局"
+      },
+      "resolution1": {
+        "title": "结局1",
+        "checkCampaignLog": "<p class='basic'>检查冒险日志：</p>"
+      },
+      "resolution2": {
+        "title": "结局2"
+      },
+      "resolution3": {
+        "title": "结局3"
+      },
+      "resolution4": {
+        "title": "结局4",
+        "loseTheCampaign": "调查失败。"
+      },
+      "resolution5": {
+        "title": "结局5",
+        "chaosTokens": "在混乱袋中增加2个{elderThing}标记。"
+      }
+    }
+  }
+}

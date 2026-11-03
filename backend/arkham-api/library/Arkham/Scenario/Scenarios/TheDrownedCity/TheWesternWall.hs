@@ -137,6 +137,7 @@ instance RunMessage TheWesternWall where
       pure s
     Setup -> runScenarioSetup TheWesternWall attrs do
       headedWest <- getHasRecord TheExpeditionHeadedWest
+      creatureWasDefeated <- getHasRecord TheCreatureWasDefeated
       -- Bind the scope name rather than a partially applied `scope`, which the
       -- monomorphism restriction would pin to a single builder type.
       let version = if headedWest then "west" else "east" :: Text
@@ -151,10 +152,20 @@ instance RunMessage TheWesternWall where
             scope version $ li "placeUpperWalkways"
             scope version $ li "placeBottomWalkways"
             li $ if headedWest then "beginAtWesternWall" else "beginAtObsidianFoundations"
-          li "setCardsAside"
-          li "setAsideCoralStarSpawn"
-          scope version $ li "buildActDeck"
-          scope version $ li "chooseExpeditionAsset"
+          -- The two versions order these bullets differently, and v.II alone
+          -- carries the campaign-log check, so each list is written out in full.
+          if headedWest
+            then do
+              scope version $ li "setCardsAside"
+              li "setAsideCoralStarSpawn"
+              scope version $ li "buildActDeck"
+              scope version $ li "chooseExpeditionAsset"
+            else do
+              scope version $ li "buildActDeck"
+              li.validate creatureWasDefeated "removeTheInescapable"
+              scope version $ li "setCardsAside"
+              li "setAsideCoralStarSpawn"
+              scope version $ li "chooseExpeditionAsset"
           li.nested "addFloodTokens" do
             scope version $ li "floodLevels"
             scope version $ li "fullyFloodLevels"
@@ -178,11 +189,17 @@ instance RunMessage TheWesternWall where
       whenHasRecord TheExpeditionHelpedThePilgrim $ placeDoomOnAgenda 1
 
       setAside
-        [ Enemies.theInescapable
-        , Enemies.huntingParasite
+        [ Enemies.huntingParasite
         , Treacheries.seafloorFrieze
         , Locations.underseaVault
         ]
+
+      -- v.I sets the enemy aside. v.II leaves it in the encounter deck with the
+      -- Still Behind You copies, or removes the whole set if the creature is dead.
+      if headedWest
+        then setAside [Enemies.theInescapable]
+        else when creatureWasDefeated do
+          removeCards =<< amongGathered (CardFromEncounterSet Set.TheInescapable)
       setAside =<< amongGathered (cardIs Enemies.coralStarSpawn)
       removeCards =<< amongGathered (CardFromEncounterSet Set.StarSpawn)
 

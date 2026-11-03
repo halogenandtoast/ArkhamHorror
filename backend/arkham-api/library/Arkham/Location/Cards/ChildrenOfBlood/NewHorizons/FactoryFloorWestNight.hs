@@ -14,7 +14,7 @@ newtype FactoryFloorWestNight = FactoryFloorWestNight LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 factoryFloorWestNight :: LocationCard FactoryFloorWestNight
-factoryFloorWestNight = symbolLabel $ location FactoryFloorWestNight Cards.factoryFloorWestNight 2 (PerPlayer 1)
+factoryFloorWestNight = symbolLabel $ location FactoryFloorWestNight Cards.factoryFloorWestNight 1 (PerPlayer 1)
 
 instance HasAbilities FactoryFloorWestNight where
   getAbilities (FactoryFloorWestNight a) =

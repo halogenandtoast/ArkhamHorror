@@ -28,7 +28,10 @@ instance HasModifiersFor DimensionalShamblerDraggingThemBelow where
 
 instance HasAbilities DimensionalShamblerDraggingThemBelow where
   getAbilities (DimensionalShamblerDraggingThemBelow a) =
-    extend1 a $ mkAbility a 1 $ forced $ EnemyDealtDamage #after AnyDamageEffect (be a) AnySource
+    extend1 a
+      $ restricted a 1 (thisExists a EnemyWithAnyCardsUnderneath)
+      $ forced
+      $ EnemyDealtDamage #after AnyDamageEffect (be a) AnySource
 
 instance RunMessage DimensionalShamblerDraggingThemBelow where
   runMessage msg e@(DimensionalShamblerDraggingThemBelow attrs) = runQueueT $ case msg of
@@ -37,6 +40,6 @@ instance RunMessage DimensionalShamblerDraggingThemBelow where
       for_ (listToMaybe attached) \card -> do
         push $ RemoveFromUnderneath (toTarget attrs) [card]
         push $ RemovedFromGame card
-      healDamage attrs (attrs.ability 1) 2
+        healDamage attrs (attrs.ability 1) 2
       pure e
     _ -> DimensionalShamblerDraggingThemBelow <$> liftRunMessage msg attrs

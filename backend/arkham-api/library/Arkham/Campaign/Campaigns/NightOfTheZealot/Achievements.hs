@@ -33,7 +33,7 @@ import Arkham.Game.Base
 import Arkham.Game.Settings (activeUltimatumsAndBoons)
 import Arkham.Helpers.Campaign (stored)
 import Arkham.Helpers.Modifiers (getFullModifiers)
-import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
+import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isFighting)
 import Arkham.Id
 import Arkham.Location.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Locations
 import Arkham.Location.CardDefs.ReturnToNightOfTheZealot.ReturnToTheMidnightMasks qualified as Locations
@@ -121,22 +121,25 @@ runNotzAchievements msg = whenEligibleCampaign $ case msg of
       bumpCounter uniqueCultistsDefeatedKey 1
 
     when (cardDef == Enemies.ghoulPriest) do
-      -- "The Zealot's Revenge": Lita Chantler's reaction (+1 damage while the
-      -- attack's skill test resolves) deals the killing blow, i.e. without her
-      -- bonus the total damage would not have reached his (modified) health.
-      getSkillTestInvestigator >>= traverse_ \iid -> do
-        litas <- select $ assetIs Assets.litaChantler
-        mods <- getFullModifiers iid
-        let litaBonus =
-              sum
-                [ n
-                | Modifier {modifierSource = src, modifierType = DamageDealt n} <- mods
-                , maybe False (`elem` litas) src.asset
-                ]
-        when (litaBonus > 0) do
-          dmg <- field EnemyDamage eid
-          mHealth <- field EnemyHealth eid
-          when (maybe False (\h -> dmg - litaBonus < h) mHealth) do
+      -- "The Zealot's Revenge": the Ghoul Priest is defeated by an attack that
+      -- Lita Chantler's reaction boosted (+1 damage while the attack's skill
+      -- test resolves). Her bonus arrives in the same lump of damage as the
+      -- weapon's, so there is no "her" point to isolate -- the attack she
+      -- boosted IS the killing blow. A but-for test ("without her bonus the
+      -- damage would not have reached his health") also rejects every overkill,
+      -- since excess damage lands on the enemy uncapped, so it only ever fired
+      -- when the fatal attack landed exactly on his health (#5948).
+      whenM (isFighting eid) do
+        getSkillTestInvestigator >>= traverse_ \iid -> do
+          litas <- select $ assetIs Assets.litaChantler
+          mods <- getFullModifiers iid
+          let litaBonus =
+                sum
+                  [ n
+                  | Modifier {modifierSource = src, modifierType = DamageDealt n} <- mods
+                  , maybe False (`elem` litas) src.asset
+                  ]
+          when (litaBonus > 0) do
             earnAchievement $ NightOfTheZealotAchievement TheZealotsRevenge
       -- "Do You Get It Now?": Billy Cooper's Forced ability triggers off any
       -- Monster defeated at his location; the achievement wants specifically

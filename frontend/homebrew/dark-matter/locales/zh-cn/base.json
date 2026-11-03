@@ -31,6 +31,20 @@
   "electricNightmare": {
     "label": {
       "noInvestigatorAddsK2": "没有调查员将其加入自己的牌组"
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "未达成任何结局"
+      },
+      "resolution1": {
+        "title": "结局1"
+      },
+      "resolution2": {
+        "title": "结局2"
+      },
+      "resolution3": {
+        "title": "结局3"
+      }
     }
   },
   "desynchronization": {
@@ -70,5 +84,8 @@
     "hasturAndTassildaAreImprisonedInCarcosaOnceMore": "哈斯塔与塔西尔达再次囚禁于卡尔克萨，宇宙战胜了注定的结局……暂时如此。",
     "impendingDoom": "迫近的毁灭",
     "memories": "记忆"
+  },
+  "difficulty": {
+    "Expert": "我要疯到人类无法理解"
   }
 }

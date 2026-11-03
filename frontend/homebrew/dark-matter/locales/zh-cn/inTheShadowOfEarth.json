@@ -1,0 +1,24 @@
+{
+  "inTheShadowOfEarth": {
+    "resolutions": {
+      "noResolution": {
+        "title": "未达成任何结局"
+      },
+      "resolution1": {
+        "title": "结局1"
+      },
+      "resolution2": {
+        "title": "结局2"
+      },
+      "resolution3": {
+        "title": "结局3"
+      },
+      "resolution4": {
+        "title": "结局4"
+      },
+      "resolution5": {
+        "title": "结局5"
+      }
+    }
+  }
+}

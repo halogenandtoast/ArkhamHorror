@@ -1,0 +1,21 @@
+{
+  "scenario": {
+    "setup": {
+      "shuffleRemainder": "混洗剩余遭遇卡牌来创建遭遇牌堆。"
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "结局1"
+      },
+      "resolution2": {
+        "title": "结局2"
+      },
+      "resolution3": {
+        "title": "结局3"
+      },
+      "resolution4": {
+        "title": "结局4"
+      }
+    }
+  }
+}

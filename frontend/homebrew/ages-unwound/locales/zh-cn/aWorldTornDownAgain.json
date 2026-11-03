@@ -1,0 +1,19 @@
+{
+  "aWorldTornDownAgain": {
+    "heading": "冒险VI",
+    "setup": {
+      "checkCampaignLog": "检查冒险日志："
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "未达成任何结局"
+      },
+      "resolution1": {
+        "title": "结局1"
+      },
+      "resolution2": {
+        "title": "结局2"
+      }
+    }
+  }
+}

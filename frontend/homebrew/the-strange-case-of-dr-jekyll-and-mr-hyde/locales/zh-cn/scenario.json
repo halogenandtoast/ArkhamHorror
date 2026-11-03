@@ -1,0 +1,12 @@
+{
+  "scenario": {
+    "resolutions": {
+      "resolution1": {
+        "title": "结局1"
+      },
+      "resolution2": {
+        "title": "结局2"
+      }
+    }
+  }
+}

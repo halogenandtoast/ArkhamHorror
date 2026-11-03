@@ -150,5 +150,11 @@
   },
   "artifactsEarned": {
     "title": "获得的神器"
+  },
+  "difficulty": {
+    "Easy": "我就随波逐流",
+    "Standard": "我只沉眠入梦",
+    "Hard": "我偏沉入深海",
+    "Expert": "我愿去拉莱耶"
   }
 }

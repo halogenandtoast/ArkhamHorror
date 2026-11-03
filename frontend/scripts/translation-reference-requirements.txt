@@ -1,0 +1,2 @@
+polib==1.2.0
+opencc-python-reimplemented==0.1.7

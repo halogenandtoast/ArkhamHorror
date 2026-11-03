@@ -1,0 +1,12 @@
+{
+  "theTatterdemalion": {
+    "resolutions": {
+      "noResolution": {
+        "title": "未达成任何结局"
+      },
+      "resolution1": {
+        "title": "结局1"
+      }
+    }
+  }
+}

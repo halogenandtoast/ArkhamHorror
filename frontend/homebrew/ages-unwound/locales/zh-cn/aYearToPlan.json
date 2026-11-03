@@ -1,0 +1,13 @@
+{
+  "aYearToPlan": {
+    "heading": "冒险V",
+    "resolutions": {
+      "noResolution": {
+        "title": "未达成任何结局"
+      },
+      "resolution1": {
+        "title": "结局1"
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "scenario": {
+    "ichabodCrane": {
+      "label": {
+        "drawCard": "抽取1张卡牌。"
+      }
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "结局1"
+      },
+      "resolution2": {
+        "title": "结局2"
+      }
+    }
+  }
+}

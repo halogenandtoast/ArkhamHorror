@@ -1,0 +1,18 @@
+{
+  "scenario": {
+    "setup": {
+      "shuffleRemainder": "混洗剩余遭遇卡牌来创建遭遇牌堆。"
+    },
+    "resolutions": {
+      "label": {
+        "healMentalTrauma": "治愈1点精神创伤"
+      },
+      "investigatorDefeat": {
+        "title": "调查员被击败"
+      },
+      "resolution1": {
+        "title": "结局1"
+      }
+    }
+  }
+}

@@ -1,0 +1,4619 @@
+{
+  "repository": "https://github.com/zzorba/arkham-cards-data",
+  "revision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+  "policy": "Fill untranslated messages only; zh-cn first, zh converted with OpenCC t2s as fallback.",
+  "messages": [
+    {
+      "file": "frontend/homebrew/against-the-wendigo/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "epilogue",
+        "intro"
+      ],
+      "runtimePath": [
+        "againstTheWendigo",
+        "scenario",
+        "epilogue",
+        "intro"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "64186d3a47fa48395ca92bc8cf24deb55eb59497bbfc14753195928ef292da66",
+      "translationSha256": "5f84ce44863ac0cf9a944c2a4f99ae379568efe90b498b31cdba235e1e0add68",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/epilogue.po",
+          "line": 16,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/against-the-wendigo/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "prologue",
+        "title"
+      ],
+      "runtimePath": [
+        "againstTheWendigo",
+        "scenario",
+        "prologue",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "eb7f661e0d35afaf03a56278d2f5fa34012445f759914e0bd818612fd7411a2b",
+      "translationSha256": "e1ab8443fab917adb8c4a23bdaa158332c9d340b1a6abef1430deb302ac00743",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/dwl_prologue.po",
+          "line": 16,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/against-the-wendigo/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "againstTheWendigo",
+        "scenario",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "b5af1ed2edd7c8863dccb97fec9e78c8ab581218fcf9c6d3a74858ee6f0296c3",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/the_last_king.po",
+          "line": 108,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/against-the-wendigo/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "againstTheWendigo",
+        "scenario",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/against-the-wendigo/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "againstTheWendigo",
+        "scenario",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/against-the-wendigo/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "runtimePath": [
+        "againstTheWendigo",
+        "scenario",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "c9158bc35392dc53bd939470b100e93830091d2f83fde4b5f47fde2070cf4f1f",
+      "translationSha256": "db85a990ae45ed86358996855bda2ec22d5f7c6fbec0e98f75d907cf8a13a3da",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 138,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/against-the-wendigo/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution4",
+        "title"
+      ],
+      "runtimePath": [
+        "againstTheWendigo",
+        "scenario",
+        "resolutions",
+        "resolution4",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "505dd23376372edfc8499980b47517e45143ebbb6d12f57de7412b9305a2b3c0",
+      "translationSha256": "d98b073702c14e1010aa13bfeb252169cf088f7d15290592051c4e2f2c8b4cdf",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/extracurricular_activity.po",
+          "line": 73,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aWorldTornDown.json",
+      "parts": [
+        "aWorldTornDown",
+        "heading"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aWorldTornDown",
+        "heading"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "f486d709cd0caa6d987b80718b4ca5a2ce31622042e23960f6391c13a7916f97",
+      "translationSha256": "c92eba0394d39277e1db136fca56beab2e09b143e7a57f23402ceb30518c7a6f",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/essex_county_express.po",
+          "line": 95,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aWorldTornDown.json",
+      "parts": [
+        "aWorldTornDown",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aWorldTornDown",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "b5af1ed2edd7c8863dccb97fec9e78c8ab581218fcf9c6d3a74858ee6f0296c3",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/the_last_king.po",
+          "line": 108,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aWorldTornDown.json",
+      "parts": [
+        "aWorldTornDown",
+        "resolutions",
+        "resolution1",
+        "checkCampaignLog"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aWorldTornDown",
+        "resolutions",
+        "resolution1",
+        "checkCampaignLog"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "bb2fe23cedb9867287b26bbdd6a34d7d2f7bafbfceee4019a6c162dadbd31e89",
+      "translationSha256": "9e9cb343ee1cc64f689ef90fb1851119166ed7fadf6ca968383202fa4aaeddc6",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tic/a_light_in_the_fog.po",
+          "line": 67,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aWorldTornDown.json",
+      "parts": [
+        "aWorldTornDown",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aWorldTornDown",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aWorldTornDown.json",
+      "parts": [
+        "aWorldTornDown",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aWorldTornDown",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aWorldTornDown.json",
+      "parts": [
+        "aWorldTornDown",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aWorldTornDown",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "c9158bc35392dc53bd939470b100e93830091d2f83fde4b5f47fde2070cf4f1f",
+      "translationSha256": "db85a990ae45ed86358996855bda2ec22d5f7c6fbec0e98f75d907cf8a13a3da",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 138,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aWorldTornDown.json",
+      "parts": [
+        "aWorldTornDown",
+        "resolutions",
+        "resolution4",
+        "loseTheCampaign"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aWorldTornDown",
+        "resolutions",
+        "resolution4",
+        "loseTheCampaign"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "e3aad37d98e94493588ec041027756ea12cde211540c34b13c748cfe4e29f129",
+      "translationSha256": "1eead0029e3b955afe67c4ac2c2ed72ad3ded981b4f18e0c40e813dc99301025",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/lost_in_time_and_space.po",
+          "line": 63,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aWorldTornDown.json",
+      "parts": [
+        "aWorldTornDown",
+        "resolutions",
+        "resolution4",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aWorldTornDown",
+        "resolutions",
+        "resolution4",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "505dd23376372edfc8499980b47517e45143ebbb6d12f57de7412b9305a2b3c0",
+      "translationSha256": "d98b073702c14e1010aa13bfeb252169cf088f7d15290592051c4e2f2c8b4cdf",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/extracurricular_activity.po",
+          "line": 73,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aWorldTornDown.json",
+      "parts": [
+        "aWorldTornDown",
+        "resolutions",
+        "resolution5",
+        "chaosTokens"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aWorldTornDown",
+        "resolutions",
+        "resolution5",
+        "chaosTokens"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8545e811db4b179c7229c9a702d6ae796f5119835610b1428ba1aa55488df13f",
+      "translationSha256": "d704cfe742a3d03abd0792022137474894ea7fe14e9547799796b5bd770163dd",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/curtain_call.po",
+          "line": 91,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aWorldTornDown.json",
+      "parts": [
+        "aWorldTornDown",
+        "resolutions",
+        "resolution5",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aWorldTornDown",
+        "resolutions",
+        "resolution5",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "2ba1b62a9489aefeaa363d5544e646c0922f433b7bc2fd8d654c1e1899158ac7",
+      "translationSha256": "14d0ae8ae2ea25e76a6d1d9d255139ade8cbd562e95fec84a673b04ab02f59ed",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/dim_carcosa.po",
+          "line": 149,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aWorldTornDown.json",
+      "parts": [
+        "aWorldTornDown",
+        "rules",
+        "haunted",
+        "body"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aWorldTornDown",
+        "rules",
+        "haunted",
+        "body"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "f24774c2a293c92dc48add32e97b8fef5fb3d997b29cbabeabe996ad384ce820",
+      "translationSha256": "45a1e3f74c106a4fd5b8a7eac84dfb221d1ea8118adace8d260c4d0b062a6699",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/side/film_fatale.po",
+          "line": 14,
+          "matchKind": "aligned-fragment",
+          "convertedToSimplified": false
+        },
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/side/film_fatale.po",
+          "line": 14,
+          "matchKind": "aligned-fragment",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aWorldTornDownAgain.json",
+      "parts": [
+        "aWorldTornDownAgain",
+        "heading"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aWorldTornDownAgain",
+        "heading"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "5634e02a4633e38c956c0bc3c3f9cb006273e10e7456427cfabeb8a82f3d612a",
+      "translationSha256": "c37eab923ffb0680d329ea8202c6f66b6efe7bb8e00a065414b154f5cc693c19",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/where_doom_awaits.po",
+          "line": 99,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aWorldTornDownAgain.json",
+      "parts": [
+        "aWorldTornDownAgain",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aWorldTornDownAgain",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "b5af1ed2edd7c8863dccb97fec9e78c8ab581218fcf9c6d3a74858ee6f0296c3",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/the_last_king.po",
+          "line": 108,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aWorldTornDownAgain.json",
+      "parts": [
+        "aWorldTornDownAgain",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aWorldTornDownAgain",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aWorldTornDownAgain.json",
+      "parts": [
+        "aWorldTornDownAgain",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aWorldTornDownAgain",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aWorldTornDownAgain.json",
+      "parts": [
+        "aWorldTornDownAgain",
+        "setup",
+        "checkCampaignLog"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aWorldTornDownAgain",
+        "setup",
+        "checkCampaignLog"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "06493925a0508404f01a6d6b86cb59d923f1ab0ca052eaae802cd2b15ad17737",
+      "translationSha256": "5e5a51f7985a4bd98de9d8517c71ffa0134c77d44fe4976f2a1e0e7efe66a5e3",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tic/a_light_in_the_fog.po",
+          "line": 67,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aYearToPlan.json",
+      "parts": [
+        "aYearToPlan",
+        "heading"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aYearToPlan",
+        "heading"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "7340fce443de57aaf0142d0874a15b5eb4f6cf62a27a651446d6054b37dceb16",
+      "translationSha256": "2b59739266b364090a6caaf9d2c09161ff2f15d2c492545e6e7fd4aff1d71fad",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/undimensioned_and_unseen.po",
+          "line": 113,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aYearToPlan.json",
+      "parts": [
+        "aYearToPlan",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aYearToPlan",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "b5af1ed2edd7c8863dccb97fec9e78c8ab581218fcf9c6d3a74858ee6f0296c3",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/the_last_king.po",
+          "line": 108,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/aYearToPlan.json",
+      "parts": [
+        "aYearToPlan",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "aYearToPlan",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/base.json",
+      "parts": [
+        "additionalRulesAndClarifications",
+        "alert",
+        "body"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "additionalRulesAndClarifications",
+        "alert",
+        "body"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "445d064524c4ed2c1f779c07f09e98655601e705e82e096b8f8fb6abd747d3ea",
+      "translationSha256": "04dc6bd4efe4f2455f174389280c8332ef0b7b56999ef1700db785e30b6addd4",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/side/meddling_of_meowlathotep.po",
+          "line": 31,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/base.json",
+      "parts": [
+        "additionalRulesAndClarifications",
+        "storyCards",
+        "body"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "additionalRulesAndClarifications",
+        "storyCards",
+        "body"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "d2d0afa68264b4a4472e2de9e5b3a628435707220898e4b64122be4a4f637371",
+      "translationSha256": "e461d5051fc31f68d0cafaaa0a0cf9174dea2148ab88212942d9836c6783a556",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tdea/campaign.po",
+          "line": 41,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/base.json",
+      "parts": [
+        "additionalRulesAndClarifications",
+        "storyCards",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "additionalRulesAndClarifications",
+        "storyCards",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "23f055f8f81d0c3692013a6ce8c9cb68fab08f127212ab3b42a96d7ef81199ea",
+      "translationSha256": "ea631654dc7ba98bc452fba13116e3cec6e213adb43f4a1a6ac85cad4acddd98",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/campaign.po",
+          "line": 59,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/base.json",
+      "parts": [
+        "additionalRulesAndClarifications",
+        "swarming",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "additionalRulesAndClarifications",
+        "swarming",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "6e3e6ea144b9f29957f7ac4e62ae7736fff0d40be8999ea5bf9d5f443494d19f",
+      "translationSha256": "62f47e3330e6ece792c6e66f8b2d4afa82ece038ad2e4b63bb316231b7bf010b",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/side/war_of_the_outer_gods.po",
+          "line": 136,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/base.json",
+      "parts": [
+        "epilogue",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "epilogue",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "64186d3a47fa48395ca92bc8cf24deb55eb59497bbfc14753195928ef292da66",
+      "translationSha256": "5f84ce44863ac0cf9a944c2a4f99ae379568efe90b498b31cdba235e1e0add68",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/epilogue.po",
+          "line": 16,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/base.json",
+      "parts": [
+        "headings",
+        "interludes",
+        "1"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "headings",
+        "interludes",
+        "1"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "4172c6de8aea6518ca18ad204e2c1de508da5e3f3c6ec23e4d48767b7004046c",
+      "translationSha256": "d4169ed0b93466517583b915876a338b7d5c0b7eb8f485d5317e05392e70fbd9",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/armitages_fate.po",
+          "line": 49,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/base.json",
+      "parts": [
+        "prologue",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "prologue",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "eb7f661e0d35afaf03a56278d2f5fa34012445f759914e0bd818612fd7411a2b",
+      "translationSha256": "e1ab8443fab917adb8c4a23bdaa158332c9d340b1a6abef1430deb302ac00743",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/dwl_prologue.po",
+          "line": 16,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/nightOfFire.json",
+      "parts": [
+        "nightOfFire",
+        "heading"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "nightOfFire",
+        "heading"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "6b11b06728bdb76ae3b49deb79d99b7c5d94d41687a43a32ddfc8b03bd457534",
+      "translationSha256": "2525a3b097567e73d34fab71597c064b775773c4715de37e9550d0ddf2132202",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/notz/torch.po",
+          "line": 73,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/nightOfFire.json",
+      "parts": [
+        "nightOfFire",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "nightOfFire",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "b5af1ed2edd7c8863dccb97fec9e78c8ab581218fcf9c6d3a74858ee6f0296c3",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/the_last_king.po",
+          "line": 108,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/nightOfFire.json",
+      "parts": [
+        "nightOfFire",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "nightOfFire",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/nightOfFire.json",
+      "parts": [
+        "nightOfFire",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "nightOfFire",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/nightOfFire.json",
+      "parts": [
+        "nightOfFire",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "nightOfFire",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "c9158bc35392dc53bd939470b100e93830091d2f83fde4b5f47fde2070cf4f1f",
+      "translationSha256": "db85a990ae45ed86358996855bda2ec22d5f7c6fbec0e98f75d907cf8a13a3da",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 138,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/nightOfFire.json",
+      "parts": [
+        "nightOfFire",
+        "resolutions",
+        "resolution4",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "nightOfFire",
+        "resolutions",
+        "resolution4",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "505dd23376372edfc8499980b47517e45143ebbb6d12f57de7412b9305a2b3c0",
+      "translationSha256": "d98b073702c14e1010aa13bfeb252169cf088f7d15290592051c4e2f2c8b4cdf",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/extracurricular_activity.po",
+          "line": 73,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/theMyriadGentleman.json",
+      "parts": [
+        "theMyriadGentleman",
+        "heading"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "theMyriadGentleman",
+        "heading"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "190d057996c32520510b66d205c5f662034f2ec06504a4988239f7fe22525f0d",
+      "translationSha256": "90798615caf48899192b3cdade841682e0c7485aae0c010f3d454571d2377ef2",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/the_miskatonic_museum.po",
+          "line": 101,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/theMyriadGentleman.json",
+      "parts": [
+        "theMyriadGentleman",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "theMyriadGentleman",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "b5af1ed2edd7c8863dccb97fec9e78c8ab581218fcf9c6d3a74858ee6f0296c3",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/the_last_king.po",
+          "line": 108,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/theMyriadGentleman.json",
+      "parts": [
+        "theMyriadGentleman",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "theMyriadGentleman",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/theMyriadGentleman.json",
+      "parts": [
+        "theMyriadGentleman",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "theMyriadGentleman",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/timeRunsOut.json",
+      "parts": [
+        "timeRunsOut",
+        "heading"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "timeRunsOut",
+        "heading"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "85d054b4747fad0bca0d38afa005e26d100df70eb49bfd3c0f876d3cc0260778",
+      "translationSha256": "58d2a3f9e15ecc181050312e4f656a54ba5c66c6fdc5c7e4995227066c6f82c2",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/lost_in_time_and_space.po",
+          "line": 118,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/timeRunsOut.json",
+      "parts": [
+        "timeRunsOut",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "timeRunsOut",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "b5af1ed2edd7c8863dccb97fec9e78c8ab581218fcf9c6d3a74858ee6f0296c3",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/the_last_king.po",
+          "line": 108,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/timeRunsOut.json",
+      "parts": [
+        "timeRunsOut",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "timeRunsOut",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/timeRunsOut.json",
+      "parts": [
+        "timeRunsOut",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "timeRunsOut",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/timeRunsOut.json",
+      "parts": [
+        "timeRunsOut",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "timeRunsOut",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "c9158bc35392dc53bd939470b100e93830091d2f83fde4b5f47fde2070cf4f1f",
+      "translationSha256": "db85a990ae45ed86358996855bda2ec22d5f7c6fbec0e98f75d907cf8a13a3da",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 138,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/unstuck.json",
+      "parts": [
+        "unstuck",
+        "eagerSphinx",
+        "label",
+        "gainThreeResources"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "unstuck",
+        "eagerSphinx",
+        "label",
+        "gainThreeResources"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "26682e3ae0dc2af2f44397d7d054bf82da19db35af9bacf0173b9854c3e42924",
+      "translationSha256": "4c166d11ff47e01fedfe9b19b9b119a3d239d63b898deb7a17b022c23674c564",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/fhv/01_prologue.po",
+          "line": 274,
+          "matchKind": "whole",
+          "convertedToSimplified": true
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/unstuck.json",
+      "parts": [
+        "unstuck",
+        "heading"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "unstuck",
+        "heading"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8b69ba9ad7b95ed1df379f3f3e7a4437ab26604befaa46b20b9dd533cde53315",
+      "translationSha256": "54b12651c6edd0db31c3746aeee92321147c3bc705e5e0e8611b36d7266ba83b",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 144,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/unstuck.json",
+      "parts": [
+        "unstuck",
+        "resolutions",
+        "investigatorDefeat",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "unstuck",
+        "resolutions",
+        "investigatorDefeat",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "b05fec1d8cb3549d0ed9ab7bf67c1ca82ee71a37ea765aa21c1acb9e96778d27",
+      "translationSha256": "bbbe831713539baf19a8c08852c1af4dc7bf051456df81b559e084c7cf3a7e9c",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/essex_county_express.po",
+          "line": 78,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/ages-unwound/locales/zh-cn/unstuck.json",
+      "parts": [
+        "unstuck",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "agesUnwound",
+        "unstuck",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/and-then-there-were-none/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "andThenThereWereNone",
+        "scenario",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/and-then-there-were-none/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "andThenThereWereNone",
+        "scenario",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/allPointsWest.json",
+      "parts": [
+        "allPointsWest",
+        "heading"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "allPointsWest",
+        "heading"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8b69ba9ad7b95ed1df379f3f3e7a4437ab26604befaa46b20b9dd533cde53315",
+      "translationSha256": "54b12651c6edd0db31c3746aeee92321147c3bc705e5e0e8611b36d7266ba83b",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 144,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/allPointsWest.json",
+      "parts": [
+        "allPointsWest",
+        "intro",
+        "proceedToSetup"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "allPointsWest",
+        "intro",
+        "proceedToSetup"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "fa6b367e8313ff4b4a0151de7e00947812c6eb76cd72d96bea23476aef63a787",
+      "translationSha256": "c2a0665b64db2b16ab714babf340f239bb7463870ad6d778cb34af116d1cb54a",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tdc/11_sepulchre_of_the_sleeper.po",
+          "line": 96,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/allPointsWest.json",
+      "parts": [
+        "allPointsWest",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "allPointsWest",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "b5af1ed2edd7c8863dccb97fec9e78c8ab581218fcf9c6d3a74858ee6f0296c3",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/the_last_king.po",
+          "line": 108,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/allPointsWest.json",
+      "parts": [
+        "allPointsWest",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "allPointsWest",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/allPointsWest.json",
+      "parts": [
+        "allPointsWest",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "allPointsWest",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/allPointsWest.json",
+      "parts": [
+        "allPointsWest",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "allPointsWest",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "c9158bc35392dc53bd939470b100e93830091d2f83fde4b5f47fde2070cf4f1f",
+      "translationSha256": "db85a990ae45ed86358996855bda2ec22d5f7c6fbec0e98f75d907cf8a13a3da",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 138,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/allPointsWest.json",
+      "parts": [
+        "allPointsWest",
+        "resolutions",
+        "resolution4",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "allPointsWest",
+        "resolutions",
+        "resolution4",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "505dd23376372edfc8499980b47517e45143ebbb6d12f57de7412b9305a2b3c0",
+      "translationSha256": "d98b073702c14e1010aa13bfeb252169cf088f7d15290592051c4e2f2c8b4cdf",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/extracurricular_activity.po",
+          "line": 73,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/allPointsWest.json",
+      "parts": [
+        "allPointsWest",
+        "resolutions",
+        "resolution5",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "allPointsWest",
+        "resolutions",
+        "resolution5",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "2ba1b62a9489aefeaa363d5544e646c0922f433b7bc2fd8d654c1e1899158ac7",
+      "translationSha256": "14d0ae8ae2ea25e76a6d1d9d255139ade8cbd562e95fec84a673b04ab02f59ed",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/dim_carcosa.po",
+          "line": 149,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/bacchanalia.json",
+      "parts": [
+        "bacchanalia",
+        "heading"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "bacchanalia",
+        "heading"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "5634e02a4633e38c956c0bc3c3f9cb006273e10e7456427cfabeb8a82f3d612a",
+      "translationSha256": "c37eab923ffb0680d329ea8202c6f66b6efe7bb8e00a065414b154f5cc693c19",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/where_doom_awaits.po",
+          "line": 99,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/bacchanalia.json",
+      "parts": [
+        "bacchanalia",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "bacchanalia",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "b5af1ed2edd7c8863dccb97fec9e78c8ab581218fcf9c6d3a74858ee6f0296c3",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/the_last_king.po",
+          "line": 108,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/bacchanalia.json",
+      "parts": [
+        "bacchanalia",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "bacchanalia",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/bacchanalia.json",
+      "parts": [
+        "bacchanalia",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "bacchanalia",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/bacchanalia.json",
+      "parts": [
+        "bacchanalia",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "bacchanalia",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "c9158bc35392dc53bd939470b100e93830091d2f83fde4b5f47fde2070cf4f1f",
+      "translationSha256": "db85a990ae45ed86358996855bda2ec22d5f7c6fbec0e98f75d907cf8a13a3da",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 138,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/harmsWay.json",
+      "parts": [
+        "harmsWay",
+        "heading"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "harmsWay",
+        "heading"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "f486d709cd0caa6d987b80718b4ca5a2ce31622042e23960f6391c13a7916f97",
+      "translationSha256": "c92eba0394d39277e1db136fca56beab2e09b143e7a57f23402ceb30518c7a6f",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/essex_county_express.po",
+          "line": 95,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/harmsWay.json",
+      "parts": [
+        "harmsWay",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "harmsWay",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/harmsWay.json",
+      "parts": [
+        "harmsWay",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "harmsWay",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/harmsWay.json",
+      "parts": [
+        "harmsWay",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "harmsWay",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "c9158bc35392dc53bd939470b100e93830091d2f83fde4b5f47fde2070cf4f1f",
+      "translationSha256": "db85a990ae45ed86358996855bda2ec22d5f7c6fbec0e98f75d907cf8a13a3da",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 138,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/oneNightOnly.json",
+      "parts": [
+        "oneNightOnly",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "oneNightOnly",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "b5af1ed2edd7c8863dccb97fec9e78c8ab581218fcf9c6d3a74858ee6f0296c3",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/the_last_king.po",
+          "line": 108,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/piperAtTheGatesOfDawn.json",
+      "parts": [
+        "piperAtTheGatesOfDawn",
+        "heading"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "piperAtTheGatesOfDawn",
+        "heading"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "7340fce443de57aaf0142d0874a15b5eb4f6cf62a27a651446d6054b37dceb16",
+      "translationSha256": "2b59739266b364090a6caaf9d2c09161ff2f15d2c492545e6e7fd4aff1d71fad",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/undimensioned_and_unseen.po",
+          "line": 113,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/piperAtTheGatesOfDawn.json",
+      "parts": [
+        "piperAtTheGatesOfDawn",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "piperAtTheGatesOfDawn",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "b5af1ed2edd7c8863dccb97fec9e78c8ab581218fcf9c6d3a74858ee6f0296c3",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/the_last_king.po",
+          "line": 108,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/piperAtTheGatesOfDawn.json",
+      "parts": [
+        "piperAtTheGatesOfDawn",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "piperAtTheGatesOfDawn",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/piperAtTheGatesOfDawn.json",
+      "parts": [
+        "piperAtTheGatesOfDawn",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "piperAtTheGatesOfDawn",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/piperAtTheGatesOfDawn.json",
+      "parts": [
+        "piperAtTheGatesOfDawn",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "piperAtTheGatesOfDawn",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "c9158bc35392dc53bd939470b100e93830091d2f83fde4b5f47fde2070cf4f1f",
+      "translationSha256": "db85a990ae45ed86358996855bda2ec22d5f7c6fbec0e98f75d907cf8a13a3da",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 138,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/piperAtTheGatesOfDawn.json",
+      "parts": [
+        "piperAtTheGatesOfDawn",
+        "resolutions",
+        "resolution4",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "piperAtTheGatesOfDawn",
+        "resolutions",
+        "resolution4",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "505dd23376372edfc8499980b47517e45143ebbb6d12f57de7412b9305a2b3c0",
+      "translationSha256": "d98b073702c14e1010aa13bfeb252169cf088f7d15290592051c4e2f2c8b4cdf",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/extracurricular_activity.po",
+          "line": 73,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/piperAtTheGatesOfDawn.json",
+      "parts": [
+        "piperAtTheGatesOfDawn",
+        "resolutions",
+        "resolution5",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "piperAtTheGatesOfDawn",
+        "resolutions",
+        "resolution5",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "2ba1b62a9489aefeaa363d5544e646c0922f433b7bc2fd8d654c1e1899158ac7",
+      "translationSha256": "14d0ae8ae2ea25e76a6d1d9d255139ade8cbd562e95fec84a673b04ab02f59ed",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/dim_carcosa.po",
+          "line": 149,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/redSunrise.json",
+      "parts": [
+        "redSunrise",
+        "heading"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "redSunrise",
+        "heading"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "85d054b4747fad0bca0d38afa005e26d100df70eb49bfd3c0f876d3cc0260778",
+      "translationSha256": "58d2a3f9e15ecc181050312e4f656a54ba5c66c6fdc5c7e4995227066c6f82c2",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/lost_in_time_and_space.po",
+          "line": 118,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/redSunrise.json",
+      "parts": [
+        "redSunrise",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "redSunrise",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "b5af1ed2edd7c8863dccb97fec9e78c8ab581218fcf9c6d3a74858ee6f0296c3",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/the_last_king.po",
+          "line": 108,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/redSunrise.json",
+      "parts": [
+        "redSunrise",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "redSunrise",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/redSunrise.json",
+      "parts": [
+        "redSunrise",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "redSunrise",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/redSunrise.json",
+      "parts": [
+        "redSunrise",
+        "setup",
+        "checkAct"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "redSunrise",
+        "setup",
+        "checkAct"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "e9265071d269450c9dd05bb7a2517ff3014d3fafe13bbe92e1d502489ed0abb0",
+      "translationSha256": "3050b930e9f65eeebf9642d1d3da8a8e2e2665554de97d76de37585a839b6194",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tdc/11_sepulchre_of_the_sleeper.po",
+          "line": 42,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/redSunrise.json",
+      "parts": [
+        "redSunrise",
+        "setup",
+        "checkAgenda"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "redSunrise",
+        "setup",
+        "checkAgenda"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "e9265071d269450c9dd05bb7a2517ff3014d3fafe13bbe92e1d502489ed0abb0",
+      "translationSha256": "3050b930e9f65eeebf9642d1d3da8a8e2e2665554de97d76de37585a839b6194",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tdc/11_sepulchre_of_the_sleeper.po",
+          "line": 42,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/thousandToOne.json",
+      "parts": [
+        "thousandToOne",
+        "heading"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "thousandToOne",
+        "heading"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "44a9fcb81fdcf9f6c7d6628a1569940f8f5afaa655536c0459579535ebdc5bc9",
+      "translationSha256": "d3954958e0b59476059f336ce4e3aa441c940a6d293ce354a404a1c3204dfa25",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/dim_carcosa.po",
+          "line": 19,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/thousandToOne.json",
+      "parts": [
+        "thousandToOne",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "thousandToOne",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "b5af1ed2edd7c8863dccb97fec9e78c8ab581218fcf9c6d3a74858ee6f0296c3",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/the_last_king.po",
+          "line": 108,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/thousandToOne.json",
+      "parts": [
+        "thousandToOne",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "thousandToOne",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/thousandToOne.json",
+      "parts": [
+        "thousandToOne",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "thousandToOne",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/circus-ex-mortis/locales/zh-cn/thousandToOne.json",
+      "parts": [
+        "thousandToOne",
+        "setup",
+        "checkDoom"
+      ],
+      "runtimePath": [
+        "circusExMortis",
+        "thousandToOne",
+        "setup",
+        "checkDoom"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "e9265071d269450c9dd05bb7a2517ff3014d3fafe13bbe92e1d502489ed0abb0",
+      "translationSha256": "3050b930e9f65eeebf9642d1d3da8a8e2e2665554de97d76de37585a839b6194",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tdc/11_sepulchre_of_the_sleeper.po",
+          "line": 42,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/base.json",
+      "parts": [
+        "difficulty",
+        "Expert"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "difficulty",
+        "Expert"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "df31081ed71e36f18f6775739c96b4df27418cb2b5d8db554fad61103790dc85",
+      "translationSha256": "3947c96ac146c7613891ad3e027088309be3d83e2c84211c1c83e561247b2ea8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/zaw/campaign.po",
+          "line": 42,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/base.json",
+      "parts": [
+        "electricNightmare",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "electricNightmare",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "f4225e44b2cc17bc6a3553ddc97b0bef01619016adce8226802dad2966e2bb7b",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 150,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/base.json",
+      "parts": [
+        "electricNightmare",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "electricNightmare",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/base.json",
+      "parts": [
+        "electricNightmare",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "electricNightmare",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/base.json",
+      "parts": [
+        "electricNightmare",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "electricNightmare",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "c9158bc35392dc53bd939470b100e93830091d2f83fde4b5f47fde2070cf4f1f",
+      "translationSha256": "db85a990ae45ed86358996855bda2ec22d5f7c6fbec0e98f75d907cf8a13a3da",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 138,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/fragmentOfCarcosa.json",
+      "parts": [
+        "fragmentOfCarcosa",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "fragmentOfCarcosa",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "f4225e44b2cc17bc6a3553ddc97b0bef01619016adce8226802dad2966e2bb7b",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 150,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/fragmentOfCarcosa.json",
+      "parts": [
+        "fragmentOfCarcosa",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "fragmentOfCarcosa",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/fragmentOfCarcosa.json",
+      "parts": [
+        "fragmentOfCarcosa",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "fragmentOfCarcosa",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/fragmentOfCarcosa.json",
+      "parts": [
+        "fragmentOfCarcosa",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "fragmentOfCarcosa",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "c9158bc35392dc53bd939470b100e93830091d2f83fde4b5f47fde2070cf4f1f",
+      "translationSha256": "db85a990ae45ed86358996855bda2ec22d5f7c6fbec0e98f75d907cf8a13a3da",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 138,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/inTheShadowOfEarth.json",
+      "parts": [
+        "inTheShadowOfEarth",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "inTheShadowOfEarth",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "f4225e44b2cc17bc6a3553ddc97b0bef01619016adce8226802dad2966e2bb7b",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 150,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/inTheShadowOfEarth.json",
+      "parts": [
+        "inTheShadowOfEarth",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "inTheShadowOfEarth",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/inTheShadowOfEarth.json",
+      "parts": [
+        "inTheShadowOfEarth",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "inTheShadowOfEarth",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/inTheShadowOfEarth.json",
+      "parts": [
+        "inTheShadowOfEarth",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "inTheShadowOfEarth",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "c9158bc35392dc53bd939470b100e93830091d2f83fde4b5f47fde2070cf4f1f",
+      "translationSha256": "db85a990ae45ed86358996855bda2ec22d5f7c6fbec0e98f75d907cf8a13a3da",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 138,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/inTheShadowOfEarth.json",
+      "parts": [
+        "inTheShadowOfEarth",
+        "resolutions",
+        "resolution4",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "inTheShadowOfEarth",
+        "resolutions",
+        "resolution4",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "505dd23376372edfc8499980b47517e45143ebbb6d12f57de7412b9305a2b3c0",
+      "translationSha256": "d98b073702c14e1010aa13bfeb252169cf088f7d15290592051c4e2f2c8b4cdf",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/extracurricular_activity.po",
+          "line": 73,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/inTheShadowOfEarth.json",
+      "parts": [
+        "inTheShadowOfEarth",
+        "resolutions",
+        "resolution5",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "inTheShadowOfEarth",
+        "resolutions",
+        "resolution5",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "2ba1b62a9489aefeaa363d5544e646c0922f433b7bc2fd8d654c1e1899158ac7",
+      "translationSha256": "14d0ae8ae2ea25e76a6d1d9d255139ade8cbd562e95fec84a673b04ab02f59ed",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/dim_carcosa.po",
+          "line": 149,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/interludes.json",
+      "parts": [
+        "headings",
+        "interludes",
+        "3"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "headings",
+        "interludes",
+        "3"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "3cdac791f4bc330ac3f489b4975796ab34e7d3a469761e25a25f074c81758fde",
+      "translationSha256": "ec309928e8d0263d8e325e5beb744cf3957ed8e1299445f98e0505eda74306ce",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/survivors.po",
+          "line": 64,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/lostQuantum.json",
+      "parts": [
+        "lostQuantum",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "lostQuantum",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "f4225e44b2cc17bc6a3553ddc97b0bef01619016adce8226802dad2966e2bb7b",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 150,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/lostQuantum.json",
+      "parts": [
+        "lostQuantum",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "lostQuantum",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/lostQuantum.json",
+      "parts": [
+        "lostQuantum",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "lostQuantum",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/lostQuantum.json",
+      "parts": [
+        "lostQuantum",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "lostQuantum",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "c9158bc35392dc53bd939470b100e93830091d2f83fde4b5f47fde2070cf4f1f",
+      "translationSha256": "db85a990ae45ed86358996855bda2ec22d5f7c6fbec0e98f75d907cf8a13a3da",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 138,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/starfall.json",
+      "parts": [
+        "starfall",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "starfall",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "f4225e44b2cc17bc6a3553ddc97b0bef01619016adce8226802dad2966e2bb7b",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 150,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/starfall.json",
+      "parts": [
+        "starfall",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "starfall",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/starfall.json",
+      "parts": [
+        "starfall",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "starfall",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/strangeMoons.json",
+      "parts": [
+        "strangeMoons",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "strangeMoons",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "f4225e44b2cc17bc6a3553ddc97b0bef01619016adce8226802dad2966e2bb7b",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 150,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/strangeMoons.json",
+      "parts": [
+        "strangeMoons",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "strangeMoons",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/strangeMoons.json",
+      "parts": [
+        "strangeMoons",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "strangeMoons",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/theMachineInYellow.json",
+      "parts": [
+        "theMachineInYellow",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "theMachineInYellow",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "f4225e44b2cc17bc6a3553ddc97b0bef01619016adce8226802dad2966e2bb7b",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 150,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/theMachineInYellow.json",
+      "parts": [
+        "theMachineInYellow",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "theMachineInYellow",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/theMachineInYellow.json",
+      "parts": [
+        "theMachineInYellow",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "theMachineInYellow",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/theTatterdemalion.json",
+      "parts": [
+        "theTatterdemalion",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "theTatterdemalion",
+        "resolutions",
+        "noResolution",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "f4225e44b2cc17bc6a3553ddc97b0bef01619016adce8226802dad2966e2bb7b",
+      "translationSha256": "cab66bbdac1cf610b039f7787614e1429ee7d469585f0b53809a886de561ab76",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 150,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/dark-matter/locales/zh-cn/theTatterdemalion.json",
+      "parts": [
+        "theTatterdemalion",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "darkMatter",
+        "theTatterdemalion",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/night-of-vespers/locales/zh-cn/base.json",
+      "parts": [
+        "headings",
+        "epilogue"
+      ],
+      "runtimePath": [
+        "nightOfVespers",
+        "headings",
+        "epilogue"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "64186d3a47fa48395ca92bc8cf24deb55eb59497bbfc14753195928ef292da66",
+      "translationSha256": "5f84ce44863ac0cf9a944c2a4f99ae379568efe90b498b31cdba235e1e0add68",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/epilogue.po",
+          "line": 16,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/night-of-vespers/locales/zh-cn/base.json",
+      "parts": [
+        "headings",
+        "prologue"
+      ],
+      "runtimePath": [
+        "nightOfVespers",
+        "headings",
+        "prologue"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "eb7f661e0d35afaf03a56278d2f5fa34012445f759914e0bd818612fd7411a2b",
+      "translationSha256": "e1ab8443fab917adb8c4a23bdaa158332c9d340b1a6abef1430deb302ac00743",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/dwl_prologue.po",
+          "line": 16,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/night-of-vespers/locales/zh-cn/base.json",
+      "parts": [
+        "prologue",
+        "title"
+      ],
+      "runtimePath": [
+        "nightOfVespers",
+        "prologue",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "eb7f661e0d35afaf03a56278d2f5fa34012445f759914e0bd818612fd7411a2b",
+      "translationSha256": "e1ab8443fab917adb8c4a23bdaa158332c9d340b1a6abef1430deb302ac00743",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/dwl_prologue.po",
+          "line": 16,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/night-of-vespers/locales/zh-cn/epilogue.json",
+      "parts": [
+        "epilogue",
+        "title"
+      ],
+      "runtimePath": [
+        "nightOfVespers",
+        "epilogue",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "64186d3a47fa48395ca92bc8cf24deb55eb59497bbfc14753195928ef292da66",
+      "translationSha256": "5f84ce44863ac0cf9a944c2a4f99ae379568efe90b498b31cdba235e1e0add68",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/epilogue.po",
+          "line": 16,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/night-of-vespers/locales/zh-cn/mothersMercy.json",
+      "parts": [
+        "mothersMercy",
+        "rules",
+        "fadingPalace",
+        "emptySpace",
+        "title"
+      ],
+      "runtimePath": [
+        "nightOfVespers",
+        "mothersMercy",
+        "rules",
+        "fadingPalace",
+        "emptySpace",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "65263a129733cd5de02e443428fe9f35069f2f9267935082a194ecf2551cc9ad",
+      "translationSha256": "e239d8902085811aab132cc2875c9e62fd0a444925f09c80e3d30705009f6f39",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tcu/before_the_black_throne.po",
+          "line": 61,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/night-of-vespers/locales/zh-cn/theTeachingsOfAradia.json",
+      "parts": [
+        "theTeachingsOfAradia",
+        "rules",
+        "title"
+      ],
+      "runtimePath": [
+        "nightOfVespers",
+        "theTeachingsOfAradia",
+        "rules",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "32faeb3d64014a7ff29b763cba6c425b0b6a74e4777925bd6fc1a2a67c885056",
+      "translationSha256": "86723139578d6a426f12ecf7ac419288751e9d3c12b255c86a7d6144487ba9dc",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tdea/the_search_for_kadath.po",
+          "line": 154,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-fall-of-the-house-of-usher/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "theFallOfTheHouseOfUsher",
+        "scenario",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-fall-of-the-house-of-usher/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "theFallOfTheHouseOfUsher",
+        "scenario",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-invisible-man/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "theInvisibleMan",
+        "scenario",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-invisible-man/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "theInvisibleMan",
+        "scenario",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-legend-of-sleepy-hollow/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "ichabodCrane",
+        "label",
+        "drawCard"
+      ],
+      "runtimePath": [
+        "theLegendOfSleepyHollow",
+        "scenario",
+        "ichabodCrane",
+        "label",
+        "drawCard"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "c0d4faf5a12aa0128b8014901b29bd18422226050aee0ba287a41fb6baecc72a",
+      "translationSha256": "85bc68d7ec730821dae5c4ec86d39e0f55b19becf35c6568c88ae47a254fa55b",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/boa/02_smoke_and_mirrors.po",
+          "line": 222,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-legend-of-sleepy-hollow/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "theLegendOfSleepyHollow",
+        "scenario",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-legend-of-sleepy-hollow/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "theLegendOfSleepyHollow",
+        "scenario",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-masque-of-the-red-death/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "theMasqueOfTheRedDeath",
+        "scenario",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-masque-of-the-red-death/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "theMasqueOfTheRedDeath",
+        "scenario",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-phantom-of-the-opera/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "thePhantomOfTheOpera",
+        "scenario",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-phantom-of-the-opera/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "thePhantomOfTheOpera",
+        "scenario",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-phantom-of-the-opera/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "runtimePath": [
+        "thePhantomOfTheOpera",
+        "scenario",
+        "resolutions",
+        "resolution3",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "c9158bc35392dc53bd939470b100e93830091d2f83fde4b5f47fde2070cf4f1f",
+      "translationSha256": "db85a990ae45ed86358996855bda2ec22d5f7c6fbec0e98f75d907cf8a13a3da",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 138,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-phantom-of-the-opera/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution4",
+        "title"
+      ],
+      "runtimePath": [
+        "thePhantomOfTheOpera",
+        "scenario",
+        "resolutions",
+        "resolution4",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "505dd23376372edfc8499980b47517e45143ebbb6d12f57de7412b9305a2b3c0",
+      "translationSha256": "d98b073702c14e1010aa13bfeb252169cf088f7d15290592051c4e2f2c8b4cdf",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/extracurricular_activity.po",
+          "line": 73,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-phantom-of-the-opera/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "setup",
+        "shuffleRemainder"
+      ],
+      "runtimePath": [
+        "thePhantomOfTheOpera",
+        "scenario",
+        "setup",
+        "shuffleRemainder"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "2c7aa828cd5483e1f39d96680c06223c30116e333949a14a9d8519a08f127c6b",
+      "translationSha256": "ab41dd77d0031830b6a9cc98126928893a7a8004415f0fc353b823b77d4fa8c8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tcu/at_deaths_doorstep.po",
+          "line": 79,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-strange-case-of-dr-jekyll-and-mr-hyde/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "theStrangeCaseOfDrJekyllAndMrHyde",
+        "scenario",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-strange-case-of-dr-jekyll-and-mr-hyde/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "runtimePath": [
+        "theStrangeCaseOfDrJekyllAndMrHyde",
+        "scenario",
+        "resolutions",
+        "resolution2",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a5afd1244de4366d6af107f6c8416beaf216d396e1ab060b104b29899fe841e6",
+      "translationSha256": "c50848327e2dd397a979a396319a02a965c2d27806d651ec0e5dcac6d9f68057",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 132,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-symphony-of-erich-zann/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "investigatorDefeat",
+        "title"
+      ],
+      "runtimePath": [
+        "theSymphonyOfErichZann",
+        "scenario",
+        "resolutions",
+        "investigatorDefeat",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "b05fec1d8cb3549d0ed9ab7bf67c1ca82ee71a37ea765aa21c1acb9e96778d27",
+      "translationSha256": "bbbe831713539baf19a8c08852c1af4dc7bf051456df81b559e084c7cf3a7e9c",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/essex_county_express.po",
+          "line": 78,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-symphony-of-erich-zann/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "label",
+        "healMentalTrauma"
+      ],
+      "runtimePath": [
+        "theSymphonyOfErichZann",
+        "scenario",
+        "resolutions",
+        "label",
+        "healMentalTrauma"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "2aa4d1521448b38c5a3d46037f6bd3321da8a3428aa2b045d17a42c697eeb087",
+      "translationSha256": "1355926b5f38c1fcbd9a022318e2c66e6147f79c5512ad256c069f166f82476a",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/eoe/endless_night.po",
+          "line": 214,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-symphony-of-erich-zann/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "runtimePath": [
+        "theSymphonyOfErichZann",
+        "scenario",
+        "resolutions",
+        "resolution1",
+        "title"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8e43bdb69e14b6753787e65808ba7cf8e4636323addf706013759f7d8288d8a6",
+      "translationSha256": "071dda3ad1509b953d6f98de8efecd9eb500c9ae4315c9c65f60b18ecb0409f8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/blood_on_the_altar.po",
+          "line": 126,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/homebrew/the-symphony-of-erich-zann/locales/zh-cn/scenario.json",
+      "parts": [
+        "scenario",
+        "setup",
+        "shuffleRemainder"
+      ],
+      "runtimePath": [
+        "theSymphonyOfErichZann",
+        "scenario",
+        "setup",
+        "shuffleRemainder"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "2c7aa828cd5483e1f39d96680c06223c30116e333949a14a9d8519a08f127c6b",
+      "translationSha256": "ab41dd77d0031830b6a9cc98126928893a7a8004415f0fc353b823b77d4fa8c8",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tcu/at_deaths_doorstep.po",
+          "line": 79,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/base.json",
+      "parts": [
+        "questionFilter",
+        "custom"
+      ],
+      "runtimePath": [
+        "questionFilter",
+        "custom"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "494ca78f7374e46fb2de9ad9f2dbd4aaae89b50b2ca044177a1566a59e06627e",
+      "translationSha256": "9fdcf6af4cc2e2fac480ef83c92c7fc37c8a14c2d6b5360d21649fb3c76e9bd7",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/packs.po",
+          "line": 19,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/edgeOfTheEarth/base.json",
+      "parts": [
+        "difficulty",
+        "Easy"
+      ],
+      "runtimePath": [
+        "edgeOfTheEarth",
+        "difficulty",
+        "Easy"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "df950efb13d0dea7750bbbd38f561108fea0114940f2467ae88b5287861c4e03",
+      "translationSha256": "4f7d7c728ab671f56a895a52f1ceed88a2ae984124d52f969d9565169b048320",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/eoe/campaign.po",
+          "line": 186,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/edgeOfTheEarth/base.json",
+      "parts": [
+        "difficulty",
+        "Expert"
+      ],
+      "runtimePath": [
+        "edgeOfTheEarth",
+        "difficulty",
+        "Expert"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "e708fb9912484ffb312b65977821555cf02f555908f307536dd6fd6a7cfb4ca1",
+      "translationSha256": "2be68c4fca19dac469fef99432b47216ce577862e12f42c1bf4aa043208129ad",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/eoe/campaign.po",
+          "line": 195,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/edgeOfTheEarth/base.json",
+      "parts": [
+        "difficulty",
+        "Hard"
+      ],
+      "runtimePath": [
+        "edgeOfTheEarth",
+        "difficulty",
+        "Hard"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "ddcec576eb79d93d3ed426d29fdc92bc100c0dd54f8acc04af34b4841f8fb530",
+      "translationSha256": "b338df73ca25966247c71630414a6bfb6adb439f4965815de8155e1df61501b2",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/eoe/campaign.po",
+          "line": 192,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/edgeOfTheEarth/base.json",
+      "parts": [
+        "difficulty",
+        "Standard"
+      ],
+      "runtimePath": [
+        "edgeOfTheEarth",
+        "difficulty",
+        "Standard"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "ec9a62c64845623e19d61acff31ce1c552fb6dd4835e0a3e154b2e9b87ca55a9",
+      "translationSha256": "024b451ee61ddfd90b3fd142f0f0125c2e1538657287a71e439485909409ff53",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/eoe/campaign.po",
+          "line": 189,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/gameBoard/create.json",
+      "parts": [
+        "difficultyFlavor",
+        "Easy"
+      ],
+      "runtimePath": [
+        "create",
+        "difficultyFlavor",
+        "Easy"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "27bac68881274567ba4d38e5065234bc35addb664fa4f1a9fd38db3a595bb76c",
+      "translationSha256": "82e7cb028d73b2df3e16a88ccca12486f8ec04f8fcfcbb0533a41ec04c670289",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/campaign.po",
+          "line": 66,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/gameBoard/create.json",
+      "parts": [
+        "difficultyFlavor",
+        "Expert"
+      ],
+      "runtimePath": [
+        "create",
+        "difficultyFlavor",
+        "Expert"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "50ee4476c9db0e3f7cefa03ccd21e6b46b751ae8c0579ea62f35e57452c44dce",
+      "translationSha256": "7826ab7c6c5780a615d197ce569a35a1468401e9e7d55c5c7800b24d71a0c6b0",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/campaign.po",
+          "line": 75,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/gameBoard/create.json",
+      "parts": [
+        "difficultyFlavor",
+        "Hard"
+      ],
+      "runtimePath": [
+        "create",
+        "difficultyFlavor",
+        "Hard"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "cd44019b2fba8c25e2eaf5829411342407db468d3d785c5926646bcc7c09c486",
+      "translationSha256": "489ff1c7538d1acaaf6867f6ea99dfef8ee286c3f869fef101e725888e4ce90e",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/campaign.po",
+          "line": 72,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/gameBoard/create.json",
+      "parts": [
+        "difficultyFlavor",
+        "Standard"
+      ],
+      "runtimePath": [
+        "create",
+        "difficultyFlavor",
+        "Standard"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "fcf8d65897df36e969ab21d307eab7bd7edd7ce5e6f09dcdb3f95b67bcd2203e",
+      "translationSha256": "7dbdbf2ed033124d676bf93ca32296b8633b17a2eb11e9c90e866a2473ea4178",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/dwl/campaign.po",
+          "line": 69,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/theDrownedCity/base.json",
+      "parts": [
+        "difficulty",
+        "Easy"
+      ],
+      "runtimePath": [
+        "theDrownedCity",
+        "difficulty",
+        "Easy"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "a2662172baa38d67ce5f48020d845dbc1a7bc395f435a40cd839ef0be8df3ad2",
+      "translationSha256": "fe6cb7dd44a32b8638a30435eb4941d5b8a9c3ec7b3a7001c0896bfdd1b56265",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tdc/campaign.po",
+          "line": 45,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/theDrownedCity/base.json",
+      "parts": [
+        "difficulty",
+        "Expert"
+      ],
+      "runtimePath": [
+        "theDrownedCity",
+        "difficulty",
+        "Expert"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "23a851756cf4d3b3315b62ccf85b8c4bf9898ad1d70b99d13929edf22fcc21a6",
+      "translationSha256": "d088260daee9125e395c9519b7b763af1c938045779985f0d258e4afd23cf428",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tdc/campaign.po",
+          "line": 54,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/theDrownedCity/base.json",
+      "parts": [
+        "difficulty",
+        "Hard"
+      ],
+      "runtimePath": [
+        "theDrownedCity",
+        "difficulty",
+        "Hard"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "5f130cf66cd0131093f51125fc3186e8637e39c91ea05a3fa2b7bd13be69485c",
+      "translationSha256": "9438317cafa143f84e3e0f3fbafcde6ec7f98a3528229d5303d2725c2718a46b",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tdc/campaign.po",
+          "line": 51,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/theDrownedCity/base.json",
+      "parts": [
+        "difficulty",
+        "Standard"
+      ],
+      "runtimePath": [
+        "theDrownedCity",
+        "difficulty",
+        "Standard"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "c65f4d2824fda4eafcc4ce5aa5fe151478b59c9fec81c4dea38b414b22419dfa",
+      "translationSha256": "e32071082f85965a01d775d46aeb56d587365768c5299d2e922daa19cdc6f6af",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tdc/campaign.po",
+          "line": 48,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/theFeastOfHemlockVale/base.json",
+      "parts": [
+        "difficulty",
+        "Easy"
+      ],
+      "runtimePath": [
+        "theFeastOfHemlockVale",
+        "difficulty",
+        "Easy"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "694c95b7450eb49aa7b8680cb03f5731719be41e156721733fe256455383433b",
+      "translationSha256": "e9a16aa074c3e4f9f78d741071f93c10620cac8b479f11ff0e218cc1ae7316e9",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/fhv/campaign.po",
+          "line": 72,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/theFeastOfHemlockVale/base.json",
+      "parts": [
+        "difficulty",
+        "Expert"
+      ],
+      "runtimePath": [
+        "theFeastOfHemlockVale",
+        "difficulty",
+        "Expert"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "7a30d0bafa082921ad93c034a2138912797faa1f7564a76b7071c34c6149b3a0",
+      "translationSha256": "ff5fafaca24ffa7791cd7295aabeba6f2d3015f85d2d12ecadfae2fda5828447",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/fhv/campaign.po",
+          "line": 81,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/theFeastOfHemlockVale/base.json",
+      "parts": [
+        "difficulty",
+        "Hard"
+      ],
+      "runtimePath": [
+        "theFeastOfHemlockVale",
+        "difficulty",
+        "Hard"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "304870dc73883f71d87ff91e26dde0ee54c30b325ce22ac4fc027f22fbd51ab5",
+      "translationSha256": "556d39cd011c9baf403112d569b02a9477c209f6198a30b1e69a0a74c1fb13e0",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/fhv/campaign.po",
+          "line": 78,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/theFeastOfHemlockVale/base.json",
+      "parts": [
+        "difficulty",
+        "Standard"
+      ],
+      "runtimePath": [
+        "theFeastOfHemlockVale",
+        "difficulty",
+        "Standard"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "2e48595f8d04cf1ad9047218d2c5c3dc940fe18e395d3d50abbebcfe665e3b9f",
+      "translationSha256": "d71a36f3f34b6c052550ca64660c76c163482b3cc94ebf35d023e1d85ab52afc",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/fhv/campaign.po",
+          "line": 75,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/thePathToCarcosa/base.json",
+      "parts": [
+        "difficulty",
+        "Easy"
+      ],
+      "runtimePath": [
+        "thePathToCarcosa",
+        "difficulty",
+        "Easy"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "48fd3a3aea2503199de76e6e7ce9f47699d9a1b5303fc129441f33849ee5c5ac",
+      "translationSha256": "e7fb929d249c60f73de52b05e6484d6a6d85a2c2fecc11c086cad0d5176b6afe",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/campaign.po",
+          "line": 89,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/thePathToCarcosa/base.json",
+      "parts": [
+        "difficulty",
+        "Expert"
+      ],
+      "runtimePath": [
+        "thePathToCarcosa",
+        "difficulty",
+        "Expert"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "13bfb3b16ae21475bda16d3f84438c743ebb2a394155dd533918e3baee509230",
+      "translationSha256": "6be46b92e3c1ad3bb9d6f13b68f560e100b1760021f0135c1f7c75207bb223e3",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/campaign.po",
+          "line": 98,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/thePathToCarcosa/base.json",
+      "parts": [
+        "difficulty",
+        "Hard"
+      ],
+      "runtimePath": [
+        "thePathToCarcosa",
+        "difficulty",
+        "Hard"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "2956f8d9942b74f1db1c0f1b62599dad89108f272d79ea6c17e7290e7b516abe",
+      "translationSha256": "836ca8ff96d7b5899ea456ea69df400434c56389392b29fb7461912512277d85",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/campaign.po",
+          "line": 95,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/thePathToCarcosa/base.json",
+      "parts": [
+        "difficulty",
+        "Standard"
+      ],
+      "runtimePath": [
+        "thePathToCarcosa",
+        "difficulty",
+        "Standard"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "3353eaa4b99550e61bcad8e5b1a6baa08cda9dcee568b8689718b3d9f7a68b9a",
+      "translationSha256": "17b84209d68c93b943bda8586067925781e8753058c3409502f53c6444489a03",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/ptc/campaign.po",
+          "line": 92,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/theScarletKeys/base.json",
+      "parts": [
+        "difficulty",
+        "Easy"
+      ],
+      "runtimePath": [
+        "theScarletKeys",
+        "difficulty",
+        "Easy"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8f5b67f135408bfc2ec503030888be9acbb238cb36842f02a63b2fabe6faea06",
+      "translationSha256": "c550f79fa3ee1a6a166d274c31483335fea7d6139084d73edb2746e73c0ebd7f",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tskc/campaign.po",
+          "line": 364,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/theScarletKeys/base.json",
+      "parts": [
+        "difficulty",
+        "Expert"
+      ],
+      "runtimePath": [
+        "theScarletKeys",
+        "difficulty",
+        "Expert"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "6e2ad842102bacb022b60f4acb22e83d86b4cd10c88d9abe9521a9548e288525",
+      "translationSha256": "9fa11e5a833fc3dbeca927a92907518d51233142f5b7e8ab7ae84a1b2b869e69",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tskc/campaign.po",
+          "line": 373,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/theScarletKeys/base.json",
+      "parts": [
+        "difficulty",
+        "Hard"
+      ],
+      "runtimePath": [
+        "theScarletKeys",
+        "difficulty",
+        "Hard"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "8739d6798e1cb82c83a48ad5d561bfd5ab85137be34257bcecd67193ed8687b6",
+      "translationSha256": "2dadfcb7c4ff15a6f056647ec71e03939d21c2144a41aeb38a217f098871d9e5",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tskc/campaign.po",
+          "line": 370,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    },
+    {
+      "file": "frontend/src/locales/zh-cn/theScarletKeys/base.json",
+      "parts": [
+        "difficulty",
+        "Standard"
+      ],
+      "runtimePath": [
+        "theScarletKeys",
+        "difficulty",
+        "Standard"
+      ],
+      "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
+      "englishSha256": "bcf45ad651713a78d573e7aeaef37ce736a7d468b33558b884094b3407ed67ec",
+      "translationSha256": "9e569467d310cef09559395a8e2ddaef2e6a709a09b5ef2336b72df873e10402",
+      "sources": [
+        {
+          "locale": "zh-cn",
+          "file": "i18n/zh-cn/campaigns/tskc/campaign.po",
+          "line": 367,
+          "matchKind": "whole",
+          "convertedToSimplified": false
+        }
+      ]
+    }
+  ]
+}

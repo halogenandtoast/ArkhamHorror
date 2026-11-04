@@ -22,31 +22,35 @@ intoThePit = agenda (4, A) IntoThePit Cards.intoThePit (Static 8)
 
 instance HasAbilities IntoThePit where
   getAbilities (IntoThePit a) =
-    [ mkAbility a 1 $ forced $ PlacedDoomCounter #after AnySource (targetIs a)
-    , mkAbility a 2
+    [ restricted a 1 shamblerExists $ forced $ PlacedDoomCounter #after AnySource (targetIs a)
+    , restricted a 2 shamblerExists
         $ forced
         $ EnemySpawns #after (PlacementAt $ LocationWithTrait Otherworld) (EnemyWithTrait Syndicate)
     ]
+   where
+    shamblerExists = exists shambler
 
 instance RunMessage IntoThePit where
   runMessage msg a@(IntoThePit attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      shambler <- selectJust $ enemyIs Enemies.dimensionalShamblerDraggingThemBelow
-      withLocationOf shambler \lid -> do
+      selectOne shambler >>= traverse_ \shamblerId -> withLocationOf shamblerId \lid -> do
         cards <- field LocationCardsUnderneath lid
         for_ (nonEmpty cards) \xs -> do
           card <- sample xs
           push $ RemoveFromUnderneath (toTarget lid) [card]
-          placeUnderneath shambler [card]
+          placeUnderneath shamblerId [card]
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 (spawnedEnemy -> enemy) _ -> do
-      shambler <- selectJust $ enemyIs Enemies.dimensionalShamblerDraggingThemBelow
-      card <- field EnemyCard enemy
-      push $ RemovedFromPlay (EnemySource enemy)
-      card' <- setFacedown True card
-      placeUnderneath shambler [card']
+      selectOne shambler >>= traverse_ \shamblerId -> do
+        card <- field EnemyCard enemy
+        push $ RemovedFromPlay (EnemySource enemy)
+        card' <- setFacedown True card
+        placeUnderneath shamblerId [card']
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       eachInvestigator (kill attrs)
       pure a
     _ -> IntoThePit <$> liftRunMessage msg attrs
+
+shambler :: EnemyMatcher
+shambler = enemyIs Enemies.dimensionalShamblerDraggingThemBelow

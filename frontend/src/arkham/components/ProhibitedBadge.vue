@@ -3,6 +3,13 @@
  *
  * Hovering it shows the offending card, through the same `data-image-id` the
  * blanked badge on an investigator uses -- see CardOverlay.
+ *
+ * `suppressed` is for a caller that knows the game is offering this card right
+ * now -- committing it to a skill test under Antarctic Wind's "cannot play
+ * cards", say. The ban still holds for playing, but saying so over the choice in
+ * front of the player reads as a ban on that choice (#5959). The caller decides,
+ * because it is the one that knows what the card is being offered for; it owns
+ * the greying too, so the two cannot disagree.
  */
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -15,13 +22,18 @@ import {
 } from '@/arkham/cardProhibitions'
 import type { Game } from '@/arkham/types/Game'
 
-const props = defineProps<{ game: Game; ownerId: string; cardId: string }>()
+const props = defineProps<{
+  game: Game
+  ownerId: string
+  cardId: string
+  suppressed?: boolean
+}>()
 
 const dbCards = useDbCardStore()
 const { t } = useI18n()
 
 const prohibition = computed(() => cardProhibition(props.game, props.ownerId, props.cardId))
-const show = computed(() => isProhibited(prohibition.value))
+const show = computed(() => !props.suppressed && isProhibited(prohibition.value))
 const imageId = computed(() => prohibitionImageId(prohibition.value))
 const title = computed(() => prohibitionTitle(prohibition.value, dbCards, t))
 </script>

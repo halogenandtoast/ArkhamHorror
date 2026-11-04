@@ -120,9 +120,21 @@ const abilities = computed(() => {
   }, [])
 })
 
+/* Whether the game is offering this card right now, for whatever purpose.
+ *
+ * A ban on one use of a card says nothing about another: Antarctic Wind stops you
+ * playing cards and leaves committing to a skill test open, and the commit is on
+ * offer in the same breath (#5959). Marking the card then reads as "you cannot do
+ * this" over the one thing you can -- so a card the game is offering is not
+ * marked, which is the same reasoning that keeps cost and timing out of the
+ * prohibition list in the first place. */
+const onOffer = computed(() => cardAction.value !== -1)
+
 /* Greyed as well as badged, so a card an effect has taken away reads as spent
  * at a glance rather than only on hover. ProhibitedBadge owns the mark itself. */
-const prohibited = computed(() => isProhibited(cardProhibition(props.game, props.ownerId, id.value)))
+const prohibited = computed(
+  () => !onOffer.value && isProhibited(cardProhibition(props.game, props.ownerId, id.value)),
+)
 
 const classObject = computed(() => {
   return {
@@ -303,7 +315,7 @@ function oilPaintEffect(canvas, radius, intensity) {
       @click="handleCardClick"
     />
 
-    <ProhibitedBadge :game="game" :ownerId="ownerId" :cardId="id" />
+    <ProhibitedBadge :game="game" :ownerId="ownerId" :cardId="id" :suppressed="onOffer" />
 
     <button
       v-if="canDebugCustomize"

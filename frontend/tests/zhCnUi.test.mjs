@@ -128,3 +128,18 @@ test('community scenario display names and campaign titles are available alongsi
     }
   }
 })
+
+test('generated card placeholders translate their UI labels while retaining authored names and codes', async () => {
+  const registry = await server.ssrLoadModule('/src/locales/i18n.ts')
+  const cards = await server.ssrLoadModule('/src/arkham/customCards.ts')
+  registry.setI18n(i18n)
+  const definition = { name: { title: 'My Card <1>', subtitle: null }, cardType: 'AssetType', cardTraits: [] }
+  const svg = decodeURIComponent(cards.renderCardPlaceholder(definition).split(',').slice(1).join(','))
+  assert.match(svg, /支援/)
+  assert.match(svg, /My Card &lt;1&gt;/)
+  assert.equal(definition.cardType, 'AssetType')
+  const missing = decodeURIComponent(cards.renderMissingCard(':custom:abc').split(',').slice(1).join(','))
+  assert.match(missing, /卡牌定义/)
+  assert.match(missing, /缺失/)
+  assert.match(missing, /:custom:abc/)
+})

@@ -9,6 +9,7 @@ import * as JsonDecoder from 'ts.data.json'
 import { reactive } from 'vue'
 import { cardDefDecoder, type CardDef } from '@/arkham/types/CardDef'
 import { publishCardText } from '@/arkham/customText'
+import { translateUiMessage } from '@/locales/i18n'
 
 export type CustomCard = {
   def: CardDef
@@ -408,10 +409,12 @@ function wrap(text: string, perLine: number): string[] {
 /* A card with no art still has to be readable at the table, so draw one from
  * the def: title, type, and traits on a plain frame. */
 export function renderCardPlaceholder(def: CardDef | undefined): string {
-  const title = def ? def.name.title : 'Custom Card'
+  const title = def ? def.name.title : translateUiMessage('ui.customCard', 'Custom Card')
   const subtitle = def?.name.subtitle ?? null
   const traits = def?.cardTraits ?? []
-  const kind = def?.cardType?.replace(/Type$/, '') ?? 'Card'
+  const kind = def
+    ? translateUiMessage(`ui.enums.cardKinds.${cardKind(def.cardType)}`, def.cardType.replace(/Type$/, ''))
+    : translateUiMessage('ui.placeholderCardType', 'Card')
 
   const titleLines = wrap(title, 16)
   const titleSvg = titleLines
@@ -471,9 +474,9 @@ export function renderMissingCard(code: string): string {
       <circle cx="150" cy="150" r="42"/>
       <path d="M150 130 v26 M150 168 v3"/>
     </g>
-    <text x="150" y="240" class="t">Card definition</text>
-    <text x="150" y="266" class="t">missing</text>
-    <text x="150" y="300" class="s">This card does nothing until it is restored</text>
+    <text x="150" y="240" class="t">${escapeXml(translateUiMessage('ui.missingCardTitle', 'Card definition'))}</text>
+    <text x="150" y="266" class="t">${escapeXml(translateUiMessage('ui.missingCardStatus', 'missing'))}</text>
+    <text x="150" y="300" class="s">${escapeXml(translateUiMessage('ui.missingCardHint', 'This card does nothing until it is restored'))}</text>
     <text x="150" y="376" class="c">${escapeXml(code)}</text>
   </svg>`
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`

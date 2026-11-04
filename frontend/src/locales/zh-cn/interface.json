@@ -1334,5 +1334,9 @@
     }
   },
   "keywords": "关键词",
-  "actions": "行动"
+  "actions": "行动",
+  "placeholderCardType": "卡牌",
+  "missingCardTitle": "卡牌定义",
+  "missingCardStatus": "缺失",
+  "missingCardHint": "恢复前此卡牌不会产生效果"
 }

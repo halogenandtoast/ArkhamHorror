@@ -1334,5 +1334,9 @@
     }
   },
   "keywords": "Keywords",
-  "actions": "Actions"
+  "actions": "Actions",
+  "placeholderCardType": "Card",
+  "missingCardTitle": "Card definition",
+  "missingCardStatus": "missing",
+  "missingCardHint": "This card does nothing until it is restored"
 }

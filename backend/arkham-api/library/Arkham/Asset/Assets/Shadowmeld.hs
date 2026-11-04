@@ -7,6 +7,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Evade
 import Arkham.Helpers.Location (getAccessibleLocations)
+import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 
@@ -37,13 +38,13 @@ instance RunMessage Shadowmeld where
       pure a
     Successful (Action.Evade, EnemyTarget eid) iid _ target _ | isTarget attrs target -> do
       push $ EnemyEvaded iid eid
-      when (attrs.use Charge > 0) do
+      whenM (attrs.id <=~> AssetWithSpendableUses (atLeast 1) Charge) do
         locations <- getAccessibleLocations iid attrs
         unless (null locations) do
           chooseOrRunOneM iid do
             labeledI "doNotMoveToConnecting" nothing
             targets locations \lid -> do
-              removeTokens (attrs.ability 1) attrs Charge 1
+              spendUses (attrs.ability 1) attrs Charge 1
               moveTo attrs iid lid
       pure a
     _ -> Shadowmeld <$> liftRunMessage msg attrs

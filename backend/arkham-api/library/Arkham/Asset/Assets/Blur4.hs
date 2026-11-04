@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Evade
+import Arkham.Helpers.Cost (getSpendableUseCount)
 import Arkham.Modifier
 
 newtype Blur4 = Blur4 AssetAttrs
@@ -32,7 +33,8 @@ instance RunMessage Blur4 where
         ]
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
-      case attrs.use Charge of
+      spendable <- getSpendableUseCount [attrs.id] Charge
+      case spendable of
         0 -> pure ()
         1 -> do
           charges <- namedUUID "Charges"

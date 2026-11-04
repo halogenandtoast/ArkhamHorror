@@ -5,6 +5,7 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.Helpers.Cost (getSpendableUseCount)
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Investigate
 import Arkham.Matcher
@@ -18,7 +19,10 @@ divination1 :: AssetCard Divination1
 divination1 = asset Divination1 Cards.divination1
 
 instance HasAbilities Divination1 where
-  getAbilities (Divination1 x) = [controlled x 1 (exists $ YourLocation <> InvestigatableLocation) $ investigateActionWithAlternate_ #willpower]
+  getAbilities (Divination1 x) =
+    [ controlled x 1 (exists $ YourLocation <> InvestigatableLocation)
+        $ investigateActionWithAlternate_ #willpower
+    ]
 
 instance RunMessage Divination1 where
   runMessage msg a@(Divination1 attrs) = runQueueT $ case msg of
@@ -28,12 +32,15 @@ instance RunMessage Divination1 where
       skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
       chooseOne
         iid
-        [ Label "$label.cards.divination1.useWillpowerInsteadOfIntellect" [toMessage $ withSkillType #willpower investigate']
+        [ Label
+            "$label.cards.divination1.useWillpowerInsteadOfIntellect"
+            [toMessage $ withSkillType #willpower investigate']
         , Label "$label.cards.divination1.useIntellect" [toMessage investigate']
         ]
       pure a
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) n -> do
-      case attrs.use Charge of
+      spendable <- getSpendableUseCount [attrs.id] Charge
+      case spendable of
         0 -> pure ()
         1 -> do
           charges <- namedUUID "Charges"

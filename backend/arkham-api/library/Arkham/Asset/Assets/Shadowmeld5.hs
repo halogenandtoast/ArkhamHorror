@@ -39,7 +39,7 @@ instance RunMessage Shadowmeld5 where
       pure a
     Successful (Action.Evade, EnemyTarget eid) iid _ target _ | isTarget attrs target -> do
       push $ EnemyEvaded iid eid
-      when (attrs.use Charge > 0) do
+      whenM (attrs.id <=~> AssetWithSpendableUses (atLeast 1) Charge) do
         -- I expect this to be errata'd
         -- locations <- select $ LocationWithDistanceFromAtMost 2 (locationWithInvestigator iid) RevealedLocation
         locations <- select $ LocationWithDistanceFromAtMost 2 (locationWithInvestigator iid) Anywhere
@@ -47,7 +47,7 @@ instance RunMessage Shadowmeld5 where
           chooseOrRunOneM iid do
             labeledI "doNotMove" nothing
             targets locations \lid -> do
-              removeTokens (attrs.ability 1) attrs Charge 1
+              spendUses (attrs.ability 1) attrs Charge 1
               moveTo attrs iid lid
       pure a
     _ -> Shadowmeld5 <$> liftRunMessage msg attrs

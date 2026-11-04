@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Cost (getSpendableUseCount)
 import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
@@ -31,7 +32,8 @@ instance RunMessage BrandOfCthugha1 where
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       pushWhen (n == 0) $ LoseActions iid (attrs.ability 1) 1
-      case attrs.use Charge of
+      spendable <- getSpendableUseCount [attrs.id] Charge
+      case spendable of
         0 -> pure ()
         1 -> do
           charges <- namedUUID "Charges"

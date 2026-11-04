@@ -48,8 +48,9 @@ instance RunMessage GuidedByTheUnseen3 where
         if hasKingInYellow
           then pure []
           else filterM (getIsCommittable iid) cards
+      hasSecrets <- attrs.id <=~> AssetWithSpendableUses (atLeast 1) Secret
       focusCards cards do
-        if attrs.use Secret == 0 || null committable
+        if not hasSecrets || null committable
           then continue_ iid
           else withSkillTest \sid ->
             -- MustBeCommitted prevents being able to uncommit, as it is really "committed"

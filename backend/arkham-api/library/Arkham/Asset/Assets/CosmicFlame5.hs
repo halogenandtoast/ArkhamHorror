@@ -36,7 +36,7 @@ instance RunMessage CosmicFlame5 where
         else removeTokens (attrs.ability 1) attrs Charge 1
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      when (attrs.use #charge > 0) do
+      whenM (attrs.id <=~> AssetWithSpendableUses (atLeast 1) Charge) do
         enemies <-
           select $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource (attrs.ability 1)
         unless (null enemies) do

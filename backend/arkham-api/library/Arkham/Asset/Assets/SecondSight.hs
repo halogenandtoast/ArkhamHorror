@@ -39,11 +39,11 @@ instance RunMessage SecondSight where
         else removeTokens (attrs.ability 1) attrs Charge 1
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      when (attrs.use #charge > 0) do
+      whenM (attrs.id <=~> AssetWithSpendableUses (atLeast 1) Charge) do
         withSkillTest \sid ->
           chooseOneM iid $ cardI18n $ scope "secondSight" do
             labeled "spendChargeForClue" do
-              removeTokens (attrs.ability 1) attrs Charge 1
+              spendUses (attrs.ability 1) attrs Charge 1
               skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
             withI18n skip_
       pure a

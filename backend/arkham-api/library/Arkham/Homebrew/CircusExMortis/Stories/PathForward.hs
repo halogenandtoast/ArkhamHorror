@@ -34,9 +34,7 @@ besideRow a = case a.placement of
 pathLabelRow :: Text -> Maybe Int
 pathLabelRow label = readMay . unpack =<< T.stripPrefix "path" label
 
-{- | @column@ is the one the first sentence names. The second sentence always names the
-leftmost location of the above row, on all four copies.
--}
+-- | @column@ is the column both of the card's sentences name, each in a different row.
 pathForwardModifiers :: HasModifiersM m => StoryAttrs -> RowEnd -> m ()
 pathForwardModifiers a column = unless a.flipped do
   for_ (besideRow a) \y -> do
@@ -59,7 +57,16 @@ pathForwardModifiers a column = unless a.flipped do
       first sentence's "if" — being faceup is the whole condition. Kept a live modifier
       rather than a one-shot push so it does not depend on the above row already being on
       the board when act 1 flips the card; 'getInitialVictory' scores revealed clueless
-      locations in place, which reads it. -}
-      locationAtRowEnd column above >>= traverse_ \lid -> do
+      locations in place, which reads it.
+
+      The third sentence is what the single-location case needs: Ritual Clearing is the
+      only row of one, and a second column does not exist there, so the two copies that
+      name one (:179 from the left, :180 from the right) would otherwise point at nothing
+      and the row would score no victory at all. Sentence 1 needs no such case -- a card
+      is only placed beside a row of 2 or more. -}
+      victoryTarget <- case above of
+        [only] -> pure (Just only)
+        _ -> locationAtRowEnd column above
+      for_ victoryTarget \lid -> do
         card <- field LocationCard lid
         modifyEach a [card] [GainVictory 1]

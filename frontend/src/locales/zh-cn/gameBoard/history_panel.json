@@ -1,17 +1,17 @@
 {
   "title": "历史记录",
-  "round": "轮",
+  "round": "轮次",
   "phase": "阶段",
   "turn": "回合",
-  "empty": "此范围内尚无记录。",
+  "empty": "此范围内暂无记录。",
   "section": {
-    "counts": "计数",
+    "counts": "统计",
     "playedCards": "打出的卡牌",
     "treacheriesDrawn": "抽到的诡计",
     "enemiesDrawn": "抽到的敌人",
     "enemiesDefeated": "击败的敌人",
-    "enemiesAttackedBy": "被攻击的敌人",
-    "dealtDamageTo": "造成伤害的对象",
+    "enemiesAttackedBy": "发动攻击的敌人",
+    "dealtDamageTo": "造成伤害的目标",
     "locationsInvestigated": "调查过的地点",
     "cluesDiscovered": "发现的线索",
     "skillTests": "技能检定"
@@ -19,7 +19,7 @@
   "field": {
     "actionsCompleted": "完成的行动",
     "actionsSpent": "花费的行动",
-    "moved": "移动",
+    "moved": "移动次数",
     "cardsDrawn": "抽取的卡牌",
     "resourcesGained": "获得的资源",
     "attacksOfOpportunity": "借机攻击",
@@ -31,12 +31,12 @@
   "playedCard": {
     "at": "在{location}",
     "target": "目标：{target}",
-    "paid": "支付了{n}点资源"
+    "paid": "支付{n}资源"
   },
   "skillResult": {
-    "unrun": "未进行",
-    "succeededBy": "成功，超过{n}",
-    "failedBy": "失败，差{n}"
+    "unrun": "尚未执行",
+    "succeededBy": "成功差值为{n}",
+    "failedBy": "失败差值为{n}"
   },
   "enemy": {
     "health": "生命值：{n}",

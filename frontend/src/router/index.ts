@@ -18,8 +18,8 @@ const router = createRouter({
 
 /* Returns the redirect rather than calling next(): vue-router 5 deprecates the
  * next() callback (one warning per guard run) and 6 removes it. Returning
- * nothing proceeds, which is also how a route with neither flag passes through
- * -- and, as before, leaves its title alone. */
+ * nothing proceeds, which is also how a route with neither flag passes through.
+ * App maintains the localized document title after navigation. */
 router.beforeEach(async (to) => {
   const store = useUserStore()
   await store.loadUserFromStorage()
@@ -30,13 +30,11 @@ router.beforeEach(async (to) => {
   if (flagged('requiresAuth')) {
     if (getToken() === null) return { path: '/sign-in', query: { nextUrl: to.fullPath } }
     if (flagged('requiresAdmin') && !store.isAdmin) return { path: '/' }
-    document.title = `${to.meta.title}`
     return
   }
 
   if (flagged('guest')) {
     if (getToken() !== null) return { path: '/' }
-    document.title = `${to.meta.title}`
   }
 });
 

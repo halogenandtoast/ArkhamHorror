@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+
+
 /* A test against a number: "at least 2", "between 1 and 3", "any value".
  *
  * Stored as a comparison wrapping a `GameValue`, which in practice is always
@@ -15,20 +18,22 @@ import BindingToggle from '@/arkham/components/debug/BindingToggle.vue'
 import type { Binding } from '@/arkham/customCardBindings'
 import { typeFits } from '@/arkham/customCardExpressions'
 
+const { t: uiT } = useI18n()
+
 const props = defineProps<{ modelValue: any; bindings?: Binding[] }>()
 const emit = defineEmits<{ 'update:modelValue': [v: any] }>()
 
 const COMPARISONS = ['GreaterThanOrEqualTo', 'LessThanOrEqualTo', 'EqualTo', 'GreaterThan', 'LessThan']
 
 const OPTIONS = [
-  { tag: 'GreaterThanOrEqualTo', label: 'at least' },
-  { tag: 'LessThanOrEqualTo', label: 'at most' },
-  { tag: 'EqualTo', label: 'exactly' },
-  { tag: 'GreaterThan', label: 'more than' },
-  { tag: 'LessThan', label: 'fewer than' },
-  { tag: 'Between', label: 'between' },
-  { tag: 'AnyValue', label: 'any value' },
-  { tag: 'GameValueOneOf', label: 'one of' },
+  { tag: 'GreaterThanOrEqualTo', label: uiT('ui.atLeast') },
+  { tag: 'LessThanOrEqualTo', label: uiT('ui.atMost') },
+  { tag: 'EqualTo', label: uiT('ui.exactly') },
+  { tag: 'GreaterThan', label: uiT('ui.moreThan') },
+  { tag: 'LessThan', label: uiT('ui.fewerThan') },
+  { tag: 'Between', label: uiT('ui.between2') },
+  { tag: 'AnyValue', label: uiT('ui.anyValue') },
+  { tag: 'GameValueOneOf', label: uiT('ui.oneOf') },
 ]
 
 const tag = computed<string>(() => {
@@ -126,7 +131,7 @@ const removeBranch = (at: number) =>
         <span class="rule" aria-hidden="true"></span>
 
         <template v-for="(_, at) in tag === 'Between' ? 2 : 1" :key="at">
-          <span v-if="at > 0" class="joiner">and</span>
+          <span v-if="at > 0" class="joiner">{{ $t('ui.and2') }}</span>
           <BindingField
             v-if="showBinding(at)"
             class="grow"
@@ -140,7 +145,7 @@ const removeBranch = (at: number) =>
             v-else
             type="number"
             :value="operands[at] ?? ''"
-            placeholder="a number"
+            :placeholder="$t('ui.aNumber')"
             @input="setAmount(at, ($event.target as HTMLInputElement).value)"
             @keydown.stop
           />
@@ -164,11 +169,11 @@ const removeBranch = (at: number) =>
           :bindings="bindings"
           @update:modelValue="setBranch(at, $event)"
         />
-        <button type="button" class="remove" title="Remove this one" @click="removeBranch(at)">
+        <button type="button" class="remove" :title="$t('ui.removeThisOne')" @click="removeBranch(at)">
           ×
         </button>
       </div>
-      <button type="button" class="add" @click="addBranch">+ Add</button>
+      <button type="button" class="add" @click="addBranch">{{ $t('ui.add') }}</button>
     </div>
   </div>
 </template>

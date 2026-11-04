@@ -204,7 +204,7 @@ const dismissNotification = (notification: AppNotification) => {
                     :disabled="!importGameCanSubmit"
                     @click="submitImportGame"
                   >
-                    {{ importGameLoading ? 'Loading…' : 'Load Game' }}
+                    {{ importGameLoading ? $t('ui.loading2') : $t('ui.loadGame') }}
                   </button>
                 </div>
               </div>

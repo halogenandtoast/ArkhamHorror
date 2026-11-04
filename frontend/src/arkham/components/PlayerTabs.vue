@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+
+
 import { useStorage } from '@vueuse/core'
 import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { Ref } from 'vue';
@@ -15,6 +18,8 @@ import { imgsrc, isTypingTarget } from '@/arkham/helpers';
 import { gameLocalStorageKey } from '@/arkham/localStorage';
 import { IsMobile } from '@/arkham/isMobile';
 import { useDbCardStore } from '@/stores/dbCards'
+
+const { t: uiT } = useI18n()
 
 export interface Props {
   game: Game
@@ -75,7 +80,7 @@ function hasSwitch(investigator: Investigator) {
 
 function instructions(investigator: Investigator) {
   if (investigator.playerId !== props.playerId) {
-    return "Switch to this investigator's perspective"
+    return uiT('ui.switchToThisInvestigatorSPerspective')
   }
 
   return null

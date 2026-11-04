@@ -9,6 +9,7 @@
  * (that game only), and the campaign continuation screen (the rest of the
  * campaign). */
 import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useCardStore } from '@/stores/cards'
 import { useDbCardStore } from '@/stores/dbCards'
 import { libraryCards, libraryLoaded, loadLibrary } from '@/arkham/customCardLibrary'
@@ -29,6 +30,7 @@ const props = defineProps<{
 const emit = defineEmits<{ 'update:modelValue': [v: DeckOverlay | null] }>()
 
 const cardStore = useCardStore()
+const { t } = useI18n()
 const dbStore = useDbCardStore()
 
 onMounted(() => {
@@ -164,40 +166,40 @@ defineExpose({ isEmpty })
 
 <template>
   <div class="overlay-editor">
-    <p v-if="!libraryLoaded" class="muted">Loading your library…</p>
+    <p v-if="!libraryLoaded" class="muted">{{ t('deckUi.editor.loading') }}</p>
 
     <p v-else-if="!library.length" class="muted">
-      Your custom card library is empty. Build a card first and it will be offered here.
+      {{ t('deckUi.editor.empty') }}
     </p>
 
     <template v-else>
       <div v-if="investigators.length" class="field">
-        <span class="field-label">Investigator</span>
+        <span class="field-label">{{ t('deckUi.editor.investigator') }}</span>
         <select
           :value="overlay.investigator ?? ''"
           @change="setInvestigator(($event.target as HTMLSelectElement).value || null)"
         >
-          <option value="">No replacement — keep the deck's own</option>
+          <option value="">{{ t('deckUi.editor.keepInvestigator') }}</option>
           <option v-for="card in investigators" :key="card.def.cardCode" :value="card.def.cardCode">
             {{ card.def.name.title }}
           </option>
         </select>
         <button v-if="!isEmpty" type="button" class="clear" @click="emit('update:modelValue', null)">
-          Clear overlay
+          {{ t('deckUi.overlay.clear') }}
         </button>
       </div>
       <p v-if="overlay.investigator" class="hint">
-        Their signature cards replace the ones the deck's investigator brought.
+        {{ t('deckUi.editor.signatures') }}
       </p>
 
       <section v-if="playerCards.length">
         <header class="section-head">
-          <h4>Add cards<span v-if="addedTotal" class="count">+{{ addedTotal }}</span></h4>
-          <input v-model="addSearch" class="search" type="search" placeholder="Search…" @keydown.stop />
+          <h4>{{ t('deckUi.editor.addCards') }}<span v-if="addedTotal" class="count">+{{ addedTotal }}</span></h4>
+          <input v-model="addSearch" class="search" type="search" :placeholder="t('deckUi.editor.search')" @keydown.stop />
         </header>
         <ul class="rows">
           <template v-for="[set, cards] in addableGroups" :key="set">
-            <li v-if="addableGroups.length > 1 || set !== 'Ungrouped'" class="group">{{ set }}</li>
+            <li v-if="addableGroups.length > 1 || set !== 'Ungrouped'" class="group">{{ set === 'Ungrouped' ? t('deckUi.editor.ungrouped') : set }}</li>
             <li
               v-for="card in cards"
               :key="card.def.cardCode"
@@ -209,25 +211,25 @@ defineExpose({ isEmpty })
                 <button
                   type="button"
                   :disabled="addedCount(card.def.cardCode) === 0"
-                  title="Add one fewer"
+                  :title="t('deckUi.editor.addFewer')"
                   @click="setAdded(card.def.cardCode, addedCount(card.def.cardCode) - 1)"
                 >−</button>
                 <button
                   type="button"
-                  title="Add one"
+                  :title="t('deckUi.editor.addOne')"
                   @click="setAdded(card.def.cardCode, addedCount(card.def.cardCode) + 1)"
                 >+</button>
               </span>
             </li>
           </template>
         </ul>
-        <p v-if="!addable.length" class="muted">No card matches that.</p>
+        <p v-if="!addable.length" class="muted">{{ t('deckUi.editor.noMatches') }}</p>
       </section>
 
       <section v-if="Object.keys(props.slots).length">
         <header class="section-head">
-          <h4>Take cards out<span v-if="removedTotal" class="count">−{{ removedTotal }}</span></h4>
-          <input v-model="deckSearch" class="search" type="search" placeholder="Search…" @keydown.stop />
+          <h4>{{ t('deckUi.editor.removeCards') }}<span v-if="removedTotal" class="count">−{{ removedTotal }}</span></h4>
+          <input v-model="deckSearch" class="search" type="search" :placeholder="t('deckUi.editor.search')" @keydown.stop />
         </header>
         <ul class="rows">
           <li
@@ -241,19 +243,19 @@ defineExpose({ isEmpty })
               <button
                 type="button"
                 :disabled="removedCount(card.cardCode) >= card.count"
-                title="Take one out"
+                :title="t('deckUi.editor.takeOne')"
                 @click="setRemoved(card.cardCode, removedCount(card.cardCode) + 1, card.count)"
               >−</button>
               <button
                 type="button"
                 :disabled="removedCount(card.cardCode) === 0"
-                title="Put one back"
+                :title="t('deckUi.editor.restoreOne')"
                 @click="setRemoved(card.cardCode, removedCount(card.cardCode) - 1, card.count)"
               >+</button>
             </span>
           </li>
         </ul>
-        <p v-if="!deckCards.length" class="muted">No card matches that.</p>
+        <p v-if="!deckCards.length" class="muted">{{ t('deckUi.editor.noMatches') }}</p>
       </section>
 
       <button
@@ -262,7 +264,7 @@ defineExpose({ isEmpty })
         class="clear"
         @click="emit('update:modelValue', null)"
       >
-        Clear overlay
+        {{ t('deckUi.overlay.clear') }}
       </button>
     </template>
   </div>

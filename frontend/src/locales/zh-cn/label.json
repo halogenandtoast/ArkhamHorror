@@ -1,4 +1,8 @@
 {
+  "assignDamage": "分配{damage}点伤害",
+  "assignHorror": "分配{horror}点恐惧",
+  "assignDamageAndHorror": "分配{damage}点伤害和{horror}点恐惧",
+  "tokensToAssign": "待分配的标记",
   "addCurseTokens": "向混乱袋中添加1个{'{'}curse{'}'}标记 | 向混乱袋中添加{count}个{'{'}curse{'}'}标记",
   "addSupply": "增加补给",
   "addToHand": "将{name}加入手牌",

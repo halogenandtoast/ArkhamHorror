@@ -21,7 +21,8 @@
     "import-fr-cards": "node ./scripts/import-card-translations.cjs --source-locale fr --output-lang fr --slim",
     "import-zh-cn-cards": "node ./scripts/import-card-translations.cjs --source-locale zh-cn --output-lang zh-cn --slim",
     "slim-cards": "node ./scripts/slim-cards.cjs",
-    "check:locale-markup": "node ./scripts/check-locale-markup.cjs"
+    "check:locale-markup": "node ./scripts/check-locale-markup.cjs",
+    "check:zh-cn": "node ./scripts/check-ui-localization.mjs && node --test tests/gameplayLocalization.test.mjs tests/zhCnScenarioLocale.test.mjs tests/zhCnAchievements.test.mjs tests/zhCnDeckUi.test.mjs tests/zhCnUi.test.mjs tests/localeMarkup.test.mjs"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.1.0",

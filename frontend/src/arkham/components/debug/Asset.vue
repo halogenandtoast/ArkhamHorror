@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+
+
 import Draggable from '@/components/Draggable.vue';
 import { computed, ref } from 'vue';
 import { useDebug } from '@/arkham/debug';
@@ -18,6 +21,8 @@ import { useDbCardStore } from '@/stores/dbCards'
 import { useCardStore } from '@/stores/cards'
 import { isCustomCardCode } from '@/arkham/customCards'
 import { useEscape } from '@/composable/escape'
+
+const { t: uiT } = useI18n()
 
 const props = defineProps<{
   game: Game
@@ -87,7 +92,7 @@ const spiritDeckCardImageId = (card: ArkhamCard) => toCardContents(card).art ?? 
 const spiritDeckCardName = (card: ArkhamCard) => {
   const contents = toCardContents(card)
   const dbCard = dbCardStore.getDbCard(contents.art ?? asCardCode(card).replace(/^c/, ''))
-  if (!dbCard) return 'Unknown card'
+  if (!dbCard) return uiT('ui.unknownCard')
   return dbCard.subname ? `${dbCard.name}: ${dbCard.subname}` : dbCard.name
 }
 
@@ -162,7 +167,7 @@ const hasPool = computed(() => {
         <button @click="showSlots = false">{{ $t('debug.common.back') }}</button>
       </div>
       <div v-else-if="inspectSpiritDeck" class="spirit-deck-inspector">
-        <div class="spirit-deck-inspector__header">Spirit Deck ({{ spiritDeck.length }})</div>
+        <div class="spirit-deck-inspector__header">{{ $t('ui.spiritDeck') }}{{ spiritDeck.length }})</div>
         <div v-if="spiritDeck.length > 0" class="spirit-deck-inspector__cards">
           <div v-for="(card, index) in spiritDeck" :key="`${toCardContents(card).id}-${index}`" class="spirit-deck-inspector__card">
             <span class="spirit-deck-inspector__position">{{ index + 1 }}</span>
@@ -174,7 +179,7 @@ const hasPool = computed(() => {
             <span class="spirit-deck-inspector__name">{{ spiritDeckCardName(card) }}</span>
           </div>
         </div>
-        <div v-else class="spirit-deck-inspector__empty">The spirit deck is empty.</div>
+        <div v-else class="spirit-deck-inspector__empty">{{ $t('ui.theSpiritDeckIsEmpty') }}</div>
         <button @click="inspectSpiritDeck = false">{{ $t('debug.common.back') }}</button>
       </div>
       <div v-else-if="setModifiers" class="buttons">
@@ -191,7 +196,7 @@ const hasPool = computed(() => {
         <button v-if="asset.owner" @click="debug.send(game.id, {tag: 'Discard', contents: [null, { tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}]})">{{ $t('debug.asset.discard') }}</button>
         <button v-if="returnToHandInvestigator" @click="returnToHand">{{ $t('debug.common.returnToHand') }}</button>
         <button v-if="canFlip" @click="debug.send(game.id, {tag: 'Flip', contents: [flipInvestigator, { tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}]})">{{ $t('debug.asset.flip') }}</button>
-        <button v-if="asset.spiritDeck" @click="inspectSpiritDeck = true">Inspect spirit deck</button>
+        <button v-if="asset.spiritDeck" @click="inspectSpiritDeck = true">{{ $t('ui.inspectSpiritDeck') }}</button>
         <button v-if="slots.length > 0" @click="showSlots = true">{{ $t('debug.asset.showSlots') }}</button>
         <router-link
           v-if="isCustomCardCode(cardCode)"
@@ -199,7 +204,7 @@ const hasPool = computed(() => {
           target="_blank"
           class="edit-custom-card"
         >
-          Edit custom card
+          {{ $t('ui.editCustomCard') }}
         </router-link>
         <button @click="setModifiers = true">{{ $t('debug.common.modifiers') }}</button>
       </div>

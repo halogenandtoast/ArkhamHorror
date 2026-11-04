@@ -531,7 +531,7 @@ const chooseFromStoryCollection = (choice: number) => {
           </div>
         </div>
         <StackIndicator
-          label="Act"
+          :label="$t('ui.act')"
           :current="currentActPosition"
           :total="totalActs"
           :completedCards="completedStack"
@@ -605,7 +605,7 @@ const chooseFromStoryCollection = (choice: number) => {
     <section
       v-if="nextToStories.length >= 3 && activeStory"
       class="story-collection"
-      :aria-label="`${nextToStories.length} story cards next to the act`"
+      :aria-label="$t('ui.storiesNextToAct', { count: nextToStories.length })"
     >
       <Story
         :story="activeStory"
@@ -624,8 +624,8 @@ const chooseFromStoryCollection = (choice: number) => {
         <button
           type="button"
           class="story-collection__toggle cards-under-indicator"
-          :aria-label="`Story cards (${nextToStories.length}) — click to view`"
-          v-tooltip="`Story cards (${nextToStories.length}) — click to view`"
+          :aria-label="$t('ui.cardsUnderTooltip', { label: $t('ui.storyCardsLabel'), count: nextToStories.length })"
+          v-tooltip="$t('ui.cardsUnderTooltip', { label: $t('ui.storyCardsLabel'), count: nextToStories.length })"
         >
           <span class="cards-under-indicator__icon" aria-hidden="true">
             <span class="cards-under-indicator__card cards-under-indicator__card--back" />
@@ -635,7 +635,7 @@ const chooseFromStoryCollection = (choice: number) => {
         </button>
         <template #popper>
           <div class="cards-under-popover">
-            <div class="cards-under-popover__header">Story cards ({{ nextToStories.length }})</div>
+            <div class="cards-under-popover__header">{{ $t('ui.storyCardsCount', { count: nextToStories.length }) }}</div>
             <div class="cards-under-popover__cards">
               <article
                 v-for="storyId in nextToStories"

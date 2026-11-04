@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+
+
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { cardDropInFlight } from '@/arkham/debugCardDrop'
 import { Dropdown } from 'floating-vue'
@@ -10,6 +13,8 @@ import type { Game } from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
 import CardView from '@/arkham/components/Card.vue'
 import { useDebug } from '@/arkham/debug'
+
+const { t: uiT } = useI18n()
 
 const props = withDefaults(defineProps<{
   cards: (ArkhamCard | CardContents)[]
@@ -31,7 +36,7 @@ const props = withDefaults(defineProps<{
   allowInPlayAbilities?: boolean
   autoShowWhenOnlyChoice?: boolean
 }>(), {
-  label: 'Cards underneath',
+  label: '',
   placement: 'bottom',
   // Boolean props are cast to `false` when absent, which would make the
   // uncontrolled case indistinguishable from "the parent says stay closed" and
@@ -74,7 +79,8 @@ async function reposition() {
 const count = computed(() => props.cards.length)
 
 watch(count, () => reposition())
-const tooltip = computed(() => `${props.label} (${count.value}) — click to view`)
+const resolvedLabel = computed(() => props.label || uiT('ui.cardsUnderneath'))
+const tooltip = computed(() => uiT('ui.cardsUnderTooltip', { label: resolvedLabel.value, count: count.value }))
 const choices = computed(() => props.game && props.playerId ? ArkhamGame.choices(props.game, props.playerId) : [])
 const interactive = computed(() => props.game !== undefined && props.playerId !== undefined)
 
@@ -229,7 +235,7 @@ onBeforeUnmount(() => finishDrag())
           <span class="cards-under-indicator__card cards-under-indicator__card--front" />
         </slot>
       </span>
-      <span v-if="showLabel" class="cards-under-indicator__label">{{ label }}</span>
+      <span v-if="showLabel" class="cards-under-indicator__label">{{ resolvedLabel }}</span>
       <span class="cards-under-indicator__count">{{ count }}</span>
     </button>
 
@@ -242,7 +248,7 @@ onBeforeUnmount(() => finishDrag())
         @dragleave="onDragLeave"
         @drop="onDrop"
       >
-        <div class="cards-under-popover__header">{{ label }} ({{ count }})</div>
+        <div class="cards-under-popover__header">{{ resolvedLabel }} ({{ count }})</div>
         <div class="cards-under-popover__cards" @dragstart="hidePopoverWhileDragging">
           <div
             v-for="(card, i) in cards"

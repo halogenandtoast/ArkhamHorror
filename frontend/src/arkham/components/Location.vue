@@ -40,6 +40,8 @@ import { useDbCardStore } from '@/stores/dbCards'
 import { useSettings } from '@/stores/settings'
 import { isCthulhuBoardEnemy } from '@/arkham/components/TheDrownedCity/cthulhuBoard'
 
+const { t: uiT } = useI18n()
+
 export interface Props {
   game: Game
   location: Arkham.Location
@@ -569,7 +571,7 @@ const canShowCardsUnderneath = computed(() => {
   }
   return playerCardsUnderneath.value.length > 0 && !hasFacedownCardsUnderneath.value
 })
-const showCardsUnderneath = () => emits('show', cardsUnderneathToShow, 'Cards Underneath', false, debug.active)
+const showCardsUnderneath = () => emits('show', cardsUnderneathToShow, uiT('ui.cardsUnderneath2'), false, debug.active)
 const isAttackTarget = computed(() => props.game.enemyAttackTargets.some((e) => e.target.contents === props.location.id))
 const highlighted = computed(() => highlighter.highlighted.value === props.location.id || isAttackTarget.value)
 
@@ -647,13 +649,13 @@ const hasAnyLocationVehicleAssets = computed(() =>
           @dragenter.prevent
         >
           <Locus v-if="locus" class="locus" />
-          <span v-if="blocked" class="status-icon" v-tooltip="'Blocked'">
+          <span v-if="blocked" class="status-icon" v-tooltip="$t('ui.blocked')">
             <font-awesome-icon :icon="['fab', 'expeditedssl']" />
           </span>
           <span
             v-if="darkTraitRemoved"
             class="lantern-badge"
-            v-tooltip="'The Dark trait is removed'"
+            v-tooltip="$t('ui.theDarkTraitIsRemoved')"
           >
             <img
               class="lantern-icon"

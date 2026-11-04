@@ -107,7 +107,7 @@ function formatEntry(t: ComposerTranslation, entry: FlavorTextEntry, classes: { 
       formatEntry(t, entry.entry),
     ])
     case 'EntrySplit': return h('hr')
-    default: return h('div', "Unknown entry type")
+    default: return h('div', t('ui.unknownEntryType'))
   }
 }
 

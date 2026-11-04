@@ -67,7 +67,7 @@ async function sync(deck: Arkham.Deck) {
     allDecks.value = allDecks.value.map((d) => d.id === updated.id ? updated : d)
     toast.success(t('deckSyncedSuccessfully'), { timeout: 3000 })
   } catch (e) {
-    toast.error(deckErrorMessage(e) ?? t('deck.syncFailed'), { timeout: 8000 })
+    toast.error(deckErrorMessage(e, t) ?? t('deck.syncFailed'), { timeout: 8000 })
   }
 }
 </script>

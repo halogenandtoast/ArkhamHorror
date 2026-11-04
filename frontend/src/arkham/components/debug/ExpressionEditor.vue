@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+
+
 /* Building an expression from "Arkham.Custom.Expr" without writing its JSON.
  *
  * An expression is one source -- a value, a property, something about the test
@@ -33,6 +36,8 @@ import {
   unwindPipeline,
   windPipeline,
 } from '@/arkham/customCardExpressions'
+
+const { t: uiT } = useI18n()
 
 const props = withDefaults(
   defineProps<{
@@ -77,23 +82,23 @@ type Source = {
  * twice and makes the list slower to scan. */
 
 const SOURCES: Source[] = [
-  { key: '', label: 'Value', shape: 'literal' },
-  { key: 'get', label: 'Property', shape: 'prop' },
-  { key: 'skillTest', label: 'Skill test', shape: 'skillTest' },
-  { key: 'query', label: 'Query', shape: 'query' },
-  { key: 'recordSet', label: 'Campaign log set', shape: 'record' },
-  { key: 'recordCount', label: 'Campaign log count', shape: 'record' },
+  { key: '', label: uiT('ui.value2'), shape: 'literal' },
+  { key: 'get', label: uiT('ui.property'), shape: 'prop' },
+  { key: 'skillTest', label: uiT('ui.skillTest'), shape: 'skillTest' },
+  { key: 'query', label: uiT('ui.query'), shape: 'query' },
+  { key: 'recordSet', label: uiT('ui.campaignLogSet'), shape: 'record' },
+  { key: 'recordCount', label: uiT('ui.campaignLogCount'), shape: 'record' },
 ]
 
 const PREDICATES = [
   { key: 'eq', label: 'is' },
-  { key: 'ne', label: 'is not' },
-  { key: 'in', label: 'is one of' },
-  { key: 'notIn', label: 'is not one of' },
-  { key: 'gt', label: 'is more than' },
-  { key: 'lt', label: 'is less than' },
-  { key: 'gte', label: 'is at least' },
-  { key: 'lte', label: 'is at most' },
+  { key: 'ne', label: uiT('ui.isNot') },
+  { key: 'in', label: uiT('ui.isOneOf') },
+  { key: 'notIn', label: uiT('ui.isNotOneOf') },
+  { key: 'gt', label: uiT('ui.isMoreThan') },
+  { key: 'lt', label: uiT('ui.isLessThan') },
+  { key: 'gte', label: uiT('ui.isAtLeast') },
+  { key: 'lte', label: uiT('ui.isAtMost') },
 ]
 
 /* The expression as a source and the transforms applied to it, which is how it
@@ -324,13 +329,13 @@ const addStage = () => {
  * be read off the type you have arrived at. */
 const noStageReason = computed(() => {
   if (source.value === null && pipeline.value.stages.length === 0) {
-    return 'Give this a value first'
+    return uiT('ui.giveThisAValueFirst')
   }
   const incoming = pipelineTypes.value[pipeline.value.stages.length]
   if (stagesFor(incoming).length === 0) {
     return incoming
       ? `Nothing can be read off ${incoming}`
-      : 'Nothing can be read off this yet'
+      : uiT('ui.nothingCanBeReadOffThisYet')
   }
   return ''
 })
@@ -379,7 +384,7 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
         <div v-else class="value-box grow">
           <input
             :value="literalText"
-            :placeholder="expect === 'Int' ? 'a number' : 'a value'"
+            :placeholder="expect === 'Int' ? $t('ui.aNumber') : $t('ui.aValue')"
             @input="setLiteral(($event.target as HTMLInputElement).value)"
             @keydown.stop
           />
@@ -394,7 +399,7 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
 
       <template v-else-if="currentSource.shape === 'prop'">
         <label>
-          Of what
+          {{ $t('ui.ofWhat') }}
           <select
             :value="source?.kind ?? 'card'"
             @change="patch({ kind: ($event.target as HTMLSelectElement).value })"
@@ -412,7 +417,7 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
           @update:modelValue="patch({ get: $event })"
         />
         <label v-else>
-          Field
+          {{ $t('ui.field') }}
           <input
             :value="source?.get"
             :placeholder="FIELD_PLACEHOLDER[source?.kind ?? ''] ?? 'SomeField'"
@@ -435,7 +440,7 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
 
       <template v-else-if="currentSource.shape === 'record'">
         <label v-if="recordIsHomebrew" class="grow">
-          Key
+          {{ $t('ui.key') }}
           <input
             :value="recordKeyName"
             placeholder="TraitsLearned"
@@ -448,7 +453,7 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
           class="grow"
           :bindings="bindings"
           type="CampaignLogKey"
-          label="Key"
+          :label="$t('ui.key')"
           :modelValue="source?.[currentSource.key]"
           @update:modelValue="patch({ [currentSource.key]: $event })"
         />
@@ -460,7 +465,7 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
             :value="source?.holds ?? ''"
             @change="patch({ holds: ($event.target as HTMLSelectElement).value || undefined })"
           >
-            <option value="">anything</option>
+            <option value="">{{ $t('ui.anything') }}</option>
             <option v-for="h in RECORD_HOLDS" :key="h" :value="h">{{ h }}</option>
           </select>
         </label>
@@ -473,8 +478,8 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
     <p v-if="currentSource.shape === 'record'" class="record-hint">
       {{
         currentSource.key === 'recordSet'
-          ? 'The entries recorded under that key, so they can be counted or filtered. Crossed-out entries are left out.'
-          : 'The number recorded under that key — what the log counts, not how many entries the set has.'
+          ? $t('ui.recordedSetHelp')
+          : $t('ui.recordedNumberHelp')
       }}
     </p>
 
@@ -483,7 +488,7 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
          controls sharing a row with the field above. -->
     <div v-if="currentSource.shape === 'query'" class="query-block">
       <div class="phrase">
-        <span class="phrase-label">search</span>
+        <span class="phrase-label">{{ $t('ui.search') }}</span>
         <select
           :value="source?.query?.kind ?? 'enemy'"
           @change="patch({ query: { kind: ($event.target as HTMLSelectElement).value, matcher: null } })"
@@ -492,7 +497,7 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
             {{ QUERY_NOUNS[kind] ?? kind }}
           </option>
         </select>
-        <span class="phrase-label">get</span>
+        <span class="phrase-label">{{ $t('ui.get') }}</span>
         <select
           :value="source?.mode ?? 'all'"
           @change="patch({ mode: ($event.target as HTMLSelectElement).value })"
@@ -505,7 +510,7 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
       </div>
       <ValueEditor
         :type="(queryKinds ?? {})[source?.query?.kind ?? 'enemy'] ?? 'EnemyMatcher'"
-        label="that match"
+        :label="$t('ui.thatMatch')"
         :bindings="bindings"
         :modelValue="source?.query?.matcher"
         @update:modelValue="patch({ query: { ...(source?.query ?? { kind: 'enemy' }), matcher: $event } })"
@@ -591,16 +596,15 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
           <button
             type="button"
             class="pipe-remove"
-            title="Remove this transform"
-            aria-label="Remove this transform"
+            :title="$t('ui.removeThisTransform')"
+            :aria-label="$t('ui.removeThisTransform')"
             @click="removeStage(at)"
           >
             ×
           </button>
         </div>
         <p v-if="!stageFits(at)" class="pipe-error">
-          <code>{{ pipelineTypes[at] }}</code> is not something “{{ stageLabel(at) }}” can be
-          asked for.
+          <code>{{ pipelineTypes[at] }}</code> {{ $t('ui.isNotSomething') }}{{ stageLabel(at) }}{{ $t('ui.canBeAskedFor') }}
         </p>
         <p v-for="problem in stageOperandProblems(at)" :key="problem" class="pipe-error">
           {{ problem }}.
@@ -614,7 +618,7 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
             :bindings="bindings"
             :queryKinds="queryKinds"
             expect="Int"
-            label="how many times"
+            :label="$t('ui.howManyTimes2')"
             @update:modelValue="setStageTimes(at, $event)"
           />
         </div>
@@ -623,17 +627,17 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
           <ExpressionEditor
             :modelValue="stagePredicateOperand(at)"
             :bindings="bindings"
-            label="compared with"
+            :label="$t('ui.comparedWith')"
             @update:modelValue="setStagePredicateOperand(at, $event)"
           />
           <!-- What is compared. Without this the element itself is compared,
                which is no use for a list of things with a property worth
                testing: the answer wanted is the things, not the property. -->
           <label class="cap">
-            comparing
+            {{ $t('ui.comparing') }}
             <input
               :value="stageAt(at)?.by ?? ''"
-              placeholder="each one itself"
+              :placeholder="$t('ui.eachOneItself')"
               @input="patchStage(at, { by: ($event.target as HTMLInputElement).value || undefined })"
               @keydown.stop
             />
@@ -657,13 +661,13 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
               v-if="naryExtras(stageAt(at)).length > 1"
               type="button"
               class="remove"
-              title="Remove this value"
+              :title="$t('ui.removeThisValue')"
               @click="removeNaryExtra(at, which)"
             >
               ×
             </button>
           </div>
-          <button type="button" class="add" @click="addNaryExtra(at)">+ Value</button>
+          <button type="button" class="add" @click="addNaryExtra(at)">{{ $t('ui.value') }}</button>
         </div>
       </div>
 
@@ -671,10 +675,10 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
         type="button"
         class="add-transform"
         :disabled="!!noStageReason"
-        :title="noStageReason || 'Do something to what you have'"
+        :title="noStageReason || $t('ui.doSomethingToWhatYouHave')"
         @click="addStage"
       >
-        <span class="add-glyph" aria-hidden="true">+</span> transform
+        <span class="add-glyph" aria-hidden="true">+</span> {{ $t('ui.transform') }}
       </button>
     </div>
   </div>

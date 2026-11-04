@@ -413,7 +413,7 @@ defineExpose({
             :class="{ selected: selectedInvestigator === investigator.id }"
             @click="selectedInvestigator = investigator.id"
             type="button"
-          >{{ selectedInvestigator === investigator.id ? 'Selected' : 'Select' }}</button>
+          >{{ selectedInvestigator === investigator.id ? $t('ui.selected') : $t('ui.select') }}</button>
         </template>
       </InvestigatorRow>
     </div>

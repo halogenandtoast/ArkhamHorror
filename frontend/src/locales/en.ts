@@ -1,4 +1,5 @@
 import base from '@/locales/en/base.json'
+import ui from '@/locales/en/interface.json'
 import cardOption from '@/locales/en/cardOption.json'
 import { homebrewMessages } from '@/locales/homebrew'
 import event from '@/locales/en/event.json'
@@ -27,6 +28,7 @@ import xp from '@/locales/en/xp.json'
 
 export default
   { ...base
+  , ui
   , ...cardOption
   , ...event
   , ...campaignLog

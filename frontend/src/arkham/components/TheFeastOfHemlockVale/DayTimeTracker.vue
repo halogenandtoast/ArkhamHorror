@@ -92,11 +92,11 @@ async function setDayTime(row: number, col: number) {
           class="daytime-debug-toggle"
           :class="{ active: isDebugging }"
           @click="dayTimeDebug = !dayTimeDebug"
-        >Debug</button>
+        >{{ $t('ui.debug') }}</button>
       </div>
 
       <div class="grid">
-        <div class="icon-cell" aria-label="Day">
+        <div class="icon-cell" :aria-label="$t('ui.day')">
           <svg viewBox="0 0 24 24" class="icon" aria-hidden="true">
             <g fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">
               <circle cx="12" cy="12" r="4.2" fill="currentColor" fill-opacity="0.08" />
@@ -111,7 +111,7 @@ async function setDayTime(row: number, col: number) {
             </g>
           </svg>
         </div>
-        <div class="icon-cell" aria-label="Night">
+        <div class="icon-cell" :aria-label="$t('ui.night')">
           <svg viewBox="0 0 24 24" class="icon" aria-hidden="true">
             <path
               d="M19.5 14.8A8 8 0 0 1 9.2 4.5a8 8 0 1 0 10.3 10.3z"

@@ -1311,7 +1311,7 @@ watchEffect(() => {
                   return `translate(${x - s/2}, ${y - s/2}) scale(${s/24})`;
                 })()"
                 fill="#690000"
-                aria-label="tick"
+                :aria-label="$t('ui.tick')"
               >
                 <path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/>
               </g>
@@ -1371,7 +1371,7 @@ watchEffect(() => {
                   return `translate(${x - s/2}, ${y - s/2}) scale(${s/24})`;
                 })()"
                 fill="currentColor"
-                aria-label="tick"
+                :aria-label="$t('ui.tick')"
               >
                 <path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/>
               </g>
@@ -1436,7 +1436,7 @@ watchEffect(() => {
     <span class="fight" v-if="fight">{{ fight }}</span>
     <span class="health" v-if="health">{{ health }}</span>
     <span class="evade" v-if="evade">{{ evade }}</span>
-    <span class="victory" v-if="victory">Victory {{ victory }}.</span>
+    <span class="victory" v-if="victory">{{ $t('ui.victory') }} {{ victory }}.</span>
     <span class="keywords" v-if="keywords">{{ keywords }}.</span>
     <PoolItem class="depth" v-if="depth" type="resource" :amount="depth" />
 

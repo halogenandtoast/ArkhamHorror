@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import { computed, ref } from 'vue'
 import api from '@/api'
 import Room from '@/components/admin/Room.vue'
 import RoomDetails from '@/components/admin/RoomDetails.vue'
 import type { RoomData, RoomDetails as RoomDetailsData } from '@/components/admin/roomTypes'
+
+const { t: uiT } = useI18n()
 
 const request = await api.get<RoomData[]>('admin/rooms')
 const data = computed(() => request.data)
@@ -27,7 +30,7 @@ async function lookup(gameId: string) {
     lookupId.value = trimmed
   } catch (e) {
     details.value = null
-    error.value = `Could not look up ${trimmed}: ${e}`
+    error.value = uiT('ui.roomLookupFailed', { id: trimmed, detail: String(e) })
   } finally {
     loading.value = false
   }
@@ -37,11 +40,11 @@ async function lookup(gameId: string) {
 <template>
   <section class="admin-block">
     <header class="section-header">
-      <h2>Room Lookup</h2>
+      <h2>{{ $t('ui.roomLookup') }}</h2>
     </header>
     <form class="lookup" @submit.prevent="lookup(lookupId)">
-      <input v-model="lookupId" type="text" placeholder="Game id" spellcheck="false" />
-      <button type="submit" :disabled="loading">{{ loading ? 'Looking…' : 'Look up' }}</button>
+      <input v-model="lookupId" type="text" :placeholder="$t('ui.gameId')" spellcheck="false" />
+      <button type="submit" :disabled="loading">{{ loading ? $t('ui.looking') : $t('ui.lookUp') }}</button>
     </form>
     <div v-if="error" class="empty box">{{ error }}</div>
     <RoomDetails v-if="details" :details="details" @update="details = $event" />
@@ -49,11 +52,11 @@ async function lookup(gameId: string) {
 
   <section class="admin-block">
       <header class="section-header">
-        <h2>Open Rooms</h2>
-        <span class="count-badge" aria-label="Open rooms count">{{ data.length }}</span>
+        <h2>{{ $t('ui.openRooms') }}</h2>
+        <span class="count-badge" :aria-label="$t('ui.openRoomsCount')">{{ data.length }}</span>
       </header>
 
-      <div v-if="data.length === 0" class="empty box">No rooms.</div>
+      <div v-if="data.length === 0" class="empty box">{{ $t('ui.noRooms') }}</div>
       <div v-else class="room-list">
         <Room
           v-for="room in data"

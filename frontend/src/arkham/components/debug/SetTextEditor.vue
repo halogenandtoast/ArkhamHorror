@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
 /* Every word a set's cards say, as one document.
  *
  * The text itself lives on each card -- that is the only form that reaches a
@@ -18,6 +19,8 @@ import {
   cardText,
 } from '@/arkham/customText'
 import { saveToLibrary, setCards, type LibraryCard } from '@/arkham/customCardLibrary'
+
+const { t: uiT } = useI18n()
 
 const props = defineProps<{ setId: string; disabled?: boolean }>()
 
@@ -83,7 +86,7 @@ async function save() {
   const byName = new Map(cards.value.map((card) => [nameOf(card), card]))
   const unknown = Object.keys(parsed).filter((name) => !byName.has(name))
   if (unknown.length) {
-    error.value = `No card in this set is called ${unknown[0]}`
+    error.value = uiT('ui.unknownSetCardName', { name: unknown[0] })
     return
   }
 
@@ -119,10 +122,10 @@ async function save() {
 
 <template>
   <fieldset class="set-text">
-    <legend>Text</legend>
+    <legend>{{ $t('ui.text') }}</legend>
     <div class="row">
       <label>
-        Language
+        {{ $t('ui.language') }}
         <select v-model="language">
           <option v-for="[code, name] in TEXT_LANGUAGES" :key="code" :value="code">
             {{ name }}{{ written(code) ? ' •' : '' }}
@@ -130,10 +133,10 @@ async function save() {
         </select>
       </label>
       <button type="button" :disabled="disabled || saving || !dirty" @click="save">
-        {{ saving ? 'Saving…' : 'Save text' }}
+        {{ saving ? $t('ui.saving') : $t('ui.saveText') }}
       </button>
       <span v-if="error" class="bad">{{ error }}</span>
-      <span v-else-if="saved" class="good">{{ saved }} card{{ saved === 1 ? '' : 's' }} saved</span>
+      <span v-else-if="saved" class="good">{{ $t('ui.cardsSaved', { count: saved }, saved) }}</span>
     </div>
     <textarea v-model="draft" rows="18" spellcheck="false" :disabled="disabled" @keydown.stop />
   </fieldset>

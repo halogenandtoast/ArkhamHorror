@@ -24,6 +24,8 @@ import {
   CARD_TEXT,
 } from '@/arkham/customText'
 
+const { t: uiT } = useI18n()
+
 const props = defineProps<{
   label: string
   modelValue?: string | null
@@ -91,9 +93,9 @@ const setKey = (key: string) => {
  * announce that it takes a key instead unless something says so. */
 const HOW = {
   content: [
-    'Words here are shown as written.',
-    "$.name is this card's own text instead — the words go in Text below,",
-    'where another language can be added.',
+    uiT('ui.wordsHereAreShownAsWritten'),
+    uiT('ui.nameIsThisCardSOwnTextInsteadThe'),
+    uiT('ui.whereAnotherLanguageCanBeAdded'),
   ].join(' '),
   popperClass: 'label-how',
 }
@@ -105,7 +107,7 @@ const write = (event: Event) => emit('update:modelValue', (event.target as HTMLI
   <label class="label-field">
     <span class="caption">
       {{ label }}
-      <button type="button" class="how" v-tooltip="HOW" aria-label="How this label works" @click.prevent>
+      <button type="button" class="how" v-tooltip="HOW" :aria-label="$t('ui.howThisLabelWorks')" @click.prevent>
         <font-awesome-icon icon="circle-question" />
       </button>
     </span>
@@ -129,20 +131,20 @@ const write = (event: Event) => emit('update:modelValue', (event.target as HTMLI
           v-if="key"
           class="says-part"
           :value="says"
-          placeholder="no text yet"
+          :placeholder="$t('ui.noTextYet')"
           :disabled="!text"
           @input="text?.write(key, ($event.target as HTMLInputElement).value)"
           @keydown.stop
         />
 
         <!-- What a shared key says, which is not. -->
-        <span v-else-if="shared" class="says-part reads">{{ sharedSays || 'no such key' }}</span>
+        <span v-else-if="shared" class="says-part reads">{{ sharedSays || $t('ui.noSuchKey') }}</span>
 
         <button
           type="button"
           class="segment shared"
-          v-tooltip="'Shared text'"
-          aria-label="Shared text"
+          v-tooltip="$t('ui.sharedText')"
+          :aria-label="$t('ui.sharedText')"
           @click.prevent="picking = true"
         >
           <font-awesome-icon icon="book" />
@@ -157,8 +159,8 @@ const write = (event: Event) => emit('update:modelValue', (event.target as HTMLI
           type="button"
           class="segment values"
           :class="{ empty: blanks.some((name) => !shared?.params[name]) }"
-          v-tooltip="'Fill in what it leaves blank'"
-          aria-label="Values"
+          v-tooltip="$t('ui.fillInWhatItLeavesBlank')"
+          :aria-label="$t('ui.values')"
           @click.prevent="filling = true"
         >
           $

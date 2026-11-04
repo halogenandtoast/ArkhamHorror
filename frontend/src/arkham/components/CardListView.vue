@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useDbCardStore } from '@/stores/dbCards'
 import type { ArkhamDBCard } from '@/stores/dbCards'
 import * as Arkham from '@/arkham/types/CardDef'
@@ -7,6 +8,8 @@ import { cardImage } from '@/arkham/cardImages'
 import { isCustomCardCode } from '@/arkham/customCards'
 import { localizeArkhamDBBaseUrl } from '@/arkham/helpers'
 import { cardCost, cardGroupKey as groupKey, cardIcons, cardName, cardSetText, cardTraits, cardType, groupCards, levelText } from '@/arkham/cardDetails'
+
+const { t } = useI18n()
 
 const props = withDefaults(defineProps<{
   cards: Arkham.CardDef[],
@@ -78,12 +81,12 @@ const ancestralKnowledgeCardCount = (card: Arkham.CardDef) => ancestralKnowledge
 const bewitchingCardCount = (card: Arkham.CardDef) => bewitchingCardCounts.value.get(card.art) ?? 0
 const eldritchBrandCardCount = (card: Arkham.CardDef) => eldritchBrandCardCounts.value.get(card.art) ?? 0
 
-const marketTooltip = (card: Arkham.CardDef) => `Attached to Market deck (x ${marketCardCount(card)})`
-const spiritTooltip = (card: Arkham.CardDef) => `In Spirit deck (x ${spiritCardCount(card)})`
-const stickToThePlanTooltip = (card: Arkham.CardDef) => `Attached to Stick to the Plan (x ${stickToThePlanCardCount(card)})`
-const ancestralKnowledgeTooltip = (card: Arkham.CardDef) => `Attached to Ancestral Knowledge (x ${ancestralKnowledgeCardCount(card)})`
-const bewitchingTooltip = (card: Arkham.CardDef) => `Attached to Bewitching (x ${bewitchingCardCount(card)})`
-const eldritchBrandTooltip = (card: Arkham.CardDef) => `Branded by Eldritch Brand (x ${eldritchBrandCardCount(card)})`
+const marketTooltip = (card: Arkham.CardDef) => t('deckUi.attachments.market', { count: marketCardCount(card) })
+const spiritTooltip = (card: Arkham.CardDef) => t('deckUi.attachments.spirit', { count: spiritCardCount(card) })
+const stickToThePlanTooltip = (card: Arkham.CardDef) => t('deckUi.attachments.stickToThePlan', { count: stickToThePlanCardCount(card) })
+const ancestralKnowledgeTooltip = (card: Arkham.CardDef) => t('deckUi.attachments.ancestralKnowledge', { count: ancestralKnowledgeCardCount(card) })
+const bewitchingTooltip = (card: Arkham.CardDef) => t('deckUi.attachments.bewitching', { count: bewitchingCardCount(card) })
+const eldritchBrandTooltip = (card: Arkham.CardDef) => t('deckUi.attachments.eldritchBrand', { count: eldritchBrandCardCount(card) })
 
 const isUnderworldMarketCard = (card: Arkham.CardDef) => marketCardCount(card) > 0
 const isSpiritDeckCard = (card: Arkham.CardDef) => spiritCardCount(card) > 0
@@ -93,10 +96,10 @@ const isBewitchingCard = (card: Arkham.CardDef) => bewitchingCardCount(card) > 0
 const isEldritchBrandCard = (card: Arkham.CardDef) => eldritchBrandCardCount(card) > 0
 
 const attachmentHeading = (card: Arkham.CardDef) => {
-  if (card.art === '90052') return 'Spirit deck'
-  if (card.art === '09077') return 'Underworld Market'
-  if (card.art === '11080') return 'Eldritch Brand'
-  return `Attached cards for ${cardName(card)}`
+  if (card.art === '90052') return t('deckUi.sections.spirit')
+  if (card.art === '09077') return t('deckUi.sections.market')
+  if (card.art === '11080') return t('deckUi.sections.eldritchBrand')
+  return t('deckUi.sections.attachedFor', { name: cardName(card) })
 }
 </script>
 
@@ -120,10 +123,10 @@ const attachmentHeading = (card: Arkham.CardDef) => {
             <td>
               <div class="card-name-cell">
                 <span v-if="overlayEditing" class="overlay-controls">
-                  <button type="button" title="Take one out" @click="emit('overlay-take', card)">−</button>
+                  <button type="button" :title="t('deckUi.editor.takeOne')" @click="emit('overlay-take', card)">−</button>
                   <button
                     type="button"
-                    title="Put one back"
+                    :title="t('deckUi.editor.restoreOne')"
                     :disabled="overlayRemoved(card) === 0"
                     @click="emit('overlay-restore', card)"
                   >+</button>
@@ -188,7 +191,7 @@ const attachmentHeading = (card: Arkham.CardDef) => {
                     target="_blank"
                     :href="`${localizeArkhamDBBaseUrl()}/card/${entry.card.art}`"
                   >
-                    <span class="attachment-name">{{ cardName(entry.card) }}{{ levelText(entry.card) }} was branded</span>
+                    <span class="attachment-name">{{ t('deckUi.attachments.branded', { name: cardName(entry.card) + levelText(entry.card) }) }}</span>
                     <span v-if="entry.count > 1" class="attachment-count">x {{ entry.count }}</span>
                   </a>
                 </div>

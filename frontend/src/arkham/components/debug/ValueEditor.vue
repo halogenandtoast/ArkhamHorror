@@ -27,6 +27,8 @@ import BoolField from '@/arkham/components/debug/BoolField.vue'
 import CardCodeField from '@/arkham/components/debug/CardCodeField.vue'
 import RecordedField from '@/arkham/components/debug/RecordedField.vue'
 
+const { t: uiT } = useI18n()
+
 const props = defineProps<{
   type: string
   modelValue: any
@@ -301,16 +303,16 @@ function setCapability(name: string) {
 }
 
 const PRESETS: Record<string, { label: string; value: any }[]> = {
-  InvestigatorMatcher: [{ label: 'you', value: nullary('You') }],
+  InvestigatorMatcher: [{ label: uiT('ui.you'), value: nullary('You') }],
   LocationMatcher: [
     {
-      label: 'your location',
+      label: uiT('ui.yourLocation'),
       value: { tag: 'LocationWithInvestigator', contents: { tag: 'You', contents: [] } },
     },
   ],
   EnemyMatcher: [
     {
-      label: 'an enemy at your location',
+      label: uiT('ui.anEnemyAtYourLocation'),
       value: {
         tag: 'EnemyAt',
         contents: { tag: 'LocationWithInvestigator', contents: { tag: 'You', contents: [] } },
@@ -318,8 +320,8 @@ const PRESETS: Record<string, { label: string; value: any }[]> = {
     },
   ],
   Target: [
-    { label: 'you', value: { tag: 'InvestigatorTarget', contents: '$iid' } },
-    { label: 'this card', value: { tag: 'CardIdTarget', contents: '$cardId' } },
+    { label: uiT('ui.you'), value: { tag: 'InvestigatorTarget', contents: '$iid' } },
+    { label: uiT('ui.thisCard'), value: { tag: 'CardIdTarget', contents: '$cardId' } },
   ],
 }
 
@@ -529,7 +531,7 @@ const asComparison = computed(
           v-if="boundTo?.anchor"
           type="button"
           class="jump-segment"
-          :title="`Bound by ${boundTo.origin} — click to show`"
+          :title="$t('ui.boundBy', { origin: boundTo.origin })"
           @click="jumpToBinding(boundTo.anchor)"
         >
           ↗
@@ -537,7 +539,7 @@ const asComparison = computed(
         <button
           type="button"
           class="binding-name"
-          :title="`${boundTo ? `${boundTo.detail ?? ''} · ${boundTo.origin} — ` : ''}click to choose another`"
+          :title="$t('ui.bindingChoiceTooltip', { detail: boundTo ? `${boundTo.detail ?? ''} · ${boundTo.origin} — ` : '' })"
           @click="bindingInput = true"
         >
           <span class="binding-ident">{{ binding }}</span>
@@ -546,7 +548,7 @@ const asComparison = computed(
         <button
           type="button"
           class="clear-segment"
-          title="Take the binding off and go back to a value"
+          :title="$t('ui.takeTheBindingOffAndGoBackToA')"
           @click="clear"
         >
           ×
@@ -555,9 +557,9 @@ const asComparison = computed(
       <span
         v-if="inScope.length && !boundTo"
         class="from unknown"
-        title="Nothing in scope binds this name"
+        :title="$t('ui.nothingInScopeBindsThisName')"
       >
-        not bound
+        {{ $t('ui.notBound') }}
       </span>
     </div>
 
@@ -566,7 +568,7 @@ const asComparison = computed(
         <input
           v-model="bindingSearch"
           type="search"
-          :placeholder="`Search the ${applicable.length} bindings that fit ${type}`"
+          :placeholder="$t('ui.searchBindings', { count: applicable.length, type })"
           v-focus
           @keydown.enter.prevent="setBinding(bindingSearch)"
           @keydown.esc="bindingInput = false"
@@ -583,14 +585,14 @@ const asComparison = computed(
               v-if="bound.anchor"
               type="button"
               class="option-jump"
-              title="Show where this was bound"
+              :title="$t('ui.showWhereThisWasBound')"
               @click.stop="jumpToBinding(bound.anchor)"
             >
               ↗
             </button>
           </li>
           <li v-if="!matchingBindings.length" class="muted">
-            Nothing in scope matches — press enter to use what you typed anyway.
+            {{ $t('ui.nothingInScopeMatchesPressEnterToUseWhat') }}
           </li>
         </ul>
       </div>
@@ -632,17 +634,17 @@ const asComparison = computed(
       <input
         type="number"
         :value="staticValue ?? ''"
-        placeholder="a number"
+        :placeholder="$t('ui.aNumber')"
         @input="setStatic(($event.target as HTMLInputElement).value)"
         @keydown.stop
       />
       <button
         type="button"
         class="link"
-        title="Per player, by player count, X, or star"
+        :title="$t('ui.perPlayerByPlayerCountXOrStar')"
         @click="gameValueAdvanced = true"
       >
-        per player…
+        {{ $t('ui.perPlayer') }}
       </button>
       <BindingToggle
         :open="bindingInput"
@@ -657,7 +659,7 @@ const asComparison = computed(
         <div class="picked-row">
           <button type="button" class="picked" @click="open ? closePicker() : (open = true)">
             <span class="picked-label">
-              {{ current ? humanize(current.con.name) : `Choose ${shape.schema.name}…` }}
+              {{ current ? humanize(current.con.name) : $t('ui.chooseSchemaType', { type: shape.schema.name }) }}
             </span>
             <!-- It opens a menu, so it says so; the binding segment sits to the
                  right of this, past the field's divider. -->
@@ -674,7 +676,7 @@ const asComparison = computed(
           <input
             v-model="search"
             type="search"
-            :placeholder="`Search ${shape.schema.constructors.length} options`"
+            :placeholder="$t('ui.searchOptions', { count: shape.schema.constructors.length })"
             v-focus
             @keydown.stop
           />
@@ -682,7 +684,7 @@ const asComparison = computed(
             <li v-for="preset in search.trim() ? [] : presets" :key="preset.label" class="preset">
               <button type="button" @click="usePreset(preset.value)">
                 {{ preset.label }}
-                <small>a whole value, ready made</small>
+                <small>{{ $t('ui.aWholeValueReadyMade') }}</small>
               </button>
             </li>
             <li v-for="con in constructors" :key="con.name">
@@ -693,7 +695,7 @@ const asComparison = computed(
                     · {{ con.fields.map((f) => f.type).join(', ') }}</template>
                   <!-- Says where it came from, so the wrapping it gets is not a
                        surprise when the field is read back. -->
-                  <template v-if="isBridged(con)"> · via {{ bridge?.wrap }}</template>
+                  <template v-if="isBridged(con)"> {{ $t('ui.via') }} {{ bridge?.wrap }}</template>
                 </small>
               </button>
             </li>
@@ -733,7 +735,7 @@ const asComparison = computed(
           />
           <button type="button" class="remove" @click="removeItem(index)">×</button>
         </div>
-        <button type="button" class="add" @click="addItem">+ Add</button>
+        <button type="button" class="add" @click="addItem">{{ $t('ui.add') }}</button>
       </div>
     </template>
 
@@ -808,17 +810,17 @@ const asComparison = computed(
       <CardCodeField
         :kinds="['Investigator']"
         :modelValue="typeof modelValue === 'string' ? modelValue : null"
-        placeholder="Which investigator"
+        :placeholder="$t('ui.whichInvestigator')"
         @update:modelValue="emit('update:modelValue', $event)"
       />
       <button
         v-if="investigatorBinding"
         type="button"
         class="link"
-        title="Use the investigator this card belongs to, rather than naming one"
+        :title="$t('ui.useTheInvestigatorThisCardBelongsToRatherThan')"
         @click="setBinding(investigatorBinding.name)"
       >
-        use ${{ investigatorBinding.name }}
+        {{ $t('ui.use2') }}{{ investigatorBinding.name }}
       </button>
       <BindingToggle
         :open="bindingInput"
@@ -869,7 +871,7 @@ const asComparison = computed(
 
       <!-- Outside the field, because it removes the field's value rather than
            editing it. -->
-      <button v-if="showClear" type="button" class="clear-value" title="Clear" @click="clearAll">
+      <button v-if="showClear" type="button" class="clear-value" :title="$t('ui.clear')" @click="clearAll">
         ×
       </button>
     </div>

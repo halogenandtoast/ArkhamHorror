@@ -44,7 +44,7 @@ const format = (str: string) => {
 
 <template>
   <dialog ref="dialogRef" @cancel.prevent="handleCancel" @keydown.enter.prevent="handleYes">
-    <button class="close-btn" @click.prevent="handleCancel" aria-label="Close">
+    <button class="close-btn" @click.prevent="handleCancel" :aria-label="$t('ui.close')">
       <font-awesome-icon icon="times" />
     </button>
     <p class="prompt-text">{{ format(prompt) }}</p>

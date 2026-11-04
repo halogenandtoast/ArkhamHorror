@@ -20,7 +20,7 @@ defineEmits<{ toggle: [] }>()
     type="button"
     class="binding-toggle"
     :class="{ on: open, floating, chip }"
-    :title="open ? 'Back to the value' : `Use one of the ${count} bindings that fit ${type}`"
+    :title="open ? $t('ui.backToTheValue') : $t('ui.useMatchingBinding', { count, type })"
     @click="$emit('toggle')"
   >
     $

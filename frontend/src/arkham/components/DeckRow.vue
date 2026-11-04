@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { displayTabooId } from '@/arkham/taboo';
 import {cardImg, localizeArkhamDBBaseUrl, investigatorClass} from '@/arkham/helpers';
@@ -11,6 +12,8 @@ interface Props {
   sync?: () => void
   markDelete?: () => void
 }
+
+const { t, locale } = useI18n()
 
 const props = defineProps<Props>()
 const router = useRouter()
@@ -41,7 +44,7 @@ const hasOverlay = computed(() => !overlayIsEmpty(props.deck.overlay ?? null))
 
 const tabooList = computed(() => {
   const list = Arkham.deckPlayList(props.deck)
-  return list.taboo_id ? displayTabooId(list.taboo_id) : null
+  return list.taboo_id ? displayTabooId(list.taboo_id, locale.value, t('deckUi.unknownTaboo')) : null
 })
 
 // Makes the "recently used" sort legible: the row says what it is being ordered by.
@@ -61,15 +64,15 @@ const lastPlayed = computed(() => {
           <span
             v-if="hasOverlay"
             class="overlay-badge"
-            title="Overlay — this deck is laid over with custom cards"
-            aria-label="Overlay"
+            :title="$t('deckUi.overlay.badgeHelp')"
+            :aria-label="$t('deckUi.overlay.title')"
           >
             <font-awesome-icon icon="layer-group" />
           </span>
           <span class="deck-name">{{ deck.name }}</span>
         </div>
         <div class="deck-badges">
-          <span v-if="tabooList" class="taboo-badge"><font-awesome-icon icon="book" /> Taboo: {{ tabooList }}</span>
+          <span v-if="tabooList" class="taboo-badge"><font-awesome-icon icon="book" /> {{ $t('deckUi.taboo', { name: tabooList }) }}</span>
           <span class="last-played">
             {{ lastPlayed ? $t('deck.lastPlayed', { date: lastPlayed }) : $t('deck.neverPlayed') }}
           </span>

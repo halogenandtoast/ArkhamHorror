@@ -1,19 +1,26 @@
 import { TabooList } from '@/arkham/types/TabooList'
 
-export function displayTabooList(taboo: TabooList): string {
-  switch (taboo) {
-    case "TabooList15": return "1.5 (Apr 23, 2019)"
-    case "TabooList16": return "1.6 (Sep 27, 2019)"
-    case "TabooList18": return "1.8 (Oct 15, 2020)"
-    case "TabooList19": return "1.9 (Jun 28, 2021)"
-    case "TabooList20": return "2.0 (Aug 26, 2022)"
-    case "TabooList21": return "2.1 (Aug 30, 2023)"
-    case "TabooList22": return "2.2 (Feb 20, 2024)"
-    case "TabooList23": return "2.3 (Oct 24, 2024)"
-    case "TabooList24": return "2.4 (Jul 11, 2025)"
-    case "TabooList25": return "2.5 (Feb 21, 2026)"
-    default: return "Unknown Taboo List"
-  }
+const tabooVersions: Partial<Record<TabooList, [string, string]>> = {
+  TabooList15: ['1.5', '2019-04-23'],
+  TabooList16: ['1.6', '2019-09-27'],
+  TabooList18: ['1.8', '2020-10-15'],
+  TabooList19: ['1.9', '2021-06-28'],
+  TabooList20: ['2.0', '2022-08-26'],
+  TabooList21: ['2.1', '2023-08-30'],
+  TabooList22: ['2.2', '2024-02-20'],
+  TabooList23: ['2.3', '2024-10-24'],
+  TabooList24: ['2.4', '2025-07-11'],
+  TabooList25: ['2.5', '2026-02-21'],
+}
+
+export function displayTabooList(taboo: TabooList, locale = 'en', unknownLabel = 'Unknown Taboo List'): string {
+  const entry = tabooVersions[taboo]
+  if (!entry) return unknownLabel
+  const [version, date] = entry
+  const formattedDate = new Intl.DateTimeFormat(locale, {
+    year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC',
+  }).format(new Date(`${date}T00:00:00Z`))
+  return `${version} (${formattedDate})`
 }
 
 function tabooListIdToTabooList(tabooId: number): TabooList | null {
@@ -32,7 +39,7 @@ function tabooListIdToTabooList(tabooId: number): TabooList | null {
   }
 }
 
-export function displayTabooId(tabooId: number): string {
+export function displayTabooId(tabooId: number, locale = 'en', unknownLabel = 'Unknown Taboo List'): string {
   const taboo = tabooListIdToTabooList(tabooId)
-  return taboo ? displayTabooList(taboo) : "Unknown Taboo List"
+  return taboo ? displayTabooList(taboo, locale, unknownLabel) : unknownLabel
 }

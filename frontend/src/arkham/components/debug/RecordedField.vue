@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+
+
 /* One entry in a campaign-log set.
  *
  * Stored as a `SomeRecorded`: a recordable type paired with a `Recorded` wrapping
@@ -17,6 +20,8 @@ import BindingToggle from '@/arkham/components/debug/BindingToggle.vue'
 import CardCodeField from '@/arkham/components/debug/CardCodeField.vue'
 import { bindingFits, type Binding } from '@/arkham/customCardBindings'
 
+const { t: uiT } = useI18n()
+
 const props = defineProps<{ modelValue: any; bindings?: Binding[] }>()
 const emit = defineEmits<{ 'update:modelValue': [v: any] }>()
 
@@ -24,17 +29,17 @@ const emit = defineEmits<{ 'update:modelValue': [v: any] }>()
  * each and are plain constructor names; the other two are what a custom card
  * records. */
 const KINDS = [
-  { tag: 'RecordableGeneric', label: 'a value', hint: 'A trait, a name, a number — anything.' },
-  { tag: 'RecordableCardCode', label: 'a card', hint: 'The log prints it by name and can hand it back as a card.' },
-  { tag: 'RecordableMemento', label: 'a memento', hint: "A Circle Undone memento, by its own name." },
-  { tag: 'RecordableMemory', label: 'a memory', hint: 'An Innsmouth memory, by its own name.' },
+  { tag: 'RecordableGeneric', label: uiT('ui.aValue'), hint: uiT('ui.aTraitANameANumberAnything') },
+  { tag: 'RecordableCardCode', label: uiT('ui.aCard'), hint: uiT('ui.theLogPrintsItByNameAndCanHand') },
+  { tag: 'RecordableMemento', label: uiT('ui.aMemento'), hint: uiT('ui.aCircleUndoneMementoByItsOwnName') },
+  { tag: 'RecordableMemory', label: uiT('ui.aMemory'), hint: uiT('ui.anInnsmouthMemoryByItsOwnName') },
 ] as const
 
 /* Recorded, or crossed out — the log's way of saying it is no longer true.
  * Circled is an annotation on top of either, not a third state. */
 const STATES = [
-  { tag: 'Recorded', label: 'recorded' },
-  { tag: 'CrossedOut', label: 'crossed out' },
+  { tag: 'Recorded', label: uiT('ui.recorded') },
+  { tag: 'CrossedOut', label: uiT('ui.crossedOut') },
 ] as const
 
 const kind = computed<string>(() => props.modelValue?.recordType ?? 'RecordableGeneric')
@@ -88,7 +93,7 @@ function setBinding(name: string | null) {
   <div class="recorded">
     <div class="row">
       <label>
-        Record
+        {{ $t('ui.record') }}
         <select :value="kind" @change="write({ kind: ($event.target as HTMLSelectElement).value })">
           <option v-for="k in KINDS" :key="k.tag" :value="k.tag">{{ k.label }}</option>
         </select>
@@ -99,13 +104,13 @@ function setBinding(name: string | null) {
           <option v-for="st in STATES" :key="st.tag" :value="st.tag">{{ st.label }}</option>
         </select>
       </label>
-      <label class="check" title="A circle on an entry that is still recorded">
+      <label class="check" :title="$t('ui.aCircleOnAnEntryThatIsStillRecorded')">
         <input
           type="checkbox"
           :checked="circled"
           @change="write({ circled: ($event.target as HTMLInputElement).checked })"
         />
-        circled
+        {{ $t('ui.circled') }}
       </label>
     </div>
 
@@ -126,7 +131,7 @@ function setBinding(name: string | null) {
     <div v-else class="value-box">
       <input
         :value="asText"
-        :placeholder="kind === 'RecordableGeneric' ? 'Tome' : 'its own name'"
+        :placeholder="kind === 'RecordableGeneric' ? 'Tome' : $t('ui.itsOwnName')"
         @input="setText(($event.target as HTMLInputElement).value)"
         @keydown.stop
       />

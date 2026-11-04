@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { capitalize } from '@/arkham/helpers'
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
 import type { DeckSort } from '@/arkham/types/Deck'
@@ -37,11 +36,11 @@ function toggleClass(c: string) {
         :key="iclass"
         class="class-pill"
         :class="{ [iclass]: filterClasses.includes(iclass), active: filterClasses.includes(iclass) }"
-        :title="capitalize(iclass)"
+        :title="t(`deckUi.classes.${iclass}`)"
         @click.prevent="toggleClass(iclass)"
       >
         <span :class="`${iclass}-icon`"></span>
-        <span v-if="!compact" class="pill-label">{{ capitalize(iclass) }}</span>
+        <span v-if="!compact" class="pill-label">{{ t(`deckUi.classes.${iclass}`) }}</span>
       </button>
     </div>
     <div class="toolbar-right">
@@ -52,7 +51,7 @@ function toggleClass(c: string) {
         :class="{ active: validOnly }"
         @click.prevent="validOnly = !validOnly"
       >
-        Valid decks
+        {{ t('deckUi.validDecks') }}
       </button>
       <input
         v-model="search"

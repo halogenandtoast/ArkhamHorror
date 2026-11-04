@@ -188,7 +188,7 @@ async function changeRelationship(delta: 1 | -1) {
           class="resident-debug-toggle"
           :class="{ active: isDebugging }"
           @click="residentDebug = !residentDebug"
-        >Debug</button>
+        >{{ $t('ui.debug') }}</button>
       </div>
 
       <div class="notes">

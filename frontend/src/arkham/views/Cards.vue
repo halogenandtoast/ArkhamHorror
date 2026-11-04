@@ -871,8 +871,8 @@ const stepCard = (delta: number) => {
         v-if="!sidebarCollapsed"
         class="sidebar-collapse"
         type="button"
-        aria-label="Hide card sets"
-        title="Hide card sets"
+        :aria-label="$t('ui.hideCardSets')"
+        :title="$t('ui.hideCardSets')"
         @click="sidebarCollapsed = true"
       >
         <span class="collapse-glyph" aria-hidden="true" data-tooltip="Hide card sets">«</span>
@@ -880,7 +880,7 @@ const stepCard = (delta: number) => {
       <div class="sidebar-content">
       <button class="sidebar-close" @click="showSidebar = false"><font-awesome-icon icon="times" /></button>
       <SegmentedToggle class="sidebar-card-pool card-pool-toggle" :model-value="cardPoolMode" :options="cardPoolOptions" :label="$t('cardsView.cardPool')" @update:model-value="setCardPoolMode" />
-      <div :class="['chapter-tabs segmented', showExtrasChapter ? 'segmented-3' : 'segmented-2']" role="radiogroup" aria-label="Card chapter">
+      <div :class="['chapter-tabs segmented', showExtrasChapter ? 'segmented-3' : 'segmented-2']" role="radiogroup" :aria-label="$t('ui.cardChapter')">
         <input type="radio" :checked="activeChapter === 1" id="chapter-1" @change="activeChapter = 1" />
         <label for="chapter-1">{{ t('cardsView.chapter1') }}</label>
         <input type="radio" :checked="activeChapter === 2" id="chapter-2" @change="activeChapter = 2" />
@@ -952,7 +952,7 @@ const stepCard = (delta: number) => {
           v-if="sidebarCollapsed"
           class="desktop-sidebar-toggle"
           @click="sidebarCollapsed = false"
-          title="Show card sets"
+          :title="$t('ui.showCardSets')"
         >
           <font-awesome-icon class="toggle-arrow" icon="chevron-right" />
           <font-awesome-icon icon="book" />

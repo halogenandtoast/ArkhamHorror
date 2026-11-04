@@ -50,6 +50,8 @@ import ResidentNotes from '@/arkham/components/TheFeastOfHemlockVale/ResidentNot
 import AreasSurveyed from '@/arkham/components/TheFeastOfHemlockVale/AreasSurveyed.vue'
 import DayTimeTracker from '@/arkham/components/TheFeastOfHemlockVale/DayTimeTracker.vue'
 
+const { t: uiT } = useI18n()
+
 export interface Props {
   game: Arkham.Game
   cards: CardDef[]
@@ -174,13 +176,13 @@ const mainLog = computed<LogContents>(() => props.game.campaign?.log || props.ga
 const dreamModeTitle = computed(() => {
   const mode = props.game.campaign?.meta?.currentCampaignMode
   if (!mode) return null
-  return mode === 'TheDreamQuest' ? 'The Dream-Quest' : 'The Web of Dreams'
+  return mode === 'TheDreamQuest' ? uiT('ui.theDreamQuest') : uiT('ui.theWebOfDreams')
 })
 
 const otherModeTitle = computed(() => {
   const title = dreamModeTitle.value
   if (!title) return null
-  return title === 'The Dream-Quest' ? 'The Web of Dreams' : 'The Dream-Quest'
+  return title === 'The Dream-Quest' ? uiT('ui.theWebOfDreams') : uiT('ui.theDreamQuest')
 })
 
 // The mini-campaign being played, when only one half is in play (null = show all).
@@ -242,7 +244,7 @@ const logMap = computed<Record<string, LogContents>>(() => {
       [other]: otherLog.value ?? EMPTY_LOG,
     }
   }
-  const singleTitle = props.game.name || 'Campaign Log'
+  const singleTitle = props.game.name || uiT('ui.campaignLog')
   return { [singleTitle]: mainLog.value }
 })
 
@@ -270,7 +272,7 @@ const remembered = computed(() => {
   const prefix = scenarioToI18n(props.game.scenario)
   const toKey = (s: string) => (s.charAt(0).toLowerCase() + s.slice(1)).replace(/'/g, '')
   return log.map((record: Remembered) => {
-    if (record.tag == 'YouOweBiancaResources') return `You owe Bianca resources (${record.contents})`
+    if (record.tag == 'YouOweBiancaResources') return uiT('ui.biancaDebt', { count: record.contents })
     /* A homebrew key names its own campaign scope (`circusExMortis.AViceForOpulence`),
      * so it reads from the campaign rather than from whichever scenario is showing --
      * the same split `formatKey` makes for the campaign log. A key written without one
@@ -946,7 +948,7 @@ const cardCodeToTitle = (cardCode: string): string => {
   }
 
   if (card) return fullName(card.name)
-  if (cardCode === 'c01121b') return 'The Masked Hunter'
+  if (cardCode === 'c01121b') return uiT('ui.theMaskedHunter')
   if (cardCode === 'c50026b') return 'Narōgath'
   return 'unknown'
 }

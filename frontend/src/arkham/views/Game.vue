@@ -3324,10 +3324,10 @@ onUnmounted(() => {
       <div v-else class="game-main">
         <div v-if="showTheSilenceModal" class="the-silence-modal-backdrop">
           <div class="the-silence-modal" role="dialog" aria-modal="true" aria-labelledby="the-silence-modal-title">
-            <img class="the-silence-modal__agenda no-overlay" :src="imgsrc('cards/10652.avif')" alt="The Silence" />
+            <img class="the-silence-modal__agenda no-overlay" :src="imgsrc('cards/10652.avif')" :alt="$t('ui.theSilence')" />
             <div class="the-silence-modal__body">
-              <h2 id="the-silence-modal-title">The Silence</h2>
-              <p>If you look at the Cosmic Emissary enemy for more than 15 seconds at a time, you are <strong>driven insane</strong>.</p>
+              <h2 id="the-silence-modal-title">{{ $t('ui.theSilence') }}</h2>
+              <p>{{ $t('ui.ifYouLookAtTheCosmicEmissaryEnemyFor') }} <strong>{{ $t('ui.drivenInsane') }}</strong>.</p>
               <div class="the-silence-modal__actions">
                 <button type="button" class="the-silence-modal__confirm" @click="continueUI">{{ $t('ok') }}</button>
               </div>
@@ -3348,7 +3348,7 @@ onUnmounted(() => {
                 :class="{ 'cthulhu-revelation-card': isCthulhuDeckReveal }"
                 :role="isCthulhuDeckReveal ? 'button' : undefined"
                 :tabindex="isCthulhuDeckReveal ? 0 : undefined"
-                :aria-label="isCthulhuDeckReveal ? `${format(gameCard.title)}. Click to enact.` : undefined"
+                :aria-label="isCthulhuDeckReveal ? $t('ui.enactNamedCard', { name: format(gameCard.title) }) : undefined"
                 @click="isCthulhuDeckReveal && continueUI()"
                 @keydown.enter="isCthulhuDeckReveal && continueUI()"
                 @keydown.space.prevent="isCthulhuDeckReveal && continueUI()"
@@ -3361,7 +3361,7 @@ onUnmounted(() => {
                 />
                 <img v-else :src="imgsrc('backs/back_encounter.jpg')" class="card back" />
               </div>
-              <span v-if="isCthulhuDeckReveal" class="cthulhu-revelation-hint">Click to enact</span>
+              <span v-if="isCthulhuDeckReveal" class="cthulhu-revelation-hint">{{ $t('ui.clickToEnact') }}</span>
               <button v-else @click="continueUI">{{ $t('ok') }}</button>
             </div>
           </div>

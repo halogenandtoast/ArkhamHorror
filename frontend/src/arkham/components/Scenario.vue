@@ -91,6 +91,8 @@ import { useCardStore } from '@/stores/cards'
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { IsMobile } from '@/arkham/isMobile';
+
+const { t: uiT } = useI18n()
 const { t } = useI18n();
 
 // types
@@ -1267,8 +1269,8 @@ const scenarioBadges = computed<ScenarioBadge[]>(() => {
     badges.push({
       key: 'foodAndDrinks',
       icon: '🚫🍔',
-      label: 'No food or drinks',
-      detail: `${Math.min(damage, 3)}/3 damage dealt to Subject 8L-08`,
+      label: uiT('ui.noFoodOrDrinks'),
+      detail: uiT('ui.blobDamageReminder', { count: Math.min(damage, 3) }),
     })
   }
 
@@ -1276,8 +1278,8 @@ const scenarioBadges = computed<ScenarioBadge[]>(() => {
     badges.push({
       key: 'language',
       icon: '🗣️?',
-      label: 'Gibberish only',
-      detail: 'The concept of language is devoured until the end of the investigation phase.',
+      label: uiT('ui.gibberishOnly'),
+      detail: uiT('ui.theConceptOfLanguageIsDevouredUntilTheEnd'),
     })
   }
 
@@ -1285,8 +1287,8 @@ const scenarioBadges = computed<ScenarioBadge[]>(() => {
     badges.push({
       key: 'friendships',
       icon: '🤝⃠',
-      label: 'No cross-commits',
-      detail: 'Friendships are devoured until the end of the round.',
+      label: uiT('ui.noCrossCommits'),
+      detail: uiT('ui.friendshipsAreDevouredUntilTheEndOfTheRound'),
     })
   }
 
@@ -1294,8 +1296,8 @@ const scenarioBadges = computed<ScenarioBadge[]>(() => {
     badges.push({
       key: 'senseOfTime',
       icon: '🚫⏱️',
-      label: 'No timekeeping',
-      detail: 'Until the agenda advances, investigators cannot use time-keeping devices, ask about the time, or trigger abilities on cards with “time,” “watch,” or “chrono” in their title.',
+      label: uiT('ui.noTimekeeping'),
+      detail: uiT('ui.untilTheAgendaAdvancesInvestigatorsCannotUseTimeKeeping'),
     })
   }
 
@@ -1303,8 +1305,8 @@ const scenarioBadges = computed<ScenarioBadge[]>(() => {
     badges.push({
       key: 'discardPile',
       icon: '🗑️🫥',
-      label: 'No discard piles',
-      detail: 'Until the end of the next mythos phase, cards that would be placed in an investigator discard pile are devoured instead.',
+      label: uiT('ui.noDiscardPiles'),
+      detail: uiT('ui.untilTheEndOfTheNextMythosPhaseCards'),
     })
   }
 
@@ -1314,8 +1316,8 @@ const scenarioBadges = computed<ScenarioBadge[]>(() => {
     badges.push({
       key: 'voice',
       icon: '🤐',
-      label: names.length === 1 ? `${names[0]} cannot speak` : 'No speaking/noise',
-      detail: names.length > 0 ? names.join(', ') : 'One or more investigators cannot speak or make noise until the end of the round.',
+      label: names.length === 1 ? uiT('ui.cannotSpeak', { name: names[0] }) : uiT('ui.noSpeakingNoise'),
+      detail: names.length > 0 ? names.join(', ') : uiT('ui.oneOrMoreInvestigatorsCannotSpeakOrMakeNoise'),
     })
   }
 
@@ -1333,7 +1335,7 @@ const hasturSpeaker = computed(() => {
 })
 const spokenHasturTooltip = computed(() => {
   const name = hasturSpeaker.value?.name.title ?? 'an investigator'
-  return `Record that ${name} spoke HASTUR aloud and take 1 horror.`
+  return uiT('ui.spokeHastur', { name })
 })
 
 /* Dark Matter's Ultimatum of the Unspeakable Oath is an honor rule -- the engine
@@ -1348,7 +1350,7 @@ const speaksTheUnspeakableOath = computed(
 
 const unspeakableOathTooltip = computed(() => {
   const name = hasturSpeaker.value?.name.title ?? 'an investigator'
-  return `Record that ${name} spoke HASTUR or TASSILDA aloud and take 1 horror.`
+  return uiT('ui.spokeHasturOrTassilda', { name })
 })
 
 // Both recorders do the same thing: 1 horror, from the campaign.
@@ -2631,7 +2633,7 @@ async function addChaosToken(face: any){
           <aside
             v-if="resolvingCthulhuDeckStory && resolvingCthulhuDeckStoryImage"
             class="resolving-cthulhu-card"
-            aria-label="Cthulhu deck card currently resolving"
+            :aria-label="$t('ui.cthulhuDeckCardCurrentlyResolving')"
           >
             <img
               class="card"
@@ -2963,12 +2965,12 @@ async function addChaosToken(face: any){
             <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
           </div>
           <label v-if="debug.active" class="debug-difficulty">
-            <span>Difficulty</span>
+            <span>{{ $t('ui.difficulty') }}</span>
             <select :value="displayedScenarioDifficulty" @change="changeScenarioDifficulty">
-              <option value="Easy">Easy</option>
-              <option value="Standard">Standard</option>
-              <option value="Hard">Hard</option>
-              <option value="Expert">Expert</option>
+              <option value="Easy">{{ $t('ui.easy') }}</option>
+              <option value="Standard">{{ $t('ui.standard') }}</option>
+              <option value="Hard">{{ $t('ui.hard') }}</option>
+              <option value="Expert">{{ $t('ui.expert') }}</option>
             </select>
           </label>
           <button
@@ -2977,7 +2979,7 @@ async function addChaosToken(face: any){
             class="scenario-debug-toggle"
             @click="showScenarioDebugOptions = true"
           >
-            Debug
+            {{ $t('ui.debug') }}
           </button>
           <CardsUnderIndicator
             v-if="cardsUnderScenarioReference.length > 0"
@@ -3023,7 +3025,7 @@ async function addChaosToken(face: any){
         >
         </SkillTest>
 
-        <div v-if="showScenarioNotifierBar" class="scenario-badges" aria-label="Scenario reminders">
+        <div v-if="showScenarioNotifierBar" class="scenario-badges" :aria-label="$t('ui.scenarioReminders')">
           <div
             v-for="badge in scenarioBadges"
             :key="badge.key"
@@ -3042,14 +3044,14 @@ async function addChaosToken(face: any){
             type="button"
             class="scenario-badge rain-switch"
             :class="{ 'rain-switch--on': rainEnabled }"
-            :title="rainEnabled ? 'Stop the rain' : 'Let it rain'"
+            :title="rainEnabled ? $t('ui.stopTheRain') : $t('ui.letItRain')"
             @click="rainEnabled = !rainEnabled"
           >
             <span class="rain-switch-track" aria-hidden="true">
               <span class="rain-switch-knob"></span>
             </span>
             <span class="scenario-badge-text rain-switch-label">
-              <strong>{{ rainEnabled ? 'Rain on' : 'Rain off' }}</strong>
+              <strong>{{ rainEnabled ? $t('ui.rainOn') : $t('ui.rainOff') }}</strong>
             </span>
           </button>
           <span
@@ -3062,7 +3064,7 @@ async function addChaosToken(face: any){
               <span class="reality-acid-light-switch-knob"></span>
             </span>
             <span class="scenario-badge-text reality-acid-light-switch-label">
-              <strong>{{ realityAcidLightActive ? 'Lights off' : 'Lights on' }}</strong>
+              <strong>{{ realityAcidLightActive ? $t('ui.lightsOff') : $t('ui.lightsOn') }}</strong>
             </span>
           </span>
           <Teleport to="body">
@@ -3077,14 +3079,14 @@ async function addChaosToken(face: any){
                 width: `${realityAcidLightRect.width}px`,
                 height: `${realityAcidLightRect.height}px`,
               }"
-              :title="realityAcidLightActive ? 'Turn the lights back on' : 'Turn the lights off'"
+              :title="realityAcidLightActive ? $t('ui.turnTheLightsBackOn') : $t('ui.turnTheLightsOff')"
               @click="$emit('toggleRealityAcidLight')"
             >
               <span class="reality-acid-light-switch-track" aria-hidden="true">
                 <span class="reality-acid-light-switch-knob"></span>
               </span>
               <span class="scenario-badge-text reality-acid-light-switch-label">
-                <strong>{{ realityAcidLightActive ? 'Lights off' : 'Lights on' }}</strong>
+                <strong>{{ realityAcidLightActive ? $t('ui.lightsOff') : $t('ui.lightsOn') }}</strong>
               </span>
             </button>
           </Teleport>
@@ -3134,7 +3136,7 @@ async function addChaosToken(face: any){
             class="zoom-btn"
             :class="{ 'zoom-btn--active': locationsUnlocked }"
             @click.stop="toggleLocationsUnlocked"
-            v-tooltip="locationsUnlocked ? 'Lock locations' : 'Unlock locations to drag'"
+            v-tooltip="locationsUnlocked ? $t('ui.lockLocations') : $t('ui.unlockLocationsToDrag')"
           >
             <LockOpenIcon v-if="locationsUnlocked" class="zoom-btn__icon" />
             <LockClosedIcon v-else class="zoom-btn__icon" />
@@ -3143,7 +3145,7 @@ async function addChaosToken(face: any){
             v-if="hasAnyOffset"
             class="zoom-btn"
             @click.stop="resetLocationsLayout"
-            v-tooltip="'Reset location positions'"
+            v-tooltip="$t('ui.resetLocationPositions')"
           >
             <ArrowUturnLeftIcon class="zoom-btn__icon" />
           </button>
@@ -3151,7 +3153,7 @@ async function addChaosToken(face: any){
             class="zoom-btn"
             :class="{ 'zoom-btn--active': locationsFullscreen }"
             @click.stop="locationsFullscreen = !locationsFullscreen"
-            v-tooltip="locationsFullscreen ? 'Exit fullscreen locations (Esc)' : 'Expand locations to full screen'"
+            v-tooltip="locationsFullscreen ? $t('ui.exitFullscreenLocationsEsc') : $t('ui.expandLocationsToFullScreen')"
           >
             <ArrowsPointingInIcon v-if="locationsFullscreen" class="zoom-btn__icon" />
             <ArrowsPointingOutIcon v-else class="zoom-btn__icon" />
@@ -3330,7 +3332,7 @@ async function addChaosToken(face: any){
               class="zoom-btn"
               :class="{ 'zoom-btn--active': locationsUnlocked }"
               @click.stop="toggleLocationsUnlocked"
-              v-tooltip="locationsUnlocked ? 'Lock locations' : 'Unlock locations to drag'"
+              v-tooltip="locationsUnlocked ? $t('ui.lockLocations') : $t('ui.unlockLocationsToDrag')"
             >
               <LockOpenIcon v-if="locationsUnlocked" class="zoom-btn__icon" />
               <LockClosedIcon v-else class="zoom-btn__icon" />
@@ -3339,7 +3341,7 @@ async function addChaosToken(face: any){
               v-if="hasAnyOffset"
               class="zoom-btn"
               @click.stop="resetLocationsLayout"
-              v-tooltip="'Reset location positions'"
+              v-tooltip="$t('ui.resetLocationPositions')"
             >
               <ArrowUturnLeftIcon class="zoom-btn__icon" />
             </button>
@@ -3347,7 +3349,7 @@ async function addChaosToken(face: any){
               class="zoom-btn"
               :class="{ 'zoom-btn--active': locationsFullscreen }"
               @click.stop="locationsFullscreen = !locationsFullscreen"
-              v-tooltip="locationsFullscreen ? 'Exit fullscreen locations (Esc)' : 'Expand locations to full screen'"
+              v-tooltip="locationsFullscreen ? $t('ui.exitFullscreenLocationsEsc') : $t('ui.expandLocationsToFullScreen')"
             >
               <ArrowsPointingInIcon v-if="locationsFullscreen" class="zoom-btn__icon" />
               <ArrowsPointingOutIcon v-else class="zoom-btn__icon" />

@@ -2,7 +2,7 @@
 import { displayTabooList } from '@/arkham/taboo';
 import { portraitImage } from '@/arkham/cardImages'
 import { ref, computed, inject } from 'vue';
-import { fetchGame, upgradeDeck } from '@/arkham/api';
+import { fetchGame, upgradeDeck, deckErrorMessage } from '@/arkham/api';
 import { useStepPoller } from '@/arkham/composables/useStepPoller';
 import { localizeArkhamDBBaseUrl, processArkhamBuildDeck } from '@/arkham/helpers';
 import { ArkhamDbDecklist } from '@/arkham/types/Deck';
@@ -23,7 +23,7 @@ export interface Props {
   playerId: string
 }
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const question = computed(() => props.game.question[props.playerId])
 const questionLabel = computed(() => {
@@ -102,13 +102,13 @@ const error = computed(() => {
     })
 
     if (alreadyTaken) {
-      return 'This investigator is already taken'
+      return t('deckUi.investigatorTaken')
     }
 
     const killedOrInsane = killedInvestigators.value.includes(`c${deckInvestigator.value}`)
 
     if (killedOrInsane) {
-      return 'This investigator was killed or driven insane'
+      return t('deckUi.investigatorUnavailable')
     }
   }
 
@@ -177,8 +177,7 @@ function viewDeck() {
 // Reads the errorMsg the API returns for a rejected upgrade (Api.Handler.Arkham.Decks
 // answers with a JSONError), falling back to a generic message.
 function submitErrorMessage(e: unknown, fallback: string): string {
-  const msg = (e as { response?: { data?: { errorMsg?: string } } })?.response?.data?.errorMsg
-  return msg ?? fallback
+  return deckErrorMessage(e, t) ?? fallback
 }
 
 type ChainDeck = ArkhamDbDecklist & { next_deck?: string | number | null }
@@ -499,7 +498,7 @@ const breakdowns = computed<XpBreakdownStep[]>(() => {
 })
 
 const tabooList = function (investigator: Investigator) {
-  return investigator.taboo ? displayTabooList(investigator.taboo) : null
+  return investigator.taboo ? displayTabooList(investigator.taboo, locale.value, t('deckUi.unknownTaboo')) : null
 }
 </script>
 
@@ -516,7 +515,7 @@ const tabooList = function (investigator: Investigator) {
         </div>
         <div v-else class="content">
           <div v-if="tabooList(investigator)" class="taboo-list">
-            Taboo List: {{tabooList(investigator)}}
+            {{ $t('deckUi.taboo', { name: tabooList(investigator) }) }}
           </div>
         </div>
       </template>

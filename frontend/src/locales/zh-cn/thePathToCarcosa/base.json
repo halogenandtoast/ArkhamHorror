@@ -1,4 +1,10 @@
 {
+  "difficulty": {
+    "Easy": "欣赏这部戏剧",
+    "Standard": "细看那些印记",
+    "Hard": "大声说出誓言",
+    "Expert": "黄衣之王降临"
+  },
   "specialRules": [
     {
       "title": "新关键词：隐匿",

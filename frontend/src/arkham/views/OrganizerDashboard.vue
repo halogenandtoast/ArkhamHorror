@@ -19,6 +19,8 @@ import {
 } from '@/arkham/types/EpicEvent'
 import EventCountdown from '@/arkham/components/EventCountdown.vue'
 
+const { t: uiT } = useI18n()
+
 // Organizer dashboard. Loads the event over REST, then subscribes to the event
 // websocket (via the store) so group state stays live as players act. Shared
 // state (countermeasures etc.) lives only in the in-game organizer bar now.
@@ -177,15 +179,15 @@ async function submitMainStreetSwap() {
 }
 
 const aberrations = [
-  ['89010a', 'Manifold enemy at exactly 1 remaining health'],
-  ['89010b', 'Oozeling whose spawn location does not exist'],
-  ['89010c', 'Manifold enemy defeated by excess damage'],
-  ['89010d', 'Last clue discovered from an Oozified location'],
-  ['89010e', 'Isolated investigator'],
-  ['89010f', 'Asset defeated by an Ooze attack'],
-  ['89010g', 'Investigator with 3+ resources on It’s got me!'],
-  ['89010h', 'Enemy with Alien Food Chain attached'],
-  ['89010i', 'Location with Sticky Feet attached'],
+  ['89010a', uiT('ui.manifoldEnemyAtExactly1RemainingHealth')],
+  ['89010b', uiT('ui.oozelingWhoseSpawnLocationDoesNotExist')],
+  ['89010c', uiT('ui.manifoldEnemyDefeatedByExcessDamage')],
+  ['89010d', uiT('ui.lastClueDiscoveredFromAnOozifiedLocation')],
+  ['89010e', uiT('ui.isolatedInvestigator')],
+  ['89010f', uiT('ui.assetDefeatedByAnOozeAttack')],
+  ['89010g', uiT('ui.investigatorWith3ResourcesOnItSGotMe')],
+  ['89010h', uiT('ui.enemyWithAlienFoodChainAttached')],
+  ['89010i', uiT('ui.locationWithStickyFeetAttached')],
 ] as const
 const replicateGroup = ref<number | null>(null)
 const replicateCard = ref('89010a')
@@ -371,50 +373,50 @@ onUnmounted(() => {
 
       <section v-if="isOrganizer && mainStreetReadyGroups.length" class="advance-panel replicate-panel">
         <header class="advance-header">
-          <h3>Main Street group swap</h3>
-          <p class="advance-hint">Groups appear here after an investigator activates Main Street. Resolving the swap is a permanent undo barrier.</p>
+          <h3>{{ $t('ui.mainStreetGroupSwap') }}</h3>
+          <p class="advance-hint">{{ $t('ui.groupsAppearHereAfterAnInvestigatorActivatesMainStreet') }}</p>
         </header>
         <div class="replicate-controls">
           <label>
-            First ready group
+            {{ $t('ui.firstReadyGroup') }}
             <select v-model.number="firstSwapGroup">
-              <option :value="null">Select group</option>
+              <option :value="null">{{ $t('ui.selectGroup') }}</option>
               <option v-for="group in mainStreetReadyGroups" :key="group.ordinal" :value="group.ordinal">{{ groupLabel(group) }}</option>
             </select>
           </label>
           <label>
-            Second ready group
+            {{ $t('ui.secondReadyGroup') }}
             <select v-model.number="secondSwapGroup">
-              <option :value="null">Select group</option>
+              <option :value="null">{{ $t('ui.selectGroup') }}</option>
               <option v-for="group in mainStreetReadyGroups" :key="group.ordinal" :value="group.ordinal">{{ groupLabel(group) }}</option>
             </select>
           </label>
           <button type="button" class="advance-submit" :disabled="firstSwapGroup === null || secondSwapGroup === null || firstSwapGroup === secondSwapGroup || swapping" @click="submitMainStreetSwap">
-            Swap investigators
+            {{ $t('ui.swapInvestigators') }}
           </button>
         </div>
       </section>
 
       <section v-if="isOrganizer && event?.playWithBlobElse" class="advance-panel replicate-panel">
         <header class="advance-header">
-          <h3>Replicating Aberration</h3>
-          <p class="advance-hint">Nominate a spotted condition. The chosen group may spend 1 countermeasure to cancel it.</p>
+          <h3>{{ $t('ui.replicatingAberration') }}</h3>
+          <p class="advance-hint">{{ $t('ui.nominateASpottedConditionTheChosenGroupMaySpend') }}</p>
         </header>
         <div class="replicate-controls">
           <label>
-            Group
+            {{ $t('ui.group') }}
             <select v-model.number="replicateGroup">
               <option v-for="group in groupDigests" :key="group.ordinal" :value="group.ordinal">{{ groupLabel(group) }}</option>
             </select>
           </label>
           <label>
-            Replicate condition
+            {{ $t('ui.replicateCondition') }}
             <select v-model="replicateCard">
               <option v-for="[code, description] in aberrations" :key="code" :value="code">{{ code }} — {{ description }}</option>
             </select>
           </label>
           <label>
-            Target
+            {{ $t('ui.target') }}
             <select v-model.number="replicateTargetIndex">
               <option v-for="(target, index) in selectedReplicateGroup?.replicateTargets ?? []" :key="`${target.kind}-${target.cardCode}-${index}`" :value="index">
                 {{ replicateTargetLabel(target) }}
@@ -422,7 +424,7 @@ onUnmounted(() => {
             </select>
           </label>
           <button type="button" class="advance-submit" :disabled="!selectedReplicateTarget || replicating" @click="submitReplicate">
-            Offer replication
+            {{ $t('ui.offerReplication') }}
           </button>
         </div>
       </section>

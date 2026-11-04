@@ -497,9 +497,9 @@ onBeforeUnmount(() => {
             </div>
             <div class="segmented toggle-control">
               <input type="radio" id="opt-asIfRuling-chapter1" name="opt-asIfRuling" :checked="asIfRuling === 'chapter1'" @change="asIfRuling = 'chapter1'" />
-              <label for="opt-asIfRuling-chapter1">Chapter 1</label>
+              <label for="opt-asIfRuling-chapter1">{{ $t('ui.chapter1') }}</label>
               <input type="radio" id="opt-asIfRuling-chapter2" name="opt-asIfRuling" :checked="asIfRuling === 'chapter2'" @change="asIfRuling = 'chapter2'" />
-              <label for="opt-asIfRuling-chapter2">Chapter 2</label>
+              <label for="opt-asIfRuling-chapter2">{{ $t('ui.chapter2') }}</label>
             </div>
           </div>
 
@@ -537,7 +537,7 @@ onBeforeUnmount(() => {
                 :disabled="optionSaving"
                 @change="setOptionEnabled(o, true)"
               />
-              <label :for="`opt-${o.option.tag}-on`">{{ $t('On') ?? 'On' }}</label>
+              <label :for="`opt-${o.option.tag}-on`">{{ $t('On') }}</label>
 
               <input
                 type="radio"
@@ -547,7 +547,7 @@ onBeforeUnmount(() => {
                 :disabled="optionSaving"
                 @change="setOptionEnabled(o, false)"
               />
-              <label :for="`opt-${o.option.tag}-off`">{{ $t('Off') ?? 'Off' }}</label>
+              <label :for="`opt-${o.option.tag}-off`">{{ $t('Off') }}</label>
             </div>
           </div>
         </div>

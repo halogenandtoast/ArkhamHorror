@@ -27,7 +27,7 @@ import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 import { displayTabooId } from '@/arkham/taboo'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 export interface Props {
   deckId: string
@@ -143,7 +143,7 @@ const overlaySummary = computed(() => {
     const card = libraryCards().find(
       (c) => stripCardCodePrefix(c.def.cardCode) === stripCardCodePrefix(o.investigator!),
     )
-    parts.push(card ? card.def.name.title : 'a custom investigator')
+    parts.push(card ? card.def.name.title : t('deckUi.overlay.customInvestigator'))
   }
   const added = Object.values(o.add).reduce((a, b) => a + b, 0)
   const removed = Object.values(o.remove).reduce((a, b) => a + b, 0)
@@ -159,10 +159,10 @@ async function removeOverlay() {
     await removeDeckOverlay(deck.value.id)
     deck.value = await fetchDeck(deck.value.id)
     overlayEditing.value = false
-    toast.success('Overlay removed')
+    toast.success(t('deckUi.overlay.removed'))
   } catch (e) {
     console.error(e)
-    toast.error('Could not remove the overlay')
+    toast.error(t('deckUi.overlay.removeFailed'))
   } finally {
     savingOverlay.value = false
   }
@@ -177,10 +177,10 @@ async function saveOverlay() {
     else await removeDeckOverlay(deck.value.id)
     deck.value = await fetchDeck(deck.value.id)
     overlayEditing.value = false
-    toast.success(applying ? 'Overlay applied' : 'Overlay removed')
+    toast.success(t(applying ? 'deckUi.overlay.applied' : 'deckUi.overlay.removed'))
   } catch (e) {
     console.error(e)
-    toast.error('Could not save the overlay')
+    toast.error(t('deckUi.overlay.saveFailed'))
   } finally {
     savingOverlay.value = false
   }
@@ -255,7 +255,7 @@ function localizeCard(result: Arkham.CardDef | undefined): Arkham.CardDef | unde
 
 function findCardByDeckCode(code: string): Arkham.CardDef | undefined {
   if (code === "c01000") {
-    return { cardCode: code, doubleSided: false, classSymbols: [], cardType: "Treachery", art: "01000", level: 0, name: { title: "Random Basic Weakness", subtitle: null }, cardTraits: [], skills: [], cost: null, otherSide: null, meta: {}, errata: null }
+    return { cardCode: code, doubleSided: false, classSymbols: [], cardType: "Treachery", art: "01000", level: 0, name: { title: t('deckUi.randomBasicWeakness'), subtitle: null }, cardTraits: [], skills: [], cost: null, otherSide: null, meta: {}, errata: null }
   }
 
   // A card you built has no entry in the server's card list; it resolves
@@ -427,7 +427,7 @@ async function sync() {
     deck.value = await syncDeck(deck.value.id)
     toast.success(t('deckSyncedSuccessfully'), { timeout: 3000 })
   } catch (e) {
-    toast.error(deckErrorMessage(e) ?? t('deck.syncFailed'), { timeout: 8000 })
+    toast.error(deckErrorMessage(e, t) ?? t('deck.syncFailed'), { timeout: 8000 })
   }
 }
 
@@ -451,7 +451,7 @@ async function saveUrl() {
     urlEditing.value = false
     toast.success(t('deck.urlChanged'), { timeout: 3000 })
   } catch (e) {
-    toast.error(deckErrorMessage(e) ?? t('deck.urlChangeFailed'), { timeout: 8000 })
+    toast.error(deckErrorMessage(e, t) ?? t('deck.urlChangeFailed'), { timeout: 8000 })
   } finally {
     savingUrl.value = false
   }
@@ -473,7 +473,7 @@ const deckClass = computed(() => {
 })
 
 const tabooList = computed(() => {
-  return deck.value?.list.taboo_id ? displayTabooId(deck.value.list.taboo_id) : null
+  return deck.value?.list.taboo_id ? displayTabooId(deck.value.list.taboo_id, locale.value, t('deckUi.unknownTaboo')) : null
 })
 
 watch(deckRef, (el) => {
@@ -498,15 +498,15 @@ watch(deckRef, (el) => {
           <div class="deck--details">
             <div class="deck-main">
               <h1 class="deck-title">{{deck.name}}</h1>
-              <span v-if="tabooList" class="taboo-badge"><font-awesome-icon icon="book" /> Taboo: {{ tabooList }}</span>
+              <span v-if="tabooList" class="taboo-badge"><font-awesome-icon icon="book" /> {{ $t('deckUi.taboo', { name: tabooList }) }}</span>
               <span v-if="hasOverlay" class="overlay-badge">
                 <font-awesome-icon icon="layer-group" />
-                <span>Overlay<template v-if="overlaySummary">: {{ overlaySummary }}</template></span>
+                <span>{{ $t('deckUi.overlay.title') }}<template v-if="overlaySummary">: {{ overlaySummary }}</template></span>
                 <button
                   type="button"
                   class="overlay-badge-remove"
                   :disabled="savingOverlay"
-                  title="Remove the overlay — the deck's own list comes back exactly as it was"
+                  :title="$t('deckUi.overlay.removeHelp')"
                   @click="removeOverlay"
                 >
                   <font-awesome-icon icon="times" />
@@ -538,7 +538,7 @@ watch(deckRef, (el) => {
                 class="action-btn"
                 :class="{ 'action-btn--on': overlayEditing || hasOverlay }"
                 href="#"
-                title="Edit overlay"
+                :title="$t('deckUi.overlay.edit')"
                 @click.prevent="startOverlay"
               ><font-awesome-icon icon="layer-group" /></a>
               <a class="action-btn action-btn--delete" href="#" :title="$t('deck.deleteDeck')" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
@@ -561,17 +561,15 @@ watch(deckRef, (el) => {
           </div>
           <div v-if="overlayEditing" class="overlay-bar">
             <p class="overlay-help">
-              Custom cards, laid over this deck. Pick what to add below; take cards out with the −
-              on each card in the list. The deck's own list is kept, so removing the overlay puts
-              it back exactly as it was.
+              {{ $t('deckUi.overlay.help') }}
             </p>
             <!-- Cards come out on the list below, so the picker only puts them in. -->
             <OverlayEditor v-model="overlay" :slots="{}" :investigator="deck.list.investigator_code" />
             <div class="overlay-actions">
               <button type="button" :disabled="savingOverlay" @click="saveOverlay">
-                {{ overlayIsEmpty(overlay) ? 'Remove overlay' : 'Apply overlay' }}
+                {{ $t(overlayIsEmpty(overlay) ? 'deckUi.overlay.remove' : 'deckUi.overlay.apply') }}
               </button>
-              <button type="button" @click="overlayEditing = false">Cancel</button>
+              <button type="button" @click="overlayEditing = false">{{ $t('cancel') }}</button>
             </div>
           </div>
         </template>
@@ -579,13 +577,13 @@ watch(deckRef, (el) => {
 
       <div class="deck-sections">
         <section v-if="hunchDeckCards.length > 0" class="deck-section deck-section--hunch">
-          <h2 class="deck-section-title">Hunch Deck <span>{{ hunchDeckCards.length }}</span></h2>
+          <h2 class="deck-section-title">{{ $t('deckUi.sections.hunch') }} <span>{{ hunchDeckCards.length }}</span></h2>
           <CardImageView v-if="view == View.Image" :cards="hunchDeckCards" />
           <CardListView v-if="view == View.List" :cards="hunchDeckCards" />
         </section>
 
         <section class="deck-section deck-section--main">
-          <h2 class="deck-section-title">Main Deck <span>{{ cards.length }}</span></h2>
+          <h2 class="deck-section-title">{{ $t('deckUi.sections.main') }} <span>{{ cards.length }}</span></h2>
           <CardImageView
             v-if="view == View.Image"
             :cards="cards"
@@ -609,7 +607,7 @@ watch(deckRef, (el) => {
         </section>
 
         <section v-if="sideDeckCards.length > 0" class="deck-section deck-section--side">
-          <h2 class="deck-section-title">Side Deck <span>{{ sideDeckCards.length }}</span></h2>
+          <h2 class="deck-section-title">{{ $t('deckUi.sections.side') }} <span>{{ sideDeckCards.length }}</span></h2>
           <CardImageView v-if="view == View.Image" :cards="sideDeckCards" />
           <CardListView v-if="view == View.List" :cards="sideDeckCards" />
         </section>

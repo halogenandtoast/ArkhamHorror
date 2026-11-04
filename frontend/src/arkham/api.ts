@@ -1,4 +1,5 @@
 import api from '@/api';
+import { localizedDeckError, type DeckErrorTranslator } from '@/arkham/deckErrorMessages'
 import { logRowDecoder, type LogRow } from '@/arkham/types/GameLog';
 import { Game, GameDetails, GameDetailsEntry, gameDecoder, gameDetailsEntryDecoder } from '@/arkham/types/Game';
 import { ArkhamDbDecklist, Deck, DeckOverlay, deckDecoder } from '@/arkham/types/Deck';
@@ -1330,9 +1331,9 @@ export const setDeckUrl = async (deckId: string, url: string): Promise<Deck> => 
 }
 
 /* The API reports a rejected deck request as a JSONError (Api.Handler.Arkham.Decks). */
-export const deckErrorMessage = (e: unknown): string | null => {
+export const deckErrorMessage = (e: unknown, t?: DeckErrorTranslator): string | null => {
   const msg = (e as { response?: { data?: { errorMsg?: string } } })?.response?.data?.errorMsg
-  return typeof msg === 'string' && msg.length > 0 ? msg : null
+  return typeof msg === 'string' && msg.length > 0 ? (t ? localizedDeckError(msg, t) : msg) : null
 }
 
 export const fileBug = (gameId: string): Promise<{ data: string }> =>

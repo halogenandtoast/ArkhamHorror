@@ -18,6 +18,8 @@ import {
 } from '@/arkham/customText'
 import type { Binding } from '@/arkham/customCardBindings'
 
+const { t: uiT } = useI18n()
+
 const props = defineProps<{ label: string; bindings?: Binding[] }>()
 const emit = defineEmits<{ 'update:label': [value: string]; close: [] }>()
 
@@ -90,17 +92,17 @@ function take(name: string, bound: string) {
     <dialog ref="box" class="values" @close="emit('close')" @click.self="emit('close')">
       <section @keydown.esc="emit('close')">
         <header>
-          <h2>Values</h2>
+          <h2>{{ $t('ui.values') }}</h2>
           <code class="key">${{ held.key }}</code>
         </header>
 
         <p v-if="entry" class="says reads">{{ reads }}</p>
-        <p v-else class="says missing">Nothing in the app says this.</p>
+        <p v-else class="says missing">{{ $t('ui.nothingInTheAppSaysThis') }}</p>
         <p v-if="pending" class="says note">
-          A value in scope is filled in while the game runs, so it stands as its own name here.
+          {{ $t('ui.aValueInScopeIsFilledInWhileThe') }}
         </p>
         <p v-if="plural" class="says note">
-          Written in more than one wording; the number in <code>count</code> picks which.
+          {{ $t('ui.writtenInMoreThanOneWordingTheNumberIn') }} <code>count</code> {{ $t('ui.picksWhich') }}
         </p>
 
         <ul v-if="names.length">
@@ -113,7 +115,7 @@ function take(name: string, bound: string) {
                 <input
                   class="value-part"
                   :value="held.params[name] ?? ''"
-                  :placeholder="`what ${name} is`"
+                  :placeholder="uiT('ui.whatValueIs', { name })"
                   @input="set(name, ($event.target as HTMLInputElement).value)"
                   @keydown.stop
                 />
@@ -122,8 +124,8 @@ function take(name: string, bound: string) {
                   class="segment"
                   :class="{ on: openMenu === name }"
                   :disabled="!bindings?.length"
-                  v-tooltip="bindings?.length ? 'Use a name in scope' : 'Nothing is in scope here'"
-                  :aria-label="`Use a name in scope for ${name}`"
+                  v-tooltip="bindings?.length ? $t('ui.useANameInScope') : $t('ui.nothingIsInScopeHere')"
+                  :aria-label="uiT('ui.useScopeNameFor', { name })"
                   @click.prevent="openMenu = openMenu === name ? null : name"
                 >
                   $
@@ -142,10 +144,10 @@ function take(name: string, bound: string) {
             </div>
           </li>
         </ul>
-        <p v-else class="says">This prompt leaves nothing blank.</p>
+        <p v-else class="says">{{ $t('ui.thisPromptLeavesNothingBlank') }}</p>
 
         <div class="actions">
-          <button type="button" @click="emit('close')">Done</button>
+          <button type="button" @click="emit('close')">{{ $t('ui.done') }}</button>
         </div>
       </section>
     </dialog>

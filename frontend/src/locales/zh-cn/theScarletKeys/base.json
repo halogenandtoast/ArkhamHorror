@@ -1,4 +1,10 @@
 {
+  "difficulty": {
+    "Easy": "只是把玩密钥",
+    "Standard": "被绯红所约束",
+    "Hard": "我想面对异域",
+    "Expert": "万物归于空洞"
+  },
   "specialRules": [
     {
       "title": "新卡牌类别：钥匙",

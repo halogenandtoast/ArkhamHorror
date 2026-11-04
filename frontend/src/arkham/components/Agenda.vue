@@ -22,6 +22,8 @@ import StackIndicator from '@/arkham/components/StackIndicator.vue';
 import * as Arkham from '@/arkham/types/Agenda';
 import { useCardFlip } from '@/arkham/composables/useCardFlip';
 
+const { t: uiT } = useI18n()
+
 const props = defineProps<{
   agenda: Arkham.Agenda
   game: Game
@@ -123,7 +125,7 @@ const abilities = computed(() => {
 })
 
 const cardsUnder = computed(() => props.cardsUnder)
-const showCardsUnderAgenda = () => emit('show', cardsUnder, 'Cards Under Agenda', false)
+const showCardsUnderAgenda = () => emit('show', cardsUnder, uiT('ui.cardsUnderAgenda'), false)
 
 const futureStack = computed(() => props.remainingStack.filter(c => asCardCode(c) !== props.agenda.id))
 
@@ -354,7 +356,7 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
       />
     </div>
     <StackIndicator
-      label="Agenda"
+      :label="$t('ui.agenda')"
       :current="currentAgendaPosition"
       :total="totalAgendas"
       :completedCards="completedStack"

@@ -3,6 +3,9 @@ import { computed, ref, watch, onUnmounted } from 'vue'
 import type { Game } from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   game: Game
@@ -37,7 +40,7 @@ const horrorToken = imgsrc('tokens/horror-token.png')
     <div
       v-if="tokens && (tokens.damage > 0 || tokens.horror > 0)"
       class="pending-damage-tokens"
-      v-tooltip="'Tokens to assign'"
+      v-tooltip="t('label.tokensToAssign')"
     >
       <span v-if="tokens.damage > 0" class="token-entry">
         <img :src="damageToken" class="token" />

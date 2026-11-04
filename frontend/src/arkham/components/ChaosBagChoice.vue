@@ -93,13 +93,13 @@ const allResolved = computed(() => {
   <div class="token-choices">
 
     <div class="token-prompt" v-if="isCancel && allResolved">
-      Choose {{pluralize("token", count)}} to cancel
+      {{ $t('ui.choose') }} {{pluralize("token", count)}} {{ $t('ui.toCancel') }}
     </div>
     <div class="token-prompt" v-else-if="isIgnore && allResolved">
-      Choose {{pluralize("token", count)}} to ignore
+      {{ $t('ui.choose') }} {{pluralize("token", count)}} {{ $t('ui.toIgnore') }}
     </div>
     <div class="token-prompt" v-else-if="isResolve && allResolved">
-      Choose {{pluralize("token", count)}} to resolve
+      {{ $t('ui.choose') }} {{pluralize("token", count)}} {{ $t('ui.toResolve') }}
     </div>
 
     <div class="token-choices-inner">
@@ -123,7 +123,7 @@ const allResolved = computed(() => {
           <img :src="imgsrc('chaos-tokens/ct-blank.png')" class="token" />
         </template>
         <template v-else>
-          <div class="error"> Token choice was unhandled, please report with: {{tokenChoice}}</div>
+          <div class="error"> {{ $t('ui.tokenChoiceWasUnhandledPleaseReportWith') }} {{tokenChoice}}</div>
         </template>
       </div>
       <template v-if="allResolved">

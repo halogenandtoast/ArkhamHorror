@@ -284,7 +284,7 @@ function startDrag(event: DragEvent) {
       v-if="canDebugCustomize"
       class="debug-customize"
       type="button"
-      title="Debug customize"
+      :title="$t('ui.debugCustomize')"
       @click.stop="debugCustomize"
     ><font-awesome-icon icon="bug" /></button>
     <AbilityButton

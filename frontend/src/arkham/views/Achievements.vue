@@ -150,7 +150,7 @@ const earnedDate = (row: Achievement): string | null => {
         <summary class="campaign-header">
           <div class="campaign-title">
             <h2>{{ t(achievementCampaignScope(campaign.campaignId)) }}</h2>
-            <div class="campaign-progress" :aria-label="`${campaignEarnedCount(campaign)} of ${campaign.entries.length} achievements earned`">
+            <div class="campaign-progress" :aria-label="t('achievements.progressLabel', { earned: campaignEarnedCount(campaign), total: campaign.entries.length })">
               <span class="progress-count">{{ campaignEarnedCount(campaign) }}/{{ campaign.entries.length }}</span>
               <span class="progress-track" aria-hidden="true">
                 <span class="progress-fill" :style="{ width: `${campaignProgressPercent(campaign)}%` }" />

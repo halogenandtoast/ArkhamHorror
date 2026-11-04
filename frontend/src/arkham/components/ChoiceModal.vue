@@ -385,7 +385,7 @@ const title = computed(() => {
       :class="{ 'cthulhu-enact-card--ready': cthulhuRevealReady }"
       :style="cthulhuRevealStyle"
       type="button"
-      :aria-label="`Enact card ${cthulhuDeckChoice.cardCode}`"
+      :aria-label="$t('ui.enactCard', { code: cthulhuDeckChoice.cardCode })"
       @click="choose(cthulhuDeckChoice.index)"
     >
       <span class="cthulhu-enact-card-inner">

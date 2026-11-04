@@ -26,6 +26,8 @@ import { useDebug } from '@/arkham/debug'
 import { useDbCardStore } from '@/stores/dbCards'
 import { useEscape } from '@/composable/escape'
 
+const { t: uiT } = useI18n()
+
 const props = defineProps<{ game: Game, playerId: string }>()
 const emit = defineEmits<{ close: [] }>()
 
@@ -215,7 +217,7 @@ function rowsFor(
     const keys = realmKeys.value
     const dangling = references(placement)
       .filter(({ realm, id: ref }) => !keys[realm].has(ref))
-      .map(({ realm, id: ref }) => `${shortId(ref)} not in ${realm}`)
+      .map(({ realm, id: ref }) => uiT('ui.entityNotInRealm', { id: shortId(ref), realm }))
     const cardCode = (e.cardCode as string) ?? ''
     return {
       id,
@@ -238,16 +240,16 @@ const groups = computed(() => {
   }
   const owner = (e: Record<string, unknown>) => (e.owner as string) ?? ''
   return [
-    { label: 'Locations', rows: rowsFor(g.locations, 'location', (e) => (e.label as string) ?? '') },
-    { label: 'Enemies', rows: rowsFor(g.enemies, 'enemy') },
-    { label: 'Assets', rows: rowsFor(g.assets, 'asset', (e) => (e.controller as string) ?? (e.owner as string) ?? '') },
-    { label: 'Treacheries', rows: rowsFor(g.treacheries, 'treachery', owner, 'TreacheryTarget') },
-    { label: 'Events', rows: rowsFor(g.events, 'event', owner) },
-    { label: 'Skills', rows: rowsFor(g.skills, 'skill', owner) },
-    { label: 'Stories', rows: rowsFor(g.stories, 'story') },
-    { label: 'Acts', rows: rowsFor(g.acts, null, seq) },
-    { label: 'Agendas', rows: rowsFor(g.agendas, null, seq) },
-    { label: 'Concealed', rows: rowsFor(g.concealed, 'concealed') },
+    { label: uiT('ui.locations'), rows: rowsFor(g.locations, 'location', (e) => (e.label as string) ?? '') },
+    { label: uiT('ui.enemies2'), rows: rowsFor(g.enemies, 'enemy') },
+    { label: uiT('ui.assets'), rows: rowsFor(g.assets, 'asset', (e) => (e.controller as string) ?? (e.owner as string) ?? '') },
+    { label: uiT('ui.treacheries'), rows: rowsFor(g.treacheries, 'treachery', owner, 'TreacheryTarget') },
+    { label: uiT('ui.events'), rows: rowsFor(g.events, 'event', owner) },
+    { label: uiT('ui.skills'), rows: rowsFor(g.skills, 'skill', owner) },
+    { label: uiT('ui.stories'), rows: rowsFor(g.stories, 'story') },
+    { label: uiT('ui.acts'), rows: rowsFor(g.acts, null, seq) },
+    { label: uiT('ui.agendas'), rows: rowsFor(g.agendas, null, seq) },
+    { label: uiT('ui.concealed'), rows: rowsFor(g.concealed, 'concealed') },
   ]
 })
 
@@ -305,24 +307,24 @@ async function copyJson() {
   <div v-show="!openPanel" class="entity-browser-overlay" @click.self="emit('close')">
     <div class="entity-browser" role="dialog" aria-modal="true" aria-labelledby="entity-browser-title">
       <header class="entity-browser-header">
-        <h2 id="entity-browser-title">Entities</h2>
+        <h2 id="entity-browser-title">{{ $t('ui.entities') }}</h2>
         <span class="entity-browser-count">
-          {{ totalCount }} in play<template v-if="danglingCount > 0">, <span class="dangling-count">{{ danglingCount }} dangling</span></template>
+          {{ totalCount }} {{ $t('ui.inPlay') }}<template v-if="danglingCount > 0">, <span class="dangling-count">{{ danglingCount }} {{ $t('ui.dangling') }}</span></template>
         </span>
-        <button type="button" aria-label="Close entity browser" @click="emit('close')">×</button>
+        <button type="button" :aria-label="$t('ui.closeEntityBrowser')" @click="emit('close')">×</button>
       </header>
 
       <div class="entity-browser-controls">
-        <input v-model="filter" type="search" placeholder="Filter by id, code, name, placement…" />
+        <input v-model="filter" type="search" :placeholder="$t('ui.filterByIdCodeNamePlacement')" />
         <label class="entity-browser-toggle">
           <input v-model="danglingOnly" type="checkbox" />
-          <span>Dangling only</span>
+          <span>{{ $t('ui.danglingOnly') }}</span>
         </label>
-        <button type="button" class="entity-browser-copy" @click="copyJson">Copy JSON</button>
+        <button type="button" class="entity-browser-copy" @click="copyJson">{{ $t('ui.copyJson') }}</button>
       </div>
 
       <div class="entity-browser-body">
-        <p v-if="visibleGroups.length === 0" class="entity-browser-empty">Nothing matches.</p>
+        <p v-if="visibleGroups.length === 0" class="entity-browser-empty">{{ $t('ui.nothingMatches') }}</p>
         <section v-for="group in visibleGroups" :key="group.label">
           <h3>{{ group.label }} <span class="group-count">{{ group.visible.length }}/{{ group.rows.length }}</span></h3>
           <table>
@@ -341,13 +343,13 @@ async function copyJson() {
                     type="button"
                     class="row-debug"
                     @click="openPanel = { kind: row.panel, id: row.id }"
-                  >Debug</button>
+                  >{{ $t('ui.debug') }}</button>
                   <button
                     v-if="row.discardTag"
                     type="button"
                     class="row-debug row-discard"
                     @click="discardRow(row)"
-                  >Discard</button>
+                  >{{ $t('ui.discard') }}</button>
                 </td>
               </tr>
             </tbody>

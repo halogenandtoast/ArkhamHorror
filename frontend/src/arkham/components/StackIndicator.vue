@@ -1,10 +1,13 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
 import { Dropdown } from 'floating-vue'
 import { type Card, cardImage, toCardContents, asCardCode } from '@/arkham/types/Card'
 import { resolvedSideArt } from '@/arkham/cardImages'
 import { cardImg, imgsrc } from '@/arkham/helpers'
 import StackPopoverCard from '@/arkham/components/StackPopoverCard.vue'
+
+const { t: uiT } = useI18n()
 
 type PipState = 'completed' | 'current' | 'remaining'
 
@@ -88,7 +91,7 @@ const currentPosition = computed(() => {
 
 const tooltip = computed(() => {
   const base = `${props.label} ${currentPosition.value} / ${pips.value.length}`
-  return expandable.value ? `${base} — click to view deck` : base
+  return expandable.value ? uiT('ui.clickToViewDeck', { label: base }) : base
 })
 </script>
 

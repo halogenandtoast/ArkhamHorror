@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+
+
 /* A card as the server holds it, open for editing.
  *
  * The form is the way to write a card and cannot be the only way to read one:
@@ -11,6 +14,8 @@
  */
 import { computed, nextTick, ref, watch } from 'vue'
 import { DERIVED_CARD_KEYS, SET_STAMPED_META_KEYS } from '@/arkham/customCards'
+
+const { t: uiT } = useI18n()
 
 const props = defineProps<{
   /** The def as stored, which is what is shown and what is compared against. */
@@ -84,7 +89,7 @@ const complaint = computed(() => {
   if (!draft.value.trim()) return 'Empty'
   try {
     const value = JSON.parse(draft.value)
-    if (!value || typeof value !== 'object' || Array.isArray(value)) return 'A card def is an object'
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return uiT('ui.aCardDefIsAnObject')
   } catch (e) {
     return (e as Error).message
   }
@@ -159,7 +164,7 @@ const revert = () => {
       <h2>{{ title }}</h2>
       <code class="code">{{ def.cardCode }}</code>
       <span class="spacer" />
-      <button type="button" class="link" @click="emit('close')">Back to the form</button>
+      <button type="button" class="link" @click="emit('close')">{{ $t('ui.backToTheForm') }}</button>
     </header>
 
     <div class="code-box">
@@ -180,8 +185,8 @@ const revert = () => {
 
     <p v-if="complaint" class="bad">{{ complaint }}</p>
     <p v-else-if="codeChanged" class="warn">
-      The card code changed — saving writes a new card and leaves
-      <code>{{ def.cardCode }}</code> where it is.
+      {{ $t('ui.theCardCodeChangedSavingWritesANewCard') }}
+      <code>{{ def.cardCode }}</code> {{ $t('ui.whereItIs') }}
     </p>
     <p v-else-if="error" class="bad">{{ error }}</p>
 
@@ -192,14 +197,14 @@ const revert = () => {
         :disabled="readonly || busy || !dirty || !!complaint"
         @click="save"
       >
-        {{ busy ? 'Saving…' : 'Save' }}
+        {{ busy ? $t('ui.saving') : $t('ui.save') }}
       </button>
-      <button type="button" class="cancel" :disabled="!dirty" @click="revert">Revert</button>
+      <button type="button" class="cancel" :disabled="!dirty" @click="revert">{{ $t('ui.revert') }}</button>
       <span v-if="held.length" class="note">
-        Kept as they are:
+        {{ $t('ui.keptAsTheyAre') }}
         <code v-for="key in held" :key="key">{{ key }}</code>
       </span>
-      <span v-if="readonly" class="note">This set follows someone else's, so its cards are read-only.</span>
+      <span v-if="readonly" class="note">{{ $t('ui.thisSetFollowsSomeoneElseSSoItsCards') }}</span>
     </div>
   </section>
 </template>

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { localizedCardKind } from '@/arkham/cardLabels'
 /* The card builder: your library on the left, the card you are working on to
  * the right. Cards live against your account, so they outlive any one game.
  *
@@ -12,7 +13,7 @@ import CardOverlay from '@/arkham/components/CardOverlay.vue'
 import CardSetStrip from '@/arkham/components/CardSetStrip.vue'
 import SegmentedToggle from '@/components/SegmentedToggle.vue'
 import Prompt from '@/components/Prompt.vue'
-import { cardKind, stripCardCodePrefix } from '@/arkham/customCards'
+import { stripCardCodePrefix } from '@/arkham/customCards'
 import {
   mintCustomCardCode,
   renderCardPlaceholder,
@@ -1403,13 +1404,13 @@ async function onImport(event: Event) {
            to when the two libraries have drifted. -->
       <div v-if="importReview && (importReview.updated.length || importReview.added.length || importReview.removed.length)" class="review-changes">
         <p v-if="importReview.identical" class="note">
-          {{ importReview.identical }} unchanged
+          {{ importReview.identical }} {{ $t('ui.unchanged') }}
         </p>
 
         <ul class="changed">
           <li v-for="card in importReview.updated" :key="card.cardCode" class="changed-card">
             <button type="button" class="change-head" @click="toggleChange(card.cardCode)">
-              <span class="mark changed">changed</span>
+              <span class="mark changed">{{ $t('ui.changed') }}</span>
               <span class="who">{{ card.title }}</span>
               <span class="keys">{{ changeLabel(card) }}</span>
             </button>
@@ -1425,13 +1426,13 @@ async function onImport(event: Event) {
           </li>
           <li v-for="card in importReview.added" :key="card.cardCode" class="changed-card">
             <span class="change-head plain">
-              <span class="mark added">new</span>
+              <span class="mark added">{{ $t('ui.new') }}</span>
               <span class="who">{{ card.title }}</span>
             </span>
           </li>
           <li v-for="card in importReview.removed" :key="card.cardCode" class="changed-card">
             <span class="change-head plain">
-              <span class="mark removed">dropped</span>
+              <span class="mark removed">{{ $t('ui.dropped') }}</span>
               <span class="who">{{ card.title }}</span>
             </span>
           </li>
@@ -2119,7 +2120,7 @@ async function onImport(event: Event) {
                   ({{ card.def.level }})
                 </span>
               </span>
-              <small>{{ cardKind(card.def.cardType) }}</small>
+              <small>{{ localizedCardKind(card.def.cardType, $t) }}</small>
             </span>
           </button>
         </li>

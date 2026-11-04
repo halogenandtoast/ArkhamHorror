@@ -25,7 +25,7 @@ import {
   type FacetKey,
 } from '@/arkham/customCardFilters'
 
-const { t } = useI18n()
+const { t, te } = useI18n()
 const K = 'customCardSets.'
 
 const filter = defineModel<CardFilter>({ required: true })
@@ -86,6 +86,12 @@ function toggleExpanded(key: FacetKey) {
 const CLASSES = ['Guardian', 'Seeker', 'Rogue', 'Mystic', 'Survivor', 'Neutral']
 const classKey = (value: string) =>
   CLASSES.includes(value) ? value.toLowerCase() : null
+
+function displayValue(facet: FacetKey, value: string, fallback: string): string {
+  const key = facet === 'classes' ? `deckUi.classes.${value.toLowerCase()}`
+    : facet === 'types' ? `ui.enums.cardTypes.${value}` : null
+  return key && te(key) ? t(key) : fallback
+}
 </script>
 
 <template>
@@ -136,7 +142,7 @@ const classKey = (value: string) =>
               :class="`${classKey(value.value)}-icon`"
               aria-hidden="true"
             ></span>
-            <span class="chip-label">{{ value.label }}</span>
+            <span class="chip-label">{{ displayValue(facet.key, value.value, value.label) }}</span>
             <small>{{ value.count }}</small>
           </button>
           <button

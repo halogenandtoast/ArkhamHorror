@@ -33,6 +33,8 @@ import { storeToRefs } from 'pinia'
 import { filterDisplayable, isDevBuild, type Gateable } from '@/arkham/displayRules'
 import { hasParallelContent } from '@/arkham/deckRestrictions'
 
+const { t: uiT } = useI18n()
+
 const sideStories = [...sideStoriesJSON, ...homebrewSideStories] as (Gateable & { xp: number; id: string; name: string; group?: SideStoryGroup })[]
 const allCampaignEntries = [...(officialCampaignsJSON as CampaignEntry[]), ...homebrewCampaigns]
 
@@ -439,7 +441,7 @@ async function applyOverlay(investigatorId: string) {
     overlayFor.value = null
   } catch (e) {
     console.error(e)
-    rosterError.value = 'Could not apply the overlay'
+    rosterError.value = uiT('ui.couldNotApplyTheOverlay')
   } finally {
     overlayBusy.value = false
   }
@@ -593,7 +595,7 @@ const setIcon = computed(() =>
                 class="roster-btn"
                 :class="{ 'roster-btn--on': overlayFor === investigator.id }"
                 :disabled="overlayBusy"
-                v-tooltip="'Lay custom cards over this deck'"
+                v-tooltip="$t('ui.layCustomCardsOverThisDeck')"
                 @click="openOverlay(investigator.id)"
               ><font-awesome-icon icon="layer-group" /></button>
               <button
@@ -624,10 +626,9 @@ const setIcon = computed(() =>
           </template>
         </InvestigatorRow>
         <div v-if="overlayFor === investigator.id" class="overlay-panel">
-          <h3 class="overlay-title">Overlay</h3>
+          <h3 class="overlay-title">{{ $t('ui.overlay') }}</h3>
           <p class="overlay-help">
-            Overlays allow you to add custom cards to your deck to use during the campaign.
-            If custom cards cost trauma or xp this will not be reflected in game.
+            {{ $t('ui.overlaysAllowYouToAddCustomCardsToYour') }}
           </p>
           <OverlayEditor
             v-model="overlay"
@@ -636,7 +637,7 @@ const setIcon = computed(() =>
           />
           <div class="overlay-actions">
             <button class="roster-btn" :disabled="overlayBusy" @click="applyOverlay(investigator.id)">
-              Apply overlay
+              {{ $t('ui.applyOverlay') }}
             </button>
             <button class="roster-btn" @click="overlayFor = null">{{ t('cancel') }}</button>
           </div>

@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { ChaosToken, chaosTokenImage } from '@/arkham/types/ChaosToken';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n'
+import { localizedTokenFace } from '@/arkham/tokenLabels'
 import { imgsrc } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -19,11 +21,12 @@ const image = computed(() => chaosTokenImage(props.token.face))
 const treatedAsFaces = computed(() =>
   (props.token.modifiedFaces ?? []).filter((face) => face !== props.token.face)
 )
-const faceLabel = (face: string) => face
-  .replace(/Token$/, '')
-  .replace(/([a-z])([A-Z])/g, '$1 $2')
+const { t } = useI18n()
+const faceLabel = (face: string) => localizedTokenFace(face, t)
 const treatmentLabel = computed(() =>
-  `${faceLabel(props.token.face)} is treated as ${treatedAsFaces.value.map(faceLabel).join(' and ')}`
+  t('ui.tokenTreatedAs', {
+    face: faceLabel(props.token.face), faces: treatedAsFaces.value.map(faceLabel).join(t('ui.tokenFaceAnd')),
+  })
 )
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 

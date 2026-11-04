@@ -73,42 +73,42 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="stats-grid" aria-label="Admin stats">
+  <section class="stats-grid" :aria-label="$t('ui.adminStats')">
       <div class="stat-card box">
-        <span class="stat-label">Current Users</span>
+        <span class="stat-label">{{ $t('ui.currentUsers') }}</span>
         <strong>{{ statsLoading ? '…' : stats?.currentUsers ?? '—' }}</strong>
       </div>
       <div class="stat-card box">
-        <span class="stat-label">Active Users (14d)</span>
+        <span class="stat-label">{{ $t('ui.activeUsers14d') }}</span>
         <strong>{{ statsLoading ? '…' : stats?.activeUsers ?? '—' }}</strong>
       </div>
       <div class="stat-card box">
-        <span class="stat-label">Active Games</span>
+        <span class="stat-label">{{ $t('ui.activeGames') }}</span>
         <strong>{{ activeGamesLoading ? '…' : activeGames.length }}</strong>
       </div>
       <div class="stat-card box">
-        <span class="stat-label">Finished Games</span>
+        <span class="stat-label">{{ $t('ui.finishedGames') }}</span>
         <strong>{{ activeGamesLoading ? '…' : finishedGames.length }}</strong>
       </div>
     </section>
 
-    <p v-if="statsError" class="empty box">Unable to load admin stats.</p>
+    <p v-if="statsError" class="empty box">{{ $t('ui.unableToLoadAdminStats') }}</p>
 
     <section class="admin-block">
       <header class="section-header">
-        <h2>Find Game</h2>
+        <h2>{{ $t('ui.findGame') }}</h2>
       </header>
       <GameFinder />
     </section>
 
     <section class="admin-block">
       <header class="section-header">
-        <h2>Active Games</h2>
-        <span class="count-badge" aria-label="Active games count">{{ activeGames.length }}</span>
+        <h2>{{ $t('ui.activeGames') }}</h2>
+        <span class="count-badge" :aria-label="$t('ui.activeGamesCount')">{{ activeGames.length }}</span>
       </header>
-      <div v-if="activeGamesLoading" class="empty box">Loading active games…</div>
-      <div v-else-if="activeGamesError" class="empty box">Unable to load active games.</div>
-      <div v-else-if="activeGames.length === 0" class="empty box">No active games.</div>
+      <div v-if="activeGamesLoading" class="empty box">{{ $t('ui.loadingActiveGames') }}</div>
+      <div v-else-if="activeGamesError" class="empty box">{{ $t('ui.unableToLoadActiveGames') }}</div>
+      <div v-else-if="activeGames.length === 0" class="empty box">{{ $t('ui.noActiveGames') }}</div>
       <div v-else class="game-list">
         <GameRow v-for="g in activeGames" :key="g.id" :game="g" :admin="true" />
       </div>
@@ -116,8 +116,8 @@ onMounted(() => {
 
     <section class="admin-block" v-if="finishedGames.length > 0">
       <header class="section-header">
-        <h2>Finished Games</h2>
-        <span class="count-badge" aria-label="Finished games count">{{ finishedGames.length }}</span>
+        <h2>{{ $t('ui.finishedGames') }}</h2>
+        <span class="count-badge" :aria-label="$t('ui.finishedGamesCount')">{{ finishedGames.length }}</span>
       </header>
       <div class="game-list">
         <GameRow v-for="g in finishedGames" :key="g.id" :game="g" :admin="true" />
@@ -126,13 +126,13 @@ onMounted(() => {
 
     <section class="admin-block">
       <header class="section-header">
-        <h2>Recent Active Games</h2>
-        <span class="section-note">from last 20</span>
-        <span class="count-badge" aria-label="Recent active games count">{{ recentActiveGames.length }}</span>
+        <h2>{{ $t('ui.recentActiveGames') }}</h2>
+        <span class="section-note">{{ $t('ui.fromLast20') }}</span>
+        <span class="count-badge" :aria-label="$t('ui.recentActiveGamesCount')">{{ recentActiveGames.length }}</span>
       </header>
-      <div v-if="recentGamesLoading" class="empty box">Loading recent games…</div>
-      <div v-else-if="recentGamesError" class="empty box">Unable to load recent games.</div>
-      <div v-else-if="recentActiveGames.length === 0" class="empty box">No recent active games.</div>
+      <div v-if="recentGamesLoading" class="empty box">{{ $t('ui.loadingRecentGames') }}</div>
+      <div v-else-if="recentGamesError" class="empty box">{{ $t('ui.unableToLoadRecentGames') }}</div>
+      <div v-else-if="recentActiveGames.length === 0" class="empty box">{{ $t('ui.noRecentActiveGames') }}</div>
       <div v-else class="game-list">
         <GameRow v-for="g in recentActiveGames" :key="g.id" :game="g" :admin="true" />
       </div>
@@ -140,9 +140,9 @@ onMounted(() => {
 
     <section class="admin-block" v-if="recentFinishedGames.length > 0">
       <header class="section-header">
-        <h2>Recent Finished Games</h2>
-        <span class="section-note">from last 20</span>
-        <span class="count-badge" aria-label="Recent finished games count">{{ recentFinishedGames.length }}</span>
+        <h2>{{ $t('ui.recentFinishedGames') }}</h2>
+        <span class="section-note">{{ $t('ui.fromLast20') }}</span>
+        <span class="count-badge" :aria-label="$t('ui.recentFinishedGamesCount')">{{ recentFinishedGames.length }}</span>
       </header>
       <div class="game-list">
         <GameRow v-for="g in recentFinishedGames" :key="g.id" :game="g" :admin="true" />

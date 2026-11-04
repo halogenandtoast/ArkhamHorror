@@ -1,4 +1,10 @@
 {
+  "difficulty": {
+    "Easy": "只想尽情起舞！",
+    "Standard": "一心享受盛宴！",
+    "Hard": "渴望体无完肤！",
+    "Expert": "一同堕入深渊！"
+  },
   "specialRules": [
     {
       "title": "剧典",

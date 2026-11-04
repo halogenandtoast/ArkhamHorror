@@ -26,7 +26,7 @@ import CustomWeaknessPool from '@/arkham/components/CustomWeaknessPool.vue'
 import { useI18n } from 'vue-i18n'
 import { handleEmbeddedI18n } from '@/arkham/i18n'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const dbCards = useDbCardStore()
 
 let customWeaknessSave: Promise<boolean> = Promise.resolve(true)
@@ -60,7 +60,7 @@ const deckHasOverlay = (deck: Arkham.Deck) => !overlayIsEmpty(deck.overlay ?? nu
 
 function deckTaboo(deck: Arkham.Deck): string | null {
   const list = Arkham.deckPlayList(deck)
-  return list.taboo_id ? displayTabooId(list.taboo_id) : null
+  return list.taboo_id ? displayTabooId(list.taboo_id, locale.value, t('deckUi.unknownTaboo')) : null
 }
 
 const filteredDecks = computed(() => {
@@ -107,28 +107,33 @@ watch(
 )
 
 const weaknessPoolOptions = [
-  { token: 'cycle:core', label: 'Core Set', aliases: ['core'] },
-  { token: 'cycle:rcore', label: 'Revised Core Set', aliases: ['rcore'] },
-  { token: 'cycle:dwl', label: 'The Dunwich Legacy', aliases: ['dwl', 'dwlp'] },
-  { token: 'cycle:ptc', label: 'The Path to Carcosa', aliases: ['ptc', 'ptcp'] },
-  { token: 'cycle:tfa', label: 'The Forgotten Age', aliases: ['tfa', 'tfap'] },
-  { token: 'cycle:tcu', label: 'The Circle Undone', aliases: ['tcu', 'tcup'] },
-  { token: 'cycle:tde', label: 'The Dream-Eaters', aliases: ['tde', 'tdep'] },
-  { token: 'cycle:tic', label: 'The Innsmouth Conspiracy', aliases: ['tic', 'ticp'] },
-  { token: 'cycle:eote', label: 'Edge of the Earth', aliases: ['eote', 'eoep'] },
-  { token: 'cycle:tsk', label: 'The Scarlet Keys', aliases: ['tsk', 'tskp'] },
-  { token: 'cycle:fhv', label: 'The Feast of Hemlock Vale', aliases: ['fhv', 'fhvp'] },
-  { token: 'cycle:tdc', label: 'The Drowned City', aliases: ['tdc', 'tdcp'] },
-  { token: 'cycle:core_ch2', label: 'Chapter 2 Core Set', aliases: ['core_ch2', 'core2026', 'core_2026'] },
-  { token: 'cycle:return', label: 'Return To boxes', aliases: ['return'] },
-  { token: 'cycle:investigator_decks', label: 'Investigator Starter Decks', aliases: ['investigator_decks'] },
-  { token: 'cycle:investigator_decks_ch2', label: 'Chapter 2 Investigator Decks', aliases: ['investigator_decks_ch2'] },
+  { token: 'cycle:core', aliases: ['core'] },
+  { token: 'cycle:rcore', aliases: ['rcore'] },
+  { token: 'cycle:dwl', aliases: ['dwl', 'dwlp'] },
+  { token: 'cycle:ptc', aliases: ['ptc', 'ptcp'] },
+  { token: 'cycle:tfa', aliases: ['tfa', 'tfap'] },
+  { token: 'cycle:tcu', aliases: ['tcu', 'tcup'] },
+  { token: 'cycle:tde', aliases: ['tde', 'tdep'] },
+  { token: 'cycle:tic', aliases: ['tic', 'ticp'] },
+  { token: 'cycle:eote', aliases: ['eote', 'eoep'] },
+  { token: 'cycle:tsk', aliases: ['tsk', 'tskp'] },
+  { token: 'cycle:fhv', aliases: ['fhv', 'fhvp'] },
+  { token: 'cycle:tdc', aliases: ['tdc', 'tdcp'] },
+  { token: 'cycle:core_ch2', aliases: ['core_ch2', 'core2026', 'core_2026'] },
+  { token: 'cycle:return', aliases: ['return'] },
+  { token: 'cycle:investigator_decks', aliases: ['investigator_decks'] },
+  { token: 'cycle:investigator_decks_ch2', aliases: ['investigator_decks_ch2'] },
 ]
 
 function normalizeWeaknessPoolToken(token: string): string {
   const trimmed = token.trim()
   const bare = trimmed.startsWith('cycle:') ? trimmed.slice(6) : trimmed
   return weaknessPoolOptions.find((o) => o.token === trimmed || o.aliases.includes(bare))?.token ?? trimmed
+}
+
+function weaknessPoolLabel(token: string): string {
+  const option = weaknessPoolOptions.find((o) => o.token === token)
+  return option ? t(`deckUi.products.${option.token.slice(6)}`) : token
 }
 
 const selectedWeaknessPool = ref<string[]>([])
@@ -144,10 +149,10 @@ const currentDeckList = computed(() => {
 const playerCustomWeaknessPool = computed(() => props.game.settings.settingsCustomRandomWeaknessPools[props.playerId] ?? [false, []] as [boolean, string[]])
 const weaknessPoolSummary = computed(() => {
   const [enabled, sets] = playerCustomWeaknessPool.value
-  const customSummary = enabled && sets.length ? ` · ${sets.length} custom set${sets.length === 1 ? '' : 's'}` : ''
-  if (selectedWeaknessPool.value.length === 0) return enabled && sets.length ? sets.join(', ') : 'All printed basic weaknesses'
-  const names = selectedWeaknessPool.value.map((token) => weaknessPoolOptions.find((o) => o.token === token)?.label ?? token)
-  return (names.length <= 2 ? names.join(', ') : `${names.length} products selected`) + customSummary
+  const customSummary = enabled && sets.length ? t('deckUi.weaknessPool.customSetCount', { count: sets.length }, sets.length) : ''
+  if (selectedWeaknessPool.value.length === 0) return enabled && sets.length ? sets.join(', ') : t('deckUi.weaknessPool.allPrinted')
+  const names = selectedWeaknessPool.value.map(weaknessPoolLabel)
+  return (names.length <= 2 ? names.join(', ') : t('deckUi.weaknessPool.productsSelected', { count: names.length })) + customSummary
 })
 
 function deckToArkhamDbDecklist(deck: Arkham.Deck): ArkhamDbDecklist {
@@ -409,13 +414,13 @@ watch(currentDeckList, resetOverlayFromDeck)
 
 const overlaySummary = computed(() => {
   const o = selectedOverlay.value
-  if (!o) return 'none'
+  if (!o) return t('deckUi.overlay.none')
   const parts: string[] = []
-  if (o.investigator) parts.push('investigator')
+  if (o.investigator) parts.push(t('deckUi.overlay.investigator'))
   const cards =
     Object.keys(o.swaps).length + Object.keys(o.add).length + Object.keys(o.remove).length
-  if (cards) parts.push(`${cards} card${cards === 1 ? '' : 's'}`)
-  return parts.join(', ') || 'none'
+  if (cards) parts.push(t('deckUi.overlay.cardCount', { count: cards }, cards))
+  return parts.join(', ') || t('deckUi.overlay.none')
 })
 
 const emit = defineEmits(['choose'])
@@ -444,7 +449,7 @@ async function selectAndChoose(deck: Arkham.Deck) {
 type Player = { tag: "EmptyPlayer", id: string } | { tag: "Chosen", contents: Investigator, id: string }
 
 const tabooList = function (investigator: Investigator) {
-  return investigator.taboo ? displayTabooList(investigator.taboo) : null
+  return investigator.taboo ? displayTabooList(investigator.taboo, locale.value, t('deckUi.unknownTaboo')) : null
 }
 
 const players = computed<Player[]>(() => {
@@ -562,7 +567,7 @@ const needsReply = computed(() => {
           <template v-else-if="needsReply && player.id == playerId">
             <div class="deck-main">
               <div v-if="deckRequirements.length" class="deck-requirements-card">
-                <div class="deck-requirements-title">Deck Requirements</div>
+                <div class="deck-requirements-title">{{ $t('deckUi.requirements') }}</div>
                 <div class="deck-requirements-body">
                   <ul class="deck-requirements">
                     <li v-for="requirement in deckRequirements" :key="requirement">{{ requirement }}</li>
@@ -573,7 +578,7 @@ const needsReply = computed(() => {
                     :class="{ active: validOnly }"
                     @click.prevent="validOnly = !validOnly"
                   >
-                    {{ validOnly ? 'Showing Valid Decks' : 'Filter Valid Decks' }}
+                    {{ $t(validOnly ? 'deckUi.showingValid' : 'deckUi.filterValid') }}
                   </button>
                 </div>
               </div>
@@ -611,9 +616,9 @@ const needsReply = computed(() => {
                         <span
                           v-if="deckHasOverlay(deck)"
                           class="deck-item-overlaid"
-                          title="This deck is laid over with custom cards"
+                          :title="$t('deckUi.overlay.badgeHelp')"
                         >
-                          <font-awesome-icon icon="layer-group" /> Overlay
+                          <font-awesome-icon icon="layer-group" /> {{ $t('deckUi.overlay.title') }}
                         </span>
                         <span v-if="deckId === deck.id && error" class="deck-item-error">{{ error }}</span>
                       </div>
@@ -622,7 +627,7 @@ const needsReply = computed(() => {
                         type="button"
                         class="deck-item-overlay"
                         :class="{ active: overlayFor === deck.id && overlay }"
-                        :title="`Overlay: ${overlaySummary}`"
+                        :title="$t('deckUi.overlay.summary', { summary: overlaySummary })"
                         @click.stop.prevent="toggleOverlayForDeck(deck)"
                       >
                         <font-awesome-icon icon="layer-group" />
@@ -642,31 +647,30 @@ const needsReply = computed(() => {
                       </button>
                       <div v-if="overlayFor === deck.id && overlayOpen" class="weakness-pool-panel deck-item-weakness-pool" @click.stop>
                         <div class="weakness-pool-heading">
-                          <span>Overlay</span>
+                          <span>{{ $t('deckUi.overlay.title') }}</span>
                           <span class="weakness-pool-summary">{{ overlaySummary }}</span>
                         </div>
                         <p class="weakness-pool-help">
-                          Custom cards, laid over this deck for this game only. The deck itself is
-                          not changed.
+                          {{ $t('deckUi.overlay.gameOnlyHelp') }}
                         </p>
                         <OverlayEditor v-model="overlay" :slots="deck.list.slots" :investigator="deck.list.investigator_code" />
                       </div>
                       <div v-if="deckId === deck.id && weaknessPoolOpen" class="weakness-pool-panel deck-item-weakness-pool" @click.stop>
                         <div class="weakness-pool-heading">
-                          <span>Random basic weakness pool</span>
+                          <span>{{ $t('deckUi.weaknessPool.title') }}</span>
                           <span class="weakness-pool-summary">{{ weaknessPoolSummary }}</span>
                         </div>
                         <p class="weakness-pool-help">
-                          Select printed or custom sets. Leave all sets unselected to use the full printed pool.
+                          {{ $t('deckUi.weaknessPool.help') }}
                         </p>
                         <div class="weakness-pool-actions">
-                          <button type="button" @click.prevent="setWeaknessPool(weaknessPoolOptions.map((o) => o.token))">Select all</button>
-                          <button type="button" @click.prevent="setWeaknessPool([])">Clear</button>
+                          <button type="button" @click.prevent="setWeaknessPool(weaknessPoolOptions.map((o) => o.token))">{{ $t('deckUi.weaknessPool.selectAll') }}</button>
+                          <button type="button" @click.prevent="setWeaknessPool([])">{{ $t('deckUi.weaknessPool.clear') }}</button>
                         </div>
                         <div class="weakness-pool-grid">
                           <label v-for="option in weaknessPoolOptions" :key="option.token" class="weakness-pool-option">
                             <input type="checkbox" :value="option.token" v-model="selectedWeaknessPool" @change="weaknessPoolTouched = true" />
-                            <span>{{ option.label }}</span>
+                            <span>{{ weaknessPoolLabel(option.token) }}</span>
                           </label>
                         </div>
                         <CustomWeaknessPool v-if="customCardsEnabled" :game="game" :playerId="playerId" @saving="trackCustomWeaknessSave" />
@@ -690,21 +694,21 @@ const needsReply = computed(() => {
                     <p v-if="unsavedDeckError" class="deck-form-error">{{ unsavedDeckError }}</p>
                     <div class="weakness-pool-panel">
                       <button type="button" class="weakness-pool-toggle" @click.prevent="weaknessPoolOpen = !weaknessPoolOpen">
-                        <span>Random basic weakness pool</span>
+                        <span>{{ $t('deckUi.weaknessPool.title') }}</span>
                         <span class="weakness-pool-summary">{{ weaknessPoolSummary }}</span>
                       </button>
                       <div v-if="weaknessPoolOpen" class="weakness-pool-body">
                         <p class="weakness-pool-help">
-                          Select printed or custom sets. Leave all sets unselected to use the full printed pool.
+                          {{ $t('deckUi.weaknessPool.help') }}
                         </p>
                         <div class="weakness-pool-actions">
-                          <button type="button" @click.prevent="setWeaknessPool(weaknessPoolOptions.map((o) => o.token))">Select all</button>
-                          <button type="button" @click.prevent="setWeaknessPool([])">Clear</button>
+                          <button type="button" @click.prevent="setWeaknessPool(weaknessPoolOptions.map((o) => o.token))">{{ $t('deckUi.weaknessPool.selectAll') }}</button>
+                          <button type="button" @click.prevent="setWeaknessPool([])">{{ $t('deckUi.weaknessPool.clear') }}</button>
                         </div>
                         <div class="weakness-pool-grid">
                           <label v-for="option in weaknessPoolOptions" :key="option.token" class="weakness-pool-option">
                             <input type="checkbox" :value="option.token" v-model="selectedWeaknessPool" @change="weaknessPoolTouched = true" />
-                            <span>{{ option.label }}</span>
+                            <span>{{ weaknessPoolLabel(option.token) }}</span>
                           </label>
                         </div>
                         <CustomWeaknessPool v-if="customCardsEnabled" :game="game" :playerId="playerId" @saving="trackCustomWeaknessSave" />

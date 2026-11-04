@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+
+
 import { computed, ComputedRef, ref } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import * as DebugInPlay from '@/arkham/debugInPlay';
@@ -13,6 +16,8 @@ import TokenPool from '@/arkham/components/TokenPool.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Event';
+
+const { t: uiT } = useI18n()
 
 export interface Props {
   game: Game
@@ -120,7 +125,7 @@ function startDrag(event: DragEvent) {
 const cardsUnderneath = computed(() => props.event.cardsUnderneath)
 const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value.length})`)
 
-const showCardsUnderneath = (e: Event) => emits('showCards', e, cardsUnderneath, "Cards Underneath", false)
+const showCardsUnderneath = (e: Event) => emits('showCards', e, cardsUnderneath, uiT('ui.cardsUnderneath2'), false)
 
 const choose = (index: number) => emits('choose', index)
 </script>

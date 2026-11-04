@@ -1,0 +1,96 @@
+{
+  "achievements": {
+    "Scapegoat": {
+      "name": "替罪羊",
+      "text": "使用珍妮·巴恩斯游玩《亡者马戏团》战役，并在附有“惊恐的俘虏”的地点击败祭牲。"
+    },
+    "MoonlightSonata": {
+      "name": "月光奏鸣曲",
+      "text": "使用吉姆·卡尔弗游玩《亡者马戏团》战役，并在结算“最后的狂想曲”时揭示至少3个月亮标记。"
+    },
+    "GravesideChat": {
+      "name": "墓边闲谈",
+      "text": "使用玛丽·朗博游玩《亡者马戏团》战役，并让安息日男爵和埃斯普丽夫人同时在场。"
+    },
+    "WolfOfWallStreet": {
+      "name": "华尔街之狼",
+      "text": "游玩《亡者马戏团》战役，让“兽性变化”和“孤狼”同时在场，并控制至少20个资源。"
+    },
+    "DestinedKarma": {
+      "name": "命定因果",
+      "text": "在击败黑山羊的技能检定中，通过阿玛尔西娅·韦弗的能力获得+3技能值。"
+    },
+    "TimeOut": {
+      "name": "暂停！",
+      "text": "在与至少3名敌人交战时，发动《兽类崇拜》上的行动能力。"
+    },
+    "WaxAndWane": {
+      "name": "阴晴圆缺",
+      "text": "在同一次技能检定中，使用“狄安娜的祈唤”取消1个月亮标记并释放2个月亮标记。"
+    },
+    "ShootTheMoon": {
+      "name": "摘下月亮",
+      "text": "在同一次技能检定中揭示至少4个月亮标记。"
+    },
+    "UtterLunatic": {
+      "name": "彻头彻尾的疯子",
+      "text": "在同一轮结束时，释放你调查员卡上的全部6个月亮标记。"
+    },
+    "ClownCollege": {
+      "name": "小丑学院",
+      "text": "使用“易容术”躲避一名新月小丑。"
+    },
+    "NaturalSelection": {
+      "name": "自然选择",
+      "text": "通过你控制的一张“生物”支援上的能力，击败一名新月驯兽师。"
+    },
+    "LactoseIntolerant": {
+      "name": "乳糖不耐受",
+      "text": "在同一场冒险中取消至少2张“莎布·尼古拉丝之乳”。"
+    },
+    "DeepSleepers": {
+      "name": "沉睡者",
+      "text": "在没有任何调查员被巍峨的黑山羊幼仔攻击过的情况下，达成《险途》的结局2。"
+    },
+    "PainTrain": {
+      "name": "痛苦列车",
+      "text": "在《一路向西》中获得至少3点创伤。"
+    },
+    "ViceSquad": {
+      "name": "风纪小队",
+      "text": "让每位调查员都选择全部4种恶习，并达成《酒神狂欢》的结局2。"
+    },
+    "ManyFutures": {
+      "name": "万般未来",
+      "text": "获得阿玛尔西娅·韦弗的每一种最终版本。",
+      "items": {
+        "OracleOfPurity": "纯洁先知",
+        "OracleOfEnlightenment": "启迪先知",
+        "OracleOfResolve": "决心先知",
+        "OracleOfMystery": "奥秘先知"
+      }
+    },
+    "ManyPasts": {
+      "name": "万般过往",
+      "text": "获得《兽类崇拜》的每一种最终版本。",
+      "items": {
+        "ProphecyOfTheBeyond": "彼岸预言",
+        "ProphecyOfTheHorde": "群魔预言",
+        "ProphecyOfTheEternal": "永恒预言",
+        "ProphecyOfTheBehemoth": "巨兽预言"
+      }
+    },
+    "GOAT": {
+      "name": "史上最强山羊",
+      "text": "在同一轮中，在莎布·尼古拉丝上放置的伤害至少达到调查员人数的8倍。"
+    },
+    "StealTheShow": {
+      "name": "抢尽风头",
+      "text": "仅选择“表演者”调查员，并赢得《亡者马戏团》战役。"
+    },
+    "GreatestShowOnEarth": {
+      "name": "举世无双的演出",
+      "text": "在专家难度下赢得《亡者马戏团》战役。"
+    }
+  }
+}

@@ -48,6 +48,8 @@ import { fullName } from '@/arkham/types/Name';
 import { isCthulhuBoardEnemy } from '@/arkham/components/TheDrownedCity/cthulhuBoard'
 import { useCardStore } from '@/stores/cards';
 import { getGameLocalStorageItem, setGameLocalStorageItem } from '@/arkham/localStorage';
+
+const { t: uiT } = useI18n()
 const { t } = useI18n();
 
 interface RefWrapper<T> {
@@ -771,7 +773,7 @@ async function openDebugAddCard() {
       debugPlayerCards.value = allCards.filter(isDebugPlayerCard)
     } catch (error) {
       console.error(error)
-      debugAddCardError.value = 'Unable to load player cards.'
+      debugAddCardError.value = uiT('ui.unableToLoadPlayerCards')
     } finally {
       debugAddCardLoading.value = false
     }
@@ -792,7 +794,7 @@ async function debugAddCardToHand(card: CardDef) {
     showDebugAddCard.value = false
   } catch (error) {
     console.error(error)
-    debugAddCardError.value = `Unable to add ${fullName(card.name)} to hand.`
+    debugAddCardError.value = uiT('ui.addPlayerCardFailed', { name: fullName(card.name) })
   }
 }
 
@@ -822,13 +824,13 @@ const emptySlots = computed(() => {
 })
 type DebugSlotType = 'HeadSlot' | 'HandSlot' | 'BodySlot' | 'AccessorySlot' | 'ArcaneSlot' | 'TarotSlot' | 'AllySlot'
 const debugSlotTypes: { type: DebugSlotType; label: string; icon: string }[] = [
-  { type: 'HandSlot', label: 'Hand', icon: 'slots/hand.png' },
-  { type: 'ArcaneSlot', label: 'Arcane', icon: 'slots/arcane.png' },
-  { type: 'AllySlot', label: 'Ally', icon: 'slots/ally.png' },
-  { type: 'AccessorySlot', label: 'Accessory', icon: 'slots/accessory.png' },
-  { type: 'BodySlot', label: 'Body', icon: 'slots/body.png' },
-  { type: 'HeadSlot', label: 'Head', icon: 'slots/head.png' },
-  { type: 'TarotSlot', label: 'Tarot', icon: 'slots/tarot.png' },
+  { type: 'HandSlot', label: uiT('ui.hand'), icon: 'slots/hand.png' },
+  { type: 'ArcaneSlot', label: uiT('ui.arcane'), icon: 'slots/arcane.png' },
+  { type: 'AllySlot', label: uiT('ui.ally'), icon: 'slots/ally.png' },
+  { type: 'AccessorySlot', label: uiT('ui.accessory'), icon: 'slots/accessory.png' },
+  { type: 'BodySlot', label: uiT('ui.body'), icon: 'slots/body.png' },
+  { type: 'HeadSlot', label: uiT('ui.head'), icon: 'slots/head.png' },
+  { type: 'TarotSlot', label: uiT('ui.tarot'), icon: 'slots/tarot.png' },
 ]
 const showDebugSlotMenu = ref(false)
 const { isMobile } = IsMobile();
@@ -1256,7 +1258,7 @@ function closeHand() {
                 :aria-expanded="showDebugSlotMenu"
                 @click="showDebugSlotMenu = !showDebugSlotMenu"
               >
-                <span>Add Slot</span>
+                <span>{{ $t('ui.addSlot') }}</span>
                 <span>{{ showDebugSlotMenu ? '−' : '+' }}</span>
               </button>
               <div v-if="showDebugSlotMenu" class="debug-add-slots-menu">
@@ -1264,7 +1266,7 @@ function closeHand() {
                   v-for="slot in debugSlotTypes"
                   :key="slot.type"
                   type="button"
-                  :title="`Add ${slot.label} Slot`"
+                  :title="$t('ui.addNamedSlot', { slot: slot.label })"
                   @click="debugAddSlot(slot.type)"
                 >
                   <img :src="imgsrc(slot.icon)" />
@@ -1282,7 +1284,7 @@ function closeHand() {
         vertical
         droppable
         draggableCards
-        label="Hidden"
+        :label="$t('ui.hidden')"
         placement="left"
         allowInPlayAbilities
         autoShowWhenOnlyChoice
@@ -1324,18 +1326,18 @@ function closeHand() {
       @click.self="showDebugAddCard = false"
     >
       <div class="debug-add-card-modal">
-        <h3>Add player card to {{ fullName(investigator.name) }}'s hand</h3>
+        <h3>{{ $t('ui.addPlayerCardTo') }} {{ fullName(investigator.name) }}{{ $t('ui.sHand') }}</h3>
         <label>
-          Search card
+          {{ $t('ui.searchCard') }}
           <input
             v-model="debugCardSearch"
             type="search"
             autofocus
-            placeholder="Name, code, type, class, or trait"
+            :placeholder="$t('ui.nameCodeTypeClassOrTrait')"
             @keydown.stop
           />
         </label>
-        <p v-if="debugAddCardLoading" class="debug-add-card-status">Loading player cards…</p>
+        <p v-if="debugAddCardLoading" class="debug-add-card-status">{{ $t('ui.loadingPlayerCards') }}</p>
         <p v-if="debugAddCardError" class="debug-add-card-error">{{ debugAddCardError }}</p>
         <div v-else class="debug-add-card-results">
           <button
@@ -1345,7 +1347,7 @@ function closeHand() {
             @click="debugAddCardToHand(card)"
           >
             <span>{{ debugCardLabel(card) }}</span>
-            <small>{{ card.cardType }} · {{ card.classSymbols.join(', ') || 'Neutral' }}</small>
+            <small>{{ card.cardType }} · {{ card.classSymbols.join(', ') || $t('ui.neutral') }}</small>
           </button>
         </div>
         <button type="button" @click="showDebugAddCard = false">{{ $t('close') }}</button>
@@ -1432,7 +1434,7 @@ function closeHand() {
               key="as-if-in-hand-cards"
               class="special-hand-cards"
               :cards="asIfInHandCards"
-              label="Out of play cards playable as if in hand"
+              :label="$t('ui.outOfPlayCardsPlayableAsIfInHand')"
               placement="top"
               :game="game"
               :playerId="playerId"
@@ -1490,8 +1492,8 @@ function closeHand() {
 
         </transition-group>
         <div class="hand-debug-actions" v-if="debug.active">
-          <button type="button" @click="openDebugAddCard">+ Card to hand</button>
-          <button v-if="customCardsEnabled" type="button" @click="showCustomCardPicker = true">+ Custom card</button>
+          <button type="button" @click="openDebugAddCard">{{ $t('ui.cardToHand') }}</button>
+          <button v-if="customCardsEnabled" type="button" @click="showCustomCardPicker = true">{{ $t('ui.customCard') }}</button>
           <button type="button" :disabled="investigator.hand.length === 0" @click="discardRandom">{{ $t('debug.hand.discardRandom') }}</button>
         </div>
         <div v-if="investigator.handSize" class="hand-size" :class="handSizeClasses" :current-length="totalHandSize">{{ t('handSize') }}: {{totalHandSize}}/{{investigator.handSize}}</div>
@@ -1515,7 +1517,7 @@ function closeHand() {
         class="hand-debug-mobile"
       >
         <button class="hand-debug-add-button" type="button" @click.stop="openDebugAddCard">
-          + Card
+          {{ $t('ui.card') }}
         </button>
         <button
           class="hand-debug-add-button"
@@ -1530,7 +1532,7 @@ function closeHand() {
         v-show="handAreaPointerEvents === 'auto'"
         class="hand-close-button"
         type="button"
-        aria-label="Close hand"
+        :aria-label="$t('ui.closeHand')"
         @click.stop="closeHand"
       >
         <XMarkIcon aria-hidden="true" />
@@ -1540,8 +1542,8 @@ function closeHand() {
         class="hand-sticky-toggle"
         type="button"
         :aria-pressed="stickyHand"
-        :aria-label="stickyHand ? 'Disable sticky hand' : 'Enable sticky hand'"
-        :title="stickyHand ? 'Disable sticky hand' : 'Enable sticky hand'"
+        :aria-label="stickyHand ? $t('ui.disableStickyHand') : $t('ui.enableStickyHand')"
+        :title="stickyHand ? $t('ui.disableStickyHand') : $t('ui.enableStickyHand')"
         @click.stop="toggleStickyHand"
       >
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -1567,7 +1569,7 @@ function closeHand() {
             key="as-if-in-hand-cards"
             class="special-hand-cards"
             :cards="asIfInHandCards"
-            label="Out of play cards playable as if in hand"
+            :label="$t('ui.outOfPlayCardsPlayableAsIfInHand')"
             placement="top"
             :game="game"
             :playerId="playerId"

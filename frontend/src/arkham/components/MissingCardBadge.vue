@@ -24,11 +24,11 @@ const code = computed(() => stripCardCodePrefix(props.cardCode))
     v-if="missing"
     class="missing-card-badge"
     :to="{ name: 'CardBuilder', query: { card: code } }"
-    v-tooltip="'This card has no definition in this game, so it does nothing. Open it in the card builder to restore it, or build it again if it was deleted.'"
+    v-tooltip="$t('ui.missingCardDefinition')"
     @click.stop
   >
     <font-awesome-icon :icon="['fas', 'triangle-exclamation']" />
-    <span>Fix in builder</span>
+    <span>{{ $t('ui.fixInBuilder') }}</span>
   </router-link>
 </template>
 

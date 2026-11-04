@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+import { localizedCardKind } from '@/arkham/cardLabels'
+import { useI18n } from 'vue-i18n'
+
+
 /* Adding one of your custom cards to the game.
  *
  * Building and editing live on the card builder page, where there is room for
@@ -8,7 +12,6 @@ import { useDebug } from '@/arkham/debug'
 import { useCardStore } from '@/stores/cards'
 import {
   PLAYER_CARD_TYPES,
-  cardKind,
   customCards,
   registerCustomCards,
   renderCardPlaceholder,
@@ -18,6 +21,8 @@ import {
 import { libraryCards, libraryLoaded, loadLibrary } from '@/arkham/customCardLibrary'
 import type { Game } from '@/arkham/types/Game'
 import { useEscape } from '@/composable/escape'
+
+const { t: uiT } = useI18n()
 
 const props = defineProps<{ game: Game; investigatorId: string }>()
 const emit = defineEmits<{ close: [] }>()
@@ -61,7 +66,7 @@ async function refresh() {
     refreshed.value = stale.length
   } catch (e) {
     console.error(e)
-    error.value = 'Could not refresh those cards.'
+    error.value = uiT('ui.couldNotRefreshThoseCards')
   } finally {
     busy.value = false
   }
@@ -99,7 +104,7 @@ async function add(placement: Placement) {
     emit('close')
   } catch (e) {
     console.error(e)
-    error.value = 'Could not add that card.'
+    error.value = uiT('ui.couldNotAddThatCard')
   } finally {
     busy.value = false
   }
@@ -110,13 +115,13 @@ async function add(placement: Placement) {
   <div class="picker-overlay" @click.self="emit('close')">
     <div class="picker-modal">
       <header>
-        <h3>Add a custom card</h3>
-        <router-link to="/card-builder" target="_blank" class="builder-link">Open card builder</router-link>
+        <h3>{{ $t('ui.addACustomCard') }}</h3>
+        <router-link to="/card-builder" target="_blank" class="builder-link">{{ $t('ui.openCardBuilder') }}</router-link>
       </header>
 
-      <p v-if="!libraryLoaded" class="muted">Loading your library…</p>
+      <p v-if="!libraryLoaded" class="muted">{{ $t('ui.loadingYourLibrary') }}</p>
       <p v-else-if="!cards.length" class="muted">
-        Your library is empty. Build a card in the card builder and it will show up here.
+        {{ $t('ui.yourLibraryIsEmptyBuildACardInThe') }}
       </p>
 
       <div v-else class="grid">
@@ -129,26 +134,26 @@ async function add(placement: Placement) {
         >
           <img :src="cardArt(card)" :data-image-id="card.def.cardCode" alt="" />
           <span class="name">{{ card.def.name.title }}</span>
-          <small>{{ cardKind(card.def.cardType) }}</small>
+          <small>{{ localizedCardKind(card.def.cardType, $t) }}</small>
         </div>
       </div>
 
       <p v-if="error" class="error">{{ error }}</p>
       <p v-else-if="refreshed !== null" class="muted">
-        Reloaded {{ refreshed }} card{{ refreshed === 1 ? '' : 's' }} from your library.
+        {{ $t('ui.cardsRefreshed', { count: refreshed }, refreshed) }}
       </p>
 
       <div class="actions">
-        <button type="button" :disabled="busy || !selectedCard" @click="add('play')">Put into play</button>
-        <button type="button" :disabled="busy || !selectedCard" @click="add('hand')">Add to hand</button>
+        <button type="button" :disabled="busy || !selectedCard" @click="add('play')">{{ $t('ui.putIntoPlay') }}</button>
+        <button type="button" :disabled="busy || !selectedCard" @click="add('hand')">{{ $t('ui.addToHand') }}</button>
         <button v-if="isPlayerCard" type="button" :disabled="busy" @click="add('campaignDeck')">
-          Add to deck for campaign
+          {{ $t('ui.addToDeckForCampaign') }}
         </button>
         <button v-if="selectedCard && !isPlayerCard" type="button" :disabled="busy" @click="add('encounterDeck')">
-          Shuffle into encounter deck
+          {{ $t('ui.shuffleIntoEncounterDeck') }}
         </button>
         <button type="button" class="secondary" :disabled="busy" @click="refresh">
-          Reload edited cards
+          {{ $t('ui.reloadEditedCards') }}
         </button>
         <button type="button" class="secondary" @click="emit('close')">{{ $t('close') }}</button>
       </div>

@@ -76,7 +76,7 @@ onMounted(async () => {
           </div>
         </div>
       </div>
-        <div v-if="groups.length" class="event-groups" aria-label="Epic multiplayer groups">
+        <div v-if="groups.length" class="event-groups" :aria-label="$t('ui.epicMultiplayerGroups')">
           <section v-for="group in groups" :key="group.ordinal" class="event-group-card">
             <h2>{{ groupLabel(group) }}</h2>
             <div class="investigators">

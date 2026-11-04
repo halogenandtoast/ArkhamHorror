@@ -64,16 +64,16 @@ const take = (key?: string) => {
     <dialog ref="box" class="shared-picker" @close="emit('close')" @click.self="emit('close')">
       <section @keydown.esc="emit('close')">
         <header>
-          <h2>Shared text</h2>
-          <span class="count">{{ catalogue.length }} prompts</span>
+          <h2>{{ $t('ui.sharedText') }}</h2>
+          <span class="count">{{ catalogue.length }} {{ $t('ui.prompts') }}</span>
           <span class="spacer" />
-          <button type="button" class="link" @click="emit('close')">Close</button>
+          <button type="button" class="link" @click="emit('close')">{{ $t('ui.close') }}</button>
         </header>
 
         <input
           v-model="search"
           type="search"
-          placeholder="Search by what it says — “add to hand”, “heal”, “choose”"
+          :placeholder="$t('ui.searchByWhatItSaysAddToHandHeal')"
           v-focus
           @keydown.stop
           @keydown.enter.prevent="take()"
@@ -90,7 +90,7 @@ const take = (key?: string) => {
               </span>
             </button>
           </li>
-          <li v-if="!matching.length" class="none">Nothing says that</li>
+          <li v-if="!matching.length" class="none">{{ $t('ui.nothingSaysThat') }}</li>
         </ul>
       </section>
     </dialog>

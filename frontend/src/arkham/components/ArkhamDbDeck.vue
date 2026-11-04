@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import {imgsrc, localizeArkhamDBBaseUrl, processArkhamBuildDeck} from '@/arkham/helpers';
 
 const model = defineModel()
+const { t } = useI18n()
 const deck = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
 const error = ref<string | null>(null)
@@ -30,12 +32,12 @@ async function loadDeck() {
       const data = await response.json()
       const deckData = processArkhamBuildDeck(data, deckUrl.value)
       if (Object.keys(deckData.slots).length === 0) {
-        error.value = "Is this deck empty?"
+        error.value = t('deckUi.import.empty')
       } else{
         model.value = deckData
       }
     } else {
-      error.value = "Could not find deck, please make sure you have created a public share."
+      error.value = t('deckUi.import.shareNotFound')
     }
   } else if (matches = deck.value.match(arkhamBuildDecklistRegex)) {
     deckUrl.value = `https://api.arkham.build/v1/public/share/${matches[1]}?type=decklist`
@@ -45,15 +47,15 @@ async function loadDeck() {
         const data = await response.json()
         const deckData = processArkhamBuildDeck(data, deckUrl.value)
         if (Object.keys(deckData.slots).length === 0) {
-          error.value = "Is this deck empty?"
+          error.value = t('deckUi.import.empty')
         } else{
           model.value = deckData
         }
       } else {
-        error.value = "Could not find decklist."
+        error.value = t('deckUi.import.decklistNotFound')
       }
     } catch {
-      error.value = "Could not find decklist."
+      error.value = t('deckUi.import.decklistNotFound')
     }
   }
 }

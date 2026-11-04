@@ -109,7 +109,7 @@ async function toggle(entry: Entry) {
         class="memory-debug-toggle"
         :class="{ active: memoryDebug }"
         @click="memoryDebug = !memoryDebug"
-      >Debug</button>
+      >{{ $t('ui.debug') }}</button>
     </h3>
     <p v-if="entries.length === 0" class="empty">{{ t('campaignLogView.noEntriesYet') }}</p>
     <ul v-else class="memory-list">

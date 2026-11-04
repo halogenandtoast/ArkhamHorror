@@ -123,7 +123,7 @@ function choose(code: string) {
       <input
         v-model="search"
         type="search"
-        placeholder="Search your cards and the card pool by name or code"
+        :placeholder="$t('ui.searchYourCardsAndTheCardPoolByName')"
         v-focus
         @keydown.enter.prevent="choose(search.trim())"
         @keydown.esc="open = false"
@@ -140,11 +140,11 @@ function choose(code: string) {
               }}<span v-if="card.subtitle" class="option-subtitle">{{ card.subtitle }}</span></code
             >
             <span class="option-detail">{{ card.set ?? card.kind }}</span>
-            <span class="option-origin">{{ card.custom ? 'yours' : '' }}</span>
+            <span class="option-origin">{{ card.custom ? $t('ui.yours') : '' }}</span>
           </button>
         </li>
         <li v-if="!matching.length" class="muted">
-          Nothing matches — press enter to use what you typed as a code.
+          {{ $t('ui.nothingMatchesPressEnterToUseWhatYouTyped') }}
         </li>
       </ul>
     </div>
@@ -156,19 +156,19 @@ function choose(code: string) {
           <button
             type="button"
             class="binding-name"
-            :title="modelValue ? `${modelValue} — click to choose another` : 'Choose a card'"
+            :title="modelValue ? $t('ui.clickToChooseAnother', { value: modelValue }) : $t('ui.chooseACard2')"
             @click="open = true"
           >
             <template v-if="chosen"
               >{{ chosen.title
               }}<span v-if="chosen.subtitle" class="chip-subtitle">{{ chosen.subtitle }}</span>
             </template>
-            <template v-else>{{ modelValue || placeholder || 'Choose a card…' }}</template>
+            <template v-else>{{ modelValue || placeholder || $t('ui.chooseACard') }}</template>
           </button>
         </div>
       </div>
-      <span v-if="modelValue && !chosen" class="from unknown" title="No card in your library or the pool has this code">
-        not a card we know
+      <span v-if="modelValue && !chosen" class="from unknown" :title="$t('ui.noCardInYourLibraryOrThePoolHas')">
+        {{ $t('ui.notACardWeKnow') }}
       </span>
     </div>
   </div>

@@ -227,7 +227,7 @@ const isBuildSpiritDeckQuestion = (q: Question): q is Question & { tag: Question
         <div class="scenario-choices" v-if="scenarioChoices.length > 0">
           <template v-for="[choice, index] in scenarioChoices" :key="index">
             <button class="scenario-tile button" @click="choose(index)">
-              <img :src="scenarioBoxImage(choice.scenarioId)" :alt="`Scenario ${choice.scenarioId}`" />
+              <img :src="scenarioBoxImage(choice.scenarioId)" :alt="$t('ui.scenarioCode', { code: choice.scenarioId })" />
               <span v-html="label(choice.label)"></span>
             </button>
           </template>

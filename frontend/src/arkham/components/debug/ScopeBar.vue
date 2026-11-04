@@ -13,20 +13,20 @@
 import { jumpToBinding, type Binding } from '@/arkham/customCardBindings'
 
 withDefaults(defineProps<{ bindings: Binding[]; label?: string }>(), {
-  label: 'In scope here:',
+  label: '',
 })
 </script>
 
 <template>
   <p v-if="bindings.length" class="scope-bar">
-    <span class="scope-label">{{ label }}</span>
+    <span class="scope-label">{{ label || $t('ui.inScopeHere') }}</span>
     <button
       v-for="bound in bindings"
       :key="bound.name"
       type="button"
       class="scope-chip"
       :class="{ jumpable: !!bound.anchor }"
-      :title="`${bound.detail ? bound.detail + ' · ' : ''}${bound.origin}${bound.anchor ? ' — click to show' : ''}`"
+      :title="`${bound.detail ? bound.detail + ' · ' : ''}${bound.origin}${bound.anchor ? $t('ui.clickToShow') : ''}`"
       @click="jumpToBinding(bound.anchor)"
     >
       ${{ bound.name }}

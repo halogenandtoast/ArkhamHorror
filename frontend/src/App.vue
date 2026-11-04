@@ -8,9 +8,9 @@
     </section>
   </div>
   <div v-else-if="!avifSupported" class="error-message container">
-    <header><h2 class="title">Please update your browser</h2></header>
+    <header><h2 class="title">{{ $t('ui.pleaseUpdateYourBrowser') }}</h2></header>
     <section class="box">
-      <p>Your browser does not support AVIF images. Please update your browser or switch to a different one.</p>
+      <p>{{ $t('ui.yourBrowserDoesNotSupportAvifImagesPleaseUpdate') }}</p>
     </section>
   </div>
   <template v-else>
@@ -23,19 +23,20 @@
           </transition>
         </router-view>
         <template #fallback>
-          Loading...
+          {{ $t('ui.loading') }}
         </template>
       </Suspense>
     </main>
     <ModalsContainer />
   </template>
   <Toasts />
-  <footer><a href="https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/" rel="noreferrer" target="_blank" tabindex="-1">Arkham Horror: The Card Game™</a> and all related content © <a href="https://www.fantasyflightgames.com" rel="noreferrer" target="_blank" tabindex="-1">Fantasy Flight Games (FFG)</a>. This site is not produced, endorsed by or affiliated with FFG. <router-link to="/about">{{$t('nav.about')}}.</router-link></footer>
+  <footer><a href="https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/" rel="noreferrer" target="_blank" tabindex="-1">Arkham Horror: The Card Game™</a> {{ $t('ui.andAllRelatedContent') }} <a href="https://www.fantasyflightgames.com" rel="noreferrer" target="_blank" tabindex="-1">Fantasy Flight Games (FFG)</a>{{ $t('ui.thisSiteIsNotProducedEndorsedByOrAffiliated') }} <router-link to="/about">{{$t('nav.about')}}.</router-link></footer>
 </template>
 
 <script lang="ts" setup>
 import { ModalsContainer } from 'vue-final-modal'
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watchEffect } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { useSiteSettingsStore } from '@/stores/site_settings'
 import { maintenanceActive, maintenanceMessage } from '@/maintenance'
@@ -54,6 +55,11 @@ const settingsStore = useSiteSettingsStore()
  * indistinguishable from a stuck board. Keying on the game forces a remount;
  * routes without one keep a stable key so ordinary navigation is unaffected. */
 const route = useRoute()
+const { t, te } = useI18n()
+watchEffect(() => {
+  const key = `ui.pageTitles.${String(route.name)}`
+  document.title = te(key) ? t(key) : String(route.meta.title ?? 'Arkham Horror')
+})
 const routeKey = computed(() =>
   route.params.gameId ? `${String(route.name)}:${route.params.gameId}` : String(route.name)
 )

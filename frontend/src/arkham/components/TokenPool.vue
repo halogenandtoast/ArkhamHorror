@@ -1,10 +1,15 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+
+
 import { computed, ref, nextTick, onUnmounted } from 'vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import { customTokenSlug, type Token, type Tokens } from '@/arkham/types/Token'
 import { customSetToken } from '@/arkham/customCards'
 import { useDebug } from '@/arkham/debug'
 import { draggedOff, removeDragAttrs, type RemoveTarget } from '@/arkham/debugCardDrop'
+
+const { t: uiT } = useI18n()
 
 // Unique per TokenPool instance, so view-transition-names never collide between
 // different cards' pools.
@@ -38,7 +43,7 @@ export type TokenPoolOverride = {
 }
 
 const TOKEN_CONFIG: Partial<Record<Token, { type: string; tooltip?: string }>> = {
-  AlarmLevel: { type: 'doom', tooltip: 'Alarm Level' },
+  AlarmLevel: { type: 'doom', tooltip: uiT('ui.alarmLevel') },
   Clue: { type: 'clue' },
   Damage: { type: 'health' },
   Doom: { type: 'doom' },
@@ -46,39 +51,39 @@ const TOKEN_CONFIG: Partial<Record<Token, { type: string; tooltip?: string }>> =
   Resource: { type: 'resource' },
   Pillar: { type: 'resource' },
   Kindling: { type: 'resource' },
-  Leyline: { type: 'resource', tooltip: 'Leyline' },
-  Shard: { type: 'resource', tooltip: 'Shard' },
-  ScoutingReport: { type: 'resource', tooltip: 'Scouting Report' },
-  Scrap: { type: 'resource', tooltip: 'Scrap' },
-  Depletion: { type: 'resource', tooltip: 'Scouting Report' },
-  Antiquity: { type: 'resource', tooltip: 'Antiquity' },
-  Civilian: { type: 'resource', tooltip: 'Civilian' },
-  Study: { type: 'resource', tooltip: 'Civilian' },
-  Target: { type: 'resource', tooltip: 'Target' },
-  Time: { type: 'resource', tooltip: 'Time' },
-  Newspaper: { type: 'resource', tooltip: 'Newspaper' },
-  Shipment: { type: 'resource', tooltip: 'Shipment' },
-  Seed: { type: 'resource', tooltip: 'Seed' },
-  TimeCapsule: { type: 'resource', tooltip: 'Time Capsule' },
-  Seal: { type: 'resource', tooltip: 'Seal' },
+  Leyline: { type: 'resource', tooltip: uiT('ui.leyline') },
+  Shard: { type: 'resource', tooltip: uiT('ui.shard') },
+  ScoutingReport: { type: 'resource', tooltip: uiT('ui.scoutingReport') },
+  Scrap: { type: 'resource', tooltip: uiT('ui.scrap') },
+  Depletion: { type: 'resource', tooltip: uiT('ui.scoutingReport') },
+  Antiquity: { type: 'resource', tooltip: uiT('ui.antiquity') },
+  Civilian: { type: 'resource', tooltip: uiT('ui.civilian') },
+  Study: { type: 'resource', tooltip: uiT('ui.civilian') },
+  Target: { type: 'resource', tooltip: uiT('ui.target') },
+  Time: { type: 'resource', tooltip: uiT('ui.time') },
+  Newspaper: { type: 'resource', tooltip: uiT('ui.newspaper') },
+  Shipment: { type: 'resource', tooltip: uiT('ui.shipment') },
+  Seed: { type: 'resource', tooltip: uiT('ui.seed') },
+  TimeCapsule: { type: 'resource', tooltip: uiT('ui.timeCapsule') },
+  Seal: { type: 'resource', tooltip: uiT('ui.seal') },
   Depth: { type: 'resource' },
   LostSoul: { type: 'resource' },
   Overgrowth: { type: 'resource' },
   Bounty: { type: 'resource' },
-  Evidence: { type: 'resource', tooltip: 'Evidence' },
-  Warning: { type: 'resource', tooltip: 'Warning' },
-  Memory: { type: 'resource', tooltip: 'Memory' },
-  Mutation: { type: 'resource', tooltip: 'Mutation' },
-  Brilliance: { type: 'resource', tooltip: 'Brilliance' },
+  Evidence: { type: 'resource', tooltip: uiT('ui.evidence') },
+  Warning: { type: 'resource', tooltip: uiT('ui.warning') },
+  Memory: { type: 'resource', tooltip: uiT('ui.memory') },
+  Mutation: { type: 'resource', tooltip: uiT('ui.mutation') },
+  Brilliance: { type: 'resource', tooltip: uiT('ui.brilliance') },
   Charge: { type: 'resource' },
-  Obligation: { type: 'resource', tooltip: 'Obligation' },
-  Discovery: { type: 'resource', tooltip: 'Discovery' },
-  Dose: { type: 'resource', tooltip: 'Dose' },
-  Chance: { type: 'resource', tooltip: 'Chance' },
-  Obsession: { type: 'resource', tooltip: 'Obsession' },
-  Offering: { type: 'resource', tooltip: 'Offering' },
-  Sign: { type: 'resource', tooltip: 'Sign' },
-  Snare: { type: 'resource', tooltip: 'Snare' },
+  Obligation: { type: 'resource', tooltip: uiT('ui.obligation') },
+  Discovery: { type: 'resource', tooltip: uiT('ui.discovery') },
+  Dose: { type: 'resource', tooltip: uiT('ui.dose') },
+  Chance: { type: 'resource', tooltip: uiT('ui.chance') },
+  Obsession: { type: 'resource', tooltip: uiT('ui.obsession') },
+  Offering: { type: 'resource', tooltip: uiT('ui.offering') },
+  Sign: { type: 'resource', tooltip: uiT('ui.sign') },
+  Snare: { type: 'resource', tooltip: uiT('ui.snare') },
 }
 
 const props = withDefaults(defineProps<{

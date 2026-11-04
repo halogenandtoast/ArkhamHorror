@@ -65,6 +65,8 @@ import { keywordBindings, keywordStepSlots } from '@/arkham/customCardBindings'
 import AbilityEditor from '@/arkham/components/debug/AbilityEditor.vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 
+const { t: uiT } = useI18n()
+
 const { t } = useI18n()
 const K = 'customCardSets.'
 
@@ -191,11 +193,11 @@ function conditionResultShape(slug: string): Partial<Api.CustomSetKeyword> {
   })
   return {
     slots: [
-      { name: 'condition', label: 'Condition', kind: 'window', required: true },
-      { name: 'requires', label: '…only when', kind: 'criterion', required: false },
-      { name: 'conditionText', label: 'Condition, as printed', kind: 'text', required: false },
-      { name: 'resultText', label: 'Result, as printed', kind: 'text', required: false },
-      { name: 'steps', label: 'On activating', kind: 'steps', required: false },
+      { name: 'condition', label: uiT('ui.condition2'), kind: 'window', required: true },
+      { name: 'requires', label: uiT('ui.onlyWhen2'), kind: 'criterion', required: false },
+      { name: 'conditionText', label: uiT('ui.conditionAsPrinted'), kind: 'text', required: false },
+      { name: 'resultText', label: uiT('ui.resultAsPrinted'), kind: 'text', required: false },
+      { name: 'steps', label: uiT('ui.onActivating'), kind: 'steps', required: false },
     ] satisfies Api.KeywordSlot[],
     behavior: {
       abilities: [
@@ -288,11 +290,11 @@ function removeSlot(index: number, at: number) {
  * kind is the whole of what decides which editor a card gets, so it is worth
  * saying in words rather than offering five bare nouns. */
 const SLOT_KINDS = [
-  { kind: 'window', label: 'A window', help: 'When it happens. The card picks a timing window.' },
-  { kind: 'criterion', label: 'A condition', help: 'Something that has to be true. The card picks a criterion.' },
-  { kind: 'text', label: 'Printed text', help: 'Words, shown back to whoever reads the card. The engine never reads them.' },
-  { kind: 'steps', label: 'Steps', help: 'Things to do. Insert them with the "Whatever the card fills in" step.' },
-  { kind: 'value', label: 'Anything', help: 'Unpinned, so it is offered in every field. Narrow it if you can.' },
+  { kind: 'window', label: uiT('ui.aWindow'), help: uiT('ui.whenItHappensTheCardPicksATimingWindow') },
+  { kind: 'criterion', label: uiT('ui.aCondition'), help: uiT('ui.somethingThatHasToBeTrueTheCardPicks') },
+  { kind: 'text', label: uiT('ui.printedText'), help: uiT('ui.wordsShownBackToWhoeverReadsTheCardThe') },
+  { kind: 'steps', label: uiT('ui.steps2'), help: uiT('ui.thingsToDoInsertThemWithTheWhateverThe') },
+  { kind: 'value', label: uiT('ui.anything2'), help: uiT('ui.unpinnedSoItIsOfferedInEveryFieldNarrow') },
 ]
 
 const slotKindHelp = (kind?: string) => SLOT_KINDS.find((k) => k.kind === kind)?.help ?? ''
@@ -548,7 +550,7 @@ const tokenChoices = computed(() => draft.value.tokens.filter((token) => token.s
                         class="slug"
                         type="text"
                         :value="slot.name"
-                        placeholder="condition"
+                        :placeholder="$t('ui.condition')"
                         @input="editSlot(index, at, { name: ($event.target as HTMLInputElement).value })"
                         @keydown.stop
                       />

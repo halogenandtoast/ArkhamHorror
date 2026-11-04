@@ -1,4 +1,5 @@
 import { useDbCardStore } from '@/stores/dbCards'
+import { localizedAssignmentLabel } from '@/arkham/assignmentLabels'
 
 export const handleI18n = (body: string, t: (key: string, params: { [key: string]: any }) => string) => {
   const {key, params} = parseInput(body)
@@ -21,6 +22,8 @@ export const handleI18n = (body: string, t: (key: string, params: { [key: string
 
 export const handleEmbeddedI18n = (body: string, t: (key: string, params: { [key: string]: any }) => string) => {
   const trimmed = body.trim()
+  const assignment = localizedAssignmentLabel(trimmed, t)
+  if (assignment !== null) return assignment
 
   if (isWholeI18nToken(trimmed)) {
     return handleI18n(trimmed, t)

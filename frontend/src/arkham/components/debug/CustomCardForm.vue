@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+
+
 /* The card builder's form: everything that makes up a custom card's def.
  *
  * It owns its own state and exposes `loadCard`, `reset` and `buildCustomCard`,
@@ -37,6 +40,8 @@ import {
 } from '@/arkham/customText'
 import KeywordEffectEditor from '@/arkham/components/debug/KeywordEffectEditor.vue'
 import type { CustomSetKeyword, CustomSetToken } from '@/arkham/api'
+
+const { t: uiT, te: uiTe } = useI18n()
 
 /* What the set this card belongs to declares. A card prints one of its set's
  * keywords, so the list of them has to come from outside the card: the set is
@@ -84,23 +89,28 @@ const actionList = (v: any): string[] =>
         : []
 
 const CLASSES = ['Guardian', 'Seeker', 'Rogue', 'Mystic', 'Survivor', 'Neutral']
+function enumLabel(group: string, value: string): string {
+  const key = `ui.enums.${group}.${value}`
+  return uiTe(key) ? uiT(key) : value
+}
+
 const SLOTS = ['HandSlot', 'BodySlot', 'AllySlot', 'AccessorySlot', 'ArcaneSlot', 'TarotSlot', 'HeadSlot']
 const USE_TYPES = ['Ammo', 'Charge', 'Secret', 'Supply', 'Offering', 'Resource', 'Key', 'Evidence']
 /* An investigator records stats rather than icons: the same control, without
  * wild, since there is no such stat. */
 const STATS = [
-  { key: 'willpower', label: 'Willpower', icon: 'willpower-icon' },
-  { key: 'intellect', label: 'Intellect', icon: 'intellect-icon' },
-  { key: 'combat', label: 'Combat', icon: 'combat-icon' },
-  { key: 'agility', label: 'Agility', icon: 'agility-icon' },
+  { key: 'willpower', label: uiT('ui.willpower'), icon: 'willpower-icon' },
+  { key: 'intellect', label: uiT('ui.intellect'), icon: 'intellect-icon' },
+  { key: 'combat', label: uiT('ui.combat'), icon: 'combat-icon' },
+  { key: 'agility', label: uiT('ui.agility'), icon: 'agility-icon' },
 ] as const
 
 const ICONS = [
-  { value: 'SkillWillpower', label: 'Willpower', icon: 'willpower-icon' },
-  { value: 'SkillIntellect', label: 'Intellect', icon: 'intellect-icon' },
-  { value: 'SkillCombat', label: 'Combat', icon: 'combat-icon' },
-  { value: 'SkillAgility', label: 'Agility', icon: 'agility-icon' },
-  { value: 'Wild', label: 'Wild', icon: 'wild-icon' },
+  { value: 'SkillWillpower', label: uiT('ui.willpower'), icon: 'willpower-icon' },
+  { value: 'SkillIntellect', label: uiT('ui.intellect'), icon: 'intellect-icon' },
+  { value: 'SkillCombat', label: uiT('ui.combat'), icon: 'combat-icon' },
+  { value: 'SkillAgility', label: uiT('ui.agility'), icon: 'agility-icon' },
+  { value: 'Wild', label: uiT('ui.wild'), icon: 'wild-icon' },
 ]
 const KEYWORDS = [
   'Alert', 'Aloof', 'Doomed', 'Elusive', 'Fast', 'Hidden', 'Hunter', 'Massive',
@@ -303,12 +313,12 @@ type ArtSlot = { key: string; label: string; shape: 'card' | 'sideways' | 'portr
 const ART_SLOTS = computed<ArtSlot[]>(() =>
   form.cardType === 'InvestigatorType'
     ? [
-        { key: 'art', label: 'Card front', shape: 'sideways' },
-        { key: 'backArt', label: 'Card back', shape: 'sideways' },
-        { key: 'portrait', label: 'Portrait', shape: 'portrait' },
-        { key: 'portraitBack', label: 'Portrait back', shape: 'portrait' },
+        { key: 'art', label: uiT('ui.cardFront'), shape: 'sideways' },
+        { key: 'backArt', label: uiT('ui.cardBack'), shape: 'sideways' },
+        { key: 'portrait', label: uiT('ui.portrait'), shape: 'portrait' },
+        { key: 'portraitBack', label: uiT('ui.portraitBack'), shape: 'portrait' },
       ]
-    : [{ key: 'art', label: 'Card art', shape: 'card' }],
+    : [{ key: 'art', label: uiT('ui.cardArt'), shape: 'card' }],
 )
 
 /* An investigator is unique, so start it that way rather than making everyone
@@ -426,13 +436,13 @@ const hasRevelationPlacement = computed(
 const REVELATION_PLACEMENTS = computed(() =>
   isTreachery.value
     ? [
-        { value: 'none', label: 'Discarded once it resolves' },
-        { value: 'threatArea', label: 'Your threat area' },
+        { value: 'none', label: uiT('ui.discardedOnceItResolves') },
+        { value: 'threatArea', label: uiT('ui.yourThreatArea') },
       ]
     : [
-        { value: 'none', label: 'Nowhere — the steps place it' },
-        { value: 'threatArea', label: 'Your threat area' },
-        { value: 'playArea', label: 'Your play area' },
+        { value: 'none', label: uiT('ui.nowhereTheStepsPlaceIt') },
+        { value: 'threatArea', label: uiT('ui.yourThreatArea') },
+        { value: 'playArea', label: uiT('ui.yourPlayArea') },
       ],
 )
 
@@ -625,7 +635,7 @@ function buildDef(cardCode: string): Record<string, any> {
     cardCode,
     art: cardCode,
     cardType: form.cardType,
-    name: { title: form.title.trim() || 'Custom Card', subtitle: form.subtitle.trim() || null },
+    name: { title: form.title.trim() || uiT('ui.customCard2'), subtitle: form.subtitle.trim() || null },
     cardTraits: parsedTraits.value.map((t) => t.name),
     skills: hasSkillIcons.value ? form.icons.map(iconJson) : [],
     keywords: isInvestigator.value ? [] : form.keywords.map((k) => ({ tag: k, contents: [] })),
@@ -792,7 +802,7 @@ async function takeImage(slot: string, file: File | undefined) {
     if (previousPreview) artPreviews[slot] = previousPreview
     else delete artPreviews[slot]
     console.error(e)
-    error.value = e?.response?.data?.message ?? e?.message ?? 'Could not upload that image.'
+    error.value = e?.response?.data?.message ?? e?.message ?? uiT('ui.couldNotUploadThatImage')
   } finally {
     uploading.value = null
   }
@@ -1056,29 +1066,29 @@ defineExpose({
         >
           <img v-if="slotPreview(slot.key)" :src="slotPreview(slot.key)!" alt="" />
           <div v-else class="art-empty"></div>
-          <span class="art-hint">{{ uploading === slot.key ? 'Uploading…' : 'Drop an image' }}</span>
+          <span class="art-hint">{{ uploading === slot.key ? $t('ui.uploading') : $t('ui.dropAnImage') }}</span>
         </div>
         <label class="file-pick">
-          Choose an image
+          {{ $t('ui.chooseAnImage') }}
           <input type="file" accept="image/*" @change="onFile(slot.key, $event)" />
         </label>
         <label>
-          …or a URL, or a card code to reuse that card's art
+          {{ $t('ui.orAUrlOrACardCodeToReuse') }}
           <input
             v-model="form.artUrls[slot.key]"
             type="text"
-            placeholder="https://… or 01004"
+            :placeholder="$t('ui.httpsOr01004')"
             @keydown.stop
           />
         </label>
-        <button v-if="artFor(slot.key)" type="button" class="link" @click="clearArt(slot.key)">Clear</button>
+        <button v-if="artFor(slot.key)" type="button" class="link" @click="clearArt(slot.key)">{{ $t('ui.clear') }}</button>
       </div>
       <p v-if="error" class="custom-card-error">{{ error }}</p>
     </div>
 
         <div class="custom-card-form">
           <div v-if="!form.cardType" class="type-picker">
-            <p class="type-prompt">What kind of card is this?</p>
+            <p class="type-prompt">{{ $t('ui.whatKindOfCardIsThis') }}</p>
             <div class="type-grid">
               <button
                 v-for="t in CARD_TYPES"
@@ -1086,65 +1096,65 @@ defineExpose({
                 type="button"
                 @click="chooseType(t.value)"
               >
-                {{ t.label }}
+                {{ $t(`ui.enums.cardTypes.${t.value}`) }}
               </button>
             </div>
           </div>
 
           <template v-else>
           <div class="chosen-type">
-            <strong>{{ CARD_TYPES.find((t) => t.value === form.cardType)?.label }}</strong>
-            <button type="button" class="link" @click="form.cardType = ''">Change type</button>
+            <strong>{{ $t(`ui.enums.cardTypes.${form.cardType}`) }}</strong>
+            <button type="button" class="link" @click="form.cardType = ''">{{ $t('ui.changeType') }}</button>
           </div>
 
           <div class="row">
             <label>
-              Title
+              {{ $t('ui.title') }}
               <input v-model="form.title" type="text" autofocus @keydown.stop />
             </label>
             <label>
-              Subtitle
+              {{ $t('ui.subtitle') }}
               <input v-model="form.subtitle" type="text" @keydown.stop />
             </label>
           </div>
 
           <div class="row">
             <label v-if="canBeWeakness">
-              Weakness
+              {{ $t('ui.weakness') }}
               <select v-model="form.weaknessKind">
-                <option v-if="weaknessOptional" value="">Not a weakness</option>
-                <option value="Weakness">Weakness</option>
-                <option value="BasicWeakness">Basic weakness</option>
+                <option v-if="weaknessOptional" value="">{{ $t('ui.notAWeakness') }}</option>
+                <option value="Weakness">{{ $t('ui.weakness') }}</option>
+                <option value="BasicWeakness">{{ $t('ui.basicWeakness') }}</option>
               </select>
             </label>
             <label v-if="hasClass">
-              Class
+              {{ $t('ui.class') }}
               <select v-model="form.classSymbol">
-                <option v-for="c in CLASSES" :key="c" :value="c">{{ c }}</option>
+                <option v-for="c in CLASSES" :key="c" :value="c">{{ $t(`deckUi.classes.${c.toLowerCase()}`) }}</option>
               </select>
             </label>
           </div>
 
           <div class="row">
             <label v-if="hasCost">
-              Cost
+              {{ $t('ui.cost') }}
               <input v-model="form.cost" type="number" @keydown.stop />
             </label>
             <label v-if="hasLevel">
-              Level
+              {{ $t('ui.level') }}
               <input v-model="form.level" type="number" @keydown.stop />
             </label>
             <label v-if="!isInvestigator">
-              Victory
+              {{ $t('ui.victory') }}
               <input v-model="form.victory" type="number" @keydown.stop />
             </label>
             <BoolField
-              label="Unique"
+              :label="$t('ui.unique')"
               v-model="form.unique"
             />
             <BoolField
               v-if="isPlayerCard"
-              label="Permanent"
+              :label="$t('ui.permanent')"
               :modelValue="form.permanent"
               @update:modelValue="setPermanent"
             />
@@ -1152,7 +1162,7 @@ defineExpose({
 
           <div v-if="!isInvestigator && signatureOwner" class="row">
             <label>
-              Signature of
+              {{ $t('ui.signatureOf') }}
               <router-link
                 class="owner-pill"
                 :to="{ name: 'CardBuilder', query: { card: signatureOwner.def.cardCode } }"
@@ -1162,20 +1172,19 @@ defineExpose({
             </label>
           </div>
           <p v-if="!isInvestigator && signatureOwner" class="hint">
-            Only they can take it, and their id is bound as <code>$investigator</code> for this
-            card's abilities. The link lives on their signatures, so add or remove it there.
+            {{ $t('ui.onlyTheyCanTakeItAndTheirIdIs') }} <code>$investigator</code> {{ $t('ui.forThisCardSAbilitiesTheLinkLivesOn') }}
           </p>
 
           <div class="row">
             <label>
-              Card number
+              {{ $t('ui.cardNumber') }}
               <input v-model="form.cardNumber" type="text" placeholder="1" @keydown.stop />
             </label>
             <!-- The note is about the id, so it stays in the id's column rather
                  than running under the card number as well. -->
             <div v-if="canClaimArkhamBuildId" class="with-note">
               <label>
-                arkham.build card id
+                {{ $t('ui.arkhamBuildCardId') }}
                 <input
                   v-model="form.arkhamBuildId"
                   type="text"
@@ -1186,20 +1195,18 @@ defineExpose({
               </label>
               <p class="hint" :class="{ bad: badArkhamBuildId }">
                 <template v-if="badArkhamBuildId">
-                  Not an arkham.build id — a uuid, or the 32- or 8-character form a pack's cards
-                  come through with. Left out until it is one.
+                  {{ $t('ui.notAnArkhamBuildIdAUuidOrThe') }}
                 </template>
                 <template v-else>
-                  Optional. If this same card is published on arkham.build, paste its id and a deck
-                  built there will find this copy instead of failing as an unimplemented card.
+                  {{ $t('ui.optionalIfThisSameCardIsPublishedOnArkham') }}
                 </template>
               </p>
             </div>
           </div>
 
           <label>
-            Traits
-            <input v-model="form.traits" type="text" placeholder="Monster. Elite. Ancient One." @keydown.stop />
+            {{ $t('ui.traits') }}
+            <input v-model="form.traits" type="text" :placeholder="$t('ui.monsterEliteAncientOne')" @keydown.stop />
           </label>
           <p v-if="parsedTraits.length" class="trait-preview">
             <span
@@ -1207,12 +1214,12 @@ defineExpose({
               :key="trait.name"
               class="trait"
               :class="{ custom: trait.custom }"
-              :title="trait.custom ? 'Not a known trait — added as a custom trait' : trait.name"
+              :title="trait.custom ? $t('ui.notAKnownTraitAddedAsACustomTrait') : trait.name"
             >{{ trait.raw }}.</span>
           </p>
 
           <fieldset v-if="hasSkillIcons">
-            <legend>Skill icons</legend>
+            <legend>{{ $t('ui.skillIcons') }}</legend>
             <div class="icon-steppers">
               <div v-for="icon in ICONS" :key="icon.value" class="icon-stepper" :title="icon.label">
                 <button type="button" :disabled="!iconCount(icon.value)" @click="removeIcon(icon.value)">−</button>
@@ -1224,7 +1231,7 @@ defineExpose({
           </fieldset>
 
           <fieldset v-if="keywordChoices.length">
-            <legend>Keywords</legend>
+            <legend>{{ $t('ui.keywords') }}</legend>
             <div class="chips">
               <button
                 v-for="keyword in keywordChoices"
@@ -1232,16 +1239,14 @@ defineExpose({
                 type="button"
                 class="chip"
                 :class="{ on: hasKeyword(keyword), 'from-set': keyword.fromSet }"
-                :title="keyword.fromSet ? 'Declared by this card set' : undefined"
+                :title="keyword.fromSet ? $t('ui.declaredByThisCardSet') : undefined"
                 @click="toggleKeyword(keyword)"
               >
-                {{ keyword.name }}
+                {{ keyword.fromSet ? keyword.name : enumLabel('keywords', keyword.name) }}
               </button>
             </div>
             <p v-if="isHidden" class="hint">
-              Drawing this secretly puts it into your hand instead of resolving it, and only an
-              ability used "In your hand" can get it out again — nothing discards a hidden card.
-              An enemy's draw is still announced to the table unless it also prints Peril.
+              {{ $t('ui.drawingThisSecretlyPutsItIntoYourHandInstead') }}
             </p>
           </fieldset>
 
@@ -1249,7 +1254,7 @@ defineExpose({
                one is on: the chip above says it is printed, this says what it
                says on this card. -->
           <fieldset v-if="keywordsNeedingInput.length">
-            <legend>Keyword details</legend>
+            <legend>{{ $t('ui.keywordDetails') }}</legend>
             <KeywordEffectEditor
               :setKeywords="props.setKeywords"
               :setTokens="props.setTokens"
@@ -1260,7 +1265,7 @@ defineExpose({
           </fieldset>
 
           <fieldset v-if="isInvestigator">
-            <legend>Investigator</legend>
+            <legend>{{ $t('ui.investigator') }}</legend>
             <div class="icon-steppers">
               <div v-for="stat in STATS" :key="stat.key" class="icon-stepper" :title="stat.label">
                 <button type="button" :disabled="statValue(stat.key) <= 0" @click="stepStat(stat.key, -1)">−</button>
@@ -1270,13 +1275,13 @@ defineExpose({
               </div>
             </div>
             <div class="row">
-              <label>Health<input v-model="form.investigatorHealth" type="number" @keydown.stop /></label>
-              <label>Sanity<input v-model="form.investigatorSanity" type="number" @keydown.stop /></label>
+              <label>{{ $t('ui.health') }}<input v-model="form.investigatorHealth" type="number" @keydown.stop /></label>
+              <label>{{ $t('ui.sanity') }}<input v-model="form.investigatorSanity" type="number" @keydown.stop /></label>
             </div>
           </fieldset>
 
           <fieldset v-if="form.cardType === 'EventType' || form.cardType === 'EncounterEventType'">
-            <legend>Actions</legend>
+            <legend>{{ $t('ui.actions') }}</legend>
             <div class="chips">
               <button
                 v-for="action in ACTIONS"
@@ -1286,15 +1291,15 @@ defineExpose({
                 :class="{ on: form.actions.includes(action) }"
                 @click="toggle(form.actions, action)"
               >
-                {{ action }}
+                {{ enumLabel('actions', action) }}
               </button>
             </div>
             <BoolField
               v-if="form.actions.length > 1"
-              label="Any one of them, rather than all of them"
+              :label="$t('ui.anyOneOfThemRatherThanAllOfThem')"
               v-model="form.actionsOr"
             />
-            <p class="hint">What happens when it is played:</p>
+            <p class="hint">{{ $t('ui.whatHappensWhenItIsPlayed') }}</p>
             <StepsEditor
               :queryKinds="QUERY_KINDS"
               :bindings="[...cardBindings(form.cardType), ...remembered]"
@@ -1305,9 +1310,9 @@ defineExpose({
           </fieldset>
 
           <fieldset v-if="isInvestigator">
-            <legend>Signature cards</legend>
+            <legend>{{ $t('ui.signatureCards') }}</legend>
             <p v-if="!signatureChoices.length" class="hint">
-              Build the cards first and they will be listed here to pick from.
+              {{ $t('ui.buildTheCardsFirstAndTheyWillBeListed') }}
             </p>
             <template v-else>
               <div class="chips">
@@ -1321,7 +1326,7 @@ defineExpose({
                 v-if="addingSignature"
                 @change="addSignature(($event.target as HTMLSelectElement).value)"
               >
-                <option value="">Choose a card…</option>
+                <option value="">{{ $t('ui.chooseACard') }}</option>
                 <option
                   v-for="card in signatureChoices.filter((c) => !isSignature(c.def.cardCode))"
                   :key="card.def.cardCode"
@@ -1334,54 +1339,54 @@ defineExpose({
           </fieldset>
 
           <fieldset v-if="isEnemy">
-            <legend>Enemy — leave a stat blank for a dash</legend>
+            <legend>{{ $t('ui.enemyLeaveAStatBlankForADash') }}</legend>
             <div class="row">
-              <label>Fight<input v-model="form.fight" type="number" placeholder="—" @keydown.stop /></label>
-              <label>Health<input v-model="form.health" type="number" placeholder="—" @keydown.stop /></label>
-              <label>Evade<input v-model="form.evade" type="number" placeholder="—" @keydown.stop /></label>
+              <label>{{ $t('ui.fight') }}<input v-model="form.fight" type="number" placeholder="—" @keydown.stop /></label>
+              <label>{{ $t('ui.health') }}<input v-model="form.health" type="number" placeholder="—" @keydown.stop /></label>
+              <label>{{ $t('ui.evade') }}<input v-model="form.evade" type="number" placeholder="—" @keydown.stop /></label>
             </div>
             <div class="row">
-              <label>Damage<input v-model="form.damage" type="number" placeholder="—" @keydown.stop /></label>
-              <label>Horror<input v-model="form.horror" type="number" placeholder="—" @keydown.stop /></label>
+              <label>{{ $t('ui.damage') }}<input v-model="form.damage" type="number" placeholder="—" @keydown.stop /></label>
+              <label>{{ $t('ui.horror') }}<input v-model="form.horror" type="number" placeholder="—" @keydown.stop /></label>
               <BoolField
-                label="Health per investigator"
+                :label="$t('ui.healthPerInvestigator')"
                 v-model="form.healthPerPlayer"
               />
             </div>
             <ValueEditor
               type="PreyMatcher"
               :bindings="defBindings(!!signatureOwner)"
-              label="Prey (defaults to anyone)"
+              :label="$t('ui.preyDefaultsToAnyone')"
               :modelValue="form.prey"
               @update:modelValue="form.prey = $event"
             />
             <ValueEditor
               type="SpawnAt"
               :bindings="defBindings(!!signatureOwner)"
-              label="Spawn (defaults to the usual rules)"
+              :label="$t('ui.spawnDefaultsToTheUsualRules')"
               :modelValue="form.spawnAt"
               @update:modelValue="form.spawnAt = $event"
             />
             <p v-if="signatureOwner" class="hint">
-              <code>$investigator</code> is their id, so "Prey — them only" is
+              <code>$investigator</code> {{ $t('ui.isTheirIdSoPreyThemOnlyIs') }}
               <code>OnlyPrey</code> of <code>InvestigatorWithId</code> <code>$investigator</code>.
             </p>
           </fieldset>
 
           <fieldset v-if="isLocation">
-            <legend>Location</legend>
+            <legend>{{ $t('ui.location') }}</legend>
             <div class="row">
-              <label>Shroud<input v-model="form.shroud" type="number" @keydown.stop /></label>
-              <label>Clues<input v-model="form.clues" type="number" @keydown.stop /></label>
+              <label>{{ $t('ui.shroud') }}<input v-model="form.shroud" type="number" @keydown.stop /></label>
+              <label>{{ $t('ui.clues') }}<input v-model="form.clues" type="number" @keydown.stop /></label>
               <BoolField
-                label="Clues per investigator"
+                :label="$t('ui.cluesPerInvestigator')"
                 v-model="form.cluesPerPlayer"
               />
             </div>
           </fieldset>
 
           <fieldset v-if="isAsset">
-            <legend>Asset</legend>
+            <legend>{{ $t('ui.asset') }}</legend>
             <div class="chips">
               <!-- A slot is a list, not a flag: a two-handed weapon takes the
                    hand slot twice. So the pill is in two parts -- the slot, and
@@ -1393,14 +1398,14 @@ defineExpose({
                 :class="{ on: slotCount(slot) > 0 }"
               >
                 <button type="button" class="seg" @click="toggleSlot(slot)">
-                  {{ slot.replace('Slot', '') }}
+                  {{ enumLabel('slots', slot) }}
                 </button>
                 <button
                   v-if="slotCount(slot) > 0"
                   type="button"
                   class="seg double"
                   :class="{ on: slotCount(slot) > 1 }"
-                  :title="slotCount(slot) > 1 ? 'Takes one of these' : 'Takes two of these'"
+                  :title="slotCount(slot) > 1 ? $t('ui.takesOneOfThese') : $t('ui.takesTwoOfThese')"
                   @click="toggleDoubleSlot(slot)"
                 >
                   ×2
@@ -1408,23 +1413,23 @@ defineExpose({
               </span>
             </div>
             <div class="row">
-              <label>Health<input v-model="form.assetHealth" type="number" placeholder="—" @keydown.stop /></label>
-              <label>Sanity<input v-model="form.assetSanity" type="number" placeholder="—" @keydown.stop /></label>
+              <label>{{ $t('ui.health') }}<input v-model="form.assetHealth" type="number" placeholder="—" @keydown.stop /></label>
+              <label>{{ $t('ui.sanity') }}<input v-model="form.assetSanity" type="number" placeholder="—" @keydown.stop /></label>
             </div>
             <div class="row">
               <label>
-                Uses
+                {{ $t('ui.uses') }}
                 <select v-model="form.useType">
-                  <option value="">None</option>
-                  <option v-for="u in USE_TYPES" :key="u" :value="u">{{ u }}</option>
+                  <option value="">{{ $t('ui.none') }}</option>
+                  <option v-for="u in USE_TYPES" :key="u" :value="u">{{ enumLabel('useTypes', u) }}</option>
                 </select>
               </label>
               <label v-if="form.useType">
-                Amount
+                {{ $t('ui.amount') }}
                 <input v-model="form.useCount" type="number" @keydown.stop />
               </label>
               <label v-if="form.useType">
-                Limit
+                {{ $t('ui.limit') }}
                 <input v-model="form.useLimit" type="number" placeholder="—" @keydown.stop />
               </label>
             </div>
@@ -1432,15 +1437,14 @@ defineExpose({
 
           <!-- An investigator is never played, so none of this applies to one. -->
           <fieldset v-if="!isInvestigator">
-            <legend>Playing it</legend>
+            <legend>{{ $t('ui.playingIt') }}</legend>
             <p class="hint">
-              What the card makes you do beyond paying its cost, checked and taken as part of
-              playing it — spend an action, add curse tokens, shuffle bonded cards into your deck.
+              {{ $t('ui.whatTheCardMakesYouDoBeyondPayingIts') }}
             </p>
             <ValueEditor
               optional
               type="Cost"
-              label="Additional cost (optional)"
+              :label="$t('ui.additionalCostOptional')"
               :bindings="defBindings(!!signatureOwner)"
               :modelValue="form.additionalCost"
               @update:modelValue="form.additionalCost = $event"
@@ -1448,23 +1452,22 @@ defineExpose({
 
             <ValueEditor
               type="[DeckRestriction]"
-              label="Deck restrictions (optional)"
+              :label="$t('ui.deckRestrictionsOptional')"
               :bindings="defBindings(!!signatureOwner)"
               :modelValue="form.deckRestrictions"
               @update:modelValue="form.deckRestrictions = $event ?? []"
             />
 
             <p class="hint">
-              Bonded cards start outside the deck and come with this one. A cost that searches
-              your bonded cards is what puts them in.
+              {{ $t('ui.bondedCardsStartOutsideTheDeckAndComeWith') }}
             </p>
             <div v-for="(b, at) in form.bonded" :key="at" class="row">
               <label>
-                How many
+                {{ $t('ui.howMany') }}
                 <input v-model="b.count" type="number" min="1" @keydown.stop />
               </label>
               <div class="grow">
-                <CardCodeField v-model="b.cardCode" placeholder="Which card" />
+                <CardCodeField v-model="b.cardCode" :placeholder="$t('ui.whichCard')" />
               </div>
               <button type="button" class="chip-remove" @click="form.bonded.splice(at, 1)">×</button>
             </div>
@@ -1473,12 +1476,12 @@ defineExpose({
               class="add"
               @click="form.bonded.push({ count: '1', cardCode: '' })"
             >
-              + Bonded card
+              {{ $t('ui.bondedCard') }}
             </button>
           </fieldset>
 
           <fieldset>
-            <legend>Abilities</legend>
+            <legend>{{ $t('ui.abilities') }}</legend>
             <AbilityEditor
               :cardType="form.cardType"
               :extraBindings="remembered"
@@ -1504,9 +1507,9 @@ defineExpose({
           <!-- What the card's own labels say. The keys come from the card:
                every `$.name` it writes is a line here. -->
           <fieldset v-if="textKeys.length" class="card-text">
-            <legend>Text</legend>
+            <legend>{{ $t('ui.text') }}</legend>
             <label class="text-language">
-              Language
+              {{ $t('ui.language') }}
               <select v-model="textLanguage">
                 <option v-for="[code, name] in TEXT_LANGUAGES" :key="code" :value="code">
                   {{ name }}{{ written(code) ? ' •' : '' }}
@@ -1517,7 +1520,7 @@ defineExpose({
               <code>$.{{ key }}</code>
               <input
                 :value="textFor(key)"
-                placeholder="What it says"
+                :placeholder="$t('ui.whatItSays')"
                 @input="writeText(key, ($event.target as HTMLInputElement).value)"
                 @keydown.stop
               />

@@ -67,7 +67,7 @@ const discovered = computed(() => {
         class="glyph-debug-toggle"
         :class="{ active: glyphDebug }"
         @click="glyphDebug = !glyphDebug"
-      >Debug</button>
+      >{{ $t('ui.debug') }}</button>
     </h3>
     <div class="glyph-grid">
       <div

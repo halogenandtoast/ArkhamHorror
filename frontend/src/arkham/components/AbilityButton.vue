@@ -14,6 +14,8 @@ import { homebrewActionScope } from '@/arkham/homebrewData';
 import { handleI18n } from '@/arkham/i18n';
 import { useI18n } from 'vue-i18n';
 
+const { t: uiT } = useI18n()
+
 const { t, te } = useI18n()
 const props = withDefaults(defineProps<{
  game: Game
@@ -317,7 +319,7 @@ const abilityLabel = computed(() => {
 const abilitySkillSection = computed(() => isButtonText.value ? null : abilityString.value)
 const display = computed(() => !(isAction("Move") && ability.value?.index === 104) || props.showMove)
 const showSwarmHostWarning = computed(() => props.hostHasSwarm && isFight.value)
-const swarmHostWarningTooltip = 'This host cannot be defeated while it has swarm cards attached.'
+const swarmHostWarningTooltip = uiT('ui.thisHostCannotBeDefeatedWhileItHasSwarm')
 
 const isZeroedActionAbility = computed(() => {
   if (!ability.value) {

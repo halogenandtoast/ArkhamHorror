@@ -5,6 +5,7 @@ import type { Scenario } from '@/arkham/types/Scenario'
 import { imgsrc, toCamelCase } from '@/arkham/helpers'
 import { useI18n } from 'vue-i18n';
 import { campaignIdToI18n, scenarioIdToI18n } from '@/arkham/types/Scenario'
+import { localizedScenarioName } from '@/arkham/scenarioNames'
 import { ScenarioOptions, defaultScenarioOptions, scenarioOptionsDecoder } from '@/arkham/types/ScenarioOptions';
 
 /* The locale scope a campaign's own text lives under. By id first, so a "Return
@@ -300,6 +301,10 @@ export function extendWithOptions(step: ScenarioStep | ScenarioStepWithOptions |
 
 export function campaignStepName(game: Game, step: CampaignStep, scenario?: Scenario) {
   const { t, te } = useI18n();
+  const scenarioName = (id: string) => {
+    const normalized = id.replace(/^c(?=[0-9:])/, '')
+    return localizedScenarioName(normalized, findScenarioName(normalized) || 'Unknown Scenario', t, te)
+  }
   if (scenario) {
     const scenarioId = scenario.id.replace(/^c/, '')
     if (step.tag === 'CheckpointStep') {
@@ -320,11 +325,11 @@ export function campaignStepName(game: Game, step: CampaignStep, scenario?: Scen
       if (te(key)) return t(key)
     }
 
-    return findScenarioName(scenarioId) || "Unknown Scenario"
+    return scenarioName(scenarioId)
   }
 
-  if (step.tag === 'StandaloneScenarioStep') {
-    const scenarioId = step.contents[0].slice(1)
+  if (step.tag === 'StandaloneScenarioStep' || step.tag === 'StandaloneScenarioStepWithOptions') {
+    const scenarioId = step.contents[0].replace(/^c(?=[0-9:])/, '')
     if (step.contents[1]?.tag === 'CheckpointStep') {
       const prefix = scenarioIdToI18n(scenarioId)
       const key = `${prefix}.names.checkpoint${step.contents[1].contents}`
@@ -342,17 +347,15 @@ export function campaignStepName(game: Game, step: CampaignStep, scenario?: Scen
       const key = `${prefix}.names.${part}`
       if (te(key)) return t(key)
     }
-    return findScenarioName(scenarioId) || "Unknown Scenario"
+    return scenarioName(scenarioId)
   }
 
   if (step.tag === 'ScenarioStep') {
-    const scenarioId = step.contents.slice(1)
-    return findScenarioName(scenarioId) || "Unknown Scenario"
+    return scenarioName(step.contents)
   }
 
   if (step.tag === 'ScenarioStepWithOptions') {
-    const scenarioId = step.contents[0].slice(1)
-    return findScenarioName(scenarioId) || "Unknown Scenario"
+    return scenarioName(step.contents[0])
   }
 
   if (step.tag === 'InterludeStep') {

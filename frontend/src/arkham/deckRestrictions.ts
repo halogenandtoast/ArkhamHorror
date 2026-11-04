@@ -26,6 +26,7 @@ type DeckRestrictionContext = CampaignDeckRestrictionContext & {
 
 type DeckRestriction = {
   description?: string | ((t: Translate) => string)
+  localizedDescription?: (t: Translate) => string
   validate: (context: DeckRestrictionContext) => string | null
 }
 
@@ -77,7 +78,9 @@ const scenarioDeckRestrictions: Record<string, DeckRestriction[]> = {
     minimum: 4,
     label: 'non-weakness Tome assets',
     description: "Daisy Walker's deck must include at least 4 non-weakness Tome assets.",
-    error: (count, minimum) => `Daisy Walker's deck must include at least ${minimum} non-weakness Tome assets (${count}/${minimum})`,
+    localizedDescription: (t) => t('deckUi.restrictions.daisyTomesDescription'),
+    error: (count, minimum, t) => t?.('deckUi.restrictions.daisyTomesError', { count, minimum })
+      ?? `Daisy Walker's deck must include at least ${minimum} non-weakness Tome assets (${count}/${minimum})`,
   })],
   '90094': [requiresAnyParallelContentInvestigator()],
 }
@@ -97,8 +100,14 @@ function requiredInvestigator(name: string, codes: string[]): RequiredInvestigat
     name,
     investigatorCodes,
     description: `This scenario requires ${name}.`,
-    validate: ({ deckList }) => {
-      return investigatorCodes.has(deckInvestigatorCode(deckList)) ? null : `This scenario requires ${name}`
+    localizedDescription: (t) => t('deckUi.restrictions.requiredInvestigatorDescription', {
+      name: t(`deckUi.restrictions.investigators.${codes[0]}`),
+    }),
+    validate: ({ deckList, t }) => {
+      return investigatorCodes.has(deckInvestigatorCode(deckList)) ? null
+        : t?.('deckUi.restrictions.requiredInvestigatorError', {
+          name: t(`deckUi.restrictions.investigators.${codes[0]}`),
+        }) ?? `This scenario requires ${name}`
     },
   }
 }
@@ -106,10 +115,12 @@ function requiredInvestigator(name: string, codes: string[]): RequiredInvestigat
 function requiresAnyParallelContentInvestigator(): DeckRestriction {
   return {
     description: 'At least 1 investigator with parallel content must be chosen.',
-    validate: ({ deckList, chosenInvestigatorCodes }) => {
+    localizedDescription: (t) => t('deckUi.restrictions.parallelDescription'),
+    validate: ({ deckList, chosenInvestigatorCodes, t }) => {
       const hasChosenParallel = chosenInvestigatorCodes.some(hasParallelContent)
       if (hasChosenParallel || hasParallelContent(deckInvestigatorCode(deckList))) return null
-      return 'Enthralling Encore requires at least 1 investigator with parallel content'
+      return t?.('deckUi.restrictions.parallelError')
+        ?? 'Enthralling Encore requires at least 1 investigator with parallel content'
     },
   }
 }
@@ -119,20 +130,23 @@ function minimumCardCount({
   minimum,
   label,
   description,
+  localizedDescription,
   error,
 }: {
   cardCodes: Set<string>
   minimum: number
   label: string
   description?: string
-  error?: (count: number, minimum: number) => string
+  localizedDescription?: (t: Translate) => string
+  error?: (count: number, minimum: number, t?: Translate) => string
 }): DeckRestriction {
   return {
     description,
-    validate: ({ deckList }) => {
+    localizedDescription,
+    validate: ({ deckList, t }) => {
       const count = countDeckSlots(deckList, cardCodes)
       if (count >= minimum) return null
-      return error?.(count, minimum) ?? `Deck must include at least ${minimum} ${label} (${count}/${minimum})`
+      return error?.(count, minimum, t) ?? `Deck must include at least ${minimum} ${label} (${count}/${minimum})`
     },
   }
 }
@@ -196,6 +210,7 @@ export function deckRequirementDescriptions(
     ...(normalizedScenarioId ? (scenarioDeckRestrictions[normalizedScenarioId] ?? []) : []),
     ...(normalizedCampaignId ? (campaignDeckRestrictions[normalizedCampaignId] ?? []) : []),
   ].filter((r): r is DeckRestriction => r !== undefined).flatMap((r) => {
+    if (r.localizedDescription && t) return [r.localizedDescription(t)]
     if (!r.description) return []
     if (typeof r.description === 'function') return t ? [r.description(t)] : []
     return [r.description]

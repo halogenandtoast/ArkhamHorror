@@ -10,5 +10,6 @@ import upgrade from '@/locales/en/gameBoard/upgrade.json'
 import create from '@/locales/en/gameBoard/create.json'
 import ultimatumsAndBoons from '@/locales/en/gameBoard/ultimatumsAndBoons.json'
 import achievements from '@/locales/en/gameBoard/achievements.json'
+import deckUi from '@/locales/en/gameBoard/deck_ui.json'
 
-export default {...base, phase, skillTest, gameBar, historyPanel, investigator, scenario, card, upgrade, create, ultimatumsAndBoons, achievements}
+export default {...base, phase, skillTest, gameBar, historyPanel, investigator, scenario, card, upgrade, create, ultimatumsAndBoons, achievements, deckUi}

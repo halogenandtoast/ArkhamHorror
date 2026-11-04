@@ -9,14 +9,18 @@ import { getGameLocalStorageItem } from '@/arkham/localStorage'
 import type { Game } from '@/arkham/types/Game'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import LogIcons from '@/arkham/components/LogIcons.vue'
+import { localizedScenarioName } from '@/arkham/scenarioNames'
 
-const { t } = useI18n()
+const { t, te } = useI18n()
 
 const props = defineProps<{
   gameId: string
   game: Game
   playerId: string | null
 }>()
+const scenarioTitle = computed(() => props.game.scenario
+  ? localizedScenarioName(props.game.scenario.id, props.game.scenario.name.title, t, te)
+  : null)
 
 const route = useRoute()
 const router = useRouter()
@@ -127,7 +131,7 @@ async function takeSeat() {
       <div class="next-scenario-info">
         <div class="scenario-info">
           <h3>{{ game.scenario ? $t('lobby.scenario') : game.campaign ? $t('lobby.campaign') : $t('lobby.multiplayer') }}</h3>
-          <h2>{{ game.scenario?.name.title ?? game.campaign?.name ?? $t('lobby.waitingForPlayers') }}</h2>
+          <h2>{{ scenarioTitle ?? game.campaign?.name ?? $t('lobby.waitingForPlayers') }}</h2>
         </div>
         <div class="invite-section">
           <p class="invite-label">{{ $t('lobby.inviteOthers') }}</p>

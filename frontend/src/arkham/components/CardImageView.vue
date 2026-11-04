@@ -1,9 +1,12 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import * as Arkham from '@/arkham/types/CardDef'
 import { localizeArkhamDBBaseUrl } from '@/arkham/helpers'
 import { cardGroupKey as groupKey, groupCards } from '@/arkham/cardDetails'
 import CardImage from '@/arkham/components/CardImage.vue'
+
+const { t } = useI18n()
 
 const props = withDefaults(defineProps<{
   cards: Arkham.CardDef[],
@@ -82,12 +85,12 @@ const ancestralKnowledgeCardCount = (card: Arkham.CardDef) => ancestralKnowledge
 const bewitchingCardCount = (card: Arkham.CardDef) => bewitchingCardCounts.value.get(card.art) ?? 0
 const eldritchBrandCardCount = (card: Arkham.CardDef) => eldritchBrandCardCounts.value.get(card.art) ?? 0
 
-const marketTooltip = (card: Arkham.CardDef) => `Attached to Market deck (x ${marketCardCount(card)})`
-const spiritTooltip = (card: Arkham.CardDef) => `In Spirit deck (x ${spiritCardCount(card)})`
-const stickToThePlanTooltip = (card: Arkham.CardDef) => `Attached to Stick to the Plan (x ${stickToThePlanCardCount(card)})`
-const ancestralKnowledgeTooltip = (card: Arkham.CardDef) => `Attached to Ancestral Knowledge (x ${ancestralKnowledgeCardCount(card)})`
-const bewitchingTooltip = (card: Arkham.CardDef) => `Attached to Bewitching (x ${bewitchingCardCount(card)})`
-const eldritchBrandTooltip = (card: Arkham.CardDef) => `Branded by Eldritch Brand (x ${eldritchBrandCardCount(card)})`
+const marketTooltip = (card: Arkham.CardDef) => t('deckUi.attachments.market', { count: marketCardCount(card) })
+const spiritTooltip = (card: Arkham.CardDef) => t('deckUi.attachments.spirit', { count: spiritCardCount(card) })
+const stickToThePlanTooltip = (card: Arkham.CardDef) => t('deckUi.attachments.stickToThePlan', { count: stickToThePlanCardCount(card) })
+const ancestralKnowledgeTooltip = (card: Arkham.CardDef) => t('deckUi.attachments.ancestralKnowledge', { count: ancestralKnowledgeCardCount(card) })
+const bewitchingTooltip = (card: Arkham.CardDef) => t('deckUi.attachments.bewitching', { count: bewitchingCardCount(card) })
+const eldritchBrandTooltip = (card: Arkham.CardDef) => t('deckUi.attachments.eldritchBrand', { count: eldritchBrandCardCount(card) })
 
 const isUnderworldMarketCard = (card: Arkham.CardDef) => marketCardCount(card) > 0
 const isSpiritDeckCard = (card: Arkham.CardDef) => spiritCardCount(card) > 0
@@ -97,10 +100,10 @@ const isBewitchingCard = (card: Arkham.CardDef) => bewitchingCardCount(card) > 0
 const isEldritchBrandCard = (card: Arkham.CardDef) => eldritchBrandCardCount(card) > 0
 
 const attachmentTitle = (card: Arkham.CardDef) => {
-  if (card.art === '90052') return 'Spirit deck'
-  if (card.art === '09077') return 'Underworld Market'
-  if (card.art === '11080') return 'Eldritch Brand'
-  return 'Attached cards'
+  if (card.art === '90052') return t('deckUi.sections.spirit')
+  if (card.art === '09077') return t('deckUi.sections.market')
+  if (card.art === '11080') return t('deckUi.sections.eldritchBrand')
+  return t('deckUi.sections.attached')
 }
 
 const cardName = (card: Arkham.CardDef) => {
@@ -116,7 +119,7 @@ const cardName = (card: Arkham.CardDef) => {
       :key="groupKey(card)"
       class="card-tile"
       :class="{ 'has-attachments': attachedCards(card).length > 0, 'card-tile--unimplemented': isUnimplemented(card), 'card-tile--out': isOut(card) }"
-      v-tooltip="isUnimplemented(card) ? 'Not yet implemented' : undefined"
+      v-tooltip="isUnimplemented(card) ? t('deckUi.notImplemented') : undefined"
     >
       <a target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`" @click="onCardClick($event, card)">
         <CardImage :card="card" />
@@ -149,10 +152,10 @@ const cardName = (card: Arkham.CardDef) => {
         </span>
       </a>
       <div v-if="overlayEditing" class="overlay-controls">
-        <button type="button" title="Take one out" @click="emit('overlay-take', card)">−</button>
+        <button type="button" :title="t('deckUi.editor.takeOne')" @click="emit('overlay-take', card)">−</button>
         <button
           type="button"
-          title="Put one back"
+          :title="t('deckUi.editor.restoreOne')"
           :disabled="overlayRemoved(card) === 0"
           @click="emit('overlay-restore', card)"
         >+</button>
@@ -172,7 +175,7 @@ const cardName = (card: Arkham.CardDef) => {
           >
             <CardImage :card="entry.card" />
             <span class="attachment-label">
-              <span class="attachment-name">{{ cardName(entry.card) }}{{ card.art === '11080' ? ' was branded' : '' }}</span>
+              <span class="attachment-name">{{ card.art === '11080' ? t('deckUi.attachments.branded', { name: cardName(entry.card) }) : cardName(entry.card) }}</span>
               <span v-if="card.art !== '11080' || entry.count > 1" class="attachment-count">x {{ entry.count }}</span>
             </span>
           </a>

@@ -11,6 +11,7 @@
   "settingsToggleTitle": "Achievement tracking",
   "settingsToggleDescription": "Track this campaign's official achievements as you play. Unlocks are recorded to your account and shown in the campaign log.",
   "noneEarnedYet": "No achievements earned yet.",
+  "progressLabel": "{earned} of {total} achievements earned",
   "campaigns": {
     "06": "The Dream-Eaters",
     "07": "The Innsmouth Conspiracy",

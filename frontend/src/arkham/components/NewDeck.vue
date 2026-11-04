@@ -133,7 +133,7 @@ function validationErrorsFromResponse(err: unknown): string[] {
     if (payload && typeof payload === 'object' && 'message' in payload) {
       return [String((payload as { message: unknown }).message)]
     }
-    return ['Unable to validate deck']
+    return [t('deckUi.import.validationFailed')]
   }
 
   return payload.map((e) => {
@@ -149,8 +149,8 @@ function validationErrorsFromResponse(err: unknown): string[] {
      * stores its code with the leading `c` that `normalizeCode` strips. */
     const custom =
       libraryCard(`c${key}`) ?? libraryCard(`c${arkhamBuildCustomCardCode(key)}`)
-    if (custom) return `${custom.def.name.title} (custom)`
-    return `Unknown card: ${code}`
+    if (custom) return t('deckUi.import.customCard', { name: custom.def.name.title })
+    return t('deckUi.import.unknownCard', { code })
   })
 }
 

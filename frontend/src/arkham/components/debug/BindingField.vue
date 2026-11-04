@@ -65,7 +65,7 @@ function choose(name: string) {
       <input
         v-model="search"
         type="search"
-        :placeholder="`Search the ${applicable.length} bindings that fit ${type}`"
+        :placeholder="$t('ui.searchBindings', { count: applicable.length, type })"
         v-focus
         @keydown.enter.prevent="choose(search)"
         @keydown.esc="open = false"
@@ -82,14 +82,14 @@ function choose(name: string) {
             v-if="bound.anchor"
             type="button"
             class="option-jump"
-            title="Show where this was bound"
+            :title="$t('ui.showWhereThisWasBound')"
             @click.stop="jumpToBinding(bound.anchor)"
           >
             ↗
           </button>
         </li>
         <li v-if="!matching.length" class="muted">
-          Nothing in scope matches — press enter to use what you typed anyway.
+          {{ $t('ui.nothingInScopeMatchesPressEnterToUseWhat') }}
         </li>
       </ul>
     </div>
@@ -101,7 +101,7 @@ function choose(name: string) {
             v-if="boundTo?.anchor"
             type="button"
             class="jump-segment"
-            :title="`Bound by ${boundTo.origin} — click to show`"
+            :title="$t('ui.boundBy', { origin: boundTo.origin })"
             @click="jumpToBinding(boundTo.anchor)"
           >
             ↗
@@ -111,12 +111,12 @@ function choose(name: string) {
             class="binding-name"
             :title="
               boundTo
-                ? `${boundTo.detail ?? ''} · ${boundTo.origin} — click to choose another`
-                : 'Choose a binding'
+                ? $t('ui.clickToChooseAnother', { value: `${boundTo.detail ?? ''} · ${boundTo.origin}` })
+                : $t('ui.chooseABinding2')
             "
             @click="open = true"
           >
-            <span class="binding-ident">{{ modelValue ?? 'Choose a binding…' }}</span>
+            <span class="binding-ident">{{ modelValue ?? $t('ui.chooseABinding') }}</span>
             <span v-if="boundTo?.type" class="binding-type">:: {{ boundTo.type }}</span>
           </button>
           <BindingToggle
@@ -130,15 +130,15 @@ function choose(name: string) {
             v-if="clearable"
             type="button"
             class="clear-segment"
-            title="Take the binding off and go back to a value"
+            :title="$t('ui.takeTheBindingOffAndGoBackToA')"
             @click="emit('update:modelValue', null)"
           >
             ×
           </button>
         </div>
       </div>
-      <span v-if="modelValue && !boundTo" class="from unknown" title="Nothing in scope binds this name">
-        not bound
+      <span v-if="modelValue && !boundTo" class="from unknown" :title="$t('ui.nothingInScopeBindsThisName')">
+        {{ $t('ui.notBound') }}
       </span>
     </div>
   </div>

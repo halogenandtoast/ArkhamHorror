@@ -132,7 +132,7 @@ onUnmounted(() => clearInterval(interval.value))
 
 <template>
   <div v-if="loadError" role="alert" class="replay-error">
-    Could not load this replay step. <button @click="router.go(0)">Retry</button>
+    {{ $t('ui.couldNotLoadThisReplayStep') }} <button @click="router.go(0)">{{ $t('ui.retry') }}</button>
   </div>
   <div id="game" v-if="ready && game && playerId">
     <div v-if="processing" class="processing">
@@ -159,7 +159,7 @@ onUnmounted(() => clearInterval(interval.value))
       <div class="sidebar">
         <CardOverlay />
         <GameLog :entries="gameLog" :player-id="playerId" />
-        <div class="controls" role="group" aria-label="Replay controls">
+        <div class="controls" role="group" :aria-label="$t('ui.replayControls')">
           <button v-tooltip="t('replay.restart')" :aria-label="t('replay.restart')" :disabled="processing || currentStep === 0" @click="restart"><BackspaceIcon aria-hidden="true" /></button>
           <button v-tooltip="t('replay.stepBack')" :aria-label="t('replay.stepBack')" :disabled="processing || currentStep === 0" @click="goBack"><BackwardIcon aria-hidden="true" /></button>
           <button v-tooltip="t('replay.play')" :aria-label="t('replay.play')" class="play-control" v-if="!play" :disabled="processing || loadError || currentStep >= totalSteps" @click="play = true"><PlayIcon aria-hidden="true" /></button>

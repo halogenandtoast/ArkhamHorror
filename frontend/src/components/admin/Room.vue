@@ -39,20 +39,20 @@ async function deleteRoom() {
 <template>
   <div class="room box" :class="{ deleted, 'watchers-only': watchersOnly }">
     <div class="room-stat">
-      <span class="label">Clients</span>
+      <span class="label">{{ $t('ui.clients') }}</span>
       <strong>{{ room.roomClients }}</strong>
     </div>
     <div class="room-stat">
-      <span class="label">Watching</span>
+      <span class="label">{{ $t('ui.watching') }}</span>
       <strong>{{ room.roomWatchers }}</strong>
     </div>
     <div class="room-stat updated">
-      <span class="label">Last Updated</span>
+      <span class="label">{{ $t('ui.lastUpdated') }}</span>
       <span>{{ lastUpdated }}</span>
     </div>
     <div class="room-actions">
       <a href="#" @click.prevent="emit('inspect')">{{ t('admin.inspectRoom') }}</a>
-      <router-link :to="`/admin/games/${room.roomArkhamGameId}`">View</router-link>
+      <router-link :to="`/admin/games/${room.roomArkhamGameId}`">{{ $t('ui.view') }}</router-link>
       <a href="#" class="delete" @click.prevent="deleteRoom">
         {{ room.roomClients > 0 ? t('admin.dropRoom') : t('admin.deleteRoom') }}
       </a>

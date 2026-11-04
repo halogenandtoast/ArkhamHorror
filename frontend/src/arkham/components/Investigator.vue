@@ -28,6 +28,8 @@ import useHighlighter from '@/composable/useHighlighter';
 import Resources from '@/arkham/components/Resources.vue';
 import Draw from '@/arkham/components/Draw.vue';
 import { IsMobile } from '@/arkham/isMobile';
+
+const { t: uiT } = useI18n()
 const { t } = useI18n();
 
 export interface Props {
@@ -287,7 +289,7 @@ onUnmounted(() => {
 })
 
 
-const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, "Cards Underneath", false)
+const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, uiT('ui.cardsUnderneath2'), false)
 const showDevoured = (e: Event) => emit('showCards', e, devoured, "Devoured", false)
 const forcedShowUnder = ref(false)
 
@@ -482,7 +484,7 @@ const spadeInjury = computed(() => {
 <template>
   <div v-if="portrait" class="portrait-container" :data-id="investigator.id" v-bind="cardDrop">
     <span v-if="isMobile">
-      <i class="action" v-for="n in investigator.remainingActions" :key="n" :class="{ 'action--blocked': n <= blockedActions }" :data-image-id="n <= blockedActions ? blockedActionSources[n - 1] : undefined" :title="n <= blockedActions ? 'This action cannot be spent while the restriction is active' : undefined"></i>
+      <i class="action" v-for="n in investigator.remainingActions" :key="n" :class="{ 'action--blocked': n <= blockedActions }" :data-image-id="n <= blockedActions ? blockedActionSources[n - 1] : undefined" :title="n <= blockedActions ? $t('ui.thisActionCannotBeSpentWhileTheRestrictionIs') : undefined"></i>
       <template v-for="(action, actionIndex) in investigator.additionalActions" :key="actionIndex">
         <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigatorClass.toLowerCase()}ActionButton`]">
           <i class="action"></i>
@@ -592,7 +594,7 @@ const spadeInjury = computed(() => {
               <i class="heart" v-if="heartInjury"></i>
               <i class="diamond" v-if="diamondInjury"></i>
               <i class="club" v-if="clubInjury"></i>
-              <i class="action" v-for="n in investigator.remainingActions" :key="n" :class="{ 'action--blocked': n <= blockedActions }" :data-image-id="n <= blockedActions ? blockedActionSources[n - 1] : undefined" :title="n <= blockedActions ? 'This action cannot be spent while the restriction is active' : undefined"></i>
+              <i class="action" v-for="n in investigator.remainingActions" :key="n" :class="{ 'action--blocked': n <= blockedActions }" :data-image-id="n <= blockedActions ? blockedActionSources[n - 1] : undefined" :title="n <= blockedActions ? $t('ui.thisActionCannotBeSpentWhileTheRestrictionIs') : undefined"></i>
               <template v-for="(action, actionIndex) in investigator.additionalActions" :key="actionIndex">
                 <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigatorClass.toLowerCase()}ActionButton`]">
                   <i class="action"></i>

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
+
 /* What an If, a When or a Case branch asks.
  *
  * `runReadCondition` reads a condition five ways, and the editor only ever
@@ -15,6 +18,8 @@ import type { Binding } from '@/arkham/customCardBindings'
 import ExpressionEditor from '@/arkham/components/debug/ExpressionEditor.vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 
+const { t: uiT } = useI18n()
+
 const props = defineProps<{
   modelValue: any
   bindings?: Binding[]
@@ -28,18 +33,18 @@ const emit = defineEmits<{ 'update:modelValue': [v: any] }>()
 const COMPARISONS = ['eq', 'ne', 'lt', 'lte', 'gt', 'gte'] as const
 
 const FORMS = [
-  { key: 'query', label: 'something is on the table' },
-  { key: 'criteria', label: 'a criterion holds' },
-  { key: 'source', label: 'the source matches' },
-  { key: 'compare', label: 'two values compare' },
+  { key: 'query', label: uiT('ui.somethingIsOnTheTable') },
+  { key: 'criteria', label: uiT('ui.aCriterionHolds') },
+  { key: 'source', label: uiT('ui.theSourceMatches') },
+  { key: 'compare', label: uiT('ui.twoValuesCompare') },
 ] as const
 
 const COMPARISON_LABELS: Record<string, string> = {
   eq: 'is',
   ne: 'is not',
-  lt: 'is less than',
+  lt: uiT('ui.isLessThan'),
   lte: 'is at most',
-  gt: 'is more than',
+  gt: uiT('ui.isMoreThan'),
   gte: 'is at least',
 }
 
@@ -98,7 +103,7 @@ const matcherType = (kind: string | undefined) => props.queryKinds[kind ?? 'enem
 <template>
   <div class="condition">
     <label>
-      Asks whether
+      {{ $t('ui.asksWhether') }}
       <select :value="formOf()" @change="setForm(($event.target as HTMLSelectElement).value)">
         <option v-for="form in FORMS" :key="form.key" :value="form.key">{{ form.label }}</option>
       </select>
@@ -106,7 +111,7 @@ const matcherType = (kind: string | undefined) => props.queryKinds[kind ?? 'enem
 
     <template v-if="formOf() === 'query'">
       <label>
-        Kind
+        {{ $t('ui.kind') }}
         <select
           :value="modelValue?.kind ?? 'enemy'"
           @change="emit('update:modelValue', { kind: ($event.target as HTMLSelectElement).value, matcher: null })"
@@ -117,24 +122,23 @@ const matcherType = (kind: string | undefined) => props.queryKinds[kind ?? 'enem
       <ValueEditor
         :bindings="bindings"
         :type="matcherType(modelValue?.kind)"
-        label="Matcher"
+        :label="$t('ui.matcher')"
         :modelValue="modelValue?.matcher"
         @update:modelValue="emit('update:modelValue', { ...modelValue, matcher: $event })"
       />
-      <p class="hint">Holds when the matcher finds anything at all.</p>
+      <p class="hint">{{ $t('ui.holdsWhenTheMatcherFindsAnythingAtAll') }}</p>
     </template>
 
     <template v-else-if="formOf() === 'criteria'">
       <ValueEditor
         :bindings="bindings"
         type="Criterion"
-        label="Criterion"
+        :label="$t('ui.criterion')"
         :modelValue="criterionOf()"
         @update:modelValue="emit('update:modelValue', { criteria: $event })"
       />
       <p class="hint">
-        What the card says about the situation — "if you are engaged with an enemy", "during your
-        turn" — rather than what is on the table.
+        {{ $t('ui.whatTheCardSaysAboutTheSituationIfYou') }}
       </p>
     </template>
 
@@ -142,7 +146,7 @@ const matcherType = (kind: string | undefined) => props.queryKinds[kind ?? 'enem
       <ExpressionEditor
         :queryKinds="queryKinds"
         :bindings="bindings"
-        label="Which source"
+        :label="$t('ui.whichSource')"
         expect="Source"
         :modelValue="modelValue?.source"
         @update:modelValue="emit('update:modelValue', { ...modelValue, source: $event })"
@@ -150,13 +154,12 @@ const matcherType = (kind: string | undefined) => props.queryKinds[kind ?? 'enem
       <ValueEditor
         :bindings="bindings"
         type="SourceMatcher"
-        label="Matches"
+        :label="$t('ui.matches')"
         :modelValue="modelValue?.matches"
         @update:modelValue="emit('update:modelValue', { ...modelValue, matches: $event })"
       />
       <p class="hint">
-        A window carries the source of what it is reacting to, and no matcher kind selects sources,
-        so this is the only way to ask about one.
+        {{ $t('ui.aWindowCarriesTheSourceOfWhatItIs') }}
       </p>
     </template>
 
@@ -164,7 +167,7 @@ const matcherType = (kind: string | undefined) => props.queryKinds[kind ?? 'enem
       <ExpressionEditor
         :queryKinds="queryKinds"
         :bindings="bindings"
-        label="This"
+        :label="$t('ui.this')"
         :modelValue="pair()[0]"
         @update:modelValue="setSide(0, $event)"
       />
@@ -176,13 +179,12 @@ const matcherType = (kind: string | undefined) => props.queryKinds[kind ?? 'enem
       <ExpressionEditor
         :queryKinds="queryKinds"
         :bindings="bindings"
-        label="That"
+        :label="$t('ui.that')"
         :modelValue="pair()[1]"
         @update:modelValue="setSide(1, $event)"
       />
       <p class="hint">
-        A property read off a binding is not something the game can be asked about, so comparing one
-        is the only way to branch on it. The orderings read both sides as numbers.
+        {{ $t('ui.aPropertyReadOffABindingIsNotSomething') }}
       </p>
     </template>
   </div>

@@ -35,6 +35,8 @@ import { type Card as ArkhamCard, toCardContents } from '@/arkham/types/Card';
 import { isUnvaluedCalculation } from '@/arkham/types/Calculation'
 import { useCardStore } from '@/stores/cards'
 
+const { t: uiT } = useI18n()
+
 const props = withDefaults(defineProps<{
   game: Game
   enemy: Arkham.Enemy
@@ -144,7 +146,7 @@ const swarmCards = computed<ArkhamCard[]>(() =>
 )
 
 const swarmCardsShown = ref(false)
-const swarmTooltip = computed(() => `Swarm cards (${swarmCards.value.length}) — click to view`)
+const swarmTooltip = computed(() => uiT('ui.swarmCardsTooltip', { count: swarmCards.value.length }))
 const swarmBackImage = imgsrc('backs/back_player.jpg')
 const swarmEnemyDamage = (enemy: typeof props.enemy) => (enemy.tokens[TokenType.Damage] || 0) + enemy.assignedDamage
 
@@ -608,7 +610,7 @@ function onDrop(event: DragEvent) {
 
         <template #popper>
         <div class="swarm-popover">
-          <div class="swarm-popover__header">Swarm Cards ({{ swarmCards.length }})</div>
+          <div class="swarm-popover__header">{{ $t('ui.swarmCards') }}{{ swarmCards.length }})</div>
           <div class="swarm-popover__cards">
             <Enemy
               v-for="swarmEnemy in swarmEnemies"

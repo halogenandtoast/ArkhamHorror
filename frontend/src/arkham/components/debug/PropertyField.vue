@@ -68,7 +68,7 @@ function choose(name: string) {
       <input
         v-model="search"
         type="search"
-        :placeholder="`Search the ${entries.length} properties of ${of}`"
+        :placeholder="$t('ui.searchProperties', { count: entries.length, type: of })"
         v-focus
         @keydown.esc="open = false"
         @keydown.stop
@@ -80,7 +80,7 @@ function choose(name: string) {
             <span class="option-detail">{{ entry.type }}</span>
           </button>
         </li>
-        <li v-if="!matching.length" class="muted">Nothing matches.</li>
+        <li v-if="!matching.length" class="muted">{{ $t('ui.nothingMatches') }}</li>
       </ul>
     </div>
 
@@ -90,10 +90,10 @@ function choose(name: string) {
           <button
             type="button"
             class="binding-name"
-            :title="chosen ? `${chosen.name} :: ${chosen.type} — click to choose another` : 'Choose a property'"
+            :title="chosen ? $t('ui.clickToChooseAnother', { value: `${chosen.name} :: ${chosen.type}` }) : $t('ui.chooseAProperty2')"
             @click="open = true"
           >
-            {{ chosen ? `${chosen.label} :: ${chosen.type}` : (modelValue || 'Choose a property…') }}
+            {{ chosen ? `${chosen.label} :: ${chosen.type}` : (modelValue || $t('ui.chooseAProperty')) }}
           </button>
         </div>
       </div>

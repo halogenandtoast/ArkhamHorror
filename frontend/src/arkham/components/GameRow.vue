@@ -9,6 +9,9 @@ import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { CampaignDetails } from '@/arkham/types/Campaign'
 import type { ScenarioDetails } from '@/arkham/types/Scenario'
 import { imgsrc } from '@/arkham/helpers'
+import { localizedGameName, localizedScenarioName } from '@/arkham/scenarioNames'
+import campaignCatalog from '@/arkham/data/campaigns.json'
+import { homebrewCampaigns } from '@/arkham/homebrewData'
 import Prompt from '@/components/Prompt.vue'
 
 const props = withDefaults(
@@ -33,7 +36,11 @@ const props = withDefaults(
 const campaign = computed<CampaignDetails | null>(() => props.game.campaign)
 const scenario = computed<ScenarioDetails | null>(() => props.game.scenario)
 const deleting = ref(false)
-const { t } = useI18n()
+const { t, te } = useI18n()
+const gameTitle = computed(() => localizedGameName(props.game, [...campaignCatalog, ...homebrewCampaigns], t, te))
+const scenarioTitle = computed(() => scenario.value
+  ? localizedScenarioName(scenario.value.id, scenario.value.name.title, t, te)
+  : '')
 const store = useCardStore()
 
 /* The one thing worth saying about a badge: that the Campaign Guide itself
@@ -59,8 +66,8 @@ const difficulty = computed<Difficulty>(() => {
 const currentHeading = computed(() => {
   if (campaign.value?.currentCampaignMode) {
     return campaign.value?.currentCampaignMode === 'TheWebOfDreams'
-      ? 'The Web of Dreams'
-      : 'The Dream-Quest'
+      ? t('theDreamEaters.label.theWebOfDreams')
+      : t('theDreamEaters.label.theDreamQuest')
   }
 
   return null
@@ -68,7 +75,9 @@ const currentHeading = computed(() => {
 
 const otherHeading = computed(() => {
   if (currentHeading.value) {
-    return currentHeading.value === 'The Web of Dreams' ? 'The Dream-Quest' : 'The Web of Dreams'
+    return campaign.value?.currentCampaignMode === 'TheWebOfDreams'
+      ? t('theDreamEaters.label.theDreamQuest')
+      : t('theDreamEaters.label.theWebOfDreams')
   }
 
   return null
@@ -147,18 +156,18 @@ const scenarioIcon = computed(() => {
             <img class="campaign-icon" :src="scenarioIcon" />
           </div>
           <router-link v-if="admin" class="title" :to="`/admin/games/${game.id}`">{{
-            game.name
+            gameTitle
           }}</router-link>
           <router-link v-else-if="spectate" class="title" :to="`/games/${game.id}/spectate`">{{
-            game.name
+            gameTitle
           }}</router-link>
           <router-link
             v-else-if="game.hasOpenSeats"
             class="title"
             :to="`/games/${game.id}/claim-seat`"
-            >{{ game.name }}</router-link
+            >{{ gameTitle }}</router-link
           >
-          <router-link v-else class="title" :to="`/games/${game.id}`">{{ game.name }}</router-link>
+          <router-link v-else class="title" :to="`/games/${game.id}`">{{ gameTitle }}</router-link>
           <div v-if="game.multiplayerVariant === 'Solo'" class="solo">{{ $t('gameRow.solo') }}</div>
           <div v-if="spectate" class="watching">
             <font-awesome-icon icon="eye" />
@@ -185,10 +194,10 @@ const scenarioIcon = computed(() => {
         </div>
         <div v-if="campaign && scenario && scenarioIcon" class="scenario-details">
           <img class="scenario-icon" :src="scenarioIcon" />
-          <span>{{ scenario.name.title }}</span>
+          <span>{{ scenarioTitle }}</span>
         </div>
         <div class="extra-details">
-          <div class="game-difficulty">{{ difficulty }}</div>
+          <div class="game-difficulty">{{ $t(`create.${difficulty}`) }}</div>
 
           <div v-if="deleteGame" class="game-delete">
             <a href="#delete" @click.prevent="deleting = true"

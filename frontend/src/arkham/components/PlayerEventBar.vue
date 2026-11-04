@@ -98,12 +98,12 @@ function openGroup(group: GroupDigest) {
       <SharedPools :current-act-stage="currentActStage" />
       <EventCountdown />
       <div v-if="replicationPendingCount" class="bar-metric danger-alert">
-        <span class="bar-label">Replicating</span>
-        <span class="bar-value">{{ replicationPendingCount }} pending</span>
+        <span class="bar-label">{{ $t('ui.replicating') }}</span>
+        <span class="bar-value">{{ replicationPendingCount }} {{ $t('ui.pending') }}</span>
       </div>
       <div v-if="mainStreetReadyCount" class="bar-metric variant-alert">
-        <span class="bar-label">Main Street</span>
-        <span class="bar-value">{{ mainStreetReadyCount }} ready</span>
+        <span class="bar-label">{{ $t('ui.mainStreet') }}</span>
+        <span class="bar-value">{{ mainStreetReadyCount }} {{ $t('ui.ready') }}</span>
       </div>
       <div class="bar-metric">
         <span class="bar-label">{{ $t('event.countermeasures') }}</span>

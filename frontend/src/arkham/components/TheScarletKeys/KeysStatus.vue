@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 type KeyStatus = { tag: "KeyWithInvestigator", contents: string } | { tag: "KeyWithEnemy", contents: [string, string | null] }
 
@@ -26,7 +29,7 @@ const toBearer = (cardCode: string): string | null => {
   if (!status) return null
   if (status.tag === "KeyWithInvestigator") return props.toTitle(status.contents)
   if (status.tag === "KeyWithEnemy") return props.toTitle(status.contents[0])
-  return "Unknown"
+  return t('ui.unknown')
 }
 
 </script>
@@ -38,7 +41,7 @@ const toBearer = (cardCode: string): string | null => {
       <thead><tr><th><span>{{ $t('keysStatus.nameOfArtifact') }}</span></th><th><span>{{ $t('keysStatus.bearer') }}</span></th></tr></thead>
       <tbody>
         <tr v-for="[cardCode, scarletKey] in Object.entries(allScarletKeys)" :key="scarletKey">
-          <td><span class='checkbox'>{{props.keys[cardCode] ? "✓" : null}}</span>{{ scarletKey }}</td>
+          <td><span class='checkbox'>{{props.keys[cardCode] ? "✓" : null}}</span>{{ $t(`ui.enums.scarletKeyNames.${cardCode}`) }}</td>
           <td>{{ toBearer(cardCode) }}</td>
         </tr>
       </tbody>

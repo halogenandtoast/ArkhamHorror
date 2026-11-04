@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { watch, ref, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n'
 import { cardImg, localizeArkhamDBBaseUrl } from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/CardDef';
 import type { Deck} from '@/arkham/types/Deck';
@@ -8,6 +9,8 @@ import { useCardStore } from '@/stores/cards'
 import { storeToRefs } from 'pinia';
 import sets from '@/arkham/data/sets.json'
 import CardImage from '@/arkham/components/CardImage.vue'
+
+const { t } = useI18n()
 
 const props = withDefaults(defineProps<{ deck: Deck; embedded?: boolean }>(), { embedded: false })
 const deckRef = ref(null)
@@ -61,7 +64,7 @@ function localizeCard(result: Arkham.CardDef | undefined): Arkham.CardDef | unde
 
 function findCardByDeckCode(code: string): Arkham.CardDef | undefined {
   if (code === "c01000") {
-    return { cardCode: code, doubleSided: false, classSymbols: [], cardType: "Treachery", art: "01000", level: 0, name: { title: "Random Basic Weakness", subtitle: null }, cardTraits: [], skills: [], cost: null, otherSide: null, meta: {}, errata: null }
+    return { cardCode: code, doubleSided: false, classSymbols: [], cardType: "Treachery", art: "01000", level: 0, name: { title: t('deckUi.randomBasicWeakness'), subtitle: null }, cardTraits: [], skills: [], cost: null, otherSide: null, meta: {}, errata: null }
   }
 
   const normalized = code.replace(/^c/, '')
@@ -155,8 +158,8 @@ const spiritDeckCards = () => attachments.value['90052'] ?? []
 const marketCardCount = (card: Arkham.CardDef) => underworldMarketCards().filter((c) => c.art === card.art).length
 const spiritCardCount = (card: Arkham.CardDef) => spiritDeckCards().filter((c) => c.art === card.art).length
 
-const marketTooltip = (card: Arkham.CardDef) => `Attached to Market deck (x ${marketCardCount(card)})`
-const spiritTooltip = (card: Arkham.CardDef) => `In Spirit deck (x ${spiritCardCount(card)})`
+const marketTooltip = (card: Arkham.CardDef) => t('deckUi.attachments.market', { count: marketCardCount(card) })
+const spiritTooltip = (card: Arkham.CardDef) => t('deckUi.attachments.spirit', { count: spiritCardCount(card) })
 
 const isUnderworldMarketCard = (card: Arkham.CardDef, idx?: number) => {
   const marketCount = marketCardCount(card)
@@ -177,9 +180,9 @@ const isSpiritDeckCard = (card: Arkham.CardDef, idx?: number) => {
 }
 
 const attachmentHeading = (card: Arkham.CardDef) => {
-  if (card.art === '90052') return 'Spirit deck'
-  if (card.art === '09077') return 'Underworld Market'
-  return `Attached cards for ${cardName(card)}`
+  if (card.art === '90052') return t('deckUi.sections.spirit')
+  if (card.art === '09077') return t('deckUi.sections.market')
+  return t('deckUi.sections.attachedFor', { name: cardName(card) })
 }
 
 const cardName = (card: Arkham.CardDef) => {

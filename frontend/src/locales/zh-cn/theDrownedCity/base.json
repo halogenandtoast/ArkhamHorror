@@ -1,4 +1,10 @@
 {
+  "difficulty": {
+    "Easy": "我就随波逐流",
+    "Standard": "我只沉眠入梦",
+    "Hard": "我偏沉入深海",
+    "Expert": "我愿去拉莱耶"
+  },
   "specialRules": [
     {
       "title": "淹没标记",

@@ -344,7 +344,10 @@
   "scenarioSettings": {
     "title": "单场冒险模式设置",
     "noSettings": "此冒险目前没有可用的单场冒险模式设置。",
-    "begin": "开始"
+    "begin": "开始",
+    "submitting": "正在准备选择调查员…",
+    "submitFailed": "无法完成设置加载。请重试以检查已保存的游戏并继续。",
+    "retry": "重试"
   },
   "campaignSettings": {
     "title": "剧本设置"
@@ -496,7 +499,36 @@
     }
   },
   "questionFilter": {
-    "filter": "过滤"
+    "filter": "过滤",
+    "title": "选择一张卡牌",
+    "view": "卡牌视图",
+    "gridView": "网格视图",
+    "listView": "列表视图",
+    "collectionTitle": "搜索你的收藏",
+    "results": "{count}/{total}张卡牌",
+    "clear": "重置筛选",
+    "search": "搜索",
+    "searchPlaceholder": "搜索卡牌…",
+    "sort": "排序方式",
+    "name": "名称",
+    "level": "等级",
+    "original": "原始顺序",
+    "class": "职阶",
+    "type": "类型",
+    "trait": "特性",
+    "pack": "扩展包",
+    "allClasses": "全部职阶",
+    "allTypes": "全部类型",
+    "allLevels": "全部等级",
+    "allTraits": "全部特性",
+    "allPacks": "全部扩展包",
+    "includeCustom": "包含自定义卡牌",
+    "customCards": "自定义卡牌",
+    "custom": "自定义",
+    "eligibleOnly": "仅显示符合条件的卡牌",
+    "choose": "选择{name}",
+    "noResults": "没有符合条件的卡牌",
+    "tryFilters": "请尝试其他搜索词或调整筛选条件。"
   },
   "resourcesAria": {
     "assignAllHorror": "分配所有恐惧"
@@ -749,7 +781,8 @@
       "notePlaceholder": "要记入战役日志的笔记",
       "countPlaceholder": "计数的名称",
       "addNote": "记录笔记",
-      "addCount": "记录计数"
+      "addCount": "记录计数",
+      "editCampaignEntries": "调试战役记录"
     },
     "seals": {
       "sealedTokens": "封印的指示物",

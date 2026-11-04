@@ -28,7 +28,7 @@ const group = `bool-${Math.random().toString(36).slice(2, 9)}`
           :checked="!modelValue"
           @change="$emit('update:modelValue', false)"
         />
-        false
+        {{ $t('ui.false') }}
       </label>
       <label class="bool-option" :class="{ active: !!modelValue }">
         <input
@@ -37,7 +37,7 @@ const group = `bool-${Math.random().toString(36).slice(2, 9)}`
           :checked="!!modelValue"
           @change="$emit('update:modelValue', true)"
         />
-        true
+        {{ $t('ui.true') }}
       </label>
     </div>
   </div>

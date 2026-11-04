@@ -69,7 +69,7 @@ const earned = computed(() => {
         class="artifact-debug-toggle"
         :class="{ active: artifactDebug }"
         @click="artifactDebug = !artifactDebug"
-      >Debug</button>
+      >{{ $t('ui.debug') }}</button>
     </h3>
     <ul class="artifact-list">
       <li

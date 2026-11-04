@@ -122,7 +122,7 @@ async function navigateTo(path: string) {
                       <div class="loading-line wide"></div>
                       <div class="loading-line"></div>
                       <div class="loading-line short"></div>
-                      <span class="sr-only">Loading admin content…</span>
+                      <span class="sr-only">{{ $t('ui.loadingAdminContent') }}</span>
                     </div>
                   </template>
                 </Suspense>

@@ -1,11 +1,17 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+
+
 import { computed, ref, watch } from 'vue'
+import { localizedTokenFace } from '@/arkham/tokenLabels'
 import { useDebug, scenarioDebugCountsFor, scenarioTokenBagsFor } from '@/arkham/debug'
 import TokenBag from '@/arkham/components/debug/TokenBag.vue'
 import type { Game } from '@/arkham/types/Game'
 import type { Scenario } from '@/arkham/types/Scenario'
 import { chaosTokenImage, standardTokenFaces, type TokenFace } from '@/arkham/types/ChaosToken'
 import { useEscape } from '@/composable/escape'
+
+const { t: uiT } = useI18n()
 
 const props = defineProps<{
   game: Game
@@ -23,24 +29,7 @@ const realityAcidDebugToken1 = ref<TokenFace>('Skull')
 const realityAcidDebugToken2 = ref<TokenFace>('Cultist')
 const realityAcidDebugTokens: readonly TokenFace[] = standardTokenFaces
 
-const realityAcidTokenLabel = (token: TokenFace) => {
-  switch (token) {
-    case 'PlusOne': return '+1'
-    case 'Zero': return '0'
-    case 'MinusOne': return '−1'
-    case 'MinusTwo': return '−2'
-    case 'MinusThree': return '−3'
-    case 'MinusFour': return '−4'
-    case 'MinusFive': return '−5'
-    case 'MinusSix': return '−6'
-    case 'MinusSeven': return '−7'
-    case 'MinusEight': return '−8'
-    case 'AutoFail': return 'Auto-fail'
-    case 'ElderSign': return 'Elder sign'
-    case 'ElderThing': return 'Elder thing'
-    default: return token
-  }
-}
+const realityAcidTokenLabel = (token: TokenFace) => localizedTokenFace(token, uiT)
 
 const tokenOptionClass = (token: TokenFace, selectedToken?: TokenFace) => ({
   'reality-acid-token-option--selected': token === selectedToken,
@@ -81,59 +70,59 @@ const tokenMatch = (matchA: (token: TokenFace) => boolean, matchB: (token: Token
 }
 
 const realityAcidPreview = computed(() => {
-  if (tokenMatch((t) => t === 'ElderSign', isSkullCultist)) return '…The non-Elite enemy nearest to you.'
-  if (tokenMatch((t) => t === 'ElderSign', isTabletElderThing)) return '…A treachery at your location.'
-  if (tokenMatch((t) => t === 'ElderSign', isNegative)) return '…1 horror and 1 damage from your investigator card.'
-  if (tokenMatch((t) => t === 'ElderSign', isZeroOrPlusOne)) return '…Your greatest flaw. Search your deck for any 1 weakness card.'
-  if (tokenMatch((t) => t === 'ElderSign', (t) => t === 'AutoFail')) return '…The Elder Sign token just revealed.'
-  if (tokenMatch((t) => t === 'PlusOne', isSkullCultist)) return '…Your caution. Resolve Reality Acid three more times.'
-  if (tokenMatch((t) => t === 'PlusOne', isTabletElderThing)) return '…Your ignorance. Discover 1 clue at your location.'
-  if (tokenMatch((t) => t === 'PlusOne', isNegative)) return '…Friendships. Investigators cannot commit cards to each others’ skill tests this round.'
-  if (tokenMatch((t) => t === 'Zero', (t) => t === 'Zero')) return '…1 per-investigator clues from your location.'
-  if (tokenMatch((t) => t === 'Zero', isNegative1Or2)) return '…Itself, then regurgitates itself. Deal 1 damage to Subject 8L-08.'
-  if (tokenMatch((t) => t === 'Zero', (t) => t === 'MinusThree')) return '…All damage from each Manifold enemy.'
-  if (tokenMatch((t) => t === 'Zero', isNegative4To8)) return '…All supplies, ammo, charges, and secrets among assets you control.'
-  if (tokenMatch((t) => t === 'MinusOne', (t) => t === 'Skull')) return '…Your hope. Set your base willpower to 0.'
-  if (tokenMatch((t) => t === 'MinusOne', (t) => t === 'Cultist')) return '…Your curiosity. Set your base intellect to 0.'
-  if (tokenMatch((t) => t === 'MinusOne', (t) => t === 'Tablet')) return '…Your precision. Set your base combat to 0.'
-  if (tokenMatch((t) => t === 'MinusOne', (t) => t === 'ElderThing')) return '…Your attention. Set your base agility to 0.'
-  if (tokenMatch((t) => t === 'MinusOne', (t) => t === 'MinusOne')) return '…Your versatility. You cannot play off-class cards this round.'
-  if (tokenMatch((t) => t === 'MinusOne', (t) => t === 'MinusTwo')) return '…Your cell phone.'
-  if (tokenMatch((t) => t === 'MinusOne', (t) => t === 'MinusThree')) return '…The chaos bag.'
-  if (tokenMatch((t) => t === 'MinusOne', isNegative4To8)) return '…Level 1–5 cards of your choice with at least 5 total levels.'
-  if (tokenMatch((t) => t === 'MinusTwo', isSkullCultist)) return '…The top 3 cards of your deck.'
-  if (tokenMatch((t) => t === 'MinusTwo', isTabletElderThing)) return '…The top 3 cards of your discard pile.'
-  if (tokenMatch((t) => t === 'MinusTwo', (t) => t === 'MinusTwo')) return '…The deckbox you store your deck in.'
-  if (tokenMatch((t) => t === 'MinusTwo', (t) => t === 'MinusThree')) return '…Your investigator’s card sleeve.'
-  if (tokenMatch((t) => t === 'MinusTwo', isNegative4To8)) return '…Your party’s teamwork. Each investigator loses 1 action.'
-  if (tokenMatch((t) => t === 'MinusThree', isSymbol)) return '…A Talent, Connection, or Condition asset you control.'
-  if (tokenMatch((t) => t === 'MinusThree', isNegative4To8)) return '…Your sense of time.'
-  if (tokenMatch((t) => t === 'Skull', (t) => t === 'Skull')) return '…The highest-cost Ally asset you control.'
-  if (tokenMatch((t) => t === 'Skull', (t) => t === 'Cultist')) return '…All event cards in your hand.'
-  if (tokenMatch((t) => t === 'Skull', (t) => t === 'Tablet')) return '…All of your resources.'
-  if (tokenMatch((t) => t === 'Skull', (t) => t === 'ElderThing')) return '…All skill cards in your hand.'
-  if (tokenMatch((t) => t === 'Cultist', (t) => t === 'Cultist')) return '…All cards that have been exiled.'
-  if (tokenMatch((t) => t === 'Cultist', (t) => t === 'Tablet')) return '…Your identity.'
-  if (tokenMatch((t) => t === 'Cultist', (t) => t === 'ElderThing')) return '…The concept of speed.'
-  if (tokenMatch((t) => t === 'Tablet', (t) => t === 'Tablet')) return '…Your sense of urgency. You cannot move this round.'
-  if (tokenMatch((t) => t === 'Tablet', (t) => t === 'ElderThing')) return '…Your potential. Your skills cannot be increased this round.'
-  if (tokenMatch((t) => t === 'ElderThing', (t) => t === 'ElderThing')) return '…Your patience. Place 1 doom on the current agenda.'
-  if (tokenMatch((t) => t === 'AutoFail', isSkullCultist)) return '…All Spell and Ritual assets you control.'
-  if (tokenMatch((t) => t === 'AutoFail', isTabletElderThing)) return '…All Item assets you control.'
-  if (tokenMatch((t) => t === 'AutoFail', (t) => t === 'PlusOne')) return '…The concept of a “discard pile.”'
-  if (tokenMatch((t) => t === 'AutoFail', (t) => t === 'Zero')) return '…One of your hands.'
-  if (tokenMatch((t) => t === 'AutoFail', (t) => t === 'MinusOne')) return '…The concept of success.'
+  if (tokenMatch((t) => t === 'ElderSign', isSkullCultist)) return uiT('ui.theNonEliteEnemyNearestToYou')
+  if (tokenMatch((t) => t === 'ElderSign', isTabletElderThing)) return uiT('ui.aTreacheryAtYourLocation')
+  if (tokenMatch((t) => t === 'ElderSign', isNegative)) return uiT('ui.text1HorrorAnd1DamageFromYourInvestigatorCard')
+  if (tokenMatch((t) => t === 'ElderSign', isZeroOrPlusOne)) return uiT('ui.yourGreatestFlawSearchYourDeckForAny1')
+  if (tokenMatch((t) => t === 'ElderSign', (t) => t === 'AutoFail')) return uiT('ui.theElderSignTokenJustRevealed')
+  if (tokenMatch((t) => t === 'PlusOne', isSkullCultist)) return uiT('ui.yourCautionResolveRealityAcidThreeMoreTimes')
+  if (tokenMatch((t) => t === 'PlusOne', isTabletElderThing)) return uiT('ui.yourIgnoranceDiscover1ClueAtYourLocation')
+  if (tokenMatch((t) => t === 'PlusOne', isNegative)) return uiT('ui.friendshipsInvestigatorsCannotCommitCardsToEachOthersSkill')
+  if (tokenMatch((t) => t === 'Zero', (t) => t === 'Zero')) return uiT('ui.text1PerInvestigatorCluesFromYourLocation')
+  if (tokenMatch((t) => t === 'Zero', isNegative1Or2)) return uiT('ui.itselfThenRegurgitatesItselfDeal1DamageToSubject')
+  if (tokenMatch((t) => t === 'Zero', (t) => t === 'MinusThree')) return uiT('ui.allDamageFromEachManifoldEnemy')
+  if (tokenMatch((t) => t === 'Zero', isNegative4To8)) return uiT('ui.allSuppliesAmmoChargesAndSecretsAmongAssetsYou')
+  if (tokenMatch((t) => t === 'MinusOne', (t) => t === 'Skull')) return uiT('ui.yourHopeSetYourBaseWillpowerTo0')
+  if (tokenMatch((t) => t === 'MinusOne', (t) => t === 'Cultist')) return uiT('ui.yourCuriositySetYourBaseIntellectTo0')
+  if (tokenMatch((t) => t === 'MinusOne', (t) => t === 'Tablet')) return uiT('ui.yourPrecisionSetYourBaseCombatTo0')
+  if (tokenMatch((t) => t === 'MinusOne', (t) => t === 'ElderThing')) return uiT('ui.yourAttentionSetYourBaseAgilityTo0')
+  if (tokenMatch((t) => t === 'MinusOne', (t) => t === 'MinusOne')) return uiT('ui.yourVersatilityYouCannotPlayOffClassCardsThis')
+  if (tokenMatch((t) => t === 'MinusOne', (t) => t === 'MinusTwo')) return uiT('ui.yourCellPhone')
+  if (tokenMatch((t) => t === 'MinusOne', (t) => t === 'MinusThree')) return uiT('ui.theChaosBag')
+  if (tokenMatch((t) => t === 'MinusOne', isNegative4To8)) return uiT('ui.level15CardsOfYourChoiceWithAt')
+  if (tokenMatch((t) => t === 'MinusTwo', isSkullCultist)) return uiT('ui.theTop3CardsOfYourDeck')
+  if (tokenMatch((t) => t === 'MinusTwo', isTabletElderThing)) return uiT('ui.theTop3CardsOfYourDiscardPile')
+  if (tokenMatch((t) => t === 'MinusTwo', (t) => t === 'MinusTwo')) return uiT('ui.theDeckboxYouStoreYourDeckIn')
+  if (tokenMatch((t) => t === 'MinusTwo', (t) => t === 'MinusThree')) return uiT('ui.yourInvestigatorSCardSleeve')
+  if (tokenMatch((t) => t === 'MinusTwo', isNegative4To8)) return uiT('ui.yourPartySTeamworkEachInvestigatorLoses1Action')
+  if (tokenMatch((t) => t === 'MinusThree', isSymbol)) return uiT('ui.aTalentConnectionOrConditionAssetYouControl')
+  if (tokenMatch((t) => t === 'MinusThree', isNegative4To8)) return uiT('ui.yourSenseOfTime')
+  if (tokenMatch((t) => t === 'Skull', (t) => t === 'Skull')) return uiT('ui.theHighestCostAllyAssetYouControl')
+  if (tokenMatch((t) => t === 'Skull', (t) => t === 'Cultist')) return uiT('ui.allEventCardsInYourHand')
+  if (tokenMatch((t) => t === 'Skull', (t) => t === 'Tablet')) return uiT('ui.allOfYourResources')
+  if (tokenMatch((t) => t === 'Skull', (t) => t === 'ElderThing')) return uiT('ui.allSkillCardsInYourHand')
+  if (tokenMatch((t) => t === 'Cultist', (t) => t === 'Cultist')) return uiT('ui.allCardsThatHaveBeenExiled')
+  if (tokenMatch((t) => t === 'Cultist', (t) => t === 'Tablet')) return uiT('ui.yourIdentity')
+  if (tokenMatch((t) => t === 'Cultist', (t) => t === 'ElderThing')) return uiT('ui.theConceptOfSpeed')
+  if (tokenMatch((t) => t === 'Tablet', (t) => t === 'Tablet')) return uiT('ui.yourSenseOfUrgencyYouCannotMoveThisRound')
+  if (tokenMatch((t) => t === 'Tablet', (t) => t === 'ElderThing')) return uiT('ui.yourPotentialYourSkillsCannotBeIncreasedThisRound')
+  if (tokenMatch((t) => t === 'ElderThing', (t) => t === 'ElderThing')) return uiT('ui.yourPatiencePlace1DoomOnTheCurrentAgenda')
+  if (tokenMatch((t) => t === 'AutoFail', isSkullCultist)) return uiT('ui.allSpellAndRitualAssetsYouControl')
+  if (tokenMatch((t) => t === 'AutoFail', isTabletElderThing)) return uiT('ui.allItemAssetsYouControl')
+  if (tokenMatch((t) => t === 'AutoFail', (t) => t === 'PlusOne')) return uiT('ui.theConceptOfADiscardPile')
+  if (tokenMatch((t) => t === 'AutoFail', (t) => t === 'Zero')) return uiT('ui.oneOfYourHands')
+  if (tokenMatch((t) => t === 'AutoFail', (t) => t === 'MinusOne')) return uiT('ui.theConceptOfSuccess')
   if (tokenMatch((t) => t === 'AutoFail', isNegative2Or3)) return '…1 countermeasure.'
-  if (tokenMatch((t) => t === 'AutoFail', isNegative4To8)) return '…The concept of easiness.'
-  if (tokenMatch((t) => t === 'PlusOne', (t) => t === 'Zero')) return '…Your player reference card.'
-  if (tokenMatch(isNegative4To8, isSkullCultist)) return '…Your investigator mini card.'
-  if (tokenMatch(isNegative4To8, isTabletElderThing)) return '…Your house.'
-  if (tokenMatch(isNegative4To8, isNegative4To8)) return '…Your soul.'
-  if (tokenMatch((t) => t === 'Zero', (t) => t === 'Skull')) return '…Your voice.'
-  if (tokenMatch((t) => t === 'Zero', (t) => t === 'Cultist')) return '…Your group’s food and drinks.'
-  if (tokenMatch((t) => t === 'Zero', (t) => t === 'Tablet')) return '…The concept of language.'
+  if (tokenMatch((t) => t === 'AutoFail', isNegative4To8)) return uiT('ui.theConceptOfEasiness')
+  if (tokenMatch((t) => t === 'PlusOne', (t) => t === 'Zero')) return uiT('ui.yourPlayerReferenceCard')
+  if (tokenMatch(isNegative4To8, isSkullCultist)) return uiT('ui.yourInvestigatorMiniCard')
+  if (tokenMatch(isNegative4To8, isTabletElderThing)) return uiT('ui.yourHouse')
+  if (tokenMatch(isNegative4To8, isNegative4To8)) return uiT('ui.yourSoul')
+  if (tokenMatch((t) => t === 'Zero', (t) => t === 'Skull')) return uiT('ui.yourVoice')
+  if (tokenMatch((t) => t === 'Zero', (t) => t === 'Cultist')) return uiT('ui.yourGroupSFoodAndDrinks')
+  if (tokenMatch((t) => t === 'Zero', (t) => t === 'Tablet')) return uiT('ui.theConceptOfLanguage')
   if (tokenMatch((t) => t === 'Zero', (t) => t === 'ElderThing')) return '…Light.'
-  return 'Combination is not listed, or may be unavailable; Reality Acid will reveal two new chaos tokens.'
+  return uiT('ui.combinationIsNotListedOrMayBeUnavailableReality')
 })
 
 const realityAcidDebugChoice = computed(() => {
@@ -193,8 +182,8 @@ const setCount = (key: string) => {
   <div class="scenario-debug-modal-overlay" @click.self="emit('close')">
     <div class="scenario-debug-modal" role="dialog" aria-modal="true" aria-labelledby="scenario-debug-title" @click="openRealityAcidDropdown = null">
       <header class="scenario-debug-modal-header">
-        <h2 id="scenario-debug-title">Scenario Debug</h2>
-        <button type="button" aria-label="Close scenario debug" @click="emit('close')">×</button>
+        <h2 id="scenario-debug-title">{{ $t('ui.scenarioDebug') }}</h2>
+        <button type="button" :aria-label="$t('ui.closeScenarioDebug')" @click="emit('close')">×</button>
       </header>
       <div class="scenario-debug-options">
         <section v-for="entry in tokenBags" :key="entry.key" class="scenario-debug-section">
@@ -202,7 +191,7 @@ const setCount = (key: string) => {
           <TokenBag :game-id="game.id" :bag-key="entry.key" :bag="entry.bag" />
         </section>
         <section v-if="scenario.id === 'c85001'" class="scenario-debug-section">
-          <span class="scenario-debug-label">Reality Acid tokens</span>
+          <span class="scenario-debug-label">{{ $t('ui.realityAcidTokens') }}</span>
           <div class="scenario-debug-row">
             <div class="reality-acid-token-dropdown" @click.stop>
               <button
@@ -254,29 +243,29 @@ const setCount = (key: string) => {
             </div>
           </div>
           <div class="reality-acid-preview">
-            <span class="reality-acid-preview-label">Will devour</span>
+            <span class="reality-acid-preview-label">{{ $t('ui.willDevour') }}</span>
             <span>{{ realityAcidPreview }}</span>
           </div>
-          <button type="button" @click="setRealityAcidDebugTokens">Use for next Reality Acid</button>
+          <button type="button" @click="setRealityAcidDebugTokens">{{ $t('ui.useForNextRealityAcid') }}</button>
           <button v-if="realityAcidDebugChoice" type="button" @click="clearRealityAcidDebugTokens">
-            Clear (currently {{ realityAcidDebugChoiceLabel }})
+            {{ $t('ui.clearCurrently') }} {{ realityAcidDebugChoiceLabel }})
           </button>
         </section>
 
         <section v-if="isDoomOfArkhamPartII" class="scenario-debug-section">
-          <span class="scenario-debug-label">Cthulhu deck</span>
-          <button type="button" @click="drawCthulhuCard">Draw top card</button>
+          <span class="scenario-debug-label">{{ $t('ui.cthulhuDeck') }}</span>
+          <button type="button" @click="drawCthulhuCard">{{ $t('ui.drawTopCard') }}</button>
         </section>
 
         <section v-if="debugCounts.length > 0" class="scenario-debug-section">
           <div v-for="count in debugCounts" :key="count.key" class="scenario-debug-count">
             <span class="scenario-debug-label">
-              {{ count.label }}
+              {{ $t(`ui.enums.debugCounts.${count.key}`) }}
               <span class="scenario-debug-current">{{ countValue(count.key) }}</span>
             </span>
             <div class="count-editor">
               <input v-model.number="editedCounts[count.key]" type="number" min="0" class="count-input" />
-              <button type="button" class="count-set" :disabled="!countChanged(count.key)" @click="setCount(count.key)">Set</button>
+              <button type="button" class="count-set" :disabled="!countChanged(count.key)" @click="setCount(count.key)">{{ $t('ui.set') }}</button>
             </div>
           </div>
         </section>

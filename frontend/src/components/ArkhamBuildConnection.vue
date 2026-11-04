@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+
+
 /* Linking an account to arkham.build over OAuth 2.0.
  *
  * We are a confidential client: the client secret and both tokens live on our
@@ -9,6 +12,8 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '@/api'
 import ArkhamBuildLogo from '@/components/icons/ArkhamBuildLogo.vue'
+
+const { t: uiT } = useI18n()
 
 type Connection = {
   accountId: string
@@ -27,33 +32,33 @@ type Status = {
 }
 
 const SCOPE_LABELS: Record<string, string> = {
-  'profile:read': 'Read your account name',
-  'decks:read': 'Read your decks, and the ArkhamDB decks linked to them',
-  'decks:write': 'Save decks, so upgrades, exiles, and earned cards are recorded',
-  'decks:delete': 'Delete your decks',
+  'profile:read': uiT('ui.readYourAccountName'),
+  'decks:read': uiT('ui.readYourDecksAndTheArkhamdbDecksLinkedTo'),
+  'decks:write': uiT('ui.saveDecksSoUpgradesExilesAndEarnedCardsAre'),
+  'decks:delete': uiT('ui.deleteYourDecks'),
 }
 
 /* What the callback can leave behind. Anything unlisted is reported verbatim so
  * a new error from arkham.build is still legible rather than swallowed. */
 const OUTCOMES: Record<string, { kind: 'good' | 'bad'; text: string }> = {
-  connected: { kind: 'good', text: 'Connected to arkham.build.' },
-  access_denied: { kind: 'bad', text: 'You declined the request, so nothing was connected.' },
+  connected: { kind: 'good', text: uiT('ui.connectedToArkhamBuild') },
+  access_denied: { kind: 'bad', text: uiT('ui.youDeclinedTheRequestSoNothingWasConnected') },
   invalid_state: {
     kind: 'bad',
-    text: 'That sign-in could not be matched to a request from this browser. Try again.',
+    text: uiT('ui.thatSignInCouldNotBeMatchedToA'),
   },
-  expired: { kind: 'bad', text: 'That request took too long and expired. Try again.' },
-  no_code: { kind: 'bad', text: 'arkham.build did not send an authorization code back.' },
+  expired: { kind: 'bad', text: uiT('ui.thatRequestTookTooLongAndExpiredTryAgain') },
+  no_code: { kind: 'bad', text: uiT('ui.arkhamBuildDidNotSendAnAuthorizationCodeBack') },
   invalid_grant: {
     kind: 'bad',
-    text: 'arkham.build would not accept that authorization. Try again.',
+    text: uiT('ui.arkhamBuildWouldNotAcceptThatAuthorizationTryAgain'),
   },
   invalid_client: {
     kind: 'bad',
-    text: "arkham.build did not recognise this server's client credentials.",
+    text: uiT('ui.arkhamBuildDidNotRecogniseThisServerSClient'),
   },
-  not_configured: { kind: 'bad', text: 'This server has no arkham.build client credentials.' },
-  unreachable: { kind: 'bad', text: 'Could not reach arkham.build. Try again in a moment.' },
+  not_configured: { kind: 'bad', text: uiT('ui.thisServerHasNoArkhamBuildClientCredentials') },
+  unreachable: { kind: 'bad', text: uiT('ui.couldNotReachArkhamBuildTryAgainInA') },
 }
 
 const route = useRoute()
@@ -103,7 +108,7 @@ function errorMessage(e: unknown): string | null {
 async function readOutcome() {
   const outcome = route.query.arkhamBuild
   if (typeof outcome !== 'string' || !outcome) return
-  notice.value = OUTCOMES[outcome] ?? { kind: 'bad', text: `arkham.build reported: ${outcome}` }
+  notice.value = OUTCOMES[outcome] ?? { kind: 'bad', text: uiT('ui.arkhamBuildReported', { outcome }) }
   const { arkhamBuild: _dropped, ...rest } = route.query
   await router.replace({ path: route.path, query: rest })
 }
@@ -115,7 +120,7 @@ async function load() {
     const { data } = await api.get<Status>('arkham-build/connection')
     status.value = data
   } catch (e) {
-    failure.value = errorMessage(e) ?? 'Could not read your arkham.build connection.'
+    failure.value = errorMessage(e) ?? uiT('ui.couldNotReadYourArkhamBuildConnection')
   } finally {
     loading.value = false
   }
@@ -132,7 +137,7 @@ async function connect() {
     window.location.href = data.url
   } catch (e) {
     working.value = false
-    failure.value = errorMessage(e) ?? 'Could not start the connection.'
+    failure.value = errorMessage(e) ?? uiT('ui.couldNotStartTheConnection')
   }
 }
 
@@ -143,11 +148,11 @@ async function verify() {
   try {
     const { data } = await api.post<{ connection: Connection | null }>('arkham-build/verify', {})
     if (status.value) status.value = { ...status.value, connection: data.connection }
-    notice.value = { kind: 'good', text: 'The connection works.' }
+    notice.value = { kind: 'good', text: uiT('ui.theConnectionWorks') }
   } catch (e) {
     notice.value = {
       kind: 'bad',
-      text: errorMessage(e) ?? 'The connection did not answer. You may need to reconnect.',
+      text: errorMessage(e) ?? uiT('ui.theConnectionDidNotAnswerYouMayNeedTo'),
     }
   } finally {
     working.value = false
@@ -155,16 +160,16 @@ async function verify() {
 }
 
 async function disconnect() {
-  if (!window.confirm('Disconnect arkham.build? You can connect again at any time.')) return
+  if (!window.confirm(uiT('ui.disconnectArkhamBuildYouCanConnectAgainAtAny'))) return
   working.value = true
   failure.value = null
   notice.value = null
   try {
     await api.delete('arkham-build/connection')
-    notice.value = { kind: 'good', text: 'Disconnected from arkham.build.' }
+    notice.value = { kind: 'good', text: uiT('ui.disconnectedFromArkhamBuild') }
     await load()
   } catch (e) {
-    failure.value = errorMessage(e) ?? 'Could not disconnect.'
+    failure.value = errorMessage(e) ?? uiT('ui.couldNotDisconnect')
   } finally {
     working.value = false
   }
@@ -179,10 +184,9 @@ onMounted(async () => {
 <template>
   <section class="box column connections">
     <header class="group-head">
-      <h3>Connections</h3>
+      <h3>{{ $t('ui.connections') }}</h3>
       <p class="muted">
-        Link this app to the services you keep decks on. Nothing is shared until you
-        approve it, and you can take it back at any time.
+        {{ $t('ui.linkThisAppToTheServicesYouKeepDecks') }}
       </p>
     </header>
 
@@ -191,19 +195,19 @@ onMounted(async () => {
         <ArkhamBuildLogo class="mark" />
         <div class="entry-title">
           <h4>arkham.build</h4>
-          <p class="muted">Deck builder and collection tracker</p>
+          <p class="muted">{{ $t('ui.deckBuilderAndCollectionTracker') }}</p>
         </div>
         <span class="pill" :class="state">
           {{
             state === 'connected'
-              ? 'Connected'
+              ? $t('ui.connected')
               : state === 'partial'
-                ? 'Needs reconnecting'
+                ? $t('ui.needsReconnecting')
                 : state === 'unavailable'
-                  ? 'Unavailable'
+                  ? $t('ui.unavailable')
                   : state === 'loading'
                     ? '…'
-                    : 'Not connected'
+                    : $t('ui.notConnected')
           }}
         </span>
       </div>
@@ -211,25 +215,24 @@ onMounted(async () => {
       <p v-if="notice" class="banner" :class="notice.kind">{{ notice.text }}</p>
       <p v-if="failure" class="banner bad">{{ failure }}</p>
 
-      <p v-if="state === 'loading'" class="muted">Loading…</p>
+      <p v-if="state === 'loading'" class="muted">{{ $t('ui.loading2') }}</p>
 
       <p v-else-if="state === 'unavailable'" class="banner warn">
-        This server has not been given arkham.build client credentials, so there is
-        nothing to connect to yet.
+        {{ $t('ui.thisServerHasNotBeenGivenArkhamBuildClient') }}
       </p>
 
       <template v-else-if="connection">
         <dl class="facts">
-          <dt>Account</dt>
+          <dt>{{ $t('ui.account') }}</dt>
           <dd class="strong">{{ connection.username }}</dd>
-          <dt>Connected</dt>
+          <dt>{{ $t('ui.connected') }}</dt>
           <dd>{{ when(connection.connectedAt) }}</dd>
-          <dt>Authorization expires</dt>
+          <dt>{{ $t('ui.authorizationExpires') }}</dt>
           <dd>{{ when(connection.expiresAt) }}</dd>
         </dl>
 
         <div class="scopes">
-          <p class="label">You have granted</p>
+          <p class="label">{{ $t('ui.youHaveGranted') }}</p>
           <ul>
             <li v-for="scope in connection.scopes" :key="scope">{{ describeScope(scope) }}</li>
           </ul>
@@ -237,10 +240,9 @@ onMounted(async () => {
 
         <div v-if="missingScopes.length" class="scopes">
           <p class="banner warn">
-            This app now asks for more than this connection was given. Reconnect to
-            grant it — what you have already granted keeps working until you do.
+            {{ $t('ui.thisAppNowAsksForMoreThanThisConnection') }}
           </p>
-          <p class="label">Still to grant</p>
+          <p class="label">{{ $t('ui.stillToGrant') }}</p>
           <ul>
             <li v-for="scope in missingScopes" :key="scope">{{ describeScope(scope) }}</li>
           </ul>
@@ -248,31 +250,30 @@ onMounted(async () => {
 
         <div class="row actions">
           <button v-if="missingScopes.length" type="button" :disabled="working" @click="connect">
-            {{ working ? 'Opening arkham.build…' : 'Reconnect' }}
+            {{ working ? $t('ui.openingArkhamBuild') : $t('ui.reconnect') }}
           </button>
           <button type="button" class="quiet" :disabled="working" @click="verify">
-            {{ working ? 'Checking…' : 'Check connection' }}
+            {{ working ? $t('ui.checking') : $t('ui.checkConnection') }}
           </button>
           <button type="button" class="quiet danger" :disabled="working" @click="disconnect">
-            Disconnect
+            {{ $t('ui.disconnect') }}
           </button>
         </div>
       </template>
 
       <template v-else>
         <div class="scopes">
-          <p class="label">Connecting will ask arkham.build to let this app</p>
+          <p class="label">{{ $t('ui.connectingWillAskArkhamBuildToLetThisApp') }}</p>
           <ul>
             <li v-for="scope in requestedScopes" :key="scope">{{ describeScope(scope) }}</li>
           </ul>
         </div>
         <p class="muted fine">
-          Your arkham.build password never reaches us. We are never granted the ability
-          to delete a deck.
+          {{ $t('ui.yourArkhamBuildPasswordNeverReachesUsWeAre') }}
         </p>
         <div class="row actions">
           <button type="button" :disabled="working" @click="connect">
-            {{ working ? 'Opening arkham.build…' : 'Connect arkham.build' }}
+            {{ working ? $t('ui.openingArkhamBuild') : $t('ui.connectArkhamBuild') }}
           </button>
         </div>
       </template>

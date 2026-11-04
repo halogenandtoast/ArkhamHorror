@@ -34,6 +34,8 @@ import {
   CARD_TEXT,
 } from '@/arkham/customText'
 
+const { t: uiT } = useI18n()
+
 const props = defineProps<{
   modelValue: any[]
   queryKinds: Record<string, string>
@@ -110,42 +112,42 @@ const KIND_LABELS: Record<StepKind, string> = {
   if: 'If',
   when: 'When',
   case: 'Case',
-  forEach: 'For each',
+  forEach: uiT('ui.forEach'),
   repeat: 'Repeat',
   call: 'Again',
   distribute: 'Distribute',
   search: 'Search',
-  request: 'Ask the game',
+  request: uiT('ui.askTheGame'),
   modify: 'Modify',
-  withSkillTest: 'With skill test',
-  withLocationOf: 'With location of',
+  withSkillTest: uiT('ui.withSkillTest'),
+  withLocationOf: uiT('ui.withLocationOf'),
   choose: 'Choose',
-  chooseFrom: 'Choose from',
+  chooseFrom: uiT('ui.chooseFrom'),
   playCard: 'Play a card',
-  useAbility: 'Use an ability',
-  cancelBatch: 'Cancel what would happen',
+  useAbility: uiT('ui.useAnAbility'),
+  cancelBatch: uiT('ui.cancelWhatWouldHappen'),
   fight: 'Fight',
   investigate: 'Investigate',
   evade: 'Evade',
   parley: 'Parley',
-  test: 'Skill test',
+  test: uiT('ui.skillTest'),
   attack: 'Attack',
   ready: 'Ready',
   discardCard: 'Discard a card',
-  record: 'Record in the campaign log',
-  takeAction: 'Take an action',
-  draw: 'Draw cards',
+  record: uiT('ui.recordInTheCampaignLog'),
+  takeAction: uiT('ui.takeAnAction'),
+  draw: uiT('ui.drawCards'),
   gather: 'Gather',
   customize: 'Customize',
   place: 'Place a card',
-  discover: 'Discover clues',
-  setAside: 'Set cards aside',
-  activateAbility: "Activate another card's ability",
-  repeatAbilities: "Repeat what a card's abilities did",
-  notifyResult: "Tell a card the test's result again",
-  skillTestOption: 'Offer this at the end of the test',
-  seal: 'Seal chaos tokens',
-  slot: 'Whatever the card fills in',
+  discover: uiT('ui.discoverClues'),
+  setAside: uiT('ui.setCardsAside'),
+  activateAbility: uiT('ui.activateAnotherCardSAbility'),
+  repeatAbilities: uiT('ui.repeatWhatACardSAbilitiesDid'),
+  notifyResult: uiT('ui.tellACardTheTestSResultAgain'),
+  skillTestOption: uiT('ui.offerThisAtTheEndOfTheTest'),
+  seal: uiT('ui.sealChaosTokens'),
+  slot: uiT('ui.whateverTheCardFillsIn'),
 }
 
 function kindOf(step: any): StepKind {
@@ -262,52 +264,52 @@ const blankStep = (kind: StepKind) =>
  * bare names cannot tell you -- Gather and Draw are both about cards, Choose and
  * Choose from are a word apart and are not the same thing at all. */
 const KIND_HELP: Record<StepKind, string> = {
-  query: 'Superseded — a Let can bind a query directly.',
-  let: 'Works something out and binds it to a name for the steps after this one.',
-  random: 'Binds a fresh id, or one thing picked at random out of a list.',
-  push: 'Puts a message on the queue, written as the engine spells it.',
-  if: 'Runs a matcher and takes the first branch when it finds anything.',
-  when: 'Runs its steps only when a matcher finds something. An If with no else.',
-  case: 'Takes the first branch whose condition holds.',
-  forEach: 'Runs its steps once per thing found, from a matcher or a list, bound inside.',
-  repeat: 'Runs its steps a number of times, with the pass number bound inside. Named, it runs when something calls it instead.',
-  call: 'Runs another pass of a named repeat. Nothing happens once its passes are spent.',
-  distribute: 'Splits a total between investigators, then runs its steps on each share.',
-  search: 'Searches a zone for cards, and says what happens to what it finds — and to finding nothing.',
-  request: 'Pushes a message that is answered later, with the answer handled here.',
-  modify: 'Gives something modifiers for as long as a window lasts.',
-  withSkillTest: 'Runs its steps during a skill test, with that test bound inside.',
-  withLocationOf: 'Runs its steps where something is, with that location bound inside.',
-  choose: 'Offers the player named options, each with steps of its own.',
-  chooseFrom: 'One option per thing found — from a matcher or a list — bound for the steps below.',
-  playCard: 'Offers the cards that could be played and pays for the one chosen.',
-  useAbility: "Resolves one of this card's own abilities, paying its cost.",
-  cancelBatch: 'Stops what the ability is reacting to. Needs a "would" window.',
-  fight: 'Fights an enemy. The test it starts is $sid.',
-  investigate: 'Investigates, the way the action does. The test it starts is $sid.',
-  evade: 'Evades an enemy. The test it starts is $sid.',
-  parley: 'Parleys against something, naming the target, skill and difficulty itself.',
-  test: 'Begins a plain skill test — "test {willpower} (3)" — and says what its result does.',
-  attack: 'This card attacks — an enemy making an immediate attack.',
-  ready: 'Readies this card, or the one chosen.',
-  discardCard: 'Discards a card, from hand or from play — whichever it is in.',
-  record: 'Writes in the campaign log — that something happened, a number, or entries in a list.',
-  takeAction: 'Takes one immediate action as if it were your turn.',
-  draw: 'Draws cards. Nothing is drawn when the amount works out to zero or less.',
-  gather: 'Shuffles a card into the encounter deck.',
-  customize: 'Marks a checkbox on the upgrade sheet of a customizable card.',
-  place: 'Puts a card somewhere — attached, in a play area, in a threat area. An event that places itself stays in play.',
-  discover: 'Discovers clues, with the id everything reacting to a discovery is keyed on.',
-  setAside: 'Makes copies of named cards in the set-aside zone, owned by an investigator.',
-  activateAbility: "Offers every ability of a named shape on OTHER cards, and uses the one chosen.",
+  query: uiT('ui.supersededALetCanBindAQueryDirectly'),
+  let: uiT('ui.worksSomethingOutAndBindsItToAName'),
+  random: uiT('ui.bindsAFreshIdOrOneThingPickedAt'),
+  push: uiT('ui.putsAMessageOnTheQueueWrittenAsThe'),
+  if: uiT('ui.runsAMatcherAndTakesTheFirstBranchWhen'),
+  when: uiT('ui.runsItsStepsOnlyWhenAMatcherFindsSomething'),
+  case: uiT('ui.takesTheFirstBranchWhoseConditionHolds'),
+  forEach: uiT('ui.runsItsStepsOncePerThingFoundFromA'),
+  repeat: uiT('ui.runsItsStepsANumberOfTimesWithThe'),
+  call: uiT('ui.runsAnotherPassOfANamedRepeatNothingHappens'),
+  distribute: uiT('ui.splitsATotalBetweenInvestigatorsThenRunsItsSteps'),
+  search: uiT('ui.searchesAZoneForCardsAndSaysWhatHappens'),
+  request: uiT('ui.pushesAMessageThatIsAnsweredLaterWithThe'),
+  modify: uiT('ui.givesSomethingModifiersForAsLongAsAWindow'),
+  withSkillTest: uiT('ui.runsItsStepsDuringASkillTestWithThat'),
+  withLocationOf: uiT('ui.runsItsStepsWhereSomethingIsWithThatLocation'),
+  choose: uiT('ui.offersThePlayerNamedOptionsEachWithStepsOf'),
+  chooseFrom: uiT('ui.oneOptionPerThingFoundFromAMatcherOr'),
+  playCard: uiT('ui.offersTheCardsThatCouldBePlayedAndPays'),
+  useAbility: uiT('ui.resolvesOneOfThisCardSOwnAbilitiesPaying'),
+  cancelBatch: uiT('ui.stopsWhatTheAbilityIsReactingToNeedsA'),
+  fight: uiT('ui.fightsAnEnemyTheTestItStartsIsSid'),
+  investigate: uiT('ui.investigatesTheWayTheActionDoesTheTestIt'),
+  evade: uiT('ui.evadesAnEnemyTheTestItStartsIsSid'),
+  parley: uiT('ui.parleysAgainstSomethingNamingTheTargetSkillAndDifficulty'),
+  test: uiT('ui.beginsAPlainSkillTestTestWillpower3And'),
+  attack: uiT('ui.thisCardAttacksAnEnemyMakingAnImmediateAttack'),
+  ready: uiT('ui.readiesThisCardOrTheOneChosen'),
+  discardCard: uiT('ui.discardsACardFromHandOrFromPlayWhichever'),
+  record: uiT('ui.writesInTheCampaignLogThatSomethingHappenedA'),
+  takeAction: uiT('ui.takesOneImmediateActionAsIfItWereYour'),
+  draw: uiT('ui.drawsCardsNothingIsDrawnWhenTheAmountWorks'),
+  gather: uiT('ui.shufflesACardIntoTheEncounterDeck'),
+  customize: uiT('ui.marksACheckboxOnTheUpgradeSheetOfA'),
+  place: uiT('ui.putsACardSomewhereAttachedInAPlayArea'),
+  discover: uiT('ui.discoversCluesWithTheIdEverythingReactingToA'),
+  setAside: uiT('ui.makesCopiesOfNamedCardsInTheSetAside2'),
+  activateAbility: uiT('ui.offersEveryAbilityOfANamedShapeOnOther'),
   repeatAbilities:
-    "Pushes every ability USE already recorded for a source, so whatever it did happens again.",
+    uiT('ui.pushesEveryAbilityUseAlreadyRecordedForASource'),
   notifyResult:
-    "Says the test's result to a card a second time, so its \"if you succeed\" happens again.",
+    uiT('ui.saysTheTestSResultToACardA'),
   skillTestOption:
-    'Registers these steps as one of the options the investigator orders at the end of a test.',
-  seal: 'Seals chaos tokens on this card, or releases the ones it is holding.',
-  slot: 'Splices in the steps whichever card prints this keyword supplied.',
+    uiT('ui.registersTheseStepsAsOneOfTheOptionsThe'),
+  seal: uiT('ui.sealsChaosTokensOnThisCardOrReleasesThe'),
+  slot: uiT('ui.splicesInTheStepsWhicheverCardPrintsThisKeyword'),
 }
 
 /* A query is an expression now, so binding one is what a Let does and a Query
@@ -373,9 +375,9 @@ function optionBinding(index: number, option: any, oi: number): Binding | null {
   if (!option?.query) return null
   return {
     name: typeof option.bind === 'string' && option.bind ? option.bind : 'chosen',
-    detail: 'what was chosen',
+    detail: uiT('ui.whatWasChosen'),
     type: QUERY_TYPES[option.query?.kind],
-    origin: `the query on option ${oi + 1} of this Choose`,
+    origin: uiT('ui.queryOnOption', { number: oi + 1 }),
     anchor: anchorFor(index),
   }
 }
@@ -500,20 +502,20 @@ const setRandomKind = (index: number, kind: string) => {
 /* What the log can be told, in the words a card uses rather than the seven
  * messages the engine reaches it through. Each maps to one of those. */
 const RECORD_MODES = [
-  { key: 'flag', label: 'that it happened', help: 'Records the key. "Record that …"' },
-  { key: 'crossOut', label: 'cross it out', help: 'Crosses the key out, undoing a record.' },
-  { key: 'count', label: 'set a number', help: 'Sets the number kept under the key.' },
-  { key: 'increase', label: 'increase the number', help: 'Adds to the number kept under the key.' },
-  { key: 'decrease', label: 'decrease the number', help: 'Takes away from the number kept under the key.' },
+  { key: 'flag', label: uiT('ui.thatItHappened'), help: uiT('ui.recordsTheKeyRecordThat') },
+  { key: 'crossOut', label: uiT('ui.crossItOut'), help: uiT('ui.crossesTheKeyOutUndoingARecord') },
+  { key: 'count', label: uiT('ui.setANumber'), help: uiT('ui.setsTheNumberKeptUnderTheKey') },
+  { key: 'increase', label: uiT('ui.increaseTheNumber'), help: uiT('ui.addsToTheNumberKeptUnderTheKey') },
+  { key: 'decrease', label: uiT('ui.decreaseTheNumber'), help: uiT('ui.takesAwayFromTheNumberKeptUnderTheKey') },
   {
     key: 'entries',
-    label: 'add to the list',
-    help: 'Adds entries to the set kept under the key. Adding one twice keeps one.',
+    label: uiT('ui.addToTheList'),
+    help: uiT('ui.addsEntriesToTheSetKeptUnderTheKey'),
   },
   {
     key: 'crossOutEntries',
-    label: 'cross out entries in the list',
-    help: 'Marks entries already in the set as no longer true. They stop counting.',
+    label: uiT('ui.crossOutEntriesInTheList'),
+    help: uiT('ui.marksEntriesAlreadyInTheSetAsNoLonger'),
   },
 ] as const
 
@@ -544,8 +546,8 @@ const setRecord = (index: number, changes: Record<string, any>) => {
 }
 
 const OUTCOME_LEGENDS: Record<string, string> = {
-  onSuccess: 'If you succeed',
-  onFailure: 'If you fail',
+  onSuccess: uiT('ui.ifYouSucceed'),
+  onFailure: uiT('ui.ifYouFail'),
 }
 
 /* A list to choose or loop over can come from a matcher or from a binding. Which
@@ -604,49 +606,49 @@ const matcherType = (kind: string | undefined) => props.queryKinds[kind ?? 'enem
  * a search is a search as far as everything that reacts to one is concerned,
  * looking leaves the deck alone, revealing shows the card to the table. */
 const SEARCH_HOWS: [string, string][] = [
-  ['search', 'search it'],
-  ['look', 'look at it'],
-  ['reveal', 'reveal it'],
+  ['search', uiT('ui.searchIt')],
+  ['look', uiT('ui.lookAtIt')],
+  ['reveal', uiT('ui.revealIt')],
 ]
 
 /* The zones a card names, and how deep. Only the two deck zones take a depth --
  * a hand or a discard pile is read whole. */
 const SEARCH_ZONES: [string, string][] = [
-  ['topOfDeck', 'the top of your deck'],
-  ['bottomOfDeck', 'the bottom of your deck'],
-  ['deck', 'your whole deck'],
-  ['hand', 'your hand'],
-  ['discard', 'your discard pile'],
+  ['topOfDeck', uiT('ui.theTopOfYourDeck')],
+  ['bottomOfDeck', uiT('ui.theBottomOfYourDeck')],
+  ['deck', uiT('ui.yourWholeDeck')],
+  ['hand', uiT('ui.yourHand')],
+  ['discard', uiT('ui.yourDiscardPile')],
 ]
 
 const ZONE_TAKES_DEPTH = ['topOfDeck', 'bottomOfDeck']
 
 /* What becomes of the cards it did NOT take. */
 const SEARCH_RETURNS: [string, string][] = [
-  ['ShuffleBackIn', 'shuffle the rest back in'],
-  ['PutBack', 'put the rest back as they were'],
-  ['PutBackInAnyOrder', 'put the rest back in any order'],
-  ['PutBackInAnyOrderBothTopAndBottom', 'put the rest back, top or bottom'],
-  ['DiscardRest', 'discard the rest'],
-  ['RemoveRestFromGame', 'remove the rest from the game'],
-  ['DoNothing', 'leave the rest alone'],
+  ['ShuffleBackIn', uiT('ui.shuffleTheRestBackIn')],
+  ['PutBack', uiT('ui.putTheRestBackAsTheyWere')],
+  ['PutBackInAnyOrder', uiT('ui.putTheRestBackInAnyOrder')],
+  ['PutBackInAnyOrderBothTopAndBottom', uiT('ui.putTheRestBackTopOrBottom')],
+  ['DiscardRest', uiT('ui.discardTheRest')],
+  ['RemoveRestFromGame', uiT('ui.removeTheRestFromTheGame')],
+  ['DoNothing', uiT('ui.leaveTheRestAlone')],
 ]
 
 /* What becomes of what it DID find. Everything but the last is one of the
  * engine's own strategies, which handle the prompt themselves; the last hands
  * the result back to this card so its own steps can say. */
 const SEARCH_FOUND: [string, string][] = [
-  ['draw', 'draw it'],
-  ['drawUpTo', 'draw up to that many'],
-  ['drawAll', 'draw all of them'],
-  ['hand', 'add it to your hand'],
-  ['play', 'play it, paying its cost'],
-  ['playFree', 'play it without paying its cost'],
-  ['handOrPlay', 'add it to your hand or play it'],
-  ['drawOrCommit', 'draw it or commit it'],
-  ['removeFromGame', 'remove it from the game'],
-  ['return', 'nothing — just look'],
-  ['steps', 'whatever the steps below say'],
+  ['draw', uiT('ui.drawIt')],
+  ['drawUpTo', uiT('ui.drawUpToThatMany')],
+  ['drawAll', uiT('ui.drawAllOfThem')],
+  ['hand', uiT('ui.addItToYourHand')],
+  ['play', uiT('ui.playItPayingItsCost')],
+  ['playFree', uiT('ui.playItWithoutPayingItsCost')],
+  ['handOrPlay', uiT('ui.addItToYourHandOrPlayIt')],
+  ['drawOrCommit', uiT('ui.drawItOrCommitIt')],
+  ['removeFromGame', uiT('ui.removeItFromTheGame')],
+  ['return', uiT('ui.nothingJustLook')],
+  ['steps', uiT('ui.whateverTheStepsBelowSay')],
 ]
 
 /* Whether this search hands its result back to the card. Writing either branch
@@ -708,12 +710,12 @@ function bindsOf(
   return [
     ...after.map((b) => ({
       name: b.name,
-      scope: both.has(b.name) ? 'the steps inside and after' : 'later steps',
+      scope: both.has(b.name) ? uiT('ui.theStepsInsideAndAfter') : uiT('ui.laterSteps'),
       type: b.type,
     })),
     ...inside
       .filter((b) => !both.has(b.name))
-      .map((b) => ({ name: b.name, scope: 'the steps inside', type: b.type })),
+      .map((b) => ({ name: b.name, scope: uiT('ui.theStepsInside'), type: b.type })),
   ]
 }
 
@@ -842,7 +844,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
     <div v-for="(step, index) in steps" :key="index" :id="anchorFor(index)" class="step">
       <div class="step-head">
         <span class="step-kind">{{ KIND_LABELS[kindOf(step)] }}</span>
-        <button type="button" class="step-remove" title="Remove this step" @click="remove(index)">
+        <button type="button" class="step-remove" :title="$t('ui.removeThisStep')" @click="remove(index)">
           ×
         </button>
       </div>
@@ -851,12 +853,11 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-if="kindOf(step) === 'query'">
         <p class="hint">
-          A Let step can bind a query directly, which is how new ones are written.
-          This still works; there is nothing to fix here.
+          {{ $t('ui.aLetStepCanBindAQueryDirectlyWhich') }}
         </p>
         <div class="row">
           <label>
-            Kind
+            {{ $t('ui.kind') }}
             <select
               :value="step.query?.kind"
               @change="set(index, { ...step, query: { kind: ($event.target as HTMLSelectElement).value, matcher: null } })"
@@ -865,27 +866,27 @@ const optionTitle = (step: any, option: any, oi: number): string => {
             </select>
           </label>
           <label>
-            Bind to
+            {{ $t('ui.bindTo') }}
             <input
               :value="step.bind"
-              placeholder="enemies"
+              :placeholder="$t('ui.enemies')"
               @input="set(index, { ...step, bind: ($event.target as HTMLInputElement).value })"
               @keydown.stop
             />
           </label>
           <label>
-            Mode
+            {{ $t('ui.mode') }}
             <select :value="step.mode ?? 'all'" @change="set(index, { ...step, mode: ($event.target as HTMLSelectElement).value })">
-              <option value="all">all</option>
-              <option value="first">first</option>
-              <option value="count">count</option>
+              <option value="all">{{ $t('ui.all') }}</option>
+              <option value="first">{{ $t('ui.first') }}</option>
+              <option value="count">{{ $t('ui.queryCount') }}</option>
             </select>
           </label>
         </div>
         <ValueEditor
           :bindings="scopeFor(index)"
           :type="matcherType(step.query?.kind)"
-          label="Matcher"
+          :label="$t('ui.matcher')"
           :modelValue="step.query?.matcher"
           @update:modelValue="set(index, { ...step, query: { ...step.query, matcher: $event } })"
         />
@@ -893,17 +894,17 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'let'">
         <label>
-          Name
+          {{ $t('ui.name') }}
           <input
             :value="step.let"
-            placeholder="icons"
+            :placeholder="$t('ui.icons')"
             @input="set(index, { ...step, let: ($event.target as HTMLInputElement).value })"
             @keydown.stop
           />
         </label>
         <ExpressionEditor
           :queryKinds="queryKinds"
-          label="Expression"
+          :label="$t('ui.expression')"
           :bindings="scopeFor(index)"
           :modelValue="step.be"
           @update:modelValue="set(index, { ...step, be: $event })"
@@ -914,14 +915,13 @@ const optionTitle = (step: any, option: any, oi: number): string => {
       <template v-else-if="kindOf(step) === 'random'">
         <p class="summary">
           <template v-if="step.random?.from === undefined">
-            A fresh id, for the steps that have to name something before it exists — a skill test an
-            effect is scoped to, pushed before the test itself.
+            {{ $t('ui.aFreshIdForTheStepsThatHaveTo') }}
           </template>
-          <template v-else>One thing out of the list, picked at random.</template>
+          <template v-else>{{ $t('ui.oneThingOutOfTheListPickedAtRandom') }}</template>
         </p>
         <div class="row">
           <label>
-            Bind to
+            {{ $t('ui.bindTo') }}
             <input
               :value="step.random?.bind"
               placeholder="sid"
@@ -930,27 +930,26 @@ const optionTitle = (step: any, option: any, oi: number): string => {
             />
           </label>
           <label>
-            What
+            {{ $t('ui.what') }}
             <select
               :value="step.random?.from === undefined ? 'id' : 'from'"
               @change="setRandomKind(index, ($event.target as HTMLSelectElement).value)"
             >
-              <option value="id">a fresh id</option>
-              <option value="from">one of a list</option>
+              <option value="id">{{ $t('ui.aFreshId') }}</option>
+              <option value="from">{{ $t('ui.oneOfAList') }}</option>
             </select>
           </label>
         </div>
         <ExpressionEditor
           v-if="step.random?.from !== undefined"
           :queryKinds="queryKinds"
-          label="Out of"
+          :label="$t('ui.outOf')"
           :bindings="scopeFor(index)"
           :modelValue="step.random?.from"
           @update:modelValue="set(index, { ...step, random: { ...step.random, from: $event } })"
         />
         <p v-if="step.random?.from !== undefined" class="hint">
-          A matcher can be picked from directly — a Query with its mode set to random — so this is
-          for a list a step is already holding.
+          {{ $t('ui.aMatcherCanBePickedFromDirectlyAQuery') }}
         </p>
       </template>
 
@@ -958,13 +957,13 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           :bindings="scopeFor(index)"
         v-else-if="kindOf(step) === 'push'"
         type="Message"
-        label="Message"
+        :label="$t('ui.message')"
         :modelValue="step.push"
         @update:modelValue="set(index, { ...step, push: $event })"
       />
 
       <template v-else-if="kindOf(step) === 'if'">
-        <p class="hint">Takes the first branch when the condition holds.</p>
+        <p class="hint">{{ $t('ui.takesTheFirstBranchWhenTheConditionHolds') }}</p>
         <ConditionField
           :bindings="scopeFor(index)"
           :queryKinds="queryKinds"
@@ -975,7 +974,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
              indented under it rather than left as two labelled step lists that
              read as siblings of the matcher. -->
         <div class="branch">
-          <span class="branch-label">Then</span>
+          <span class="branch-label">{{ $t('ui.then') }}</span>
           <StepsEditor
             :slotSteps="slotSteps"
             :bindings="innerScope(index)"
@@ -987,7 +986,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           />
         </div>
         <div class="branch">
-          <span class="branch-label">Else</span>
+          <span class="branch-label">{{ $t('ui.else') }}</span>
           <StepsEditor
             :slotSteps="slotSteps"
             :bindings="innerScope(index)"
@@ -1002,15 +1001,15 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           v-if="elseIsEmpty(step)"
           type="button"
           class="convert"
-          title="Nothing happens otherwise, so the else has nothing to say"
+          :title="$t('ui.nothingHappensOtherwiseSoTheElseHasNothingTo')"
           @click="toWhen(index, step)"
         >
-          Make this a When
+          {{ $t('ui.makeThisAWhen') }}
         </button>
       </template>
 
       <template v-else-if="kindOf(step) === 'when'">
-        <p class="hint">Runs the steps below only when the condition holds.</p>
+        <p class="hint">{{ $t('ui.runsTheStepsBelowOnlyWhenTheConditionHolds') }}</p>
         <ConditionField
           :bindings="scopeFor(index)"
           :queryKinds="queryKinds"
@@ -1018,7 +1017,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           @update:modelValue="set(index, { ...step, when: $event })"
         />
         <div class="branch">
-          <span class="branch-label">Then</span>
+          <span class="branch-label">{{ $t('ui.then') }}</span>
           <StepsEditor
             :slotSteps="slotSteps"
             :bindings="innerScope(index)"
@@ -1033,27 +1032,27 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           <button
             type="button"
             class="convert"
-            title="Say what happens when it finds nothing"
+            :title="$t('ui.sayWhatHappensWhenItFindsNothing')"
             @click="toIf(index, step)"
           >
-            Make this an If
+            {{ $t('ui.makeThisAnIf') }}
           </button>
           <button
             type="button"
             class="convert"
-            title="Drop the condition and leave the steps where this block was"
+            :title="$t('ui.dropTheConditionAndLeaveTheStepsWhereThis')"
             @click="promote(index, step)"
           >
-            Drop the condition
+            {{ $t('ui.dropTheCondition') }}
           </button>
         </div>
       </template>
 
       <template v-else-if="kindOf(step) === 'case'">
-        <p class="hint">The first branch whose condition holds.</p>
+        <p class="hint">{{ $t('ui.theFirstBranchWhoseConditionHolds') }}</p>
         <div v-for="(b, bi) in branches(step)" :key="bi" class="option">
           <div class="row">
-            <span class="branch-label">Branch {{ bi + 1 }}</span>
+            <span class="branch-label">{{ $t('ui.branch') }} {{ bi + 1 }}</span>
             <button type="button" @click="set(index, { ...step, case: step.case.filter((_: any, i: number) => i !== bi) })">×</button>
           </div>
           <ConditionField
@@ -1073,10 +1072,10 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           />
         </div>
         <button type="button" class="add" @click="set(index, { ...step, case: [...(step.case ?? []), { if: { kind: 'enemy', matcher: null }, steps: [] }] })">
-          + Branch
+          {{ $t('ui.branch2') }}
         </button>
         <div class="branch">
-          <span class="branch-label">Else</span>
+          <span class="branch-label">{{ $t('ui.else') }}</span>
           <StepsEditor
             :slotSteps="slotSteps"
             :bindings="innerScope(index)"
@@ -1090,20 +1089,20 @@ const optionTitle = (step: any, option: any, oi: number): string => {
       </template>
 
       <template v-else-if="kindOf(step) === 'forEach'">
-        <p class="hint">Runs the steps once per thing found, with it bound below.</p>
+        <p class="hint">{{ $t('ui.runsTheStepsOncePerThingFoundWithIt') }}</p>
         <div class="row">
           <label>
-            Over
+            {{ $t('ui.over') }}
             <select
               :value="overSource(step.forEach)"
               @change="setSource(index, 'forEach', ($event.target as HTMLSelectElement).value)"
             >
-              <option value="query">what a matcher finds</option>
-              <option value="over">what is in a list</option>
+              <option value="query">{{ $t('ui.whatAMatcherFinds') }}</option>
+              <option value="over">{{ $t('ui.whatIsInAList') }}</option>
             </select>
           </label>
           <label v-if="overSource(step.forEach) === 'query'">
-            Kind
+            {{ $t('ui.kind') }}
             <select
               :value="step.forEach?.query?.kind"
               @change="set(index, { ...step, forEach: { ...step.forEach, query: { kind: ($event.target as HTMLSelectElement).value, matcher: null } } })"
@@ -1112,7 +1111,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
             </select>
           </label>
           <label>
-            Bind to
+            {{ $t('ui.bindTo') }}
             <input
               :value="step.forEach?.bind"
               @input="set(index, { ...step, forEach: { ...step.forEach, bind: ($event.target as HTMLInputElement).value } })"
@@ -1124,14 +1123,14 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           v-if="overSource(step.forEach) === 'query'"
           :bindings="scopeFor(index)"
           :type="matcherType(step.forEach?.query?.kind)"
-          label="Matcher"
+          :label="$t('ui.matcher')"
           :modelValue="step.forEach?.query?.matcher"
           @update:modelValue="set(index, { ...step, forEach: { ...step.forEach, query: { ...step.forEach.query, matcher: $event } } })"
         />
         <ExpressionEditor
           v-else
           :queryKinds="queryKinds"
-          label="The list"
+          :label="$t('ui.theList')"
           :bindings="scopeFor(index)"
           :modelValue="step.forEach?.over"
           @update:modelValue="set(index, { ...step, forEach: { ...step.forEach, over: $event } })"
@@ -1151,11 +1150,10 @@ const optionTitle = (step: any, option: any, oi: number): string => {
            because outside the block there may be no such thing to name. -->
       <template v-else-if="kindOf(step) === 'withSkillTest'">
         <p class="hint">
-          Runs the steps below only while a skill test is being resolved, with that test bound
-          for them. Nothing happens when there is no test.
+          {{ $t('ui.runsTheStepsBelowOnlyWhileASkillTest') }}
         </p>
         <label>
-          Bind to
+          {{ $t('ui.bindTo') }}
           <input
             :value="step.withSkillTest?.bind"
             placeholder="skillTestId"
@@ -1176,12 +1174,11 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'withLocationOf'">
         <p class="hint">
-          Runs the steps below where something is, with that location bound for them. Nothing
-          happens when it is nowhere.
+          {{ $t('ui.runsTheStepsBelowWhereSomethingIsWithThat') }}
         </p>
         <div class="row">
           <label>
-            Of what
+            {{ $t('ui.ofWhat') }}
             <select
               :value="step.withLocationOf?.kind ?? 'investigator'"
               @change="set(index, { ...step, withLocationOf: { ...step.withLocationOf, kind: ($event.target as HTMLSelectElement).value } })"
@@ -1190,7 +1187,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
             </select>
           </label>
           <label>
-            Bind to
+            {{ $t('ui.bindTo') }}
             <input
               :value="step.withLocationOf?.bind"
               placeholder="location"
@@ -1201,7 +1198,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
         </div>
         <ExpressionEditor
           :queryKinds="queryKinds"
-          label="Which one"
+          :label="$t('ui.whichOne')"
           :bindings="scopeFor(index)"
           :modelValue="step.withLocationOf?.of"
           @update:modelValue="set(index, { ...step, withLocationOf: { ...step.withLocationOf, of: $event } })"
@@ -1219,36 +1216,33 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'request'">
         <p class="hint">
-          Some messages are answered by another message a turn of the game later —
+          {{ $t('ui.someMessagesAreAnsweredByAnotherMessageATurn') }}
           <code>RequestChaosTokens_</code> by <code>RequestedChaosTokens_</code>,
-          <code>FindEncounterCard</code> by <code>FoundEncounterCard</code>. Every one of them
-          sends the answer back by source or target, which is this card, so the answer is handled
-          here beside the question rather than in a handler of its own.
+          <code>FindEncounterCard</code> by <code>FoundEncounterCard</code>{{ $t('ui.everyOneOfThemSendsTheAnswerBackBy') }}
         </p>
         <ValueEditor
           :bindings="scopeFor(index)"
           type="Message"
-          label="Ask"
+          :label="$t('ui.ask')"
           :modelValue="step.request?.push"
           @update:modelValue="set(index, { ...step, request: { ...step.request, push: $event } })"
         />
         <label>
-          Answered by
+          {{ $t('ui.answeredBy') }}
           <select
             :value="step.request?.on"
             @change="set(index, { ...step, request: { ...step.request, on: ($event.target as HTMLSelectElement).value } })"
           >
-            <option value="">—choose—</option>
+            <option value="">{{ $t('ui.choose2') }}</option>
             <option v-for="m in ANSWERS" :key="m" :value="m">{{ m }}</option>
           </select>
         </label>
         <p v-if="step.request?.on" class="hint">
-          Bound for the steps below: <code>$message</code>, and <code>$0</code>,
-          <code>$1</code>… for what the answer carries. Not what earlier steps in this run
-          bound — the answer is its own message.
+          {{ $t('ui.boundForTheStepsBelow') }} <code>$message</code>{{ $t('ui.and') }} <code>$0</code>,
+          <code>$1</code>{{ $t('ui.forWhatTheAnswerCarriesNotWhatEarlierSteps') }}
         </p>
         <div class="branch">
-          <span class="branch-label">With the answer</span>
+          <span class="branch-label">{{ $t('ui.withTheAnswer') }}</span>
           <StepsEditor
             :slotSteps="slotSteps"
             :bindings="innerScope(index)"
@@ -1263,16 +1257,12 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'search'">
         <p class="hint">
-          Searches a zone and says what happens to what it finds. Everything but the last
-          option under <em>What happens to what you find</em> is one of the engine's own
-          ways of resolving a search, prompt and all. Choosing <em>whatever the steps below
-          say</em> — or writing either branch — hands the result back to this card instead,
-          which is the only way to say anything else, and brings the
-          <em>found nothing</em> branch with it.
+          {{ $t('ui.searchesAZoneAndSaysWhatHappensToWhat') }} <em>{{ $t('ui.whatHappensToWhatYouFind') }}</em> {{ $t('ui.isOneOfTheEngineSOwnWaysOf') }} <em>{{ $t('ui.whateverTheStepsBelowSay') }}</em> {{ $t('ui.orWritingEitherBranchHandsTheResultBackTo') }}
+          <em>{{ $t('ui.foundNothing') }}</em> {{ $t('ui.branchWithIt') }}
         </p>
 
         <label>
-          How
+          {{ $t('ui.how') }}
           <select
             :value="step.search?.how ?? 'search'"
             @change="setSearch(index, step, { how: ($event.target as HTMLSelectElement).value })"
@@ -1282,7 +1272,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
         </label>
 
         <label>
-          Whose zones <span class="muted">(defaults to whoever used this)</span>
+          {{ $t('ui.whoseZones') }} <span class="muted">{{ $t('ui.defaultsToWhoeverUsedThis') }}</span>
           <input
             type="text"
             placeholder="$iid"
@@ -1292,7 +1282,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           />
         </label>
 
-        <h6>Where to look</h6>
+        <h6>{{ $t('ui.whereToLook') }}</h6>
         <div v-for="(zone, zi) in searchZones(step)" :key="zi" class="zone">
           <select
             :value="zone.zone"
@@ -1304,7 +1294,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
                location's shroud" has no number to write down. -->
           <ExpressionEditor
             v-if="ZONE_TAKES_DEPTH.includes(zone.zone)"
-            label="How many"
+            :label="$t('ui.howMany')"
             :bindings="scopeFor(index)"
             :modelValue="zone.amount ?? 1"
             @update:modelValue="setSearchZone(index, step, zi, { amount: $event })"
@@ -1320,12 +1310,12 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           </button>
         </div>
         <button type="button" class="add-zone" @click="addSearchZone(index, step)">
-          <font-awesome-icon icon="plus" /> another zone
+          <font-awesome-icon icon="plus" /> {{ $t('ui.anotherZone') }}
         </button>
 
         <ValueEditor
           optional
-          label="Only cards matching"
+          :label="$t('ui.onlyCardsMatching')"
           type="ExtendedCardMatcher"
           :bindings="scopeFor(index)"
           :modelValue="step.search?.matcher"
@@ -1333,7 +1323,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
         />
 
         <label>
-          What happens to what you find
+          {{ $t('ui.whatHappensToWhatYouFind') }}
           <select
             :value="step.search?.found ?? 'return'"
             @change="setSearch(index, step, { found: ($event.target as HTMLSelectElement).value })"
@@ -1344,7 +1334,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
         <ExpressionEditor
           v-if="SEARCH_COUNTED.includes(step.search?.found)"
-          label="How many"
+          :label="$t('ui.howMany')"
           :bindings="scopeFor(index)"
           :modelValue="step.search?.amount ?? 1"
           @update:modelValue="setSearch(index, step, { amount: $event })"
@@ -1356,12 +1346,12 @@ const optionTitle = (step: any, option: any, oi: number): string => {
             :checked="step.search?.asDraw === true"
             @change="setSearch(index, step, { asDraw: ($event.target as HTMLInputElement).checked || undefined })"
           />
-          Finding a card counts as drawing it
+          {{ $t('ui.findingACardCountsAsDrawingIt') }}
         </label>
 
         <template v-if="searchDefers(step)">
           <label>
-            Bind the card to
+            {{ $t('ui.bindTheCardTo') }}
             <input
               type="text"
               placeholder="card"
@@ -1371,14 +1361,14 @@ const optionTitle = (step: any, option: any, oi: number): string => {
             />
           </label>
           <p class="declares">
-            binds <code>${{ step.search?.bind || 'card' }}</code> :: Card and
-            <code>${{ step.search?.bind || 'card' }}s</code> :: [Card] for the
-            <em>found</em> steps
+            {{ $t('ui.binds') }} <code>${{ step.search?.bind || 'card' }}</code> {{ $t('ui.cardAnd') }}
+            <code>${{ step.search?.bind || 'card' }}s</code> {{ $t('ui.cardForThe') }}
+            <em>found</em> {{ $t('ui.steps') }}
           </p>
         </template>
 
         <div v-if="step.search?.onFound !== undefined" class="branch">
-          <span class="branch-label">When it finds something</span>
+          <span class="branch-label">{{ $t('ui.whenItFindsSomething') }}</span>
           <StepsEditor
             :slotSteps="slotSteps"
             :bindings="innerScope(index)"
@@ -1393,7 +1383,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
         <!-- The other branch, which the engine only ever takes for a deferred
              search: "If you cannot discard an event, shuffle this back in". -->
         <div v-if="step.search?.onNoneFound !== undefined" class="branch">
-          <span class="branch-label">When it finds nothing</span>
+          <span class="branch-label">{{ $t('ui.whenItFindsNothing') }}</span>
           <StepsEditor
             :slotSteps="slotSteps"
             :bindings="scopeFor(index)"
@@ -1407,23 +1397,21 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
         <div class="branch-toggles">
           <button type="button" @click="toggleSearchBranch(index, step, 'onFound')">
-            {{ step.search?.onFound === undefined ? '+ found something' : '− found something' }}
+            {{ step.search?.onFound === undefined ? $t('ui.foundSomething') : $t('ui.foundSomething2') }}
           </button>
           <button type="button" @click="toggleSearchBranch(index, step, 'onNoneFound')">
-            {{ step.search?.onNoneFound === undefined ? '+ found nothing' : '− found nothing' }}
+            {{ step.search?.onNoneFound === undefined ? $t('ui.foundNothing2') : $t('ui.foundNothing3') }}
           </button>
         </div>
       </template>
 
       <template v-else-if="kindOf(step) === 'distribute'">
         <p class="hint">
-          Asks once, splitting a total between investigators, and runs the steps below on each
-          share. The answer comes back as its own message, so those steps see the card's own
-          bindings and the two this block makes — not what earlier steps in this run bound.
+          {{ $t('ui.asksOnceSplittingATotalBetweenInvestigatorsAndRuns') }}
         </p>
         <ExpressionEditor
           :queryKinds="queryKinds"
-          label="Total to split"
+          :label="$t('ui.totalToSplit')"
           expect="Int"
           :bindings="scopeFor(index)"
           :modelValue="step.distribute?.total"
@@ -1432,41 +1420,41 @@ const optionTitle = (step: any, option: any, oi: number): string => {
         <ValueEditor
           :bindings="scopeFor(index)"
           type="InvestigatorMatcher"
-          label="Among"
+          :label="$t('ui.among')"
           :modelValue="step.distribute?.among?.matcher"
           @update:modelValue="set(index, { ...step, distribute: { ...step.distribute, among: { kind: 'investigator', matcher: $event } } })"
         />
         <div class="row">
           <label>
-            Prompt
+            {{ $t('ui.prompt') }}
             <input
               :value="step.distribute?.label"
-              placeholder="How many each"
+              :placeholder="$t('ui.howManyEach')"
               @input="set(index, { ...step, distribute: { ...step.distribute, label: ($event.target as HTMLInputElement).value } })"
               @keydown.stop
             />
           </label>
           <label>
-            Bind the investigator to
+            {{ $t('ui.bindTheInvestigatorTo') }}
             <input
               :value="step.distribute?.bind"
-              placeholder="who"
+              :placeholder="$t('ui.who')"
               @input="set(index, { ...step, distribute: { ...step.distribute, bind: ($event.target as HTMLInputElement).value } })"
               @keydown.stop
             />
           </label>
           <label>
-            Bind their share to
+            {{ $t('ui.bindShareTo') }}
             <input
               :value="step.distribute?.amount"
-              placeholder="amount"
+              :placeholder="$t('ui.amount2')"
               @input="set(index, { ...step, distribute: { ...step.distribute, amount: ($event.target as HTMLInputElement).value } })"
               @keydown.stop
             />
           </label>
         </div>
         <div class="branch">
-          <span class="branch-label">For each share</span>
+          <span class="branch-label">{{ $t('ui.forEachShare') }}</span>
           <StepsEditor
             :slotSteps="slotSteps"
             :bindings="innerScope(index)"
@@ -1481,28 +1469,27 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'repeat'">
         <p class="hint">
-          Runs the steps below over and over. "A total of 8 resources, distributed as you wish"
-          is eight passes of choosing who gets one, which is how the engine plays it.
+          {{ $t('ui.runsTheStepsBelowOverAndOverATotal') }}
         </p>
         <!-- The two readings of "repeat": all of it now, or a pass at a time
              when something asks. The second is a name, because the steps that
              ask for a pass have to say which repeat they mean. -->
         <div class="row">
           <label>
-            Runs
+            {{ $t('ui.runs') }}
             <select
               :value="step.repeat?.as ? 'called' : 'now'"
               @change="setRepeatMode(index, step, ($event.target as HTMLSelectElement).value)"
             >
-              <option value="now">every pass, one after another</option>
-              <option value="called">one pass each time it is called</option>
+              <option value="now">{{ $t('ui.everyPassOneAfterAnother') }}</option>
+              <option value="called">{{ $t('ui.onePassEachTimeItIsCalled') }}</option>
             </select>
           </label>
           <label v-if="step.repeat?.as !== undefined">
-            Called as
+            {{ $t('ui.calledAs') }}
             <input
               :value="step.repeat?.as"
-              placeholder="again"
+              :placeholder="$t('ui.again')"
               @input="set(index, { ...step, repeat: { ...step.repeat, as: ($event.target as HTMLInputElement).value } })"
               @keydown.stop
             />
@@ -1510,14 +1497,14 @@ const optionTitle = (step: any, option: any, oi: number): string => {
         </div>
         <ExpressionEditor
           :queryKinds="queryKinds"
-          :label="step.repeat?.as ? 'How many passes at most' : 'How many times'"
+          :label="step.repeat?.as ? $t('ui.howManyPassesAtMost') : $t('ui.howManyTimes')"
           expect="Int"
           :bindings="scopeFor(index)"
           :modelValue="step.repeat?.times"
           @update:modelValue="set(index, { ...step, repeat: { ...step.repeat, times: $event } })"
         />
         <label>
-          Bind the pass number to
+          {{ $t('ui.bindThePassNumberTo') }}
           <input
             :value="step.repeat?.bind"
             placeholder="i"
@@ -1538,31 +1525,29 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'call'">
         <label>
-          Another pass of
+          {{ $t('ui.anotherPassOf') }}
           <select
             :value="typeof step.call === 'string' ? step.call : ''"
             @change="set(index, { call: ($event.target as HTMLSelectElement).value })"
           >
-            <option value="">— choose a repeat —</option>
+            <option value="">{{ $t('ui.chooseARepeat') }}</option>
             <option v-for="loop in repeatsInScope(index)" :key="loop.name" :value="`$${loop.name}`">
               ${{ loop.name }}
             </option>
           </select>
         </label>
         <p v-if="!repeatsInScope(index).length" class="hint">
-          No repeat in scope is called by name. Set one to run a pass at a time and it appears here.
+          {{ $t('ui.noRepeatInScopeIsCalledByNameSet') }}
         </p>
       </template>
 
       <template v-else-if="kindOf(step) === 'modify'">
         <p class="hint">
-          The source is this card and the modifiers carry no card of their own, so only what is
-          modified, for how long, and with what are asked for. Left alone, the window is the
-          skill test being resolved — what "+2 for this test" means.
+          {{ $t('ui.theSourceIsThisCardAndTheModifiersCarry') }}
         </p>
         <ValueEditor
           type="Target"
-          label="What is modified"
+          :label="$t('ui.whatIsModified')"
           :bindings="scopeFor(index)"
           :modelValue="step.modify?.target"
           @update:modelValue="set(index, { ...step, modify: { ...step.modify, target: $event } })"
@@ -1570,14 +1555,14 @@ const optionTitle = (step: any, option: any, oi: number): string => {
         <ValueEditor
           optional
           type="EffectWindow"
-          label="For how long (defaults to this skill test)"
+          :label="$t('ui.forHowLongDefaultsToThisSkillTest')"
           :bindings="scopeFor(index)"
           :modelValue="step.modify?.window"
           @update:modelValue="set(index, { ...step, modify: { ...step.modify, window: $event } })"
         />
         <ValueEditor
           type="[ModifierType]"
-          label="Modifiers"
+          :label="$t('ui.modifiers')"
           :bindings="scopeFor(index)"
           :modelValue="step.modify?.modifiers"
           @update:modelValue="set(index, { ...step, modify: { ...step.modify, modifiers: $event } })"
@@ -1586,9 +1571,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'choose'">
         <p class="hint">
-          Named options, each with steps of its own. An option can instead stand for one option per
-          thing a matcher finds, bound for that option's steps — which is what lets a single prompt
-          span several kinds of thing, where a Choose from can only span one.
+          {{ $t('ui.namedOptionsEachWithStepsOfItsOwnAn') }}
         </p>
         <!-- One tab per option, named for what the option says. The panel below
              is the one option being written, so where it begins and ends is the
@@ -1609,12 +1592,12 @@ const optionTitle = (step: any, option: any, oi: number): string => {
               <span class="tab-name">{{ optionTitle(step, option, oi) }}</span>
               <span
                 class="tab-remove"
-                title="Remove this option"
+                :title="$t('ui.removeThisOption')"
                 @click.stop="removeOption(step, oi, index)"
                 >&times;</span
               >
             </button>
-            <button type="button" class="tab add-tab" title="Add an option" @click="addAndShowOption(step, index)">
+            <button type="button" class="tab add-tab" :title="$t('ui.addAnOption')" @click="addAndShowOption(step, index)">
               +
             </button>
           </div>
@@ -1626,24 +1609,24 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           >
             <div class="row">
               <label>
-                This option is
+                {{ $t('ui.thisOptionIs') }}
                 <select
                   :value="option.query ? 'query' : 'one'"
                   @change="setOptionSource(step, oi, index, ($event.target as HTMLSelectElement).value)"
                 >
-                  <option value="one">one named option</option>
-                  <option value="query">one per thing a matcher finds</option>
+                  <option value="one">{{ $t('ui.oneNamedOption') }}</option>
+                  <option value="query">{{ $t('ui.onePerThingAMatcherFinds') }}</option>
                 </select>
               </label>
               <LabelField
                 v-if="!option.query"
-                label="Option label"
+                :label="$t('ui.optionLabel')"
                 :bindings="optionScope(index, option, oi)"
                 :modelValue="option.label"
                 @update:modelValue="setOption(step, oi, { ...option, label: $event }, index)"
               />
               <label v-if="option.query">
-                Kind
+                {{ $t('ui.kind') }}
                 <select
                   :value="option.query?.kind"
                   @change="setOption(step, oi, { ...option, query: { kind: ($event.target as HTMLSelectElement).value, matcher: null } }, index)"
@@ -1652,7 +1635,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
                 </select>
               </label>
               <label v-if="option.query">
-                Bind to
+                {{ $t('ui.bindTo') }}
                 <input
                   :value="option.bind"
                   placeholder="chosen"
@@ -1666,7 +1649,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
               v-if="option.query"
               :bindings="innerScope(index)"
               :type="matcherType(option.query?.kind)"
-              label="Matcher"
+              :label="$t('ui.matcher')"
               :modelValue="option.query?.matcher"
               @update:modelValue="setOption(step, oi, { ...option, query: { ...option.query, matcher: $event } }, index)"
             />
@@ -1676,7 +1659,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
             <ValueEditor
               optional
               type="Criterion"
-              label="Only offered when (optional)"
+              :label="$t('ui.onlyOfferedWhenOptional')"
               :bindings="innerScope(index)"
               :modelValue="option.criteria?.criteria ?? (option.criteria?.tag ? option.criteria : undefined)"
               @update:modelValue="setOption(step, oi, { ...option, criteria: $event ? { criteria: $event } : undefined }, index)"
@@ -1686,14 +1669,14 @@ const optionTitle = (step: any, option: any, oi: number): string => {
                  found, and that thing is what its steps are written against. -->
             <div v-if="optionBinding(index, option, oi)" class="step-foot">
               <span class="binds">
-                <span class="binds-label">binds</span>
+                <span class="binds-label">{{ $t('ui.binds') }}</span>
                 <code class="binds-name"
                   >${{ optionBinding(index, option, oi)!.name
                   }}<span v-if="optionBinding(index, option, oi)!.type" class="binds-type">
                     :: {{ optionBinding(index, option, oi)!.type }}</span
                   ></code
                 >
-                <span class="binds-scope">for this option's steps</span>
+                <span class="binds-scope">{{ $t('ui.forThisOptionSSteps') }}</span>
               </span>
             </div>
             <StepsEditor
@@ -1710,19 +1693,16 @@ const optionTitle = (step: any, option: any, oi: number): string => {
       </template>
 
       <p v-else-if="kindOf(step) === 'cancelBatch'" class="hint">
-        Stops the thing this ability is reacting to, for effects that say "instead". Only works
-        in a <code>would</code> window, which is what carries the batch to cancel — and only
-        cancels what that batch holds, so anything else the card means to do it must push itself.
+        {{ $t('ui.stopsTheThingThisAbilityIsReactingToFor') }} <code>{{ $t('ui.would') }}</code> {{ $t('ui.windowWhichIsWhatCarriesTheBatchToCancel') }}
       </p>
 
       <template v-else-if="kindOf(step) === 'useAbility'">
         <p class="hint">
-          Resolves one of this card's own abilities, offered the way using it normally would be
-          so its cost is paid. Abilities are numbered from 1, in the order they are written.
+          {{ $t('ui.resolvesOneOfThisCardSOwnAbilitiesOffered') }}
         </p>
         <div class="row">
           <label>
-            Ability
+            {{ $t('ui.ability') }}
             <input
               type="number"
               min="1"
@@ -1736,14 +1716,14 @@ const optionTitle = (step: any, option: any, oi: number): string => {
              line with the toggle that decides that. -->
         <div class="row">
           <BoolField
-            label="may decline"
+            :label="$t('ui.mayDecline')"
             :modelValue="!!step.useAbility?.optional"
             @update:modelValue="set(index, { ...step, useAbility: { ...step.useAbility, optional: $event } })"
           />
           <LabelField
             v-if="step.useAbility?.optional"
-            label="Decline label"
-            placeholder="Do not"
+            :label="$t('ui.declineLabel')"
+            :placeholder="$t('ui.doNot')"
             :bindings="scopeFor(index)"
             :modelValue="step.useAbility?.declineLabel"
             @update:modelValue="set(index, { ...step, useAbility: { ...step.useAbility, declineLabel: $event } })"
@@ -1751,7 +1731,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
         </div>
         <div class="row">
           <BoolField
-            label="ignore its limit"
+            :label="$t('ui.ignoreItsLimit')"
             :modelValue="!!step.useAbility?.ignoreLimit"
             @update:modelValue="set(index, { ...step, useAbility: { ...step.useAbility, ignoreLimit: $event } })"
           />
@@ -1760,14 +1740,11 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'playCard'">
         <p class="hint">
-          Offers the cards you could play, paying the cost, each shown as the card itself. A
-          discount is worked out before the choice, since a card is only playable if you can
-          afford it. Naming a card plays that one instead of offering a choice; free skips
-          payment entirely, for "without paying its cost".
+          {{ $t('ui.offersTheCardsYouCouldPlayPayingTheCost') }}
         </p>
         <div class="row">
           <label>
-            Played by <span class="muted">(defaults to whoever is resolving this)</span>
+            {{ $t('ui.playedBy') }} <span class="muted">{{ $t('ui.defaultsToWhoeverIsResolvingThis') }}</span>
             <input
               :value="step.playCard?.iid"
               placeholder="$iid"
@@ -1776,7 +1753,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
             />
           </label>
           <label>
-            This card (optional)
+            {{ $t('ui.thisCardOptional') }}
             <input
               :value="step.playCard?.card"
               placeholder="$card"
@@ -1785,21 +1762,21 @@ const optionTitle = (step: any, option: any, oi: number): string => {
             />
           </label>
           <BoolField
-            label="without paying its cost"
+            :label="$t('ui.withoutPayingItsCost')"
             :modelValue="!!step.playCard?.free"
             @update:modelValue="set(index, { ...step, playCard: { ...step.playCard, free: $event } })"
           />
         </div>
         <div class="row">
           <BoolField
-            label="may decline"
+            :label="$t('ui.mayDecline')"
             :modelValue="!!step.playCard?.optional"
             @update:modelValue="set(index, { ...step, playCard: { ...step.playCard, optional: $event } })"
           />
           <LabelField
             v-if="step.playCard?.optional"
-            label="Decline label"
-            placeholder="Do not"
+            :label="$t('ui.declineLabel')"
+            :placeholder="$t('ui.doNot')"
             :bindings="scopeFor(index)"
             :modelValue="step.playCard?.declineLabel"
             @update:modelValue="set(index, { ...step, playCard: { ...step.playCard, declineLabel: $event } })"
@@ -1808,14 +1785,14 @@ const optionTitle = (step: any, option: any, oi: number): string => {
         <ValueEditor
           :bindings="scopeFor(index)"
           type="CardMatcher"
-          label="Which cards"
+          :label="$t('ui.whichCards')"
           :modelValue="step.playCard?.matcher"
           @update:modelValue="set(index, { ...step, playCard: { ...step.playCard, matcher: $event } })"
         />
         <ExpressionEditor
           :queryKinds="queryKinds"
           :bindings="scopeFor(index)"
-          label="Discount"
+          :label="$t('ui.discount')"
           expect="Int"
           :modelValue="step.playCard?.discount ?? 0"
           @update:modelValue="set(index, { ...step, playCard: { ...step.playCard, discount: $event } })"
@@ -1824,7 +1801,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           optional
           :bindings="scopeFor(index)"
           type="Criterion"
-          label="Discount only when (optional)"
+          :label="$t('ui.discountOnlyWhenOptional')"
           :modelValue="step.playCard?.discountIf?.criteria"
           @update:modelValue="set(index, { ...step, playCard: { ...step.playCard, discountIf: $event ? { criteria: $event } : undefined } })"
         />
@@ -1832,29 +1809,27 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'fight'">
         <p class="hint">
-          Fight an enemy. Whether the card itself is a fight action comes from its Actions, not
-          from here — this is the attack it makes.
+          {{ $t('ui.fightAnEnemyWhetherTheCardItselfIsA') }}
         </p>
         <BoolField
-          label="a basic fight action instead"
+          :label="$t('ui.aBasicFightActionInstead')"
           :modelValue="!!step.fight?.basic"
           @update:modelValue="set(index, { ...step, fight: { ...step.fight, basic: $event } })"
         />
         <p v-if="step.fight?.basic" class="hint">
-          The enemy's own attack ability, granted so it costs no action. No card can be a basic
-          fight action, so modifiers "for this attack" have nowhere to go here.
+          {{ $t('ui.theEnemySOwnAttackAbilityGrantedSoIt') }}
         </p>
         <ValueEditor
           optional
           :bindings="scopeFor(index)"
           type="EnemyMatcher"
-          label="Which enemies (optional)"
+          :label="$t('ui.whichEnemiesOptional')"
           :modelValue="step.fight?.matcher"
           @update:modelValue="set(index, { ...step, fight: { ...step.fight, matcher: $event } })"
         />
         <BoolField
           v-if="!step.fight?.basic"
-          label="ignore the aloof keyword for this attack"
+          :label="$t('ui.ignoreTheAloofKeywordForThisAttack')"
           :modelValue="!!step.fight?.ignoreAloof"
           @update:modelValue="set(index, { ...step, fight: { ...step.fight, ignoreAloof: $event } })"
         />
@@ -1862,7 +1837,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           :bindings="scopeFor(index)"
           v-if="!step.fight?.basic"
           type="[ModifierType]"
-          label="For this attack"
+          :label="$t('ui.forThisAttack')"
           :modelValue="step.fight?.modifiers"
           @update:modelValue="set(index, { ...step, fight: { ...step.fight, modifiers: $event } })"
         />
@@ -1871,41 +1846,38 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'investigate'">
         <p class="summary">
-          Investigate, the way the action does. The test it starts is
-          <code>$sid</code>, so a modifier "for this investigation" goes in the box below or is
-          pushed against that.
+          {{ $t('ui.investigateTheWayTheActionDoesTheTestIt') }}
+          <code>$sid</code>{{ $t('ui.soAModifierForThisInvestigationGoesInThe') }}
         </p>
         <div class="row">
           <label>
-            Using
+            {{ $t('ui.using') }}
             <select
               :value="step.investigate?.skill ?? ''"
               @change="set(index, { ...step, investigate: { ...step.investigate, skill: ($event.target as HTMLSelectElement).value || undefined } })"
             >
-              <option value="">the location's own skill</option>
+              <option value="">{{ $t('ui.theLocationSOwnSkill') }}</option>
               <option v-for="sk in SKILLS" :key="sk" :value="sk">{{ sk.replace('Skill', '') }}</option>
             </select>
           </label>
           <label v-if="step.investigate?.skill">
-            instead of
+            {{ $t('ui.insteadOf') }}
             <select
               :value="step.investigate?.insteadOf ?? ''"
               @change="set(index, { ...step, investigate: { ...step.investigate, insteadOf: ($event.target as HTMLSelectElement).value || undefined } })"
             >
-              <option value="">— always use it —</option>
+              <option value="">{{ $t('ui.alwaysUseIt') }}</option>
               <option v-for="sk in SKILLS" :key="sk" :value="sk">{{ sk.replace('Skill', '') }}</option>
             </select>
           </label>
         </div>
         <p v-if="step.investigate?.skill && step.investigate?.insteadOf" class="hint">
-          Swaps only when the test would have used that skill, and can be declined by anything
-          that ignores the substitution — the difference between "uses willpower" and "uses
-          willpower instead of intellect".
+          {{ $t('ui.swapsOnlyWhenTheTestWouldHaveUsedThat') }}
         </p>
         <ValueEditor
           :bindings="scopeFor(index)"
           type="[ModifierType]"
-          label="For this investigation"
+          :label="$t('ui.forThisInvestigation')"
           :modelValue="step.investigate?.modifiers"
           @update:modelValue="set(index, { ...step, investigate: { ...step.investigate, modifiers: $event } })"
         />
@@ -1913,25 +1885,25 @@ const optionTitle = (step: any, option: any, oi: number): string => {
       </template>
 
       <template v-else-if="kindOf(step) === 'evade'">
-        <p class="summary">Evade an enemy. The test it starts is <code>$sid</code>.</p>
+        <p class="summary">{{ $t('ui.evadeAnEnemyTheTestItStartsIs') }} <code>$sid</code>.</p>
         <div class="row">
           <label>
-            Using
+            {{ $t('ui.using') }}
             <select
               :value="step.evade?.skill ?? ''"
               @change="set(index, { ...step, evade: { ...step.evade, skill: ($event.target as HTMLSelectElement).value || undefined } })"
             >
-              <option value="">the enemy's own skill</option>
+              <option value="">{{ $t('ui.theEnemySOwnSkill') }}</option>
               <option v-for="sk in SKILLS" :key="sk" :value="sk">{{ sk.replace('Skill', '') }}</option>
             </select>
           </label>
           <label v-if="step.evade?.skill">
-            instead of
+            {{ $t('ui.insteadOf') }}
             <select
               :value="step.evade?.insteadOf ?? ''"
               @change="set(index, { ...step, evade: { ...step.evade, insteadOf: ($event.target as HTMLSelectElement).value || undefined } })"
             >
-              <option value="">— always use it —</option>
+              <option value="">{{ $t('ui.alwaysUseIt') }}</option>
               <option v-for="sk in SKILLS" :key="sk" :value="sk">{{ sk.replace('Skill', '') }}</option>
             </select>
           </label>
@@ -1940,14 +1912,14 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           optional
           :bindings="scopeFor(index)"
           type="EnemyMatcher"
-          label="Which enemies (optional)"
+          :label="$t('ui.whichEnemiesOptional')"
           :modelValue="step.evade?.matcher"
           @update:modelValue="set(index, { ...step, evade: { ...step.evade, matcher: $event } })"
         />
         <ValueEditor
           :bindings="scopeFor(index)"
           type="[ModifierType]"
-          label="For this evasion"
+          :label="$t('ui.forThisEvasion')"
           :modelValue="step.evade?.modifiers"
           @update:modelValue="set(index, { ...step, evade: { ...step.evade, modifiers: $event } })"
         />
@@ -1956,18 +1928,17 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'parley'">
         <p class="summary">
-          Parley against something. Unlike the others there is no action to derive the test from,
-          so the target, skill and difficulty are all named here. The test is <code>$sid</code>.
+          {{ $t('ui.parleyAgainstSomethingUnlikeTheOthersThereIsNo') }} <code>$sid</code>.
         </p>
         <ValueEditor
           :bindings="scopeFor(index)"
           type="Target"
-          label="Against"
+          :label="$t('ui.against')"
           :modelValue="step.parley?.target"
           @update:modelValue="set(index, { ...step, parley: { ...step.parley, target: $event } })"
         />
         <label>
-          Using
+          {{ $t('ui.using') }}
           <select
             :value="step.parley?.skill ?? 'SkillWillpower'"
             @change="set(index, { ...step, parley: { ...step.parley, skill: ($event.target as HTMLSelectElement).value } })"
@@ -1978,14 +1949,14 @@ const optionTitle = (step: any, option: any, oi: number): string => {
         <ValueEditor
           :bindings="scopeFor(index)"
           type="GameCalculation"
-          label="Difficulty"
+          :label="$t('ui.difficulty')"
           :modelValue="step.parley?.difficulty"
           @update:modelValue="set(index, { ...step, parley: { ...step.parley, difficulty: $event } })"
         />
         <ValueEditor
           :bindings="scopeFor(index)"
           type="[ModifierType]"
-          label="For this parley"
+          :label="$t('ui.forThisParley')"
           :modelValue="step.parley?.modifiers"
           @update:modelValue="set(index, { ...step, parley: { ...step.parley, modifiers: $event } })"
         />
@@ -1994,13 +1965,11 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'test'">
         <p class="summary">
-          A plain skill test the card names itself. The test it starts is <code>$sid</code>, and
-          what its result does goes in the boxes below — no handler, and no ability index to keep
-          in step with.
+          {{ $t('ui.aPlainSkillTestTheCardNamesItselfThe') }} <code>$sid</code>{{ $t('ui.andWhatItsResultDoesGoesInTheBoxes') }}
         </p>
         <div class="row">
           <label>
-            Using
+            {{ $t('ui.using') }}
             <select
               :value="step.test?.skill ?? 'SkillWillpower'"
               @change="set(index, { ...step, test: { ...step.test, skill: ($event.target as HTMLSelectElement).value } })"
@@ -2014,20 +1983,20 @@ const optionTitle = (step: any, option: any, oi: number): string => {
              out once, when the test begins, and can do arithmetic over bindings. -->
         <div class="row">
           <label>
-            Difficulty
+            {{ $t('ui.difficulty') }}
             <select
               :value="calculatedDifficulty(step.test?.difficulty) ? 'calculation' : 'expression'"
               @change="setDifficultyKind(index, ($event.target as HTMLSelectElement).value)"
             >
-              <option value="expression">a number the card works out</option>
-              <option value="calculation">something the engine counts</option>
+              <option value="expression">{{ $t('ui.aNumberTheCardWorksOut') }}</option>
+              <option value="calculation">{{ $t('ui.somethingTheEngineCounts') }}</option>
             </select>
           </label>
         </div>
         <ExpressionEditor
           v-if="!calculatedDifficulty(step.test?.difficulty)"
           :queryKinds="queryKinds"
-          label="Difficulty"
+          :label="$t('ui.difficulty')"
           expect="Int"
           :bindings="scopeFor(index)"
           :modelValue="step.test?.difficulty ?? 0"
@@ -2037,7 +2006,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           v-else
           :bindings="scopeFor(index)"
           type="GameCalculation"
-          label="Difficulty"
+          :label="$t('ui.difficulty')"
           :modelValue="step.test?.difficulty"
           @update:modelValue="set(index, { ...step, test: { ...step.test, difficulty: $event } })"
         />
@@ -2045,14 +2014,14 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           optional
           :bindings="scopeFor(index)"
           type="Target"
-          label="About what (optional — you by default)"
+          :label="$t('ui.aboutWhatOptionalYouByDefault')"
           :modelValue="step.test?.target"
           @update:modelValue="set(index, { ...step, test: { ...step.test, target: $event } })"
         />
         <ValueEditor
           :bindings="scopeFor(index)"
           type="[ModifierType]"
-          label="For this test"
+          :label="$t('ui.forThisTest')"
           :modelValue="step.test?.modifiers"
           @update:modelValue="set(index, { ...step, test: { ...step.test, modifiers: $event } })"
         />
@@ -2060,17 +2029,16 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'attack'">
         <p class="summary">
-          <template v-if="step.attack?.target">This card attacks the chosen target.</template>
+          <template v-if="step.attack?.target">{{ $t('ui.thisCardAttacksTheChosenTarget') }}</template>
           <template v-else>
-            This card attacks whoever triggered the ability — "it makes an immediate attack
-            against you".
+            {{ $t('ui.thisCardAttacksWhoeverTriggeredTheAbilityItMakes') }}
           </template>
         </p>
         <ValueEditor
           optional
           :bindings="scopeFor(index)"
           type="Target"
-          label="Attack someone else instead (optional)"
+          :label="$t('ui.attackSomeoneElseInsteadOptional')"
           :modelValue="step.attack?.target"
           @update:modelValue="set(index, { ...step, attack: { ...step.attack, target: $event } })"
         />
@@ -2078,14 +2046,14 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'ready'">
         <p class="summary">
-          <template v-if="step.ready?.target">Readies the chosen card.</template>
-          <template v-else>Readies this card.</template>
+          <template v-if="step.ready?.target">{{ $t('ui.readiesTheChosenCard') }}</template>
+          <template v-else>{{ $t('ui.readiesThisCard') }}</template>
         </p>
         <ValueEditor
           optional
           :bindings="scopeFor(index)"
           type="Target"
-          label="Ready something else instead (optional)"
+          :label="$t('ui.readySomethingElseInsteadOptional')"
           :modelValue="step.ready?.target"
           @update:modelValue="set(index, { ...step, ready: { ...step.ready, target: $event } })"
         />
@@ -2093,26 +2061,24 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'discardCard'">
         <p class="summary">
-          Discards the card. A card in hand goes to your discard pile; a card in play is discarded
-          as the entity it is, so the asset leaves the table rather than being left behind.
+          {{ $t('ui.discardsTheCardACardInHandGoesTo') }}
         </p>
         <ExpressionEditor
           :queryKinds="queryKinds"
-          label="Which card"
+          :label="$t('ui.whichCard')"
           expect="Card"
           :bindings="scopeFor(index)"
           :modelValue="step.discardCard?.card"
           @update:modelValue="set(index, { ...step, discardCard: { card: $event } })"
         />
         <p class="hint">
-          Or name the entity outright, which is what "discard that asset" means when you have its
-          id rather than its card.
+          {{ $t('ui.orNameTheEntityOutrightWhichIsWhatDiscard') }}
         </p>
         <ValueEditor
           optional
           :bindings="scopeFor(index)"
           type="Target"
-          label="The entity instead (optional)"
+          :label="$t('ui.theEntityInsteadOptional')"
           :modelValue="step.discardCard?.target"
           @update:modelValue="set(index, { ...step, discardCard: { target: $event } })"
         />
@@ -2120,12 +2086,11 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'record'">
         <p class="summary">
-          The campaign log keeps three different things under a key — whether it happened, a number,
-          and a list of entries. Say which of those is being written and the rest follows.
+          {{ $t('ui.theCampaignLogKeepsThreeDifferentThingsUnderA') }}
         </p>
         <div class="row">
           <label v-if="recordKeyIsHomebrew(step)">
-            Key
+            {{ $t('ui.key') }}
             <input
               :value="recordKeyName(step)"
               placeholder="TraitsLearned"
@@ -2134,7 +2099,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
             />
           </label>
           <label>
-            Record
+            {{ $t('ui.record') }}
             <select
               :value="recordMode(step)"
               @change="setRecord(index, { mode: ($event.target as HTMLSelectElement).value })"
@@ -2147,7 +2112,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           v-if="!recordKeyIsHomebrew(step)"
           :bindings="scopeFor(index)"
           type="CampaignLogKey"
-          label="Key"
+          :label="$t('ui.key')"
           :modelValue="step.record?.key"
           @update:modelValue="setRecord(index, { key: $event })"
         />
@@ -2155,7 +2120,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
         <ExpressionEditor
           v-if="recordTakesAmount(step)"
           :queryKinds="queryKinds"
-          label="How much"
+          :label="$t('ui.howMuch')"
           expect="Int"
           :bindings="scopeFor(index)"
           :modelValue="step.record?.amount ?? 1"
@@ -2164,52 +2129,50 @@ const optionTitle = (step: any, option: any, oi: number): string => {
         <template v-if="recordTakesValues(step)">
           <ExpressionEditor
             :queryKinds="queryKinds"
-            label="What to record"
+            :label="$t('ui.whatToRecord')"
             :bindings="scopeFor(index)"
             :modelValue="step.record?.values"
             @update:modelValue="setRecord(index, { values: $event })"
           />
           <div class="row">
             <label>
-              Each one is
+              {{ $t('ui.eachOneIs') }}
               <select
                 :value="step.record?.kind ?? 'value'"
                 @change="setRecord(index, { kind: ($event.target as HTMLSelectElement).value })"
               >
-                <option value="value">a value — a trait, a name, a number</option>
-                <option value="cardCode">a card</option>
+                <option value="value">{{ $t('ui.aValueATraitANameANumber') }}</option>
+                <option value="cardCode">{{ $t('ui.aCard') }}</option>
               </select>
             </label>
           </div>
           <p class="hint">
-            A list records every entry in it, one each. Recording a card rather than a plain value is
-            what lets the log print its name and hand it back as a card.
+            {{ $t('ui.aListRecordsEveryEntryInItOneEach') }}
           </p>
         </template>
       </template>
 
       <template v-else-if="kindOf(step) === 'takeAction'">
-        <p class="summary">Take one immediate action as if it were your turn.</p>
+        <p class="summary">{{ $t('ui.takeOneImmediateActionAsIfItWereYour') }}</p>
       </template>
 
       <template v-else-if="kindOf(step) === 'draw'">
         <ExpressionEditor
           :queryKinds="queryKinds"
-          label="How many"
+          :label="$t('ui.howMany')"
           expect="Int"
           :bindings="scopeFor(index)"
           :modelValue="step.draw?.amount ?? 1"
           @update:modelValue="set(index, { ...step, draw: { ...step.draw, amount: $event } })"
         />
-        <p class="hint">Nothing is drawn when this works out to zero or less.</p>
+        <p class="hint">{{ $t('ui.nothingIsDrawnWhenThisWorksOutToZero') }}</p>
       </template>
 
       <template v-else-if="kindOf(step) === 'gather'">
         <p class="hint">
-          Shuffles a card into the encounter deck. "Gather during setup" is over by the time a card
-          in play can act, so this is the nearest a card can get to it.
+          {{ $t('ui.shufflesACardIntoTheEncounterDeckGatherDuring') }}
         </p>
-        <label class="cap">Which card</label>
+        <label class="cap">{{ $t('ui.whichCard') }}</label>
         <CardCodeField
           :modelValue="step.gather?.cardCode"
           @update:modelValue="set(index, { ...step, gather: { ...step.gather, cardCode: $event } })"
@@ -2218,12 +2181,11 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'discover'">
         <p class="summary">
-          Discovers clues. Not a push: a discovery carries an id minted for it, which is what the
-          would-discover window and everything reacting to it are keyed on.
+          {{ $t('ui.discoversCluesNotAPushADiscoveryCarriesAn') }}
         </p>
         <ExpressionEditor
           :queryKinds="queryKinds"
-          label="How many"
+          :label="$t('ui.howMany')"
           expect="Int"
           :bindings="scopeFor(index)"
           :modelValue="step.discover?.amount ?? 1"
@@ -2233,7 +2195,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           optional
           :bindings="scopeFor(index)"
           type="InvestigatorId"
-          label="Who discovers them (defaults to you)"
+          :label="$t('ui.whoDiscoversThemDefaultsToYou')"
           :modelValue="step.discover?.iid"
           @update:modelValue="set(index, { ...step, discover: { ...step.discover, iid: $event } })"
         />
@@ -2241,31 +2203,28 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           optional
           :bindings="scopeFor(index)"
           type="LocationId"
-          label="From where (defaults to your location)"
+          :label="$t('ui.fromWhereDefaultsToYourLocation')"
           :modelValue="step.discover?.location"
           @update:modelValue="set(index, { ...step, discover: { ...step.discover, location: $event } })"
         />
         <BoolField
-          label="counts as investigating"
+          :label="$t('ui.countsAsInvestigating')"
           :modelValue="step.discover?.via === 'investigate'"
           @update:modelValue="set(index, { ...step, discover: { ...step.discover, via: $event ? 'investigate' : undefined } })"
         />
         <p class="hint">
-          Which decides whether "discover 1 additional clue when you investigate" applies. A card
-          that just says "discover a clue" is not investigating.
+          {{ $t('ui.whichDecidesWhetherDiscover1AdditionalClueWhenYou') }}
         </p>
       </template>
 
       <template v-else-if="kindOf(step) === 'place'">
         <p class="summary">
-          Puts a card somewhere. "Attach to your location" and "put into play in your threat area"
-          are both a placement; the target says which message carries it, so only the placement is
-          written here.
+          {{ $t('ui.putsACardSomewhereAttachToYourLocationAnd') }}
         </p>
         <ValueEditor
           :bindings="scopeFor(index)"
           type="Placement"
-          label="Where it goes"
+          :label="$t('ui.whereItGoes')"
           :modelValue="step.place?.placement"
           @update:modelValue="set(index, { ...step, place: { ...step.place, placement: $event } })"
         />
@@ -2273,43 +2232,38 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           optional
           :bindings="scopeFor(index)"
           type="Target"
-          label="What is placed (defaults to this card)"
+          :label="$t('ui.whatIsPlacedDefaultsToThisCard')"
           :modelValue="step.place?.target"
           @update:modelValue="set(index, { ...step, place: { ...step.place, target: $event } })"
         />
         <p class="hint">
-          An event that places itself stays in play: the runner only discards one still in limbo
-          when it has finished resolving.
+          {{ $t('ui.anEventThatPlacesItselfStaysInPlayThe') }}
         </p>
       </template>
 
       <template v-else-if="kindOf(step) === 'setAside'">
         <p class="summary">
-          Makes copies of named cards in the set-aside zone, owned by an investigator — which is
-          what "you begin the game with each copy of X set aside" needs, since the copies are not
-          anywhere yet to be moved.
+          {{ $t('ui.makesCopiesOfNamedCardsInTheSetAside') }}
         </p>
-        <label class="cap">Which cards</label>
+        <label class="cap">{{ $t('ui.whichCards') }}</label>
         <div v-for="(code, ci) in setAsideCards(step)" :key="ci" class="row">
           <CardCodeField
             :modelValue="code"
             @update:modelValue="setAsideCard(index, ci, $event)"
           />
-          <button type="button" class="drop" @click="setAsideCard(index, ci, null)">remove</button>
+          <button type="button" class="drop" @click="setAsideCard(index, ci, null)">{{ $t('ui.remove2') }}</button>
         </div>
         <button type="button" class="add-rider" @click="setAsideCard(index, setAsideCards(step).length, '')">
-          + a card
+          {{ $t('ui.aCard2') }}
         </button>
         <p class="hint">
-          Left empty, it uses this card's own set-aside list — which is also what registers those
-          defs on the game, so a card set aside here and declared nowhere is a code it cannot
-          look up.
+          {{ $t('ui.leftEmptyItUsesThisCardSOwnSet') }}
         </p>
         <ValueEditor
           optional
           :bindings="scopeFor(index)"
           type="InvestigatorId"
-          label="Who owns them (defaults to you)"
+          :label="$t('ui.whoOwnsThemDefaultsToYou')"
           :modelValue="step.setAside?.iid"
           @update:modelValue="set(index, { ...step, setAside: { ...step.setAside, iid: $event } })"
         />
@@ -2317,54 +2271,46 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'repeatAbilities'">
         <p class="summary">
-          Does again whatever a card's abilities already did. Nothing records a card's
-          <em>effects</em>, but the game records which of its abilities were <em>used</em> — so
-          every recorded use of this source is pushed again, with the windows it fired in.
+          {{ $t('ui.doesAgainWhateverACardSAbilitiesAlreadyDid') }}
+          <em>{{ $t('ui.effects') }}</em>{{ $t('ui.butTheGameRecordsWhichOfItsAbilitiesWere') }} <em>{{ $t('ui.used') }}</em> {{ $t('ui.soEveryRecordedUseOfThisSourceIsPushed') }}
         </p>
         <ExpressionEditor
           :queryKinds="queryKinds"
           :bindings="scopeFor(index)"
-          label="Whose abilities"
+          :label="$t('ui.whoseAbilities')"
           expect="Source"
           :modelValue="step.repeatAbilities?.source"
           @update:modelValue="set(index, { ...step, repeatAbilities: { ...step.repeatAbilities, source: $event } })"
         />
         <p class="hint">
-          The source is the entity, not the card: a committed skill's abilities belong to the
-          skill standing in limbo for the test. A silent forced ability cannot be reached by
-          "activate another card's ability" at all, which is what this is for.
+          {{ $t('ui.theSourceIsTheEntityNotTheCardA') }}
         </p>
       </template>
 
       <template v-else-if="kindOf(step) === 'notifyResult'">
         <p class="summary">
-          Tells a card the current test's result again. A committed card's "if you succeed" is a
-          handler on that notification rather than an ability, so hearing it twice is what
-          "resolve its effects an additional time" means.
+          {{ $t('ui.tellsACardTheCurrentTestSResultAgain') }}
         </p>
         <ExpressionEditor
           :queryKinds="queryKinds"
           :bindings="scopeFor(index)"
-          label="Which card to tell (defaults to this one)"
+          :label="$t('ui.whichCardToTellDefaultsToThisOne')"
           expect="Target"
           :modelValue="step.notifyResult?.target"
           @update:modelValue="set(index, { ...step, notifyResult: { ...step.notifyResult, target: $event } })"
         />
         <p class="hint">
-          The message is the test's own result, so nothing is told about a success the test did not
-          have. A skill committed to the test is a <em>skill</em> target, standing in limbo.
+          {{ $t('ui.theMessageIsTheTestSOwnResultSo') }} <em>skill</em> {{ $t('ui.targetStandingInLimbo') }}
         </p>
       </template>
 
       <template v-else-if="kindOf(step) === 'skillTestOption'">
         <p class="summary">
-          Holds these steps back and offers them as one of the options at the end of the test, in
-          the list the investigator puts in order — beside a chaos token's effect and the
-          investigation's own clue.
+          {{ $t('ui.holdsTheseStepsBackAndOffersThemAsOne') }}
         </p>
         <LabelField
-          label="Label"
-          placeholder="Resolve"
+          :label="$t('ui.label')"
+          :placeholder="$t('ui.resolve')"
           :bindings="scopeFor(index)"
           :modelValue="step.skillTestOption?.label"
           @update:modelValue="set(index, { ...step, skillTestOption: { ...step.skillTestOption, label: $event } })"
@@ -2379,52 +2325,48 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           @update:modelValue="set(index, { ...step, skillTestOption: { ...step.skillTestOption, steps: $event } })"
         />
         <p class="hint">
-          An option resolves after every committed card has been told the result once, which is
-          what lets it speak about effects that have already happened.
+          {{ $t('ui.anOptionResolvesAfterEveryCommittedCardHasBeen') }}
         </p>
       </template>
 
       <template v-else-if="kindOf(step) === 'activateAbility'">
         <p class="summary">
-          Uses an ability that is not this card's own — "take a fight action printed on each
-          Firearm you control", "activate an ability on the attached card". Only abilities that
-          could actually be used are offered.
+          {{ $t('ui.usesAnAbilityThatIsNotThisCardS') }}
         </p>
         <ValueEditor
           :bindings="scopeFor(index)"
           type="AbilityMatcher"
-          label="Which abilities"
+          :label="$t('ui.whichAbilities')"
           :modelValue="step.activateAbility?.matcher"
           @update:modelValue="set(index, { ...step, activateAbility: { ...step.activateAbility, matcher: $event } })"
         />
         <ValueEditor
           type="[ModifierType]"
-          label="Modifiers on those abilities"
+          :label="$t('ui.modifiersOnThoseAbilities')"
           :bindings="scopeFor(index)"
           :modelValue="step.activateAbility?.modifiers"
           @update:modelValue="set(index, { ...step, activateAbility: { ...step.activateAbility, modifiers: $event } })"
         />
         <p class="hint">
-          These go on the abilities themselves, not on anything on the table, so "without paying
-          its cost" is an action-cost modifier here rather than one anyone else can see.
+          {{ $t('ui.theseGoOnTheAbilitiesThemselvesNotOnAnything') }}
         </p>
         <div class="row">
           <BoolField
-            label="does not provoke attacks of opportunity"
+            :label="$t('ui.doesNotProvokeAttacksOfOpportunity')"
             :modelValue="!!step.activateAbility?.noAttacksOfOpportunity"
             @update:modelValue="set(index, { ...step, activateAbility: { ...step.activateAbility, noAttacksOfOpportunity: $event } })"
           />
         </div>
         <div class="row">
           <BoolField
-            label="may decline"
+            :label="$t('ui.mayDecline')"
             :modelValue="!!step.activateAbility?.optional"
             @update:modelValue="set(index, { ...step, activateAbility: { ...step.activateAbility, optional: $event } })"
           />
           <LabelField
             v-if="step.activateAbility?.optional"
-            label="Decline label"
-            placeholder="Do not"
+            :label="$t('ui.declineLabel')"
+            :placeholder="$t('ui.doNot')"
             :bindings="scopeFor(index)"
             :modelValue="step.activateAbility?.declineLabel"
             @update:modelValue="set(index, { ...step, activateAbility: { ...step.activateAbility, declineLabel: $event } })"
@@ -2434,31 +2376,29 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'seal'">
         <p class="summary">
-          Seals chaos tokens on this card, or lets go of the ones it is holding. Both halves are
-          here because a card that seals nearly always says when it stops.
+          {{ $t('ui.sealsChaosTokensOnThisCardOrLetsGo') }}
         </p>
         <BoolField
-          label="release what it is holding"
+          :label="$t('ui.releaseWhatItIsHolding')"
           :modelValue="!!step.seal?.release"
           @update:modelValue="set(index, { ...step, seal: $event ? { release: true } : { tokens: null } })"
         />
         <ExpressionEditor
           v-if="!step.seal?.release"
           :queryKinds="queryKinds"
-          label="Which tokens"
+          :label="$t('ui.whichTokens')"
           expect="[ChaosToken]"
           :bindings="scopeFor(index)"
           :modelValue="step.seal?.tokens"
           @update:modelValue="set(index, { ...step, seal: { ...step.seal, tokens: $event } })"
         />
         <p v-else class="hint">
-          Every token this card is holding, so "release each token on it" needs no list. Name
-          tokens below to release only some.
+          {{ $t('ui.everyTokenThisCardIsHoldingSoReleaseEach') }}
         </p>
         <ExpressionEditor
           v-if="step.seal?.release"
           :queryKinds="queryKinds"
-          label="Only these (optional)"
+          :label="$t('ui.onlyTheseOptional')"
           expect="[ChaosToken]"
           :bindings="scopeFor(index)"
           :modelValue="step.seal?.tokens"
@@ -2468,7 +2408,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           optional
           :bindings="scopeFor(index)"
           type="Target"
-          label="On what (defaults to this card)"
+          :label="$t('ui.onWhatDefaultsToThisCard')"
           :modelValue="step.seal?.on"
           @update:modelValue="set(index, { ...step, seal: { ...step.seal, on: $event } })"
         />
@@ -2476,10 +2416,9 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'slot'">
         <p class="hint">
-          Whatever the card printing this keyword put in that slot is spliced in here. Nothing is
-          written at this point for a card that left it empty.
+          {{ $t('ui.whateverTheCardPrintingThisKeywordPutInThat') }}
         </p>
-        <label class="cap">Which slot</label>
+        <label class="cap">{{ $t('ui.whichSlot') }}</label>
         <select
           :value="String(step).replace(/^\$/, '')"
           @change="set(index, `$${($event.target as HTMLSelectElement).value}`)"
@@ -2492,12 +2431,11 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'customize'">
         <p class="hint">
-          Mark a checkbox on an upgrade sheet for a customizable card you own — pick the card and
-          which customization, and answer whatever that customization asks for.
+          {{ $t('ui.markACheckboxOnAnUpgradeSheetForA') }}
         </p>
         <div class="row">
           <label>
-            Who (optional)
+            {{ $t('ui.whoOptional') }}
             <input
               :value="step.customize?.iid"
               placeholder="$iid"
@@ -2506,7 +2444,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
             />
           </label>
           <BoolField
-            label="may decline"
+            :label="$t('ui.mayDecline')"
             :modelValue="step.customize?.optional !== false"
             @update:modelValue="set(index, { ...step, customize: { ...step.customize, optional: $event } })"
           />
@@ -2515,23 +2453,21 @@ const optionTitle = (step: any, option: any, oi: number): string => {
 
       <template v-else-if="kindOf(step) === 'chooseFrom'">
         <p class="hint">
-          One option per thing found, with it bound for the steps below. Not everything a card asks
-          you to choose between is something a matcher can name — "one of its traits" is a list read
-          off a card — so the options can come from a list instead.
+          {{ $t('ui.oneOptionPerThingFoundWithItBoundFor') }}
         </p>
         <div class="row">
           <label>
-            Between
+            {{ $t('ui.between') }}
             <select
               :value="overSource(step.chooseFrom)"
               @change="setSource(index, 'chooseFrom', ($event.target as HTMLSelectElement).value)"
             >
-              <option value="query">what a matcher finds</option>
-              <option value="over">what is in a list</option>
+              <option value="query">{{ $t('ui.whatAMatcherFinds') }}</option>
+              <option value="over">{{ $t('ui.whatIsInAList') }}</option>
             </select>
           </label>
           <label v-if="overSource(step.chooseFrom) === 'query'">
-            Kind
+            {{ $t('ui.kind') }}
             <select
               :value="step.chooseFrom?.query?.kind"
               @change="set(index, { ...step, chooseFrom: { ...step.chooseFrom, query: { kind: ($event.target as HTMLSelectElement).value, matcher: null } } })"
@@ -2540,7 +2476,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
             </select>
           </label>
           <label>
-            Bind to
+            {{ $t('ui.bindTo') }}
             <input
               :value="step.chooseFrom?.bind"
               @input="set(index, { ...step, chooseFrom: { ...step.chooseFrom, bind: ($event.target as HTMLInputElement).value } })"
@@ -2548,14 +2484,14 @@ const optionTitle = (step: any, option: any, oi: number): string => {
             />
           </label>
           <BoolField
-            label="may decline"
+            :label="$t('ui.mayDecline')"
             :modelValue="!!step.chooseFrom?.optional"
             @update:modelValue="set(index, { ...step, chooseFrom: { ...step.chooseFrom, optional: $event } })"
           />
           <LabelField
             v-if="step.chooseFrom?.optional"
-            label="Decline label"
-            placeholder="Do not"
+            :label="$t('ui.declineLabel')"
+            :placeholder="$t('ui.doNot')"
             :bindings="scopeFor(index)"
             :modelValue="step.chooseFrom?.declineLabel"
             @update:modelValue="set(index, { ...step, chooseFrom: { ...step.chooseFrom, declineLabel: $event } })"
@@ -2565,30 +2501,30 @@ const optionTitle = (step: any, option: any, oi: number): string => {
           v-if="overSource(step.chooseFrom) === 'query'"
           :bindings="scopeFor(index)"
           :type="matcherType(step.chooseFrom?.query?.kind)"
-          label="Matcher"
+          :label="$t('ui.matcher')"
           :modelValue="step.chooseFrom?.query?.matcher"
           @update:modelValue="set(index, { ...step, chooseFrom: { ...step.chooseFrom, query: { ...step.chooseFrom.query, matcher: $event } } })"
         />
         <template v-else>
           <ExpressionEditor
             :queryKinds="queryKinds"
-            label="The list"
+            :label="$t('ui.theList')"
             :bindings="scopeFor(index)"
             :modelValue="step.chooseFrom?.over"
             @update:modelValue="set(index, { ...step, chooseFrom: { ...step.chooseFrom, over: $event } })"
           />
           <label>
-            Holding
+            {{ $t('ui.holding') }}
             <select
               :value="step.chooseFrom?.kind ?? ''"
               @change="setOverKind(index, step, ($event.target as HTMLSelectElement).value)"
             >
-              <option value="">plain words — a trait, a skill, a number</option>
+              <option value="">{{ $t('ui.plainWordsATraitASkillANumber') }}</option>
               <option v-for="(_, kind) in queryKinds" :key="kind" :value="kind">{{ kind }}</option>
             </select>
           </label>
           <label v-if="!step.chooseFrom?.kind">
-            Label each option
+            {{ $t('ui.labelEachOption') }}
             <input
               :value="step.chooseFrom?.label"
               :placeholder="`$${step.chooseFrom?.bind || 'chosen'}`"
@@ -2597,11 +2533,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
             />
           </label>
           <p class="hint">
-            A matcher's options show as the thing itself; a list has nothing behind it to show unless
-            it says what it holds. Say so and each option is that card or entity; leave it as plain
-            words and the option reads as the value — a trait, a skill — or as the label above. One
-            label for every option is no choice at all, so name the kind whenever the list holds
-            cards.
+            {{ $t('ui.aMatcherSOptionsShowAsTheThingItself') }}
           </p>
         </template>
         <StepsEditor
@@ -2619,22 +2551,22 @@ const optionTitle = (step: any, option: any, oi: number): string => {
            asked for. Not part of the chain above: they belong to all five. -->
       <template v-if="startsTest(step)">
         <fieldset class="on-reveal">
-          <legend>If a chaos token is revealed during this test</legend>
+          <legend>{{ $t('ui.ifAChaosTokenIsRevealedDuringThisTest') }}</legend>
           <BoolField
-            label="it does something"
+            :label="$t('ui.itDoesSomething')"
             :modelValue="!!onReveal(step, kindOf(step))"
             @update:modelValue="setOnReveal(index, kindOf(step), $event ? { tokens: null, steps: [] } : undefined)"
           />
           <template v-if="onReveal(step, kindOf(step))">
             <ValueEditor
               type="ChaosTokenMatcher"
-              label="Which tokens"
+              :label="$t('ui.whichTokens')"
               :bindings="scopeFor(index)"
               :modelValue="onReveal(step, kindOf(step)).tokens"
               @update:modelValue="setOnReveal(index, kindOf(step), { ...onReveal(step, kindOf(step)), tokens: $event })"
             />
             <BoolField
-              label="only once the test has succeeded"
+              :label="$t('ui.onlyOnceTheTestHasSucceeded')"
               :modelValue="!!onReveal(step, kindOf(step)).whenPassed"
               @update:modelValue="setOnReveal(index, kindOf(step), { ...onReveal(step, kindOf(step)), whenPassed: $event })"
             />
@@ -2659,14 +2591,14 @@ const optionTitle = (step: any, option: any, oi: number): string => {
         <fieldset v-for="which in (['onSuccess', 'onFailure'] as const)" :key="which" class="outcome">
           <legend>{{ OUTCOME_LEGENDS[which] }}</legend>
           <BoolField
-            label="something happens"
+            :label="$t('ui.somethingHappens')"
             :modelValue="outcomes(step, which).length > 0"
             @update:modelValue="setOutcomes(index, which, $event ? [{ steps: [] }] : [])"
           />
           <div v-for="(rider, ri) in outcomes(step, which)" :key="ri" class="rider">
             <div v-if="outcomes(step, which).length > 1" class="rider-head">
-              <span class="rider-label">and</span>
-              <button type="button" class="drop" @click="removeRider(index, which, ri)">remove</button>
+              <span class="rider-label">{{ $t('ui.and2') }}</span>
+              <button type="button" class="drop" @click="removeRider(index, which, ri)">{{ $t('ui.remove2') }}</button>
             </div>
             <ValueMatcherField
               :bindings="scopeFor(index)"
@@ -2674,8 +2606,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
               @update:modelValue="setRider(index, which, ri, { ...rider, by: $event })"
             />
             <p class="hint">
-              By how much, when the card says so — "if you succeed by 2 or more". Any value covers
-              the plain wording.
+              {{ $t('ui.byHowMuchWhenTheCardSaysSoIf') }}
             </p>
             <StepsEditor
               :slotSteps="slotSteps"
@@ -2687,9 +2618,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
               @update:modelValue="setRider(index, which, ri, { ...rider, steps: $event })"
             />
             <p class="hint">
-              Worked out when the test begins, so these can name what this ability chose — the card
-              revealed, the trait picked. A query inside them reads the board as it stands now,
-              not after the test; use a handler for anything that has to look afterwards.
+              {{ $t('ui.workedOutWhenTheTestBeginsSoTheseCan') }}
             </p>
           </div>
           <button
@@ -2698,7 +2627,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
             class="add-rider"
             @click="addRider(index, which)"
           >
-            + another, at a different margin
+            {{ $t('ui.anotherAtADifferentMargin') }}
           </button>
         </fieldset>
       </template>
@@ -2709,11 +2638,11 @@ const optionTitle = (step: any, option: any, oi: number): string => {
              in the builder, rather than as a sentence with code spans dropped
              into it -- with a type that made two of them run together. -->
         <span v-for="bound in bindsOf(step, index)" :key="bound.name" class="binds">
-          <span class="binds-label">binds</span>
+          <span class="binds-label">{{ $t('ui.binds') }}</span>
           <code class="binds-name"
             >${{ bound.name }}<span v-if="bound.type" class="binds-type"> :: {{ bound.type }}</span></code
           >
-          <span class="binds-scope">for {{ bound.scope }}</span>
+          <span class="binds-scope">{{ $t('ui.for') }} {{ bound.scope }}</span>
         </span>
       </div>
     </div>
@@ -2721,13 +2650,13 @@ const optionTitle = (step: any, option: any, oi: number): string => {
     <!-- A menu rather than a row of buttons: twenty names side by side is a wall
          to read, and the name alone does not say what the step does. -->
     <div ref="addEl" class="step-actions">
-      <button type="button" @click="toggleAdd">+ Step</button>
+      <button type="button" @click="toggleAdd">{{ $t('ui.step') }}</button>
       <div v-if="addingStep" class="kind-menu">
         <input
           v-model="addSearch"
           type="search"
           class="kind-search"
-          placeholder="Type to filter, enter to pick"
+          :placeholder="$t('ui.typeToFilterEnterToPick')"
           v-focus
           @keydown.enter.prevent="addFirstMatch"
           @keydown.esc="addingStep = false"
@@ -2740,7 +2669,7 @@ const optionTitle = (step: any, option: any, oi: number): string => {
               <span class="kind-help">{{ KIND_HELP[kind] }}</span>
             </button>
           </li>
-          <li v-if="!matchingKinds.length" class="muted">Nothing matches.</li>
+          <li v-if="!matchingKinds.length" class="muted">{{ $t('ui.nothingMatches') }}</li>
         </ul>
       </div>
     </div>

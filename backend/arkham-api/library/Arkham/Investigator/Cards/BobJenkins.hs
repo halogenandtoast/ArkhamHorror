@@ -52,7 +52,15 @@ instance HasAbilities BobJenkins where
     | BobJenkinsAction `notElem` map additionalActionType attrs.usedAdditionalActions
     ]
    where
-    matchCards = basic (#asset <> #item) <> InHandOf ForPlay (affectsColocatedMatch You)
+    matchCards =
+      basic ((#asset <> #item) <> notOthersSignature attrs.id)
+        <> InHandOf ForPlay (affectsColocatedMatch You)
+
+-- An investigator cannot play another investigator's signature cards (FAQ
+-- "Definitions and Terms"), even playing it under their control. Same guard as
+-- Wooden Sledge and Black Market (2).
+notOthersSignature :: InvestigatorId -> CardMatcher
+notOthersSignature iid = oneOf [NotCard SignatureCard, CardOwnedBy iid]
 
 bobJenkinsAction :: Sourceable source => source -> AdditionalAction
 bobJenkinsAction source = AdditionalAction "Bob Jenkins" (toSource source) BobJenkinsAction
@@ -72,22 +80,17 @@ instance RunMessage BobJenkins where
       -- HistoryActionsSpent under-counts the turn.
       updateHistory iid (HistoryItem HistoryActionsSpent 1)
       let windows' = defaultWindows iid
+      -- The ability source, not plain `attrs`: enumerating a teammate's hand
+      -- asks about them, so Playable needs to know Bob is the one playing to
+      -- read the play prohibitions off him and not off them (#5957).
+      let bobSource = attrs.ability 1
+      let items = card_ $ (#asset <> #item) <> notOthersSignature iid
       investigators <- select (affectsColocated iid)
       playableCards <- concatForM investigators \iid' -> do
         if iid == iid'
           then getPlayableCardsMatch attrs iid (UnpaidCost NoAction) windows' (card_ $ #asset <> #item)
           else withModifiersOf iid attrs [CanSpendResourcesOnCardFromInvestigator (be iid') (#asset <> #item)] do
-            -- The ability source, not plain `attrs`: enumerating a teammate's
-            -- hand asks about them, so Playable needs to know Bob is the one
-            -- playing to read the play prohibitions off him and not off them
-            -- (#5957).
-            cards <-
-              getPlayableCardsMatch
-                (attrs.ability 1)
-                iid'
-                (UnpaidCost NoAction)
-                windows'
-                (card_ $ #asset <> #item)
+            cards <- getPlayableCardsMatch bobSource iid' (UnpaidCost NoAction) windows' items
             -- Bob may share the *resource* cost of a teammate's Item (his
             -- ability only allows resources), but any additional cost is paid
             -- by Bob, the investigator actually playing the card. Exclude cards

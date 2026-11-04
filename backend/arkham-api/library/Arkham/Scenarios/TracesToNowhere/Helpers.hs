@@ -223,6 +223,9 @@ with that investigator, or attacks them if it is already in play.
 abductorDoomWatchResolve
   :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> [ChaosToken] -> m ()
 abductorDoomWatchResolve source iid tokens = do
+  -- The reveal and the reset that follows it land in one batch, so without a stop
+  -- here the token is focused and unfocused before the client ever sees it.
+  continue_ iid
   when (any ((`elem` abductorTokens) . (.face)) tokens) do
     selectOne (enemyIs Enemies.abductorThatWhichLurksInShadows) >>= \case
       Just abductor -> initiateEnemyAttack abductor source iid

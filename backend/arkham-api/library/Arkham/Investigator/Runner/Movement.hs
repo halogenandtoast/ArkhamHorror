@@ -453,12 +453,17 @@ handleMoveToward a@InvestigatorAttrs {..} target locationMatcher = do
   mods <- getModifiers investigatorId
   unless (CannotMove `elem` mods) do
     withLocationOf investigatorId \loc -> do
-      mlid <- selectOne locationMatcher
-      for_ mlid \lid -> when (lid /= loc) do
-        closestLocationIds <- select $ ClosestPathLocation loc lid
-        steps <- filterM (getCanStepTo investigatorId GameSource) closestLocationIds
-        when (notNull steps) do
-          Choose.chooseTargetM investigatorId steps $ moveTo GameSource investigatorId
+      -- ClosestPathLocation is barrier-blind, so the path has to route around
+      -- a barrier rather than stall on it (#5955).
+      let closest =
+            if CanIgnoreBarriers `elem` mods then ClosestPathLocation else ClosestUnbarricadedPathLocation
+      destinations <- filter (/= loc) <$> select locationMatcher
+      steps <-
+        filterM (getCanStepTo investigatorId GameSource)
+          . nub
+          =<< concatMapM (select . closest loc) destinations
+      when (notNull steps) do
+        Choose.chooseTargetM investigatorId steps $ moveTo GameSource investigatorId
   pure a
 
 handleMoveUntil a@InvestigatorAttrs {..} lid target = do
@@ -466,7 +471,9 @@ handleMoveUntil a@InvestigatorAttrs {..} lid target = do
   unless (CannotMove `elem` mods) do
     withLocationOf investigatorId \loc ->
       when (lid /= loc) do
-        closestLocationIds <- select $ ClosestPathLocation loc lid
+        let closest =
+              if CanIgnoreBarriers `elem` mods then ClosestPathLocation else ClosestUnbarricadedPathLocation
+        closestLocationIds <- select $ closest loc lid
         -- Each step along the path is a real move, so a location this
         -- investigator cannot pay to enter is not a step we can offer (#5894).
         steps <- filterM (getCanStepTo investigatorId GameSource) closestLocationIds

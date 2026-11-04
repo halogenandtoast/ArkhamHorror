@@ -65,7 +65,7 @@ pathForwardModifiers a column = unless a.flipped do
       and the row would score no victory at all. Sentence 1 needs no such case -- a card
       is only placed beside a row of 2 or more. -}
       victoryTarget <- case above of
-        [only] -> pure (Just only)
+        [single] -> pure (Just single)
         _ -> locationAtRowEnd column above
       for_ victoryTarget \lid -> do
         card <- field LocationCard lid

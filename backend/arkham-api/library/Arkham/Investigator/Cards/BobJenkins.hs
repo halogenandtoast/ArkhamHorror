@@ -77,7 +77,17 @@ instance RunMessage BobJenkins where
         if iid == iid'
           then getPlayableCardsMatch attrs iid (UnpaidCost NoAction) windows' (card_ $ #asset <> #item)
           else withModifiersOf iid attrs [CanSpendResourcesOnCardFromInvestigator (be iid') (#asset <> #item)] do
-            cards <- getPlayableCardsMatch attrs iid' (UnpaidCost NoAction) windows' (card_ $ #asset <> #item)
+            -- The ability source, not plain `attrs`: enumerating a teammate's
+            -- hand asks about them, so Playable needs to know Bob is the one
+            -- playing to read the play prohibitions off him and not off them
+            -- (#5957).
+            cards <-
+              getPlayableCardsMatch
+                (attrs.ability 1)
+                iid'
+                (UnpaidCost NoAction)
+                windows'
+                (card_ $ #asset <> #item)
             -- Bob may share the *resource* cost of a teammate's Item (his
             -- ability only allows resources), but any additional cost is paid
             -- by Bob, the investigator actually playing the card. Exclude cards

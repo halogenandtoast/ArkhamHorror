@@ -382,32 +382,37 @@ getPlayabilityChecksWithResources
       _ -> pure True
     let uniquenessDetail = if uniquenessOk then Nothing else Just $ "A copy of \"" <> title <> "\" is already in play"
 
-    -- Play restrictions check
-    modifiers <- getModifiers iid
+    -- Bob Jenkins check
     let
-      playRestrictionsOk = none (preventsPlay c) modifiers
+      bobJenkinsPlay = case toCardOwner c of
+        Just owner -> do
+          isBobCard <-
+            andM
+              [ pure $ c `cardMatch` card_ (#asset <> #item)
+              , owner <=~> affectsOthers (colocatedWith @InvestigatorId "08016")
+              ]
+          pure $ guard isBobCard $> ("08016" :: InvestigatorId)
+        Nothing -> pure Nothing
+    mPlayedBy <- case source of
+      AbilitySource (InvestigatorSource "08016") 1 -> bobJenkinsPlay
+      UseAbilitySource _ (InvestigatorSource "08016") 1 -> bobJenkinsPlay
+      _ -> pure Nothing
+    let isBobJenkins = isJust mPlayedBy
+
+    -- Play restrictions check
+    --
+    -- A "you cannot play" prohibition belongs to the investigator doing the
+    -- playing, which is not always the hand the card is in: Bob Jenkins plays
+    -- an Item out of a colocated teammate's hand, under *their* control, so it
+    -- is Bob who has to be allowed to play it. The teammate's Dissonant Voices
+    -- does not stop him and his own does (#5957). Matches PlayableCardExists
+    -- and PlayCard, which both ask this of Bob.
+    modifiers <- getModifiers iid
+    restrictionModifiers <- maybe (pure modifiers) getModifiers mPlayedBy
+    let
+      playRestrictionsOk = none (preventsPlay c) restrictionModifiers
       playRestrictionsDetail =
         if playRestrictionsOk then Nothing else Just "A modifier is preventing this card from being played"
-
-    -- Bob Jenkins check
-    isBobJenkins <- case source of
-      AbilitySource (InvestigatorSource "08016") 1 -> do
-        case toCardOwner c of
-          Just owner ->
-            andM
-              [ pure $ c `cardMatch` card_ (#asset <> #item)
-              , owner <=~> affectsOthers (colocatedWith @InvestigatorId "08016")
-              ]
-          Nothing -> pure False
-      UseAbilitySource _ (InvestigatorSource "08016") 1 -> do
-        case toCardOwner c of
-          Just owner ->
-            andM
-              [ pure $ c `cardMatch` card_ (#asset <> #item)
-              , owner <=~> affectsOthers (colocatedWith @InvestigatorId "08016")
-              ]
-          Nothing -> pure False
-      _ -> pure False
 
     mTaboo <- field InvestigatorTaboo iid
 

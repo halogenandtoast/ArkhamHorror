@@ -4148,7 +4148,8 @@
       ],
       "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
       "englishSha256": "27bac68881274567ba4d38e5065234bc35addb664fa4f1a9fd38db3a595bb76c",
-      "translationSha256": "82e7cb028d73b2df3e16a88ccca12486f8ec04f8fcfcbb0533a41ec04c670289",
+      "translationSha256": "3e33154debc766d3d30b8a467058193637c4f677f11a864b2a2ff395e5c1cbc8",
+      "localOverride": "Local override (#5956): replaced with the first-person rendering, which keeps the English voice. The upstream source below is where the original came from, not what this string now says.",
       "sources": [
         {
           "locale": "zh-cn",
@@ -4172,7 +4173,8 @@
       ],
       "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
       "englishSha256": "50ee4476c9db0e3f7cefa03ccd21e6b46b751ae8c0579ea62f35e57452c44dce",
-      "translationSha256": "7826ab7c6c5780a615d197ce569a35a1468401e9e7d55c5c7800b24d71a0c6b0",
+      "translationSha256": "a065fe36814b01a5104b23617108341da4f8d0e4afa3d792afffbe6b972a92c5",
+      "localOverride": "Local override (#5956): replaced with the first-person rendering, which keeps the English voice. The upstream source below is where the original came from, not what this string now says.",
       "sources": [
         {
           "locale": "zh-cn",
@@ -4196,7 +4198,8 @@
       ],
       "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
       "englishSha256": "cd44019b2fba8c25e2eaf5829411342407db468d3d785c5926646bcc7c09c486",
-      "translationSha256": "489ff1c7538d1acaaf6867f6ea99dfef8ee286c3f869fef101e725888e4ce90e",
+      "translationSha256": "0484b6e15d3d16381f2e8a9867e6b01bd43bd5297d1b4eb96976346da78f1977",
+      "localOverride": "Local override (#5956): replaced with the first-person rendering, which keeps the English voice. The upstream source below is where the original came from, not what this string now says.",
       "sources": [
         {
           "locale": "zh-cn",
@@ -4220,7 +4223,8 @@
       ],
       "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
       "englishSha256": "fcf8d65897df36e969ab21d307eab7bd7edd7ce5e6f09dcdb3f95b67bcd2203e",
-      "translationSha256": "7dbdbf2ed033124d676bf93ca32296b8633b17a2eb11e9c90e866a2473ea4178",
+      "translationSha256": "3b20ba63a194476ff0b6abfbf238a5921f42d9f8e8a759e5e88d5fc39a574afe",
+      "localOverride": "Local override (#5956): replaced with the first-person rendering, which keeps the English voice. The upstream source below is where the original came from, not what this string now says.",
       "sources": [
         {
           "locale": "zh-cn",

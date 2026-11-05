@@ -19,7 +19,7 @@ instance HasModifiersFor JimCulver4 where
 
 instance HasAbilities JimCulver4 where
   getAbilities (JimCulver4 a) =
-    [ controlled a 1 (youExist can.draw.cards)
+    [ controlled a 1 (youExist $ oneOf [can.draw.cards, can.gain.resources])
         $ triggered
           (oneOf [InvestigatorTakeDamage #after You AnySource, InvestigatorTakeHorror #after You AnySource])
           (exhaust a)

@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import { watch, ref, computed, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { localizedScenarioName } from '@/arkham/scenarioNames'
 import { useUserStore } from '@/stores/user'
 import { useRoute, useRouter } from 'vue-router'
 import * as Arkham from '@/arkham/types/Deck'
@@ -23,6 +25,8 @@ import GameOptions from '@/arkham/components/NewCampaign/GameOptions.vue'
 
 type Step = 'ChooseMode' | 'GameOptions'
 type CampaignGroup = 'chapter1' | 'chapter2' | 'homebrew'
+
+const { t, te } = useI18n()
 
 const store = useUserStore()
 const { currentUser } = storeToRefs(store)
@@ -161,28 +165,22 @@ const difficulties = computed<Difficulty[]>(() => {
 
 const defaultCampaignName = computed(() => {
   if (gameMode.value === 'Campaign' && campaign.value) {
-    const prefix = returnTo.value ? 'Return to ' : ''
-    return `${prefix}${campaign.value.name}`
+    const id = returnTo.value ? campaign.value.returnTo?.id : campaign.value.id
+    const key = `campaignNames.${id}`
+    if (id && te(key)) return t(key)
+    return returnTo.value ? t('create.returnToName', { name: campaign.value.name }) : campaign.value.name
   }
 
-  if (fullCampaign.value === 'Standalone' && scenario.value) {
-    const prefix = returnTo.value ? 'Return to ' : ''
-    return `${prefix}${scenario.value.name}`
+  const selected = scenario.value
+  if (!selected) return ''
+  if (gameMode.value === 'SideStory' && selected.scenarios && sideStoryMode.value !== 'campaign') {
+    const part = selected.scenarios.find((s) => s.id === sideStoryMode.value)
+    if (part) return localizedScenarioName(part.id, part.name, t, te)
   }
-
-  if (gameMode.value === 'SideStory' && scenario.value) {
-    if (returnTo.value && scenario.value.returnToVariant) {
-      return 'The Blob That Ate Everything ELSE!'
-    }
-
-    if (scenario.value.scenarios && sideStoryMode.value !== 'campaign') {
-      const part = scenario.value.scenarios.find((s) => s.id === sideStoryMode.value)
-      if (part) return part.name
-    }
-    return `${scenario.value.name}`
-  }
-
-  return ''
+  if (returnTo.value && selected.returnToVariant) return t('create.blobElseTitle')
+  const id = returnTo.value ? (selected.returnTo ?? selected.id) : selected.id
+  const fallback = returnTo.value ? t('create.returnToName', { name: selected.name }) : selected.name
+  return localizedScenarioName(id, fallback, t, te)
 })
 
 const currentCampaignName = computed(() => {

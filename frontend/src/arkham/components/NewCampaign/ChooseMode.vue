@@ -1,7 +1,20 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useDbCardStore } from '@/stores/dbCards'
+import { localizedScenarioName } from '@/arkham/scenarioNames'
+import { deckRequirementDescriptions } from '@/arkham/deckRestrictions'
 import { sideStoryGroup, type Scenario, type Campaign } from '@/arkham/data'
 import { imgsrc, campaignBox, scenarioBox } from '@/arkham/helpers'
+
+const { t, te } = useI18n()
+const dbCards = useDbCardStore()
+const campaignTitle = (campaign: Campaign) => te(`campaignNames.${campaign.id}`) ? t(`campaignNames.${campaign.id}`) : campaign.name
+function requirementsFor(scenario: Scenario): string[] {
+  const translated = deckRequirementDescriptions(scenario.id, undefined, t)
+  if (scenario.requiredInvestigator) translated.shift()
+  return translated.length ? translated : scenario.deckRequirements ?? []
+}
 
 type GameMode = 'Campaign' | 'SideStory'
 type CampaignGroup = 'chapter1' | 'chapter2' | 'homebrew'
@@ -185,13 +198,15 @@ function selectGameMode(mode: 'Campaign' | 'SideStory') {
             class="scenario-box"
             :class="{ 'selected-scenario': selectedScenario == s.id }"
             :src="scenarioBox(s.id)"
+            :alt="localizedScenarioName(s.id, s.name, t, te)"
+            :title="localizedScenarioName(s.id, s.name, t, te)"
             @click="selectedScenario = s.id; emits('go')"
           />
         </div>
         <span v-if="s.requiredInvestigator" class="requires-investigator">
-          {{ $t('create.requiresInvestigator', { name: s.requiredInvestigator }) }}
+          {{ $t('create.requiresInvestigator', { name: dbCards.getCardName(s.requiredInvestigator, 'investigator') }) }}
         </span>
-        <span v-for="requirement in s.deckRequirements" :key="requirement" class="requires-investigator">
+        <span v-for="requirement in requirementsFor(s)" :key="requirement" class="requires-investigator">
           {{ requirement }}
         </span>
         <span v-if="s.designer" class="designer-credit">
@@ -215,6 +230,8 @@ function selectGameMode(mode: 'Campaign' | 'SideStory') {
               class="campaign-box"
               :class="{ 'selected-campaign': selectedCampaign == c.id }"
               :src="campaignBoxSrc(c)"
+              :alt="campaignTitle(c)"
+              :title="campaignTitle(c)"
               @error="missingBoxArt[c.id] = true"
               @click.prevent="selectedCampaign = c.id; emits('go')"
             />
@@ -225,7 +242,7 @@ function selectGameMode(mode: 'Campaign' | 'SideStory') {
               :class="{ 'selected-campaign': selectedCampaign == c.id }"
               @click.prevent="selectedCampaign = c.id; emits('go')"
             >
-              {{ c.name }}
+              {{ campaignTitle(c) }}
             </button>
           </div>
           <span v-if="c.designer" class="designer-credit">

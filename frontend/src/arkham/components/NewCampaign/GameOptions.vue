@@ -16,6 +16,8 @@ import api from '@/api'
 import { narrativeBlurb, narrativeHost, narrativesFor, type NarrativeEntry } from '@/arkham/composables/useNarrative'
 import { filterDisplayable, type DisplayRuleOptions } from '@/arkham/displayRules'
 import { campaignIdToI18n } from '@/arkham/types/Scenario'
+import { localizedScenarioName } from '@/arkham/scenarioNames'
+import { deckRequirementDescriptions } from '@/arkham/deckRestrictions'
 import { useI18n } from 'vue-i18n'
 
 const { locale, t, te } = useI18n()
@@ -129,7 +131,10 @@ const sideStoryScenarios = computed(() =>
   props.gameMode === 'SideStory' ? props.scenario?.scenarios ?? [] : []
 )
 
-const deckRequirements = computed(() => props.scenario?.deckRequirements ?? [])
+const deckRequirements = computed(() => {
+  const translated = deckRequirementDescriptions(props.scenario?.id, undefined, t)
+  return translated.length ? translated : props.scenario?.deckRequirements ?? []
+})
 
 const showAlphaWarning = computed(() => {
   if (props.gameMode === 'Campaign' && props.campaign) {
@@ -186,7 +191,7 @@ const selectionSummary = computed(() => {
     return {
       kind: 'SideStory' as const,
       id: props.chosenSideStoryId,
-      title: selectedSideStoryPart.value?.name ?? props.scenario?.name ?? ''
+      title: localizedScenarioName(props.chosenSideStoryId, selectedSideStoryPart.value?.name ?? props.scenario?.name ?? '', t, te)
     }
   }
 
@@ -483,7 +488,7 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
 
     <section class="config">
       <div v-if="deckRequirements.length" class="card deck-requirements-card">
-        <div class="card-title">Deck Requirements</div>
+        <div class="card-title">{{ $t('create.deckRequirements') }}</div>
         <ul class="deck-requirements">
           <li v-for="requirement in deckRequirements" :key="requirement">{{ requirement }}</li>
         </ul>
@@ -600,7 +605,7 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
 
           <template v-for="s in sideStoryScenarios" :key="s.id">
             <input type="radio" v-model="sideStoryMode" :value="s.id" :id="`sideStoryPart-${s.id}`" />
-            <label :for="`sideStoryPart-${s.id}`">{{ s.name }}</label>
+            <label :for="`sideStoryPart-${s.id}`">{{ localizedScenarioName(s.id, s.name, t, te) }}</label>
           </template>
         </div>
       </div>
@@ -611,7 +616,7 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
           <input type="radio" v-model="returnTo" :value="false" id="normal" />
           <label for="normal">{{ $t('create.normal') }}</label>
           <input type="radio" v-model="returnTo" :value="true" id="returnTo" />
-          <label for="returnTo">{{ scenario?.returnToVariant ? 'The Blob That Ate Everything ELSE!' : $t('create.returnTo') }}</label>
+          <label for="returnTo">{{ scenario?.returnToVariant ? $t('create.blobElseTitle') : $t('create.returnTo') }}</label>
         </div>
       </div>
 
@@ -642,7 +647,7 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
                 :class="{ selected: selectedScenario == s.id }"
                 @click="selectedScenario = s.id"
               >
-                <img :src="scenarioBox(s.id)" :alt="s.name" />
+                <img :src="scenarioBox(s.id)" :alt="localizedScenarioName(s.id, s.name, t, te)" />
               </button>
             </div>
           </div>
@@ -739,17 +744,17 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
 
       <div class="card rules-card">
         <button type="button" class="rules-toggle" @click="rulesExpanded = !rulesExpanded">
-          <span class="card-title" style="margin-bottom: 0">{{ $t('create.advancedRulesConfiguration') ?? 'Advanced Rules Configuration' }}</span>
+          <span class="card-title" style="margin-bottom: 0">{{ $t('create.advancedRulesConfiguration') }}</span>
           <span class="rules-header-right">
             <span class="preset-pill" :class="activePreset ?? 'custom'">
-              {{ activePreset ? ($t(`create.preset.${activePreset}.name`) ?? activePreset) : ($t('create.presetCustom') ?? 'Custom') }}
+              {{ activePreset ? ($t(`create.preset.${activePreset}.name`) ?? activePreset) : ($t('create.presetCustom')) }}
             </span>
             <span class="rules-chevron" :class="{ expanded: rulesExpanded }">▸</span>
           </span>
         </button>
         <transition name="slide">
           <div v-if="rulesExpanded" class="rules-body subcard">
-            <div class="card-title small">{{ $t('create.rulesPresets') ?? 'Presets' }}</div>
+            <div class="card-title small">{{ $t('create.rulesPresets') }}</div>
             <div class="preset-options">
               <button
                 v-for="preset in (['chapter1', 'chapter2'] as RulesPreset[])"
@@ -765,21 +770,21 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
             </div>
 
             <div class="rule-setting subcard">
-              <div class="card-title small">{{ $t('create.asIfAtBehavior') ?? '"As If" At Behavior' }}</div>
+              <div class="card-title small">{{ $t('create.asIfAtBehavior') }}</div>
               <div class="as-if-at-options">
                 <label class="as-if-at-option" :class="{ selected: !strictAsIfAt }" @click="strictAsIfAt = false">
                   <div class="as-if-at-header">
                     <input type="radio" v-model="strictAsIfAt" :value="false" id="asIfAtChapter1" />
-                    <span class="as-if-at-name">{{ $t('create.asIfAtChapter1') ?? 'Chapter 1 Rules' }}</span>
+                    <span class="as-if-at-name">{{ $t('create.asIfAtChapter1') }}</span>
                   </div>
-                  <div class="as-if-at-desc">{{ $t('create.asIfAtChapter1Description') ?? '' }}</div>
+                  <div class="as-if-at-desc">{{ $t('create.asIfAtChapter1Description') }}</div>
                 </label>
                 <label class="as-if-at-option" :class="{ selected: strictAsIfAt }" @click="strictAsIfAt = true">
                   <div class="as-if-at-header">
                     <input type="radio" v-model="strictAsIfAt" :value="true" id="asIfAtChapter2" />
-                    <span class="as-if-at-name">{{ $t('create.asIfAtChapter2') ?? 'Chapter 2 Rules' }}</span>
+                    <span class="as-if-at-name">{{ $t('create.asIfAtChapter2') }}</span>
                   </div>
-                  <div class="as-if-at-desc">{{ $t('create.asIfAtChapter2Description') ?? '' }}</div>
+                  <div class="as-if-at-desc">{{ $t('create.asIfAtChapter2Description') }}</div>
                 </label>
               </div>
             </div>
@@ -852,7 +857,7 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
       </div>
 
       <div v-if="recommendedToggles.length > 0" class="card">
-        <div class="card-title">{{ $t('create.recommendedOptions') ?? 'Recommended options' }}</div>
+        <div class="card-title">{{ $t('create.recommendedOptions') }}</div>
 
         <div class="recommended-list">
           <div class="recommended-row" v-for="o in recommendedToggles" :key="optKey(o)">
@@ -873,7 +878,7 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
                 :checked="isOptEnabled(o)"
                 @change="setOptEnabled(o, true)"
               />
-              <label :for="`rec-${optKey(o)}-on`">{{ $t('On') ?? 'On' }}</label>
+              <label :for="`rec-${optKey(o)}-on`">{{ $t('On') }}</label>
 
               <input
                 type="radio"
@@ -881,7 +886,7 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
                 :checked="!isOptEnabled(o)"
                 @change="setOptEnabled(o, false)"
               />
-              <label :for="`rec-${optKey(o)}-off`">{{ $t('Off') ?? 'Off' }}</label>
+              <label :for="`rec-${optKey(o)}-off`">{{ $t('Off') }}</label>
             </div>
           </div>
         </div>

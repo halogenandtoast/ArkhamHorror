@@ -110,5 +110,8 @@
     "beta": "Beta",
     "betaWarning": "This is ready for testing, but a community telling has seen far less play than the Campaign Guide. File a bug if something reads wrong.",
     "by": "by {designer}"
-  }
+  },
+  "deckRequirements": "Deck Requirements",
+  "blobElseTitle": "The Blob That Ate Everything ELSE!",
+  "returnToName": "Return to {name}"
 }

@@ -24,6 +24,8 @@ import gameBoard from '@/locales/zh-cn/gameBoard/gameBoard'
 import xp from '@/locales/zh-cn/xp.json'
 import theLabyrinthsOfLunacy from '@/locales/zh-cn/theLabyrinthsOfLunacy.json'
 import childrenOfBlood from '@/locales/zh-cn/childrenOfBlood'
+import scenarioNames from '@/locales/zh-cn/scenarioNames.json'
+import campaignNames from '@/locales/zh-cn/campaignNames.json'
 
 export default 
 { ...base,
@@ -36,6 +38,8 @@ export default
   label: { ...label, cards: cards["label"] },
   log,
   xp,
+  scenarioNames,
+  campaignNames,
   nightOfTheZealot, 
   theDunwichLegacy, 
   thePathToCarcosa, 

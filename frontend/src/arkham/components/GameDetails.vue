@@ -6,6 +6,9 @@ import type { Difficulty } from '@/arkham/types/Difficulty';
 import type { Campaign } from '@/arkham/types/Campaign';
 import type { Scenario } from '@/arkham/types/Scenario';
 import { imgsrc, campaignBox, scenarioBox } from '@/arkham/helpers';
+import { localizedGameName, localizedScenarioName } from '@/arkham/scenarioNames'
+import campaignCatalog from '@/arkham/data/campaigns.json'
+import { homebrewCampaigns } from '@/arkham/homebrewData'
 
 export interface Props {
   game: Game
@@ -38,7 +41,11 @@ const box = computed(() => {
 
   return null
 })
-const { t } = useI18n()
+const { t, te } = useI18n()
+const gameTitle = computed(() => localizedGameName(props.game, [...campaignCatalog, ...homebrewCampaigns], t, te))
+const scenarioTitle = computed(() => scenario.value
+  ? localizedScenarioName(scenario.value.id, scenario.value.name.title, t, te)
+  : '')
 
 /* The one thing worth saying about a badge: that the Campaign Guide itself
  * hedged the ending. */
@@ -60,12 +67,12 @@ const outcomeTooltip = computed(() => {
         <div class="campaign-icon-container" v-else-if="scenario">
           <img class="campaign-icon" :src="imgsrc(`sets/${scenario.id.replace('c', '').slice(0,2)}.png`)" />
         </div>
-        <router-link class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
+        <router-link class="title" :to="`/games/${game.id}`">{{gameTitle}}</router-link>
         <div v-if="scenario" class="scenario-details">
           <img class="scenario-icon" :src="imgsrc(`sets/${scenario.id.replace('c', '')}.png`)" />
-          <span>{{scenario.name.title}}</span>
+          <span>{{scenarioTitle}}</span>
         </div>
-        <div class="game-difficulty">{{difficulty}}</div>
+        <div class="game-difficulty">{{ $t(`create.${difficulty}`) }}</div>
         <div
           v-if="game.outcome"
           class="outcome"

@@ -111,5 +111,8 @@
     "Standard": "我想迎接挑战",
     "Hard": "我想经历真正的噩梦",
     "Expert": "我想体验诡镇奇谈"
-  }
+  },
+  "deckRequirements": "牌组要求",
+  "blobElseTitle": "吞噬万物：其余的一切！",
+  "returnToName": "重返{name}"
 }

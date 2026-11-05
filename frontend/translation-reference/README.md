@@ -9,9 +9,17 @@ Where third-party-sourced translations in `src/locales` and `../homebrew/*/local
 
 **It holds no translation text** — only, per message, the locale file and key path it landed at,
 the upstream `.po` file and line it came from, and `sha256` of both the English source and the
-Chinese result. Nothing imports it and no test reads it; it is an audit trail, not data. The
-hashes are deliberately not asserted anywhere, so correcting a bad translation never means
-updating this file first.
+Chinese result. Nothing imports it at runtime.
+
+It is not only an audit trail, though: `tests/zhCnLocaleLoading.test.mjs` asserts every one of
+the 172 entries, both hashes included. **So these 172 strings are hash-locked in both
+languages.** Editing one of them — fixing a translation, or just reworking the English copy —
+fails that test until you update the matching `englishSha256` / `translationSha256` here.
+
+That is worth knowing before you reach for it. The English-side check is useful (it flags a
+translation gone stale against reworded English), but the translation-side check mainly forbids
+improving a translation, which is not what we want to make hard. If it starts costing more than
+it catches, drop the `translationSha256` assertion from that test and keep the rest.
 
 Two entries are worth a second look if either reads oddly, because they were not whole-string
 matches from the matching campaign:

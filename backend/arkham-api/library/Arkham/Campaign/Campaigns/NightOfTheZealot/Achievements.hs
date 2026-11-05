@@ -121,14 +121,12 @@ runNotzAchievements msg = whenEligibleCampaign $ case msg of
       bumpCounter uniqueCultistsDefeatedKey 1
 
     when (cardDef == Enemies.ghoulPriest) do
-      -- "The Zealot's Revenge": the Ghoul Priest is defeated by an attack that
-      -- Lita Chantler's reaction boosted (+1 damage while the attack's skill
-      -- test resolves). Her bonus arrives in the same lump of damage as the
-      -- weapon's, so there is no "her" point to isolate -- the attack she
-      -- boosted IS the killing blow. A but-for test ("without her bonus the
-      -- damage would not have reached his health") also rejects every overkill,
-      -- since excess damage lands on the enemy uncapped, so it only ever fired
-      -- when the fatal attack landed exactly on his health (#5948).
+      -- "The Zealot's Revenge": Lita Chantler's reaction (+1 damage while the
+      -- attack's skill test resolves) deals the killing blow. Her bonus has to
+      -- be the damage that finishes him, not merely part of the blow that did:
+      -- without her bonus the total damage must not have reached his (modified)
+      -- health, so an attack that would have killed him anyway does not count
+      -- (#5948).
       whenM (isFighting eid) do
         getSkillTestInvestigator >>= traverse_ \iid -> do
           litas <- select $ assetIs Assets.litaChantler
@@ -140,7 +138,10 @@ runNotzAchievements msg = whenEligibleCampaign $ case msg of
                   , maybe False (`elem` litas) src.asset
                   ]
           when (litaBonus > 0) do
-            earnAchievement $ NightOfTheZealotAchievement TheZealotsRevenge
+            dmg <- field EnemyDamage eid
+            mHealth <- field EnemyHealth eid
+            when (maybe False (\h -> dmg - litaBonus < h) mHealth) do
+              earnAchievement $ NightOfTheZealotAchievement TheZealotsRevenge
       -- "Do You Get It Now?": Billy Cooper's Forced ability triggers off any
       -- Monster defeated at his location; the achievement wants specifically
       -- the Ghoul Priest, so check Billy is at the priest's location.

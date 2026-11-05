@@ -1,0 +1,64 @@
+{
+  "achievements": {
+    "AFullBag": {
+      "name": "满满一袋",
+      "text": "让混乱袋中同时有10个祝福标记和10个诅咒标记。"
+    },
+    "ThisGuyAgain": {
+      "name": "怎么又是这家伙",
+      "text": "在整个战役中，击败深潜者巨怪至少5次。"
+    },
+    "OffToAGoodStart": {
+      "name": "良好开局",
+      "text": "在恰好剩余1点体力和1点心智的情况下完成《绝望深坑》。"
+    },
+    "FriendOfThePeople": {
+      "name": "人民之友",
+      "text": "在《艾莲娜·哈珀失踪案》中，同时控制全部3张剧情支援。"
+    },
+    "RunForYourLives": {
+      "name": "逃命要紧",
+      "text": "在不击败任何“深潜者”敌人的情况下完成《深陷危局》。"
+    },
+    "GoodSwimmer": {
+      "name": "游泳健将",
+      "text": "在从未移动渔船的情况下完成《魔鬼礁石》，并达成3个钥匙目标中的至少1个。"
+    },
+    "StepOnIt": {
+      "name": "油门踩到底",
+      "text": "在《全速恐惧》中，每一轮都使用你的汽车的加速能力。"
+    },
+    "WayTooCute": {
+      "name": "可爱过头了",
+      "text": "在《雾中之光》中，让4名深潜者幼体同时在场。"
+    },
+    "MakingYourOwnLuck": {
+      "name": "命运掌握在手中",
+      "text": "在《达贡巢穴》中，先让混乱袋里的诅咒标记达到10个，再将其全部移除至0个。"
+    },
+    "GoBackToSleep": {
+      "name": "回去睡吧",
+      "text": "在《暗潮之下》的调查阶段，让达贡和海德拉同时处于横置状态。"
+    },
+    "ActuallyJustHereForTheMoney": {
+      "name": "其实只是为了钱",
+      "text": "取回深潜者的财宝。"
+    },
+    "IDoNotRecallThisPlace": {
+      "name": "我不记得这个地方",
+      "text": "在战役日志的“恢复记忆”栏没有任何记录的情况下，赢得《印斯茅斯暗潮》战役。"
+    },
+    "TotalRecall": {
+      "name": "全部记起来了",
+      "text": "在战役日志的“恢复记忆”栏有16条记录的情况下，赢得《印斯茅斯暗潮》战役。"
+    },
+    "SomethingSmellsFishy": {
+      "name": "闻起来有点腥",
+      "text": "使用“深潜者”调查员赢得《印斯茅斯暗潮》战役。"
+    },
+    "ExpertFisherman": {
+      "name": "钓鱼专家",
+      "text": "在专家难度下赢得《印斯茅斯暗潮》战役。"
+    }
+  }
+}

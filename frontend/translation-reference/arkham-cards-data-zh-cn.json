@@ -4052,7 +4052,8 @@
       ],
       "referenceRevision": "8b283b08e290d982ee83ec03960e0c4a1e293587",
       "englishSha256": "df950efb13d0dea7750bbbd38f561108fea0114940f2467ae88b5287861c4e03",
-      "translationSha256": "4f7d7c728ab671f56a895a52f1ceed88a2ae984124d52f969d9565169b048320",
+      "translationSha256": "59e8996385eab80cc56033ab59ab46faf030b1e929e0e17eaa2410676a60843e",
+      "localOverride": "Local correction: upstream's zh-cn carried the Traditional form \u8457; this is the Simplified \u7740.",
       "sources": [
         {
           "locale": "zh-cn",

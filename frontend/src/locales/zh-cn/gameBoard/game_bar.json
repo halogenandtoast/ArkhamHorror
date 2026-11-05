@@ -91,7 +91,15 @@
     "drawSpotlight": "像遭遇牌那样，放大显示你从自己牌库中抽到的卡牌。",
     "drawSpotlightOff": "关闭",
     "drawSpotlightUpkeep": "仅准备阶段",
-    "drawSpotlightEvery": "每次抽牌"
+    "drawSpotlightEvery": "每次抽牌",
+    "customWeaknessTitle": "自定义随机弱点",
+    "customWeaknessDescription": "在随机抽取和牌组设置时，加入所选自定义卡牌组中的基础弱点。",
+    "customWeaknessSets": "包含的卡牌组",
+    "customWeaknessUnsorted": "未分类的自定义卡牌",
+    "customWeaknessEmpty": "你的卡牌库中没有自定义基础弱点。",
+    "customWeaknessSelect": "选择卡牌组，将其中的基础弱点加入范围。",
+    "customWeaknessSaveFailed": "无法保存弱点范围，请重试。",
+    "customWeaknessLoadFailed": "无法加载自定义弱点卡牌组，请重新打开设置后重试。"
   },
   "chaosBagStats": {
     "tokens": "{count}个混乱标记",

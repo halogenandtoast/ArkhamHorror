@@ -11,6 +11,7 @@
   "settingsToggleTitle": "成就追踪",
   "settingsToggleDescription": "游玩时追踪本战役的官方成就。解锁记录会保存到你的账号中，并显示在战役日志里。",
   "noneEarnedYet": "尚未获得任何成就。",
+  "progressLabel": "已获得{earned}/{total}项成就",
   "campaigns": {
     "10": "毒堇谷盛宴",
     "11": "沉没之城",

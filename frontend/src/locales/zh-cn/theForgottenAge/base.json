@@ -1,4 +1,10 @@
 {
+  "difficulty": {
+    "Easy": "我想探索未知",
+    "Standard": "我想踏上艰难的旅途",
+    "Hard": "我想被世人遗忘",
+    "Expert": "我想承受伊格的复仇"
+  },
   "specialRules": [
     {
       "title": "封印",

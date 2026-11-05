@@ -189,5 +189,8 @@
   "undoToHere": "撤销到此处",
   "undoToHereConfirm": "撤销此时点之后的所有操作？游戏将回到“{entry}”之前。",
   "undoToHereConfirmPlain": "撤销此时点之后的所有操作？",
-  "usesAbility": "{investigator}使用了{source}"
+  "usesAbility": "{investigator}使用了{source}",
+  "exiled": "{card}被放逐",
+  "returnsCardsFromDiscardToHand": "{investigator}将{cards}从弃牌堆返回手牌",
+  "shufflesCardsIntoDeck": "{investigator}将{cards}混洗入牌组"
 }

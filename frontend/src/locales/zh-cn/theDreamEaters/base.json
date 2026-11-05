@@ -58,18 +58,23 @@
   },
   "specialRules": [
     {
-      "title": "警戒",
-      "body": "<p class='basic'>每当调查员在尝试躲避具有警戒关键词的敌人时技能检定失败，在结算该技能检定的所有结果后，该敌人攻击正在躲避它的调查员。敌人执行警戒攻击后不会横置。无论该敌人是否与该调查员交战，此攻击都会发生。</p>"
+      "title": "@:theDreamEaters.additionalRulesAndClarifications.alert.title",
+      "body": "@:theDreamEaters.additionalRulesAndClarifications.alert.body"
     },
     {
-      "title": "蜂拥X",
-      "body": "<p class='basic'>具有蜂拥X关键词的敌人，实际上是一群协同行动的敌人。将具有蜂拥X关键词的敌人放置入场后，不查看地将你牌堆顶的X张卡牌面朝下放在该敌人下方，作为蜂拥卡牌。位于这些卡牌上方的敌人称为“头领敌人”。某些冒险卡牌效果也会指示玩家为敌人增加蜂拥卡牌；以相同流程结算。</p><ul><li>若不清楚应由哪位调查员增加蜂拥卡牌，则由调查员队长增加。</li><li>对大多数用途而言，头领敌人下方的每张蜂拥卡牌都视为该敌人的一个独立个体。每张蜂拥卡牌具有其头领卡牌相同的数值与文本。（例如，若一位调查员与一名下方有2张蜂拥卡牌的头领敌人交战，则该调查员总共与3名敌人交战。）</li><li>敌军阶段的敌人攻击步骤中，每张蜂拥卡牌分别攻击。头领敌人与其所有蜂拥卡牌均在此步骤中攻击后，将它们全部横置。</li><li>每张蜂拥卡牌可分别被攻击或受到伤害，但头领敌人下方仍有蜂拥卡牌时不能被击败。蜂拥卡牌被击败时，任何多余伤害可对同一头领敌人下方的另一张蜂拥卡牌或头领敌人本身造成。（例如，托尼·摩尔根使用.41短口手枪攻击一名下方有2张蜂拥卡牌的潜行的祖格鼠。该次攻击造成2点伤害。第1点伤害击败其中1张蜂拥卡牌，因此多余的1点伤害可对另一张蜂拥卡牌造成，并将其击败。）</li><li>蜂拥卡牌离场时，将其放到其拥有者牌堆底。若不确定蜂拥卡牌的拥有者，可查看该卡来确认。</li><li>头领敌人与其所有蜂拥卡牌视为一个整体移动、交战与横置。（例如，若头领敌人或其任意一张蜂拥卡牌被躲避，则它们全部横置并解除交战。）</li></ul>"
+      "title": "@:theDreamEaters.additionalRulesAndClarifications.storyCards.title",
+      "body": "@:theDreamEaters.additionalRulesAndClarifications.storyCards.body"
     },
     {
-      "title": "隐藏",
-      "body": "<p class='basic'>具有隐藏关键词的遭遇卡或弱点具有显现能力，会秘密地将该卡加入你的手牌，不应向其他调查员展示该卡或其文本。</p><ul><li>隐藏诡计在你手中时，视为位于你的威胁区：其持续能力生效，其能力可触发，但仅限你触发。</li><li>隐藏敌人在你手中时，不视为与你交战或位于你的威胁区，除非另有说明不会攻击；但其持续能力生效，且仅限你触发其能力。</li><li>隐藏卡计入手牌上限，但除该卡所述方式外不能以任何方式从手牌弃掉。弃掉时，将其放入相应弃牌堆。</li></ul><p class='basic'>为获得最佳体验，建议玩家保持“角色扮演”，不要分享手中隐藏卡的信息。</p>"
+      "title": "@:theDreamEaters.additionalRulesAndClarifications.swarming.title",
+      "body": "@:theDreamEaters.additionalRulesAndClarifications.swarming.body"
+    },
+    {
+      "title": "@:theDreamEaters.additionalRulesAndClarifications.hidden.title",
+      "body": "@:theDreamEaters.additionalRulesAndClarifications.hidden.body"
     }
   ],
+
   "label": {
     "beyondTheGatesOfSleep": "梦境门外",
     "wakingNightmare": "清醒噩梦",

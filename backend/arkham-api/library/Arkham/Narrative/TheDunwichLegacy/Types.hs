@@ -24,7 +24,7 @@ data DunwichNarrative m = DunwichNarrative
   , armitagesFate1 :: Flavor m
   , interlude1a :: Flavor m
   , interlude2Armitage :: FlavorKey m
-  , interlude2FrancisMorgan :: Extra m
+  , interlude2FrancisMorgan :: Flavor m
   , epilogue :: Flavor m
   , extracurricularActivityIntro :: Flavor m
   , extracurricularActivityResolution2 :: FlavorKey m
@@ -35,7 +35,7 @@ data DunwichNarrative m = DunwichNarrative
   , theMiskatonicMuseumResolution1 :: FlavorKey m
   , theMiskatonicMuseumResolution2 :: FlavorKey m
   , theEssexCountyExpressIntro :: Flavor m
-  , theEssexCountyExpressResolution1 :: Extra m
+  , theEssexCountyExpressResolution1 :: Flavor m
   , bloodOnTheAltarIntro :: Flavor m
   , bloodOnTheAltarResolution2 :: Extra m
   , undimensionedAndUnseenIntro :: Flavor m

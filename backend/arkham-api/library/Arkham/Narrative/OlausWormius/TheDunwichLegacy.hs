@@ -115,9 +115,15 @@ interlude2Armitage = do
   rescued <- getHasRecord TheInvestigatorsRescuedDrHenryArmitage
   pure $ if rescued then "drHenryArmitageRescued" else "drHenryArmitageKidnapped"
 
--- | Morgan on his rifle, with the rewrite's citation for Armitage's warning.
-interlude2FrancisMorgan :: (HasI18n, ReverseQueue m) => m ()
-interlude2FrancisMorgan = flavor $ footnote 11 "footnote11"
+{- | Morgan on his rifle, with the rewrite's citation for Armitage's warning. The
+citation is the only thing the rewrite adds, but it has to be built with the
+block it annotates: a footnote alone is a story window with nothing in it.
+-}
+interlude2FrancisMorgan :: (HasI18n, Applicative m) => m (FlavorTextBuilder ())
+interlude2FrancisMorgan = pure do
+  setTitle "title"
+  p "drFrancisMorgan"
+  footnote 11 "footnote11"
 
 -- * Scenario I-A: Extracurricular Activity
 
@@ -237,9 +243,14 @@ theEssexCountyExpressIntro = do
       else p "part2"
     p "part3"
 
--- | Resolution 1 quotes Armitage's account; the citation follows it.
-theEssexCountyExpressResolution1 :: (HasI18n, ReverseQueue m) => m ()
-theEssexCountyExpressResolution1 = flavor $ footnote 8 "footnote8"
+{- | Resolution 1 quotes Armitage's account; the citation follows it, in the
+resolution's own flavor rather than a window of its own.
+-}
+theEssexCountyExpressResolution1 :: (HasI18n, Applicative m) => m (FlavorTextBuilder ())
+theEssexCountyExpressResolution1 = pure do
+  setTitle "resolution1.title"
+  p "resolution1.body"
+  footnote 8 "footnote8"
 
 -- * Scenario IV: Blood on the Altar
 

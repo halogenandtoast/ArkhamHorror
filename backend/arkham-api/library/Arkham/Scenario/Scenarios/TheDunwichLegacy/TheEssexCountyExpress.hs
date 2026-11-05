@@ -214,9 +214,9 @@ instance RunMessage TheEssexCountyExpress where
     DoStep 1 (ScenarioResolution r) -> scope "resolutions" do
       case r of
         Resolution 1 -> do
-          resolutionWithXp "resolution1" $ allGainXp' attrs
           narrative <- getDunwichNarrative
-          onNarrative narrative.theEssexCountyExpressResolution1
+          narrativeResolution "resolution1" narrative.theEssexCountyExpressResolution1
+            $ allGainXp' attrs
         Resolution 2 -> do
           resolutionWithXp "resolution2" $ allGainXp' attrs
           record TheInvestigatorsWereDelayedOnTheirWayToDunwich

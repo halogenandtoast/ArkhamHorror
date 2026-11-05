@@ -132,8 +132,10 @@ instance RunMessage TheDunwichLegacy where
             addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.professorWarrenRice
 
         unless (sacrificed Assets.drFrancisMorgan) do
-          interlude "drFrancisMorgan"
-          onNarrative narrative.interlude2FrancisMorgan
+          storyBuild
+            =<< narrativeBuilder
+              narrative.interlude2FrancisMorgan
+              (setTitle "title" >> p "drFrancisMorgan")
           record DrFrancisMorganSurvivedTheDunwichLegacy
 
           whenM (isNothing <$> getOwner Assets.drFrancisMorgan) do

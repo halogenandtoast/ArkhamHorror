@@ -21,7 +21,7 @@ instance HasModifiersFor HikingBoots1 where
 
 instance HasAbilities HikingBoots1 where
   getAbilities (HikingBoots1 a) =
-    [controlled a 1 criteria $ triggered (DiscoveringLastClue #after You YourLocation) (exhaust a)]
+    [controlled a 1 criteria $ triggered (DiscoveringLastClue #after Anyone YourLocation) (exhaust a)]
    where
     criteria =
       exists

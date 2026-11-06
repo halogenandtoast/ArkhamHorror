@@ -147,6 +147,12 @@ const views: LocationView[] = ['scene', 'map', 'cards']
       <LocationScene v-if="view === 'scene' && selected" :game="game" :playerId="playerId" :location="selected"
         :neighbours="neighbours" :mine="selected.id === myLocation"
         @choose="emit('choose', $event)" @select="selectedId = $event" />
+      <div v-if="view === 'scene'" class="mini-map">
+        <LocationMapCanvas compact :game="game" :playerId="playerId" :locations="locations"
+          :positions="positions" :links="links" :moves="moves" :gridSpots="gridSpots" :selectedId="selected?.id ?? null"
+          :myLocation="myLocation" :choices="choices" :enemiesAt="enemiesAt"
+          @activate="activate" @choose="emit('choose', $event)" />
+      </div>
       <LocationMapCanvas v-else-if="view === 'map'" :game="game" :playerId="playerId" :locations="locations"
         :positions="positions" :links="links" :moves="moves" :gridSpots="gridSpots" :selectedId="selected?.id ?? null"
         :myLocation="myLocation" :choices="choices" :enemiesAt="enemiesAt" :width="canvasSize.width" :height="canvasSize.height"
@@ -159,7 +165,7 @@ const views: LocationView[] = ['scene', 'map', 'cards']
 </template>
 
 <style scoped>
-.location-map { display: flex; flex-direction: column; min-height: 0; flex: 1; overflow-y: auto; background: radial-gradient(ellipse at 50% 45%, #2c3a28, #0e1610 78%); }
+.location-map { display: flex; flex-direction: column; min-height: 380px; height: calc(100dvh - 60px - var(--hand-h, 0px)); flex: none; overflow: hidden; background: radial-gradient(ellipse at 50% 45%, #2c3a28, #0e1610 78%); }
 .map-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 5px 12px; background: #101a14; border-bottom: 1px solid #a68b5540; }
 .views { display: flex; gap: 4px; }
 .view { padding: 3px 12px; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; background: transparent; border: 1px solid #75836b66; border-radius: 4px; color: #b4bdab; cursor: pointer; }
@@ -171,10 +177,13 @@ const views: LocationView[] = ['scene', 'map', 'cards']
 .map-layout.panel-open > .map-scroll { padding-right: 300px; }
 .team-slot:not(:empty) ~ .map-scroll { padding-left: 212px; }
 .action-overlay { position: absolute; right: 12px; top: 12px; bottom: 12px; height: auto; z-index: 60; }
-.map-layout > :not(.team-slot):not(.action-overlay) { flex: 1; min-width: 0; }
+.mini-map { position: absolute; left: 12px; bottom: 12px; z-index: 50; width: clamp(240px, 24vw, 380px); aspect-ratio: 4 / 3; padding: 6px; background: #0b130ee6; border: 1px solid #c6a873aa; border-radius: 8px; box-shadow: 0 6px 20px #000a; }
+.mini-map :deep(.map-scroll) { width: 100%; height: 100%; }
+.map-layout > :not(.team-slot):not(.action-overlay):not(.mini-map) { flex: 1; min-width: 0; }
 .team-slot { position: absolute; left: 12px; top: 84px; bottom: 12px; z-index: 55; width: 242px; display: flex; flex-direction: column; pointer-events: none; }
 @media (max-width: 800px) { .team-slot { width: calc(100% - 24px); bottom: auto; } }
 @media (max-width: 800px) {
+  .location-map { height: auto; overflow: visible; }
   .map-layout { height: auto; }
   .map-layout > .scene { height: 60vh; }
 }

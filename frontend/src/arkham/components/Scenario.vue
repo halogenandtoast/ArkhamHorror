@@ -2412,7 +2412,7 @@ async function addChaosToken(face: any){
   </div>
   <div v-else-if="!gameOver" id="scenario" class="scenario" :data-scenario="scenario.id">
     <SmokePuffLayer />
-    <div class="scenario-body" :class="{'split-view': splitView, 'scenario-body--notifier-overlays': showScenarioNotifierBar }">
+    <div class="scenario-body" :class="{'split-view': splitView, 'scenario-body--notifier-overlays': showScenarioNotifierBar, 'scenario-body--map': settingsStore.locationView !== 'cards' && !splitView }">
       <Draggable v-if="showOutOfPlay || forcedShowOutOfPlay">
         <template #handle><header><h2>{{ $t('gameBar.outOfPlay') }}</h2></header></template>
         <div class="card-row-cards">
@@ -3561,6 +3561,13 @@ async function addChaosToken(face: any){
 
   &.scenario-body--notifier-overlays {
     z-index: auto;
+  }
+
+  /* Map views: the map fills the window; the player area sits below it and is reached by scrolling. */
+  &.scenario-body--map {
+    grid-template-rows: auto auto;
+    align-content: start;
+    overflow-y: auto;
   }
 
   &.split-view {

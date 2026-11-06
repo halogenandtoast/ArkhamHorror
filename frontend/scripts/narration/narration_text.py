@@ -18,25 +18,43 @@ STORY_SEGMENT = re.compile(
     r"^(intro|prologue|epilogue|interlude|resolutions?|flavor(Text)?|story|narrative)", re.I
 )
 # ...and none of its segments names rules or UI text.
-SKIP_SEGMENTS = {"setup", "label", "labels", "tokens", "xp", "campaignlog", "title", "heading"}
+SKIP_SEGMENTS = {"setup", "label", "labels", "tokens", "xp", "campaignlog", "title", "heading", "standalone"}
 
 # Paragraphs that are bookkeeping instructions even when written as prose.
 INSTRUCTION_START = re.compile(
     r"^(in your campaign log|record (that|in)|each investigator (earns|suffers|must)|"
     r"the lead investigator (earns|suffers)|proceed to|skip to|go to|if this is|"
     r"check (your )?campaign log|choose one|otherwise,|continue to|"
-    r"read (intro|resolution|interlude|epilogue|prologue)|then read)",
+    r"read (intro|resolution|interlude|epilogue|prologue)|then read|"
+    r"add (\d|one|two) |search each investigator|any one investigator|"
+    r"the investigators must|check the |if .{0,120}\b(proceed|skip) to\b)",
     re.I,
 )
+# Rules text that can trail a story paragraph in the same <p>.
+RULES_ANYWHERE = re.compile(
+    r"chaos bag|campaign log|'\}|encounter set|\bproceed to (resolution|intro|interlude|epilogue)\b",
+    re.I,
+)
+# Choice labels (the option the player taps), interlude setup steps and
+# bonus-experience rules, not narration.
+CHOICE_SEGMENT = re.compile(
+    r"^(proceedTo|done[A-Z]|sentencedTo|remove[A-Z]|put[A-Z]|move[A-Z]|flip[A-Z]|"
+    r"resumePlaying$|if[A-Z]|xp\d+$)"
+)
+# Speaker tags and bare names, not narration.
+SPEAKER_NAME = re.compile(r"^Dr\. [A-Z]\w*( [A-Z]\w*)+$")
 
 
 def locale_files(locale_root: Path, campaign: str) -> list[tuple[str, Path]]:
     """Each JSON file of a campaign with the i18n key prefix it is mounted under
     (mirrors src/locales/<lang>/<campaign>.ts: base.json at the campaign root,
-    scenarios/<name>.json under <campaign>.<name>)."""
+    scenarios/<name>.json and, in campaigns that keep them flat, <name>.json at
+    the campaign root, both under <campaign>.<name>)."""
     root = locale_root / campaign
     files = [(campaign, root / "base.json")] if (root / "base.json").exists() else []
-    for f in sorted((root / "scenarios").glob("*.json")):
+    scenario_files = list((root / "scenarios").glob("*.json"))
+    scenario_files += [f for f in root.glob("*.json") if f.name != "base.json"]
+    for f in sorted(scenario_files, key=lambda p: p.stem):
         files.append((f"{campaign}.{f.stem}", f))
     return files
 
@@ -56,6 +74,8 @@ def is_story_key(key: str) -> bool:
     segments = key.split(".")
     if any(s.lower() in SKIP_SEGMENTS for s in segments):
         return False
+    if any(CHOICE_SEGMENT.match(s) for s in segments):
+        return False
     return any(STORY_SEGMENT.match(s) for s in segments[1:])
 
 
@@ -66,6 +86,13 @@ def _strip_lists(text: str) -> str:
         prev = text
         text = re.sub(r"<ul>(?:(?!<ul>).)*?</ul>", " ", text, flags=re.S)
     return text
+
+
+def _is_scrambled(p: str) -> bool:
+    """Visual-glitch paragraphs set as broken fragments ("yo urs e lfst an d")
+    read as nonsense aloud; real prose averages well over 2.5 letters a word."""
+    words = p.split()
+    return len(words) > 8 and sum(len(w) for w in words) / len(words) < 2.5
 
 
 def story_paragraphs(raw: str) -> list[str]:
@@ -85,7 +112,13 @@ def story_paragraphs(raw: str) -> list[str]:
         p = re.sub(r"[*_]", "", p)             # markdown emphasis
         p = re.sub(r"(\w) - (\w)", r"\1-\2", p)  # "half - eaten"
         p = re.sub(r"\s+", " ", p).strip()
-        if len(p) > 1 and not INSTRUCTION_START.match(p):
+        if (
+            len(p) > 1
+            and not INSTRUCTION_START.match(p)
+            and not RULES_ANYWHERE.search(p)
+            and not SPEAKER_NAME.match(p)
+            and not _is_scrambled(p)
+        ):
             paragraphs.append(p)
     return paragraphs
 

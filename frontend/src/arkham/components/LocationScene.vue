@@ -11,7 +11,6 @@ import { choicesFor, selectLocationIndex, type EntityChoice } from '@/arkham/loc
 import { useDbCardStore } from '@/stores/dbCards'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import { ownInvestigator } from '@/arkham/ownInvestigator'
-import HandCard from '@/arkham/components/HandCard.vue'
 
 /* The room you are standing in, drawn as a place rather than a card: a backdrop, the investigators and
  * enemies at the location standing on its floor, and doors to the locations next to it.
@@ -72,7 +71,6 @@ const youAt = ref<[number, number]>([46, 82])
 watch(() => props.location.id, () => { youAt.value = [46, 82]; menu.value = null })
 
 const me = computed(() => ownInvestigator(props.game, props.playerId))
-const hand = computed(() => me.value?.hand ?? [])
 
 const figures = computed<Figure[]>(() => {
   const result: Figure[] = []
@@ -199,14 +197,6 @@ function pick(index: number) {
       <button v-if="menu.lookAt" class="button look" @click="emit('select', menu.lookAt); menu = null">{{ t('locationMap.lookThere') }}</button>
       <p v-if="menuSelectIndex === -1 && menuEntries.length === 0" class="detail">{{ t('locationMap.noActions') }}</p>
     </div>
-    <div v-if="me && hand.length" class="hand-fan" :aria-label="t('locationMap.hand', { count: hand.length })">
-      <span class="hand-title">{{ t('locationMap.hand', { count: hand.length }) }}</span>
-      <div class="cards">
-        <div v-for="(card, i) in hand" :key="i" class="slot" :style="{ '--i': i - (hand.length - 1) / 2 }">
-          <HandCard :card="card" :game="game" :ownerId="me?.id ?? playerId" :playerId="playerId" @choose="emit('choose', $event)" />
-        </div>
-      </div>
-    </div>
   </section>
 </template>
 
@@ -247,17 +237,11 @@ function pick(index: number) {
 .figure .meter b { margin-left: auto; color: #fff4df; }
 @keyframes breathe { 50% { transform: scaleY(1.015) translateY(-1px); } }
 .figure .name { margin-top: 2px; font-size: 0.7rem; background: #0b100dcc; padding: 1px 6px; border-radius: 3px; white-space: nowrap; }
-.menu { position: absolute; right: 14px; bottom: 14px; z-index: 50; width: min(320px, calc(100% - 28px)); max-height: 70%; overflow: auto; display: flex; flex-direction: column; gap: 6px; padding: 12px; background: #0f1813f0; border: 1px solid #c6a873aa; border-radius: 8px; box-shadow: 0 8px 28px #000a; }
+.menu { position: absolute; left: 14px; bottom: 14px; z-index: 50; width: min(320px, calc(100% - 28px)); max-height: 70%; overflow: auto; display: flex; flex-direction: column; gap: 6px; padding: 12px; background: #0f1813f0; border: 1px solid #c6a873aa; border-radius: 8px; box-shadow: 0 8px 28px #000a; }
 .menu h3 { margin: 0; font: 1.25rem Georgia, serif; }
 .menu .close { position: absolute; right: 6px; top: 4px; background: transparent; border: 0; color: #a3aca3; cursor: pointer; }
 .detail { margin: 0; font-size: 0.8rem; color: #b9c2ad; }
 .look { background: rgb(180 140 70 / 25%); }
-.hand-fan { position: absolute; left: 0; right: 0; bottom: -34px; z-index: 40; display: flex; flex-direction: column; align-items: center; pointer-events: none; }
-.hand-title { pointer-events: auto; font-size: 0.7rem; padding: 2px 12px; background: #0f1813e6; border: 1px solid #c6a87366; border-radius: 10px 10px 0 0; color: #e6d6a8; }
-.hand-fan .cards { display: flex; justify-content: center; height: 160px; overflow: visible; }
-.hand-fan .slot { pointer-events: auto; width: 112px; flex: none; margin-left: -20px; transform-origin: 50% 120%; transform: translateY(calc(var(--i) * var(--i) * 2px - 4px)) rotate(calc(var(--i) * 4deg)); transition: transform 0.15s; }
-.hand-fan .slot:hover { z-index: 5; transform: translateY(-44px); }
-.hand-fan .slot :deep(.card) { width: 112px; min-width: 112px; }
 @keyframes pulse { 50% { box-shadow: 0 0 0 5px #e6c58422; } }
 @media (prefers-reduced-motion: reduce) { .hotspot { animation: none; } .figure { transition: none; } .figure .sprite { animation: none; } }
 </style>

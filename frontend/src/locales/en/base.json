@@ -530,6 +530,20 @@
     "debug": "Debug"
   },
   "locationMap": {
+    "close": "Close",
+    "playCard": "Play {name}",
+    "gainResource": "Gain 1 resource",
+    "drawCard": "Draw 1 card",
+    "endTurn": "End turn",
+    "skipTriggers": "Skip triggers",
+    "section": {
+      "basic": "Basic",
+      "scenario": "Location & scenario",
+      "enemies": "Enemies",
+      "inPlay": "Cards in play",
+      "hand": "Play cards from hand",
+      "other": "Other"
+    },
     "title": "Location map",
     "act": "Act",
     "actions": "Actions",

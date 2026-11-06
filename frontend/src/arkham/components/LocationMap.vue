@@ -13,7 +13,8 @@ import {
 } from '@/arkham/locationGraph'
 import { gridSlotIndex, selectLocationIndex } from '@/arkham/locationChoices'
 import LocationMapCanvas, { type MapMove } from '@/arkham/components/LocationMapCanvas.vue'
-import LocationActionList from '@/arkham/components/LocationActionList.vue'
+import LocationActionPanel from '@/arkham/components/LocationActionPanel.vue'
+import LocationHand from '@/arkham/components/LocationHand.vue'
 import { ownInvestigator } from '@/arkham/ownInvestigator'
 import LocationMissionStrip from '@/arkham/components/LocationMissionStrip.vue'
 import LocationScene from '@/arkham/components/LocationScene.vue'
@@ -125,6 +126,7 @@ watch(graph, (g) => {
 
 onBeforeUnmount(() => { if (clearTimer) clearTimeout(clearTimer) })
 
+const panelOpen = ref(true)
 const views: LocationView[] = ['scene', 'map', 'cards']
 </script>
 
@@ -136,6 +138,7 @@ const views: LocationView[] = ['scene', 'map', 'cards']
           :aria-selected="v === view" @click="settings.setLocationView(v)">{{ t(`locationMap.view.${v}`) }}</button>
       </span>
       <span v-if="boardOnlyContent" class="board-note">{{ t('locationMap.boardOnly') }}</span>
+      <button class="view" :class="{ active: panelOpen }" @click="panelOpen = !panelOpen">{{ t('locationMap.actions') }}</button>
       <button class="view decks" :class="{ active: decksShown }" @click="emit('toggleDecks')">{{ t('locationMap.decks') }}</button>
     </div>
     <LocationMissionStrip :game="game" :scenario="scenario" :playerId="playerId" @choose="emit('choose', $event)" />
@@ -147,8 +150,10 @@ const views: LocationView[] = ['scene', 'map', 'cards']
         :positions="positions" :links="links" :moves="moves" :gridSpots="gridSpots" :selectedId="selected?.id ?? null"
         :myLocation="myLocation" :choices="choices" :enemiesAt="enemiesAt" :width="canvasSize.width" :height="canvasSize.height"
         @activate="activate" @choose="emit('choose', $event)" />
+      <LocationActionPanel v-if="panelOpen" class="action-overlay" :game="game" :playerId="playerId"
+        :location="game.locations[myLocation ?? ''] ?? selected" @choose="emit('choose', $event)" @close="panelOpen = false" />
     </div>
-    <LocationActionList :game="game" :playerId="playerId" @choose="emit('choose', $event)" />
+    <LocationHand :game="game" :playerId="playerId" @choose="emit('choose', $event)" />
   </section>
 </template>
 
@@ -160,7 +165,8 @@ const views: LocationView[] = ['scene', 'map', 'cards']
 .view:hover { border-color: #e6c584; }
 .view.active { background: #c6a873; border-color: #c6a873; color: #191c16; font-weight: 650; }
 .board-note { font-size: 0.75rem; color: #d8b68c; }
-.map-layout { display: flex; flex: 1 0 clamp(300px, 50vh, 640px); }
+.map-layout { position: relative; display: flex; flex: 1 0 clamp(300px, 50vh, 640px); }
+.action-overlay { position: absolute; right: 12px; top: 12px; bottom: 12px; height: auto; z-index: 60; }
 .map-layout > :first-child { flex: 1; min-width: 0; }
 @media (max-width: 800px) {
   .map-layout { height: auto; }

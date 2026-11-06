@@ -10,6 +10,7 @@ import { useCardNames } from '@/arkham/composables/useCardNames'
 import { choicesFor, selectLocationIndex, type EntityChoice } from '@/arkham/locationChoices'
 import { useDbCardStore } from '@/stores/dbCards'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import HandCard from '@/arkham/components/HandCard.vue'
 
 /* The room you are standing in, drawn as a place rather than a card: a backdrop, the investigators and
  * enemies at the location standing on its floor, and doors to the locations next to it.
@@ -67,6 +68,8 @@ const meter = (max: number, taken: number): Meter => ({ max, left: Math.max(0, m
 const ENEMY_SPOTS: [number, number][] = [[72, 80], [84, 72], [78, 90], [60, 72], [88, 88], [62, 90]]
 const youAt = ref<[number, number]>([46, 82])
 watch(() => props.location.id, () => { youAt.value = [46, 82]; menu.value = null })
+
+const hand = computed(() => props.game.investigators[props.playerId]?.hand ?? [])
 
 const figures = computed<Figure[]>(() => {
   const result: Figure[] = []
@@ -175,7 +178,7 @@ function pick(index: number) {
       <span class="stand">
         <span class="shadow"></span>
         <img v-if="f.sprite" class="sprite" :src="f.sprite" :alt="f.name" draggable="false" />
-        <img v-else class="crop" :src="cardImage(f.code)" :alt="f.name" draggable="false" />
+        <span v-else class="crop" :class="f.kind" role="img" :aria-label="f.name" :style="{ backgroundImage: `url(${cardImage(f.code)})` }"></span>
       </span>
       <span class="name">{{ f.name }}<small v-if="f.note"> {{ f.note }}</small></span>
     </button>
@@ -193,7 +196,14 @@ function pick(index: number) {
       <p v-if="menuSelectIndex === -1 && menuEntries.length === 0" class="detail">{{ t('locationMap.noActions') }}</p>
     </div>
   </section>
-</template>
+    <div v-if="hand.length" class="hand-fan" :aria-label="t('locationMap.hand', { count: hand.length })">
+      <span class="hand-title">{{ t('locationMap.hand', { count: hand.length }) }}</span>
+      <div class="cards">
+        <div v-for="(card, i) in hand" :key="i" class="slot" :style="{ '--i': i - (hand.length - 1) / 2 }">
+          <HandCard :card="card" :game="game" :ownerId="playerId" :playerId="playerId" @choose="emit('choose', $event)" />
+        </div>
+      </div>
+    </div>
 
 <style scoped>
 .scene { position: relative; flex: 1; min-height: 420px; overflow: hidden; background: #0b100d; color: #ece6d0; isolation: isolate; }
@@ -215,7 +225,8 @@ function pick(index: number) {
 .figure .stand { position: relative; display: grid; justify-items: center; }
 .figure .shadow { position: absolute; bottom: -4px; width: 78%; height: 14px; border-radius: 50%; background: radial-gradient(#000a, transparent 70%); }
 .figure .sprite { position: relative; height: clamp(110px, 24vh, 210px); width: auto; animation: breathe 4s ease-in-out infinite; transform-origin: 50% 95%; }
-.figure .crop { position: relative; width: clamp(70px, 13vh, 110px); aspect-ratio: 1; object-fit: cover; object-position: 50% 24%; border-radius: 50%; border: 2px solid #c9dab1; background: #1a2620; }
+.figure .crop { position: relative; display: block; width: clamp(70px, 13vh, 110px); aspect-ratio: 1; border-radius: 50%; border: 2px solid #c9dab1; background-color: #1a2620; background-repeat: no-repeat; background-size: 235% auto; background-position: 100% 14%; }
+.figure .crop.enemy { background-size: 165% auto; background-position: 50% 17%; }
 .figure.enemy .crop { border-color: #d99e8e; }
 .figure.you .crop { border-color: #ffe9a0; box-shadow: 0 0 10px #ffe9a0aa; }
 .figure.you .sprite { filter: drop-shadow(0 0 6px #ffe9a0aa); }
@@ -234,6 +245,12 @@ function pick(index: number) {
 .menu .close { position: absolute; right: 6px; top: 4px; background: transparent; border: 0; color: #a3aca3; cursor: pointer; }
 .detail { margin: 0; font-size: 0.8rem; color: #b9c2ad; }
 .look { background: rgb(180 140 70 / 25%); }
+.hand-fan { position: absolute; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+.hand-title { pointer-events: auto; font-size: 0.7rem; padding: 2px 12px; background: #0f1813e6; border: 1px solid #c6a87366; border-radius: 10px 10px 0 0; color: #e6d6a8; }
+.hand-fan .cards { display: flex; justify-content: center; height: 118px; overflow: visible; }
+.hand-fan .slot { pointer-events: auto; width: 84px; flex: none; margin-left: -14px; transform-origin: 50% 120%; transform: translateY(calc(var(--i) * var(--i) * 2px - 4px)) rotate(calc(var(--i) * 4deg)); transition: transform 0.15s; }
+.hand-fan .slot:hover { z-index: 5; transform: translateY(-30px); }
+.hand-fan .slot :deep(.card) { width: 84px; min-width: 84px; }
 @keyframes pulse { 50% { box-shadow: 0 0 0 5px #e6c58422; } }
 @media (prefers-reduced-motion: reduce) { .hotspot { animation: none; } .figure { transition: none; } .figure .sprite { animation: none; } }
 </style>

@@ -532,6 +532,7 @@
   "locationMap": {
     "title": "Location map",
     "act": "Act",
+    "hand": "Hand · {count}",
     "agenda": "Agenda",
     "doomCount": "Doom {count} / {max}",
     "health": "Health",

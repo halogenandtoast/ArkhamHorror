@@ -3,8 +3,8 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Game } from '@/arkham/types/Game'
 import type { Scenario } from '@/arkham/types/Scenario'
-import { cardArt, cardImage } from '@/arkham/cardImages'
-import { useDbCardStore } from '@/stores/dbCards'
+import { cardImage } from '@/arkham/cardImages'
+import { useCardInfo } from '@/arkham/composables/useCardNames'
 import { useGameChoices } from '@/arkham/composables/useGameChoices'
 import { choicesFor, type EntityChoice } from '@/arkham/locationChoices'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
@@ -16,7 +16,7 @@ const props = defineProps<{ game: Game; scenario: Scenario; playerId: string }>(
 const emit = defineEmits<{ (e: 'choose', index: number): void }>()
 
 const { t } = useI18n()
-const dbCards = useDbCardStore()
+const cardInfo = useCardInfo()
 const choices = useGameChoices(() => props.game, () => props.playerId)
 
 // Printed text carries markup (bold tags, [[Trait]], [action]); the banner shows it plain.
@@ -30,8 +30,7 @@ type Panel = {
 }
 
 function describe(kind: 'act' | 'agenda', id: string, deckId: number, step: number, flipped: boolean, doom: number | null): Panel {
-  const art = cardArt(id)
-  const card = dbCards.getDbCard(art) ?? dbCards.getDbCard(art.replace(/[a-z]$/, ''))
+  const card = cardInfo(id)
   const stack = kind === 'act'
     ? [props.scenario.actStack[deckId], props.scenario.completedActStack[deckId]]
     : [props.scenario.agendaStack[deckId], props.scenario.completedAgendaStack[deckId]]

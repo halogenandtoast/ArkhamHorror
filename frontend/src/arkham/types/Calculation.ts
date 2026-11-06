@@ -14,7 +14,7 @@ export type GameValueTag =
 
 export type Calculation
   = { tag: "Fixed", contents: number }
-  | { tag: "GameValueCalculation", contents: { tag: GameValueTag } }
+  | { tag: "GameValueCalculation", contents: { tag: GameValueTag, contents?: unknown } }
   | { tag: "OtherCalculation" }
 
 export const calculationDecoder: JsonDecoder.Decoder<Calculation> = JsonDecoder.oneOf<Calculation>([
@@ -22,8 +22,8 @@ export const calculationDecoder: JsonDecoder.Decoder<Calculation> = JsonDecoder.
   JsonDecoder.object<Calculation>(
     {
       tag: JsonDecoder.literal("GameValueCalculation"),
-      contents: JsonDecoder.object<{ tag: GameValueTag }>(
-        { tag: JsonDecoder.string().map((t) => t as GameValueTag) },
+      contents: JsonDecoder.object<{ tag: GameValueTag; contents?: unknown }>(
+        { tag: JsonDecoder.string().map((t) => t as GameValueTag), contents: JsonDecoder.optional(JsonDecoder.succeed()) },
         'GameValue',
       ),
     },
@@ -38,4 +38,19 @@ export const isUnvaluedCalculation = (c: Calculation | null): boolean => {
   if (c === null) return true
   if (c.tag !== "GameValueCalculation") return false
   return c.contents.tag === "ValueStar" || c.contents.tag === "ValueX" || c.contents.tag === "ValueUnknown"
+}
+
+/* The number a printed stat resolves to for this many investigators, or null when it is a dash, an X or
+ * something the server did not spell out. Per-player values scale with the investigators the game started with. */
+export const resolveCalculation = (c: Calculation | null, players: number): number | null => {
+  if (c === null) return null
+  if (c.tag === "Fixed") return c.contents
+  if (c.tag !== "GameValueCalculation") return null
+  const { tag, contents } = c.contents
+  const numbers = Array.isArray(contents) ? contents.filter((n): n is number => typeof n === "number") : []
+  if (tag === "Static" && typeof contents === "number") return contents
+  if (tag === "PerPlayer" && typeof contents === "number") return contents * players
+  if (tag === "StaticWithPerPlayer" && numbers.length === 2) return numbers[0] + numbers[1] * players
+  if (tag === "ByPlayerCount" && numbers.length > 0) return numbers[Math.min(players, numbers.length) - 1]
+  return null
 }

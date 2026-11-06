@@ -8,6 +8,7 @@ import { cardArt, cardImage, portraitImage } from '@/arkham/cardImages'
 import { useCardNames } from '@/arkham/composables/useCardNames'
 import { useDbCardStore } from '@/stores/dbCards'
 import { spriteFor } from '@/arkham/sceneSprites'
+import { resolveCalculation } from '@/arkham/types/Calculation'
 import { selectLocationIndex } from '@/arkham/locationChoices'
 import { ownInvestigator } from '@/arkham/ownInvestigator'
 import type { Point } from '@/arkham/locationGraph'
@@ -64,8 +65,8 @@ function figuresAt(l: Location): Fig[] {
   const monsters = props.enemiesAt(l).slice(0, 4).flatMap((id): Fig[] => {
     const e = props.game.enemies[id]
     if (!e) return []
-    const damage = e.tokens[TokenType.Damage] ?? 0
-    const max = e.health?.tag === 'Fixed' ? e.health.contents : null
+    const damage = (e.tokens[TokenType.Damage] ?? 0) + e.assignedDamage
+    const max = resolveCalculation(e.health, Object.keys(props.game.investigators).length)
     return [{
       id, kind: 'enemy', name: nameOf(e.cardCode), src: spriteOf(e.cardCode), art: cardImage(e.cardCode), you: false, exhausted: e.exhausted,
       note: max === null ? `♥ ${damage} dmg` : null,

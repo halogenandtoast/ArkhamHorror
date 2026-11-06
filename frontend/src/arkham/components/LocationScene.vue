@@ -5,6 +5,7 @@ import type { Game } from '@/arkham/types/Game'
 import type { Location } from '@/arkham/types/Location'
 import { TokenType } from '@/arkham/types/Token'
 import { cardArt, cardImage } from '@/arkham/cardImages'
+import { resolveCalculation } from '@/arkham/types/Calculation'
 import { spriteFor } from '@/arkham/sceneSprites'
 import { useGameChoices } from '@/arkham/composables/useGameChoices'
 import { useCardNames } from '@/arkham/composables/useCardNames'
@@ -85,8 +86,8 @@ const figures = computed<Figure[]>(() => {
     const enemy = props.game.enemies[id]
     if (!enemy || (enemy.placement.tag !== 'AtLocation' && !engaged.includes(id))) continue
     const [x, y] = ENEMY_SPOTS[slot++ % ENEMY_SPOTS.length]
-    const damage = enemy.tokens[TokenType.Damage] ?? 0
-    const maxHealth = enemy.health?.tag === 'Fixed' ? enemy.health.contents : null
+    const damage = (enemy.tokens[TokenType.Damage] ?? 0) + enemy.assignedDamage
+    const maxHealth = resolveCalculation(enemy.health, Object.keys(props.game.investigators).length)
     result.push({
       id, code: enemy.cardCode, name: nameOf(enemy.cardCode), kind: 'enemy', x, y, exhausted: enemy.exhausted, you: false,
       note: maxHealth === null && damage ? `♥ −${damage}` : null,

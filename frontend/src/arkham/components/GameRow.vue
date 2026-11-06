@@ -150,7 +150,11 @@ const scenarioIcon = computed(() => {
       <div class="game-title">
         <div class="main-details">
           <div class="campaign-icon-container" v-if="campaignIcon">
-            <img class="campaign-icon" :src="campaignIcon" />
+            <img
+              class="campaign-icon"
+              :class="{ 'campaign-icon--vespers': campaign?.id === ':night-of-vespers' }"
+              :src="campaignIcon"
+            />
           </div>
           <div class="campaign-icon-container" v-else-if="scenarioIcon">
             <img class="campaign-icon" :src="scenarioIcon" />
@@ -302,6 +306,18 @@ h2 {
   max-height: 50px;
   width: 100%;
   object-fit: contain;
+}
+
+.campaign-icon--vespers {
+  /* The guide pairs yellow gold with a fine dark outline and an offset shadow. */
+  filter:
+    brightness(0) saturate(100%) invert(80%) sepia(88%) saturate(1690%)
+    hue-rotate(350deg) brightness(85%) contrast(105%) saturate(75%)
+    drop-shadow(0.4px 0 0 #242016)
+    drop-shadow(-0.4px 0 0 #242016)
+    drop-shadow(0 0.4px 0 #242016)
+    drop-shadow(0 -0.4px 0 #242016)
+    drop-shadow(0.6px 0.8px 0.4px rgb(0 0 0 / 55%));
 }
 
 .scenario-icon {

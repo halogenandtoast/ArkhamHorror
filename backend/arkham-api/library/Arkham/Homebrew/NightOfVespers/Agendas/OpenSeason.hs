@@ -29,6 +29,7 @@ instance RunMessage OpenSeason where
       eachInvestigator \iid -> do
         sid <- getRandom
         beginSkillTest sid iid attrs iid #agility (Fixed 3)
+      advanceAgendaDeck attrs
       pure a
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       findEncounterCard iid attrs $ #enemy <> CardWithTrait Syndicate

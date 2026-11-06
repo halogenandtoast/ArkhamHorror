@@ -199,11 +199,11 @@ function pick(index: number) {
       <button v-if="menu.lookAt" class="button look" @click="emit('select', menu.lookAt); menu = null">{{ t('locationMap.lookThere') }}</button>
       <p v-if="menuSelectIndex === -1 && menuEntries.length === 0" class="detail">{{ t('locationMap.noActions') }}</p>
     </div>
-    <div v-if="hand.length" class="hand-fan" :aria-label="t('locationMap.hand', { count: hand.length })">
+    <div v-if="me && hand.length" class="hand-fan" :aria-label="t('locationMap.hand', { count: hand.length })">
       <span class="hand-title">{{ t('locationMap.hand', { count: hand.length }) }}</span>
       <div class="cards">
         <div v-for="(card, i) in hand" :key="i" class="slot" :style="{ '--i': i - (hand.length - 1) / 2 }">
-          <HandCard :card="card" :game="game" :ownerId="playerId" :playerId="playerId" @choose="emit('choose', $event)" />
+          <HandCard :card="card" :game="game" :ownerId="me?.id ?? playerId" :playerId="playerId" @choose="emit('choose', $event)" />
         </div>
       </div>
     </div>

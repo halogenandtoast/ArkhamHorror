@@ -195,7 +195,6 @@ function pick(index: number) {
       <button v-if="menu.lookAt" class="button look" @click="emit('select', menu.lookAt); menu = null">{{ t('locationMap.lookThere') }}</button>
       <p v-if="menuSelectIndex === -1 && menuEntries.length === 0" class="detail">{{ t('locationMap.noActions') }}</p>
     </div>
-  </section>
     <div v-if="hand.length" class="hand-fan" :aria-label="t('locationMap.hand', { count: hand.length })">
       <span class="hand-title">{{ t('locationMap.hand', { count: hand.length }) }}</span>
       <div class="cards">
@@ -204,6 +203,8 @@ function pick(index: number) {
         </div>
       </div>
     </div>
+  </section>
+</template>
 
 <style scoped>
 .scene { position: relative; flex: 1; min-height: 420px; overflow: hidden; background: #0b100d; color: #ece6d0; isolation: isolate; }

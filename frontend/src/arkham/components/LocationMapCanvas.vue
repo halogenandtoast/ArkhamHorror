@@ -40,9 +40,40 @@ const { t } = useI18n()
 const nameOf = useCardNames()
 const pos = (id: string): Point => props.cutaway?.[id] ?? props.positions[id]
 const dbCards = useDbCardStore()
-const figureSrc = (cardCode: string) => spriteFor(cardCode, dbCards.getDbCard(cardArt(cardCode))?.traits ?? '')
-  ?? portraitImage(cardCode)
-const enemyFigures = (l: Location) => props.enemiesAt(l).slice(0, 3).map((id) => props.game.enemies[id]).filter(Boolean)
+// The name is checked as well as the traits: it is what is on screen, and the card database may not have loaded yet.
+const spriteOf = (cardCode: string) => spriteFor(cardCode, `${dbCards.getDbCard(cardArt(cardCode))?.traits ?? ''} ${nameOf(cardCode)}`)
+const figureSrc = (cardCode: string) => spriteOf(cardCode) ?? portraitImage(cardCode)
+type Meter = { left: number; max: number }
+type Fig = {
+  id: string; kind: 'investigator' | 'enemy'; name: string; src: string | null; art: string; you: boolean; exhausted: boolean; note: string | null
+  health: Meter | null; sanity: Meter | null; resources: number | null; clues: number | null
+}
+const meter = (max: number, taken: number): Meter => ({ max, left: Math.max(0, max - taken) })
+/** Everyone standing in a room, investigators first, with the numbers shown above their heads. */
+function figuresAt(l: Location): Fig[] {
+  const mine = ownInvestigator(props.game, props.playerId)?.id
+  const people = l.investigators.flatMap((id): Fig[] => {
+    const i = props.game.investigators[id]
+    if (!i) return []
+    return [{
+      id, kind: 'investigator', name: nameOf(i.cardCode), src: figureSrc(i.cardCode), art: '', you: id === mine, exhausted: false, note: null,
+      health: meter(i.health, i.tokens[TokenType.Damage] ?? 0), sanity: meter(i.sanity, i.tokens[TokenType.Horror] ?? 0),
+      resources: i.tokens[TokenType.Resource] ?? 0, clues: i.tokens[TokenType.Clue] ?? 0,
+    }]
+  })
+  const monsters = props.enemiesAt(l).slice(0, 4).flatMap((id): Fig[] => {
+    const e = props.game.enemies[id]
+    if (!e) return []
+    const damage = e.tokens[TokenType.Damage] ?? 0
+    const max = e.health?.tag === 'Fixed' ? e.health.contents : null
+    return [{
+      id, kind: 'enemy', name: nameOf(e.cardCode), src: spriteOf(e.cardCode), art: cardImage(e.cardCode), you: false, exhausted: e.exhausted,
+      note: max === null ? `♥ ${damage} dmg` : null,
+      health: max === null ? null : meter(max, damage), sanity: null, resources: null, clues: null,
+    }]
+  })
+  return [...people, ...monsters]
+}
 const ownId = () => ownInvestigator(props.game, props.playerId)?.id
 const clueCount = (l: Location) => l.tokens[TokenType.Clue] ?? 0
 const doomCount = (l: Location) => l.tokens[TokenType.Doom] ?? 0
@@ -81,12 +112,21 @@ const investigatorName = (id: string) => {
           <span v-if="doomCount(l)" class="doom" :title="t('locationMap.doom')">☠{{ doomCount(l) }}</span>
         </span>
         <span class="occupants">
-          <img v-for="id in l.investigators" :key="id" class="figure"
-            :class="{ you: id === ownId(), sprite: cutaway }" :src="cutaway ? figureSrc(game.investigators[id]?.cardCode ?? '') : portraitImage(game.investigators[id]?.cardCode ?? '')"
-            :alt="investigatorName(id)" :title="investigatorName(id)" />
           <template v-if="cutaway">
-            <img v-for="e in enemyFigures(l)" :key="e.id" class="figure sprite enemy-figure" :class="{ exhausted: e.exhausted }"
-              :src="figureSrc(e.cardCode)" :alt="nameOf(e.cardCode)" :title="nameOf(e.cardCode)" />
+            <span v-for="f in figuresAt(l)" :key="f.id" class="fig" :class="[f.kind, { you: f.you, exhausted: f.exhausted }]" :title="f.name">
+              <span v-if="f.health || f.sanity" class="hud">
+                <span v-if="f.health" class="meter hp"><span aria-hidden="true">♥</span><span class="track"><i :style="{ width: (100 * f.health.left / Math.max(1, f.health.max)) + '%' }"></i></span><b>{{ f.health.left }}/{{ f.health.max }}</b></span>
+                <span v-if="f.sanity" class="meter sanity"><span aria-hidden="true">◆</span><span class="track"><i :style="{ width: (100 * f.sanity.left / Math.max(1, f.sanity.max)) + '%' }"></i></span><b>{{ f.sanity.left }}/{{ f.sanity.max }}</b></span>
+                <span v-if="f.resources !== null" class="counts"><span class="count res">$ {{ f.resources }}</span><span class="count clue">◇ {{ f.clues }}</span></span>
+              </span>
+              <span v-else-if="f.note" class="hud"><span class="meter hp">{{ f.note }}</span></span>
+              <img v-if="f.src" class="figure sprite" :src="f.src" :alt="f.name" draggable="false" />
+              <span v-else class="crop" role="img" :aria-label="f.name" :style="{ backgroundImage: `url(${f.art})` }"></span>
+            </span>
+          </template>
+          <template v-else>
+            <img v-for="id in l.investigators" :key="id" class="figure" :class="{ you: id === ownId() }"
+              :src="portraitImage(game.investigators[id]?.cardCode ?? '')" :alt="investigatorName(id)" :title="investigatorName(id)" />
           </template>
           <span v-if="enemiesAt(l).length && !cutaway" class="token enemy">☠{{ enemiesAt(l).length > 1 ? ' ' + enemiesAt(l).length : '' }}</span>
         </span>
@@ -106,16 +146,23 @@ const investigatorName = (id: string) => {
 .cutaway .node { translate: -50% -100%; width: auto; height: auto; min-width: 70px; padding: 0 3px 3px; background: transparent; border: 0; overflow: visible; align-items: center; justify-content: flex-end; gap: 2px; }
 .cutaway .node::after, .cutaway .art { display: none; }
 .cutaway .node .occupants { order: -1; flex-wrap: nowrap; filter: drop-shadow(2px 4px 3px #000c); }
-.cutaway .node .figure { width: clamp(34px, 5.2cqh, 64px); }
-.cutaway .node .figure.sprite { width: auto; height: clamp(46px, 11cqh, 110px); aspect-ratio: auto; border: 0; border-radius: 0; background: transparent; object-fit: contain; object-position: bottom; }
-.cutaway .node .figure.sprite.you { box-shadow: none; filter: drop-shadow(0 0 6px #ffe9a0); }
-.figure.exhausted { opacity: 0.65; rotate: 7deg; }
-.cutaway .title { padding: 3px 9px; background: #102018e6; border: 1px solid #a596685e; border-radius: 4px; font-size: clamp(0.75rem, 1vw, 0.95rem); white-space: nowrap; }
-.cutaway .node:hover .title, .cutaway .node.selected .title { border-color: #e8cb8d; color: #fff1ca; }
-.cutaway .node.here .title { border-color: #bfd18f; background: #273421ed; }
-.cutaway .node.here, .cutaway .node.selected { box-shadow: none; outline: 0; }
-.cutaway .node.targetable .title { box-shadow: 0 0 10px 2px #f2d27a; }
-.cutaway .node .badges { position: absolute; top: -14px; }
+.cutaway .node .occupants { align-items: flex-end; gap: 6px; }
+.cutaway .fig { display: grid; justify-items: center; gap: 2px; }
+.cutaway .fig .figure.sprite { width: auto; height: clamp(46px, 11cqh, 110px); aspect-ratio: auto; border: 0; border-radius: 0; background: transparent; object-fit: contain; object-position: bottom; }
+.cutaway .fig.you .figure { filter: drop-shadow(0 0 6px #ffe9a0); }
+.cutaway .fig.exhausted .figure { opacity: 0.65; rotate: 7deg; }
+.cutaway .fig.enemy .figure { filter: drop-shadow(0 0 5px #c9684f); }
+.crop { display: block; width: clamp(40px, 8cqh, 72px); aspect-ratio: 1; border-radius: 50%; border: 2px solid #d99e8e; background: #1a2620 no-repeat 50% 17% / 165% auto; }
+.hud { display: grid; gap: 2px; min-width: 56px; padding: 3px 5px; background: #111815ef; border: 1px solid #9f8d605c; border-radius: 4px; font: 600 10px/1.15 system-ui, sans-serif; white-space: nowrap; text-shadow: none; }
+.hud .meter { display: flex; align-items: center; gap: 3px; font-variant-numeric: tabular-nums; }
+.hud .meter.hp { color: #ff9b87; }
+.hud .meter.sanity { color: #9fceee; }
+.hud .track { width: 22px; height: 4px; background: #67645d; border-radius: 3px; overflow: hidden; }
+.hud .track i { display: block; height: 100%; background: currentColor; }
+.hud .meter b { margin-left: auto; color: #fff4df; }
+.hud .counts { display: flex; justify-content: space-between; gap: 8px; border-top: 1px solid #ffffff1a; padding-top: 2px; }
+.hud .count.res { color: #f0d9a8; }
+.hud .count.clue { color: #9fd3e6; }
 .map-links { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
 .map-links line { stroke: #b2996399; stroke-width: 1.2; vector-effect: non-scaling-stroke; }
 .moving-enemy { fill: #eeab78; filter: drop-shadow(0 0 2px #f37045); }

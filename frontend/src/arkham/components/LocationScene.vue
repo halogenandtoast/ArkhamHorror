@@ -80,9 +80,10 @@ const figures = computed<Figure[]>(() => {
     })
   }
   let slot = 0
-  for (const id of props.location.enemies) {
+  const engaged = props.location.investigators.flatMap((id) => props.game.investigators[id]?.engagedEnemies ?? [])
+  for (const id of new Set([...props.location.enemies, ...engaged])) {
     const enemy = props.game.enemies[id]
-    if (!enemy || enemy.placement.tag !== 'AtLocation') continue
+    if (!enemy || (enemy.placement.tag !== 'AtLocation' && !engaged.includes(id))) continue
     const [x, y] = ENEMY_SPOTS[slot++ % ENEMY_SPOTS.length]
     const damage = enemy.tokens[TokenType.Damage] ?? 0
     const maxHealth = enemy.health?.tag === 'Fixed' ? enemy.health.contents : null

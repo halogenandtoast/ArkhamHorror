@@ -43,6 +43,12 @@ const locations = computed(() => Object.values(props.game.locations)
 
 const enemiesAt = (l: Location) => l.enemies.filter((id) => props.game.enemies[id]?.placement.tag === 'AtLocation')
 
+// Enemies engaged with an investigator are in that investigator's threat area, not on the location: they still stand in the room.
+const enemiesShownAt = (l: Location) => [...new Set([
+  ...enemiesAt(l),
+  ...l.investigators.flatMap((id) => props.game.investigators[id]?.engagedEnemies ?? []),
+])].filter((id) => props.game.enemies[id])
+
 const graph = computed<LocationGraph>(() => Object.fromEntries(locations.value.map((l) => [l.id, {
   id: l.id, label: l.label, connectedLocations: l.connectedLocations,
   investigators: l.investigators, enemies: enemiesAt(l),
@@ -165,12 +171,12 @@ const views: LocationView[] = ['scene', 'map', 'cards']
       <div v-if="view === 'scene' && !showOverview && locations.length > 1" class="mini-map">
         <LocationMapCanvas compact :game="game" :playerId="playerId" :locations="locations"
           :positions="positions" :links="links" :moves="moves" :gridSpots="gridSpots" :selectedId="selected?.id ?? null"
-          :myLocation="myLocation" :choices="choices" :enemiesAt="enemiesAt"
+          :myLocation="myLocation" :choices="choices" :enemiesAt="enemiesShownAt"
           @activate="activate" @choose="emit('choose', $event)" />
       </div>
       <LocationMapCanvas v-else-if="showOverview" :cutaway="cutaway" :game="game" :playerId="playerId" :locations="locations"
         :positions="positions" :links="links" :moves="moves" :gridSpots="gridSpots" :selectedId="selected?.id ?? null"
-        :myLocation="myLocation" :choices="choices" :enemiesAt="enemiesAt" :width="canvasSize.width" :height="canvasSize.height"
+        :myLocation="myLocation" :choices="choices" :enemiesAt="enemiesShownAt" :width="canvasSize.width" :height="canvasSize.height"
         @activate="activate" @choose="emit('choose', $event)" />
       <LocationActionPanel v-if="panelOpen" class="action-overlay" :game="game" :playerId="playerId"
         :location="game.locations[myLocation ?? ''] ?? selected" @choose="emit('choose', $event)" @close="panelOpen = false" />

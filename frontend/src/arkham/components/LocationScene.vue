@@ -5,6 +5,7 @@ import type { Game } from '@/arkham/types/Game'
 import type { Location } from '@/arkham/types/Location'
 import { TokenType } from '@/arkham/types/Token'
 import { cardArt, cardImage } from '@/arkham/cardImages'
+import { spriteFor } from '@/arkham/sceneSprites'
 import { useGameChoices } from '@/arkham/composables/useGameChoices'
 import { useCardNames } from '@/arkham/composables/useCardNames'
 import { choicesFor, selectLocationIndex, type EntityChoice } from '@/arkham/locationChoices'
@@ -50,19 +51,8 @@ type Figure = {
   resources: number | null; clues: number | null
 }
 
-// Cut-out standees shipped in public/img/scenes/actors, taken from the offline demo. A figure without
-// one is drawn from a crop of its card art instead.
-const SPRITE_BY_CODE: Record<string, string> = {
-  '01001': 'roland', '01159': 'rats', '01116': 'priest', '01157': 'umordhoth', '01172': 'nightgaunt', '01175': 'nightgaunt',
-}
-function spriteFor(code: string): string | null {
-  const art = cardArt(code)
-  const named = SPRITE_BY_CODE[art]
-  if (named) return `img/scenes/actors/${named}.webp`
-  const traits = dbCards.getDbCard(art)?.traits ?? ''
-  if (traits.includes('Cultist')) return 'img/scenes/actors/cultist.webp'
-  if (traits.includes('Ghoul')) return 'img/scenes/actors/ghoul.webp'
-  return null
+function spriteForCode(code: string): string | null {
+  return spriteFor(code, dbCards.getDbCard(cardArt(code))?.traits ?? '')
 }
 const meter = (max: number, taken: number): Meter => ({ max, left: Math.max(0, max - taken) })
 
@@ -82,7 +72,7 @@ const figures = computed<Figure[]>(() => {
     const [x, y] = you ? youAt.value : [30 + 9 * others++, 86]
     result.push({
       id, code: investigator.cardCode, name: nameOf(investigator.cardCode), kind: 'investigator', x, y, exhausted: false, you, note: null,
-      sprite: spriteFor(investigator.cardCode),
+      sprite: spriteForCode(investigator.cardCode),
       health: meter(investigator.health, investigator.tokens[TokenType.Damage] ?? 0),
       sanity: meter(investigator.sanity, investigator.tokens[TokenType.Horror] ?? 0),
       resources: investigator.tokens[TokenType.Resource] ?? 0,
@@ -99,7 +89,7 @@ const figures = computed<Figure[]>(() => {
     result.push({
       id, code: enemy.cardCode, name: nameOf(enemy.cardCode), kind: 'enemy', x, y, exhausted: enemy.exhausted, you: false,
       note: maxHealth === null && damage ? `♥ −${damage}` : null,
-      sprite: spriteFor(enemy.cardCode), health: maxHealth === null ? null : meter(maxHealth, damage), sanity: null, resources: null, clues: null,
+      sprite: spriteForCode(enemy.cardCode), health: maxHealth === null ? null : meter(maxHealth, damage), sanity: null, resources: null, clues: null,
     })
   }
   return result

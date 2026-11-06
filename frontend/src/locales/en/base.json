@@ -530,6 +530,8 @@
     "debug": "Debug"
   },
   "locationMap": {
+    "overview": "Overview",
+    "closeUp": "Close-up",
     "skillsAndActions": "Willpower, intellect, combat, agility and actions left",
     "actionsLeft": "{count} actions left",
     "totalDoom": "Total doom",

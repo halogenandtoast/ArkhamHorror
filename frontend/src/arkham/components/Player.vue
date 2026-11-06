@@ -1134,37 +1134,39 @@ function closeHand() {
               @choose="$emit('choose', $event)"
             />
 
-            <span v-if="sceneMode" key="threat-label" class="area-label threat">{{ $t('locationMap.threatArea') }}</span>
-            <EnemyView
-              v-for="enemy in engagedEnemies"
-              :key="enemy.id"
-              data-card-movement="enemy"
-              :enemy="enemy"
-              :style="{ viewTransitionName: `enemy-${enemy.id}` }"
-              :game="game"
-              :data-index="enemy.cardId"
-              :playerId="playerId"
-              @choose="$emit('choose', $event)"
-            />
+            <div key="threat-group" class="threat-group">
+              <span v-if="sceneMode" key="threat-label" class="area-label threat">{{ $t('locationMap.threatArea') }}</span>
+              <EnemyView
+                v-for="enemy in engagedEnemies"
+                :key="enemy.id"
+                data-card-movement="enemy"
+                :enemy="enemy"
+                :style="{ viewTransitionName: `enemy-${enemy.id}` }"
+                :game="game"
+                :data-index="enemy.cardId"
+                :playerId="playerId"
+                @choose="$emit('choose', $event)"
+              />
 
-            <Treachery
-              v-for="treachery in visibleTreacheries"
-              :key="treachery.id"
-              :treachery="treachery"
-              :game="game"
-              :data-index="treachery.cardId"
-              :playerId="playerId"
-              :tuckable="tuckInertCards && tuckableCardCodes.has(treachery.cardCode)"
-              @choose="$emit('choose', $event)"
-            />
+              <Treachery
+                v-for="treachery in visibleTreacheries"
+                :key="treachery.id"
+                :treachery="treachery"
+                :game="game"
+                :data-index="treachery.cardId"
+                :playerId="playerId"
+                :tuckable="tuckInertCards && tuckableCardCodes.has(treachery.cardCode)"
+                @choose="$emit('choose', $event)"
+              />
 
-            <div
-              v-for="facedown in facedownThreatCards"
-              :key="facedown.id"
-              class="card-container"
-              :data-index="facedown.cardId"
-            >
-              <img class="card" :src="facedownThreatCardImage(facedown.cardId)" />
+              <div
+                v-for="facedown in facedownThreatCards"
+                :key="facedown.id"
+                class="card-container"
+                :data-index="facedown.cardId"
+              >
+                <img class="card" :src="facedownThreatCardImage(facedown.cardId)" />
+              </div>
             </div>
 
             <div v-if="hasThreatArea || sceneMode" :key="'threat-divider'" class="threat-divider" />
@@ -1645,10 +1647,18 @@ function closeHand() {
 .player-cards--scene { display: flex; flex-direction: row-reverse; align-items: stretch; }
 .player-cards--scene > .in-play-row { flex: 1; min-width: 0; }
 .player-cards--scene > .player { flex: none; align-self: stretch; align-items: center; padding: 6px 10px; }
-.player-cards--scene .player :deep(.investigator-and-deck) { display: flex; flex-direction: column-reverse; align-items: center; gap: 6px; }
+.player-cards--scene .player :deep(.investigator-and-deck) { display: flex; flex-flow: row wrap; justify-content: center; align-items: flex-start; gap: 6px; width: 176px; }
+.player-cards--scene .player :deep(.investigator-and-deck > .deck-container) { order: 0; }
+.player-cards--scene .player :deep(.investigator-and-deck > .discard) { order: 1; width: auto; }
+.player-cards--scene .player :deep(.investigator-and-deck > .discard .card) { max-height: 76px; width: auto; }
+.player-cards--scene .player :deep(.investigator-and-deck > .player-container) { order: 2; flex: 0 0 100%; }
 .player-cards--scene .player :deep(.player-container), .player-cards--scene .player :deep(.player-area) { display: block; }
 .player-cards--scene .player :deep(.button-group) { display: flex; flex-direction: column; align-items: stretch; gap: 4px; }
 .player-cards--scene .player :deep(.deck) { max-height: 76px; width: auto; }
+/* The threat area is parked at the right edge, on the same row as the play area. */
+.threat-group { display: contents; }
+.player-cards--scene .threat-group { display: flex; order: 2; margin-left: auto; align-items: stretch; gap: inherit; padding-left: 10px; }
+.player-cards--scene .in-play :deep(.threat-divider) { display: none; }
 .area-label { align-self: stretch; flex: none; display: grid; place-items: center; padding: 0 3px; writing-mode: vertical-rl; transform: rotate(180deg); text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.6rem; color: #c6a873; border-left: 1px solid #c6a87355; }
 .area-label.threat { color: #d99e8e; border-left-color: #d99e8e66; }
 .player {

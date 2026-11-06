@@ -6,6 +6,8 @@ import type { Scenario } from '@/arkham/types/Scenario'
 import type { Location } from '@/arkham/types/Location'
 import { useGameChoices } from '@/arkham/composables/useGameChoices'
 import { useCardNames } from '@/arkham/composables/useCardNames'
+import { useStorage } from '@vueuse/core'
+import { cardArt } from '@/arkham/cardImages'
 import { useSettings, type LocationView } from '@/stores/settings'
 import {
   gridPositions, locationLinks, mapPositions, shortestPath,
@@ -71,6 +73,18 @@ const canvasSize = computed(() => {
   const lines = (rows.length || Math.ceil(n / Math.max(cols, 1))) + stripRow
   return { width: Math.max(cols, 1) * 150, height: Math.max(lines, 2) * 120 }
 })
+
+// The Gathering's house, once more than the study is in play: draw the rooms on the cutaway picture of the house.
+const HOUSE_POINTS: Record<string, Point> = {
+  '01111': [52, 81], '01112': [51, 59], '01113': [56, 25], '01114': [44, 92], '01115': [83, 58],
+}
+const cutaway = computed<Record<string, Point> | null>(() => {
+  const all = locations.value
+  if (all.length < 2 || !all.every((l) => cardArt(l.cardCode) in HOUSE_POINTS)) return null
+  return Object.fromEntries(all.map((l) => [l.id, HOUSE_POINTS[cardArt(l.cardCode)]]))
+})
+const overview = useStorage('arkham-scene-overview', true)
+const showOverview = computed(() => props.view === 'map' || (props.view === 'scene' && cutaway.value !== null && overview.value))
 
 const me = computed(() => ownInvestigator(props.game, props.playerId))
 const myLocation = computed(() => me.value?.location ?? null)
@@ -138,22 +152,23 @@ const views: LocationView[] = ['scene', 'map', 'cards']
           :aria-selected="v === view" @click="settings.setLocationView(v)">{{ t(`locationMap.view.${v}`) }}</button>
       </span>
       <span v-if="boardOnlyContent" class="board-note">{{ t('locationMap.boardOnly') }}</span>
+      <button v-if="view === 'scene' && cutaway" class="view" @click="overview = !overview">{{ overview ? t('locationMap.closeUp') : t('locationMap.overview') }}</button>
       <button class="view" :class="{ active: panelOpen }" @click="panelOpen = !panelOpen">{{ t('locationMap.actions') }}</button>
       <button class="view decks" :class="{ active: decksShown }" @click="emit('toggleDecks')">{{ t('locationMap.decks') }}</button>
     </div>
     <LocationMissionStrip :game="game" :scenario="scenario" :playerId="playerId" @choose="emit('choose', $event)" />
     <div class="map-layout" :class="[view, { 'panel-open': panelOpen }]">
       <div id="scene-team-slot" class="team-slot"></div>
-      <LocationScene v-if="view === 'scene' && selected" :game="game" :playerId="playerId" :location="selected"
+      <LocationScene v-if="view === 'scene' && !showOverview && selected" :game="game" :playerId="playerId" :location="selected"
         :neighbours="neighbours" :mine="selected.id === myLocation"
         @choose="emit('choose', $event)" @select="selectedId = $event" />
-      <div v-if="view === 'scene'" class="mini-map">
+      <div v-if="view === 'scene' && !showOverview && locations.length > 1" class="mini-map">
         <LocationMapCanvas compact :game="game" :playerId="playerId" :locations="locations"
           :positions="positions" :links="links" :moves="moves" :gridSpots="gridSpots" :selectedId="selected?.id ?? null"
           :myLocation="myLocation" :choices="choices" :enemiesAt="enemiesAt"
           @activate="activate" @choose="emit('choose', $event)" />
       </div>
-      <LocationMapCanvas v-else-if="view === 'map'" :game="game" :playerId="playerId" :locations="locations"
+      <LocationMapCanvas v-else-if="showOverview" :cutaway="cutaway" :game="game" :playerId="playerId" :locations="locations"
         :positions="positions" :links="links" :moves="moves" :gridSpots="gridSpots" :selectedId="selected?.id ?? null"
         :myLocation="myLocation" :choices="choices" :enemiesAt="enemiesAt" :width="canvasSize.width" :height="canvasSize.height"
         @activate="activate" @choose="emit('choose', $event)" />

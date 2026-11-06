@@ -1,0 +1,12 @@
+---
+title: project_custom_keyword_must_be_declared_on_the_carddef
+description: "A homebrew CustomKeyword is dead unless cdKeywords declares it; the Jinx specs grant it with AddKeyword so they pass either way, and the slug needs a leaf module because the keyword's logic module imports Arkham.Message"
+---
+
+A `CustomKeyword` has no effect from the printed text alone — `cdKeywords` on the `CardDef` is the only thing the engine reads. Night of Vespers' **Jinxed** keyword was fully implemented (`Jinx.hs`: the `jinxWindow`, `runJinx`'s failed fight/evade/investigate hook, `hasJinxedCardAt` reading location/enemy/asset/treachery keywords *and* modifiers) and could never fire in The End of Seasons, because the one card that prints "Hunter. Retaliate. Jinxed." — Declan O'Doyle (`:night-of-vespers:031`) — declared no `cdKeywords` at all. `hasJinxedCardAt` was therefore always `False`, so `triggerJinxWith` never ran and the act's `jinxAbility` clause was unreachable. No error, no log line: the keyword simply never happens.
+
+**Why the test suite did not catch it.** All 12 cases in `JinxSpec.hs` grant the keyword artificially (`gameModifier … (AddKeyword Jinxed)`) or call `triggerJinx` directly, which is the right way to test the *machinery* but means no test ever asserts that a real card carries the keyword. A keyword's specs pass identically whether or not any printed card declares it. Assert the def, not just the mechanism: check `Jinxed `member` cdKeywords declanODoyle`, or that the scenario's gathered cards contain at least one Jinxed card.
+
+**Why the slug lives in its own module.** `pattern Jinxed` started out in `Jinx.hs`, but importing that from `CardDefs/Enemies.hs` is a cycle — `Jinx` imports `Arkham.Message`, which reaches `Arkham.Decklist.Type` and back down to the defs, which sit upstream of all of it. The slug is now in the leaf `Arkham/Homebrew/NightOfVespers/Jinxed.hs`, importing only `Arkham.Keyword` (already a defs dependency); `Jinx.hs` re-exports it via `module … (pattern Jinxed, module …) where` so existing consumers are unchanged. Any homebrew campaign whose custom keyword must appear on a def needs the same split — defs cannot see a module that pulls in `Arkham.Message`.
+
+Audit shape that found it: for each implemented def, parse standalone `Word. Word.` lines out of the printed text and diff against `Keyword.*` occurrences in the def body. It also turned up Syndicate Firing Squad (`339`) and Hired Triggermen (`341`) missing printed `Hunter`.

@@ -1,6 +1,7 @@
 module Arkham.Homebrew.NightOfVespers.CardDefs.Enemies where
 
 import Arkham.Enemy.CardDefs.Import
+import Arkham.Homebrew.NightOfVespers.Jinxed (pattern Jinxed)
 import Arkham.Homebrew.NightOfVespers.Sets qualified as Set
 import Arkham.Keyword qualified as Keyword
 
@@ -8,6 +9,7 @@ declanODoyle :: CardDef
 declanODoyle =
   (enemy ":night-of-vespers:031" ("Declan O'Doyle" <:> "Reanimated Racketeer") Set.TheEndOfSeasons 1)
     { cdCardTraits = setFromList [Humanoid, Criminal, Risen, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate, Jinxed]
     , cdFight = fight 3
     , cdHealth = health 2
     , cdEvade = evade 3
@@ -31,6 +33,7 @@ syndicateFiringSquad :: CardDef
 syndicateFiringSquad =
   (enemy ":night-of-vespers:339" "Syndicate Firing Squad" Set.TheFamily 2)
     { cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
+    , cdKeywords = singleton Keyword.Hunter
     , cdFight = fight 3
     , cdHealth = health 2
     , cdEvade = evade 1
@@ -42,6 +45,7 @@ hiredTriggermen :: CardDef
 hiredTriggermen =
   (enemy ":night-of-vespers:341" "Hired Triggermen" Set.TheFamily 2)
     { cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
+    , cdKeywords = singleton Keyword.Hunter
     , cdFight = fight 3
     , cdHealth = health 2
     , cdEvade = evade 2

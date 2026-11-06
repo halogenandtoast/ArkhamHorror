@@ -85,6 +85,11 @@
     "aBargainWasMade": "A bargain was made.",
     "stolasIsUnbound": "Stolas is unbound."
   },
+  "remembered": {
+    "threwAChairThroughTheConservatoryWindow": "You “threw a chair through the conservatory window.”",
+    "foundAWayThroughTheHedgeMaze": "You “found a way through the hedge maze.”",
+    "forcedOpenTheRooftopSkylight": "You “forced open the rooftop skylight.”"
+  },
   "interludes": {
     "1": "Two Messages",
     "2": "The Rose of Tuscany",

@@ -5414,6 +5414,7 @@ library
       Arkham.Homebrew.NightOfVespers.Helpers
       Arkham.Homebrew.NightOfVespers.Intros
       Arkham.Homebrew.NightOfVespers.Jinx
+      Arkham.Homebrew.NightOfVespers.Jinxed
       Arkham.Homebrew.NightOfVespers.Key
       Arkham.Homebrew.NightOfVespers.Locations.BarLAmmaliatrice_013
       Arkham.Homebrew.NightOfVespers.Locations.BarLAmmaliatrice_014
@@ -5445,6 +5446,7 @@ library
       Arkham.Homebrew.NightOfVespers.Scenarios.MothersMercy
       Arkham.Homebrew.NightOfVespers.Scenarios.TheCityOfFog
       Arkham.Homebrew.NightOfVespers.Scenarios.TheEndOfSeasons
+      Arkham.Homebrew.NightOfVespers.Scenarios.TheEndOfSeasons.Helpers
       Arkham.Homebrew.NightOfVespers.Scenarios.TheGardenOfBones
       Arkham.Homebrew.NightOfVespers.Scenarios.TheTeachingsOfAradia
       Arkham.Homebrew.NightOfVespers.Sets

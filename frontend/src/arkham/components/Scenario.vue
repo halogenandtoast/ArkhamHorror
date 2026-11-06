@@ -3655,6 +3655,8 @@ async function addChaosToken(face: any){
 }
 
 .location-cards-stage {
+  /* Leave room at the map edges for cards rotated beyond their layout boxes. */
+  padding-inline: calc(var(--card-width) / 2);
   position: relative;
   display: grid;
   row-gap: 16px;

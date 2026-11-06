@@ -1,7 +1,7 @@
 {- | Shared keyword machinery. Jinxed is a presence condition, never a count.
 Printed Jinx clauses stay on their own act/agenda as 'jinxAbility' entries.
 -}
-module Arkham.Homebrew.NightOfVespers.Jinx where
+module Arkham.Homebrew.NightOfVespers.Jinx (pattern Jinxed, module Arkham.Homebrew.NightOfVespers.Jinx) where
 
 import Arkham.Ability
 import Arkham.Asset.Types (Field (AssetCard))
@@ -14,6 +14,7 @@ import Arkham.Helpers.Enemy (getModifiedKeywords)
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestResultWithResultModifiers)
+import Arkham.Homebrew.NightOfVespers.Jinxed (pattern Jinxed)
 import Arkham.Id
 import Arkham.Keyword (Keyword (..))
 import Arkham.Location.Types (Field (LocationKeywords))
@@ -29,9 +30,6 @@ import Arkham.Target
 import Arkham.Treachery.Types (Field (TreacheryCard))
 import Arkham.Window qualified as Window
 import Data.Aeson.Types (parseMaybe)
-
-pattern Jinxed :: Keyword
-pattern Jinxed = CustomKeyword "nightOfVespers.jinxed"
 
 jinxEvent, jinxResolvedEvent :: Text
 jinxEvent = "nightOfVespers.jinx"

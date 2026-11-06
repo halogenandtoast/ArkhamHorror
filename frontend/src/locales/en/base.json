@@ -532,6 +532,10 @@
   "locationMap": {
     "title": "Location map",
     "act": "Act",
+    "threatArea": "Threat area",
+    "playArea": "Play area",
+    "decks": "Decks",
+    "resources": "Resources",
     "hand": "Hand · {count}",
     "agenda": "Agenda",
     "doomCount": "Doom {count} / {max}",

@@ -1018,6 +1018,7 @@ function debugAddSlot(slotType: DebugSlotType) {
 }
 
 const playAreaCollapsed = ref(false)
+const sceneMode = computed(() => settings.locationView !== 'cards')
 
 const handCardHeight = Math.min(7 * window.innerWidth / 50 + 114, 340);
 const handCardExposedHeight_MIN = `${-Math.round(handCardHeight * 0.2)}`;
@@ -1133,6 +1134,7 @@ function closeHand() {
               @choose="$emit('choose', $event)"
             />
 
+            <span v-if="sceneMode && hasThreatArea" key="threat-label" class="area-label threat">{{ $t('locationMap.threatArea') }}</span>
             <EnemyView
               v-for="enemy in engagedEnemies"
               :key="enemy.id"
@@ -1166,6 +1168,7 @@ function closeHand() {
             </div>
 
             <div v-if="hasThreatArea" :key="'threat-divider'" class="threat-divider" />
+            <span v-if="sceneMode" key="play-label" class="area-label">{{ $t('locationMap.playArea') }}</span>
 
             <template v-if="tarotCards.length > 0">
               <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana" :data-index="tarotCard.arcana">
@@ -1403,7 +1406,7 @@ function closeHand() {
            `.hand` is `flex: 0`, so its box stops at the last card and a drop in
            the empty space beside the hand hit nothing. -->
       <div
-        v-if="!isMobile"
+        v-if="!isMobile && !sceneMode"
         class="hand hand-area"
         :class="{
           'hand-area--droppable': handDropAccepts === true,
@@ -1498,7 +1501,7 @@ function closeHand() {
       </div>
     </div>
     <div
-      v-if="isMobile"
+      v-if="isMobile && !sceneMode"
       class="hand hand-area-IsMobile"
       :class="{ 'hand-area--drop-target': handDraggedOver && handDropAccepts === true }"
       :style="{ bottom: `${handAreaMarginBottom}px` }"
@@ -1638,6 +1641,8 @@ function closeHand() {
 </template>
 
 <style scoped>
+.area-label { align-self: stretch; flex: none; display: grid; place-items: center; padding: 0 3px; writing-mode: vertical-rl; transform: rotate(180deg); text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.6rem; color: #c6a873; border-left: 1px solid #c6a87355; }
+.area-label.threat { color: #d99e8e; border-left-color: #d99e8e66; }
 .player {
   display: flex;
   gap: 5px;

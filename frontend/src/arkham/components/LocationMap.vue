@@ -24,8 +24,9 @@ const props = defineProps<{
   view: Exclude<LocationView, 'cards'>
   /** The scenario shows things only the card board can draw (barriers, enemies standing as locations, ...). */
   boardOnlyContent: boolean
+  decksShown: boolean
 }>()
-const emit = defineEmits<{ (e: 'choose', index: number): void }>()
+const emit = defineEmits<{ (e: 'choose', index: number): void; (e: 'toggleDecks'): void }>()
 
 const { t } = useI18n()
 const nameOf = useCardNames()
@@ -135,6 +136,7 @@ const views: LocationView[] = ['scene', 'map', 'cards']
           :aria-selected="v === view" @click="settings.setLocationView(v)">{{ t(`locationMap.view.${v}`) }}</button>
       </span>
       <span v-if="boardOnlyContent" class="board-note">{{ t('locationMap.boardOnly') }}</span>
+      <button class="view decks" :class="{ active: decksShown }" @click="emit('toggleDecks')">{{ t('locationMap.decks') }}</button>
     </div>
     <LocationMissionStrip :game="game" :scenario="scenario" :playerId="playerId" @choose="emit('choose', $event)" />
     <div class="map-layout" :class="view">

@@ -35,7 +35,7 @@ const choices = useGameChoices(() => props.game, () => props.playerId)
 // Backdrops shipped in public/img/scenes, named by printed card code. Any other location falls back to its card art.
 const SCENE_ART = new Set(['01111', '01112', '01113', '01114', '01115'])
 const artCode = computed(() => cardArt(props.location.cardCode))
-const sceneArt = computed(() => props.location.revealed && SCENE_ART.has(artCode.value) ? `img/scenes/${artCode.value}.webp` : null)
+const sceneArt = computed(() => SCENE_ART.has(artCode.value) ? `img/scenes/${artCode.value}.webp` : null)
 const cardArtUrl = computed(() => cardImage(props.location.cardCode, props.location.revealed ? '' : 'b'))
 
 const clues = computed(() => props.location.tokens[TokenType.Clue] ?? 0)
@@ -47,6 +47,7 @@ type Figure = {
   id: string; code: string; name: string; kind: 'investigator' | 'enemy'; x: number; y: number
   exhausted: boolean; you: boolean; note: string | null
   sprite: string | null; health: Meter | null; sanity: Meter | null
+  resources: number | null; clues: number | null
 }
 
 // Cut-out standees shipped in public/img/scenes/actors, taken from the offline demo. A figure without
@@ -84,6 +85,8 @@ const figures = computed<Figure[]>(() => {
       sprite: spriteFor(investigator.cardCode),
       health: meter(investigator.health, investigator.tokens[TokenType.Damage] ?? 0),
       sanity: meter(investigator.sanity, investigator.tokens[TokenType.Horror] ?? 0),
+      resources: investigator.tokens[TokenType.Resource] ?? 0,
+      clues: investigator.tokens[TokenType.Clue] ?? 0,
     })
   }
   let slot = 0
@@ -96,7 +99,7 @@ const figures = computed<Figure[]>(() => {
     result.push({
       id, code: enemy.cardCode, name: nameOf(enemy.cardCode), kind: 'enemy', x, y, exhausted: enemy.exhausted, you: false,
       note: maxHealth === null && damage ? `♥ −${damage}` : null,
-      sprite: spriteFor(enemy.cardCode), health: maxHealth === null ? null : meter(maxHealth, damage), sanity: null,
+      sprite: spriteFor(enemy.cardCode), health: maxHealth === null ? null : meter(maxHealth, damage), sanity: null, resources: null, clues: null,
     })
   }
   return result
@@ -134,7 +137,7 @@ function pick(index: number) {
 
 <template>
   <section class="scene" :aria-label="t('locationMap.sceneLabel', { name: nameOf(location.cardCode) })">
-    <div class="backdrop" :class="{ painted: sceneArt, plain: !sceneArt }">
+    <div class="backdrop" :class="{ painted: sceneArt, plain: !sceneArt, dim: !location.revealed }">
       <img v-if="sceneArt" :src="sceneArt" alt="" />
       <img v-else :src="cardArtUrl" alt="" class="from-card" />
     </div>
@@ -174,6 +177,10 @@ function pick(index: number) {
         <span v-if="f.sanity" class="meter sanity" :aria-label="t('locationMap.sanity') + ' ' + f.sanity.left + '/' + f.sanity.max">
           <span aria-hidden="true">◆</span><span class="track"><i :style="{ width: (100 * f.sanity.left / Math.max(1, f.sanity.max)) + '%' }"></i></span><b>{{ f.sanity.left }}/{{ f.sanity.max }}</b>
         </span>
+        <span v-if="f.resources !== null" class="counts">
+          <span class="count res" :title="t('locationMap.resources')">$ {{ f.resources }}</span>
+          <span class="count clue" :title="t('locationMap.clues')">◇ {{ f.clues }}</span>
+        </span>
       </span>
       <span class="stand">
         <span class="shadow"></span>
@@ -210,6 +217,7 @@ function pick(index: number) {
 .scene { position: relative; flex: 1; min-height: 420px; overflow: hidden; background: #0b100d; color: #ece6d0; isolation: isolate; }
 .backdrop, .backdrop img { position: absolute; inset: 0; width: 100%; height: 100%; }
 .backdrop img { object-fit: cover; }
+.backdrop.dim img { filter: brightness(0.45) saturate(0.8); }
 .backdrop.plain img.from-card { object-fit: cover; object-position: 50% 30%; filter: blur(14px) brightness(0.55) saturate(1.2); transform: scale(1.15); }
 .vignette { position: absolute; inset: 0; background: linear-gradient(#08100b99, transparent 22%, transparent 72%, #07100bb0); pointer-events: none; }
 .heading { position: absolute; left: 16px; top: 12px; z-index: 5; text-shadow: 0 2px 6px #000; pointer-events: none; }
@@ -238,6 +246,9 @@ function pick(index: number) {
 .figure .meter.sanity { color: #9fceee; }
 .figure .track { width: 22px; height: 4px; background: #67645d; border-radius: 3px; overflow: hidden; }
 .figure .track i { display: block; height: 100%; background: currentColor; }
+.figure .counts { display: flex; justify-content: space-between; gap: 8px; border-top: 1px solid #ffffff1a; padding-top: 2px; }
+.figure .count.res { color: #f0d9a8; }
+.figure .count.clue { color: #9fd3e6; }
 .figure .meter b { margin-left: auto; color: #fff4df; }
 @keyframes breathe { 50% { transform: scaleY(1.015) translateY(-1px); } }
 .figure .name { margin-top: 2px; font-size: 0.7rem; background: #0b100dcc; padding: 1px 6px; border-radius: 3px; white-space: nowrap; }

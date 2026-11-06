@@ -1738,6 +1738,7 @@ const cardsUnderScenarioReference = computed(() =>
 )
 /* Tokens sealed on the scenario reference card itself (Traces to Nowhere's codex entries). */
 const scenarioSealedChaosTokens = computed(() => props.scenario.sealedChaosTokens)
+const decksShown = ref(false)
 const cardsUnderAgenda = computed(() => props.scenario.cardsUnderAgendaDeck)
 const cardsUnderAct = computed(() => props.scenario.cardsUnderActDeck)
 const cardsNextToAct = computed(() => props.scenario.cardsNextToActDeck)
@@ -2564,7 +2565,7 @@ async function addChaosToken(face: any){
         @choose="choose"
         @close="hideCards"
       />
-      <div class="scenario-cards" :class="{ 'scenario-cards--has-badges': showScenarioNotifierBar }">
+      <div v-show="settingsStore.locationView === 'cards' || decksShown" class="scenario-cards" :class="{ 'scenario-cards--has-badges': showScenarioNotifierBar }">
         <div v-if="anyInTheShadowLocations || inTheShadows.length > 0 || inTheShadowsInvestigators.length > 0" class="in-the-shadows">
           <template v-if="anyInTheShadowLocations">
             <Location
@@ -3109,6 +3110,8 @@ async function addChaosToken(face: any){
         :scenario="scenario"
         :playerId="playerId"
         :boardOnlyContent="boardOnlyContent"
+        :decksShown="decksShown"
+        @toggleDecks="decksShown = !decksShown"
         @choose="choose"
       />
       <template v-else>

@@ -41,6 +41,8 @@ export interface Props {
 const props = withDefaults(defineProps<Props>(), { portrait: false })
 const emit = defineEmits(['showCards', 'hideCards', 'choose'])
 
+// The location views show resources and clues beside the figure instead of a row of token pools.
+const sceneMode = computed(() => useSettings().locationView !== 'cards')
 const id = computed(() => props.investigator.id)
 const highlighter = useHighlighter()
 const isHighlighted = computed(() => highlighter.highlighted.value === props.investigator.id)
@@ -684,7 +686,7 @@ const spadeInjury = computed(() => {
           />
         </div>
         <Resources
-          v-if="isMobile"
+          v-if="isMobile && !sceneMode"
           :game="game"
           :investigator="investigator"
           :choices="choices"
@@ -694,7 +696,7 @@ const spadeInjury = computed(() => {
       </div>
     </div>
     <Resources
-      v-if="!isMobile"
+      v-if="!isMobile && !sceneMode"
       :game="game"
       :investigator="investigator"
       :choices="choices"

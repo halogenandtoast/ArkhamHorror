@@ -529,6 +529,28 @@
   "enemy": {
     "debug": "Debug"
   },
+  "locationMap": {
+    "title": "Location map",
+    "panel": "Selected location",
+    "showCards": "Card board",
+    "showMap": "Location map",
+    "boardOnly": "Part of this scenario can only be shown on the card board.",
+    "nothingSelected": "Select a location.",
+    "shroud": "Shroud {count}",
+    "location": "Location",
+    "chooseHere": "Choose this location",
+    "route": "Show next step ({count} steps away)",
+    "noActions": "Nothing to do here right now.",
+    "enemies": "Enemies",
+    "cardsHere": "Cards here",
+    "investigators": "Investigators",
+    "exhausted": "Exhausted",
+    "damage": "{count} damage",
+    "you": "You",
+    "clues": "Clues",
+    "doom": "Doom",
+    "placeHere": "Place a location here"
+  },
   "location": {
     "under": "Under ({count})"
   },

@@ -46,6 +46,11 @@ const DRAW_SPOTLIGHT_SETTING = 'drawSpotlight'
 const CUSTOM_CARDS_KEY = 'arkhamCustomCardsEnabled'
 const INLINE_MODALS_KEY = 'arkhamInlineModals'
 
+/* How a scenario draws its locations: 'map' is the node map with an action panel, 'cards' the original
+ * board of location cards. Anything stored that is not 'cards' means map, so the map is the default. */
+const LOCATION_VIEW_KEY = 'arkhamLocationView'
+export type LocationView = 'map' | 'cards'
+
 /* Never trust what comes back out of localStorage: it survives a rename, and a
  * value this store does not understand would otherwise gate the overlay on a
  * string comparison that can never be true. */
@@ -85,6 +90,13 @@ export const useSettings = defineStore("settings", () => {
   // Keep modal-heavy interactions in the document flow for small screens. This
   // is global because it is a browser/UI preference, not game state.
   const inlineModals = ref(localStorage.getItem(INLINE_MODALS_KEY) === 'true')
+
+  const locationView = ref<LocationView>(localStorage.getItem(LOCATION_VIEW_KEY) === 'cards' ? 'cards' : 'map')
+
+  function setLocationView(view: LocationView) {
+    locationView.value = view
+    localStorage.setItem(LOCATION_VIEW_KEY, view)
+  }
 
   function setInlineModals(enabled: boolean) {
     inlineModals.value = enabled
@@ -228,6 +240,8 @@ export const useSettings = defineStore("settings", () => {
     setCustomCardsEnabled,
     inlineModals,
     setInlineModals,
+    locationView,
+    setLocationView,
     drawSpotlight,
     drawSpotlightGlobal,
     drawSpotlightOverride,

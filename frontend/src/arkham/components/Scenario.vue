@@ -74,6 +74,7 @@ import SkillTest from '@/arkham/components/SkillTest.vue';
 import ScenarioDeck from '@/arkham/components/ScenarioDeck.vue';
 import CthulhuBoard from '@/arkham/components/TheDrownedCity/CthulhuBoard.vue';
 import LocationCell from '@/arkham/components/LocationCell.vue';
+import LocationMap from '@/arkham/components/LocationMap.vue';
 import { isCthulhuBoardEnemyInPlay } from '@/arkham/components/TheDrownedCity/cthulhuBoard';
 import ScenarioDebug from '@/arkham/components/ScenarioDebug.vue';
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
@@ -1495,6 +1496,10 @@ const scenarioDeckStyles = computed(() => {
 })
 const players = computed(() => props.game.investigators)
 const playerOrder = computed(() => props.game.playerOrder)
+// What only the card board can draw; the map says so rather than silently leaving it out.
+const boardOnlyContent = computed(() =>
+  Boolean(barriers.value) || enemiesAsLocations.value.length > 0 || gridStories.value.length > 0 ||
+  gridConcealed.value.length > 0 || playerLocationZones.value.length > 0)
 const discards = computed<Card[]>(() => props.scenario.discard.map(c => ({ tag: 'EncounterCard', contents: c })))
 const playerLocationZones = computed(() => props.game.playerOrder.flatMap((investigatorId) => {
   const investigator = props.game.investigators[investigatorId]
@@ -3097,6 +3102,16 @@ async function addChaosToken(face: any){
         ></div>
       </div>
 
+      <LocationMap
+        v-if="settingsStore.locationView === 'map'"
+        :game="game"
+        :scenario="scenario"
+        :playerId="playerId"
+        :boardOnlyContent="boardOnlyContent"
+        @choose="choose"
+      />
+      <template v-else>
+      <button class="location-view-switch" @click="settingsStore.setLocationView('map')">{{ $t('locationMap.showMap') }}</button>
       <RainOverlay :enabled="showRain" :options="rainOptions">
       <div
         ref="locationCardsContainer"
@@ -3310,6 +3325,7 @@ async function addChaosToken(face: any){
         </div>
       </div>
       </RainOverlay>
+      </template>
 
       <div id="player-zone" :class="{ 'player-zone--fullscreen': locationsFullscreen }">
         <PlayerTabs
@@ -3321,7 +3337,7 @@ async function addChaosToken(face: any){
           :tarotCards="props.scenario.tarotCards"
           @choose="choose"
         >
-          <div v-if="!splitView" class="zoom-control">
+          <div v-if="!splitView && settingsStore.locationView === 'cards'" class="zoom-control">
             <DebugTokenPanel v-if="debug.active" :game-id="game.id" />
             <button class="zoom-btn" @pointerdown.stop="startHold(decreaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">−</button>
             <input v-model.number="locationsZoom" type="range" min="0.25" max="6" step="0.05" class="zoom-slider" />
@@ -3464,6 +3480,13 @@ async function addChaosToken(face: any){
   transform: translateX(-50%) translateY(-50%);
   pointer-events: none;
   -webkit-text-stroke: 1px black;
+}
+
+.location-view-switch {
+  align-self: flex-start;
+  margin: 4px 8px;
+  padding: 3px 10px;
+  font-size: 0.75rem;
 }
 
 .scenario-cards {

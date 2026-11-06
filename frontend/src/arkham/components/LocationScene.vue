@@ -8,6 +8,7 @@ import { cardArt, cardImage } from '@/arkham/cardImages'
 import { useGameChoices } from '@/arkham/composables/useGameChoices'
 import { useCardNames } from '@/arkham/composables/useCardNames'
 import { choicesFor, selectLocationIndex, type EntityChoice } from '@/arkham/locationChoices'
+import { useDbCardStore } from '@/stores/dbCards'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 
 /* The room you are standing in, drawn as a place rather than a card: a backdrop, the investigators and
@@ -27,6 +28,7 @@ const emit = defineEmits<{ (e: 'choose', index: number): void; (e: 'select', id:
 
 const { t } = useI18n()
 const nameOf = useCardNames()
+const dbCards = useDbCardStore()
 const choices = useGameChoices(() => props.game, () => props.playerId)
 
 // Backdrops shipped in public/img/scenes, named by printed card code. Any other location falls back to its card art.
@@ -39,7 +41,28 @@ const clues = computed(() => props.location.tokens[TokenType.Clue] ?? 0)
 const doom = computed(() => props.location.tokens[TokenType.Doom] ?? 0)
 
 // --- who is standing here ---
-type Figure = { id: string; code: string; name: string; kind: 'investigator' | 'enemy'; x: number; y: number; exhausted: boolean; you: boolean; note: string | null }
+type Meter = { left: number; max: number }
+type Figure = {
+  id: string; code: string; name: string; kind: 'investigator' | 'enemy'; x: number; y: number
+  exhausted: boolean; you: boolean; note: string | null
+  sprite: string | null; health: Meter | null; sanity: Meter | null
+}
+
+// Cut-out standees shipped in public/img/scenes/actors, taken from the offline demo. A figure without
+// one is drawn from a crop of its card art instead.
+const SPRITE_BY_CODE: Record<string, string> = {
+  '01001': 'roland', '01159': 'rats', '01116': 'priest', '01157': 'umordhoth', '01172': 'nightgaunt', '01175': 'nightgaunt',
+}
+function spriteFor(code: string): string | null {
+  const art = cardArt(code)
+  const named = SPRITE_BY_CODE[art]
+  if (named) return `img/scenes/actors/${named}.webp`
+  const traits = dbCards.getDbCard(art)?.traits ?? ''
+  if (traits.includes('Cultist')) return 'img/scenes/actors/cultist.webp'
+  if (traits.includes('Ghoul')) return 'img/scenes/actors/ghoul.webp'
+  return null
+}
+const meter = (max: number, taken: number): Meter => ({ max, left: Math.max(0, max - taken) })
 
 const ENEMY_SPOTS: [number, number][] = [[72, 80], [84, 72], [78, 90], [60, 72], [88, 88], [62, 90]]
 const youAt = ref<[number, number]>([46, 82])
@@ -53,7 +76,12 @@ const figures = computed<Figure[]>(() => {
     if (!investigator) continue
     const you = id === props.playerId
     const [x, y] = you ? youAt.value : [30 + 9 * others++, 86]
-    result.push({ id, code: investigator.cardCode, name: nameOf(investigator.cardCode), kind: 'investigator', x, y, exhausted: false, you, note: null })
+    result.push({
+      id, code: investigator.cardCode, name: nameOf(investigator.cardCode), kind: 'investigator', x, y, exhausted: false, you, note: null,
+      sprite: spriteFor(investigator.cardCode),
+      health: meter(investigator.health, investigator.tokens[TokenType.Damage] ?? 0),
+      sanity: meter(investigator.sanity, investigator.tokens[TokenType.Horror] ?? 0),
+    })
   }
   let slot = 0
   for (const id of props.location.enemies) {
@@ -61,7 +89,12 @@ const figures = computed<Figure[]>(() => {
     if (!enemy || enemy.placement.tag !== 'AtLocation') continue
     const [x, y] = ENEMY_SPOTS[slot++ % ENEMY_SPOTS.length]
     const damage = enemy.tokens[TokenType.Damage] ?? 0
-    result.push({ id, code: enemy.cardCode, name: nameOf(enemy.cardCode), kind: 'enemy', x, y, exhausted: enemy.exhausted, you: false, note: damage ? `♥ −${damage}` : null })
+    const maxHealth = enemy.health?.tag === 'Fixed' ? enemy.health.contents : null
+    result.push({
+      id, code: enemy.cardCode, name: nameOf(enemy.cardCode), kind: 'enemy', x, y, exhausted: enemy.exhausted, you: false,
+      note: maxHealth === null && damage ? `♥ −${damage}` : null,
+      sprite: spriteFor(enemy.cardCode), health: maxHealth === null ? null : meter(maxHealth, damage), sanity: null,
+    })
   }
   return result
 })
@@ -131,7 +164,19 @@ function pick(index: number) {
     <button v-for="f in figures" :key="f.id" class="figure" :class="[f.kind, { exhausted: f.exhausted, you: f.you }]"
       :style="{ left: f.x + '%', top: f.y + '%', zIndex: Math.round(f.y) }"
       :aria-label="f.name" @click.stop="openMenu(f.name, f.id, { detail: f.note })">
-      <img :src="cardImage(f.code)" :alt="f.name" />
+      <span v-if="f.health || f.sanity" class="hud">
+        <span v-if="f.health" class="meter hp" :aria-label="t('locationMap.health') + ' ' + f.health.left + '/' + f.health.max">
+          <span aria-hidden="true">♥</span><span class="track"><i :style="{ width: (100 * f.health.left / Math.max(1, f.health.max)) + '%' }"></i></span><b>{{ f.health.left }}/{{ f.health.max }}</b>
+        </span>
+        <span v-if="f.sanity" class="meter sanity" :aria-label="t('locationMap.sanity') + ' ' + f.sanity.left + '/' + f.sanity.max">
+          <span aria-hidden="true">◆</span><span class="track"><i :style="{ width: (100 * f.sanity.left / Math.max(1, f.sanity.max)) + '%' }"></i></span><b>{{ f.sanity.left }}/{{ f.sanity.max }}</b>
+        </span>
+      </span>
+      <span class="stand">
+        <span class="shadow"></span>
+        <img v-if="f.sprite" class="sprite" :src="f.sprite" :alt="f.name" draggable="false" />
+        <img v-else class="crop" :src="cardImage(f.code)" :alt="f.name" draggable="false" />
+      </span>
       <span class="name">{{ f.name }}<small v-if="f.note"> {{ f.note }}</small></span>
     </button>
 
@@ -167,16 +212,28 @@ function pick(index: number) {
 .hotspot.search { left: 50%; top: 56%; }
 .symbol { color: #e6c584; }
 .figure { position: absolute; translate: -50% -100%; display: grid; justify-items: center; gap: 2px; padding: 0; background: transparent; border: 0; cursor: pointer; transition: left 0.7s ease, top 0.7s ease; filter: drop-shadow(2px 4px 4px #000c); }
-.figure img { height: clamp(86px, 17vh, 150px); aspect-ratio: 5 / 7; object-fit: cover; background: #1a2620; border-radius: 6px; border: 2px solid #c9dab1; }
-.figure.enemy img { border-color: #d99e8e; }
-.figure.you img { border-color: #ffe9a0; box-shadow: 0 0 10px #ffe9a0aa; }
-.figure.exhausted img { opacity: 0.6; transform: rotate(8deg); }
-.figure .name { font-size: 0.7rem; background: #0b100dcc; padding: 1px 6px; border-radius: 3px; white-space: nowrap; }
+.figure .stand { position: relative; display: grid; justify-items: center; }
+.figure .shadow { position: absolute; bottom: -4px; width: 78%; height: 14px; border-radius: 50%; background: radial-gradient(#000a, transparent 70%); }
+.figure .sprite { position: relative; height: clamp(110px, 24vh, 210px); width: auto; animation: breathe 4s ease-in-out infinite; transform-origin: 50% 95%; }
+.figure .crop { position: relative; width: clamp(70px, 13vh, 110px); aspect-ratio: 1; object-fit: cover; object-position: 50% 24%; border-radius: 50%; border: 2px solid #c9dab1; background: #1a2620; }
+.figure.enemy .crop { border-color: #d99e8e; }
+.figure.you .crop { border-color: #ffe9a0; box-shadow: 0 0 10px #ffe9a0aa; }
+.figure.you .sprite { filter: drop-shadow(0 0 6px #ffe9a0aa); }
+.figure.exhausted .stand { opacity: 0.6; transform: rotate(8deg); }
+.figure .hud { display: grid; gap: 2px; min-width: 56px; padding: 3px 5px; background: #111815ef; border: 1px solid #9f8d605c; border-radius: 4px; font: 600 10px/1.15 system-ui, sans-serif; white-space: nowrap; }
+.figure .meter { display: flex; align-items: center; gap: 3px; font-variant-numeric: tabular-nums; }
+.figure .meter.hp { color: #ff9b87; }
+.figure .meter.sanity { color: #9fceee; }
+.figure .track { width: 22px; height: 4px; background: #67645d; border-radius: 3px; overflow: hidden; }
+.figure .track i { display: block; height: 100%; background: currentColor; }
+.figure .meter b { margin-left: auto; color: #fff4df; }
+@keyframes breathe { 50% { transform: scaleY(1.015) translateY(-1px); } }
+.figure .name { margin-top: 2px; font-size: 0.7rem; background: #0b100dcc; padding: 1px 6px; border-radius: 3px; white-space: nowrap; }
 .menu { position: absolute; right: 14px; bottom: 14px; z-index: 50; width: min(320px, calc(100% - 28px)); max-height: 70%; overflow: auto; display: flex; flex-direction: column; gap: 6px; padding: 12px; background: #0f1813f0; border: 1px solid #c6a873aa; border-radius: 8px; box-shadow: 0 8px 28px #000a; }
 .menu h3 { margin: 0; font: 1.25rem Georgia, serif; }
 .menu .close { position: absolute; right: 6px; top: 4px; background: transparent; border: 0; color: #a3aca3; cursor: pointer; }
 .detail { margin: 0; font-size: 0.8rem; color: #b9c2ad; }
 .look { background: rgb(180 140 70 / 25%); }
 @keyframes pulse { 50% { box-shadow: 0 0 0 5px #e6c58422; } }
-@media (prefers-reduced-motion: reduce) { .hotspot { animation: none; } .figure { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .hotspot { animation: none; } .figure { transition: none; } .figure .sprite { animation: none; } }
 </style>

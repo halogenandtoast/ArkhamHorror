@@ -14,6 +14,7 @@ import {
 import { gridSlotIndex, selectLocationIndex } from '@/arkham/locationChoices'
 import LocationMapCanvas, { type MapMove } from '@/arkham/components/LocationMapCanvas.vue'
 import LocationMapPanel from '@/arkham/components/LocationMapPanel.vue'
+import LocationMissionStrip from '@/arkham/components/LocationMissionStrip.vue'
 import LocationScene from '@/arkham/components/LocationScene.vue'
 
 const props = defineProps<{
@@ -135,6 +136,7 @@ const views: LocationView[] = ['scene', 'map', 'cards']
       </span>
       <span v-if="boardOnlyContent" class="board-note">{{ t('locationMap.boardOnly') }}</span>
     </div>
+    <LocationMissionStrip :game="game" :scenario="scenario" :playerId="playerId" @choose="emit('choose', $event)" />
     <div class="map-layout" :class="view">
       <LocationScene v-if="view === 'scene' && selected" :game="game" :playerId="playerId" :location="selected"
         :neighbours="neighbours" :mine="selected.id === myLocation"

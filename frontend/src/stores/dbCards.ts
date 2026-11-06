@@ -12,6 +12,8 @@ export interface ArkhamDBCard {
   back_text?: string
   customization_text?: string
   flavor? :string
+  doom?: number
+  stage?: number
   back_flavor?: string
   faction_name: string
   faction2_name?: string

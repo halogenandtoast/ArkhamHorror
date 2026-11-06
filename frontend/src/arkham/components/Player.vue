@@ -1020,7 +1020,7 @@ function debugAddSlot(slotType: DebugSlotType) {
 const playAreaCollapsed = ref(false)
 
 const handCardHeight = Math.min(7 * window.innerWidth / 50 + 114, 340);
-const handCardExposedHeight_MIN = `${-(handCardHeight - 50)}`;
+const handCardExposedHeight_MIN = `${-Math.round(handCardHeight * 0.2)}`;
 const handCardExposedHeight_MAX = `0`;
 const handAreaMarginBottom = ref(handCardExposedHeight_MIN);
 const handAreaPointerEvents = ref('none');

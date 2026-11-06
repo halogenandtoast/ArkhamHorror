@@ -531,6 +531,11 @@
   },
   "locationMap": {
     "title": "Location map",
+    "act": "Act",
+    "agenda": "Agenda",
+    "doomCount": "Doom {count} / {max}",
+    "health": "Health",
+    "sanity": "Sanity",
     "panel": "Selected location",
     "view": { "scene": "Scene", "map": "Map", "cards": "Card board" },
     "showScene": "Scene view",

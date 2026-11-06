@@ -63,7 +63,7 @@ function readDrawSpotlightMode(value: string | null): DrawSpotlightMode | null {
 }
 
 function readLocationView(value: string | null): LocationView {
-  return value === 'cards' || value === 'map' ? value : 'scene'
+  return value === 'cards' || value === 'scene' ? value : 'map'
 }
 
 function loadVariants(): string[] {

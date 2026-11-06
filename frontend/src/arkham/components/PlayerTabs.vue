@@ -47,7 +47,7 @@ const inactiveInvestigators = computed(() => props.playerOrder.filter(iid => pro
 const lead = computed(() => `url('${imgsrc(`tokens/lead-investigator.png`)}')`)
 const { isMobile } = IsMobile();
 const store = useDbCardStore()
-const sceneMode = computed(() => useSettings().locationView === 'scene')
+const sceneMode = computed(() => useSettings().locationView !== 'cards')
 // Teammates only: your own investigator stays in the player area under the map.
 const seats = computed(() => [...investigators.value, ...inactiveInvestigators.value].filter((i) => i.playerId !== props.playerId))
 

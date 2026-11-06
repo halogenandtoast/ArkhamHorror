@@ -75,16 +75,16 @@ const panels = computed<Panel[]>(() => [
 </template>
 
 <style scoped>
-.mission-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; padding: 8px 10px; background: #101a14; border-bottom: 1px solid #a68b5540; }
-.mission { display: flex; gap: 10px; padding: 8px 10px; background: #16221b; border: 1px solid #c6a87366; border-radius: 6px; color: #e5e2d4; min-width: 0; }
+.mission-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 8px; padding: 5px 10px; background: #101a14; border-bottom: 1px solid #a68b5540; }
+.mission { display: flex; gap: 8px; padding: 4px 8px; background: #16221b; border: 1px solid #c6a87366; border-radius: 6px; color: #e5e2d4; min-width: 0; }
 .mission.agenda { border-color: #c9887a88; }
-.thumb { flex: none; width: 58px; height: 80px; object-fit: cover; object-position: top; border-radius: 4px; border: 1px solid #0006; }
-.body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.thumb { flex: none; width: 42px; height: 58px; object-fit: cover; object-position: top; border-radius: 4px; border: 1px solid #0006; }
+.body { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 .eyebrow { text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.6rem; color: #c6a873; }
 .agenda .eyebrow { color: #d99e8e; }
-h3 { margin: 0; font: 1.15rem Georgia, serif; }
+h3 { margin: 0; font: 1rem Georgia, serif; }
 p { margin: 0; font-size: 0.75rem; line-height: 1.35; }
-.flavor { color: #b9c2ad; font-style: italic; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.flavor { color: #b9c2ad; font-style: italic; display: none; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
 .text { color: #e9e3cc; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .doom { display: flex; flex-direction: column; gap: 2px; font-size: 0.7rem; color: #f0d9a8; }
 .doom i { display: block; height: 4px; background: #5a4a40; border-radius: 3px; overflow: hidden; }

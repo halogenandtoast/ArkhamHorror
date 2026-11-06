@@ -142,8 +142,8 @@ const views: LocationView[] = ['scene', 'map', 'cards']
       <button class="view decks" :class="{ active: decksShown }" @click="emit('toggleDecks')">{{ t('locationMap.decks') }}</button>
     </div>
     <LocationMissionStrip :game="game" :scenario="scenario" :playerId="playerId" @choose="emit('choose', $event)" />
-    <div class="map-layout" :class="view">
-      <div v-if="view === 'scene'" id="scene-team-slot" class="team-slot"></div>
+    <div class="map-layout" :class="[view, { 'panel-open': panelOpen }]">
+      <div id="scene-team-slot" class="team-slot"></div>
       <LocationScene v-if="view === 'scene' && selected" :game="game" :playerId="playerId" :location="selected"
         :neighbours="neighbours" :mine="selected.id === myLocation"
         @choose="emit('choose', $event)" @select="selectedId = $event" />
@@ -166,7 +166,10 @@ const views: LocationView[] = ['scene', 'map', 'cards']
 .view:hover { border-color: #e6c584; }
 .view.active { background: #c6a873; border-color: #c6a873; color: #191c16; font-weight: 650; }
 .board-note { font-size: 0.75rem; color: #d8b68c; }
-.map-layout { position: relative; display: flex; flex: 1 0 clamp(300px, 46vh, 640px); }
+.map-layout { position: relative; display: flex; flex: 1 1 300px; min-height: 300px; }
+.map-layout > .map-scroll { box-sizing: border-box; }
+.map-layout.panel-open > .map-scroll { padding-right: 300px; }
+.team-slot:not(:empty) ~ .map-scroll { padding-left: 212px; }
 .action-overlay { position: absolute; right: 12px; top: 12px; bottom: 12px; height: auto; z-index: 60; }
 .map-layout > :not(.team-slot):not(.action-overlay) { flex: 1; min-width: 0; }
 .team-slot { position: absolute; left: 12px; top: 84px; bottom: 12px; z-index: 55; width: 242px; display: flex; flex-direction: column; pointer-events: none; }

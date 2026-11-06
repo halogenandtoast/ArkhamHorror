@@ -28,6 +28,7 @@ import CardChoicePicker from '@/arkham/components/CardChoicePicker.vue';
 import { cardPoolForLabelKey } from '@/arkham/cardPools';
 import { putBackInAnyOrderPicks } from '@/arkham/putBackInAnyOrder';
 import PutBackInAnyOrder from '@/arkham/components/PutBackInAnyOrder.vue';
+import NarrationToggle from '@/arkham/components/NarrationToggle.vue';
 
 export interface Props {
   game: Game
@@ -936,6 +937,7 @@ const useCardPicker = computed(() => cardLabels.value.every(({ choice }) => !cho
     </div>
 
     <div class="intro-text" v-if="question && question.tag === QuestionType.READ && !suppressReadInSkillTest">
+      <NarrationToggle />
       <div v-if="readCards.length > 0" class="story-with-card">
         <img :src="cardCodeImage(cardCode)" v-for="cardCode in readCards" :key="cardCode" class="card no-overlay" />
         <div>
@@ -2015,6 +2017,7 @@ h2 {
 }
 
 .intro-text {
+  position: relative;
   max-height: 60vh;
   > *:first-child {
     padding-top: 30px;

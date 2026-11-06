@@ -6,6 +6,26 @@ import {
   setGameLocalStorageItem,
 } from '@/arkham/localStorage'
 import { isDevBuild } from '@/arkham/displayRules'
+import {
+  defaultNarrationLanguage,
+  readNarrationLanguage,
+  type NarrationLanguage,
+} from '@/arkham/narration'
+
+// Spoken story narration (pre-rendered intro/resolution audio). A browser
+// preference, so global: on unless explicitly turned off.
+const NARRATION_KEY = 'arkhamNarration'
+const NARRATION_LANGUAGE_KEY = 'arkhamNarrationLanguage'
+const NARRATION_VOLUME_KEY = 'arkhamNarrationVolume'
+// Synthesised horror ambience under a scenario (arkham/horrorAmbience.ts). Also
+// silenced by the global Sounds switch.
+const MUSIC_KEY = 'arkhamHorrorMusic'
+const MUSIC_VOLUME_KEY = 'arkhamHorrorMusicVolume'
+
+function readVolume(value: string | null, fallback = 0.8): number {
+  const n = value === null ? NaN : Number(value)
+  return Number.isFinite(n) ? Math.min(1, Math.max(0, n)) : fallback
+}
 
 const EPIC_MULTIPLAYER_KEY = 'epicMultiplayerEnabled'
 
@@ -120,6 +140,43 @@ export const useSettings = defineStore("settings", () => {
 
   function toggleEpicMultiplayer() {
     setEpicMultiplayerEnabled(!epicMultiplayerStored.value)
+  }
+
+  const narration = ref(localStorage.getItem(NARRATION_KEY) !== 'false')
+  const narrationLanguage = ref<NarrationLanguage>(
+    readNarrationLanguage(
+      localStorage.getItem(NARRATION_LANGUAGE_KEY),
+      defaultNarrationLanguage(typeof navigator === 'undefined' ? [] : navigator.languages ?? []),
+    ),
+  )
+  const narrationVolume = ref(readVolume(localStorage.getItem(NARRATION_VOLUME_KEY)))
+
+  function setNarration(enabled: boolean) {
+    narration.value = enabled
+    localStorage.setItem(NARRATION_KEY, String(enabled))
+  }
+
+  function setNarrationLanguage(language: NarrationLanguage) {
+    narrationLanguage.value = language
+    localStorage.setItem(NARRATION_LANGUAGE_KEY, language)
+  }
+
+  function setNarrationVolume(volume: number) {
+    narrationVolume.value = readVolume(String(volume))
+    localStorage.setItem(NARRATION_VOLUME_KEY, String(narrationVolume.value))
+  }
+
+  const music = ref(localStorage.getItem(MUSIC_KEY) !== 'false')
+  const musicVolume = ref(readVolume(localStorage.getItem(MUSIC_VOLUME_KEY), 0.45))
+
+  function setMusic(enabled: boolean) {
+    music.value = enabled
+    localStorage.setItem(MUSIC_KEY, String(enabled))
+  }
+
+  function setMusicVolume(volume: number) {
+    musicVolume.value = readVolume(String(volume), 0.45)
+    localStorage.setItem(MUSIC_VOLUME_KEY, String(musicVolume.value))
   }
 
   // Global player preference, on unless explicitly turned off.
@@ -252,5 +309,15 @@ export const useSettings = defineStore("settings", () => {
     drawSpotlightOverride,
     setDrawSpotlightGlobal,
     setDrawSpotlightOverride,
+    narration,
+    setNarration,
+    narrationLanguage,
+    setNarrationLanguage,
+    narrationVolume,
+    setNarrationVolume,
+    music,
+    setMusic,
+    musicVolume,
+    setMusicVolume,
   }
 })

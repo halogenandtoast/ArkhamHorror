@@ -17,6 +17,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import WorldMap, { type MapData } from '@/arkham/components/TheScarletKeys/WorldMap.vue';
 import BuildSpiritDeck from '@/arkham/components/BuildSpiritDeck.vue';
 import CardImage from '@/arkham/components/CardImage.vue';
+import NarrationToggle from '@/arkham/components/NarrationToggle.vue';
 import type { CardDef } from '@/arkham/types/CardDef';
 
 export interface Props {
@@ -187,6 +188,11 @@ const isBuildSpiritDeckQuestion = (q: Question): q is Question & { tag: Question
 
 <template>
   <div :class="['story-question-root', { 'view-only': viewOnly }]">
+    <!-- Outside the view-only branch: a player waiting on the lead still hears
+         the story and can replay or stop it. -->
+    <div v-if="question && question.tag === QuestionType.READ || viewOnly" class="story-narration">
+      <NarrationToggle />
+    </div>
     <div v-if="viewOnly" class="waiting-banner">
       {{ t('waitingForPlayer', { name: viewerInvestigatorName }) }}
     </div>
@@ -343,6 +349,13 @@ const isBuildSpiritDeckQuestion = (q: Question): q is Question & { tag: Question
 .story-question-root.view-only {
   pointer-events: none;
   opacity: 0.85;
+}
+
+/* A zero-height strip the narration button hangs from, clickable even in view-only. */
+.story-narration {
+  position: relative;
+  height: 0;
+  pointer-events: auto;
 }
 
 .story-question-root.view-only :is(button, a, .scenario-tile, .token-labels img, .portrait, .clickable) {

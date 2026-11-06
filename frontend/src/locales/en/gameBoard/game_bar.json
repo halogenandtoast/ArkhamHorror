@@ -81,7 +81,21 @@
         "drawSpotlight": "Show the cards you draw from your own deck, enlarged, the way an encounter card is shown.",
         "drawSpotlightOff": "Off",
         "drawSpotlightUpkeep": "Upkeep only",
-        "drawSpotlightEvery": "Every draw"
+        "drawSpotlightEvery": "Every draw",
+        "narration": {
+            "title": "Story Narration",
+            "description": "Reads scenario intros and resolutions aloud as they appear. Everyone at the table hears it together, each in their own narration language. Setup steps and campaign-log bookkeeping are not read.",
+            "language": "Narration language",
+            "en": "English",
+            "vi": "Tiếng Việt",
+            "volume": "Volume",
+            "play": "Play narration",
+            "stop": "Stop narration"
+        },
+        "music": {
+            "title": "Horror Ambience",
+            "description": "A low drone, wind and the odd distant bell or heartbeat under each scenario. Made live in your browser, nothing to download; it quietens while the story is read. The Sounds switch turns it off too."
+        }
     },
 
 

@@ -1,0 +1,41 @@
+{
+ "languages": {
+  "en": {
+   "nightOfTheZealot.prologue": "b353e3e1a778",
+   "nightOfTheZealot.theDevourerBelow.intro.body": "cbc0e059086b",
+   "nightOfTheZealot.theDevourerBelow.resolutions.noResolution.body": "86ae2e60111a",
+   "nightOfTheZealot.theDevourerBelow.resolutions.resolution1.body": "43813b051d72",
+   "nightOfTheZealot.theDevourerBelow.resolutions.resolution2.body": "6dbceb5f7c22",
+   "nightOfTheZealot.theDevourerBelow.resolutions.resolution3.body": "de74edaeae13",
+   "nightOfTheZealot.theGathering.intro.body": "a5661dd88fa5",
+   "nightOfTheZealot.theGathering.resolutions.noResolution.body": "213b386516dd",
+   "nightOfTheZealot.theGathering.resolutions.resolution1.body": "c61bf2896b4d",
+   "nightOfTheZealot.theGathering.resolutions.resolution2.body": "6b122add8add",
+   "nightOfTheZealot.theGathering.resolutions.resolution3.body": "5cd2f4cab3a0",
+   "nightOfTheZealot.theMidnightMasks.intro1": "0538a40407cc",
+   "nightOfTheZealot.theMidnightMasks.intro2": "181c3f044cd4",
+   "nightOfTheZealot.theMidnightMasks.intro3": "abcea36c5b37",
+   "nightOfTheZealot.theMidnightMasks.resolutions.resolution1.body": "a4477520895c",
+   "nightOfTheZealot.theMidnightMasks.resolutions.resolution2.body": "b01f4cd11a25"
+  },
+  "vi": {
+   "nightOfTheZealot.prologue": "674177b83a94",
+   "nightOfTheZealot.theDevourerBelow.intro.body": "a2c3d5a35cdb",
+   "nightOfTheZealot.theDevourerBelow.resolutions.noResolution.body": "3e57c9e49c6f",
+   "nightOfTheZealot.theDevourerBelow.resolutions.resolution1.body": "b601947b2680",
+   "nightOfTheZealot.theDevourerBelow.resolutions.resolution2.body": "77534773b12a",
+   "nightOfTheZealot.theDevourerBelow.resolutions.resolution3.body": "114bcd388611",
+   "nightOfTheZealot.theGathering.intro.body": "b1d75ec01f35",
+   "nightOfTheZealot.theGathering.resolutions.noResolution.body": "f9ace28b2781",
+   "nightOfTheZealot.theGathering.resolutions.resolution1.body": "2ea77ee0bd1b",
+   "nightOfTheZealot.theGathering.resolutions.resolution2.body": "36952c23abf9",
+   "nightOfTheZealot.theGathering.resolutions.resolution3.body": "def50db57764",
+   "nightOfTheZealot.theMidnightMasks.intro1": "73ba1f86efb8",
+   "nightOfTheZealot.theMidnightMasks.intro2": "067163463d37",
+   "nightOfTheZealot.theMidnightMasks.intro3": "ddbb00d4bd02",
+   "nightOfTheZealot.theMidnightMasks.resolutions.resolution1.body": "2fa86b8e636c",
+   "nightOfTheZealot.theMidnightMasks.resolutions.resolution2.body": "e300cd073749"
+  }
+ },
+ "version": 1
+}

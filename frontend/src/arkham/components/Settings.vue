@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { type Game } from '@/arkham/types/Game'
+import { NARRATION_LANGUAGES } from '@/arkham/narration'
 import { useDebug } from '@/arkham/debug'
 import { useI18n } from 'vue-i18n';
 import { updateGameRaw } from '@/arkham/api'
@@ -404,6 +405,68 @@ onBeforeUnmount(() => {
             </div>
           </div>
 
+          <div class="toggle-row">
+            <div class="toggle-text">
+              <div class="toggle-name">{{$t('gameBar.settings.narration.title')}}</div>
+              <div class="toggle-desc">{{$t('gameBar.settings.narration.description')}}</div>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.you')}}</div>
+            </div>
+            <div class="segmented toggle-control">
+              <input type="radio" id="opt-narration-on" name="opt-narration" :checked="settings.narration" @change="settings.setNarration(true)" />
+              <label for="opt-narration-on">{{ $t('On') }}</label>
+              <input type="radio" id="opt-narration-off" name="opt-narration" :checked="!settings.narration" @change="settings.setNarration(false)" />
+              <label for="opt-narration-off">{{ $t('Off') }}</label>
+            </div>
+          </div>
+
+          <div v-if="settings.narration" class="toggle-row">
+            <div class="toggle-text">
+              <div class="toggle-name">{{$t('gameBar.settings.narration.language')}}</div>
+              <label class="toggle-desc narration-volume">
+                {{$t('gameBar.settings.narration.volume')}}
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  :value="settings.narrationVolume"
+                  @input="settings.setNarrationVolume(Number(($event.target as HTMLInputElement).value))"
+                />
+              </label>
+            </div>
+            <div class="segmented toggle-control">
+              <template v-for="lang in NARRATION_LANGUAGES" :key="lang">
+                <input type="radio" :id="`opt-narration-${lang}`" name="opt-narration-language" :checked="settings.narrationLanguage === lang" @change="settings.setNarrationLanguage(lang)" />
+                <label :for="`opt-narration-${lang}`">{{ $t(`gameBar.settings.narration.${lang}`) }}</label>
+              </template>
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-text">
+              <div class="toggle-name">{{$t('gameBar.settings.music.title')}}</div>
+              <div class="toggle-desc">{{$t('gameBar.settings.music.description')}}</div>
+              <label v-if="settings.music" class="toggle-desc narration-volume">
+                {{$t('gameBar.settings.narration.volume')}}
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  :value="settings.musicVolume"
+                  @input="settings.setMusicVolume(Number(($event.target as HTMLInputElement).value))"
+                />
+              </label>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.you')}}</div>
+            </div>
+            <div class="segmented toggle-control">
+              <input type="radio" id="opt-music-on" name="opt-music" :checked="settings.music" @change="settings.setMusic(true)" />
+              <label for="opt-music-on">{{ $t('On') }}</label>
+              <input type="radio" id="opt-music-off" name="opt-music" :checked="!settings.music" @change="settings.setMusic(false)" />
+              <label for="opt-music-off">{{ $t('Off') }}</label>
+            </div>
+          </div>
+
           <ScopedSetting
             :ref="setSettingRef('drawSpotlight')"
             settingKey="drawSpotlight"
@@ -706,6 +769,12 @@ onBeforeUnmount(() => {
   line-height: 1.4;
   color: var(--background-light);
 }
+
+.narration-volume {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  input { flex: 1; max-width: 160px; }
 
 /* Grow past 150px when the labels need it ("Default", "Chapter 1", …) rather
    than letting the segments clip or wrap. */

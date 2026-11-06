@@ -64,6 +64,8 @@ import SmokePuffLayer from '@/arkham/components/SmokePuffLayer.vue';
 import { supportsHtmlInCanvas } from '@/arkham/droplets';
 import { createRainAudio, type RainAudioInstance } from '@/arkham/rainAudio';
 import { useSoundsDisabled } from '@/composable/useSoundsDisabled';
+import { createHorrorAmbience, type HorrorAmbienceInstance } from '@/arkham/horrorAmbience';
+import { useNarrationControls } from '@/arkham/composables/useNarration';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import { homebrewNamespaceOf, homebrewTotalsTokens } from '@/arkham/homebrewData';
@@ -173,6 +175,28 @@ watch(rainAudioWanted, (wanted) => {
 onBeforeUnmount(() => {
   rainAudio?.destroy()
   rainAudio = null
+})
+
+// Horror ambience for as long as a scenario is on screen, under the global
+// Sounds switch, ducking whenever the story narration speaks.
+const narrationControls = useNarrationControls()
+const musicWanted = computed(() => settingsStore.music && !soundsDisabled.value)
+let ambience: HorrorAmbienceInstance | null = null
+
+watch(musicWanted, (wanted) => {
+  if (!wanted) {
+    ambience?.stop()
+    return
+  }
+  ambience ??= createHorrorAmbience(settingsStore.musicVolume)
+  ambience?.start()
+}, { immediate: true })
+watch(() => settingsStore.musicVolume, (v) => ambience?.setVolume(v))
+watch(narrationControls.playing, (speaking) => ambience?.duck(speaking), { immediate: true })
+
+onBeforeUnmount(() => {
+  ambience?.destroy()
+  ambience = null
 })
 
 // From the canvasui playground: slow, thin, sparse. Note this sits at the

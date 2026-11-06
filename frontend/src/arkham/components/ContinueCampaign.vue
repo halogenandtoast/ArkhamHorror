@@ -208,6 +208,9 @@ const canUpgrade = computed(() => {
   if (!props.canUpgradeDecks) return false
   if (props.step.tag === "CampaignSpecificStep" && props.canUpgradeDecks) return true
   if (!["ScenarioStep", "ScenarioStepWithOptions", "StandaloneScenarioStep"].includes(props.step.tag)) return false
+  // Normally nothing to spend before the first scenario, but a campaign can hand
+  // out xp in its prologue (Children of Blood, Hard/Expert).
+  if (investigators.value.some((i: Investigator) => i.xp > 0)) return true
   return (props.campaign.completedSteps ?? []).some((step: CampaignStep) => ['ScenarioStep', 'ScenarioStepWithOptions', 'StandaloneScenarioStep'].includes(step.tag))
 })
 

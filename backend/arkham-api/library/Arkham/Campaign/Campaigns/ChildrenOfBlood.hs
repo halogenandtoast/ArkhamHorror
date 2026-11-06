@@ -29,7 +29,7 @@ childrenOfBlood = campaign ChildrenOfBlood (CampaignId "13") "Children of blood"
 instance IsCampaign ChildrenOfBlood where
   campaignTokens = chaosBagContents
   nextStep a = case (toAttrs a).normalizedStep of
-    PrologueStep -> continue RiverOfBlood
+    PrologueStep -> continueEdit RiverOfBlood noSideStory
     RiverOfBlood -> continue NewHorizons
     NewHorizons -> continue $ InterludeStep 1 Nothing
     InterludeStep 1 _ -> continue BloodMoney
@@ -37,14 +37,20 @@ instance IsCampaign ChildrenOfBlood where
     other -> defaultNextStep other
 
 instance RunMessage ChildrenOfBlood where
-  runMessage msg c@(ChildrenOfBlood _attrs) =
+  runMessage msg c@(ChildrenOfBlood attrs) =
     runQueueT $ campaignI18n $ lift (runChildrenOfBloodAchievements msg) *> case msg of
     CampaignStep PrologueStep -> do
       scope "intro" $ flavor $ setTitle "title" >> p "body"
       scope "additionalRulesAndClarifications" do
         flavor $ setTitle "title" >> p "bloodTokens"
         flavor $ setTitle "title" >> p "predator"
-      scope "prologue" $ flavor $ setTitle "title" >> p "body"
+      scope "prologue" do
+        flavor $ setTitle "title" >> p "body"
+        -- "If you are playing on Hard or Expert difficulty, each investigator may
+        -- begin the campaign with 5 bonus experience. You may upgrade your decks
+        -- before starting the first scenario."
+        when (attrs.difficulty `elem` [Hard, Expert]) do
+          eachInvestigator \iid -> gainXp iid CampaignSource (ikey "xp.bonusExperience") 5
       nextCampaignStep
       pure c
     CampaignStep (InterludeStep 1 _) -> scope "friendsInLowPlaces" do

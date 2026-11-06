@@ -210,7 +210,7 @@ function pick(index: number) {
 .heading h2 { margin: 2px 0; font: 1.9rem Georgia, serif; }
 .heading p { margin: 0; font-size: 0.8rem; color: #d3d0bd; }
 .eyebrow { text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.65rem; color: #c6a873; }
-.floor { position: absolute; left: 4%; right: 4%; top: 62%; bottom: calc(var(--hand-h, 0px) + 8px); z-index: 1; cursor: crosshair; }
+.floor { position: absolute; left: 4%; right: 4%; top: 62%; bottom: 4%; z-index: 1; cursor: crosshair; }
 .hotspot { position: absolute; z-index: 30; translate: -50% 0; display: flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; background: #101a15d9; border: 1px solid #c6a873aa; color: #f1e6c1; cursor: pointer; font-size: 0.8rem; backdrop-filter: blur(2px); animation: pulse 2.6s ease-in-out infinite; }
 .hotspot:hover { background: #26352bf0; border-color: #ffe9a0; }
 .hotspot.door { top: 40%; }

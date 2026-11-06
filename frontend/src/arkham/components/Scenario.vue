@@ -58,7 +58,6 @@ import EnemyView from '@/arkham/components/Enemy.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
 import KeyToken from '@/arkham/components/Key.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
-import { useSceneDrawer } from '@/arkham/composables/useSceneDrawer'
 import Connections from '@/arkham/components/Connections.vue';
 import RainOverlay from '@/arkham/components/RainOverlay.vue';
 import SmokePuffLayer from '@/arkham/components/SmokePuffLayer.vue';
@@ -1740,7 +1739,6 @@ const cardsUnderScenarioReference = computed(() =>
 /* Tokens sealed on the scenario reference card itself (Traces to Nowhere's codex entries). */
 const scenarioSealedChaosTokens = computed(() => props.scenario.sealedChaosTokens)
 const decksShown = ref(false)
-const sceneDrawerOpen = useSceneDrawer(() => props.game.id)
 const cardsUnderAgenda = computed(() => props.scenario.cardsUnderAgendaDeck)
 const cardsUnderAct = computed(() => props.scenario.cardsUnderActDeck)
 const cardsNextToAct = computed(() => props.scenario.cardsNextToActDeck)
@@ -3333,7 +3331,7 @@ async function addChaosToken(face: any){
       </RainOverlay>
       </template>
 
-      <div id="player-zone" :class="{ 'player-zone--fullscreen': locationsFullscreen, 'player-zone--drawer': settingsStore.locationView === 'scene', 'player-zone--open': sceneDrawerOpen }" :inert="settingsStore.locationView === 'scene' && !sceneDrawerOpen">
+      <div id="player-zone" :class="{ 'player-zone--fullscreen': locationsFullscreen, 'player-zone--scene': settingsStore.locationView !== 'cards' }">
         <PlayerTabs
           :game="game"
           :playerId="playerId"
@@ -3768,24 +3766,8 @@ async function addChaosToken(face: any){
 
 /* Keep the player zone (hand + in-play assets) usable while the board is a
    fixed fullscreen overlay: pin it to the viewport bottom above the overlay. */
-/* Scene view: the play / threat areas live in a drawer that slides up above the hand. It stays mounted
-   (only moved off screen) so the controls PlayerTabs watches for automatic seat switching keep existing. */
-.player-zone--drawer {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: var(--hand-h, 0px);
-  z-index: 850;
-  max-height: 45vh;
-  overflow: auto;
-  transform: translateY(calc(100% + var(--hand-h, 0px) + 20px));
-  visibility: hidden;
-  transition: transform 0.2s ease, visibility 0s linear 0.2s;
-  box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.6);
-}
-.player-zone--drawer.player-zone--open { transform: none; visibility: visible; transition: transform 0.2s ease; }
-.player-zone--drawer #totals { display: none; }
-@media (prefers-reduced-motion: reduce) { .player-zone--drawer { transition: none; } }
+/* Location views: the fixed hand sits under the player area, so keep the area clear of it. */
+.player-zone--scene { padding-bottom: 0; }
 
 .player-zone--fullscreen {
   position: fixed;

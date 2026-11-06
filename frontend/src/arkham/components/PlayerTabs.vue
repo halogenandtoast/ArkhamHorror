@@ -16,7 +16,6 @@ import { gameLocalStorageKey } from '@/arkham/localStorage';
 import { IsMobile } from '@/arkham/isMobile';
 import { useDbCardStore } from '@/stores/dbCards'
 import { useSettings } from '@/stores/settings'
-import { useSceneDrawer } from '@/arkham/composables/useSceneDrawer'
 import SceneSeatCard from '@/arkham/components/SceneSeatCard.vue'
 
 export interface Props {
@@ -49,25 +48,8 @@ const lead = computed(() => `url('${imgsrc(`tokens/lead-investigator.png`)}')`)
 const { isMobile } = IsMobile();
 const store = useDbCardStore()
 const sceneMode = computed(() => useSettings().locationView === 'scene')
-const drawerOpen = useSceneDrawer(() => props.game.id)
-
-// Your own seat first and expanded, then the others in table order, eliminated seats last.
-const seats = computed(() => {
-  const all = [...investigators.value, ...inactiveInvestigators.value]
-  const mine = all.filter((i) => i.playerId === props.playerId)
-  return [...mine, ...all.filter((i) => i.playerId !== props.playerId)]
-})
-const areaCounts = (i: Investigator) => ({ threat: i.treacheries.length + i.engagedEnemies.length, play: i.assets.length })
-
-// The links on a seat open the drawer holding that seat's play / threat area and scroll to it.
-async function openArea(investigator: Investigator, area: 'threat' | 'play') {
-  selectTab(investigator.playerId)
-  drawerOpen.value = true
-  await nextTick()
-  const zone = document.getElementById('player-zone')
-  zone?.querySelector<HTMLElement>(`.tab[data-player-tab="${investigator.playerId}"] ${area === 'threat' ? '.area-label.threat' : '.area-label:not(.threat)'}`)
-    ?.scrollIntoView({ block: 'nearest', inline: 'start', behavior: 'smooth' })
-}
+// Teammates only: your own investigator stays in the player area under the map.
+const seats = computed(() => [...investigators.value, ...inactiveInvestigators.value].filter((i) => i.playerId !== props.playerId))
 
 function tabClass(investigator: Investigator) {
   const pid = investigator.playerId
@@ -517,7 +499,7 @@ watch(
 <template>
   <div ref="playerInfo" class="player-info">
     <div class="tabs-row">
-    <ul v-show="!sceneMode" class='tabs__header'>
+    <ul class='tabs__header'>
       <li v-for='investigator in investigators'
         :key='investigator.name.title'
         @click='selectTab(investigator.playerId)'
@@ -562,13 +544,13 @@ watch(
     <slot />
     </div>
     <Teleport defer to="#scene-team-slot" :disabled="!sceneMode">
-      <div v-if="sceneMode" class="team-overlay" role="group" :aria-label="$t('locationMap.team')">
+      <div v-if="sceneMode && seats.length" class="team-overlay" role="group" :aria-label="$t('locationMap.team')">
         <SceneSeatCard v-for="i in seats" :key="i.id" :game="game" :investigator="i"
-          :expanded="i.playerId === playerId" :selected="i.playerId === selectedTab"
+          :selected="i.playerId === selectedTab"
           :active="i.id === activePlayerId" :lead="i.id === game.leadInvestigatorId"
           :hasActions="hasActions(i)" :waiting="isWaiting(i)" :eliminated="i.eliminated"
-          :solo="!!solo" :canSwitch="hasSwitch(i)" :switchable="i.playerId !== playerId" :areaCounts="areaCounts(i)"
-          @select="selectTab(i.playerId)" @perspective="selectTabExtended(i.playerId)" @openArea="openArea(i, $event)" />
+          :solo="!!solo" :canSwitch="hasSwitch(i)" :switchable="i.playerId !== playerId"
+          @select="selectTab(i.playerId)" @perspective="selectTabExtended(i.playerId)" />
       </div>
     </Teleport>
     <Tab

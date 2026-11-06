@@ -13,7 +13,6 @@ import { useCardNames } from '@/arkham/composables/useCardNames'
 const props = defineProps<{
   game: Game
   investigator: Investigator
-  expanded: boolean
   selected: boolean
   active: boolean
   lead: boolean
@@ -23,12 +22,10 @@ const props = defineProps<{
   solo: boolean
   canSwitch: boolean
   switchable: boolean
-  areaCounts: { threat: number; play: number }
 }>()
 const emit = defineEmits<{
   (e: 'select'): void
   (e: 'perspective'): void
-  (e: 'openArea', area: 'threat' | 'play'): void
 }>()
 
 const { t } = useI18n()
@@ -41,13 +38,10 @@ const tok = (type: keyof typeof inv.value.tokens) => inv.value.tokens[type] ?? 0
 const meter = (max: number, taken: number) => ({ max, left: Math.max(0, max - taken), pct: max > 0 ? (100 * Math.max(0, max - taken)) / max : 0 })
 const hp = computed(() => meter(inv.value.health, tok(TokenType.Damage)))
 const sanity = computed(() => meter(inv.value.sanity, tok(TokenType.Horror)))
-const skills = computed(() => [
-  ['willpower', inv.value.willpower], ['intellect', inv.value.intellect], ['combat', inv.value.combat], ['agility', inv.value.agility],
-] as const)
 </script>
 
 <template>
-  <div class="seat" :class="[`class-${cls}`, { expanded, selected, active, eliminated }]" role="button" tabindex="0"
+  <div class="seat" :class="[`class-${cls}`, { selected, active, eliminated }]" role="button" tabindex="0"
     :aria-pressed="selected" @click="emit('select')" @keydown.enter.prevent="emit('select')">
     <span class="face">
       <img :src="portrait" :alt="nameOf(inv.cardCode)" />
@@ -58,20 +52,12 @@ const skills = computed(() => [
       <span class="name"><b v-if="active" class="play" aria-hidden="true">▶</b>{{ nameOf(inv.cardCode) }}</span>
       <span class="meter hp"><span class="track"><i :style="{ width: hp.pct + '%' }"></i></span><em>♥ {{ hp.left }}/{{ hp.max }}</em></span>
       <span class="meter sanity"><span class="track"><i :style="{ width: sanity.pct + '%' }"></i></span><em>◆ {{ sanity.left }}/{{ sanity.max }}</em></span>
-      <template v-if="expanded">
-        <span class="skills"><span v-for="[k, v] in skills" :key="k" :title="k">{{ k.slice(0, 1).toUpperCase() }}{{ v }}</span></span>
-        <span class="stock">{{ tok(TokenType.Resource) }} {{ t('locationMap.resources').toLowerCase() }} · {{ tok(TokenType.Clue) }} {{ t('locationMap.clues').toLowerCase() }}</span>
-        <span class="links">
-          <button @click.stop="emit('openArea', 'threat')">{{ t('locationMap.threatArea') }} ({{ areaCounts.threat }})</button>
-          <button @click.stop="emit('openArea', 'play')">{{ t('locationMap.playArea') }} ({{ areaCounts.play }})</button>
-        </span>
-      </template>
     </span>
-    <span v-if="!expanded" class="side">
+    <span class="side">
       <span class="count res" :title="t('locationMap.resources')">$ {{ tok(TokenType.Resource) }}</span>
       <span class="count clue" :title="t('locationMap.clues')">◇ {{ tok(TokenType.Clue) }}</span>
       <span v-if="waiting" class="waiting" :title="t('locationMap.waiting')">⟳</span>
-      <span v-else class="count hand" :title="t('locationMap.hand', { count: inv.hand?.length ?? 0 })">🂠 {{ inv.hand?.length ?? '–' }}</span>
+      <span v-if="!waiting" class="count hand" :title="t('locationMap.hand', { count: inv.hand?.length ?? 0 })">🂠 {{ inv.hand?.length ?? '–' }}</span>
     </span>
     <button v-if="solo && switchable" class="eye" :class="{ glow: canSwitch }" :title="t('locationMap.switchTo')"
       @click.stop="emit('perspective')">👁</button>
@@ -79,20 +65,19 @@ const skills = computed(() => [
 </template>
 
 <style scoped>
-.seat { flex: none; box-sizing: border-box; --c: #8a9a86; position: relative; display: flex; align-items: center; gap: 8px; width: 204px; padding: 6px 8px; background: #0f1813e6; border: 1px solid color-mix(in srgb, var(--c) 70%, transparent); border-radius: 8px; backdrop-filter: blur(4px); color: #e5e2d4; cursor: pointer; transition: transform 0.12s, box-shadow 0.12s; }
-.seat.expanded { width: 236px; align-items: flex-start; }
+.seat { flex: none; box-sizing: border-box; --c: #8a9a86; position: relative; display: flex; align-items: center; gap: 8px; width: 188px; padding: 4px 6px; background: #0f1813b8; border: 1px solid color-mix(in srgb, var(--c) 70%, transparent); border-radius: 8px; backdrop-filter: blur(4px); color: #e5e2d4; cursor: pointer; transition: transform 0.12s, box-shadow 0.12s; }
+.seat:hover { background: #0f1813f2; }
 .seat.class-Guardian { --c: #4a8fd0; } .seat.class-Seeker { --c: #d9a441; } .seat.class-Rogue { --c: #4fae6a; }
 .seat.class-Mystic { --c: #9a63d1; } .seat.class-Survivor { --c: #d1584f; }
 .seat.selected { outline: 2px solid #ffe9a0; outline-offset: -2px; }
 .seat.active .face { box-shadow: 0 0 0 2px #ffe9a0, 0 0 10px #ffe9a0aa; }
 .seat.eliminated { opacity: 0.4; filter: grayscale(1); }
-.face { position: relative; flex: none; width: 44px; height: 44px; border-radius: 50%; border: 3px solid var(--c); }
+.face { position: relative; flex: none; width: 36px; height: 36px; border-radius: 50%; border: 3px solid var(--c); }
 .face > img:first-child { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: 50% 20%; }
-.expanded .face { width: 56px; height: 56px; }
 .crown { position: absolute; left: -8px; top: -8px; width: 18px; height: 18px; }
 .pulse { position: absolute; right: -3px; top: -3px; width: 10px; height: 10px; border-radius: 50%; background: #ffe9a0; animation: blink 1.4s ease-in-out infinite alternate; }
 .body { display: grid; gap: 3px; min-width: 0; flex: 1; font: 600 11px/1.15 system-ui, sans-serif; }
-.name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 0.85rem Georgia, serif; }
+.name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 0.78rem Georgia, serif; }
 .play { color: #ffe9a0; margin-right: 4px; font-size: 0.7rem; }
 .meter { display: flex; align-items: center; gap: 5px; }
 .meter .track { flex: 1; height: 4px; background: #5b5a54; border-radius: 3px; overflow: hidden; }
@@ -100,11 +85,6 @@ const skills = computed(() => [
 .meter em { font-style: normal; flex: none; white-space: nowrap; text-align: right; color: #fff4df; }
 .meter .track { min-width: 16px; }
 .meter.hp { color: #ff9b87; } .meter.sanity { color: #9fceee; }
-.skills { display: flex; gap: 8px; color: #d6d0b6; }
-.stock { color: #f0d9a8; }
-.links { display: flex; gap: 6px; flex-wrap: wrap; }
-.links button { padding: 3px 8px; font-size: 0.7rem; background: #17261f; border: 1px solid #c6a87388; border-radius: 4px; color: #e6d6a8; cursor: pointer; }
-.links button:hover { border-color: #ffe9a0; }
 .side { display: grid; gap: 1px; justify-items: end; font: 600 10px/1.2 system-ui, sans-serif; }
 .count.res { color: #f0d9a8; } .count.clue { color: #9fd3e6; } .count.hand { color: #c9d0c3; }
 .waiting { animation: spin 3s linear infinite; color: #ffe9a0; }
@@ -116,6 +96,5 @@ const skills = computed(() => [
 @media (max-width: 800px) {
   .seat:not(.selected) { width: auto; padding: 3px; }
   .seat:not(.selected) .body, .seat:not(.selected) .side, .seat:not(.selected) .eye { display: none; }
-  .seat.expanded.selected { width: 220px; }
 }
 </style>

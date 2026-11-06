@@ -211,7 +211,7 @@ function pick(index: number) {
 </template>
 
 <style scoped>
-.scene { position: relative; flex: 1; min-height: 420px; overflow: hidden; background: #0b100d; color: #ece6d0; isolation: isolate; }
+.scene { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #0b100d; color: #ece6d0; isolation: isolate; }
 .backdrop, .backdrop img { position: absolute; inset: 0; width: 100%; height: 100%; }
 .backdrop img { object-fit: cover; }
 .backdrop.plain img.from-card { object-fit: cover; object-position: 50% 30%; filter: blur(14px) brightness(0.55) saturate(1.2); transform: scale(1.15); }

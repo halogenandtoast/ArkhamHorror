@@ -153,15 +153,15 @@ const views: LocationView[] = ['scene', 'map', 'cards']
 </template>
 
 <style scoped>
-.location-map { display: flex; flex-direction: column; min-height: 0; flex: 1; background: radial-gradient(ellipse at 50% 45%, #2c3a28, #0e1610 78%); }
+.location-map { display: flex; flex-direction: column; min-height: 0; flex: 1; overflow-y: auto; background: radial-gradient(ellipse at 50% 45%, #2c3a28, #0e1610 78%); }
 .map-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 5px 12px; background: #101a14; border-bottom: 1px solid #a68b5540; }
 .views { display: flex; gap: 4px; }
 .view { padding: 3px 12px; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; background: transparent; border: 1px solid #75836b66; border-radius: 4px; color: #b4bdab; cursor: pointer; }
 .view:hover { border-color: #e6c584; }
 .view.active { background: #c6a873; border-color: #c6a873; color: #191c16; font-weight: 650; }
 .board-note { font-size: 0.75rem; color: #d8b68c; }
-.map-layout { display: flex; min-height: 0; flex: 1; height: clamp(420px, 66vh, 780px); }
-.map-layout > :first-child { min-height: 0; flex: 1; min-width: 0; }
+.map-layout { display: flex; flex: 1 0 clamp(300px, 50vh, 640px); }
+.map-layout > :first-child { flex: 1; min-width: 0; }
 @media (max-width: 800px) {
   .map-layout { height: auto; }
   .map-layout > :first-child { height: 60vh; }

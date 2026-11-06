@@ -60,8 +60,8 @@ const panels = computed<Panel[]>(() => [
       <div class="body">
         <span class="eyebrow">{{ t(`locationMap.${p.kind}`) }} {{ p.step }} / {{ p.total }}</span>
         <h3>{{ p.title }}</h3>
-        <p v-if="p.flavor" class="flavor">{{ p.flavor }}</p>
-        <p v-if="p.text" class="text">{{ p.text }}</p>
+        <p v-if="p.flavor" class="flavor" :title="p.flavor">{{ p.flavor }}</p>
+        <p v-if="p.text" class="text" :title="p.text">{{ p.text }}</p>
         <div v-if="p.doom !== null" class="doom">
           <span>{{ t('locationMap.doomCount', { count: p.doom, max: p.doomMax ?? '?' }) }}</span>
           <i v-if="p.doomMax"><b :style="{ width: Math.min(100, (100 * p.doom) / p.doomMax) + '%' }"></b></i>
@@ -82,8 +82,8 @@ const panels = computed<Panel[]>(() => [
 .agenda .eyebrow { color: #d99e8e; }
 h3 { margin: 0; font: 1.15rem Georgia, serif; }
 p { margin: 0; font-size: 0.75rem; line-height: 1.35; }
-.flavor { color: #b9c2ad; font-style: italic; }
-.text { color: #e9e3cc; }
+.flavor { color: #b9c2ad; font-style: italic; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.text { color: #e9e3cc; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .doom { display: flex; flex-direction: column; gap: 2px; font-size: 0.7rem; color: #f0d9a8; }
 .doom i { display: block; height: 4px; background: #5a4a40; border-radius: 3px; overflow: hidden; }
 .doom b { display: block; height: 100%; background: #c9684f; }

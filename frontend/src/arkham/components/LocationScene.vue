@@ -204,7 +204,7 @@ function pick(index: number) {
 .scene { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #0b100d; color: #ece6d0; isolation: isolate; }
 .backdrop, .backdrop img { position: absolute; inset: 0; width: 100%; height: 100%; }
 .backdrop img { object-fit: cover; }
-.backdrop.plain img.from-card { object-fit: cover; object-position: 50% 30%; filter: blur(14px) brightness(0.55) saturate(1.2); transform: scale(1.15); }
+.backdrop.plain img.from-card { object-fit: cover; object-position: 50% 24%; filter: brightness(0.85) saturate(1.1); transform: scale(1.3); }
 .vignette { position: absolute; inset: 0; background: linear-gradient(#08100b99, transparent 22%, transparent 72%, #07100bb0); pointer-events: none; }
 .heading { position: absolute; left: 16px; top: 12px; z-index: 5; text-shadow: 0 2px 6px #000; pointer-events: none; }
 .heading h2 { margin: 2px 0; font: 1.9rem Georgia, serif; }

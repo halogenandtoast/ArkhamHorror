@@ -3767,7 +3767,8 @@ async function addChaosToken(face: any){
 /* Keep the player zone (hand + in-play assets) usable while the board is a
    fixed fullscreen overlay: pin it to the viewport bottom above the overlay. */
 /* Location views: the fixed hand sits under the player area, so keep the area clear of it. */
-.player-zone--scene { padding-bottom: 0; }
+.player-zone--scene { padding-bottom: var(--hand-h, 0px); }
+.player-zone--scene #totals { display: none; }
 
 .player-zone--fullscreen {
   position: fixed;

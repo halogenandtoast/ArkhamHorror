@@ -530,6 +530,10 @@
     "debug": "Debug"
   },
   "locationMap": {
+    "skillsAndActions": "Willpower, intellect, combat, agility and actions left",
+    "actionsLeft": "{count} actions left",
+    "totalDoom": "Total doom",
+    "totalClues": "Spendable clues",
     "team": "Team",
     "areas": "Play / Threat",
     "lead": "Lead investigator",

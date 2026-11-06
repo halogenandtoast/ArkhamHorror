@@ -508,6 +508,10 @@ watch(
         <i v-if="hasActions(investigator)" class="tab-pulse" aria-hidden="true"></i>
         <span v-if="isMobile">{{ getInvestigatorName(investigator.name.title).split(' ')[0] }}</span>
         <span v-else>{{ getInvestigatorName(investigator.name.title) }}</span>
+        <span v-if="sceneMode" class="tab-meta" :title="$t('locationMap.skillsAndActions')">
+          <b class="sk will">{{ investigator.willpower }}</b><b class="sk int">{{ investigator.intellect }}</b><b class="sk com">{{ investigator.combat }}</b><b class="sk agi">{{ investigator.agility }}</b>
+          <span class="pips" :aria-label="$t('locationMap.actionsLeft', { count: investigator.remainingActions })"><i v-for="n in investigator.remainingActions" :key="n" class="pip"></i><i v-if="investigator.remainingActions === 0" class="pip none"></i></span>
+        </span>
         <button
           v-if="solo"
           v-tooltip="instructions(investigator)"
@@ -595,7 +599,13 @@ watch(
 </template>
 
 <style scoped>
-.team-overlay { display: flex; flex: 0 1 auto; min-height: 0; flex-direction: column; gap: 6px; padding: 2px; overflow: hidden auto; pointer-events: auto; scrollbar-width: thin; }
+.tab-meta { display: inline-flex; align-items: center; gap: 3px; padding: 0 8px 0 0; }
+.tab-meta .sk { min-width: 17px; padding: 1px 3px; text-align: center; font: 700 0.7rem/1.2 system-ui, sans-serif; border-radius: 3px; color: #fff; }
+.sk.will { background: #3b6fb0; } .sk.int { background: #7b4aa8; } .sk.com { background: #b23a3a; } .sk.agi { background: #3d8a4d; }
+.tab-meta .pips { display: inline-flex !important; gap: 2px; margin-left: 5px; padding: 0 !important; }
+.pip { display: block; width: 9px; height: 9px; border-radius: 50%; background: #ffe9a0; box-shadow: 0 0 4px #ffe9a0aa; }
+.pip.none { background: #55534c; box-shadow: none; }
+.team-overlay { display: flex; flex: 0 1 auto; flex-direction: column; gap: 6px; padding: 2px; pointer-events: auto; }
 @media (max-width: 800px) { .team-overlay { flex-direction: row; flex-wrap: wrap; align-items: flex-start; } }
 .tabs-row {
   display: flex;

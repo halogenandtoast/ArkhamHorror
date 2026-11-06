@@ -5,7 +5,6 @@ import type { Game } from '@/arkham/types/Game'
 import type { Location } from '@/arkham/types/Location'
 import { MessageType } from '@/arkham/types/Message'
 import { cardId, toCardContents } from '@/arkham/types/Card'
-import { TokenType } from '@/arkham/types/Token'
 import { useGameChoices } from '@/arkham/composables/useGameChoices'
 import { useCardNames } from '@/arkham/composables/useCardNames'
 import { sourceEntityId, type EntityChoice } from '@/arkham/locationChoices'
@@ -93,9 +92,6 @@ const sections = computed(() => {
   return SECTIONS.filter((key) => rows[key].length > 0).map((key) => ({ key, title: t(`locationMap.section.${key}`), rows: rows[key] }))
 })
 
-const bar = (max: number, taken: number) => ({ max, left: Math.max(0, max - taken), pct: max > 0 ? (100 * Math.max(0, max - taken)) / max : 0 })
-const health = computed(() => me.value ? bar(me.value.health, me.value.tokens[TokenType.Damage] ?? 0) : null)
-const sanity = computed(() => me.value ? bar(me.value.sanity, me.value.tokens[TokenType.Horror] ?? 0) : null)
 </script>
 
 <template>
@@ -113,11 +109,6 @@ const sanity = computed(() => me.value ? bar(me.value.sanity, me.value.tokens[To
         <AbilityButton v-else-if="r.contents" class="row" :game="game" :ability="r.contents" @choose="emit('choose', r.index)" />
       </template>
     </section>
-    <footer v-if="me && health && sanity">
-      <span class="who">{{ nameOf(me.cardCode) }}</span>
-      <span class="meter hp"><span>♥</span><i><b :style="{ width: health.pct + '%' }"></b></i><em>{{ health.left }}/{{ health.max }}</em></span>
-      <span class="meter sanity"><span>◆</span><i><b :style="{ width: sanity.pct + '%' }"></b></i><em>{{ sanity.left }}/{{ sanity.max }}</em></span>
-    </footer>
   </aside>
 </template>
 
@@ -133,12 +124,4 @@ h5 { margin: 4px 0 0; font-size: 0.7rem; color: #e0a595; font-weight: 600; }
 .row:hover, .section :deep(button:hover:not(:disabled)) { background: #213529 !important; border-color: #e6c584 !important; }
 .section :deep(button:disabled) { opacity: 0.5; }
 .empty { margin: 0; font-size: 0.8rem; color: #98a38f; }
-footer { display: grid; gap: 4px; border-top: 1px solid #ffffff14; padding-top: 8px; font-size: 0.7rem; }
-.who { color: #b9c2ad; }
-.meter { display: flex; align-items: center; gap: 6px; }
-.meter i { flex: 1; height: 5px; background: #5b5a54; border-radius: 3px; overflow: hidden; }
-.meter b { display: block; height: 100%; background: currentColor; }
-.meter em { font-style: normal; font-weight: 700; color: #fff4df; }
-.meter.hp { color: #ff9b87; }
-.meter.sanity { color: #9fceee; }
 </style>

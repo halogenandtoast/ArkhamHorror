@@ -66,6 +66,8 @@ const panels = computed<Panel[]>(() => [
           <span>{{ t('locationMap.doomCount', { count: p.doom, max: p.doomMax ?? '?' }) }}</span>
           <i v-if="p.doomMax"><b :style="{ width: Math.min(100, (100 * p.doom) / p.doomMax) + '%' }"></b></i>
         </div>
+        <div v-if="p.kind === 'agenda'" class="total doom-total" :title="t('locationMap.totalDoom')">☠ {{ t('locationMap.totalDoom') }} <b>{{ game.totalDoom }}</b></div>
+        <div v-else class="total clue-total" :title="t('locationMap.totalClues')">◇ {{ t('locationMap.totalClues') }} <b>{{ game.totalClues }}</b></div>
         <AbilityButton v-for="c in p.choices" :key="c.index" :game="game" :ability="c.contents" @choose="emit('choose', c.index)" />
       </div>
     </article>
@@ -82,9 +84,13 @@ const panels = computed<Panel[]>(() => [
 .agenda .eyebrow { color: #d99e8e; }
 h3 { margin: 0; font: 1.15rem Georgia, serif; }
 p { margin: 0; font-size: 0.75rem; line-height: 1.35; }
-.flavor { color: #b9c2ad; font-style: italic; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.text { color: #e9e3cc; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.flavor { color: #b9c2ad; font-style: italic; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.text { color: #e9e3cc; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .doom { display: flex; flex-direction: column; gap: 2px; font-size: 0.7rem; color: #f0d9a8; }
 .doom i { display: block; height: 4px; background: #5a4a40; border-radius: 3px; overflow: hidden; }
+.total { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; margin-top: 2px; padding: 2px 8px; border-radius: 999px; font-size: 0.7rem; background: #0006; }
+.total b { font-size: 0.9rem; color: #fff4df; }
+.doom-total { color: #e8a08d; border: 1px solid #c9684f88; }
+.clue-total { color: #9fd3e6; border: 1px solid #5fa8c488; }
 .doom b { display: block; height: 100%; background: #c9684f; }
 </style>

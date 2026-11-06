@@ -36,6 +36,9 @@ const portrait = computed(() => portraitImage(inv.value.cardCode))
 const crown = computed(() => imgsrc('tokens/lead-investigator.png'))
 const tok = (type: keyof typeof inv.value.tokens) => inv.value.tokens[type] ?? 0
 const meter = (max: number, taken: number) => ({ max, left: Math.max(0, max - taken), pct: max > 0 ? (100 * Math.max(0, max - taken)) / max : 0 })
+const skills = computed(() => [
+  ['willpower', inv.value.willpower], ['intellect', inv.value.intellect], ['combat', inv.value.combat], ['agility', inv.value.agility],
+] as const)
 const hp = computed(() => meter(inv.value.health, tok(TokenType.Damage)))
 const sanity = computed(() => meter(inv.value.sanity, tok(TokenType.Horror)))
 </script>
@@ -59,6 +62,13 @@ const sanity = computed(() => meter(inv.value.sanity, tok(TokenType.Horror)))
       <span v-if="waiting" class="waiting" :title="t('locationMap.waiting')">⟳</span>
       <span v-if="!waiting" class="count hand" :title="t('locationMap.hand', { count: inv.hand?.length ?? 0 })">🂠 {{ inv.hand?.length ?? '–' }}</span>
     </span>
+    <div class="detail" role="tooltip">
+      <b>{{ nameOf(inv.cardCode) }}</b>
+      <span>♥ {{ hp.left }}/{{ hp.max }} · ◆ {{ sanity.left }}/{{ sanity.max }}</span>
+      <span class="skills"><i v-for="[k, v] in skills" :key="k">{{ k.slice(0, 3) }} {{ v }}</i></span>
+      <span>{{ tok(TokenType.Resource) }} {{ t('locationMap.resources').toLowerCase() }} · {{ tok(TokenType.Clue) }} {{ t('locationMap.clues').toLowerCase() }}</span>
+      <span>{{ t('locationMap.hand', { count: inv.hand?.length ?? 0 }) }} · {{ t('locationMap.actionsLeft', { count: inv.remainingActions }) }}</span>
+    </div>
     <button v-if="solo && switchable" class="eye" :class="{ glow: canSwitch }" :title="t('locationMap.switchTo')"
       @click.stop="emit('perspective')">👁</button>
   </div>
@@ -90,6 +100,11 @@ const sanity = computed(() => meter(inv.value.sanity, tok(TokenType.Horror)))
 .waiting { animation: spin 3s linear infinite; color: #ffe9a0; }
 .eye { position: absolute; right: 4px; top: 4px; background: #0008; border: 0; border-radius: 4px; color: #aaa; font-size: 0.7rem; cursor: pointer; }
 .eye.glow { color: #ffe9a0; }
+.detail { display: none; position: absolute; left: 100%; top: 0; z-index: 5; margin-left: 8px; min-width: 190px; padding: 8px 10px; gap: 3px; background: #0f1813f5; border: 1px solid #c6a873aa; border-radius: 8px; box-shadow: 0 6px 20px #000a; font: 500 0.72rem/1.3 system-ui, sans-serif; }
+.seat:hover .detail { display: grid; }
+.detail b { font: 0.9rem Georgia, serif; }
+.detail .skills { display: flex; gap: 8px; text-transform: uppercase; white-space: nowrap; color: #d6d0b6; }
+.detail .skills i { font-style: normal; }
 @keyframes blink { to { opacity: 0.35; } }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .pulse, .waiting { animation: none; } }

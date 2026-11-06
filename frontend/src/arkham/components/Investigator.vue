@@ -550,13 +550,14 @@ const spadeInjury = computed(() => {
   <div v-else class="player-container" v-bind="cardDrop">
     <div class="player-area">
       <div class="player-card">
-        <div class="stats">
+        <div v-if="!sceneMode" class="stats">
           <div class="willpower willpower-icon">{{willpower}}</div>
           <div class="intellect intellect-icon">{{intellect}}</div>
           <div class="combat combat-icon">{{combat}}</div>
           <div class="agility agility-icon">{{agility}}</div>
         </div>
         <div
+          v-if="!sceneMode || investigator.sealedChaosTokens.length > 0"
           class="investigator-image"
           :data-id="investigator.id"
           @drop="onDrop($event)"
@@ -564,6 +565,7 @@ const spadeInjury = computed(() => {
           @dragenter.prevent
         >
           <img
+            v-if="!sceneMode"
             :class="{ 'investigator--can-interact': investigatorAction !== -1, 'ability-target': isHighlighted || isAttackTarget }"
             class="card card--sideways"
             :src="image"
@@ -589,7 +591,7 @@ const spadeInjury = computed(() => {
       <div>
         <div class="player-buttons">
           <div class="button-group" :class="{ 'button-group--skip-all-pending': isCurrentPlayersInvestigator && skipAllInProgress }">
-            <span v-if="!isMobile" class="action-container">
+            <span v-if="!isMobile && !sceneMode" class="action-container">
               <i class="spade" v-if="spadeInjury"></i>
               <i class="heart" v-if="heartInjury"></i>
               <i class="diamond" v-if="diamondInjury"></i>

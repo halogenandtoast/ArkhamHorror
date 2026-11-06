@@ -15,6 +15,7 @@ import { gridSlotIndex, selectLocationIndex } from '@/arkham/locationChoices'
 import LocationMapCanvas, { type MapMove } from '@/arkham/components/LocationMapCanvas.vue'
 import LocationActionPanel from '@/arkham/components/LocationActionPanel.vue'
 import LocationHand from '@/arkham/components/LocationHand.vue'
+import { useSceneDrawer } from '@/arkham/composables/useSceneDrawer'
 import { ownInvestigator } from '@/arkham/ownInvestigator'
 import LocationMissionStrip from '@/arkham/components/LocationMissionStrip.vue'
 import LocationScene from '@/arkham/components/LocationScene.vue'
@@ -127,6 +128,7 @@ watch(graph, (g) => {
 onBeforeUnmount(() => { if (clearTimer) clearTimeout(clearTimer) })
 
 const panelOpen = ref(true)
+const drawerOpen = useSceneDrawer(() => props.game.id)
 const views: LocationView[] = ['scene', 'map', 'cards']
 </script>
 
@@ -138,11 +140,13 @@ const views: LocationView[] = ['scene', 'map', 'cards']
           :aria-selected="v === view" @click="settings.setLocationView(v)">{{ t(`locationMap.view.${v}`) }}</button>
       </span>
       <span v-if="boardOnlyContent" class="board-note">{{ t('locationMap.boardOnly') }}</span>
+      <button v-if="view === 'scene'" class="view" :class="{ active: drawerOpen }" @click="drawerOpen = !drawerOpen">{{ t('locationMap.areas') }}</button>
       <button class="view" :class="{ active: panelOpen }" @click="panelOpen = !panelOpen">{{ t('locationMap.actions') }}</button>
       <button class="view decks" :class="{ active: decksShown }" @click="emit('toggleDecks')">{{ t('locationMap.decks') }}</button>
     </div>
     <LocationMissionStrip :game="game" :scenario="scenario" :playerId="playerId" @choose="emit('choose', $event)" />
     <div class="map-layout" :class="view">
+      <div v-if="view === 'scene'" id="scene-team-slot" class="team-slot"></div>
       <LocationScene v-if="view === 'scene' && selected" :game="game" :playerId="playerId" :location="selected"
         :neighbours="neighbours" :mine="selected.id === myLocation"
         @choose="emit('choose', $event)" @select="selectedId = $event" />
@@ -165,11 +169,13 @@ const views: LocationView[] = ['scene', 'map', 'cards']
 .view:hover { border-color: #e6c584; }
 .view.active { background: #c6a873; border-color: #c6a873; color: #191c16; font-weight: 650; }
 .board-note { font-size: 0.75rem; color: #d8b68c; }
-.map-layout { position: relative; display: flex; flex: 1 0 clamp(300px, 50vh, 640px); }
-.action-overlay { position: absolute; right: 12px; top: 12px; bottom: 12px; height: auto; z-index: 60; }
-.map-layout > :first-child { flex: 1; min-width: 0; }
+.map-layout { position: relative; display: flex; flex: 1 0 clamp(300px, calc(100dvh - 215px), 1000px); }
+.action-overlay { position: absolute; right: 12px; top: 12px; bottom: calc(var(--hand-h, 0px) + 12px); height: auto; z-index: 60; }
+.map-layout > :not(.team-slot):not(.action-overlay) { flex: 1; min-width: 0; }
+.team-slot { position: absolute; left: 12px; top: 84px; bottom: calc(var(--hand-h, 0px) + 12px); z-index: 55; width: 242px; display: flex; flex-direction: column; pointer-events: none; }
+@media (max-width: 800px) { .team-slot { width: calc(100% - 24px); bottom: auto; } }
 @media (max-width: 800px) {
   .map-layout { height: auto; }
-  .map-layout > :first-child { height: 60vh; }
+  .map-layout > .scene { height: 60vh; }
 }
 </style>

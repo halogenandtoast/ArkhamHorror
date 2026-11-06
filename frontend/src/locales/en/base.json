@@ -530,6 +530,11 @@
     "debug": "Debug"
   },
   "locationMap": {
+    "team": "Team",
+    "areas": "Play / Threat",
+    "lead": "Lead investigator",
+    "waiting": "Waiting",
+    "switchTo": "Switch to this investigator's perspective",
     "close": "Close",
     "playCard": "Play {name}",
     "gainResource": "Gain 1 resource",

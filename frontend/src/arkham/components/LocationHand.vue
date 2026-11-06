@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Game } from '@/arkham/types/Game'
 import { ownInvestigator } from '@/arkham/ownInvestigator'
@@ -18,12 +18,24 @@ const hand = computed(() => me.value?.hand ?? [])
 const page = ref(0)
 const pages = computed(() => Math.max(1, Math.ceil(hand.value.length / PAGE)))
 watch(pages, (n) => { if (page.value >= n) page.value = n - 1 })
+const dock = ref<HTMLElement | null>(null)
+let observer: ResizeObserver | null = null
+// Other overlays keep clear of the hand through this variable.
+watch(dock, (el) => {
+  observer?.disconnect()
+  observer = null
+  const root = document.documentElement.style
+  if (!el) { root.removeProperty('--hand-h'); return }
+  observer = new ResizeObserver(() => root.setProperty('--hand-h', `${Math.round(el.getBoundingClientRect().height - 0.2 * 1.4 * 130)}px`))
+  observer.observe(el)
+})
+onBeforeUnmount(() => { observer?.disconnect(); document.documentElement.style.removeProperty('--hand-h') })
 const visible = computed(() => hand.value.slice(page.value * PAGE, page.value * PAGE + PAGE))
 </script>
 
 <template>
   <Teleport to="body">
-    <div v-if="me && hand.length" class="hand-dock" :aria-label="t('locationMap.hand', { count: hand.length })">
+    <div v-if="me && hand.length" ref="dock" class="hand-dock" :aria-label="t('locationMap.hand', { count: hand.length })">
       <div class="tab">
         <button v-if="pages > 1" :disabled="page === 0" @click="page--">‹</button>
         <span>{{ t('locationMap.hand', { count: hand.length }) }}</span>

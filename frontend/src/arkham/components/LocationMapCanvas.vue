@@ -7,6 +7,7 @@ import { TokenType } from '@/arkham/types/Token'
 import { cardImage } from '@/arkham/cardImages'
 import { useCardNames } from '@/arkham/composables/useCardNames'
 import { selectLocationIndex } from '@/arkham/locationChoices'
+import { ownInvestigator } from '@/arkham/ownInvestigator'
 import type { Point } from '@/arkham/locationGraph'
 
 export type MapMove = { id: string; name: string; path: string }
@@ -33,6 +34,7 @@ const emit = defineEmits<{ (e: 'activate', location: Location): void; (e: 'choos
 
 const { t } = useI18n()
 const nameOf = useCardNames()
+const ownId = () => ownInvestigator(props.game, props.playerId)?.id
 const clueCount = (l: Location) => l.tokens[TokenType.Clue] ?? 0
 const doomCount = (l: Location) => l.tokens[TokenType.Doom] ?? 0
 const investigatorName = (id: string) => {
@@ -69,7 +71,7 @@ const investigatorName = (id: string) => {
           <span v-if="doomCount(l)" class="doom" :title="t('locationMap.doom')">☠{{ doomCount(l) }}</span>
         </span>
         <span class="occupants">
-          <span v-for="id in l.investigators" :key="id" class="token investigator" :class="{ you: id === playerId }"
+          <span v-for="id in l.investigators" :key="id" class="token investigator" :class="{ you: id === ownId() }"
             :title="investigatorName(id)">{{ investigatorName(id).charAt(0) }}</span>
           <span v-if="enemiesAt(l).length" class="token enemy">☠{{ enemiesAt(l).length > 1 ? ' ' + enemiesAt(l).length : '' }}</span>
         </span>

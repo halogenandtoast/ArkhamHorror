@@ -532,6 +532,8 @@
   "locationMap": {
     "title": "Location map",
     "act": "Act",
+    "actions": "Actions",
+    "otherActions": "Other",
     "threatArea": "Threat area",
     "playArea": "Play area",
     "decks": "Decks",

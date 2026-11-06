@@ -10,6 +10,7 @@ import { useCardNames } from '@/arkham/composables/useCardNames'
 import { choicesFor, selectLocationIndex, type EntityChoice } from '@/arkham/locationChoices'
 import { useDbCardStore } from '@/stores/dbCards'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import { ownInvestigator } from '@/arkham/ownInvestigator'
 import HandCard from '@/arkham/components/HandCard.vue'
 
 /* The room you are standing in, drawn as a place rather than a card: a backdrop, the investigators and
@@ -70,7 +71,8 @@ const ENEMY_SPOTS: [number, number][] = [[72, 80], [84, 72], [78, 90], [60, 72],
 const youAt = ref<[number, number]>([46, 82])
 watch(() => props.location.id, () => { youAt.value = [46, 82]; menu.value = null })
 
-const hand = computed(() => props.game.investigators[props.playerId]?.hand ?? [])
+const me = computed(() => ownInvestigator(props.game, props.playerId))
+const hand = computed(() => me.value?.hand ?? [])
 
 const figures = computed<Figure[]>(() => {
   const result: Figure[] = []
@@ -78,7 +80,7 @@ const figures = computed<Figure[]>(() => {
   for (const id of props.location.investigators) {
     const investigator = props.game.investigators[id]
     if (!investigator) continue
-    const you = id === props.playerId
+    const you = id === me.value?.id
     const [x, y] = you ? youAt.value : [30 + 9 * others++, 86]
     result.push({
       id, code: investigator.cardCode, name: nameOf(investigator.cardCode), kind: 'investigator', x, y, exhausted: false, you, note: null,
@@ -137,7 +139,7 @@ function pick(index: number) {
 
 <template>
   <section class="scene" :aria-label="t('locationMap.sceneLabel', { name: nameOf(location.cardCode) })">
-    <div class="backdrop" :class="{ painted: sceneArt, plain: !sceneArt, dim: !location.revealed }">
+    <div class="backdrop" :class="{ painted: sceneArt, plain: !sceneArt }">
       <img v-if="sceneArt" :src="sceneArt" alt="" />
       <img v-else :src="cardArtUrl" alt="" class="from-card" />
     </div>
@@ -160,11 +162,6 @@ function pick(index: number) {
       @click.stop="openMenu(nameOf(d.location.cardCode), d.location.id, { location: d.location, lookAt: d.location.id })">
       <span class="symbol">↗</span>
       <span class="label">{{ nameOf(d.location.cardCode) }}</span>
-    </button>
-
-    <button class="hotspot search" @click.stop="openMenu(nameOf(location.cardCode), location.id, { location })">
-      <span class="symbol">◈</span>
-      <span class="label">{{ t('locationMap.searchArea') }}</span>
     </button>
 
     <button v-for="f in figures" :key="f.id" class="figure" :class="[f.kind, { exhausted: f.exhausted, you: f.you }]"
@@ -217,7 +214,6 @@ function pick(index: number) {
 .scene { position: relative; flex: 1; min-height: 420px; overflow: hidden; background: #0b100d; color: #ece6d0; isolation: isolate; }
 .backdrop, .backdrop img { position: absolute; inset: 0; width: 100%; height: 100%; }
 .backdrop img { object-fit: cover; }
-.backdrop.dim img { filter: brightness(0.45) saturate(0.8); }
 .backdrop.plain img.from-card { object-fit: cover; object-position: 50% 30%; filter: blur(14px) brightness(0.55) saturate(1.2); transform: scale(1.15); }
 .vignette { position: absolute; inset: 0; background: linear-gradient(#08100b99, transparent 22%, transparent 72%, #07100bb0); pointer-events: none; }
 .heading { position: absolute; left: 16px; top: 12px; z-index: 5; text-shadow: 0 2px 6px #000; pointer-events: none; }
@@ -228,7 +224,6 @@ function pick(index: number) {
 .hotspot { position: absolute; z-index: 30; translate: -50% 0; display: flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; background: #101a15d9; border: 1px solid #c6a873aa; color: #f1e6c1; cursor: pointer; font-size: 0.8rem; backdrop-filter: blur(2px); animation: pulse 2.6s ease-in-out infinite; }
 .hotspot:hover { background: #26352bf0; border-color: #ffe9a0; }
 .hotspot.door { top: 40%; }
-.hotspot.search { left: 50%; top: 56%; }
 .symbol { color: #e6c584; }
 .figure { position: absolute; translate: -50% -100%; display: grid; justify-items: center; gap: 2px; padding: 0; background: transparent; border: 0; cursor: pointer; transition: left 0.7s ease, top 0.7s ease; filter: drop-shadow(2px 4px 4px #000c); }
 .figure .stand { position: relative; display: grid; justify-items: center; }
@@ -257,12 +252,12 @@ function pick(index: number) {
 .menu .close { position: absolute; right: 6px; top: 4px; background: transparent; border: 0; color: #a3aca3; cursor: pointer; }
 .detail { margin: 0; font-size: 0.8rem; color: #b9c2ad; }
 .look { background: rgb(180 140 70 / 25%); }
-.hand-fan { position: absolute; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+.hand-fan { position: absolute; left: 0; right: 0; bottom: -34px; z-index: 40; display: flex; flex-direction: column; align-items: center; pointer-events: none; }
 .hand-title { pointer-events: auto; font-size: 0.7rem; padding: 2px 12px; background: #0f1813e6; border: 1px solid #c6a87366; border-radius: 10px 10px 0 0; color: #e6d6a8; }
-.hand-fan .cards { display: flex; justify-content: center; height: 118px; overflow: visible; }
-.hand-fan .slot { pointer-events: auto; width: 84px; flex: none; margin-left: -14px; transform-origin: 50% 120%; transform: translateY(calc(var(--i) * var(--i) * 2px - 4px)) rotate(calc(var(--i) * 4deg)); transition: transform 0.15s; }
-.hand-fan .slot:hover { z-index: 5; transform: translateY(-30px); }
-.hand-fan .slot :deep(.card) { width: 84px; min-width: 84px; }
+.hand-fan .cards { display: flex; justify-content: center; height: 160px; overflow: visible; }
+.hand-fan .slot { pointer-events: auto; width: 112px; flex: none; margin-left: -20px; transform-origin: 50% 120%; transform: translateY(calc(var(--i) * var(--i) * 2px - 4px)) rotate(calc(var(--i) * 4deg)); transition: transform 0.15s; }
+.hand-fan .slot:hover { z-index: 5; transform: translateY(-44px); }
+.hand-fan .slot :deep(.card) { width: 112px; min-width: 112px; }
 @keyframes pulse { 50% { box-shadow: 0 0 0 5px #e6c58422; } }
 @media (prefers-reduced-motion: reduce) { .hotspot { animation: none; } .figure { transition: none; } .figure .sprite { animation: none; } }
 </style>

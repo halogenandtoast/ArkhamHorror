@@ -13,7 +13,8 @@ import {
 } from '@/arkham/locationGraph'
 import { gridSlotIndex, selectLocationIndex } from '@/arkham/locationChoices'
 import LocationMapCanvas, { type MapMove } from '@/arkham/components/LocationMapCanvas.vue'
-import LocationMapPanel from '@/arkham/components/LocationMapPanel.vue'
+import LocationActionList from '@/arkham/components/LocationActionList.vue'
+import { ownInvestigator } from '@/arkham/ownInvestigator'
 import LocationMissionStrip from '@/arkham/components/LocationMissionStrip.vue'
 import LocationScene from '@/arkham/components/LocationScene.vue'
 
@@ -70,7 +71,8 @@ const canvasSize = computed(() => {
   return { width: Math.max(cols, 1) * 150, height: Math.max(lines, 2) * 120 }
 })
 
-const myLocation = computed(() => props.game.investigators[props.playerId]?.location ?? null)
+const me = computed(() => ownInvestigator(props.game, props.playerId))
+const myLocation = computed(() => me.value?.location ?? null)
 const selectedId = ref<string | null>(null)
 const selected = computed(() => {
   const id = selectedId.value
@@ -82,8 +84,6 @@ const selected = computed(() => {
 // Following the investigator: once they move, the scene follows rather than staying on the room they left.
 watch(myLocation, () => { selectedId.value = null })
 
-const route = computed(() => selected.value && myLocation.value
-  ? shortestPath(graph.value, myLocation.value, selected.value.id) : [])
 const neighbours = computed(() => (selected.value?.connectedLocations ?? [])
   .map((id) => props.game.locations[id]).filter((l): l is Location => Boolean(l) && Boolean(graph.value[l.id])))
 
@@ -147,15 +147,8 @@ const views: LocationView[] = ['scene', 'map', 'cards']
         :positions="positions" :links="links" :moves="moves" :gridSpots="gridSpots" :selectedId="selected?.id ?? null"
         :myLocation="myLocation" :choices="choices" :enemiesAt="enemiesAt" :width="canvasSize.width" :height="canvasSize.height"
         @activate="activate" @choose="emit('choose', $event)" />
-      <div class="side">
-        <LocationMapCanvas v-if="view === 'scene'" compact :game="game" :playerId="playerId" :locations="locations"
-          :positions="positions" :links="links" :moves="moves" :gridSpots="gridSpots" :selectedId="selected?.id ?? null"
-          :myLocation="myLocation" :choices="choices" :enemiesAt="enemiesAt"
-          @activate="activate" @choose="emit('choose', $event)" />
-        <LocationMapPanel :game="game" :playerId="playerId" :location="selected" :route="route"
-          @choose="emit('choose', $event)" @select="selectedId = $event" />
-      </div>
     </div>
+    <LocationActionList :game="game" :playerId="playerId" @choose="emit('choose', $event)" />
   </section>
 </template>
 
@@ -167,13 +160,10 @@ const views: LocationView[] = ['scene', 'map', 'cards']
 .view:hover { border-color: #e6c584; }
 .view.active { background: #c6a873; border-color: #c6a873; color: #191c16; font-weight: 650; }
 .board-note { font-size: 0.75rem; color: #d8b68c; }
-.map-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; min-height: 0; flex: 1; height: clamp(420px, 66vh, 780px); }
-.map-layout > :first-child { min-height: 0; }
-.side { display: flex; flex-direction: column; min-height: 0; min-width: 0; border-left: 1px solid rgb(255 255 255 / 12%); background: rgb(14 20 17 / 92%); overflow: auto; }
-.side :deep(.map-panel) { border-left: 0; flex: 1; }
-.side > :deep(.map-scroll.compact) { flex: none; border-bottom: 1px solid rgb(255 255 255 / 12%); padding: 8px; }
+.map-layout { display: flex; min-height: 0; flex: 1; height: clamp(420px, 66vh, 780px); }
+.map-layout > :first-child { min-height: 0; flex: 1; min-width: 0; }
 @media (max-width: 800px) {
-  .map-layout { grid-template-columns: minmax(0, 1fr); height: auto; }
+  .map-layout { height: auto; }
   .map-layout > :first-child { height: 60vh; }
 }
 </style>

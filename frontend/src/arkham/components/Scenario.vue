@@ -3103,7 +3103,8 @@ async function addChaosToken(face: any){
       </div>
 
       <LocationMap
-        v-if="settingsStore.locationView === 'map'"
+        v-if="settingsStore.locationView !== 'cards'"
+        :view="settingsStore.locationView"
         :game="game"
         :scenario="scenario"
         :playerId="playerId"
@@ -3111,7 +3112,7 @@ async function addChaosToken(face: any){
         @choose="choose"
       />
       <template v-else>
-      <button class="location-view-switch" @click="settingsStore.setLocationView('map')">{{ $t('locationMap.showMap') }}</button>
+      <button class="location-view-switch" @click="settingsStore.setLocationView('scene')">{{ $t('locationMap.showScene') }}</button>
       <RainOverlay :enabled="showRain" :options="rainOptions">
       <div
         ref="locationCardsContainer"

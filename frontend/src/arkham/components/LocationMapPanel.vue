@@ -4,9 +4,9 @@ import { useI18n } from 'vue-i18n'
 import type { Game } from '@/arkham/types/Game'
 import type { Location } from '@/arkham/types/Location'
 import { TokenType } from '@/arkham/types/Token'
-import { cardArt, cardImage } from '@/arkham/cardImages'
+import { cardImage } from '@/arkham/cardImages'
 import { useGameChoices } from '@/arkham/composables/useGameChoices'
-import { useDbCardStore } from '@/stores/dbCards'
+import { useCardNames } from '@/arkham/composables/useCardNames'
 import { choicesFor, selectLocationIndex, type EntityChoice } from '@/arkham/locationChoices'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 
@@ -20,10 +20,8 @@ const props = defineProps<{
 const emit = defineEmits<{ (e: 'choose', index: number): void; (e: 'select', id: string): void }>()
 
 const { t } = useI18n()
-const dbCards = useDbCardStore()
+const nameOf = useCardNames()
 const choices = useGameChoices(() => props.game, () => props.playerId)
-
-const nameOf = (code: string) => dbCards.getDbCard(cardArt(code))?.name ?? code
 
 type Entry = { id: string; name: string; note: string | null; choices: EntityChoice[] }
 

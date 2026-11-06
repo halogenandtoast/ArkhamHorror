@@ -46,10 +46,11 @@ const DRAW_SPOTLIGHT_SETTING = 'drawSpotlight'
 const CUSTOM_CARDS_KEY = 'arkhamCustomCardsEnabled'
 const INLINE_MODALS_KEY = 'arkhamInlineModals'
 
-/* How a scenario draws its locations: 'map' is the node map with an action panel, 'cards' the original
- * board of location cards. Anything stored that is not 'cards' means map, so the map is the default. */
+/* How a scenario draws its locations: 'scene' is the room you stand in with a small map beside it, 'map' the
+ * full node map, 'cards' the original board of location cards. Anything stored that is not 'map' or 'cards'
+ * means scene, so the scene is the default. */
 const LOCATION_VIEW_KEY = 'arkhamLocationView'
-export type LocationView = 'map' | 'cards'
+export type LocationView = 'scene' | 'map' | 'cards'
 
 /* Never trust what comes back out of localStorage: it survives a rename, and a
  * value this store does not understand would otherwise gate the overlay on a
@@ -59,6 +60,10 @@ const DRAW_SPOTLIGHT_MODES: DrawSpotlightMode[] = ['off', 'upkeep', 'every']
 
 function readDrawSpotlightMode(value: string | null): DrawSpotlightMode | null {
   return DRAW_SPOTLIGHT_MODES.find((m) => m === value) ?? null
+}
+
+function readLocationView(value: string | null): LocationView {
+  return value === 'cards' || value === 'map' ? value : 'scene'
 }
 
 function loadVariants(): string[] {
@@ -91,7 +96,7 @@ export const useSettings = defineStore("settings", () => {
   // is global because it is a browser/UI preference, not game state.
   const inlineModals = ref(localStorage.getItem(INLINE_MODALS_KEY) === 'true')
 
-  const locationView = ref<LocationView>(localStorage.getItem(LOCATION_VIEW_KEY) === 'cards' ? 'cards' : 'map')
+  const locationView = ref<LocationView>(readLocationView(localStorage.getItem(LOCATION_VIEW_KEY)))
 
   function setLocationView(view: LocationView) {
     locationView.value = view

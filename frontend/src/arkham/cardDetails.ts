@@ -2,6 +2,7 @@
 // and the card details modal so both describe a card the same way.
 import type { CardDef } from '@/arkham/types/CardDef'
 import { isCustomCardCode } from '@/arkham/customCards'
+import { homebrewBoxName } from '@/arkham/homebrewData'
 import sets from '@/arkham/data/sets.json'
 
 // Two defs with the same art are one physical card and render as a single
@@ -83,6 +84,15 @@ export const cardSet = (card: CardDef) => {
   return set
 }
 
+/* ":dark-matter:021" -> { box: 'dark-matter', number: 21 }. A homebrew box
+ * namespaces its cards rather than taking a range of printed numbers, so its
+ * collection number is what follows the box name. */
+const homebrewArt = (art: string) => {
+  const match = art.match(/^:([^:]+):0*(\d+)/)
+  if (!match) return null
+  return { box: match[1], number: parseInt(match[2]) }
+}
+
 // "The Dunwich Legacy 12" — the set name plus the card's collection number.
 // `packName` overrides the set name for localized card data.
 export const cardSetText = (card: CardDef, packName?: string) => {
@@ -91,6 +101,12 @@ export const cardSetText = (card: CardDef, packName?: string) => {
   if (isCustomCardCode(card.art)) {
     const name = card.meta?.set
     return typeof name === 'string' && name ? name : 'Custom'
+  }
+
+  const homebrew = homebrewArt(card.art)
+  if (homebrew) {
+    const name = homebrewBoxName(homebrew.box)
+    return name ? `${name} ${homebrew.number}` : 'Homebrew'
   }
 
   const setNumber = parseInt(card.art.slice(2))

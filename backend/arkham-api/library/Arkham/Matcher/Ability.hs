@@ -50,6 +50,8 @@ data AbilityMatcher
   | AbilityOnCardControlledBy InvestigatorId
   | AssetAbility AssetMatcher
   | HauntedAbility
+  | -- | Abilities defined by a 'CustomKeywordAbility' with this keyword.
+    AbilityWithCustomKeyword Text
   | PerformableAbility [ModifierType]
   | PerformableAbilityBy InvestigatorMatcher [ModifierType]
   | TriggeredAbility

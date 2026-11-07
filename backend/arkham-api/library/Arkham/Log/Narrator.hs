@@ -1078,6 +1078,8 @@ abilityPhrasing = \case
   ForcedAbility {} -> Just ("log.triggersForcedAbility", [])
   ForcedAbilityWithCost {} -> Just ("log.triggersForcedAbility", [])
   Haunted -> Just ("log.triggersHauntedAbility", [])
+  -- The guide calls a keyword clause's effect a forced effect, whatever the keyword is.
+  CustomKeywordAbility {} -> Just ("log.triggersForcedAbility", [])
   -- Wrappers; the kind that matters is inside.
   DelayedAbility inner -> abilityPhrasing inner
   Objective inner -> abilityPhrasing inner
@@ -1116,6 +1118,7 @@ preventedPhrasing = \case
   Objective inner -> preventedPhrasing inner
   ForcedWhen _ inner -> preventedPhrasing inner
   Haunted -> Nothing
+  CustomKeywordAbility {} -> Nothing
   ForcedAbility {} -> Nothing
   ForcedAbilityWithCost {} -> Nothing
   SilentForcedAbility {} -> Nothing

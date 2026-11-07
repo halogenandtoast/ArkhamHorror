@@ -39,6 +39,12 @@ installJinx = do
           (1, ActId (toCardCode card))
   overTest $ entitiesL . Entities.actsL %~ insertEntity built
 
+{- | A Jinx clause is offered on its act or agenda rather than resolving on its
+own, so every trigger parks a one-option ask.
+-}
+resolveJinxClause :: HasCallStack => TestAppT ()
+resolveJinxClause = chooseOnlyOption "resolve the current Jinx"
+
 spec :: Spec
 spec = describe "Night of Vespers Jinx" do
   it "honors added and removed Jinxed keywords" do
@@ -63,6 +69,7 @@ spec = describe "Night of Vespers Jinx" do
     resourcesBefore <- self.resources
     runQueueT $ triggerJinx self.id
     runMessages
+    resolveJinxClause
     self.resources `shouldReturn` (resourcesBefore + 1)
   it "does not trigger for a plain combat test" . scenarioTest ":night-of-vespers:105" $ \self -> do
     location <- testLocation
@@ -85,6 +92,7 @@ spec = describe "Night of Vespers Jinx" do
     self `investigate` location
     startSkillTest
     applyResults
+    resolveJinxClause
     self.resources `shouldReturn` (resourcesBefore + 1)
   it "includes controlled assets at their investigator's location" . gameTest $ \self -> do
     location <- testLocation
@@ -109,6 +117,7 @@ spec = describe "Night of Vespers Jinx" do
     otherBefore <- other.resources
     runQueueT $ triggerJinx other.id
     runMessages
+    resolveJinxClause
     self.resources `shouldReturn` ownBefore
     other.resources `shouldReturn` (otherBefore + 1)
   it "triggers and discards a matching Favor even without a Jinxed card" . gameTest $ \self -> do
@@ -121,6 +130,7 @@ spec = describe "Night of Vespers Jinx" do
     runQueueT $ Lifted.requestChaosTokens self.id (TestSource mempty) 1
     runMessages
     useForcedAbility
+    resolveJinxClause
     self.resources `shouldReturn` (resourcesBefore + 1)
     assertNone $ AssetWithId favor
   it "discards a matching Favor even when no Jinx is defined" . gameTest $ \self -> do

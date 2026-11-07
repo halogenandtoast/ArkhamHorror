@@ -155,8 +155,19 @@ export const hauntedDecoder = JsonDecoder.object<Haunted>({
   tag: JsonDecoder.literal("Haunted"),
 }, 'Haunted')
 
+// Haunted for a keyword the core game does not know; `keyword` is an i18n key.
+export type CustomKeywordAbility = {
+  tag: "CustomKeywordAbility"
+  keyword: string
+}
 
-export type AbilityType = ServitorAbility | FastAbility | ReactionAbility | CustomizationReaction | ConstantReaction | ActionAbility | SilentForcedAbility | ForcedAbility | ForcedAbilityWithCost | AbilityEffect | Objective | Haunted | DelayedAbility
+export const customKeywordAbilityDecoder = JsonDecoder.object<CustomKeywordAbility>({
+  tag: JsonDecoder.literal("CustomKeywordAbility"),
+  keyword: JsonDecoder.string(),
+}, 'CustomKeywordAbility')
+
+
+export type AbilityType = ServitorAbility | FastAbility | ReactionAbility | CustomizationReaction | ConstantReaction | ActionAbility | SilentForcedAbility | ForcedAbility | ForcedAbilityWithCost | AbilityEffect | Objective | Haunted | CustomKeywordAbility | DelayedAbility
 
 export type ForcedWhen = {
   tag: "ForcedWhen"
@@ -183,6 +194,7 @@ export const abilityTypeDecoder: JsonDecoder.Decoder<AbilityType> = JsonDecoder.
   objectiveDecoder,
   delayedAbilityDecoder,
   hauntedDecoder,
+  customKeywordAbilityDecoder,
   forcedWhenDecoder.map((fw: ForcedWhen) => fw.abilityType)
 ], 'AbilityType')
 

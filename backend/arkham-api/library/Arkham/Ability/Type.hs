@@ -193,6 +193,8 @@ data AbilityType
   | AbilityEffect {actions :: Actions, cost :: Cost}
   | Objective {abilityType :: AbilityType}
   | Haunted
+  | -- | 'Haunted' for a keyword the core game does not know. @keyword@ is the i18n key the UI labels it with.
+    CustomKeywordAbility {keyword :: Text}
   | Cosmos
   | ForcedWhen {criteria :: Criterion, abilityType :: AbilityType}
   | ConstantAbility
@@ -217,6 +219,7 @@ overAbilityTypeActions f = \case
   ForcedAbility window -> ForcedAbility window
   ForcedAbilityWithCost window cost -> ForcedAbilityWithCost window cost
   Haunted -> Haunted
+  CustomKeywordAbility keyword -> CustomKeywordAbility keyword
   Cosmos -> Cosmos
   ConstantAbility -> ConstantAbility
 
@@ -235,6 +238,7 @@ instance HasCost AbilityType where
     Objective abilityType -> Objective (overCost f abilityType)
     DelayedAbility abilityType -> DelayedAbility (overCost f abilityType)
     Haunted -> Haunted
+    CustomKeywordAbility keyword -> CustomKeywordAbility keyword
     Cosmos -> Cosmos
     ForcedWhen criteria abilityType -> ForcedWhen criteria (overCost f abilityType)
     ConstantAbility -> ConstantAbility
@@ -258,6 +262,7 @@ isFastAbilityType = \case
   ActionAbility {} -> False
   AbilityEffect {} -> False
   Haunted {} -> False
+  CustomKeywordAbility {} -> False
   ServitorAbility {} -> False
   Cosmos {} -> False
   ForcedWhen _ aType -> isFastAbilityType aType

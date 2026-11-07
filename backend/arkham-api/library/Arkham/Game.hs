@@ -2002,6 +2002,7 @@ abilityMatches a@Ability {..} = \case
   AnyAbility -> pure True
   BasicAbility -> pure abilityBasic
   HauntedAbility -> pure $ abilityType == Haunted
+  AbilityWithCustomKeyword keyword -> pure $ abilityType == CustomKeywordAbility keyword
   AssetAbility assetMatcher -> do
     assetIds <- select assetMatcher
     abilities <- concatMap getAbilities <$> traverse getAsset assetIds
@@ -2114,6 +2115,7 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
     AnyAbility -> pure as
     BasicAbility -> pure $ filter abilityBasic as
     HauntedAbility -> pure $ filter ((== Haunted) . abilityType) as
+    AbilityWithCustomKeyword keyword -> pure $ filter ((== CustomKeywordAbility keyword) . abilityType) as
     AssetAbility assetMatcher -> do
       assetIds <- select assetMatcher
       abilities <- concatMap getAbilities <$> traverse getAsset assetIds

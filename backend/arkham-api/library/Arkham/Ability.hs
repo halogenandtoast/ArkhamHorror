@@ -460,6 +460,7 @@ abilityTypeActions isBasic = \case
   ForcedAbilityWithCost _ _ -> []
   AbilityEffect actions _ -> actionsToList actions
   Haunted -> []
+  CustomKeywordAbility {} -> []
   ServitorAbility action -> [action]
   Cosmos -> []
   Objective aType -> abilityTypeActions isBasic aType
@@ -479,6 +480,7 @@ abilityTypeCost = \case
   ForcedAbilityWithCost _ cost -> cost
   AbilityEffect _ cost -> cost
   Haunted -> Free
+  CustomKeywordAbility {} -> Free
   Cosmos -> Free
   ServitorAbility _ -> Free
   Objective aType -> abilityTypeCost aType
@@ -502,6 +504,7 @@ modifyCost f = \case
     ForcedAbilityWithCost window $ f cost
   AbilityEffect as cost -> AbilityEffect as cost -- modifiers don't yet apply here
   Haunted -> Haunted
+  CustomKeywordAbility keyword -> CustomKeywordAbility keyword
   ServitorAbility action -> ServitorAbility action
   Cosmos -> Cosmos
   Objective aType' -> Objective $ modifyCost f aType'
@@ -567,6 +570,7 @@ defaultAbilityWindow = \case
   ConstantReaction _ window _ -> window
   AbilityEffect {} -> AnyWindow
   Haunted -> AnyWindow
+  CustomKeywordAbility {} -> AnyWindow
   ServitorAbility _ -> Matcher.DuringYourAction You
   Cosmos -> AnyWindow
   Objective aType -> defaultAbilityWindow aType
@@ -588,6 +592,7 @@ isReactionAbilityType = \case
   ActionAbility {} -> False
   AbilityEffect {} -> False
   Haunted {} -> False
+  CustomKeywordAbility {} -> False
   ServitorAbility {} -> False
   Cosmos {} -> False
   ForcedWhen _ aType -> isReactionAbilityType aType
@@ -607,6 +612,7 @@ isSilentForcedAbilityType = \case
   ActionAbility {} -> False
   AbilityEffect {} -> False
   Haunted {} -> False
+  CustomKeywordAbility {} -> False
   ServitorAbility {} -> False
   Cosmos {} -> False
   ForcedWhen _ aType -> isSilentForcedAbilityType aType
@@ -638,6 +644,7 @@ defaultAbilityLimit = \case
   Objective aType -> defaultAbilityLimit aType
   DelayedAbility aType -> defaultAbilityLimit aType
   Haunted -> NoLimit
+  CustomKeywordAbility {} -> NoLimit
   ServitorAbility _ -> NoLimit
   Cosmos -> NoLimit
   ForcedWhen _ aType -> defaultAbilityLimit aType

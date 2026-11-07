@@ -126,6 +126,23 @@ getResolvableHauntedAbilities iid lid = do
     withActiveInvestigator iid
       $ passesCriteria iid Nothing (toSource ability) ability.requestor [] criteria
 
+{- | The custom-keyword abilities @iid@ may resolve, for the keyword's own trigger
+to prompt with. As with 'getResolvableHauntedAbilities' the normal ability path
+has nothing to say about these, plus the use limit: a keyword clause may print
+one and nothing else would enforce it.
+-}
+getResolvableKeywordAbilities :: HasGame m => Text -> InvestigatorId -> [Window] -> m [Ability]
+getResolvableKeywordAbilities keyword iid ws = do
+  abilities <- select $ Matcher.AbilityWithCustomKeyword keyword
+  flip filterM abilities \ability -> do
+    abilityModifiers <- getModifiers (AbilityTarget iid ability.ref)
+    let criteria = foldr applyCriteriaOverride (abilityCriteria ability) abilityModifiers
+    andM
+      [ getCanAffordUse iid ability ws
+      , withActiveInvestigator iid
+          $ passesCriteria iid Nothing (toSource ability) ability.requestor ws criteria
+      ]
+
 getCanPerformAbility
   :: (HasCallStack, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
 getCanPerformAbility !iid !ws !ability = do
@@ -248,6 +265,7 @@ meetsActionRestrictions iid ws ab@Ability {..} = go abilityType
  where
   go = \case
     Haunted -> pure False
+    CustomKeywordAbility {} -> pure False
     Cosmos -> pure False
     Objective aType -> go aType
     DelayedAbility aType -> go aType
@@ -521,6 +539,7 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
   go f = \case
     ServitorAbility _ -> pure True
     Haunted -> pure True
+    CustomKeywordAbility {} -> pure True
     Cosmos -> pure True
     -- 'a.actions', not the bare designators: payment charges against the list that
     -- includes #activate, so checking affordability without it offered an [action]
@@ -631,6 +650,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
             Objective {} -> pure True
             DelayedAbility inner -> go inner
             Haunted -> pure True
+            CustomKeywordAbility {} -> pure True
             Cosmos -> pure True
             ServitorAbility _ -> pure True -- should be disabled by the servitor
             ConstantAbility -> pure False
@@ -791,6 +811,7 @@ isForcedAbilityType iid source = \case
   AbilityEffect {} -> pure False
   ServitorAbility {} -> pure False
   Haunted {} -> pure True -- Maybe? we wanted this to basically never be valid but still take forced precedence
+  CustomKeywordAbility {} -> pure True
   Cosmos {} -> pure True -- Maybe? we wanted this to basically never be valid but still take forced precedence
   ForcedWhen c _ -> passesCriteria iid Nothing source source [] c
   ConstantAbility {} -> pure False

@@ -10,11 +10,12 @@ import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
+import Arkham.Helpers.Ability (getResolvableKeywordAbilities)
 import Arkham.Helpers.Enemy (getModifiedKeywords)
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
-import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestResultWithResultModifiers)
 import Arkham.Homebrew.NightOfVespers.Jinxed (pattern Jinxed)
+import Arkham.I18n (HasI18n, Scope)
 import Arkham.Id
 import Arkham.Keyword (Keyword (..))
 import Arkham.Location.Types (Field (LocationKeywords))
@@ -23,6 +24,7 @@ import Arkham.Message (Message (..), pattern FailedSkillTest)
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Question (UI (AbilityLabel))
 import Arkham.SkillTestResult
 import Arkham.SkillType (SkillType)
 import Arkham.Source
@@ -48,14 +50,28 @@ data JinxContext = JinxContext
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-jinxWindow :: WindowMatcher
-jinxWindow = ScenarioEvent #when (Just You) jinxEvent
+{- | The keyword's identity for 'CustomKeywordAbility', doubling as the i18n key
+the UI labels its button with. Spelled like 'jinxEvent' and independent of it.
+-}
+jinxKeyword :: Text
+jinxKeyword = "nightOfVespers.jinx"
 
-{- | Jinx is keyword text, not a printed "Forced" ability. Period limits belong
-on this entry (groupLimit PerRound/PerPhase), rather than on the keyword hook.
+jinxWindows :: JinxContext -> [Window.Window]
+jinxWindows context =
+  [Window.mkWhen $ Window.ScenarioEvent jinxEvent (Just context.investigator) (toJSON context)]
+
+{- | Jinx is keyword text, not a printed "Forced" ability: like a Haunted
+ability it is shown on the act or agenda that prints it and clicked, rather than
+resolving on its own. Period limits belong on this entry (groupLimit
+PerRound/PerPhase), rather than on the keyword hook.
 -}
 jinxAbility :: (HasCardCode a, Sourceable a) => a -> Int -> Ability
-jinxAbility a n = restricted a n (not_ $ SelfHasModifier ignoreJinx) $ silent jinxWindow
+jinxAbility a n =
+  restricted a n (not_ $ SelfHasModifier ignoreJinx) $ CustomKeywordAbility jinxKeyword
+
+-- | 'jinxAbility' with the printed clause as the button's tooltip.
+jinxAbilityI :: (HasI18n, HasCardCode a, Sourceable a) => Scope -> a -> Int -> Ability
+jinxAbilityI t a n = withI18nTooltip t $ jinxAbility a n
 
 jinxContext :: [Window.Window] -> Maybe JinxContext
 jinxContext =
@@ -105,17 +121,19 @@ triggerJinx iid = do
 
 triggerJinxWith :: ReverseQueue m => JinxContext -> m ()
 triggerJinxWith context = do
-  clauses <- select $ AbilityWindow jinxWindow
-  active <- filterM (withoutModifiersForClause . abilitySource) clauses
+  let iid = context.investigator
+  let ws = jinxWindows context
+  -- Only the current act or agenda defines the keyword's effect.
+  clauses <-
+    filter (isActOrAgenda . abilitySource) <$> getResolvableKeywordAbilities jinxKeyword iid ws
   -- No current Jinx means no trigger, including no "after a Jinx" effects.
-  unless (null active) do
-    checkWindows
-      [Window.mkWhen $ Window.ScenarioEvent jinxEvent (Just context.investigator) (toJSON context)]
+  unless (null clauses) do
+    chooseOneAtATime iid [AbilityLabel iid clause ws [] [] | clause <- clauses]
  where
-  withoutModifiersForClause = \case
-    source@ActSource {} -> withoutModifiers (sourceToTarget source) [ignoreJinx]
-    source@AgendaSource {} -> withoutModifiers (sourceToTarget source) [ignoreJinx]
-    _ -> pure False
+  isActOrAgenda = \case
+    ActSource {} -> True
+    AgendaSource {} -> True
+    _ -> False
 
 {- | Wrap each clause's body so Benevento/Bridge of Sighs/One For Sorrow can
 observe the actual resolution, after all its nested tests and choices.
@@ -134,13 +152,7 @@ clause's trigger limit or accidentally selecting a different current Jinx.
 -}
 repeatJinx :: ReverseQueue m => JinxContext -> m ()
 repeatJinx context = for_ context.effect \(source, clauseIndex) ->
-  push
-    $ UseCardAbility
-      context.investigator
-      source
-      clauseIndex
-      [Window.mkWhen $ Window.ScenarioEvent jinxEvent (Just context.investigator) (toJSON context)]
-      NoPayment
+  push $ UseCardAbility context.investigator source clauseIndex (jinxWindows context) NoPayment
 
 -- | Beckoning can make every test performed by its Jinx automatically fail.
 beginJinxSkillTest

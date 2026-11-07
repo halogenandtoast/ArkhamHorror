@@ -151,3 +151,18 @@ export function homebrewScenarioI18n(scenarioId: string): string | null {
   if (!scenario) return null
   return `${homebrewCampaignScope(scenario.campaign ?? '')}.${scenario.i18n}`
 }
+
+/* The display name of the box a `:<box>:NNN` card was printed in: a campaign,
+or a standalone scenario, which is a box of its own. Keyed without the leading
+colon, the way the card art spells it. Ungated on purpose -- a card already
+being shown names its box whether or not that box is offered to this player. */
+const homebrewBoxNames: Map<string, string> = new Map([
+  ...homebrewCampaigns.map((c) => [c.id.replace(/^:/, ''), c.name] as const),
+  ...homebrewStandaloneScenarios.map(
+    (s) => [(s.campaign ?? s.id).replace(/^:/, ''), s.name] as const,
+  ),
+])
+
+export function homebrewBoxName(box: string): string | null {
+  return homebrewBoxNames.get(box) ?? null
+}

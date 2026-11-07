@@ -5,6 +5,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.ChaosToken (ChaosTokenFace (..))
 import Arkham.Homebrew.NightOfVespers.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.NightOfVespers.CardDefs.Locations qualified as Locations
+import Arkham.Homebrew.NightOfVespers.Helpers (scenarioI18n)
 import Arkham.Homebrew.NightOfVespers.Jinx
 import Arkham.I18n
 import Arkham.Matcher hiding (DuringTurn)
@@ -33,7 +34,7 @@ instance HasAbilities IntoTheFire where
   getAbilities (IntoTheFire a) =
     guard (onSide A a)
       *> [ mkAbility a 1 $ forced $ Enters #after You Anywhere
-         , jinxAbility a 2
+         , scenarioI18n "theEndOfSeasons" $ jinxAbilityI "intoTheFire.jinx" a 2
          , restricted
              a
              3

@@ -32,6 +32,11 @@
         "returnClues": "Return half your clues (rounded up) and refill your location's clues",
         "placeDoom": "Place 1 doom on the agenda (this may advance the agenda)"
       }
+    },
+    "tooltips": {
+      "intoTheFire": {
+        "jinx": "You must either place 1 clue on your location from the token bank or ready the nearest exhausted enemy."
+      }
     }
   }
 }

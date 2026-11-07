@@ -58,7 +58,7 @@ import Arkham.Helpers.Phase (matchPhase)
 import Arkham.Helpers.Placement (onSameLocation)
 import {-# SOURCE #-} Arkham.Helpers.Playable (getIsPlayable, getIsPlayableWithResources)
 import Arkham.Helpers.Query (getPlayerCount)
-import {-# SOURCE #-} Arkham.Helpers.Ref (sourceToMaybeCard)
+import {-# SOURCE #-} Arkham.Helpers.Ref (sourceToMaybeCard, sourceToMaybeTarget)
 import Arkham.Helpers.Scenario (
   getScenarioDeck,
   getVictoryDisplay,
@@ -430,12 +430,11 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
         Criteria.UnderZones zs -> concatMapM getCards zs
     cardCount <- length . filter (`cardMatch` cardMatcher) <$> getCards zone
     gameValueMatches cardCount valueMatcher
-  Criteria.SelfHasModifier modifier -> case source of
-    InvestigatorSource iid' ->
-      elem modifier <$> getModifiers (InvestigatorTarget iid')
-    EnemySource iid' -> elem modifier <$> getModifiers (EnemyTarget iid')
-    AssetSource aid' -> elem modifier <$> getModifiers aid'
-    _ -> pure False
+  -- Any source with a target, not just investigator/enemy/asset: an act's or
+  -- agenda's own modifier was invisible to its own abilities, so Night of
+  -- Vespers' ignoreJinx never suppressed a Jinx clause through its criteria.
+  Criteria.SelfHasModifier modifier ->
+    maybe (pure False) (fmap (elem modifier) . getModifiers) (sourceToMaybeTarget source)
   Criteria.Here -> do
     let
       here lid =

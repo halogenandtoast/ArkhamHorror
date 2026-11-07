@@ -6,7 +6,7 @@ import type { Deck} from '@/arkham/types/Deck';
 import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 import { useCardStore } from '@/stores/cards'
 import { storeToRefs } from 'pinia';
-import sets from '@/arkham/data/sets.json'
+import { cardSetText as sharedCardSetText } from '@/arkham/cardDetails'
 import CardImage from '@/arkham/components/CardImage.vue'
 
 const props = withDefaults(defineProps<{ deck: Deck; embedded?: boolean }>(), { embedded: false })
@@ -238,28 +238,13 @@ const cardIcons = (card: Arkham.CardDef) => {
   })
 }
 
-const cardSet = (card: Arkham.CardDef) => {
-  const cardCode = parseInt(card.art)
-  return sets.find((s) => cardCode >= s.min && cardCode <= s.max)
-}
-
+// The set name is localized from the ArkhamDB card data when we have it.
 const cardSetText = (card: Arkham.CardDef) => {
-  const setNumber = parseInt(card.art.slice(2,))
   const language = localStorage.getItem('language') || 'en'
-  var setName = ''
+  if (language === 'en') return sharedCardSetText(card)
 
-  if (language !== 'en') {
-    const match: ArkhamDBCard | null = store.getDbCard(card.art)
-    if (match) setName = match.pack_name
-  }
-
-  if (!setName) {
-    const set = cardSet(card)
-    if (set !== null && set !== undefined) setName = set.name
-  }
-
-  if (setName) return `${setName} ${setNumber % 500}`
-  else return "Unknown"
+  const match: ArkhamDBCard | null = store.getDbCard(card.art)
+  return sharedCardSetText(card, match?.pack_name)
 }
 
 const deckUrlToPage = (url: string): string => {

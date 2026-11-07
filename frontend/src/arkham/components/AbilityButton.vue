@@ -108,7 +108,8 @@ const isReactionAbility = computed(() => ability.value && ability.value.type.tag
 const isForcedAbility = computed(() =>
   ability.value && (ability.value.type.tag === "ForcedAbility" || ability.value.type.tag === "ForcedAbilityWithCost"))
 const isDelayedAbility = computed(() => ability.value && ability.value.type.tag === "DelayedAbility")
-const isHaunted = computed(() => ability.value && ability.value.type.tag === "Haunted")
+const isHaunted = computed(() =>
+  ability.value && (ability.value.type.tag === "Haunted" || ability.value.type.tag === "CustomKeywordAbility"))
 
 const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))
 
@@ -310,6 +311,10 @@ const abilityLabel = computed(() => {
 
   if (labelType.value?.tag === "Haunted") {
     return t('Haunted')
+  }
+
+  if (labelType.value?.tag === "CustomKeywordAbility") {
+    return t(labelType.value.keyword)
   }
 
   return ""

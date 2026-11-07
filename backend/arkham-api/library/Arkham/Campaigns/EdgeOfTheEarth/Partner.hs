@@ -41,18 +41,63 @@ instance HasCardCode Partner where
 
 -- ** Partner Helpers ** --
 
-expeditionTeam :: NonEmpty CardDef
-expeditionTeam =
-  Assets.drAmyKenslerProfessorOfBiology
-    :| [ Assets.professorWilliamDyerProfessorOfGeology
-       , Assets.danforthBrilliantStudent
-       , Assets.roaldEllsworthIntrepidExplorer
-       , Assets.takadaHirokoAeroplaneMechanic
-       , Assets.averyClaypoolAntarcticGuide
-       , Assets.drMalaSinhaDaringPhysician
-       , Assets.jamesCookieFredericksDubiousChoice
-       , Assets.eliyahAshevakDogHandler
+{- | Every partner's three faces: the ally asset the campaign log is keyed by, its
+Resolute upgrade, and its possessed enemy from /Lost in the Night/. 'expeditionTeam',
+'toResolute' and 'toPartnerCodeMay' all derive from this one table, so a partner cannot
+be known through one face and unknown through another -- Dr. Amy Kensler's enemy face
+was missing from the hand-written map, so her Forced "when defeated" ability crashed
+(#5966).
+-}
+partnerFaces :: NonEmpty (CardDef, CardDef, CardDef)
+partnerFaces =
+  ( Assets.drAmyKenslerProfessorOfBiology
+  , Assets.drAmyKenslerProfessorOfBiologyResolute
+  , Enemies.drAmyKenslerProfessorOfBiology
+  )
+    :| [
+         ( Assets.professorWilliamDyerProfessorOfGeology
+         , Assets.professorWilliamDyerProfessorOfGeologyResolute
+         , Enemies.professorWilliamDyerProfessorOfGeology
+         )
+       ,
+         ( Assets.danforthBrilliantStudent
+         , Assets.danforthBrilliantStudentResolute
+         , Enemies.danforthBrilliantStudent
+         )
+       ,
+         ( Assets.roaldEllsworthIntrepidExplorer
+         , Assets.roaldEllsworthIntrepidExplorerResolute
+         , Enemies.roaldEllsworthIntrepidExplorer
+         )
+       ,
+         ( Assets.takadaHirokoAeroplaneMechanic
+         , Assets.takadaHirokoAeroplaneMechanicResolute
+         , Enemies.takadaHirokoAeroplaneMechanic
+         )
+       ,
+         ( Assets.averyClaypoolAntarcticGuide
+         , Assets.averyClaypoolAntarcticGuideResolute
+         , Enemies.averyClaypoolAntarcticGuide
+         )
+       ,
+         ( Assets.drMalaSinhaDaringPhysician
+         , Assets.drMalaSinhaDaringPhysicianResolute
+         , Enemies.drMalaSinhaDaringPhysician
+         )
+       ,
+         ( Assets.jamesCookieFredericksDubiousChoice
+         , Assets.jamesCookieFredericksDubiousChoiceResolute
+         , Enemies.jamesCookieFredericksDubiousChoice
+         )
+       ,
+         ( Assets.eliyahAshevakDogHandler
+         , Assets.eliyahAshevakDogHandlerResolute
+         , Enemies.eliyahAshevakDogHandler
+         )
        ]
+
+expeditionTeam :: NonEmpty CardDef
+expeditionTeam = fmap (\(asset, _, _) -> asset) partnerFaces
 
 instance HasCardDef Partner where
   toCardDef = fromMaybe (error "missing") . lookupCardDef
@@ -71,35 +116,10 @@ getPartnersWithStatus f = do
         }
 
 toResolute :: CardCode -> CardCode
-toResolute = \case
-  c
-    | c == Assets.professorWilliamDyerProfessorOfGeology.cardCode ->
-        Assets.professorWilliamDyerProfessorOfGeologyResolute.cardCode
-  c
-    | c == Assets.danforthBrilliantStudent.cardCode ->
-        Assets.danforthBrilliantStudentResolute.cardCode
-  c
-    | c == Assets.eliyahAshevakDogHandler.cardCode ->
-        Assets.eliyahAshevakDogHandlerResolute.cardCode
-  c
-    | c == Assets.drMalaSinhaDaringPhysician.cardCode ->
-        Assets.drMalaSinhaDaringPhysicianResolute.cardCode
-  c
-    | c == Assets.averyClaypoolAntarcticGuide.cardCode ->
-        Assets.averyClaypoolAntarcticGuideResolute.cardCode
-  c
-    | c == Assets.jamesCookieFredericksDubiousChoice.cardCode ->
-        Assets.jamesCookieFredericksDubiousChoiceResolute.cardCode
-  c
-    | c == Assets.drAmyKenslerProfessorOfBiology.cardCode ->
-        Assets.drAmyKenslerProfessorOfBiologyResolute.cardCode
-  c
-    | c == Assets.roaldEllsworthIntrepidExplorer.cardCode ->
-        Assets.roaldEllsworthIntrepidExplorerResolute.cardCode
-  c
-    | c == Assets.takadaHirokoAeroplaneMechanic.cardCode ->
-        Assets.takadaHirokoAeroplaneMechanicResolute.cardCode
-  c -> c
+toResolute c =
+  fromMaybe c
+    $ listToMaybe
+      [resolute.cardCode | (asset, resolute, _) <- toList partnerFaces, c == asset.cardCode]
 
 getRemainingPartners :: HasGame m => m [Partner]
 getRemainingPartners = getPartnersWithStatus (`elem` [Safe, Resolute])
@@ -129,55 +149,9 @@ toPartnerCode :: (HasCallStack, HasCardCode a) => a -> CardCode
 toPartnerCode a = fromMaybe (error "Unknown partner") (toPartnerCodeMay a)
 
 toPartnerCodeMay :: HasCardCode a => a -> Maybe CardCode
-toPartnerCodeMay a = case toCardCode a of
-  c | c `elem` expeditionTeamCodes -> Just c
-  c
-    | c == Enemies.professorWilliamDyerProfessorOfGeology.cardCode ->
-        Just Assets.professorWilliamDyerProfessorOfGeology.cardCode
-  c | c == Enemies.danforthBrilliantStudent.cardCode -> Just Assets.danforthBrilliantStudent.cardCode
-  c
-    | c == Enemies.roaldEllsworthIntrepidExplorer.cardCode ->
-        Just Assets.roaldEllsworthIntrepidExplorer.cardCode
-  c
-    | c == Enemies.takadaHirokoAeroplaneMechanic.cardCode ->
-        Just Assets.takadaHirokoAeroplaneMechanic.cardCode
-  c
-    | c == Enemies.averyClaypoolAntarcticGuide.cardCode ->
-        Just Assets.averyClaypoolAntarcticGuide.cardCode
-  c
-    | c == Enemies.drMalaSinhaDaringPhysician.cardCode ->
-        Just Assets.drMalaSinhaDaringPhysician.cardCode
-  c
-    | c == Enemies.jamesCookieFredericksDubiousChoice.cardCode ->
-        Just Assets.jamesCookieFredericksDubiousChoice.cardCode
-  c | c == Enemies.eliyahAshevakDogHandler.cardCode -> Just Assets.eliyahAshevakDogHandler.cardCode
-  c
-    | c == Assets.professorWilliamDyerProfessorOfGeologyResolute.cardCode ->
-        Just Assets.professorWilliamDyerProfessorOfGeology.cardCode
-  c
-    | c == Assets.danforthBrilliantStudentResolute.cardCode ->
-        Just Assets.danforthBrilliantStudent.cardCode
-  c
-    | c == Assets.eliyahAshevakDogHandlerResolute.cardCode ->
-        Just Assets.eliyahAshevakDogHandler.cardCode
-  c
-    | c == Assets.drMalaSinhaDaringPhysicianResolute.cardCode ->
-        Just Assets.drMalaSinhaDaringPhysician.cardCode
-  c
-    | c == Assets.averyClaypoolAntarcticGuideResolute.cardCode ->
-        Just Assets.averyClaypoolAntarcticGuide.cardCode
-  c
-    | c == Assets.jamesCookieFredericksDubiousChoiceResolute.cardCode ->
-        Just Assets.jamesCookieFredericksDubiousChoice.cardCode
-  c
-    | c == Assets.drAmyKenslerProfessorOfBiologyResolute.cardCode ->
-        Just Assets.drAmyKenslerProfessorOfBiology.cardCode
-  c
-    | c == Assets.roaldEllsworthIntrepidExplorerResolute.cardCode ->
-        Just Assets.roaldEllsworthIntrepidExplorer.cardCode
-  c
-    | c == Assets.takadaHirokoAeroplaneMechanicResolute.cardCode ->
-        Just Assets.takadaHirokoAeroplaneMechanic.cardCode
-  _ -> Nothing
- where
-  expeditionTeamCodes = map toCardCode (toList expeditionTeam)
+toPartnerCodeMay a =
+  listToMaybe
+    [ asset.cardCode
+    | (asset, resolute, enemy) <- toList partnerFaces
+    , toCardCode a `elem` [asset.cardCode, resolute.cardCode, enemy.cardCode]
+    ]

@@ -66,9 +66,12 @@ function moverFor(id: string): HTMLElement | null {
   return document.querySelector<HTMLElement>(`[data-investigator-mini="${CSS.escape(id)}"]`)
 }
 
-/** The portrait inside a mini-mover, whichever of its three shapes it took. */
+/** The portrait inside a mini-mover, whichever of its three shapes it took.
+ * On the location map the mover is the portrait image itself. */
 function portraitFor(id: string): HTMLElement | null {
-  return moverFor(id)?.querySelector<HTMLElement>('.portrait') ?? null
+  const mover = moverFor(id)
+  if (mover?.matches('.portrait')) return mover
+  return mover?.querySelector<HTMLElement>('.portrait') ?? null
 }
 
 /* `<img class="portrait">` for most investigators, a div with a

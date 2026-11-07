@@ -1,0 +1,146 @@
+{
+  "specialRules": [
+    {
+      "title": "Các địa điểm Dark",
+      "body": "<p class='basic'>Các hiệu ứng Day và Night hoạt động khác nhau trong scenario <i>The Lost Sister</i>. Trong scenario này, các lá bài tại một vị trí _Dark_ <i>(bao gồm cả bản thân vị trí đó)</i> chỉ sử dụng các hiệu ứng <b>(Night {'{'}night{'}'})</b>. Các lá bài tại tất cả các vị trí khác <i>(bao gồm cả bản thân vị trí đó)</i> chỉ sử dụng các hiệu ứng <b>(Day {'{'}day{'}'})</b>. Quy tắc này có hiệu lực bất kể scenario này được chơi vào <b>(Day {'{'}day{'}'})</b> hay <b>(Night {'{'}night{'}'})</b>.</p><ul><li>Vào buổi tối, ánh trăng sáng như mặt trời. Khác với các scenario khác trong campaign này, lá bài Time Marker không có hiệu ứng cơ chế nào trong scenario <i>The Lost Sister</i>.</li></ul>"
+    },
+    {
+      "title": "Kẻ địch Double-Sided",
+      "body": "<p class='basic'>Tập bài encounter <i>The Lost Sister</i> có 3 kẻ địch hai mặt. Những kẻ địch này có một mặt <b>(Day {'{'}day{'}'})</b> và một mặt <b>(Night {'{'}night{'}'})</b> và được coi là cùng một kẻ địch. Nếu những kẻ địch này ở tại một vị trí _Dark_, lật chúng sang mặt <b>(Night {'{'}night{'}'})</b>. Ngược lại, nếu những kẻ địch này ở tại một vị trí không có trait _Dark_, lật chúng sang mặt <b>(Day {'{'}day{'}'})</b>. Việc lật từ mặt này sang mặt kia là một hiệu ứng tức thời không thể bị ngắt quãng. Khi một kẻ địch hai mặt lật, nó giữ lại tất cả các token và bài đính kèm. <i>(Lưu ý rằng một số kẻ địch có các hiệu ứng </i><b>Forced</b><i>– kích hoạt sau khi chúng lật sang mặt này hoặc mặt kia.)</i></p>"
+    }
+  ],
+  "remembered": {
+    "foundATornDogLeash": "Tìm thấy một sợi dây dắt chó bị rách.",
+    "foundASetOfFootprints": "Tìm thấy một dãy dấu chân.",
+    "theoIsArguingWithHelen": "Theo đang cãi nhau với Helen.",
+    "gideonIsSearchingForAnHeirloom": "Nếu “Gideon đang tìm kiếm một vật gia truyền”:"
+  },
+  "intro": {
+    "title": "Kịch bản: The Lost Sister",
+    "intro1": "<p>_Intro 1_: Bạn đang ngồi trong căn bếp nhỏ của ngôi nhà gia đình Peters ở Akwan, trên bờ bắc của Hemlock Isle. Nước biển Đại Tây Dương lạnh lẽo vỗ vào những cột nhà sàn bên dưới khi Helen Peters đặt chiếc cốc bốc khói của mình lên bàn. “Các hang động ở bờ bắc là một cái bẫy chết người,” cô ấy nói một cách kiên quyết. “Tôi không nghĩ bạn biết mình đang dính líu vào chuyện gì đâu.”</p><p>Bạn nói với cô ấy rằng mình nhận thức rất rõ về sự nguy hiểm. Theo những lời đồn đại ở địa phương, một số người đã mất tích gần đây. Vụ mất tích gần đây nhất là em gái của Helen, vì vậy bạn đã đến thăm nhà Peters để đề nghị giúp đỡ.</p><p>Helen nhìn bạn một lượt, như thể đang đánh giá, và cuối cùng gật đầu. “Được rồi. Bạn hoặc là dũng cảm, hoặc là ngu ngốc. Hoặc là cả hai, giống như em trai tôi.” Cô ấy xoa trán trong sự thất vọng. “Lần cuối tôi nhìn thấy Lizzie—Elizabeth—là khi con bé đang đi dạo với con chó Bruce của chúng tôi dọc theo bờ biển. Tôi đã bảo con bé tránh xa những cái hang đó, nhưng nó không bao giờ nghe lời. Rất dễ bị lạc trong đó và có những thứ ở trong đó sẽ ám ảnh bạn trong những cơn ác mộng.” Cô ấy đặt một chiếc đèn pin lên bàn. “Nhưng đó là nơi chúng ta sẽ bắt đầu.”</p>",
+    "body": "<p class='basic unindented'>Kiểm tra Nhật ký Chiến dịch của bạn.</p>",
+    "nightSkip": "Nếu đang là _Night 1_ hoặc _Night 2_, chuyển đến _Intro 5_. Nếu không:",
+    "day1": "Nếu đang là _Day 1_, tiếp tục đến _Intro 2_.",
+    "day2": "Nếu đang là _Day 2_, chuyển đến _Intro 3_.",
+    "day3": "Nếu đang là _Day 3_, chuyển đến _Intro 4_.",
+    "intro2": "<p>_Intro 2_: Bạn theo Helen ra ngoài và bước lên những lối đi bằng ván gỗ cọt kẹt của làng Akwan. Nép mình trong một vịnh nhỏ đầy đá trên bờ biển phía bắc của hòn đảo, Akwan đã là nhà của các gia đình Abenaki và những cựu thợ săn cá voi trong nhiều thế hệ. Những đợt sóng biển dâng lên và vỗ đều đặn trên bờ đá mang lại cho khung cảnh một sự bất an kỳ lạ. Helen lấy một cây lao phóng cá từ một túp lều của người săn cá voi và dẫn bạn ra bãi biển.</p><p>Một chiếc xe bán tải cũ quen thuộc giảm tốc độ và dừng lại gần đó. Theo bước ra và chào bạn với một nụ cười rạng rỡ. “Tôi đã trở lại! Tôi phải chạy về Vale để lấy một thứ,” anh ấy vẫy tay. Nụ cười của anh ấy biến mất khi nhìn thấy Helen.</p><p>“Chị ngạc nhiên là em đã đến,” Helen nói một cách lạnh nhạt.</p><p>Theo trông có vẻ chán nản. “Tất nhiên là em đến rồi, chị. Sao em có thể không đến chứ?”</p><p>Chị gái anh không nói gì khi cô sải bước qua cả hai người về phía bờ biển ảm đạm. Một gợn sóng vỗ mạnh vào lối đi, phá vỡ bầu không khí căng thẳng của khoảnh khắc đó. Bạn hỏi Theo lý do đằng sau phản ứng lạnh nhạt của chị gái anh ấy, và ánh mắt anh ấy trở nên xa xăm trong một khoảnh khắc.</p><p>“Bạn biết đấy, đôi khi con người ta cứ thế xa nhau. Giống như hai nhánh cây. Chúng sẽ luôn được kết nối, nhưng chúng—” Phép ẩn dụ kéo dài bị cắt ngang bởi Helen, đang gọi bạn đến miệng một hang động ven biển.</p><p class='basic right'>Tiếp tục đến _Setup_.</p>",
+    "intro3": "<p>_Intro 3_: Khi bạn và Helen chuẩn bị rời đi, tiếng mưa phá vỡ sự im lặng. Theo bước qua cửa trước, vuốt mái tóc ướt khỏi mặt. Cậu ấy khóa chặt ánh mắt với Helen. “Vậy là con bé vẫn chưa về,” cậu ấy nói với giọng trầm buồn. Nước mưa từ người Theo nhỏ giọt xuống sàn nhà cũ kỹ khi Helen trừng mắt nhìn cậu. “Chị ngạc nhiên là em đã đến, em trai. Muộn còn hơn không, chị đoán vậy. Lấy dây thừng đi.” Cô vác một cây lao phóng cá lên vai và bước ra ngoài trời mưa tầm tã. Theo vội vã tìm dây thừng và chiếc đèn pin thứ hai khi bạn hỏi cậu ấy có chuyện gì.</p><p>“Em gái của chúng tôi đang mất tích. Tôi đã nói với Helen là con bé sẽ quay lại, và bây giờ đã hai ngày rồi. Đó, ừm. Chuyện là vậy đó.”</p><p class='basic right'>Tiếp tục đến _Setup_.</p>",
+    "intro4": "<p>_Intro 4_: Bạn theo Helen ra ngoài và bước lên những lối đi bằng ván gỗ cọt kẹt của ngôi làng Akwan. Nép mình trong một vịnh nhỏ đầy đá ở bờ biển phía bắc của hòn đảo, Akwan đã là nhà của các gia đình Abenaki và những cựu thợ săn cá voi trong nhiều thế hệ. “Hemlock Isle không còn an toàn nữa. Tôi đã nghĩ đây có thể là nhà của chúng tôi, nhưng tôi đoán nó chỉ là một trạm dừng chân khác trên đường đi,” Helen nói với vẻ đượm buồn. Ngôi làng gần như vắng tanh, ngoại trừ một thủy thủ già mặc chiếc áo khoác hải quân màu xanh dương. Ông ấy suýt đánh rơi cần câu khi bạn đến gần.</p><p>“Gideon! Lại câu cá à bác?” Helen nói với một nụ cười gượng.</p><p>Người thủy thủ già kéo mẻ lưới của mình lên khỏi mặt nước. “Chẳng có gì ngoài một con cá tuyết xấu xí. Và con cá tuyết chấm đen này còn gớm ghiếc hơn.” Những con cá xâu qua sợi dây bện có quá nhiều vây và những khối u có gai giống như hà biển. “Còn cháu thì sao, Helen?” Gideon hỏi.</p><p>Helen kể cho người thủy thủ già về người em gái mất tích của mình. Người thủy thủ già tỏ vẻ lo lắng. “Con bé Lizzie đúng là một đứa trẻ quý giá. Lão sẽ giúp, nếu cháu cần lão.”</p><p class='basic right'>Tiếp tục đến _Setup_.</p>",
+    "intro5": "<p>_Intro 5_: Bạn theo Helen ra ngoài và bước lên những lối đi bằng ván gỗ cọt kẹt của ngôi làng Akwan. Bầu trời đêm ảm đạm và u ám, nhưng một thứ ánh sáng lờ mờ đáng lo ngại vẫn nán lại trên đường chân trời phía nam: một thứ ánh sáng xa xăm, chuyển động liên tục với những sắc xanh lam và xanh lục phía sau những ngọn cây. Ánh sáng tạo thành những hình thù quen thuộc: Một bàn chân sư tử, một bông hoa mùa xuân, một chiếc thuyền dài, và cuối cùng là một hình bóng con người mờ ảo. Bạn nhìn xuống và thấy Helen đang biến mất vào một hang động đen ngòm.</p><p class='basic right'>Tiếp tục đến _Setup_.</p>"
+  },
+  "setup": {
+    "gatherSets": "Tập hợp tất cả lá bài từ các chồng bài encounter sau: *The Lost Sister*, *Blight*, *Horrors in the Rock*, *Mutations* và *Myconids*. Các chồng bài này được đánh dấu bằng các biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/the-lost-sister.png' /><img src='{setImgPath}/blight.png' /><img src='{setImgPath}/horrors-in-the-rock.png' /><img src='{setImgPath}/mutations.png' /><img src='{setImgPath}/myconids.png' /></section>",
+    "currentDaySet": "Ngoài ra, kiểm tra Nhật ký Chiến dịch để biết ngày hiện tại và tập hợp chồng bài encounter tương ứng: *The First Day*, *The Second Day* hoặc *The Final Day*. Các chồng bài này được đánh dấu bằng các biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/the-first-day.png' /><img src='{setImgPath}/the-second-day.png' /><img src='{setImgPath}/the-final-day.png' /></section>",
+    "currentDayMarker": "Kiểm tra Nhật ký Chiến dịch của bạn để biết ngày và giờ hiện tại. Đưa lá Time Marker vào chơi ở mặt tương ứng (_Day {'{'}day{'}'}_) hoặc (_Night {'{'}night{'}'}_).",
+    "putAkwan": "Đặt địa điểm Akwan vào chơi. Mỗi điều tra viên bắt đầu chơi tại Akwan.",
+    "cavernsDeck": "Tạo “chồng bài Caverns” như sau:",
+    "gatherCavernsLocations": "Tập hợp tất cả các địa điểm từ các bộ encounter <i>The Lost Sister</i> và <i>Horrors in the Rock</i>.",
+    "setAsideFungalCave": "Để riêng vị trí Fungal Cave ra ngoài cuộc chơi.",
+    "removeTwoCaves": "Loại bỏ 2 vị trí _Cave_ ngẫu nhiên từ tập bài encounter <i>Horrors in the Rock</i> khỏi trò chơi.",
+    "shuffleCavernsDeck": "Xào các vị trí còn lại với nhau để tạo thành chồng bài Caverns. Đặt chồng bài này gần lá bài scenario reference.",
+    "putTopThree": "Đặt ba lá trên cùng của Caverns deck vào chơi, chưa lật, ở phía dưới và bên trái, bên phải của Akwan (xem Location Adjacency ở trang 3).",
+    "dayResidents": "Nếu đang là (_Day {'{'}day{'}'}_), tập hợp mỗi story asset từ chồng bài encounter *Residents*. Chồng bài này được đánh dấu bằng biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/residents.png' /></section>",
+    "helenPeters": "Đặt Helen Peters vào chơi dưới quyền điều khiển của một điều tra viên. Cô ấy không chiếm một khe ally trong scenario này.",
+    "theoPeters": "Nếu đang là _Day 1_ hoặc _Day 2_, đưa Theo Peters vào chơi dưới quyền kiểm soát của một điều tra viên.",
+    "gideonMizrah": "Nếu đang là _Day 2_ hoặc _Day 3_, đưa Gideon Mizrah vào chơi dưới quyền kiểm soát của một điều tra viên.",
+    "williamHemlock": "Nếu đang là _Day 3_, đưa William Hemlock vào chơi tại Akwan.",
+    "removeResidents": "Loại bỏ mỗi lá bài khác của chồng bài encounter *Residents* khỏi trò chơi.",
+    "nightResidents": "Nếu đang là (_Night {'{'}night{'}'}_), tập hợp mỗi story asset từ chồng bài encounter *Residents*. Chồng bài này được đánh dấu bằng biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/residents.png' /></section>",
+    "helenPetersNight": "Đặt Helen Peters vào chơi dưới quyền điều khiển của một điều tra viên. Cô ấy không chiếm một khe ally trong scenario này.",
+    "removeResidentsNight": "Loại bỏ mỗi lá bài khác của chồng bài encounter *Residents* khỏi trò chơi.",
+    "setAsideEnemies": "Để riêng từng kẻ địch sau ra ngoài cuộc chơi: Limulus Hybrid, cả hai bản sao của Crystal Parasite, và cả hai bản sao của Crustacean Hybrid."
+  },
+  "darkLocations": {
+    "title": "Các địa điểm Dark",
+    "body": "<h3>Các địa điểm Dark</h3><p class='basic'>Các hiệu ứng Day và Night hoạt động khác nhau trong scenario <i>The Lost Sister</i>. Trong scenario này, các lá bài tại một vị trí _Dark_ <i>(bao gồm cả bản thân vị trí đó)</i> chỉ sử dụng các hiệu ứng <b>(Night {'{'}night{'}'})</b>. Các lá bài tại tất cả các vị trí khác <i>(bao gồm cả bản thân vị trí đó)</i> chỉ sử dụng các hiệu ứng <b>(Day {'{'}day{'}'})</b>. Quy tắc này có hiệu lực bất kể scenario này được chơi vào <b>(Day {'{'}day{'}'})</b> hay <b>(Night {'{'}night{'}'})</b>.</p><ul><li>Vào buổi tối, ánh trăng sáng như mặt trời. Khác với các scenario khác trong campaign này, lá bài Time Marker không có hiệu ứng cơ chế nào trong scenario <i>The Lost Sister</i>.</li></ul>"
+  },
+  "doubleSidedEnemies": {
+    "title": "Kẻ địch Double-Sided",
+    "body": "<h3>Kẻ địch Double-Sided</h3><p class='basic'>Tập bài encounter <i>The Lost Sister</i> có 3 kẻ địch hai mặt. Những kẻ địch này có một mặt <b>(Day {'{'}day{'}'})</b> và một mặt <b>(Night {'{'}night{'}'})</b> và được coi là cùng một kẻ địch. Nếu những kẻ địch này ở tại một vị trí _Dark_, lật chúng sang mặt <b>(Night {'{'}night{'}'})</b>. Ngược lại, nếu những kẻ địch này ở tại một vị trí không có trait _Dark_, lật chúng sang mặt <b>(Day {'{'}day{'}'})</b>.</p><p>Việc lật từ mặt này sang mặt kia là một hiệu ứng tức thời không thể bị ngắt quãng. Khi một kẻ địch hai mặt lật, nó giữ lại tất cả các token và bài đính kèm. <i>(Lưu ý rằng một số kẻ địch có các hiệu ứng </i><b>Forced</b><i>– kích hoạt sau khi chúng lật sang mặt này hoặc mặt kia.)</i></p>"
+  },
+  "tooltips": {
+    "akwan": {
+      "resign": "Bạn từ bỏ cuộc tìm kiếm."
+    },
+    "hiddenCove": {
+      "remember": "Ghi nhớ rằng các điều tra viên đã \"tìm thấy một sợi dây dắt chó bị rách.\""
+    },
+    "undergroundPools": {
+      "remember": "Ghi nhớ rằng các điều tra viên đã \"tìm thấy một dãy dấu chân.\""
+    }
+  },
+  "codex": {
+    "label": {
+      "bottom": "Đặt xuống dưới cùng của Caverns deck"
+    },
+    "williamHemlock": {
+      "title": "{'{'}codex{'}'} Codex 4: William Hemlock",
+      "body": "<h3>@:theFeastOfHemlockVale.theLostSister.codex.williamHemlock.title </h3><p>William đứng trên bờ biển đầy đá, nhìn ra những con sóng cuộn trào và đường bờ biển Maine xa xăm phía bên kia. “Hòn đảo nhiễm độc này là tất cả những gì còn lại của cái tên Hemlock. Di sản của gia đình tôi sẽ kết thúc cùng với tôi,” anh cay đắng nói. Helen sải bước tới, khuôn mặt giận dữ. “Hòn đảo này không thuộc về ai cả; di sản của anh đã chết. Nó đã hoang dã từ rất lâu trước khi gia đình anh tước đoạt nó khỏi tự nhiên, và giờ đây sự hoang dã sẽ lấy lại nó.”</p><p>Môi William run rẩy khi anh ngước nhìn ánh sáng le lói. Một dải cầu vồng với những màu sắc óng ánh làm biến dạng bầu trời. “Mọi điều tốt đẹp đều hoang dã và tự do,” anh trích dẫn một cách thành kính. “Có lẽ đã đến lúc tôi chấp nhận điều đó.”</p><p class='basic right'>Tăng Relationship Level của William Hemlock. Mỗi điều tra viên nhận 1 bonus experience.</p>"
+    },
+    "gideonMizrah": {
+      "title": "{'{'}codex{'}'} Codex 6: Gideon Mizrah",
+      "body": "<h3>@:theFeastOfHemlockVale.theLostSister.codex.gideonMizrah.title </h3><p>Gideon chồm người tới trước và quan sát một bãi cát đen và đá. \"Ở đây không phải lúc nào cũng kỳ lạ thế này. Hemlock Isle đã trở nên khá quái dị qua nhiều năm. Nhưng giờ nghĩ lại, tôi cho là...\" Ông lão bỏ lửng câu nói, chìm vào suy nghĩ. Một lúc sau, ông run rẩy đứng dậy. \"Tôi đã đánh mất một món kỷ vật cũ ở đây. Chà, tôi không hẳn là đánh mất nó mà là tôi đã chôn nó và quên mất nó ở đâu, nếu các cô cậu hiểu ý tôi.\" Ông luyên thuyên về ba câu chuyện không liên quan khác trước khi quay lại chủ đề. \"Tôi không ngốc đến mức chôn nó dưới cát. Nhưng có một tảng đá đen lớn trông hơi giống một con cá voi. Đó là nơi tôi đã chôn nó. Nếu các cô cậu giúp tôi tìm nó, tôi sẽ rất biết ơn.\"</p><p class='basic right'>Ghi nhớ \"Gideon đang tìm một món gia bảo.\" (Gợi ý: Nếu các điều tra viên đang kiểm soát ít nhất 2 clue khi scenario này kết thúc, bạn có thể giúp Gideon tìm thứ ông ấy đang tìm!)</p>"
+    },
+    "theoPeters": {
+      "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
+      "arguing": "<h3>@:theFeastOfHemlockVale.theLostSister.codex.theoPeters.title </h3><p><b>Nếu \"Theo đang cãi nhau với Helen\" và cả Theo Peters lẫn Helen Peters đều ở cùng một địa điểm:</b></p><p>Căng thẳng dâng cao khi Theo và Helen buông những lời lẽ cay độc với nhau.</p><p class='basic right'>Chọn một điều tra viên tại địa điểm của Theo Peters để kiểm tra {'{'}willpower{'}'} (4). Nếu bài kiểm tra này thành công, hãy đọc tiếp. Nếu không, một điều tra viên có thể kích hoạt lại codex này.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>Khi bạn và Theo theo sau Helen qua một đường hầm nhớp nháp khác, bạn bước ra một căn phòng lớn cỡ một nhà hát vòng tròn. San hô phân nhánh và những loài giáp xác khổng lồ bám chặt vào lớp đá tối tăm, ẩm ướt xung quanh bạn, và trong một khoảnh khắc, cả nhóm cùng nín thở, chiêm ngưỡng khung cảnh khó tin này. \"Tiếp tục di chuyển thôi,\" Helen càu nhàu nói. Cô ấy nhanh chóng vượt lên trước bạn và Theo, và bạn tranh thủ khoảnh khắc này để hỏi chàng trai trẻ thêm về thái độ lạnh lùng của chị gái cậu.</p><p>\"Chị ấy đổ lỗi cho the Vale về... Về, ừm, mọi thứ. Một năm trước, chúng tôi chật vật kiếm sống ở Akwan. Chị ấy cố bắt tôi đi đánh cá, giống như cha tôi, và—\" cậu dường như nghẹn lời. \"Không phải là tôi từng giúp được gì. Nhưng khi tôi đến thăm the Vale, tôi cảm thấy như mình có một chỗ đứng. Một nơi tôi thuộc về. Mother Rachel nói—\"</p><p>\"Im đi,\" Helen chen ngang cuộc trò chuyện. \"Việc Lizzie nghe em tâng bốc kẻ điên đó khi em ở nhà đã đủ tệ rồi. Em muốn làm chó cưng của bà ta, cứ việc. Em muốn quay lưng lại với gia đình, cứ việc. Nhưng đừng có phun ra mấy lời nhảm nhí đó trước mặt chị.\"</p><p>Má Theo đỏ bừng khi chị gái cậu chọc vào thứ rõ ràng là một vết thương cũ.</p><p class='basic right'>Ghi nhớ \"Theo đang cãi nhau với Helen.\" Một điều tra viên có thể kích hoạt codex này lần nữa nếu cả Theo Peters và Helen Peters đều ở cùng một địa điểm.</p>",
+      "passed": "<p>“Nói gì thì nói, nhưng the Vale giống gia đình của tôi hơn là chị đấy!” Theo hét lên. Bạn bước vào và cố gắng làm dịu cả hai. Helen nhìn thẳng vào mắt em trai mình, rõ ràng là bị tổn thương, và trả lời. “Làm ơn đừng nói vậy. Đừng bao giờ nói vậy. Em và Lizzie là mái nhà duy nhất chị có. Không phải ở đây. Không phải Hemlock Isle. Chắc chắn không phải Vermont. Chị chỉ muốn chúng ta là một gia đình.” Vẻ ngoài cứng rắn của cô vỡ vụn khi cô bắt đầu khóc. Sau một lúc, Theo nhìn chị gái mình, môi run rẩy, rồi vòng tay ôm lấy cô trong một cái ôm không lời.</p><p class='basic right'>Trong Ghi chú của Theo Peters, ghi lại <i>Theo đã làm hòa với Helen</i>. Tăng Relationship Level của Theo Peters. Mỗi điều tra viên nhận 1 điểm kinh nghiệm thưởng.</p>"
+    },
+    "lobstrosity": {
+      "title": "{'{'}codex{'}'} Codex Σ: The Lobstrosity",
+      "reconciled": "<h3>@:theFeastOfHemlockVale.theLostSister.codex.lobstrosity.title </h3><p>_If Theo reconciled with Helen:_</p><p>Một mùi hôi thối, nồng nặc của cá ươn và nấm mốc tràn ngập hang động. Theo nhìn các chị em của mình chạy trốn khỏi hang, rõ ràng là đang giằng xé, trước khi quay sang bạn, nét mặt kiên định. Cậu đứng sát cánh cùng bạn khi sinh vật quái dị kia phát ra một tiếng gầm gừ ùng ục. “Tôi khá chắc là thứ đó đã ăn thịt con chó của Lizzie,” cậu nói, rút ra một con dao. “Cái này là cho Bruce!”</p><p class='basic right'>Di chuyển 1 damage từ Theo Peters sang kẻ địch Limulus Hybrid.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>Theo nhìn các chị em của mình chạy trốn khỏi hang, rõ ràng là đang giằng xé. Hang động đầy rêu bốc mùi nấm mốc và thối rữa. Chàng trai trẻ lùi lại khi sinh vật quái dị kia phát ra một tiếng gầm gừ ùng ục. “Tôi để quên thứ gì đó trong xe tải. Tôi sẽ quay lại ngay!” cậu nói khi bỏ chạy khỏi hiện trường.</p><p class='basic right'>Loại bỏ Theo Peters khỏi trò chơi.</p>"
+    },
+    "drRosaMarquez": {
+      "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
+      "body": "<h3>@:theFeastOfHemlockVale.theLostSister.codex.drRosaMarquez.title </h3><p>Dr. Marquez quỳ xuống để kiểm tra một chi động vật giáp xác bị đứt lìa mọc đầy nấm màu vàng rực. \"Có điều gì đó cực kỳ bất ổn ở đây. Bất kể thứ gì đang gây ra những đột biến này cũng đang gây ảnh hưởng lên cả sinh vật biển địa phương. Cái mai này không chỉ bị nấm mọc um tùm.\" Cô bẻ nó ra, làm phát tán những bào tử dạng bột màu vàng. \"Cứ như thể những quy luật cơ bản của tự nhiên đã trở nên điên rồ vậy.\"</p><p class='basic right'>Nhìn vào lá bài trên cùng của chồng bài Caverns. Bạn có thể đặt địa điểm đó vào khu vực chơi liền kề với địa điểm _Cave_ gần nhất hoặc đặt nó xuống dưới cùng của chồng bài Caverns.</p>"
+    },
+    "xp": {
+      "bonus": "Kinh nghiệm thưởng"
+    }
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "Không có Resolution",
+      "body": "<p>_Nếu không đạt được resolution nào (mỗi điều tra viên đều đã resign hoặc bị đánh bại)_: Nỗ lực của bạn đã đến giới hạn. Nấm mốc bất thường và đám thú hoang hung hãn là quá sức đối với bạn. Bạn không còn lựa chọn nào ngoài từ bỏ cuộc tìm kiếm.</p><ul><li>Mỗi điều tra viên nhận 1 kinh nghiệm thưởng vì đã đối mặt với những nỗi kinh hoàng của các hang động ven biển.</li><li>Chuyển đến _Resolution 4_.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Bạn trở lại Akwan cùng Helen và Lizzie. Cô em gái cảm ơn bạn trong khi vẫn ngoái nhìn về phía những hang động. Helen cầm lấy sợi dây dắt chó sờn rách từ tay cô bé. \"Bruce là một chú chó ngoan,\" cô nói. Gió biển thổi tung mái tóc nâu sẫm của cô con gái út nhà Peters qua khuôn mặt tròn trịa của cô bé khi Helen quàng tay qua vai em mình. Bạn hỏi kế hoạch bây giờ của họ là gì.</p><p>\"Chúng ta không thể ở lại đây,\" Helen nói, hướng về phía Elizabeth nhiều hơn là bạn. Trước khi em gái kịp phản đối, Helen tiếp tục. \"Em còn nhớ câu chuyện Nokemes kể cho chúng ta không? Câu chuyện về việc Gluskab biến một người đàn ông thành một cái cây. Mọi thứ trên hòn đảo này đều sai trái. Nó đã biến đổi thành một thứ gì đó chết chóc. Có lẽ đã đến lúc chúng ta đến thăm chú George ở Portland.\"</p><p class='basic'>Kiểm tra Nhật ký Chiến dịch của bạn.</p>",
+      "proceedToResolution2": "Nếu _Theo reconciled with Helen_ được ghi lại trong _Ghi chú của Theo Peters_, tiếp tục đến _Resolution 2_.",
+      "skipToResolution3": "Nếu không, chuyển đến _Resolution 3_."
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: Sau khi quay lại từ chiếc xe tải của mình, Theo hỏi em gái tại sao cô bé lại đi lang thang. Lizzie gạt nước mắt và giơ sợi dây dắt chó bị đứt lên. \"Bruce muốn đi dạo một lần cuối. Giống như chúng em từng làm.\" Theo trông buồn bã khi hai chị em gái của anh nhìn ra biển, vượt qua những con sóng cuộn trào và những đám mây bạc. Theo ngập ngừng, tìm lời để nói khi hai chị em đối mặt với những con sóng vỗ bờ.</p><p>\"Lại đây, Theo,\" Helen vẫy tay gọi anh lại. Ba anh chị em đứng cùng nhau, lặng lẽ nhìn ra biển.</p><ul><li>Mỗi điều tra viên nhận 2 kinh nghiệm thưởng vì đã giúp Helen cứu em gái cô ấy.</li><li>Trong Nhật ký Chiến dịch của bạn, ghi lại <i>Gia đình Peters đã đoàn tụ</i>.</li><li>Chuyển đến _Resolution 4_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: \"Tôi sẽ sớm bắt đầu chuẩn bị và hy vọng chúng tôi sẽ rời khỏi hòn đảo trong vài ngày nữa,\" Helen nói với bạn. \"Tôi khuyên bạn cũng nên rời đi sớm.\" Bạn nói với cô ấy rằng cuộc khảo sát còn lâu mới kết thúc, và vẫn còn nhiều việc bạn phải làm. Helen cười khẩy. \"Tự chuốc lấy cái chết thôi,\" cô nói, rồi sau một khoảng lặng ngắn, cô lại nhìn bạn. \"Xin lỗi. Tôi không hiểu sao mình lại nói vậy,\" cô nói. \"Cảm ơn vì sự giúp đỡ của bạn. Không một ai ở Vale chịu giúp đâu.\" Cô nhìn xuống bờ cát đen hướng về Akwan. \"Gideon từng thường xuyên câu cá ở đây, nhưng giờ thì không nữa. Vale đã cướp ông ấy khỏi chúng tôi. Bây giờ họ lại cướp mất Theo.\"</p><p>Cô nhìn lại bạn. \"Tôi có một việc nữa muốn nhờ. Xin hãy để mắt đến Theo. Cậu ấy có ý tốt, ngay cả khi cậu ấy hơi chậm tiêu. Hãy đảm bảo cậu ấy vẫn ổn. Bất kể cậu ấy nghĩ gì, cậu ấy vẫn là người nhà.\"</p><ul><li>Mỗi điều tra viên nhận 2 kinh nghiệm thưởng vì đã giúp Helen cứu em gái cô ấy.</li><li>Trong Nhật ký Chiến dịch của bạn, ghi lại <i>Elizabeth Peters đã được cứu</i>.</li><li>Tiếp tục đến _Resolution 4_.</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_Resolution 4_: “Khảo sát Miskatonic, tháng 6 năm 1926. Các thành viên Marquez, Musgrave, et alii. Bờ biển phía bắc và các hang động ven biển cực kỳ nguy hiểm. Đã xác định được hàng chục loài nấm phát quang sinh học chưa từng được ghi nhận trước đây. Một hệ sinh thái vô cùng khắc nghiệt và cực kỳ nhạy cảm với ánh sáng. Khuyến nghị phân tích và quan sát thêm. Các chuyến thám hiểm trong tương lai nên chuẩn bị sẵn trang bị phù hợp và cực kỳ thận trọng. Tránh các hang động Akwan, nếu có thể.”</p><ul><li>Mỗi điều tra viên nhận kinh nghiệm bằng với giá trị Victory X của mỗi lá bài trong victory display. <b>Mỗi điều tra viên bây giờ có thể tiêu kinh nghiệm được ghi dưới mục “Unspent Experience” trong Nhật ký Chiến dịch của bạn.</b></li><li>Trong phần “Areas Surveyed” của Nhật ký Chiến dịch, đánh dấu <i>Akwan Shoreline</i>.</li></ul>"
+    },
+    "xp": {
+      "noResolutionBonus": "Điểm kinh nghiệm thưởng vì đã đối mặt với những nỗi kinh hoàng của các hang động ven biển",
+      "helenBonus": "Điểm kinh nghiệm thưởng vì đã giúp Helen cứu em gái cô",
+      "gideonBonus": "Điểm kinh nghiệm thưởng vì đã giúp Gideon tìm kho báu của ông"
+    }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X bằng một nửa số địa điểm _Cave_ đã lật đang in play (làm tròn lên).",
+      "cultist": "-1. Nếu bạn thành công, chữa 1 horror.",
+      "tablet": "-2. Nếu bạn đang ở một địa điểm _Cave_, thay vào đó hãy coi chỉ số của token này là -4.",
+      "elderThing": "-2. Nếu có một kẻ địch _Abomination_ tại địa điểm của bạn, lật thêm một token khác."
+    },
+    "hardExpert": {
+      "skull": "-X. X bằng số địa điểm _Cave_ đã lật đang in play.",
+      "cultist": "-1. Nếu bạn thành công từ 2 trở lên, chữa 1 horror.",
+      "tablet": "-4. Nếu bạn đang ở một địa điểm _Cave_, thay vào đó hãy coi chỉ số của token này là -6.",
+      "elderThing": "-3. Nếu có một kẻ địch _Abomination_ tại địa điểm của bạn, thay vào đó bài kiểm tra này tự động thất bại."
+    }
+  }
+}

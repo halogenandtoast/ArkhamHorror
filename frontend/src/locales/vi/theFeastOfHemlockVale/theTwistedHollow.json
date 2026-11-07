@@ -1,0 +1,154 @@
+{
+  "specialRules": [
+    {
+      "title": "Darkness Level",
+      "body": "<p class='basic'>Xuyên suốt kịch bản này, số lượng resource dưới “Darkness Level” trên lá bài scenario reference biểu thị giai đoạn hiện tại của màn đêm. Khi thời gian trôi qua, các resource được thêm vào darkness level hiện tại, và cuộc chơi tiếp tục cho đến khi các điều tra viên đạt đến một darkness level nhất định, hoặc bị tiêu diệt. Khu rừng càng tối, những cạm bẫy của nó càng chết chóc. Darkness level hiện tại tự nó không có hiệu ứng game; tuy nhiên, một số hiệu ứng của lá bài encounter có thể thay đổi hoặc trở nên mạnh hơn tùy thuộc vào darkness level hiện tại.</p>"
+    },
+    {
+      "title": "Sự liền kề của các địa điểm trong The Twisted Hollow",
+      "body": "<p class='basic'>Trong kịch bản này, các địa điểm sẽ được sắp xếp theo một khuôn mẫu nhất định, với các địa điểm mới từ Woods deck xuất hiện liền kề với các địa điểm hiện có, với mặt unrevealed ngửa lên. Trong kịch bản này, các địa điểm liền kề được kết nối với nhau.</p><ul><li>Nếu một địa điểm không có cạnh chung nào với một địa điểm khác, hãy trượt nó theo chiều dọc hoặc chiều ngang cho đến khi nó liền kề với địa điểm gần nhất.</li></ul>"
+    },
+    {
+      "title": "Pursuit",
+      "body": "<p class='basic'>Một số lá bài trong kịch bản này nhắc đến một khu vực gọi là “pursuit area”. Pursuit area là một khu vực out-of-play nằm cạnh chồng bài act và agenda, nơi kẻ địch có thể tiến vào và rời đi thông qua các hiệu ứng bài. Nói chung, kẻ địch đang trong khu vực chơi sẽ di chuyển đến pursuit area khi màn đêm buông xuống. <b>Mặc dù pursuit area là out of play, bất cứ khi nào một kẻ địch di chuyển đến hoặc rời khỏi pursuit area, nó vẫn giữ lại tất cả các token và attachment.</b></p><p class='basic'>Kẻ địch trong pursuit area được coi là đang “in pursuit”. Kẻ địch đang in pursuit được coi là out of play, và không thể bị ảnh hưởng bởi các lá bài của người chơi hoặc hành động của điều tra viên. Tuy nhiên, kẻ địch đang in pursuit có thể quay lại khu vực chơi bằng nhiều khả năng bài khác nhau.</p><p class='basic'><i>(Trong khi kẻ địch đang in pursuit, bỏ qua tất cả các hiệu ứng forced trên những kẻ địch đó. Doom trên kẻ địch đang in pursuit là out of play và không được tính vào doom threshold.)</i></p>"
+    }
+  ],
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X bằng mức darkness hiện tại.",
+      "cultist": "-1. Chữa 1 damage cho điều tra viên của bạn.",
+      "tablet": "-3. Nếu bạn thất bại, tìm kẻ địch đang truy đuổi có chỉ số evade cao nhất. Cho nó spawn tại địa điểm của bạn.",
+      "elderThing": "-4. Nếu bạn thất bại, nhận 1 horror."
+    },
+    "hardExpert": {
+      "skull": "-X. X bằng hai lần mức darkness hiện tại.",
+      "cultist": "-3. Nếu bạn thành công, chữa 1 damage cho điều tra viên của bạn.",
+      "tablet": "-4. Tìm kẻ địch đang truy đuổi có chỉ số evade cao nhất. Cho nó spawn tại địa điểm của bạn.",
+      "elderThing": "-5. Nhận 1 horror."
+    }
+  },
+  "intro": {
+    "label": {
+      "tellTheTruth": "<i>Nói sự thật.</i>",
+      "lie": "<i>Nói dối bà ấy.</i>"
+    },
+    "title": "Scenario: The Twisted Hollow",
+    "intro1": "<p>_Intro 1_: “Đáng lẽ tôi không nên để thằng ngốc đó đi một mình. Tôi thề có ngôi mộ nhỏ bé quý giá của nó, nếu tôi tìm thấy thằng bé đang hái hoa violet và ngâm thơ, tôi sẽ đuổi học nó,” Tiến sĩ Marquez gần như nhổ toẹt những lời đó ra khi bà dẫn bạn đến một trong những nhà kho chứa đồ của Vale. Việc tìm kiếm quanh làng không mang lại kết quả gì: Chỉ có một đống sách và chiếc cặp da của Bertie trong phòng cậu ở nhà trọ. Dường như không ai nhìn thấy cậu từ sáng.</p><p>Giáo sư mở cửa cái nhà kho ọp ẹp và lấy một chiếc đèn bão cũ từ một cái móc sắt. “Tìm dầu đi,” bà nói cộc lốc. Bạn nhắc đến lời cảnh báo của người dân địa phương về việc không nên ra ngoài vào ban đêm, và giáo sư gõ cây gậy của mình lên một thùng dầu rỗng. “Đó càng là lý do để tìm Bertie.”</p><p>Một cái bóng dài đổ xuống cả hai người, và bạn quay lại thì thấy bóng dáng Mẹ Rachel in hằn trên nền hoàng hôn. “Các bạn rời đi quá nhanh sau bữa tối. Có thứ gì tôi có thể giúp các bạn tìm không?”</p><p class='basic'>Các điều tra viên phải quyết định <i>(chọn một)</i>:</p><ul><li>*Nói sự thật*. Tiếp tục đến _Intro 2_.</li><li>*Nói dối bà ấy*. Chuyển đến _Intro 3_.</li></ul>",
+    "intro2": "<p>_Intro 2_: Khi bạn chia sẻ về tình hình nguy cấp, người phụ nữ lớn tuổi gật đầu nghiêm trọng. “Như tôi đã nói khi các bạn đến Vale, chúng tôi không mạo hiểm ra ngoài vào ban đêm. Tuy nhiên, bạn của các bạn có thể sẽ không sống sót qua đêm nay nếu bị bỏ lại một mình.” Bà nhìn chiếc đèn lồng cũ của Tiến sĩ Marquez. “Làm ơn, hãy cầm lấy đèn lồng của tôi. Hãy ở trong ánh sáng, và các bạn sẽ thấy đường đi an toàn hơn nhiều.” Bà dẫn bạn đến bìa rừng khi mặt trời lặn. Không khí trong rừng đặc quánh một cách bất thường, và bạn cảm thấy khó thở, nhưng bạn vẫn đi theo người phụ nữ lớn tuổi. Cuối cùng, Mẹ Rachel dẫn bạn đến một cánh đồng rộng mở và chỉ tay về phía những bóng tối đen ngòm. “Từ đây, các bạn phải tự nắm lấy mạng sống của mình. Người dân Vale sẽ cầu nguyện cho các bạn trở về an toàn.”</p><p>Những ánh sáng mờ ảo nhảy múa phía trên những bông cúc vạn diệp và hoa thạch thảo của đồng cỏ. Mẹ Rachel chỉ vào vực thẳm tối tăm. “Nếu mọi cách đều thất bại, hãy quay lại chỗ những con đom đóm.”</p><ul><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *Mother Rachel đã chỉ đường*.</li><li>Thêm 1 token {'{'}cultist{'}'} vào chaos bag trong suốt phần còn lại của chiến dịch.</li></ul><p class='basic right'>Tiếp tục đến _Setup_.</p>",
+    "intro3": "<p>_Intro 3_: Mẹ Rachel gật gù theo câu chuyện gượng gạo của bạn. “Tôi hiểu. Hãy nhớ rằng Vale ở đây để giúp đỡ. Chúc bạn những điều tốt đẹp nhất trong cuộc khảo sát của mình.” Sau thêm vài câu trò chuyện lịch sự, bà quản mẫu để bạn và Tiến sĩ Marquez lại lục soát nhà kho. Cuối cùng, bạn tìm thấy một chiếc lọ thủy tinh bị mẻ chỉ còn một phần năm lượng dầu. “Chúng ta có thể làm được nếu dè sẻn từng chút một,” vị giáo sư nói. Bạn đi theo ánh sáng mờ ảo của chiếc đèn lồng tiến vào họng của những thân cây xương xẩu hướng tới một con suối yên tĩnh, rồi tiếp tục đi lên và tiến sâu hơn vào bóng tối.</p><p>Cuối cùng, bạn đến một cây cầu sập và những viên đá cuội mọc đầy cỏ dại trong tàn tích của một ngôi làng cũ. Những cái cây trên đầu xào xạc. “Có thứ gì đó ở đó,” Tiến sĩ Marquez giơ cao chiếc đèn lồng của bà. Một đôi mắt nhỏ sáng rực phản chiếu ánh sáng, nhưng nhanh chóng biến mất trong bóng tối mờ mịt.</p><p>“Hãy cẩn thận và đi sát vào nhau. Không thể biết được có thứ gì ở ngoài này đâu.”</p><ul><li>Trong Nhật ký Chiến dịch của bạn, ghi lại các điều tra viên đã lạc lối.</li><li>Thêm 1 token {'{'}elderThing{'}'} vào chaos bag trong phần còn lại của chiến dịch.</li></ul><p class='basic right'>Tiếp tục đến _Setup_.</p>"
+  },
+  "tooltips": {
+    "glimmeringWoods": {
+      "resign": "Mình chắc chắn Bertie vẫn ổn!"
+    }
+  },
+  "setup": {
+    "gatherSets": "Tập hợp tất cả lá bài từ các chồng bài encounter sau: *The First Day*, *The Twisted Hollow*, *The Forest* và *Myconids*. Các chồng bài này được đánh dấu bằng các biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/the-first-day.png' /><img src='{setImgPath}/the-twisted-hollow.png' /><img src='{setImgPath}/the-forest.png' /><img src='{setImgPath}/myconids.png' /></section>",
+    "night": "Đặt lá bài Time Marker <b>Night One</b> vào chơi. Hãy tự tạo con đường của riêng bạn.",
+    "valeLantern": {
+      "checkCampaignLog": "Kiểm tra Nhật ký Chiến dịch của bạn.",
+      "showedTheWay": "*If Mother Rachel showed the way*: Tìm story asset Vale Lantern _có_ trait _Boon_ và đưa nó vào chơi dưới quyền kiểm soát của một điều tra viên, với mặt _Lit_ ngửa lên. Loại bỏ lá Vale Lantern còn lại khỏi trò chơi. Nếu chỉ có 1 điều tra viên, Vale Lantern không chiếm hand slot nào trong scenario này.",
+      "lostThePath": "*If the investigators lost the path*: Tìm story asset Vale Lantern _không có_ trait _Boon_ và đưa nó vào chơi dưới quyền kiểm soát của một điều tra viên, với mặt _Lit_ ngửa lên. Loại bỏ lá Vale Lantern còn lại khỏi trò chơi. Nếu chỉ có 1 điều tra viên, Vale Lantern không chiếm hand slot nào trong scenario này."
+    },
+    "removeLocations": "Để riêng các địa điểm Twisted Hollow và Glimmering Woods ra ngoài khu vực chơi (cả hai đều là mặt đã lật của một địa điểm Western Woods). Sau đó, dựa trên số điều tra viên trong ván, loại bỏ ngẫu nhiên những địa điểm sau khỏi các địa điểm Western Woods đã tập hợp:",
+    "oneOrTwoInvestigators": "Nếu có 1 hoặc 2 điều tra viên, loại bỏ 2 địa điểm khỏi trò chơi.",
+    "threeOrFourInvestigators": "Nếu có 3 hoặc 4 điều tra viên, loại bỏ 1 địa điểm khỏi trò chơi.",
+    "glimmeringWoods": {
+      "checkCampaignLog": "Kiểm tra Nhật ký Chiến dịch của bạn.",
+      "showedTheWay": "*If Mother Rachel showed the way*: Đặt địa điểm Glimmering Woods vào chơi. Mỗi điều tra viên bắt đầu chơi tại Glimmering Woods.",
+      "lostThePath": "*If the investigators lost the path*: Đặt một địa điểm Western Woods ngẫu nhiên chưa được để riêng vào khu vực chơi, bỏ qua mọi hiệu ứng Forced. Mỗi điều tra viên bắt đầu chơi tại địa điểm đó."
+    },
+    "woodsDeck": "Nếu chưa in play, xào địa điểm Glimmering Woods đang để riêng cùng với mỗi địa điểm Western Woods còn lại để tạo thành \"Woods deck\". Rút 4 lá trên cùng của Woods deck và đặt chúng vào chơi ở phía trên, phía dưới, bên phải và bên trái của địa điểm khởi đầu.",
+    "residents": "Kiểm tra Nhật ký Chiến dịch của bạn và tập hợp mỗi story asset từ chồng bài encounter *Residents*. Chồng bài này được đánh dấu bằng biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/residents.png' /></section>",
+    "theoPeters": "Nếu Theo Peters có Relationship Level từ 2 trở lên, để anh ấy riêng ra ngoài khu vực chơi.",
+    "judithPark": "Nếu Judith Park có Relationship Level từ 2 trở lên, để bà ấy riêng ra ngoài khu vực chơi.",
+    "drRosaMarquez": "Đặt Dr. Rosa Marquez dưới quyền điều khiển của một điều tra viên. Trong phần còn lại của kịch bản này, cô ấy không chiếm một ally slot.",
+    "bertieMusgrave": "Để riêng Bertie Musgrave, out of play.",
+    "rest": "Loại bỏ phần còn lại của tập bài encounter <i>Residents</i> khỏi trò chơi.",
+    "backToTheVale": "Để riêng agenda đặc biệt: Back to the Vale!",
+    "darknessLevel": "Đặt 1 resource lên lá bài scenario reference, dưới “Darkness Level.” Trong phần còn lại của kịch bản, số lượng resource dưới “Darkness Level” biểu thị sự trôi qua của thời gian."
+  },
+  "codex": {
+    "judithPark": {
+      "title": "{'{'}codex{'}'} Codex 7: Judith Park",
+      "body": "<h3>@:theFeastOfHemlockVale.theTwistedHollow.codex.judithPark.title </h3><p>“Ăn đạn đi, đồ khốn!” Một giọng nói quen thuộc vang lên từ trong bóng tối. Vài phát súng găm vào cơ thể mềm nhũn, đang lột xác của con gấu. Con gấu nhìn sang phải ngay khi một phát súng khác làm nứt sọ nó. Rít lên đau đớn, nó lao vào bụi rậm về phía âm thanh. Thêm nhiều tiếng súng vang lên. Sau một khoảng thời gian tưởng chừng như vô tận, Judith Park bước ra từ khu rừng, ôm chặt cánh tay đang chảy máu. Bạn vội vàng chạy đến băng bó vết thương, nhưng cô ấy xua tay. “Tôi ổn. Chỉ mừng là bạn không sao.” Judith mỉm cười đắc ý. “Mother Rachel nói bạn có thể cần giúp đỡ. Bà ấy cũng trả tôi hai mươi đô để ra đây.”</p><p class='basic right'>Gây 2 damage cho Judith Park.</p><p class='basic right'>Trong Judith Park’s Notes, ghi lại <i>Judith đã cứu mạng bạn</i>.</p><p class='basic right'>Tiếp tục đến _{'{'}codex{'}'} Codex Σ: The Bear 3_</p>"
+    },
+    "theoPeters": {
+      "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
+      "body": "<h3>@:theFeastOfHemlockVale.theTwistedHollow.codex.theoPeters.title </h3><p>Một loạt pháo nổ bay ra từ trong bóng tối. “Cẩn thận!” một giọng nói quen thuộc hét lên. Con gấu lảo đảo lùi lại bằng hai chân sau khi thêm nhiều pháo nổ tiếp tục bay tới. Theo bước ra từ bóng tối, nắm lấy tay bạn, và chạy vụt khỏi hiện trường. Con gấu gầm rống đâu đó trong bóng tối. “Mother Rachel nói bạn đang tìm Billy trong Western Woods,” Theo nói trong hơi thở gấp gáp. “Và ừ thì, tôi không thể để bạn đi một mình. Nên tôi đã mượn một ít pháo hoa của Simeon.” Bạn đang quá đỗi nhẹ nhõm nên không buồn đính chính với cậu ấy rằng đó là “Bertie” chứ không phải “Billy.”</p><p class='basic right'>Gây 2 horror cho Theo Peters.</p><p class='basic right'>Trong Theo Peters’ Notes, ghi lại <i>Theo đã đánh lạc hướng con Gấu</i>.</p><p class='basic right'>Tiếp tục đến _{'{'}codex{'}'} Codex Σ: The Bear 3_</p>"
+    },
+    "drRosaMarquez": {
+      "label": {
+        "doNotRevealLocation": "Không lật địa điểm nào."
+      },
+      "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
+      "body": "<h3>@:theFeastOfHemlockVale.theTwistedHollow.codex.drRosaMarquez.title </h3><p>Tiến sĩ Marquez tựa vào cây gậy của mình khi bà nghiên cứu một cây linh sam nhựa thơm với những cành cây mọc xoắn ốc. Những đốm sáng lấp lánh trên cây tạo ra thứ ánh sáng mờ ảo; nhìn lên, bạn thấy những điểm sáng màu xanh lam rực rỡ. “Tôi chưa bao giờ thấy thứ gì đẹp đến thế,” vị giáo sư nói, không thể kìm nén sự kinh ngạc của mình. Một lát sau, bà nhìn bạn với ánh mắt sắc lẹm. “Đừng có mà nói với Bertie là tôi đã nói thế, nếu không tôi sẽ nói với Armitage rằng bạn đã chết trong cuộc khảo sát.”</p><p class='basic'>Chọn bất kỳ địa điểm nào đang in play. Bạn có thể reveal địa điểm đó, bỏ qua hiệu ứng <b>Forced</b> của nó.</p>"
+    },
+    "bertieMusgrave": {
+      "label": {
+        "gainClues": "Mỗi điều tra viên nhận 1 manh mối <i>(từ token pool)</i>.",
+        "readyValeLantern": "Ready asset Vale Lantern."
+      },
+      "title": "{'{'}codex{'}'} Codex Ω: Bertie Musgrave",
+      "body": "<h3>@:theFeastOfHemlockVale.theTwistedHollow.codex.bertieMusgrave.title </h3><p>“Thật là một tình thế nan giải,” Bertie lẩm bẩm. Chàng trai trẻ lóng ngóng lấy cuốn sổ tay của mình ra và bắt đầu phác thảo. Khi bạn bảo anh ta rằng đây không phải là lúc hay nơi để nghiên cứu tự nhiên, anh ta gật đầu. “Ồ không, tôi xin lỗi. Nó là một tấm bản đồ. Dù không được chi tiết cho lắm—” tay anh ta run rẩy khi vẽ nét cuối cùng. “Tôi đã từng ở đây. Lối này,” anh ta chỉ tay xuyên qua những tán cây.</p><p class='basic'>Hoặc (chọn một): Mỗi điều tra viên nhận 1 clue <i>(từ token pool)</i>, hoặc ready asset Vale Lantern.</p>"
+    },
+    "sigma": {
+      "label": {
+        "physical": "Chịu 1 physical trauma và nhận 1 direct damage.",
+        "mental": "Chịu 1 mental trauma và nhận 1 direct horror."
+      },
+      "title": "{'{'}codex{'}'} Codex Σ: The Bear",
+      "body": "<p><b>Chọn điều tra viên dũng cảm nhất để đọc đoạn sau:</b></p>",
+      "theBear1": "<h3>@:theFeastOfHemlockVale.theTwistedHollow.codex.sigma.title </h3><p>_The Bear 1_: Bạn tìm thấy một mảnh vải tweed rách vướng trên một cành cây, chắc chắn là của Bertie. Một tiếng ho khò khè, khốn khổ vang lên phía sau bạn, kèm theo mùi thối rữa. Bạn quay lại. Một con gấu to lớn phát sáng như lửa ma trơi trong bóng tối. Một cụm nấm lấp lánh trên lưng sinh vật này thắp sáng sự u ám bằng một thứ ánh sáng kỳ quái. Sinh vật đó gầm lên, rồi lao tới.</p><p class='basic'>Kiểm tra các lá bài để riêng.<p><ul><li>Nếu Judith Park hoặc Theo Peters đang được để riêng, chọn một trong hai người để đưa vào chơi dưới quyền kiểm soát của bạn và giải quyết ngay mục codex của họ.</li><li>Nếu không, tiếp tục đến _The Bear 2_.</li></ul>",
+      "theBear2": "<h3>@:theFeastOfHemlockVale.theTwistedHollow.codex.sigma.title </h3><p>_The Bear 2_: Trước khi bạn kịp phản ứng, con gấu vung những móng vuốt sắc như dao cạo tát bạn. Hơi thở hôi thối, khò khè của nó tràn ngập các giác quan khi nó đè một bàn chân khổng lồ lên ngực bạn. Tầm nhìn của bạn bắt đầu mờ đi khi sức nặng của thứ đó đe dọa bẻ gãy lồng ngực bạn.</p><p class='basic'>Bạn phải (*chọn một*), rồi đọc tiếp:</p><ul><li>Chịu 1 physical trauma và nhận 1 direct damage.</li><li>Chịu 1 mental trauma và nhận 1 direct horror.</li></ul><p>Đột nhiên, một tiếng súng vang lên, làm nứt hộp sọ lộ ra của con gấu. Nó rên rỉ đau đớn khi hai phát súng nữa găm vào cơ thể mềm nhũn, đang lột xác của nó. Sinh vật đó phát ra một tiếng gầm gừ thảm hại, rồi tan biến vào bóng tối. Bạn nghe thấy giọng nói của Mother Rachel từ đâu đó gần đây: “Chạy đi!”</p><p class='basic right'>Trong Mother Rachel’s Notes, ghi lại <i>Mother Rachel đã can thiệp</i>.</p><p class='basic right'>Tiếp tục đến _The Bear 3_.</p>",
+      "theBear3": "<h3>@:theFeastOfHemlockVale.theTwistedHollow.codex.sigma.title </h3><p>_The Bear 3_: Bạn chạy trốn khỏi hiện trường vào một lùm cây đang chết khô và giơ chiếc đèn lồng lên, chờ đợi nhìn thấy đôi mắt xanh lam ma quái của con gấu phản chiếu lại trong bóng tối. Khu rừng tĩnh lặng như tờ khi bạn cố gắng định hướng lại.</p><ul><li>Di chuyển mỗi kẻ địch unengaged vào pursuit area.</li><li>Spawn kẻ địch Ursine Hybrid tại vị trí của bạn, exhausted, và gây 1 damage cho nó.</li><li>Nếu nó không nằm dưới quyền kiểm soát của một điều tra viên, chọn một điều tra viên để nắm quyền kiểm soát Vale Lantern.</li><li>Để riêng mỗi vị trí _Dark_ trống để tạo lại chồng bài Woods. Để làm điều này, thực hiện các bước sau:<ul><li>Xào vị trí Twisted Hollow được để riêng cùng với 3 vị trí Western Woods ngẫu nhiên với nhau để tạo thành 4 vị trí dưới cùng của chồng bài Woods, mặt Western Woods ngửa lên.</li><li>Sau đó, đặt tất cả các vị trí Western Woods khác lên trên theo một thứ tự ngẫu nhiên. Tất cả các lá bài trong chồng bài Woods chỉ nên hiển thị mặt Western Woods, để các điều tra viên không biết lá nào là lá nào.</li></ul></li><li>Đặt các vị trí từ trên cùng của chồng bài Woods vào chơi ở phía trên, phía dưới, và bên trái, bên phải vị trí của các điều tra viên.</li></ul>"
+    }
+  },
+  "label": {
+    "deepiningDark": {
+      "pursuitEnemy": "Rút một kẻ địch đang truy đuổi có chỉ số evade cao nhất"
+    },
+    "deepShadows": {
+      "lantern": "Điều tra viên đang kiểm soát Vale Lantern lật nó sang mặt _Unlit_ và đặt nó tại một địa điểm kết nối."
+    },
+    "lurkingFear": {
+      "pursuit": "Tìm kẻ địch đang truy đuổi có chỉ số fight cao nhất và cho nó spawn trong trạng thái engage với bạn."
+    },
+    "stolenLight": {
+      "lantern": "Lật Vale Lantern sang mặt _Unlit_. Đặt Vale Lantern tại địa điểm trống xa tất cả các điều tra viên nhất."
+    }
+  },
+  "resolutions": {
+    "xp": {
+      "bonus": {
+        "insight": "Đã hiểu thêm về hệ sinh thái độc đáo của Hemlock Isle.",
+        "bertie": "Đã resign khi đang kiểm soát Bertie Musgrave."
+      }
+    },
+    "noResolution": {
+      "title": "Không có Resolution",
+      "body": "<p>_Nếu không đạt được resolution nào (mỗi điều tra viên đều đã resign hoặc bị đánh bại)_: Những cành cây dài, gầy guộc vươn ra như những bàn tay đang chộp lấy từ tán lá dày phía trên. Bạn thấy choáng váng khi những tiếng thì thầm kỳ lạ vọng lên từ sâu trong bóng tối xung quanh. Dồn hết sức lực, bạn loạng choạng đến bờ một hồ nước đen. Vầng trăng đang tròn dần phản chiếu hoàn hảo trên mặt nước, bị bóp méo bởi những dải mỏng nhờn nhợt ánh cầu vồng với một sắc màu kỳ lạ. Bên kia hồ, một bóng người hiện rõ trong màn sương. Bạn gọi với về phía nó, và nó chậm rãi tiến về phía bạn, trên mặt nước. Khi nó đến gần, tất cả những gì bạn thấy trên gương mặt nó là một nụ cười toác rộng, cứng đờ.</p><p>“Lạy Chúa, xin hãy tỉnh dậy!” Tiến sĩ Marquez lay bạn tỉnh khỏi cơn ác mộng. Sự lo lắng của cô nhanh chóng chuyển sang bực bội khi bạn mở mắt. “Tôi rất vui vì bạn đã tỉnh. Tôi chưa chuẩn bị tinh thần để giải quyết đống giấy tờ nếu chúng ta mất cả bạn nữa đâu.” Bạn đang ở một cánh đồng đầy hoa ở bìa rừng. Khi bạn hỏi về Bertie, cô vén một lọn tóc xõa ra sau tai và nhìn lên bình minh đang ló rạng. “Cậu ấy đi rồi. Tôi đã để mất cậu ấy.”</p><ul><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *Bertie đã lạc trong rừng*.</li><li>Chuyển đến _Resolution 3_.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Những cành cây dài, khẳng khiu vươn ra như những bàn tay chực vồ lấy khi bạn bước ra khỏi khu rừng, tiến vào một đồng cỏ rực rỡ với những bông hoa dại màu xanh lấp lánh. Khung cảnh thảm hoa xanh trắng rực rỡ gần như làm bạn nín thở sau bóng tối ngột ngạt. Có lẽ do tâm trí bạn đã mệt mỏi, nhưng những bụi thạch nam và những bông hoa dường như đang phập phồng. “Nhìn kìa,” Bertie chỉ tay run rẩy. Hàng tá thân cây phát sáng nhô lên như những chiếc đèn lơ lửng trên đồng cỏ, lấp lánh dưới ánh trăng. “Tôi có cảm giác như chúng ta đang bước đi giữa vũ trụ. Rằng mỗi chúng ta là một vị thần nhỏ bé.” Cậu ta hái một nụ hoa phát sáng từ cuống của nó. “Và mỗi nụ hoa này, là một ngôi sao thậm chí còn nhỏ hơn.”</p><p>Tiến sĩ Marquez hất bông hoa khỏi tay cậu. “Chính những lời thơ thẩn vớ vẩn đó đã khiến cậu bị lạc trong rừng đấy. Chúng tôi đã phải liều mạng vì cậu! Cậu sẽ may mắn lắm nếu tôi không đưa sự cố này vào báo cáo khảo sát.” Bertie cúi đầu xấu hổ khi vị giáo sư liệt kê một chuỗi những rắc rối và hành vi sai trái. Nhưng dù vậy, bạn không thể không nhận ra sự quan tâm trong giọng nói của Tiến sĩ Marquez khi cô mắng mỏ trợ lý của mình. Khi bạn trở về Vale, bầu trời chuyển mình với bình minh đang ló rạng.</p><ul><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *Bertie đã được giải cứu*.</li><li>Chuyển đến _Resolution 3_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: Tán cây bủa vây lấy bạn, đầy rẫy vô số con mắt và tiếng đập cánh khó chịu của côn trùng. Bạn bước ra một khoảng trống nhỏ ngập ánh trăng và nghe thấy một tiếng khục khặc quen thuộc: con gấu xuất hiện từ bóng tối phía sau bạn, gầm gừ. Bertie nhìn bạn với đôi mắt mở to, trong trẻo. “Đây là lỗi của tôi. Tôi rất xin lỗi vì đã gây ra cho bạn nhiều rắc rối đến vậy. Hãy nói tốt cho tôi khi trở về Vale nhé?” Trước khi bạn kịp can thiệp, Bertie giật lấy chiếc đèn lồng khỏi tay bạn và hét vào bóng tối: “Lại đây, đồ gớm ghiếc!”</p><p>Con gấu gầm lên đáp trả. Những bào tử phát sáng màu xanh lam rải rác trong bóng tối xung quanh nó, bao phủ sinh vật này trong ánh sáng xanh nhạt. Bertie hét lên một tiếng dũng cảm đáp lại và lao sầm sập về phía nó. Nhận ra sự hy sinh của chàng trai trẻ, bạn lợi dụng sự phân tâm này để lẻn đi và đến nơi an toàn.</p><ul><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *Bertie đã lạc trong rừng*.</li><li>Tiếp tục đến _Resolution 3_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: “Khảo sát Miskatonic, tháng 6 năm 1926. Các thành viên Marquez, Musgrave, và cộng sự. Một chuyến thâm nhập ngoài kế hoạch vào Western Woods, vào ban đêm. Hệ động thực vật địa phương đã tiến hóa các mô hình hành vi mang tính chuyên biệt cao sau khi trời tối, có khả năng bị chi phối bởi nhịp sinh học cực đoan và tập tính săn mồi hung hãn. Một môi trường cực kỳ độc hại. Đã xác định được một dạng cộng sinh chưa từng được biết đến trước đây với một chủng nấm ký sinh mới. Cần quan sát thêm.”</p><ul><li>Mỗi điều tra viên nhận 1 bonus experience khi họ hiểu thêm về hệ sinh thái độc đáo của Hemlock Isle.<ul><li>Mỗi điều tra viên nhận thêm 1 điểm kinh nghiệm nếu có điều tra viên đã resign khi đang kiểm soát Bertie Musgrave.</li></ul></li><li>Mỗi điều tra viên nhận kinh nghiệm bằng với giá trị Victory X của mỗi lá bài trong victory display. <b>Mỗi điều tra viên bây giờ có thể tiêu kinh nghiệm được ghi dưới mục “Unspent Experience” trong Nhật ký Chiến dịch của bạn.</b></li><li>Cập nhật Nhật ký Chiến dịch của bạn.<ul><li>Nếu Ursine Hybrid nằm trong victory display, ghi lại *con gấu đã bị thương*.</li><li>Trong phần “Areas Surveyed” của Nhật ký Chiến dịch, đánh dấu <i>Western Woods</i>.</li></ul></li><li>Tiếp tục đến _Prelude: Dawn of the Second Day_.</li></ul>"
+    },
+    "standalone": {
+      "title": "Chế độ Standalone",
+      "body": "<p>_Chỉ dành cho Chế độ Standalone._ Chưa bao giờ có đường ra khỏi khu rừng này. Bóng tối khép lại trên đầu bạn, và thứ gì đang bước đi giữa những hàng cây kia có cả một đời để chờ đợi.</p><p>Mức darkness là {darkness}. Giữa các bạn, đã thu thập được {clues} clue.</p>"
+    }
+  },
+  "poisonedMarsh": {
+    "label": {
+      "assets": "Gây 1 damage cho mỗi asset của bạn"
+    }
+  }
+}

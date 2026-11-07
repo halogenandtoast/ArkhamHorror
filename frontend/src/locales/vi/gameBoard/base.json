@@ -1,0 +1,27 @@
+{
+  "applyAll": "Tất cả",
+  "skillTestTitle": "Skill Test",
+  "toBeCommitted": "Sẽ được commit",
+  "committedCards": "Bài đã commit",
+  "waitingForMorePlayers": "Đang chờ thêm người chơi",
+  "showInviteLink": "Mời họ bằng URL này:",
+  "gameOver": "Kết thúc trò chơi",
+  "campaignWon": "Chiến dịch đã thắng",
+  "campaignLost": "Chiến dịch đã thua",
+  "scenarioWon": "Scenario đã thắng",
+  "scenarioLost": "Scenario đã thua",
+  "campaignWonUncertain": "Chiến dịch đã thắng…?",
+  "outcomeUncertain": "Campaign Guide in kết cục này là “Các điều tra viên thắng chiến dịch…?” và không nói thêm gì.",
+  "outcomeNote": {
+    "neverSeenInTheWakingWorld": "…và không bao giờ còn được thấy hay nghe tin ở thế giới thức tỉnh nữa.",
+    "neverSeenOrHeardFromAgain": "…nhưng không bao giờ còn được thấy hay nghe tin nữa."
+  },
+  "watchReplay": "Xem lại",
+  "submit": "Gửi",
+  "cancel": "Hủy",
+  "close": "Đóng",
+  "outOfSyncHint": "Ván chơi của bạn bị lệch đồng bộ, đang thử kết nối lại...",
+  "error": "Lỗi",
+  "errorContent": "Nhiều khả năng đây là lỗi, vui lòng gửi báo cáo lỗi.",
+  "fileBug": "Báo lỗi"
+}

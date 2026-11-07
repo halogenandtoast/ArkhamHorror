@@ -15,6 +15,11 @@ export interface ArkhamDBCard {
   doom?: number
   stage?: number
   back_flavor?: string
+  // Locations: printed on the revealed side. `clues_fixed` means the clue value is not per investigator.
+  shroud?: number | null
+  clues?: number | null
+  clues_fixed?: boolean
+  victory?: number | null
   faction_name: string
   faction2_name?: string
   faction3_name?: string

@@ -1,0 +1,77 @@
+{
+  "closeLog": "Đóng nhật ký",
+  "viewLog": "Xem nhật ký",
+  "campaign": "Chiến dịch",
+  "viewRemovedFromPlay": "Đã loại khỏi ván",
+  "sectionPanels": "Bảng",
+  "sectionLayout": "Bố cục",
+  "sectionPreferences": "Tùy chọn",
+  "sectionTools": "Công cụ",
+  "sectionExports": "Xuất",
+  "view": "Xem",
+  "shortcuts": "Phím tắt",
+  "shortcutsTitle": "Phím tắt bàn phím",
+  "viewSettings": "Cài đặt",
+  "viewHistory": "Lịch sử",
+  "viewSettingTitle": "Cài đặt của {investigator}",
+  "playerSettings": "Cài đặt người chơi",
+  "viewSettingSkipTriggersTitle": "Bỏ qua kích hoạt",
+  "viewSettingAutopilotTitle": "Tự động",
+  "viewSettingConfirmCardPlaysTitle": "Xác nhận khi chơi bài",
+  "viewSettingConfirmCardPlays": "Hỏi trước khi chơi một lá bài từ tay.",
+  "viewChaosBag": "Túi hỗn loạn",
+  "chaosBag": "Túi hỗn loạn",
+  "settings": {
+    "tabs": {
+      "table": "Bàn chơi",
+      "pacing": "Nhịp độ",
+      "soundMotion": "Âm thanh & chuyển động",
+      "cards": "Thẻ bài",
+      "shared": "Chung"
+    },
+    "scope": {
+      "you": "bạn",
+      "browser": "trình duyệt này",
+      "game": "ván này",
+      "everyone": "mọi người"
+    },
+    "default": "Mặc định",
+    "soundsTitle": "Âm thanh",
+    "sounds": "Phát hiệu ứng âm thanh trong trình duyệt này.",
+    "extraAnimationsTitle": "Hiệu ứng bổ sung",
+    "extraAnimations": "Hiệu ứng trang trí như địa điểm cháy và tia Cosmic Emissary. Không ảnh hưởng đến thông tin cần để chơi.",
+    "narration": {
+      "title": "Thuyết minh cốt truyện (TTS)",
+      "description": "Đọc to phần mở đầu và kết thúc của kịch bản khi chúng xuất hiện. Mọi người trên bàn cùng nghe, mỗi người theo ngôn ngữ thuyết minh của mình. Các bước chuẩn bị và ghi chép nhật ký chiến dịch không được đọc.",
+      "language": "Ngôn ngữ thuyết minh",
+      "en": "English",
+      "vi": "Tiếng Việt",
+      "volume": "Âm lượng",
+      "play": "Phát thuyết minh",
+      "stop": "Dừng thuyết minh"
+    },
+    "music": {
+      "title": "Nhạc nền kinh dị",
+      "description": "Tiếng ù trầm, gió và thỉnh thoảng có tiếng chuông xa hay nhịp tim dưới mỗi kịch bản. Tạo trực tiếp trong trình duyệt, không cần tải về; nhỏ lại khi đang đọc truyện. Công tắc Âm thanh cũng tắt nó. Mặc định tắt."
+    },
+    "sizes": {
+      "locationTitle": "Cỡ nút địa điểm",
+      "locationDescription": "Phóng to hoặc thu nhỏ nút địa điểm và bảng tên phòng trên bản đồ và trong cảnh.",
+      "figureTitle": "Cỡ nhân vật",
+      "figureDescription": "Phóng to hoặc thu nhỏ hình nhà điều tra và quái vật trên bản đồ và trong cảnh.",
+      "reset": "Đặt lại"
+    }
+  },
+  "viewSettingAutopilot": "Tự trả lời các câu hỏi không có gì để quyết định (rút lá encounter, áp dụng kết quả bài thử, lựa chọn bắt buộc duy nhất) để các phase tự chạy. Những quyết định thật sự vẫn chờ bạn.",
+  "viewSettingWarnAttacksOfOpportunityTitle": "Cảnh báo Attack of Opportunity",
+  "viewSettingWarnAttacksOfOpportunity": "Hỏi lại trước một hành động có thể kích hoạt attack of opportunity từ kẻ địch ready đang giao chiến với bạn.",
+  "actionConfirm": {
+    "play": "Chơi {card}?",
+    "action": "Thực hiện hành động này?",
+    "attackOfOpportunity": "{enemies} đang giao chiến với bạn và có thể thực hiện attack of opportunity. | {enemies} đang giao chiến với bạn và mỗi con có thể thực hiện attack of opportunity."
+  },
+  "autopilotPaused": "Tự động trả lời đã tạm dừng sau nhiều câu trả lời tự động liên tiếp. Hãy trả lời câu hỏi tiếp theo để tiếp tục.",
+  "debugAdvanceAct": "Advance Act {step} (deck {deck})",
+  "debugAdvanceAgenda": "Advance Agenda {step} (deck {deck})",
+  "debugAdvanceFailed": "Không thể advance scenario."
+}

@@ -6,13 +6,22 @@ import ts from 'typescript'
 // locationGraph.ts is import-free on purpose so it can be loaded here without the Vue toolchain.
 const source = readFileSync(new URL('../src/arkham/locationGraph.ts', import.meta.url), 'utf8')
 const js = ts.transpile(source, { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ES2022 })
-const { locationLinks, shortestPath, locationRoster } = await import(
+const { locationLinks, locationLinkDirection, shortestPath, locationRoster } = await import(
   'data:text/javascript;base64,' + Buffer.from(js).toString('base64')
 )
 
 const loc = (id, connectedLocations = [], extra = {}) =>
   ({ id, connectedLocations, investigators: [], enemies: [], ...extra })
 const world = (...ls) => Object.fromEntries(ls.map(l => [l.id, l]))
+
+test('connection arrows show the actual direction regardless of endpoint order', () => {
+  const a = loc('a', ['b'])
+  const b = loc('b')
+  assert.equal(locationLinkDirection(a, b), 'forward')
+  assert.equal(locationLinkDirection(b, a), 'backward')
+  assert.equal(locationLinkDirection(a, loc('b', ['a'])), 'both')
+  assert.equal(locationLinkDirection(b, loc('c')), null)
+})
 
 test('links are undirected and deduplicated', () => {
   const g = world(loc('a', ['b']), loc('b', ['a', 'c']), loc('c'))
@@ -61,9 +70,28 @@ test('roster lists investigators and enemies at a location', () => {
   assert.deepEqual(locationRoster(g, 'nope'), { investigators: [], enemies: [] })
 })
 
-const { gridPositions, autoPositions, mapPositions } = await import(
+const { gridPositions, autoPositions, mapPositions, mineDescentPositions, mineDescentPassage } = await import(
   'data:text/javascript;base64,' + Buffer.from(js).toString('base64')
 )
+
+test('the mine entrance uses painted chamber positions even when the grid has extra columns', () => {
+  const g = world(
+    loc('station', [], { label: 'pos0501' }),
+    loc('random-cave', [], { label: 'pos0101' }),
+    loc('off-grid'),
+  )
+  const fallback = mapPositions(g, ['posn0201 posn0101 pos0001 pos0101 pos0201 pos0301 pos0401 pos0501'])
+  assert.deepEqual(mineDescentPositions(g, fallback), {
+    station: [85, 66],
+    'random-cave': [14, 66],
+    'off-grid': fallback['off-grid'],
+  })
+})
+
+test('the mine passage anchor is the same for either direction', () => {
+  assert.deepEqual(mineDescentPassage('pos0201', 'pos0101'), [17, 47])
+  assert.equal(mineDescentPassage('pos0101', 'pos0301'), undefined)
+})
 
 test('grid layout centres each label in its cell, as percentages', () => {
   const p = gridPositions(['a b', 'c .'])

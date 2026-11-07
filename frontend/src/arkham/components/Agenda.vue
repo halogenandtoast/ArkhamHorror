@@ -375,7 +375,7 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
         <!-- A flipped agenda has normally advanced and is on its way out, so its
              pool is hidden. Some backs stay in play and keep taking doom, so
              show the pool whenever there is doom to show. -->
-        <div class="pool" v-if="!agenda.flipped || agenda.doom > 0">
+        <div class="pool" v-if="!agenda.flipped || agenda.doom > 0" :data-fx-target="`agenda-${id}`">
           <template v-if="debug.active">
             <button @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'RemoveTokens_', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 1]}})">-</button>
           </template>

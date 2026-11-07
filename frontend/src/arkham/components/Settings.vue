@@ -10,7 +10,7 @@ import { gameLocalStorageKey, getGameLocalStorageItem, removeGameLocalStorageIte
 import campaignJSON from '@/arkham/data/campaigns.json'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { useSettingsFocus } from '@/composable/settingsFocus'
-import { useSettings, type DrawSpotlightMode } from '@/stores/settings'
+import { useSettings, MIN_SCALE, MAX_SCALE, type DrawSpotlightMode } from '@/stores/settings'
 import { keybindingProfile, setKeybindingProfile, type KeybindingProfile } from '@/arkham/keybindings'
 import CardOptionsSettings from '@/arkham/components/CardOptionsSettings.vue'
 import ScopedSetting from '@/arkham/components/ScopedSetting.vue'
@@ -324,6 +324,34 @@ onBeforeUnmount(() => {
         v-show="activeTab === 'table'"
       >
         <div class="toggle-list">
+          <div class="toggle-row">
+            <div class="toggle-text">
+              <div class="toggle-name">{{$t('gameBar.settings.sizes.locationTitle')}}</div>
+              <div class="toggle-desc">{{$t('gameBar.settings.sizes.locationDescription')}}</div>
+              <label class="toggle-desc narration-volume">
+                {{ Math.round(settings.locationScale * 100) }}%
+                <input type="range" :min="MIN_SCALE" :max="MAX_SCALE" step="0.05" :value="settings.locationScale"
+                  @input="settings.setLocationScale(Number(($event.target as HTMLInputElement).value))" />
+                <button type="button" @click="settings.setLocationScale(1)">{{$t('gameBar.settings.sizes.reset')}}</button>
+              </label>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.you')}}</div>
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-text">
+              <div class="toggle-name">{{$t('gameBar.settings.sizes.figureTitle')}}</div>
+              <div class="toggle-desc">{{$t('gameBar.settings.sizes.figureDescription')}}</div>
+              <label class="toggle-desc narration-volume">
+                {{ Math.round(settings.figureScale * 100) }}%
+                <input type="range" :min="MIN_SCALE" :max="MAX_SCALE" step="0.05" :value="settings.figureScale"
+                  @input="settings.setFigureScale(Number(($event.target as HTMLInputElement).value))" />
+                <button type="button" @click="settings.setFigureScale(1)">{{$t('gameBar.settings.sizes.reset')}}</button>
+              </label>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.you')}}</div>
+            </div>
+          </div>
+
           <div class="toggle-row" v-if="canShowOtherHands">
             <div class="toggle-text">
               <div class="toggle-name">{{$t('gameBar.viewSettingShowOtherPlayersHandsTitle')}}</div>
@@ -407,6 +435,86 @@ onBeforeUnmount(() => {
 
           <div class="toggle-row">
             <div class="toggle-text">
+              <div class="toggle-name">{{$t('gameBar.viewSettingAutopilotTitle')}}</div>
+              <div class="toggle-desc">{{$t('gameBar.viewSettingAutopilot')}}</div>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.you')}}</div>
+            </div>
+            <div class="segmented toggle-control">
+              <input type="radio" id="opt-autopilot-on" name="opt-autopilot" :checked="settings.autopilot" @change="settings.setAutopilot(true)" />
+              <label for="opt-autopilot-on">{{ $t('On') }}</label>
+              <input type="radio" id="opt-autopilot-off" name="opt-autopilot" :checked="!settings.autopilot" @change="settings.setAutopilot(false)" />
+              <label for="opt-autopilot-off">{{ $t('Off') }}</label>
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-text">
+              <div class="toggle-name">{{$t('gameBar.viewSettingCombatFxTitle')}}</div>
+              <div class="toggle-desc">{{$t('gameBar.viewSettingCombatFx')}}</div>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.you')}}</div>
+            </div>
+            <div class="segmented toggle-control">
+              <input type="radio" id="opt-combatFx-on" name="opt-combatFx" :checked="settings.combatFx" @change="settings.setCombatFx(true)" />
+              <label for="opt-combatFx-on">{{ $t('On') }}</label>
+              <input type="radio" id="opt-combatFx-off" name="opt-combatFx" :checked="!settings.combatFx" @change="settings.setCombatFx(false)" />
+              <label for="opt-combatFx-off">{{ $t('Off') }}</label>
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-text">
+              <div class="toggle-name">{{$t('gameBar.viewSettingConfirmCardPlaysTitle')}}</div>
+              <div class="toggle-desc">{{$t('gameBar.viewSettingConfirmCardPlays')}}</div>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.you')}}</div>
+            </div>
+            <div class="segmented toggle-control">
+              <input type="radio" id="opt-confirm-plays-on" name="opt-confirm-plays" :checked="settings.confirmCardPlays" @change="settings.setConfirmCardPlays(true)" />
+              <label for="opt-confirm-plays-on">{{ $t('On') }}</label>
+              <input type="radio" id="opt-confirm-plays-off" name="opt-confirm-plays" :checked="!settings.confirmCardPlays" @change="settings.setConfirmCardPlays(false)" />
+              <label for="opt-confirm-plays-off">{{ $t('Off') }}</label>
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-text">
+              <div class="toggle-name">{{$t('gameBar.viewSettingWarnAttacksOfOpportunityTitle')}}</div>
+              <div class="toggle-desc">{{$t('gameBar.viewSettingWarnAttacksOfOpportunity')}}</div>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.you')}}</div>
+            </div>
+            <div class="segmented toggle-control">
+              <input type="radio" id="opt-warn-aoo-on" name="opt-warn-aoo" :checked="settings.warnAttacksOfOpportunity" @change="settings.setWarnAttacksOfOpportunity(true)" />
+              <label for="opt-warn-aoo-on">{{ $t('On') }}</label>
+              <input type="radio" id="opt-warn-aoo-off" name="opt-warn-aoo" :checked="!settings.warnAttacksOfOpportunity" @change="settings.setWarnAttacksOfOpportunity(false)" />
+              <label for="opt-warn-aoo-off">{{ $t('Off') }}</label>
+            </div>
+          </div>
+
+          <ScopedSetting
+            :ref="setSettingRef('drawSpotlight')"
+            settingKey="drawSpotlight"
+            :name="$t('gameBar.settings.drawSpotlightTitle')"
+            :description="$t('gameBar.settings.drawSpotlight')"
+            :options="drawSpotlightOptions"
+            :global="drawSpotlightGlobal"
+            :override="drawSpotlightOverrideValue"
+            :highlighted="highlightedSetting === 'drawSpotlight'"
+            @update:global="drawSpotlightGlobal = $event"
+            @update:override="drawSpotlightOverrideValue = $event"
+          />
+        </div>
+      </section>
+
+      <!-- Noise and movement. Nothing here carries information you need to play. -->
+      <section
+        class="settings-section"
+        role="tabpanel"
+        id="settings-panel-soundMotion"
+        aria-labelledby="settings-tab-soundMotion"
+        v-show="activeTab === 'soundMotion'"
+      >
+        <div class="toggle-list">
+          <div class="toggle-row">
+            <div class="toggle-text">
               <div class="toggle-name">{{$t('gameBar.settings.narration.title')}}</div>
               <div class="toggle-desc">{{$t('gameBar.settings.narration.description')}}</div>
               <div class="toggle-scope">{{$t('gameBar.settings.scope.you')}}</div>
@@ -467,30 +575,6 @@ onBeforeUnmount(() => {
             </div>
           </div>
 
-          <ScopedSetting
-            :ref="setSettingRef('drawSpotlight')"
-            settingKey="drawSpotlight"
-            :name="$t('gameBar.settings.drawSpotlightTitle')"
-            :description="$t('gameBar.settings.drawSpotlight')"
-            :options="drawSpotlightOptions"
-            :global="drawSpotlightGlobal"
-            :override="drawSpotlightOverrideValue"
-            :highlighted="highlightedSetting === 'drawSpotlight'"
-            @update:global="drawSpotlightGlobal = $event"
-            @update:override="drawSpotlightOverrideValue = $event"
-          />
-        </div>
-      </section>
-
-      <!-- Noise and movement. Nothing here carries information you need to play. -->
-      <section
-        class="settings-section"
-        role="tabpanel"
-        id="settings-panel-soundMotion"
-        aria-labelledby="settings-tab-soundMotion"
-        v-show="activeTab === 'soundMotion'"
-      >
-        <div class="toggle-list">
           <div class="toggle-row">
             <div class="toggle-text">
               <div class="toggle-name">{{$t('gameBar.settings.soundsTitle')}}</div>
@@ -775,6 +859,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 8px;
   input { flex: 1; max-width: 160px; }
+}
 
 /* Grow past 150px when the labels need it ("Default", "Chapter 1", …) rather
    than letting the segments clip or wrap. */

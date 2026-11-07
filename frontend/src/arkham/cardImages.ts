@@ -9,6 +9,7 @@ import {
 } from '@/arkham/customCards'
 import type { CardDef } from '@/arkham/types/CardDef'
 import type { Game } from '@/arkham/types/Game'
+import type { Investigator } from '@/arkham/types/Investigator'
 import type { Source } from '@/arkham/types/Source'
 
 export function cardArt(cardCode: string, suffix: string = ''): string {
@@ -17,6 +18,23 @@ export function cardArt(cardCode: string, suffix: string = ''): string {
 
 export function cardImage(cardCode: string, suffix: string = ''): string {
   return cardImg(cardArt(cardCode, suffix))
+}
+
+export function investigatorCardArt(investigator: Investigator): string {
+  switch (investigator.form.tag) {
+    case 'YithianForm': return '04244'
+    case 'HomunculusForm': return '11068b'
+    case 'ShatteredForm': return '10661'
+    case 'TransfiguredForm': return cardArt(investigator.form.contents)
+    case 'RegularForm': {
+      const mutated = investigator.mutated ? `_${investigator.mutated}` : ''
+      const isLola = ['c03006', 'c90087'].includes(investigator.cardCode)
+      const classVariant = isLola && investigator.meta && investigator.meta !== 'Neutral'
+        ? `_${investigator.meta}`
+        : ''
+      return cardArt(investigator.art, `${classVariant}${mutated}`)
+    }
+  }
 }
 
 // A handful of acts and agendas end their id in a letter that disambiguates two

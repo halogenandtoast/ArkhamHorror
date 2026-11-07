@@ -1,0 +1,166 @@
+{
+  "specialRules": [
+    {
+      "title": "Kẻ địch-Địa điểm",
+      "body": "<p class='basic'>Màn chơi này giới thiệu một loại bài mới: enemy-location. Một enemy-location vừa là một kẻ địch vừa là một vị trí, và kẻ địch đó được coi là đang ở tại vị trí đó. Các điều tra viên có thể chiến đấu, lẩn tránh, và điều tra các enemy-location.</p><ul><li>Các enemy-location không thể bị di chuyển bởi hiệu ứng bài.</li><li>Khi được hướng dẫn lật một vị trí sang mặt enemy-location của nó hoặc ngược lại, giữ nguyên tất cả điều tra viên, kẻ địch, attachment, và token trên vị trí đó.</li><li>Các vị trí có seal trên đó được coi là “sealed” và không thể bị lật sang mặt enemy-location của chúng bởi kiểm tra predation.<ul><li>Một vị trí unsealed là một vị trí không có seal nào trên đó.</li></ul></li><li>Khi một enemy-location bị đánh bại, thêm nó vào victory display, để lại một khoảng trống. Sau đó, đồng thời trượt mỗi vị trí nằm phía trên nó trong cùng cột xuống một tầng để lấp đầy khoảng trống đó. Đặt mỗi điều tra viên, story asset, và kẻ địch đang ở tại enemy-location bị đánh bại vào vị trí mới được di chuyển đến.<ul><li>Nếu không có vị trí nào phía trên khoảng trống trong cột của nó, chọn một vị trí liền kề với khoảng trống và đặt mỗi điều tra viên, story asset, và kẻ địch vào vị trí đã chọn.</li><li>Nếu toàn bộ cột giữa bị loại bỏ, trượt toàn bộ cột trái sang phải một bước, sao cho hai cột còn lại liền kề nhau. (Chúng vẫn lần lượt là cột trái và cột phải; không có cột giữa.)</li></ul></li></ul>"
+    }
+  ],
+  "label": {
+    "parlor": {
+      "testForAdditionalDamage": "Kiểm tra {'{'}intellect{'}'} (4) để gây thêm 1 damage"
+    }
+  },
+  "cost": {
+    "removeSeal": "Loại bỏ một seal khỏi địa điểm của bạn"
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X bằng số tầng hiện tại của bạn (tối thiểu là 1).",
+      "cultist": "-1. Nếu địa điểm của bạn là một kẻ địch, hãy exhaust nó.",
+      "tablet": "-3. Nếu bạn thất bại, chữa 1 damage cho enemy-location gần nhất.",
+      "elderThing": "-4. Nếu bạn thất bại, và đang là agenda 2a hoặc 3a, sau khi bài kiểm tra này được giải quyết, loại bỏ token này khỏi chaos bag và thêm nó vào predation bag."
+    },
+    "hardExpert": {
+      "skull": "-X. X bằng hai lần số tầng hiện tại của bạn (tối thiểu là 2).",
+      "cultist": "-2. Nếu bạn thành công và địa điểm của bạn là một kẻ địch, hãy exhaust nó.",
+      "tablet": "-4. Nếu bạn thất bại, chữa 1 damage cho enemy-location gần nhất.",
+      "elderThing": "-5. Nếu đang là agenda 2a hoặc 3a, sau khi bài kiểm tra này được giải quyết, loại bỏ token này khỏi chaos bag và thêm nó vào predation bag."
+    }
+  },
+  "intro": {
+    "title": "Kịch bản: Hemlock House",
+    "body": "<p class='basic unindented'>Kiểm tra Nhật ký Chiến dịch của bạn.</p>",
+    "nightSkip": "Nếu đang là _Night 1_ hoặc _Night 2_, chuyển đến _Intro 4_. Nếu không:",
+    "day1": "Nếu đang là _Day 1_, tiếp tục đến _Intro 1_.",
+    "day2": "Nếu đang là _Day 2_, chuyển đến _Intro 2_.",
+    "day3": "Nếu đang là _Day 3_, chuyển đến _Intro 3_.",
+    "intro1": {
+      "title": "Intro 1",
+      "body": "<p>_Intro 1_: “Ôi dào, nó không bị ma ám đâu.” Theo mỉm cười dửng dưng khi anh đỗ chiếc xe tải của mình trước một dinh thự cao chót vót, mang phong cách Shingle. “Lão Gideon nói rất nhiều điều về nơi này. Nhưng lão Gideon cũng tin vào những vương quốc dưới đáy biển chứa đầy người cá,” anh cười lớn. “Tôi chắc là lời đồn cũng có cơ sở. Nghe nói có loài gây hại nào đó đang làm tổ trong đó. Chắc là chuột. Thậm chí có thể là vài con thú hoang từ trong rừng vào trú ẩn. Đó là một ngôi nhà cổ, bạn biết mà? Có rất nhiều ngóc ngách trong tường, những nơi để chúng lẩn trốn. Brother William đã nhờ Ms. Park tìm và sửa chữa chúng, dọn sạch bất cứ thứ gì đang trốn trong tường, nhưng cô ấy vẫn chưa rảnh để làm. Tôi vẫn còn để tất cả những vật tư đó trên xe tải, nếu bạn muốn giúp một tay.”</p><p>Bạn dỡ vài tấm ván gỗ, một hộp dụng cụ, và một xô hỗn hợp hóa chất bốc mùi hôi thối từ thùng xe tải của Theo. Khi anh ta lái xe đi, bạn nhìn chằm chằm lên dinh thự đang đổ nát. Có điều gì đó méo mó và đáng lo ngại trong cách bố trí các cửa sổ, cùng độ nghiêng của những mái nhà kiểu gambrel. Sự tráng lệ trước đây của ngôi nhà dường như trở nên lạc lõng với cảnh quan xung quanh, có lẽ bởi một vết nứt nào đó ở nền móng—hoặc, nếu những tin đồn là đúng, bởi bất cứ thứ gì đang sống bên trong những bức tường của nó.</p><p class='basic right'>Tiếp tục đến _Setup_.</p>"
+    },
+    "intro2": {
+      "title": "Intro 2",
+      "body": "<p>_Intro 2_: Bánh sau chiếc xe tải của Theo bắn bùn tung tóe khi nó chạy bình bịch tiến về phía mũi đất, nơi một dinh thự mang phong cách Shingle sừng sững trên đỉnh một ngọn đồi hoang tàn. \"Nó kia rồi,\" Theo nói, chỉ vào hình bóng của dinh thự, gần như không thể nhìn thấy qua cơn mưa xối xả đập vào kính chắn gió. \"Lão Gideon nói rất nhiều điều về nơi này. Nhưng lão Gideon cũng tin vào những vương quốc dưới nước đầy người cá,\" anh cười. \"Tôi chắc là lời đồn cũng có cơ sở. Nghe nói có loài gây hại nào đó đang làm tổ trong đó. Chắc là chuột. Hoặc có thể là một số động vật hoang dã tìm nơi trú ẩn từ trong rừng. Đó là một ngôi nhà cũ, bạn biết mà? Rất nhiều ngóc ngách trong tường, những nơi để chúng trốn. Chắc chắn còn tệ hơn với cơn mưa này.\"</p><p>Từng tận mắt chứng kiến những nỗi kinh hoàng ngự trị trên Hemlock Isle, bạn thừa biết không nên cho rằng những cư dân khác của ngôi nhà chỉ là lũ chuột hay gấu trúc Mỹ. Bạn hỏi Theo xem Mr. Hemlock muốn làm gì với nơi này, điều đó khiến anh ta bật cười khúc khích. \"Ông ấy yêu cầu Ms. Park sửa chữa nơi này và dọn sạch bất cứ thứ gì đang trốn trong các bức tường. Tôi nghĩ cả hai người họ đều đang ở đó lúc này, nếu bạn muốn giúp đỡ hoặc trò chuyện với họ. Không thể tin được là ông ấy vẫn nghĩ nơi này có thể cứu vãn được, nhưng mà, tôi là ai mà có quyền phán xét chứ?\"</p><p>Theo thả bạn xuống trước dinh thự đổ nát để bạn không phải lê bước qua bùn và mưa. Bạn rùng mình khi liếc nhìn lên khung nhà xiêu vẹo của nó. Có điều gì đó vô cùng đáng lo ngại về cách sắp xếp các cửa sổ và độ nghiêng của những mái nhà kiểu gambrel. Bất kể sự tráng lệ nào mà ngôi nhà này có thể đã có trong quá khứ đều đã biến mất từ lâu. Nó chỉ còn là cái bóng của chính mình trước đây—và bạn nghi ngờ nguyên nhân vẫn còn trú ngụ bên trong những bức tường của nó.</p><p class='basic right'>Tiếp tục đến _Setup_.</p>"
+    },
+    "intro3": {
+      "title": "Intro 3",
+      "body": "<p>_Intro 3_: “Xét đến những gì Brother William lảm nhảm tối qua ở buổi khiêu vũ ư? Ừ, có lẽ nó bị ma ám thật. Tôi không biết nữa.” Theo thở dài khi chiếc xe tải của anh dừng lại trước dinh thự mang phong cách Shingle cao chót vót. Những đám mây đen bao phủ trên mái nhà kiểu gambrel của nó, khung nhà xiêu vẹo và biến dạng. Khung mái của tầng áp mái bị cháy gần như trơ khung, bức tường bên ngoài phơi mình trước các yếu tố thời tiết do thiệt hại nặng nề từ trận hỏa hoạn. “Lão Gideon nói rất nhiều điều về nơi này. Nhưng lão Gideon cũng tin vào những vương quốc dưới nước đầy người cá. Dù vậy...” Theo thở dài, lắc đầu. “Có lẽ có điều gì đó đằng sau tất cả chuyện này. Tôi từng nghĩ nếu có loài gây hại, thì chắc là do chuột, bạn biết mà? Hoặc thậm chí là vài con thú hoang vào trú ẩn từ trong rừng. Nhưng Brother William trông thực sự khiếp sợ khi ông ấy quay lại thị trấn ngày hôm qua. Ai mà biết được?”</p><p>Bạn hỏi Theo xem Mr. Hemlock đang làm gì ở đây—có lẽ bạn có thể giúp tìm ra điều gì bất thường với nơi này. “Theo tôi biết thì ông ấy đã nhờ Ms. Park sửa chữa nơi này và dọn dẹp bất cứ thứ gì đang trốn trong các bức tường. Chuyện đó cách đây vài ngày rồi. Ms. Park vẫn ở đây, nhưng sau ngày hôm qua, tôi không nghĩ Brother William sẽ dám bén mảng đến gần nơi này cho đến khi nó được dọn sạch.”</p><p>Bạn chỉ cho Theo thấy những thiệt hại do hỏa hoạn, anh ấy huýt sáo đáp lại. “Ừ, cái đó mới đấy. Tôi có nghe thấy tiếng sấm khá gần trong cơn bão đêm qua. Sẽ không ngạc nhiên nếu đó là do sét đánh. May là cơn mưa chắc hẳn đã dập tắt ngọn lửa.” Bạn tự hỏi liệu có thực sự là may mắn đã giữ cho ngôi dinh thự cũ đứng vững, hay là một thứ gì đó hoàn toàn khác. Như để đáp lại những suy ngẫm của bạn, một thứ gì đó trườn đi ngay ngoài tầm nhìn từ sàn nhà lộ thiên của tầng áp mái. Bạn hỏi Theo xem anh ấy có thấy nó không, nhưng anh ấy chỉ nhún vai. “Thấy gì cơ? Bạn không định lên đó chứ, phải không? Cẩn thận đấy. Nơi này đã tồi tàn ngay cả trước cơn bão rồi.” Anh ấy tắt máy và bước ra khỏi xe tải, cùng bạn đứng dưới mái hiên của hiên trước dinh thự. “Tôi sẽ đi cùng, được chứ? Tôi sẽ không lên tận trên đó đâu, nhưng phòng khi có chuyện gì xảy ra, tôi sẽ ở đây.”</p><p>Bạn gật đầu. Từng tận mắt chứng kiến những nỗi kinh hoàng ngự trị trên Hemlock Isle, bạn thừa biết không nên cho rằng những cư dân khác của ngôi nhà chỉ là lũ chuột hay gấu trúc Mỹ. Sẽ rất tốt nếu có Theo và chiếc xe tải của anh ấy sẵn sàng cho một cuộc tẩu thoát nhanh chóng. Hít một hơi thật sâu, bạn liếc nhìn lại khung nhà xiêu vẹo của dinh thự một lần nữa. Có điều gì đó vô cùng bất an về cách bố trí các cửa sổ và độ nghiêng của mái nhà. Bất kể sự tráng lệ nào mà ngôi nhà này có thể từng có trong quá khứ đều đã biến mất từ lâu. Nó chỉ còn là cái bóng của chính mình trước đây—và bạn nghi ngờ rằng nguyên nhân vẫn còn trú ngụ bên trong những bức tường của nó.</p><p>Ngay khi bước vào nhà, bạn lập tức leo lên cầu thang bên trong để lên tầng áp mái, để Theo lại ở tầng dưới. Bị tàn phá bởi hỏa hoạn và phơi mình một phần trước gió, căn phòng ngủ tồi tàn không mang dấu vết nào của sinh vật mà bạn đã nhìn thấy từ bên dưới. Với mỗi bước đi của bạn, tòa nhà cũ kỹ lại rên rỉ một cách chông chênh. Bạn không khỏi tự hỏi liệu đó có thực sự là tiếng réo của một cái dạ dày trống rỗng hay không...</p><p class='basic right'>Tiếp tục đến _Setup_.</p>"
+    },
+    "intro4": {
+      "title": "Intro 4",
+      "body": "<p>_Intro 4_: Chiếc xe tải của Theo chầm chậm dừng lại khi bạn đỗ trước một dinh thự mang phong cách Shingle cao chót vót. Theo những gì bạn được kể, ngôi nhà Hemlock House cũ kỹ đang bị một thứ gì đó xâm chiếm—chính xác là thứ gì thì vẫn còn nhiều tranh cãi. Trước khi cho bạn mượn xe tải vào đêm nay, Theo đã nhắc đến lũ chuột trong các bức tường, hoặc có thể là động vật hoang dã từ trong rừng vào trú ẩn, chưa kể đến cơn bão đang kéo đến ở phía chân trời. Nhưng bạn không chắc lắm. Rốt cuộc, bạn đã tận mắt chứng kiến những nỗi kinh hoàng cư ngụ trên Hemlock Isle—bạn thừa biết không nên cho rằng vấn đề chỉ là lũ chuột hay gấu trúc Mỹ.</p><p>Tiến lại gần dinh thự đang đổ nát, bạn tìm thấy một kho dự trữ vật tư được cất giấu gần lối vào: vài tấm ván gỗ, một hộp dụng cụ và một xô hỗn hợp hóa chất có mùi hôi thối. Theo lời Theo, Mr. Hemlock đã yêu cầu Judith cố gắng sửa sang lại nơi này và dọn dẹp bất cứ thứ gì đang xâm chiếm các bức tường của nó. Có vẻ như cô ấy vẫn chưa làm được gì nhiều. Bạn ngước nhìn khung nhà xiêu vẹo, in bóng trên nền những đám mây bão đen kịt. Có điều gì đó vô cùng đáng lo ngại về cách sắp xếp các cửa sổ và độ nghiêng của mái nhà kiểu gambrel. Bất kể sự tráng lệ nào mà ngôi nhà này có thể đã có trong quá khứ đều đã biến mất từ lâu. Nó chỉ còn là cái bóng của chính mình trước đây—và bạn nghi ngờ nguyên nhân vẫn còn cư ngụ bên trong những bức tường của nó.</p><p class='basic right'>Tiếp tục đến _Setup_.</p>"
+    }
+  },
+  "setup": {
+    "gatherSets": "Tập hợp tất cả lá bài từ các chồng bài encounter sau: *Hemlock House*, *Agents of the Colour*, *Blight*, *Fire!*, *Transfiguration*, *Locked Doors* và *Rats*. Các chồng bài này được đánh dấu bằng các biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/hemlock-house.png' /><img src='{setImgPath}/agents-of-the-colour.png' /><img src='{setImgPath}/blight.png' /><img src='{setImgPath}/fire.png' /><img src='{setImgPath}/transfiguration.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/rats.png' /></section>",
+    "currentDaySet": "Ngoài ra, kiểm tra Nhật ký Chiến dịch để biết ngày hiện tại và tập hợp chồng bài encounter tương ứng: *The First Day*, *The Second Day* hoặc *The Final Day*. Các chồng bài này được đánh dấu bằng các biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/the-first-day.png' /><img src='{setImgPath}/the-second-day.png' /><img src='{setImgPath}/the-final-day.png' /></section>",
+    "currentDayMarker": "Kiểm tra Nhật ký Chiến dịch của bạn để biết ngày và giờ hiện tại. Đưa lá Time Marker vào chơi ở mặt tương ứng (_Day {'{'}day{'}'}_) hoặc (_Night {'{'}night{'}'}_).",
+    "againstTheHouse": "Để Act 2a: Against the House sang một bên, out of play.",
+    "houseStirsV1": "Nếu đang là _Day/Night 1_ hoặc _Day 3_, loại bỏ Agenda 2a: _The House Stirs (v.II)_ khỏi trò chơi.",
+    "houseStirsV2": "Nếu không, loại bỏ Agenda 2a: _The House Stirs (v.I)_ khỏi trò chơi.",
+    "locations": "Tập hợp tất cả 13 địa điểm. Để riêng địa điểm _Shapeless Cellar_ và một bản sao ngẫu nhiên của địa điểm _Bedroom_ ra ngoài khu vực chơi. Đặt mỗi địa điểm còn lại vào chơi, với mặt _Dormant_ ngửa lên, theo sơ đồ Location Placement ở trang 15.",
+    "firstFloor": "Đặt Parlor, Foyer, và Dining Room thành một hàng chính xác như hình. Đây là 1st Floor.",
+    "shuffleFloors": "Xáo trộn mỗi địa điểm còn lại và đặt sáu địa điểm này vào chơi thành hai hàng phía trên 1st Floor.",
+    "topBedroom": "Đặt địa điểm Bedroom đã để riêng vào chơi ở cột giữa trên 4th Floor.",
+    "removeRemaining": "Loại bỏ mỗi địa điểm còn lại khỏi trò chơi.",
+    "startAtFoyer": "Nếu đang là _Day/Night 1_ hoặc _Day/Night 2_, mỗi điều tra viên bắt đầu chơi tại Foyer.",
+    "startAtBedroom": "Nếu đang là _Day 3_, mỗi điều tra viên bắt đầu chơi tại Bedroom ở tầng 4.",
+    "residents": "Nếu đang là (_Day {'{'}day{'}'}_), tập hợp mỗi story asset từ chồng bài encounter *Residents*. Chồng bài này được đánh dấu bằng biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/residents.png' /></section>",
+    "gideonAndSylvie": "Nếu đang là _Day 1_, đưa _Gideon Mizrah_ vào chơi tại địa điểm Parlor. Đưa story asset _Little Sylvie_ vào chơi tại một địa điểm Bedroom ở tầng thấp nhất.",
+    "william": "Nếu đang là _Day 1_ hoặc _Day 2_, đưa _William Hemlock_ vào chơi tại địa điểm Bedroom ở Tầng 4.",
+    "judith": "Nếu đang là _Day 2_ hoặc _Day 3_, đưa _Judith Park_ vào chơi tại địa điểm Parlor.",
+    "theo": "Nếu đang là _Day 3_, đưa _Theo Peters_ vào chơi tại địa điểm Foyer.",
+    "removeResidents": "Loại bỏ phần còn lại của tập bài encounter <i>Residents</i> khỏi trò chơi.",
+    "predatoryHouse": "Để riêng lá story card The Predatory House hai mặt, ngoài cuộc chơi. Lá story card này có một scenario reference card khác ở mặt kia và sẽ được đưa vào chơi trong scenario.",
+    "setOutOfPlay": "Để cả 5 treachery Fire! và tất cả các bản sao của treachery Out of the Walls và Pulled In sang một bên, ngoài khu vực chơi.",
+    "shuffleEncounter": "Xào các lá bài encounter còn lại để tạo thành chồng bài encounter"
+  },
+  "enemyLocations": {
+    "title": "Kẻ địch-Địa điểm",
+    "body": "<h3>Kẻ địch-Địa điểm</h3><div class='columns' style='padding-right: 30px;'><p class='basic' style='padding-left: 0; margin-left: 0;'>Màn chơi này giới thiệu một loại bài mới: enemy-location. Một enemy-location vừa là một kẻ địch vừa là một vị trí, và kẻ địch đó được coi là đang ở tại vị trí đó. Các điều tra viên có thể chiến đấu, lẩn tránh, và điều tra các enemy-location.</p><div style='flex:1; margin-top: -40px;' class='fan-thin'><img style='object-fit: contain;' src='{setImgPath}/../cards/10532.avif' /><img style='object-fit: contain;' src='{setImgPath}/../cards/10533b.avif' /></div></div>",
+    "noMove": "Các enemy-location không thể bị di chuyển bởi hiệu ứng bài.",
+    "keepEntities": "Khi được hướng dẫn lật một vị trí sang mặt enemy-location của nó hoặc ngược lại, giữ nguyên tất cả điều tra viên, kẻ địch, attachment, và token trên vị trí đó.",
+    "sealed": "Các vị trí có seal trên đó được coi là “sealed” và không thể bị lật sang mặt enemy-location của chúng bởi kiểm tra predation.",
+    "unsealed": "Một vị trí unsealed là một vị trí không có seal nào trên đó.",
+    "defeat": "Khi một enemy-location bị đánh bại, thêm nó vào victory display, để lại một khoảng trống. Sau đó, đồng thời trượt mỗi vị trí nằm phía trên nó trong cùng cột xuống một tầng để lấp đầy khoảng trống đó. Đặt mỗi điều tra viên, story asset, và kẻ địch đang ở tại enemy-location bị đánh bại vào vị trí mới được di chuyển đến.",
+    "noAbove": "Nếu không có vị trí nào phía trên khoảng trống trong cột của nó, chọn một vị trí liền kề với khoảng trống và đặt mỗi điều tra viên, story asset, và kẻ địch vào vị trí đã chọn.",
+    "middleEmpty": "Nếu toàn bộ cột giữa bị loại bỏ, trượt toàn bộ cột trái sang phải một bước, sao cho hai cột còn lại liền kề nhau. (Chúng vẫn lần lượt là cột trái và cột phải; không có cột giữa.)"
+  },
+  "predationTest": {
+    "title": "Predation Test",
+    "cultist": "Để riêng token này sang một bên.",
+    "tablet": "Mỗi enemy-location tấn công mỗi điều tra viên tại địa điểm đó. Nếu hiệu ứng này không gây ra đòn tấn công nào, điều tra viên trưởng rút lá trên cùng của encounter deck. Trả token này và mỗi token để riêng về predation bag.",
+    "elderthing": "Để riêng token này sang một bên. Tìm địa điểm _Dormant_ chưa bị seal gần điều tra viên trưởng nhất. Lật địa điểm đó sang mặt enemy-location.",
+    "unknown": "Một token không xác định đã được rút từ predation bag."
+  },
+  "message": {
+    "predationCanceled": "Predation test bị hủy (Gideon Mizrah)",
+    "predationTokenDrawn": "{token} được rút trong Predation Test"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "Không có Resolution",
+      "body": "<p>_No Resolution_: Một tiếng ầm ĩ khủng khiếp vang dội khắp ngôi nhà khi những bức tường khép lại, đe dọa sụp đổ—để nuốt chửng bạn như một con mồi. Kinh hãi, bạn lao qua cửa trước và bỏ chạy.</p><p class='basic right'>Chuyển đến _Resolution 2_.</p>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Cuối cùng thì những nỗi kinh hoàng của Hemlock House đã lùi lại phía sau bạn. Bạn chỉ có thể hy vọng rằng tình trạng \"bị xâm chiếm\" của ngôi nhà đã biến mất.</p><p class='basic right'>Tiếp tục đến _Resolution 2_.</p>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: “Khảo sát Miskatonic, tháng 6 năm 1926. Các thành viên Marquez, Musgrave, và cộng sự. Khảo sát Hemlock House đã hoàn tất. Sinh vật vượt ngoài tầm hiểu biết. Quần thể các loài tám xúc tu và chân bụng đã xâm chiếm toàn bộ ngôi nhà. (Các) sinh vật dường như đã tiến hóa ngay trong chính ngôi nhà. Cần quan sát thêm.”</p><ul><li>Loại bỏ 1 token {'{'}elderThing{'}'} khỏi predation bag. Trả bất kỳ token {'{'}elderThing{'}'} nào còn lại trong predation bag về chaos bag cho phần còn lại của campaign.</li><li>Nếu các điều tra viên đã \"tìm thấy _Little Sylvie_\", một điều tra viên có thể thêm story asset _Little Sylvie_ vào deck của mình. Nó không được tính vào kích thước deck của điều tra viên đó.</li><li>Mỗi điều tra viên nhận số điểm kinh nghiệm bằng giá trị Victory X của mỗi lá bài trong victory display. Điểm kinh nghiệm thưởng được trao dựa trên số seal đang in play và số enemy-location trong victory display khi scenario kết thúc.</li><li>Trong phần “Areas Surveyed” của Nhật ký Chiến dịch, đánh dấu <i>Hemlock Harbor</i>.</li></ul>"
+    },
+    "xp": {
+      "bonus": "Kinh nghiệm thưởng",
+      "sealsBonus": "vì đã phong tỏa ngôi nhà",
+      "enemyLocationsBonus": "vì đã thuần hóa những kẻ săn mồi"
+    }
+  },
+  "codex": {
+    "label": {
+      "judithRight": "<i>\"Judith nói đúng. Không có gì ở đây để cứu vãn cả.\"</i>",
+      "williamRight": "<i>“Đó là nhà của William. Chúng ta nên tôn trọng mong muốn của anh ấy.”</i>"
+    },
+    "william": {
+      "title": "{'{'}codex{'}'} Codex 4: William Hemlock",
+      "day1FoundSylvie": "<p><b>Nếu đang là Day 1 và một điều tra viên điều khiển story asset Little Sylvie:</b></p><p>“Khoan đã! Con búp bê đó—nó đây rồi!” William với lấy con búp bê, nước mắt rưng rưng. Anh nhìn chằm chằm vào đôi mắt vô hồn của con búp bê, nụ cười dịu dàng, hoài niệm. “Mẹ tôi luôn yêu thích con búp bê này. Mọi người bảo nó trông giống bà.” Bạn hỏi William định làm gì bây giờ khi đã tìm lại được nó. “Chà, nó chỉ là một con búp bê, nhưng... nó cũng là một biểu tượng,” anh giải thích. “Một biểu tượng cho di sản của tôi. Nơi tôi thuộc về. Nếu tôi có thể khiến mẹ nhớ lại... có lẽ chúng tôi có thể xây dựng lại. Gây dựng lại di sản của chúng tôi.” Anh bắt tay bạn thật chặt. “Cảm ơn bạn vì đã tìm thấy nó. Tôi thực sự trân trọng điều đó.”</p><p class='basic right'>Nhận quyền điều khiển William Hemlock. Ghi nhớ rằng bạn đã “found Little Sylvie.” Tăng Relationship Level của William Hemlock. Mỗi điều tra viên nhận 1 bonus experience.</p>",
+      "day1Otherwise": "<p>_Otherwise, if it is Day 1:_</p><p>Bạn hỏi William xem có thứ gì từ ngôi nhà cũ của anh ấy mà bạn nên chú ý tìm kiếm không. “Ngôi nhà này chứa đầy những món đồ lặt vặt và vật có giá trị cũ của gia đình. Có một thứ đặc biệt mà tôi rất muốn tìm thấy, một con búp bê cũ.” Bạn đã mong đợi có lẽ là một món đồ trang sức đắt tiền hoặc một vật gia truyền, chứ không phải một con búp bê. William dường như nhận ra điều đó rất nhanh. “Tôi luôn thích chơi với búp bê. Nhưng mẹ tôi còn yêu chúng hơn.” Anh thở dài tiếc nuối. “Tôi nhớ bà có một con búp bê đặc biệt, một con mà bà luôn giữ bên mình. Tôi tự hỏi... nếu tôi cho bà xem nó, liệu bà có nhớ ra không? Liệu bà có trở lại là chính mình như xưa...?”</p><p class='basic right'>Mỗi điều tra viên nhận 1 clue (từ token pool). Trong phần còn lại của scenario, story asset Little Sylvie có thêm \"{'{'}action{'}'}: Nhận quyền kiểm soát Little Sylvie.\" Điều tra viên đang kiểm soát Little Sylvie có thể kích hoạt lại codex này.</p>",
+      "day2Argument": "<p>_Nếu đang là Day 2 và cả William Hemlock lẫn Judith Park đều ở cùng một địa điểm:_</p><p>“Cuối cùng thì,” William nói khi bạn bước vào căn phòng nơi Judith đang đứng khoanh tay. “Cô đã ở đâu vậy? Tôi thuê cô vì tôi cần cô giúp, chứ không phải để đi dậm chân thình thịch quanh ngôi nhà thời thơ ấu của tôi mà ủ rũ.” Hai người đối đầu nhau, bầu không khí căng thẳng đặc quánh...</p><p class='basic right'>Tiếp tục đến <b>Codex Σ: The Argument</b></p>",
+      "day2Otherwise": "<p>_Otherwise, if it is Day 2:_</p><p>William đi tới đi lui, nhăn mặt trước mỗi tiếng cọt kẹt của ngôi nhà cũ. Bạn hỏi anh ta xem mọi chuyện có ổn không, khiến người thừa kế u sầu thở dài thườn thượt. “Ồ, vâng, mọi thứ đều ổn cả. Judith đã bỏ đi và để tôi lại đây một mình, tôi không thể tìm thấy con búp bê của mẹ tôi ở đâu cả, và ngôi nhà thời thơ ấu của tôi đang sụp đổ ngay trước mắt tôi,” anh ta cay đắng nói. “Giúp tôi tìm Judith, được không? Cô nàng nóng nảy đó đáng lẽ phải bảo vệ tôi và giúp tôi dọn dẹp nơi này.” Anh ta theo sát bạn, ánh mắt đảo từ bóng tối này sang bóng tối khác khi ngôi nhà gầm gừ giận dữ.</p><p class='basic right'>Nhận quyền điều khiển William Hemlock. Bạn có thể kích hoạt codex này một lần nữa nếu cả William Hemlock và Judith Park đang ở cùng một địa điểm.</p>"
+    },
+    "gideon": {
+      "title": "{'{'}codex{'}'} Codex 6: Gideon Mizrah",
+      "helping": "<p>_If “you are helping Gideon”:_</p><p>Bạn lấy ra một tấm bản đồ cũ kỹ, ố vàng từ một cuốn sách và đưa nó cho Gideon. “Đúng rồi!” Ông lão thốt lên, nhận lấy nó từ tay bạn và xem xét. “Đây chính xác là thứ tôi đang tìm kiếm. Cảm ơn cậu nhiều nhé!”</p><p class='basic right'>Tăng Relationship Level của Gideon Mizrah. Mỗi điều tra viên nhận 1 bonus experience.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>Gideon hầu như không ngẩng lên khỏi một cuốn sách mốc meo khi bạn đến gần. “Chắc cậu chưa từng nghe câu chuyện về tàu Delilah nhỉ?” Bạn nói với ông lão là chưa, nhưng bạn nghĩ mình sắp được nghe rồi. Ông lão cười. “Delilah là một tàu đánh cá đã vẽ bản đồ hòn đảo này nhiều năm trước.” Ông vớ lấy một cuốn sách khác trong khi luyên thuyên không chỉ về Delilah, mà còn về ba câu chuyện ngoài lề khác. Cuối cùng, bạn lượm lặt được rằng ông lão đang tìm kiếm một tấm bản đồ ở đâu đó trong parlor.</p><p class='basic right'>Bạn có thể hủy bỏ predation tiếp theo chuẩn bị diễn ra. Ghi nhớ rằng “bạn đang giúp Gideon.” Một điều tra viên có thể kích hoạt codex này lần nữa.</p>"
+    },
+    "judith": {
+      "title": "{'{'}codex{'}'} Codex 7: Judith Park",
+      "day2Argument": "<p>_Nếu đang là Day 2 và cả William Hemlock lẫn Judith Park đều ở cùng một địa điểm:_</p><p>“Anh đây rồi,” Judith bước tới chỗ William đang đứng mơ màng. Anh ta bừng tỉnh khỏi dòng suy tưởng khi cô tiến lại gần, ngón tay chỉ thẳng vào ngực anh. “Anh nói nơi này có vấn đề về chuột, chứ không phải... không phải thế này,” cô nói, chỉ tay một cách mơ hồ. Hai người đối đầu nhau, không khí căng thẳng bao trùm...</p><p class='basic right'>Tiếp tục đến <b>Codex Σ: The Argument</b></p>",
+      "day2Otherwise": "<p>_Otherwise, if it is Day 2:_</p><p>Judith đảo mắt khi bạn hỏi cô ấy đang làm gì ở đây. “Hôm qua William đã ở đây, nhưng anh ta thấy ớn, nên đã nhờ tôi đi cùng hôm nay để làm bảo mẫu cho anh ta. Rồi anh ta chạy lên lầu để ‘suy ngẫm về di sản của mình’ và ‘ngẫm nghĩ về tổ tiên’ hay mấy thứ vô nghĩa đại loại thế.” Cô ấy lắc đầu. “Nghe này, nói riêng với bạn thôi, nơi này là một đống đổ nát. Hãy tìm William, tôi sẽ nói chuyện với anh ta, và để mặc nơi này mục nát. Bạn đi cùng tôi chứ?”</p><p class='basic right'>Nhận quyền điều khiển Judith Park. Bạn có thể kích hoạt codex này một lần nữa nếu cả William Hemlock và Judith Park đều ở cùng một địa điểm.</p>",
+      "day3": "<p>_If it is Day 3:_</p><p>“Chuột. ‘Chuột,’ anh ta nói vậy!” Judith chế nhạo. “Chuột cái con khỉ...” cô ấy nhỏ giọng càu nhàu, rồi quay sang bạn với vẻ mặt nghiêm nghị. “Nơi này là một hố rác. Có thứ gì đó trong các bức tường mà tôi thề là đang đi theo tôi.” Bao nhiêu sợ hãi trong cô dường như đã chuyển thành sự tức giận. “Chẳng trách hôm nay anh ta không muốn quay lại đây cùng tôi. Không có ‘di sản’ nào ở đây cả. Chỉ có một đống đồ nội thất xấu xí, và bất cứ sinh vật nào đang trú ngụ ở đây.” Bạn hỏi cô ấy nghĩ nên làm gì. “Quá nguy hiểm nếu cứ để mặc nó như vậy.” Cô ấy có thể đúng—điều đó chắc chắn sẽ làm William buồn, nhưng nếu cứ để nguyên như vậy, ngôi nhà này là một mối nguy hiểm cho anh ta và phần còn lại của Hemlock Isle.</p><p class='basic right'>Nhận quyền điều khiển Judith Park. Ghi nhớ rằng “Judith đang tu sửa.”</p>"
+    },
+    "theo": {
+      "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
+      "body": "<p>“Không không không không không!” Bạn nghe thấy tiếng hét của Theo từ rất lâu trước khi nhìn thấy chàng thanh niên chạy dọc hành lang. Anh ta lao sầm vào bạn, suýt xô bạn ngã. “Woah. Tôi tưởng bạn là—” anh ta ngoái nhìn lại phía sau. Hành lang im lặng như tờ. “Trông bạn có vẻ cần được bảo vệ. Chà, đừng lo. Tôi có thể, ờ. Bảo vệ bạn,” anh ta cố tỏ ra oai vệ khi đỡ bạn đứng dậy.</p><p class='basic right'>Nhận quyền điều khiển Theo Peters.</p>"
+    },
+    "marquez": {
+      "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
+      "body": "<p>\"Tôi ghét tất cả những thứ này,\" Dr. Marquez kiểm tra một giá sách. \"Lúc nãy, tôi ở trong thư viện và nó đã sống lại. Có thứ gì đó gần như... đang hồi sinh những khúc gỗ chết. Tôi định nói điều đó là bất khả thi, nhưng giờ chẳng có gì là bất khả thi nữa,\" cô cười một cách trống rỗng.</p><p class='basic right'>Rút 3 lá bài. Chọn một enemy-location đang in play và gây cho nó 1 damage.</p>"
+    },
+    "argument1": {
+      "title": "{'{'}codex{'}'} Codex Σ: The Argument",
+      "body": "<p>_The Argument 1_: \"Nghe này, William, nơi này là một bãi rác. Đâu đâu cũng có rác. Nó bẩn thỉu, tồi tàn, và bất cứ thứ gì đang sống trong những bức tường kia, chắc chắn không phải là chuột,\" Judith giải thích.</p><p>William cau mày. \"Cái 'bãi rác' này là ngôi nhà thời thơ ấu của tôi. Di sản lâu đời của gia đình tôi.\"</p><p>\"Nếu đây là di sản của gia đình tôi, tôi sẽ đổi tên mình. Ai đó cần phải phá bỏ nơi này,\" Judith vặn lại.</p><p>\"Tôi sẽ không phá bỏ ngôi nhà này!\" William hét lên. \"Điều đó hoàn toàn vô lương tâm!\" Hai người tiếp tục cãi vã, ngày càng trở nên gay gắt, cho đến khi bạn nhận ra cuộc tranh luận này sẽ không tự giải quyết được. Bạn xen vào, nói lên suy nghĩ của mình...</p><p class='basic right'>Điều tra viên giải quyết codex này phải quyết định (chọn một):</p>"
+    },
+    "argument2": {
+      "title": "{'{'}codex{'}'} The Argument 2",
+      "body": "<p>_The Argument 2_: William quay ngoắt sang nhìn bạn, ánh mắt đầy vẻ cầu xin. Có lẽ cuối cùng anh ấy cũng nhận ra sự thật. Hoặc có lẽ anh ấy không quan tâm. “Được rồi,” anh ấy gần như thì thầm. “Cứ làm theo ý bạn đi. Di sản của nhà Hemlock đã tan nát, và dường như không ai quan tâm. Tại sao bạn lại phải bận tâm chứ?” Anh ấy rời đi, đầu cúi gầm.</p><p class='basic right'>Loại bỏ William Hemlock khỏi trò chơi. Mỗi điều tra viên có thể rút 1 lá bài. Tăng Relationship Level của Judith Park. Mỗi điều tra viên nhận 1 bonus experience.</p>"
+    },
+    "argument3": {
+      "title": "{'{'}codex{'}'} The Argument 3",
+      "body": "<p>_The Argument 3_: Judith trừng mắt nhìn bạn. “Thật sao? Cả bạn nữa à?” Cô ấy dụi mắt và lẩm bẩm chửi thề. “Được thôi. Tổ chức cả cái lễ hội ở đây đi, tôi chả quan tâm. Nhưng đừng đến nhờ tôi giúp khi nơi này sụp đổ. Hoặc tệ hơn.” Cô ấy thu dọn đồ đạc và đi về phía cửa.</p><p class='basic right'>Loại bỏ Judith Park khỏi trò chơi. Mỗi điều tra viên có thể rút 1 lá bài. Tăng Relationship Level của William Hemlock. Mỗi điều tra viên nhận 1 bonus experience.</p>"
+    },
+    "xp": {
+      "bonus": "Kinh nghiệm thưởng"
+    }
+  }
+}

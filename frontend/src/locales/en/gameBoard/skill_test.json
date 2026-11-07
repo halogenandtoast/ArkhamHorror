@@ -13,5 +13,6 @@
     "skillTestEndsStep": "Skill test ends.",
 
     "skipTriggersActiveNotice": "Skip Triggers is on — fast triggers unrelated to this test are being hidden.",
-    "skipTriggersAdjust": "Adjust"
+    "skipTriggersAdjust": "Adjust",
+    "confirm": "Confirm"
 }

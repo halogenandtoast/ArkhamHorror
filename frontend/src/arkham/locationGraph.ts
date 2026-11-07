@@ -35,6 +35,18 @@ export function locationLinks(graph: LocationGraph): [string, string][] {
   return links
 }
 
+/** Direction of a displayed connection, independent of the order of its endpoints. */
+export function locationLinkDirection(
+  a: Pick<GraphLocation, 'id' | 'connectedLocations'>,
+  b: Pick<GraphLocation, 'id' | 'connectedLocations'>,
+): 'both' | 'forward' | 'backward' | null {
+  const forward = a.connectedLocations.includes(b.id)
+  const backward = b.connectedLocations.includes(a.id)
+  if (forward && backward) return 'both'
+  if (forward) return 'forward'
+  return backward ? 'backward' : null
+}
+
 /**
  * Fewest-hops route from `from` to `to`, both ends included; empty when unreachable.
  * `isBlocked` rules out intermediate and final stops (e.g. a barred location); the start is never blocked.
@@ -142,4 +154,36 @@ export function mapPositions(graph: LocationGraph, layout: string[] | null): Rec
     Object.entries(autoPositions(loose)).map(([id, [x, y]]) => [id, [x, 84 + y * 0.14] as Point]),
   )
   return { ...squeezed, ...strip }
+}
+
+// The painted chambers zigzag left to right. Anchors sit above the open floor
+// so figures have their own space below each plate.
+const MINE_DESCENT_ANCHORS: Record<string, Point> = {
+  pos0101: [14, 66],
+  pos0201: [27, 20],
+  pos0301: [48, 66],
+  pos0401: [70, 20],
+  pos0501: [85, 66],
+}
+
+// The walkway centers sit off the direct line between some room plates.
+const MINE_DESCENT_PASSAGES: Record<string, Point> = {
+  'pos0101:pos0201': [17, 47],
+  'pos0201:pos0301': [38, 47],
+  'pos0301:pos0401': [58, 47],
+  'pos0401:pos0501': [79, 47],
+}
+
+export function mineDescentPassage(a: string, b: string): Point | undefined {
+  return MINE_DESCENT_PASSAGES[a < b ? `${a}:${b}` : `${b}:${a}`]
+}
+
+export function mineDescentPositions(
+  graph: LocationGraph,
+  fallback: Record<string, Point>,
+): Record<string, Point> {
+  return Object.fromEntries(Object.entries(graph).map(([id, location]) => [
+    id,
+    MINE_DESCENT_ANCHORS[location.label ?? ''] ?? fallback[id],
+  ]))
 }

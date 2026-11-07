@@ -61,6 +61,7 @@ import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
 import Connections from '@/arkham/components/Connections.vue';
 import RainOverlay from '@/arkham/components/RainOverlay.vue';
 import SmokePuffLayer from '@/arkham/components/SmokePuffLayer.vue';
+import FxLayer from '@/arkham/components/FxLayer.vue';
 import { supportsHtmlInCanvas } from '@/arkham/droplets';
 import { createRainAudio, type RainAudioInstance } from '@/arkham/rainAudio';
 import { useSoundsDisabled } from '@/composable/useSoundsDisabled';
@@ -2436,6 +2437,7 @@ async function addChaosToken(face: any){
   </div>
   <div v-else-if="!gameOver" id="scenario" class="scenario" :data-scenario="scenario.id">
     <SmokePuffLayer />
+    <FxLayer :game="game" />
     <div class="scenario-body" :class="{'split-view': splitView, 'scenario-body--notifier-overlays': showScenarioNotifierBar, 'scenario-body--map': settingsStore.locationView !== 'cards' && !splitView }">
       <Draggable v-if="showOutOfPlay || forcedShowOutOfPlay">
         <template #handle><header><h2>{{ $t('gameBar.outOfPlay') }}</h2></header></template>
@@ -3135,11 +3137,12 @@ async function addChaosToken(face: any){
         :playerId="playerId"
         :boardOnlyContent="boardOnlyContent"
         :decksShown="decksShown"
+        :referenceImage="scenarioGuide"
         @toggleDecks="decksShown = !decksShown"
         @choose="choose"
       />
       <template v-else>
-      <button class="location-view-switch" @click="settingsStore.setLocationView('scene')">{{ $t('locationMap.showScene') }}</button>
+      <button class="location-view-switch" @click="settingsStore.setLocationView('map')">{{ $t('locationMap.showMap') }}</button>
       <RainOverlay :enabled="showRain" :options="rainOptions">
       <div
         ref="locationCardsContainer"

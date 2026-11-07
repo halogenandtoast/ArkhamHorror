@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
-import { imgsrc, formatContent } from '@/arkham/helpers';
+import { formatContent } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { ChaosTokenFaceEffect, ChaosTokenValueEntry, SkillTest, chaosTokenEffectDetail } from '@/arkham/types/SkillTest';
 import { MessageType } from '@/arkham/types/Message';
@@ -109,7 +109,12 @@ const isModified = computed(() => {
 // resets whenever a new test starts.
 const showOdds = ref(false)
 
-watch(() => props.game.skillTest?.id, () => { showOdds.value = false })
+// The token grid is collapsed during a skill test until the player asks for it;
+// debug tools (force draw, sealing) need it open. Resets with each new test.
+const bagOpen = ref(false)
+const showTokenGrid = computed(() => props.skillTest === null || bagOpen.value || debug.active)
+
+watch(() => props.game.skillTest?.id, () => { showOdds.value = false; bagOpen.value = false })
 
 const oddsPercent = computed(() => {
   const b = breakdown.value
@@ -167,16 +172,16 @@ const choose = (idx: number) => emit('choose', idx)
   <div class="chaos-bag">
     <div class="chaos-bag-contents">
       <Token v-for="revealedToken in revealedChaosTokens" :key="revealedToken.id" :token="revealedToken" :playerId="playerId" :game="game" @choose="choose" />
-      <img
+      <button
         v-if="tokenAction !== -1"
-        class="token token--can-draw"
-        :src="imgsrc('chaos-tokens/ct-blank.png')"
+        type="button"
+        class="draw-button"
         @click="choose(tokenAction)"
-      />
+      >{{ $t('skillTest.confirm') }}</button>
       <ChaosBagChoice v-if="chaosBag.choice && 'step' in chaosBag.choice && !game.skillTestResults" :choice="chaosBag.choice.step" :game="game" :playerId="playerId" @choose="choose" />
     </div>
 
-    <div class="token-preview" :class="{ 'token-preview--debug': canForceDraw }">
+    <div v-if="showTokenGrid" class="token-preview" :class="{ 'token-preview--debug': canForceDraw }">
       <div
         v-for="(token, idx) in allTokens"
         :key="`${token.face}${idx}`"
@@ -206,7 +211,10 @@ const choose = (idx: number) => emit('choose', idx)
         theme="chaos-bag-stats-popover"
       >
         <div class="stats-bar" role="button" tabindex="0">
-          <span class="stats-bar__count">{{ $t('gameBar.chaosBagStats.tokens', { count: allTokenFaces.length }) }}</span>
+          <span class="stats-bar__count stats-bar__toggle" :aria-expanded="showTokenGrid" @click.stop="bagOpen = !bagOpen">
+            {{ $t('gameBar.chaosBagStats.tokens', { count: allTokenFaces.length }) }}
+            <span class="stats-bar__chevron" aria-hidden="true">{{ showTokenGrid ? '▾' : '▸' }}</span>
+          </span>
           <span v-if="showOdds" class="stats-bar__odds" :class="{ 'stats-bar__odds--whatif': isModified }">{{ oddsPercent }}%</span>
           <button v-else type="button" class="stats-bar__reveal" @click.stop="showOdds = true">
             {{ $t('gameBar.chaosBagStats.showOdds') }}
@@ -265,10 +273,26 @@ const choose = (idx: number) => emit('choose', idx)
 </template>
 
 <style scoped>
-.token--can-draw {
-  border: min(5px, 1vw) solid var(--select);
-  border-radius: 500px;
+.draw-button {
+  width: 100%;
+  min-height: 44px;
+  margin-bottom: 10px;
+  border: 0;
+  text-transform: uppercase;
+  background-color: var(--button-2);
+  color: #EEE;
   cursor: pointer;
+  transition: filter 0.2s ease-in;
+  &:hover { filter: brightness(1.15); }
+}
+
+.stats-bar__toggle {
+  cursor: pointer;
+}
+
+.stats-bar__chevron {
+  opacity: 0.7;
+  margin-left: 4px;
 }
 
 .token {

@@ -30,6 +30,7 @@ export const TEXT_LANGUAGES: [string, string][] = [
   ['po', 'Português/Portuguese'],
   ['ru', 'Русский/Russian'],
   ['uk', 'українська/Ukrainian'],
+  ['vi', 'Tiếng Việt/Vietnamese'],
   ['zh-cn', '简体中文/Simplified Chinese'],
   ['zh', '中文/Chinese'],
 ]

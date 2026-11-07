@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref, watch, onBeforeUnmount } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Game } from '@/arkham/types/Game'
 import type { Scenario } from '@/arkham/types/Scenario'
@@ -8,18 +8,22 @@ import { useGameChoices } from '@/arkham/composables/useGameChoices'
 import { useCardNames } from '@/arkham/composables/useCardNames'
 import { useStorage } from '@vueuse/core'
 import { cardArt } from '@/arkham/cardImages'
+import { hemlockHousePosition, hemlockOverview, hemlockVillagePosition } from '@/arkham/hemlock-overview'
 import { useSettings, type LocationView } from '@/stores/settings'
 import {
-  gridPositions, locationLinks, mapPositions, shortestPath,
+  gridPositions, locationLinks, mapPositions, mineDescentPositions, shortestPath,
   type LocationGraph, type Point,
 } from '@/arkham/locationGraph'
-import { gridSlotIndex, selectLocationIndex } from '@/arkham/locationChoices'
-import LocationMapCanvas, { type MapMove } from '@/arkham/components/LocationMapCanvas.vue'
+import { gridSlotIndex } from '@/arkham/locationChoices'
+import LocationMapCanvas, { type MapMove, type RoomPlateSpot } from '@/arkham/components/LocationMapCanvas.vue'
 import LocationActionPanel from '@/arkham/components/LocationActionPanel.vue'
 import LocationHand from '@/arkham/components/LocationHand.vue'
 import { ownInvestigator } from '@/arkham/ownInvestigator'
 import LocationMissionStrip from '@/arkham/components/LocationMissionStrip.vue'
-import LocationScene from '@/arkham/components/LocationScene.vue'
+import LocationInfoCard from '@/arkham/components/LocationInfoCard.vue'
+import LocationMapLegend from '@/arkham/components/LocationMapLegend.vue'
+import { hasMapOffsets, resetMapOffsets } from '@/arkham/composables/useMapDrag'
+import { useLocationInfo } from '@/arkham/composables/useLocationInfo'
 
 const props = defineProps<{
   game: Game
@@ -29,6 +33,8 @@ const props = defineProps<{
   /** The scenario shows things only the card board can draw (barriers, enemies standing as locations, ...). */
   boardOnlyContent: boolean
   decksShown: boolean
+  /** The scenario reference card, shown next to the act and agenda. */
+  referenceImage?: string
 }>()
 const emit = defineEmits<{ (e: 'choose', index: number): void; (e: 'toggleDecks'): void }>()
 
@@ -54,8 +60,33 @@ const graph = computed<LocationGraph>(() => Object.fromEntries(locations.value.m
   investigators: l.investigators, enemies: enemiesAt(l),
 }])))
 
+const isStudyOnly = computed(() =>
+  locations.value.length === 1 && cardArt(locations.value[0].cardCode) === '01111'
+)
+
+const illustratedBoard = computed(() => {
+  if (isStudyOnly.value) {
+    return { image: 'img/scenes/night-of-the-zealot/study.webp', fixedPassages: false, village: true }
+  }
+  return hemlockOverview(
+    props.scenario.id, props.scenario.reference, props.scenario.locationLayout,
+  )
+})
+
 const layout = computed(() => props.scenario.usesGrid || props.scenario.locationLayout ? props.scenario.locationLayout : null)
-const positions = computed<Record<string, Point>>(() => mapPositions(graph.value, layout.value))
+const positions = computed<Record<string, Point>>(() => {
+  if (isStudyOnly.value) {
+    return { [locations.value[0].id]: [50, 75] }
+  }
+  const fallback = mapPositions(graph.value, layout.value)
+  if (illustratedBoard.value?.fixedPassages) return mineDescentPositions(graph.value, fallback)
+  const board = illustratedBoard.value
+  if (!board?.village && !board?.house) return fallback
+  return Object.fromEntries(locations.value.map((location) => [
+    location.id,
+    (board.house ? hemlockHousePosition(location.label) : hemlockVillagePosition(location.cardCode)) ?? fallback[location.id],
+  ]))
+})
 const links = computed(() => locationLinks(graph.value))
 
 // Empty grid slots a choice can fill (placing a location), drawn as dashed outlines.
@@ -67,7 +98,10 @@ const gridSpots = computed(() => {
   const squeeze = locations.value.some((l) => !(l.label in spots)) && locations.value.some((l) => l.label in spots)
   return Object.entries(spots)
     .filter(([label]) => !used.has(label) && gridSlotIndex(choices.value, label) !== -1)
-    .map(([label, [x, y]]) => ({ label, x, y: squeeze ? y * 0.8 : y, index: gridSlotIndex(choices.value, label) }))
+    .map(([label, [x, y]]) => {
+      const anchor = illustratedBoard.value?.house ? hemlockHousePosition(label) : undefined
+      return { label, x: anchor?.[0] ?? x, y: anchor?.[1] ?? (squeeze ? y * 0.8 : y), index: gridSlotIndex(choices.value, label) }
+    })
 })
 
 const canvasSize = computed(() => {
@@ -81,16 +115,30 @@ const canvasSize = computed(() => {
 })
 
 // The Gathering's house, once more than the study is in play: draw the rooms on the cutaway picture of the house.
-const HOUSE_POINTS: Record<string, Point> = {
-  '01111': [52, 81], '01112': [51, 59], '01113': [56, 25], '01114': [44, 92], '01115': [83, 58],
+// Each room has a spot for its people (bottom centre, on the floor) and a corner for its name plate
+// (top left, percent of the picture, with a width), so the plate never sits under the figures.
+const HOUSE_ROOMS: Record<string, { figures: Point; plate: RoomPlateSpot }> = {
+  '01111': { figures: [52, 81], plate: { x: 64, y: 66, width: 16 } },
+  '01112': { figures: [62, 61], plate: { x: 36, y: 31, width: 17 } },
+  '01113': { figures: [47, 25], plate: { x: 62, y: 4, width: 16 } },
+  '01114': { figures: [55, 96], plate: { x: 33, y: 67, width: 15 } },
+  '01115': { figures: [84, 63], plate: { x: 74.5, y: 33, width: 18 } },
 }
-const cutaway = computed<Record<string, Point> | null>(() => {
+const houseRooms = computed(() => {
   const all = locations.value
-  if (all.length < 2 || !all.every((l) => cardArt(l.cardCode) in HOUSE_POINTS)) return null
-  return Object.fromEntries(all.map((l) => [l.id, HOUSE_POINTS[cardArt(l.cardCode)]]))
+  if (all.length < 2 || !all.every((l) => cardArt(l.cardCode) in HOUSE_ROOMS)) return null
+  return all.map((l) => [l.id, HOUSE_ROOMS[cardArt(l.cardCode)]] as const)
 })
+const cutaway = computed<Record<string, Point> | null>(() =>
+  houseRooms.value ? Object.fromEntries(houseRooms.value.map(([id, room]) => [id, room.figures])) : null)
+const roomPlates = computed<Record<string, RoomPlateSpot> | null>(() =>
+  houseRooms.value ? Object.fromEntries(houseRooms.value.map(([id, room]) => [id, room.plate])) : null)
 const overview = useStorage('arkham-scene-overview', true)
-const showOverview = computed(() => props.view === 'map' || (props.view === 'scene' && cutaway.value !== null && overview.value))
+// Card text and flavour on the room plates: all shown or all folded away, so a small room keeps space for its figures.
+const plateText = useStorage('arkham-room-plate-text', false)
+const showOverview = computed(() =>
+  props.view === 'map' || !!illustratedBoard.value || (cutaway.value !== null && overview.value)
+)
 
 const me = computed(() => ownInvestigator(props.game, props.playerId))
 const myLocation = computed(() => me.value?.location ?? null)
@@ -108,12 +156,40 @@ watch(myLocation, () => { selectedId.value = null })
 const neighbours = computed(() => (selected.value?.connectedLocations ?? [])
   .map((id) => props.game.locations[id]).filter((l): l is Location => Boolean(l) && Boolean(graph.value[l.id])))
 
-function activate(l: Location) {
+const buildInfo = useLocationInfo(() => props.game, () => props.playerId, () => choices.value, enemiesShownAt)
+// Built once per update, so every plate, the scene and the card read the same snapshot.
+const infos = computed(() => new Map(locations.value.map((l) => [l.id, buildInfo(l)])))
+const infoOf = (l: Location) => infos.value.get(l.id) ?? buildInfo(l)
+
+// --- the info card: looking at a location never sends a choice, picking one is a separate click ---
+const inspectedId = ref<string | null>(null)
+const inspected = computed(() => {
+  const id = inspectedId.value
+  return id && props.game.locations[id] && graph.value[id] ? props.game.locations[id] : null
+})
+const inspectedConnections = computed(() => (inspected.value?.connectedLocations ?? [])
+  .map((id) => props.game.locations[id]).filter((l): l is Location => Boolean(l) && Boolean(graph.value[l.id]))
+  .map((l) => { const info = infoOf(l); return { id: l.id, name: info.face.name, revealed: info.revealed } }))
+const panelOpen = ref(true)
+// The card sits in the top-right corner, left of the actions panel; focus goes back to the plate that opened it.
+const anchorEl = ref<HTMLElement | null>(null)
+
+function inspect(l: Location, anchor: HTMLElement | null) {
   selectedId.value = l.id
-  // A location being offered as a target is chosen on the spot, as on the card board.
-  const index = selectLocationIndex(choices.value, l)
-  if (index !== -1) emit('choose', index)
+  inspectedId.value = l.id
+  if (anchor) anchorEl.value = anchor
 }
+function inspectById(id: string, anchor: HTMLElement | null = null) {
+  const l = props.game.locations[id]
+  if (l) inspect(l, anchor)
+}
+function closeCard() {
+  const back = anchorEl.value?.querySelector<HTMLElement>('button') ?? anchorEl.value
+  inspectedId.value = null
+  back?.focus()
+}
+// The card is rebuilt from the live state; once its location leaves the map it closes.
+watch(inspected, (l) => { if (!l) inspectedId.value = null })
 
 // --- enemy movement: a dot travels along the links an enemy took since the last update ---
 const moves = ref<MapMove[]>([])
@@ -146,8 +222,7 @@ watch(graph, (g) => {
 
 onBeforeUnmount(() => { if (clearTimer) clearTimeout(clearTimer) })
 
-const panelOpen = ref(true)
-const views: LocationView[] = ['scene', 'map', 'cards']
+const views: LocationView[] = ['map', 'cards']
 </script>
 
 <template>
@@ -158,28 +233,25 @@ const views: LocationView[] = ['scene', 'map', 'cards']
           :aria-selected="v === view" @click="settings.setLocationView(v)">{{ t(`locationMap.view.${v}`) }}</button>
       </span>
       <span v-if="boardOnlyContent" class="board-note">{{ t('locationMap.boardOnly') }}</span>
-      <button v-if="view === 'scene' && cutaway" class="view" @click="overview = !overview">{{ overview ? t('locationMap.closeUp') : t('locationMap.overview') }}</button>
       <button class="view" :class="{ active: panelOpen }" @click="panelOpen = !panelOpen">{{ t('locationMap.actions') }}</button>
+      <button v-if="showOverview && roomPlates" class="view" :class="{ active: plateText }" :aria-pressed="plateText"
+        @click="plateText = !plateText">{{ plateText ? t('locationMap.marker.collapseAll') : t('locationMap.marker.expandAll') }}</button>
+      <button v-if="hasMapOffsets(game.id)" class="view" @click="resetMapOffsets(game.id)">{{ t('locationMap.resetLayout') }}</button>
+      <LocationMapLegend />
       <button class="view decks" :class="{ active: decksShown }" @click="emit('toggleDecks')">{{ t('locationMap.decks') }}</button>
     </div>
-    <LocationMissionStrip :game="game" :scenario="scenario" :playerId="playerId" @choose="emit('choose', $event)" />
-    <div class="map-layout" :class="[view, { 'panel-open': panelOpen }]">
+    <LocationMissionStrip :game="game" :scenario="scenario" :playerId="playerId" :referenceImage="referenceImage" @choose="emit('choose', $event)" />
+    <div class="map-layout" :class="[view, { 'panel-open': panelOpen }]" @click="inspectedId = null">
       <div id="scene-team-slot" class="team-slot"></div>
-      <LocationScene v-if="view === 'scene' && !showOverview && selected" :game="game" :playerId="playerId" :location="selected"
-        :neighbours="neighbours" :mine="selected.id === myLocation"
-        @choose="emit('choose', $event)" @select="selectedId = $event" />
-      <div v-if="view === 'scene' && !showOverview && locations.length > 1" class="mini-map">
-        <LocationMapCanvas compact :game="game" :playerId="playerId" :locations="locations"
-          :positions="positions" :links="links" :moves="moves" :gridSpots="gridSpots" :selectedId="selected?.id ?? null"
-          :myLocation="myLocation" :choices="choices" :enemiesAt="enemiesShownAt"
-          @activate="activate" @choose="emit('choose', $event)" />
-      </div>
-      <LocationMapCanvas v-else-if="showOverview" :cutaway="cutaway" :game="game" :playerId="playerId" :locations="locations"
+      <LocationMapCanvas :cutaway="cutaway" :roomPlates="roomPlates" :plateText="plateText" :illustrated-board="illustratedBoard" :game="game" :playerId="playerId" :locations="locations"
         :positions="positions" :links="links" :moves="moves" :gridSpots="gridSpots" :selectedId="selected?.id ?? null"
-        :myLocation="myLocation" :choices="choices" :enemiesAt="enemiesShownAt" :width="canvasSize.width" :height="canvasSize.height"
-        @activate="activate" @choose="emit('choose', $event)" />
+        :enemiesAt="enemiesShownAt" :infoOf="infoOf" :width="canvasSize.width" :height="canvasSize.height"
+        @inspect="inspect" @choose="emit('choose', $event)" />
       <LocationActionPanel v-if="panelOpen" class="action-overlay" :game="game" :playerId="playerId"
         :location="game.locations[myLocation ?? ''] ?? selected" @choose="emit('choose', $event)" @close="panelOpen = false" />
+      <LocationInfoCard v-if="inspected" :game="game" :playerId="playerId" :location="inspected" :info="infoOf(inspected)"
+        :connections="inspectedConnections" :rightGap="panelOpen ? 300 : 0" @choose="emit('choose', $event)"
+        @inspect="inspectById" @close="closeCard" />
     </div>
     <LocationHand :game="game" :playerId="playerId" @choose="emit('choose', $event)" />
   </section>

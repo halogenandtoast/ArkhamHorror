@@ -1,3 +1,12 @@
+:root {
+  /* Display serif for map and card headings. Georgia lacks the stacked Vietnamese marks (ế, ề, ộ ...)
+   * and draws them detached, so Vietnamese gets faces that have them. */
+  --ui-serif: Georgia, "Times New Roman", serif;
+}
+:root:lang(vi) {
+  --ui-serif: "Palatino Linotype", "Times New Roman", Cambria, "Noto Serif", serif;
+}
+
 html {
   color-scheme: dark;
   interpolate-size: allow-keywords;

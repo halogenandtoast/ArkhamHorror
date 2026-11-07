@@ -29,6 +29,20 @@
     "playerSettings": "Player Settings",
     "viewSettingSkipTriggers": "Skip triggers during skill tests that don't affect the outcome",
     "viewSettingSkipTriggersTitle": "Skip Triggers",
+    "viewSettingCombatFxTitle": "Effect animations",
+    "viewSettingCombatFx": "Show damage, horror, doom and enemy attacks as they happen: numbers float off the card and the board reacts, so automatic steps stay easy to follow.",
+    "viewSettingAutopilotTitle": "Autopilot",
+    "viewSettingAutopilot": "Answer prompts that have nothing to decide (drawing an encounter card, applying test results, a single forced choice) so phases run on their own. Real decisions still wait for you.",
+    "viewSettingConfirmCardPlaysTitle": "Confirm Card Plays",
+    "viewSettingConfirmCardPlays": "Ask before playing a card from your hand.",
+    "viewSettingWarnAttacksOfOpportunityTitle": "Warn on Attacks of Opportunity",
+    "viewSettingWarnAttacksOfOpportunity": "Ask before an action that may provoke an attack of opportunity from a ready enemy engaged with you.",
+    "actionConfirm": {
+        "play": "Play {card}?",
+        "action": "Take this action?",
+        "attackOfOpportunity": "{enemies} is engaged with you and may make an attack of opportunity. | {enemies} are engaged with you and may each make an attack of opportunity."
+    },
+    "autopilotPaused": "Autopilot paused after many automatic answers in a row. Answer the next prompt to continue.",
     "viewSettingShowOtherPlayersHands": "See the cards in other players' hands at all times.",
     "viewSettingShowOtherPlayersHandsTitle": "Show Other Players' Hands",
 
@@ -94,7 +108,14 @@
         },
         "music": {
             "title": "Horror Ambience",
-            "description": "A low drone, wind and the odd distant bell or heartbeat under each scenario. Made live in your browser, nothing to download; it quietens while the story is read. The Sounds switch turns it off too."
+            "description": "A low drone, wind and the odd distant bell or heartbeat under each scenario. Made live in your browser, nothing to download; it quietens while the story is read. The Sounds switch turns it off too. Off by default."
+        },
+        "sizes": {
+            "locationTitle": "Location button size",
+            "locationDescription": "Scales the location buttons and room plates on the map and in the scene.",
+            "figureTitle": "Character size",
+            "figureDescription": "Scales investigator and enemy figures on the map and in the scene.",
+            "reset": "Reset"
         }
     },
 
@@ -125,6 +146,9 @@
 
     "debug": "Debug",
     "toggleDebug": "Toggle Debug",
+    "debugAdvanceAct": "Advance Act {step} (deck {deck})",
+    "debugAdvanceAgenda": "Advance Agenda {step} (deck {deck})",
+    "debugAdvanceFailed": "Could not advance the scenario.",
     "debugEntities": "Entities",
     "exportLog": "Export Log",
     "exportLogConfirm": "Export",

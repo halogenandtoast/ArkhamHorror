@@ -51,6 +51,9 @@ export type ModifierType
   | CannotBeDamaged
   | DamageDealt
   | HealthModifier
+  | EnemyStatModifier
+  | EnemyStatWithMinModifier
+  | ShroudValueModifier
   | SanityModifier
   | DiscoveredClues
   | SkillTestResultValueModifier
@@ -179,9 +182,27 @@ export type DamageDealt = {
   contents: number
 }
 
+/** Modifiers to a location's shroud; the map works out the shroud shown from them. */
+export type ShroudValueModifier = {
+  tag: "ShroudModifier" | "SetShroud" | "BaseShroud"
+  contents: number
+}
+
 export type HealthModifier = {
   tag: "HealthModifier"
   contents: number
+}
+
+/** Changes to an enemy's fight or evade, or to the horror it deals; damage is DamageDealt above. */
+export type EnemyStatModifier = {
+  tag: "EnemyFight" | "EnemyEvade" | "HorrorDealt"
+  contents: number
+}
+
+/** The same, with a floor the result may not drop below: `[change, minimum]`. */
+export type EnemyStatWithMinModifier = {
+  tag: "EnemyFightWithMin" | "EnemyEvadeWithMin" | "HealthModifierWithMin"
+  contents: [number, number]
 }
 
 export type SanityModifier = {
@@ -398,11 +419,32 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.literal('DamageDealt'),
       contents: JsonDecoder.number()
     }, 'DamageDealt'),
+  JsonDecoder.object<ShroudValueModifier>(
+    {
+      tag: JsonDecoder.oneOf([
+        JsonDecoder.literal('ShroudModifier'), JsonDecoder.literal('SetShroud'), JsonDecoder.literal('BaseShroud'),
+      ], 'ShroudValueModifierTag'),
+      contents: JsonDecoder.number()
+    }, 'ShroudValueModifier'),
   JsonDecoder.object<HealthModifier>(
     {
       tag: JsonDecoder.literal('HealthModifier'),
       contents: JsonDecoder.number()
     }, 'HealthModifier'),
+  JsonDecoder.object<EnemyStatModifier>(
+    {
+      tag: JsonDecoder.oneOf([
+        JsonDecoder.literal('EnemyFight'), JsonDecoder.literal('EnemyEvade'), JsonDecoder.literal('HorrorDealt'),
+      ], 'EnemyStatModifierTag'),
+      contents: JsonDecoder.number()
+    }, 'EnemyStatModifier'),
+  JsonDecoder.object<EnemyStatWithMinModifier>(
+    {
+      tag: JsonDecoder.oneOf([
+        JsonDecoder.literal('EnemyFightWithMin'), JsonDecoder.literal('EnemyEvadeWithMin'), JsonDecoder.literal('HealthModifierWithMin'),
+      ], 'EnemyStatWithMinModifierTag'),
+      contents: JsonDecoder.tuple([JsonDecoder.number(), JsonDecoder.number()], 'ValueWithMinimum')
+    }, 'EnemyStatWithMinModifier'),
   JsonDecoder.object<SanityModifier>(
     {
       tag: JsonDecoder.literal('SanityModifier'),

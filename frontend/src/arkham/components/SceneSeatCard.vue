@@ -4,9 +4,10 @@ import { useI18n } from 'vue-i18n'
 import type { Game } from '@/arkham/types/Game'
 import type { Investigator } from '@/arkham/types/Investigator'
 import { TokenType } from '@/arkham/types/Token'
-import { portraitImage } from '@/arkham/cardImages'
+import { cardImage, portraitImage } from '@/arkham/cardImages'
 import { imgsrc } from '@/arkham/helpers'
 import { useCardNames } from '@/arkham/composables/useCardNames'
+import { computeStat } from '@/arkham/statModel'
 
 /* One seat of the team overlay. Purely presentational: it shows the investigator's state and
  * reports clicks; choosing a seat is done by PlayerTabs, which owns the selected tab. */
@@ -36,35 +37,37 @@ const portrait = computed(() => portraitImage(inv.value.cardCode))
 const crown = computed(() => imgsrc('tokens/lead-investigator.png'))
 const tok = (type: keyof typeof inv.value.tokens) => inv.value.tokens[type] ?? 0
 const meter = (max: number, taken: number) => ({ max, left: Math.max(0, max - taken), pct: max > 0 ? (100 * Math.max(0, max - taken)) / max : 0 })
-const skills = computed(() => [
+// The skills with every modifier on the investigator applied, as the scene's figures show them.
+const skills = computed(() => ([
   ['willpower', inv.value.willpower], ['intellect', inv.value.intellect], ['combat', inv.value.combat], ['agility', inv.value.agility],
-] as const)
-const hp = computed(() => meter(inv.value.health, tok(TokenType.Damage)))
-const sanity = computed(() => meter(inv.value.sanity, tok(TokenType.Horror)))
+] as const).map(([k, printed]) => [k, computeStat(k, printed, inv.value.modifiers).current] as const))
+const hp = computed(() => meter(computeStat('health', inv.value.health, inv.value.modifiers).current, tok(TokenType.Damage)))
+const sanity = computed(() => meter(computeStat('sanity', inv.value.sanity, inv.value.modifiers).current, tok(TokenType.Horror)))
+import GameIcon from '@/arkham/components/GameIcon.vue'
 </script>
 
 <template>
   <div class="seat" :class="[`class-${cls}`, { selected, active, eliminated }]" role="button" tabindex="0"
     :aria-pressed="selected" @click="emit('select')" @keydown.enter.prevent="emit('select')">
-    <span class="face">
+    <span class="face" :data-image="cardImage(inv.cardCode)" :data-card-code="inv.cardCode">
       <img :src="portrait" :alt="nameOf(inv.cardCode)" />
       <img v-if="lead" class="crown" :src="crown" :alt="t('locationMap.lead')" />
       <i v-if="hasActions" class="pulse" aria-hidden="true"></i>
     </span>
     <span class="body">
       <span class="name"><b v-if="active" class="play" aria-hidden="true">▶</b>{{ nameOf(inv.cardCode) }}</span>
-      <span class="meter hp"><span class="track"><i :style="{ width: hp.pct + '%' }"></i></span><em>♥ {{ hp.left }}/{{ hp.max }}</em></span>
-      <span class="meter sanity"><span class="track"><i :style="{ width: sanity.pct + '%' }"></i></span><em>◆ {{ sanity.left }}/{{ sanity.max }}</em></span>
+      <span class="meter hp"><span class="track"><i :style="{ width: hp.pct + '%' }"></i></span><em><GameIcon type="health" /> {{ hp.left }}/{{ hp.max }}</em></span>
+      <span class="meter sanity"><span class="track"><i :style="{ width: sanity.pct + '%' }"></i></span><em><GameIcon type="sanity" /> {{ sanity.left }}/{{ sanity.max }}</em></span>
     </span>
     <span class="side">
-      <span class="count res" :title="t('locationMap.resources')">$ {{ tok(TokenType.Resource) }}</span>
-      <span class="count clue" :title="t('locationMap.clues')">◇ {{ tok(TokenType.Clue) }}</span>
+      <span class="count res" :title="t('locationMap.resources')"><GameIcon type="resource" /> {{ tok(TokenType.Resource) }}</span>
+      <span class="count clue" :title="t('locationMap.clues')"><GameIcon type="clue" /> {{ tok(TokenType.Clue) }}</span>
       <span v-if="waiting" class="waiting" :title="t('locationMap.waiting')">⟳</span>
       <span v-if="!waiting" class="count hand" :title="t('locationMap.hand', { count: inv.hand?.length ?? 0 })">🂠 {{ inv.hand?.length ?? '–' }}</span>
     </span>
     <div class="detail" role="tooltip">
       <b>{{ nameOf(inv.cardCode) }}</b>
-      <span>♥ {{ hp.left }}/{{ hp.max }} · ◆ {{ sanity.left }}/{{ sanity.max }}</span>
+      <span><GameIcon type="health" /> {{ hp.left }}/{{ hp.max }} · <GameIcon type="sanity" /> {{ sanity.left }}/{{ sanity.max }}</span>
       <span class="skills"><i v-for="[k, v] in skills" :key="k">{{ k.slice(0, 3) }} {{ v }}</i></span>
       <span>{{ tok(TokenType.Resource) }} {{ t('locationMap.resources').toLowerCase() }} · {{ tok(TokenType.Clue) }} {{ t('locationMap.clues').toLowerCase() }}</span>
       <span>{{ t('locationMap.hand', { count: inv.hand?.length ?? 0 }) }} · {{ t('locationMap.actionsLeft', { count: inv.remainingActions }) }}</span>
@@ -87,7 +90,7 @@ const sanity = computed(() => meter(inv.value.sanity, tok(TokenType.Horror)))
 .crown { position: absolute; left: -8px; top: -8px; width: 18px; height: 18px; }
 .pulse { position: absolute; right: -3px; top: -3px; width: 10px; height: 10px; border-radius: 50%; background: #ffe9a0; animation: blink 1.4s ease-in-out infinite alternate; }
 .body { display: grid; gap: 3px; min-width: 0; flex: 1; font: 600 11px/1.15 system-ui, sans-serif; }
-.name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 0.78rem Georgia, serif; }
+.name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 0.78rem var(--ui-serif); }
 .play { color: #ffe9a0; margin-right: 4px; font-size: 0.7rem; }
 .meter { display: flex; align-items: center; gap: 5px; }
 .meter .track { flex: 1; height: 4px; background: #5b5a54; border-radius: 3px; overflow: hidden; }
@@ -102,7 +105,7 @@ const sanity = computed(() => meter(inv.value.sanity, tok(TokenType.Horror)))
 .eye.glow { color: #ffe9a0; }
 .detail { display: none; position: absolute; left: 100%; top: 0; z-index: 5; margin-left: 8px; min-width: 190px; padding: 8px 10px; gap: 3px; background: #0f1813f5; border: 1px solid #c6a873aa; border-radius: 8px; box-shadow: 0 6px 20px #000a; font: 500 0.72rem/1.3 system-ui, sans-serif; }
 .seat:hover .detail { display: grid; }
-.detail b { font: 0.9rem Georgia, serif; }
+.detail b { font: 0.9rem var(--ui-serif); }
 .detail .skills { display: flex; gap: 8px; text-transform: uppercase; white-space: nowrap; color: #d6d0b6; }
 .detail .skills i { font-style: normal; }
 @keyframes blink { to { opacity: 0.35; } }

@@ -56,12 +56,18 @@ import {
   eventTimeUp,
 } from '@/arkham/api'
 import * as Api from '@/arkham/api'
+import { advanceMulligan } from '@/arkham/mulligan'
 import { useCardStore } from '@/stores/cards'
 import { useSettings } from '@/stores/settings'
 import { useUserStore } from '@/stores/user'
 import { useEventStore } from '@/arkham/stores/event'
 import { useEventTimer } from '@/arkham/composables/useEventTimer'
 import { useStepPoller } from '@/arkham/composables/useStepPoller'
+import { useAutopilot } from '@/arkham/composables/useAutopilot'
+import { fxBusy } from '@/arkham/composables/useFxBusy'
+import { useDbCardStore } from '@/stores/dbCards'
+import { useCardNames } from '@/arkham/composables/useCardNames'
+import { decideActionConfirm, type ActionConfirmRequest } from '@/arkham/actionConfirmPolicy'
 import { awaitingOrganizer, type SharedEventState } from '@/arkham/types/EpicEvent'
 import { useMenu, type MenuEntry } from '@/composable/menu'
 import { useKeybindings, type HoverAction } from '@/arkham/keybindings'
@@ -112,6 +118,7 @@ import CardOverlay from '@/arkham/components/CardOverlay.vue'
 import CardView from '@/arkham/components/Card.vue'
 import MultiplayerLobby from '@/arkham/components/MultiplayerLobby.vue'
 import GameLog from '@/arkham/components/GameLog.vue'
+import GameStatusPanel from '@/arkham/components/GameStatusPanel.vue'
 import ExportLogDialog from '@/arkham/components/ExportLogDialog.vue'
 import type { LogEntry, LogRow } from '@/arkham/types/GameLog'
 import {
@@ -134,6 +141,8 @@ import DrawSpotlight from '@/arkham/components/DrawSpotlight.vue'
 import Draggable from '@/components/Draggable.vue'
 import Menu from '@/components/Menu.vue'
 import Prompt from '@/components/Prompt.vue'
+import { sfxForUpdate } from '@/arkham/sfxEvents'
+import { playSfx } from '@/arkham/sfx'
 
 interface GameCard {
   title: string
@@ -920,6 +929,30 @@ const choices = computed(() => {
   return choicesByPlayer.value.get(playerId.value) ?? []
 })
 const gameOver = computed(() => game.value?.gameState.tag === 'IsOver')
+const advancingForDebug = ref(false)
+const canDebugAdvance = computed(() =>
+  debug.active && !props.spectate && game.value?.gameState.tag === 'IsActive'
+)
+const debugActs = computed(() => Object.values(game.value?.acts ?? {})
+  .filter((act) => ['A', 'C', 'E', 'G'].includes(act.sequence.side)))
+const debugAgendas = computed(() => Object.values(game.value?.agendas ?? {})
+  .filter((agenda) => ['A', 'C'].includes(agenda.sequence.side)))
+
+async function debugAdvance(kind: 'act' | 'agenda', id: string) {
+  const current = game.value
+  if (!current || !canDebugAdvance.value || advancingForDebug.value) return
+  advancingForDebug.value = true
+  try {
+    await debug.send(current.id, kind === 'act'
+      ? { tag: 'AdvanceAct', contents: [id, { tag: 'GameSource' }, 'AdvancedWithOther'] }
+      : { tag: 'AdvanceAgendaBy', contents: [id, 'AgendaAdvancedWithOther'] })
+  } catch (cause) {
+    console.error('[Arkham debug] Could not advance', { kind, id, cause })
+    toast.error(t('gameBar.debugAdvanceFailed'))
+  } finally {
+    advancingForDebug.value = false
+  }
+}
 const outcome = computed(() => game.value?.outcome ?? null)
 // A standalone scenario has no campaign, so the verdict is about the scenario.
 const outcomeLabel = computed(() => {
@@ -1317,6 +1350,7 @@ function applyGameUpdate(updatedGame: Arkham.Game, locked: boolean) {
    * it precisely while an overlay has the question hidden -- that is when the
    * card flying out of the overlay needs a slot laid out to land in. */
   const draws = pendingDraws(updatedGame, playerId.value ?? '')
+  if (!soundsDisabled.value) playSfx(sfxForUpdate(previousGame, updatedGame))
   const apply = async () => {
     game.value = nextGame
     heldPendingDraws.value = draws
@@ -2348,6 +2382,9 @@ async function runUndo(call: (gameId: string) => Promise<void>) {
   if (undoLock.value) return
   undoLock.value = true
   processing.value = true
+  // The restored question is often one the autopilot would answer straight away;
+  // hold off until the player moves the game forward again.
+  autopilot.suspendUntilGameMoves()
   const oldQuestion = game.value?.question
   if (game.value) setGameQuestion({})
   resultQueue.value = []
@@ -2369,6 +2406,39 @@ async function runUndo(call: (gameId: string) => Promise<void>) {
 async function undo() {
   await runUndo((gameId) => undoChoice(gameId, debug.active))
 }
+
+// A card play or provoking action waiting on the player's yes (see `choose`).
+const pendingConfirm = ref<{ index: number; step: number | undefined; request: ActionConfirmRequest } | null>(null)
+
+/* Answers the questions that have nothing to decide (a lone "draw encounter",
+ * "apply results", a forced single choice) so the phases run on by themselves.
+ * Real decisions still wait for the player. */
+const autopilot = useAutopilot({
+  enabled: computed(() => settings.autopilot),
+  question,
+  choices,
+  step: computed(() => game.value?.scenarioSteps),
+  blocked: computed(
+    () =>
+      props.spectate ||
+      processing.value ||
+      undoLock.value ||
+      uiLock.value ||
+      storyAnswerPending.value ||
+      skipAllInProgress.value ||
+      gameCard.value !== null ||
+      tarotCards.value.length > 0 ||
+      drawSpotlight.value !== null ||
+      pendingConfirm.value !== null ||
+      fxBusy.value ||
+      questionPlayerId.value !== playerId.value,
+  ),
+  hasRevealedCards: computed(() =>
+    Boolean(game.value && playerId.value && ArkhamGame.revealedCards(game.value, playerId.value).length > 0),
+  ),
+  submit: (index) => submitChoice(index),
+  onCapReached: () => toast.info(t('gameBar.autopilotPaused')),
+})
 
 async function undoScenario() {
   confirmingUndoScenario.value = false
@@ -2553,8 +2623,71 @@ function isStoryQuestion(question: Question | null | undefined): boolean {
   return inner?.tag === 'Read'
 }
 
+/* ---- Confirming plays and attacks of opportunity ------------------------
+ * Every choice the player makes goes through `choose`, so this is the one place
+ * that can stop a card play or a provoking action before it is sent (see
+ * actionConfirmPolicy.ts). The autopilot and ordered answers go straight to
+ * `submitChoice`: they never play cards or take actions. */
+const dbCardStore = useDbCardStore()
+
+function confirmRequestFor(idx: number): ActionConfirmRequest | null {
+  const g = game.value
+  const pid = playerId.value
+  if (!g || !pid || props.spectate) return null
+  return decideActionConfirm({
+    question: g.question[pid],
+    choice: choices.value[idx],
+    playerId: pid,
+    investigators: g.investigators,
+    enemies: g.enemies,
+    cardText: (code) => dbCardStore.getDbCard(code)?.real_text ?? null,
+    confirmPlays: settings.confirmCardPlays,
+    warnAttacksOfOpportunity: settings.warnAttacksOfOpportunity,
+  })
+}
+
+// Resolves the engine's code variants (a "c" prefix, a/b faces) and falls back to the English
+// card list, so the prompt never shows a raw code.
+const cardNameOf = useCardNames()
+const cardDisplayName = (code: string | null | undefined) => (code ? cardNameOf(code) : '')
+
+const pendingConfirmPrompt = computed(() => {
+  const pending = pendingConfirm.value
+  if (!pending || !game.value) return ''
+  const { request } = pending
+  const enemies = request.provokingEnemyIds
+    .map((id) => cardDisplayName(game.value?.enemies[id]?.cardCode))
+    .filter(Boolean)
+    .join(', ')
+  const head = request.kind === 'play'
+    ? t('gameBar.actionConfirm.play', { card: cardDisplayName(request.cardCode) })
+    : t('gameBar.actionConfirm.action')
+  if (enemies === '') return head
+  const warning = t('gameBar.actionConfirm.attackOfOpportunity', { enemies }, request.provokingEnemyIds.length)
+  return `${head} ${warning}`
+})
+
+function confirmPendingChoice() {
+  const pending = pendingConfirm.value
+  pendingConfirm.value = null
+  // The question moved on while the dialog was open (another seat acted): the
+  // index no longer names the same choice, so drop it rather than send it.
+  if (!pending || game.value?.scenarioSteps !== pending.step) return
+  void submitChoice(pending.index)
+}
+
 // Callbacks
 async function choose(idx: number) {
+  if (processing.value || pendingConfirm.value) return
+  const request = idx === -1 ? null : confirmRequestFor(idx)
+  if (request) {
+    pendingConfirm.value = { index: idx, step: game.value?.scenarioSteps, request }
+    return
+  }
+  await submitChoice(idx)
+}
+
+async function submitChoice(idx: number) {
   if (processing.value) return
   if (idx !== -1 && game.value && !props.spectate) {
     oldQuestion.value = game.value.question
@@ -2600,6 +2733,26 @@ async function chooseOrdered(choices: number[]) {
     }),
   )
 }
+
+/* A confirmed mulligan is answered card by card (the engine re-asks after each
+ * discard), but without blanking the question in between so the hand and panel
+ * stay put instead of flashing on every round trip. */
+function sendMulliganChoice(idx: number) {
+  if (!game.value || props.spectate) return
+  sendAnswer(
+    JSON.stringify({
+      tag: 'Answer',
+      contents: { choice: idx, playerId: playerId.value, questionVersion: game.value.scenarioSteps },
+    }),
+  )
+}
+
+watch(
+  () => game.value?.question,
+  () => {
+    if (game.value && playerId.value) advanceMulligan(game.value, playerId.value, sendMulliganChoice)
+  },
+)
 
 /* An overlay chosen at deck selection applies to this game only -- it is sent
  * with the answer rather than saved to the deck. */
@@ -3130,6 +3283,19 @@ onUnmounted(() => {
                 <span class="shortcut">{{ shortcutKeys('toggleDebug').join('+') }}</span>
               </button>
             </MenuItem>
+            <template v-if="canDebugAdvance && (debugActs.length || debugAgendas.length)">
+              <div class="menu-section">Admin</div>
+              <MenuItem v-for="act in debugActs" :key="'act-' + act.id" v-slot="{ active }" :disabled="advancingForDebug">
+                <button :class="{ active }" :disabled="advancingForDebug" @click="debugAdvance('act', act.id)">
+                  {{ $t('gameBar.debugAdvanceAct', { step: act.sequence.number, deck: act.deckId }) }}
+                </button>
+              </MenuItem>
+              <MenuItem v-for="agenda in debugAgendas" :key="'agenda-' + agenda.id" v-slot="{ active }" :disabled="advancingForDebug">
+                <button :class="{ active }" :disabled="advancingForDebug" @click="debugAdvance('agenda', agenda.id)">
+                  {{ $t('gameBar.debugAdvanceAgenda', { step: agenda.sequence.step, deck: agenda.deckId }) }}
+                </button>
+              </MenuItem>
+            </template>
             <MenuItem v-slot="{ active }">
               <button :class="{ active }" @click="showEntityBrowser = true">
                 <TableCellsIcon aria-hidden="true" /> {{ $t('gameBar.debugEntities') }}
@@ -3495,6 +3661,7 @@ onUnmounted(() => {
             isActualScenarioView
           "
         >
+          <GameStatusPanel :game="game" :playerId="playerId" />
           <GameLog
             :entries="gameLog"
             :can-undo="!spectate"
@@ -3541,6 +3708,12 @@ onUnmounted(() => {
       "
       :yes="requestUnarchive"
       :no="() => (archiveNotice = null)"
+    />
+    <Prompt
+      v-if="pendingConfirm"
+      :prompt="pendingConfirmPrompt"
+      :yes="confirmPendingChoice"
+      :no="() => (pendingConfirm = null)"
     />
     <Prompt
       v-if="confirmingUndoScenario"
@@ -4292,7 +4465,7 @@ header {
 
 .the-silence-modal__body h2 {
   margin: 0 0 10px;
-  font-family: Teutonic, Georgia, serif;
+  font-family: Teutonic, var(--ui-serif);
   font-size: 1.7rem;
   color: #bffff8;
 }
@@ -4472,7 +4645,7 @@ header {
 
 .cthulhu-revelation-hint {
   color: #b9c9b1;
-  font-family: Teutonic, Georgia, serif;
+  font-family: Teutonic, var(--ui-serif);
   font-size: 0.95rem;
   letter-spacing: 0.14em;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);

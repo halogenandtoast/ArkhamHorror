@@ -30,6 +30,8 @@ export type Location = {
   cardId: string;
   tokens: Tokens;
   shroud: number | null;
+  /** How the printed shroud is counted: a plain number, per investigator, or X. */
+  shroudKind: GameValue['tag'] | null;
   revealed: boolean;
   enemyLocation: boolean;
   exhausted: boolean;
@@ -71,7 +73,7 @@ export const groupMembershipDecoder = JsonDecoder.object<GroupMembership>(
   'GroupMembership',
 )
 
-type GameValue =
+export type GameValue =
   | { tag: "Static", contents: number }
   | { tag: "PerPlayer", contents: number }
   | { tag: "ValueX", contents: number }
@@ -83,14 +85,16 @@ export const gameValueDecoder = JsonDecoder.oneOf<GameValue>([
     .map(() => ({ tag: "ValueX" as const, contents: 0 }))
 ], 'GameValue')
 
-export const locationDecoder = JsonDecoder.object<Location>(
+type RawLocation = Omit<Location, 'shroud' | 'shroudKind'> & { shroud: GameValue | null }
+
+export const locationDecoder = JsonDecoder.object<RawLocation>(
   {
     cardCode: JsonDecoder.string(),
     label: JsonDecoder.string(),
     id: JsonDecoder.string(),
     cardId: JsonDecoder.string(),
     tokens: tokensDecoder,
-    shroud: JsonDecoder.nullable(gameValueDecoder.map(v => v.contents)),
+    shroud: JsonDecoder.nullable(gameValueDecoder),
     revealed: JsonDecoder.boolean(),
     investigators: JsonDecoder.array<string>(JsonDecoder.string(), 'InvestigatorId[]'),
     enemies: JsonDecoder.array<string>(JsonDecoder.string(), 'EnemyId[]'),
@@ -116,4 +120,4 @@ export const locationDecoder = JsonDecoder.object<Location>(
     exhausted: JsonDecoder.optional(JsonDecoder.boolean()).map(v => v ?? false),
   },
   'Location',
-);
+).map<Location>(({ shroud, ...rest }) => ({ ...rest, shroud: shroud?.contents ?? null, shroudKind: shroud?.tag ?? null }));

@@ -1,5 +1,6 @@
 import * as JsonDecoder from 'ts.data.json';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
+import { GameValue, gameValueDecoder } from '@/arkham/types/Location';
 
 export type AgendaSequence = {
   step: number
@@ -8,7 +9,7 @@ export type AgendaSequence = {
 
 export type Agenda = {
   doom: number;
-  // doomThreshold: GameValue;
+  doomThreshold: GameValue | null;
   id: string;
   deckId: number;
   treacheries: string[];
@@ -25,7 +26,7 @@ export const agendaSequenceDecoder = JsonDecoder.object({
 
 export const agendaDecoder = JsonDecoder.object<Agenda>({
   doom: JsonDecoder.number(),
-  // doomThreshold: gameValueDecoder,
+  doomThreshold: JsonDecoder.optional(JsonDecoder.nullable(gameValueDecoder)).map((v) => v ?? null),
   id: JsonDecoder.string(),
   deckId: JsonDecoder.number(),
   treacheries: JsonDecoder.array<string>(JsonDecoder.string(), 'TreacheryId[]'),

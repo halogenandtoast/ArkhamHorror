@@ -1,0 +1,31 @@
+{
+  "heading": "Màn IV-B",
+  "setup": {
+    "putGreatWebs": "Xào mỗi bản sao của The Great Web và đặt ngẫu nhiên 4 lá vào chơi, theo hàng dọc.",
+    "beginAtTopmostWeb": "Mỗi điều tra viên bắt đầu chơi ở vị trí The Great Web trên cùng.",
+    "setOtherWebsAside": "Đặt mỗi lá bài The Great Web còn lại qua một bên, ngoài khu vực chơi.",
+    "setCardsAside": "Đặt các thẻ sau sang một bên, ngoài khu vực chơi: lá Atlach-Nacha hai mặt, kẻ địch 4 Legs of Atlach-Nacha và cả hai bản sao của The Spinner in Darkness.",
+    "checkSteps": "Kiểm tra số kiểm đếm được ghi bên cạnh \"Các bước của cây cầu\" trong Nhật ký Chiến dịch.",
+    "buildEncounterDeck": "Xáo trộn các lá bài encounter còn lại để tạo thành chồng bài encounter."
+  },
+  "intro": {
+    "title": "Màn IV-B: Weaver of the Cosmos"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "resolution5": {
+      "title": "Giải pháp thứ 5"
+    }
+  }
+}

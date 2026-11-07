@@ -1,0 +1,17 @@
+{
+  "heading": "Màn I",
+  "intro": {
+    "title": "Màn I: Vùng Hoang Dã Chưa Được Khai Phá"
+  },
+  "setup": {
+    "placeLocations": "Đặt vị trí Expedition Camp vào chơi. Mỗi điều tra viên bắt đầu chơi tại Expedition Camp."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

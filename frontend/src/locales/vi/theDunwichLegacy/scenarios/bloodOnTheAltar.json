@@ -1,0 +1,23 @@
+{
+  "heading": "Màn IV",
+  "setup": {
+    "placeLocations": "Đặt lá bài Village Commons vào màn chơi. Mỗi điều tra viên bắt đầu trò chơi tại Village Commons.",
+    "potentialSacrifices": "Kiểm tra Nhật ký Chiến dịch. Tập hợp các thẻ cho từng nhân vật “bị bắt cóc” dựa trên Nhật ký chiến dịch của bạn. Hình thành một chồng bài \"đối tượng tiềm năng để hiến tế\" chứa các lá bài trên, cùng với lá bài Zebulon Whateley và Earl Sawyer.",
+    "setAside": "Đặt các lá bài sau đây sang một bên, ngoài vùng chơi: Silas Bishop, The Hidden Chamber, Key to the Chamber, và Powder of Ibn-Ghazi.",
+    "placeUnderneath": "Lấy các lá bài The Hidden Chamber và Key to the Chamber được để một bên hồi đầu, cùng với 3 lá bài đầu tiên của chồng bài encounter. Xào chúng và chia 1 lá bài ngẫu nhiên úp xuống bên dưới mỗi vị trí đang có trong màn chơi, ngoại trừ vị trí Village Commons."
+  },
+  "hiddenChamber": {
+    "title": "Căn Phòng Ẩn Giấu"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

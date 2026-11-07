@@ -1,0 +1,26 @@
+{
+  "setup": {
+    "sewers": "Xáo trộn các địa điểm trong bộ encounter _Sewers_ để bạn không biết đâu là đâu và đưa tất cả vào khu vực chơi, ở mặt chưa lật.",
+    "sluiceControl": "Để riêng Sluice Control, out of play.",
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Sewer Culvert.",
+    "checkCampaignLog": "Kiểm tra Nhật ký Chiến dịch.",
+    "setOutOfPlay": "Tập hợp tập bài encounter _Fire!_ và đặt mỗi bản sao của Fire! sang một bên, ngoài khu vực chơi, cùng với cả hai bản sao của asset phần thưởng Collector và các kẻ địch Elokoss, Queen’s Knight, và Herald of Flame."
+  },
+  "intro": {
+    "title": "Kịch bản III: Queen of Ash"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "xp": {
+      "bonus": "Kinh nghiệm thưởng"
+    }
+  }
+}

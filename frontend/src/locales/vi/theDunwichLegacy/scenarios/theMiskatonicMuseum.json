@@ -1,0 +1,30 @@
+{
+  "heading": "Màn II",
+  "intro": {
+    "title": "Màn II: Viện bảo tàng Miskatonic",
+    "part1": {
+      "title": "Màn II: Viện bảo tàng Miskatonic"
+    },
+    "part2": {
+      "title": "Màn II: Viện bảo tàng Miskatonic"
+    }
+  },
+  "setup": {
+    "placeLocations": "Đặt ngẫu nhiên một trong hai vị trí Administration Office và một trong hai vị trí Security Office vào màn chơi. Loại bỏ các bản sao của 2 vị trí trên khỏi màn chơi. Sau đó, đặt vị trí Museum Entrance and Museum Halls vào màn chơi. Các điều tra viên bắt đầu màn chơi tại vị trí Museum Entrance.",
+    "exhibitDeck": {
+      "instructions": "Đặt 6 lá vị trí “Exhibit Hall” sang một bên để tạo thành chồng bài “Exhibit”. Để tạo chồng bài, làm theo các bước sau:",
+      "bottom": "Xào lá bài Exhibit Hall (Restricted Hall) và 2 lá Exhibit Hall ngẫu nhiên vào nhau để tạo thành 3 lá bài cuối cùng của chồng bài Exhibit, mặt chưa để lộ ngửa lên."
+    }
+  },
+  "theVoid": {
+    "body": "Một số lá bài trong màn này ám chỉ đến một khu vực chơi được gọi là “the void” (hư không). Hư không là một khu vực ngoài vùng chơi và nằm bên cạnh chồng bài act và agenda để kẻ địch Hunting Horror có thể tiến vào hay rời đi thông qua hiệu ứng của các lá bài. Trong khi Hunting Horror đang ở trong vùng hư không, nó được xem là rời khỏi màn chơi và không thể bị ảnh hưởng bởi các lá bài của người chơi hoặc hành động của điều tra viên."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

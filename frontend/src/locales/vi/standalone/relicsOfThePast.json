@@ -1,0 +1,40 @@
+{
+  "intro": {
+    "body": "<p>*Để hiểu rõ hơn về tương lai của chúng ta, trước tiên chúng ta phải hiểu về quá khứ. Không mất nhiều thời gian để những báo cáo về chuyến thám hiểm thất bại của Miskatonic University tới những khu rừng rậm ở Mexico lọt vào tai bạn. Những câu chuyện về các kim tự tháp bậc thang, tộc người rắn thần thoại và các cổ vật dị thường ở những nơi trước đây được cho là không có người ở đã khơi dậy sự hứng thú của bạn. Bạn không mất nhiều thời gian để thu dọn hành lý và lên kế hoạch tự mình đến đó để điều tra. Chuyến thám hiểm của Miskatonic University đã tiến vào khu di tích nhưng gặp khó khăn trong việc tạo ra bất kỳ bước tiến nào. Tim bạn đập thình thịch khi bắt đầu nghĩ đến những kho báu bị lãng quên nào khác vẫn chưa được khám phá ở trung tâm của lăng mộ.*</p>",
+    "supplies": {
+      "title": "Vật Tư Dự Trữ"
+    }
+  },
+  "label": {
+    "supplies": {
+      "chalk": "_Chalk:_ *Dùng để viết lên các bề mặt đá.*",
+      "compass": "_Compass:_ *Có thể giúp bạn xác định phương hướng.*",
+      "journal": "_Journal:_ *Để ghi chép lại các sự kiện của chuyến thám hiểm.*",
+      "satchel": "_Satchel:_ *Một nơi an toàn để cất giữ bất cứ thứ gì bạn tìm thấy trong hầm mộ.*",
+      "torches": "_Torches:_ *Có thể thắp sáng các khu vực tối tăm, hoặc châm lửa các giá cắm đuốc.*"
+    },
+    "swap": {
+      "question": "Monterey Jack có thể nâng cấp Trusty Bullwhip lên phiên bản advanced, hoặc hạ cấp phiên bản advanced của Buried Secrets xuống phiên bản gốc.",
+      "questionMust": "Monterey Jack phải nâng cấp Buried Secrets lên phiên bản advanced, hoặc hạ cấp phiên bản advanced của Trusty Bullwhip về phiên bản gốc."
+    }
+  },
+  "supplies": {
+    "chalk": "_Chalk:_ *Dùng để viết lên các bề mặt đá.*",
+    "compass": "_Compass:_ *Có thể giúp bạn xác định phương hướng.*",
+    "journal": "_Journal:_ *Để ghi chép lại các sự kiện của chuyến thám hiểm.*",
+    "satchel": "_Satchel:_ *Một nơi an toàn để cất giữ bất cứ thứ gì bạn tìm thấy trong hầm mộ.*",
+    "torches": "_Torches:_ *Có thể thắp sáng các khu vực tối tăm, hoặc châm lửa các giá cắm đuốc.*"
+  },
+  "setup": {
+    "placeEntryway": "Đặt vị trí Entryway vào chơi. Mỗi điều viên bắt đầu chơi tại vị trí Entryway.",
+    "poisoned": "Đặt mỗi điểm yếu Poisonsed đang không ở trong chồng bài của một điều tra sang một bên."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

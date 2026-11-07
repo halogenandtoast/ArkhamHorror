@@ -218,6 +218,10 @@ export function pluralize(w: string, n: number) {
     case 'ko': {
       return `${w} ${n}`
     }
+    // Vietnamese nouns do not inflect for number: the count simply precedes them.
+    case 'vi': {
+      return `${n} ${w}`
+    }
     case 'zh':
     case 'zh-cn': {
       return `${n}${w}${n == 1 ? '' : ''}`

@@ -1,0 +1,162 @@
+{
+  "difficulty": {
+    "Easy": "*Tôi muốn trở về từ chuyến thám hiểm*",
+    "Standard": "*Tôi muốn đấu tranh với thiên nhiên khắc nghiệt*",
+    "Hard": "*Tôi muốn khám phá thành phố đã mất*",
+    "Expert": "*Tôi muốn biết tên của sự điên loạn thực sự*"
+  },
+  "interludes": {
+    "1": "Đêm Nghỉ Ngơi",
+    "2": "Đêm Dài Vô Tận",
+    "3": "Đêm Cuối"
+  },
+  "checkpoint1": {
+    "theDisappearance1": {
+      "title": "Chuyển tiếp I: Sự biến mất"
+    },
+    "theDisappearance2": {
+      "title": "Chuyển tiếp I: Sự biến mất"
+    },
+    "theDisappearance3": {
+      "title": "Chuyển tiếp I: Sự biến mất"
+    }
+  },
+  "checkpoint2": {
+    "theAttack1": {
+      "title": "Điểm Kiểm Tra II: Cuộc Tấn Công"
+    },
+    "theAttack2": {
+      "title": "Điểm Kiểm Tra II: Cuộc Tấn Công"
+    },
+    "theAttack3": {
+      "title": "Điểm Kiểm Tra II: Cuộc Tấn Công"
+    }
+  },
+  "interlude1": {
+    "restfulNight1": {
+      "title": "Chuyển tiếp I: Đêm Nghỉ Ngơi"
+    },
+    "restfulNight2": {
+      "title": "Chuyển tiếp I: Đêm Nghỉ Ngơi"
+    },
+    "restfulNight3": {
+      "title": "Chuyển tiếp I: Đêm Nghỉ Ngơi"
+    },
+    "danforthIsAlive": "<p>Nếu Danforth còn sống</p><p> Danforth lẩm bẩm một mình liên tục khi bạn bước vào lều của anh ta: “‘…Giờ đây dường như không còn chỗ cho hy vọng… và tôi có thể nhận ra… trên gương mặt của các đồng đội… rằng họ đã quyết định sẽ bỏ mạng…’” Nhịp điệu giọng nói của anh ta cho thấy anh đang đọc thuộc lòng điều gì đó hơn là nói ra suy nghĩ. Chỉ khi bạn hắng giọng to, anh ta mới nhận ra sự hiện diện của bạn. Đôi mắt anh ta mở to, không chớp. “Giờ cậu hiểu rồi,” anh ta nói khẽ dưới hơi thở. “Cậu đã thấy điều tôi thấy.” Bạn gật đầu. Không còn nghi ngờ gì nữa. Thứ mà Danforth nhìn thấy khi anh ta và giáo sư thoát khỏi chuyến đi định mệnh chính là thực thể đã đập máy bay của bạn xuống đất. “Nó biết chúng ta ở đây,” anh ta nói một cách u ám. “Nó thấy chúng ta.”</p><p class='basic'>Lắng nghe Danforth giúp bạn hiểu sâu hơn về sự điên loạn của nơi này. Bất kỳ điều tra viên nào cũng có thể bắt đầu _Màn II: To the Forbidden Peaks (Đến Những Đỉnh Cấm)_ với hai lá bài bổ sung được rút trong tay bài ban đầu.</p>",
+    "kenslerIsAlive": "<p>Nếu Tiến sĩ Amy Kensler còn sống</p><p> Người dẫn đầu đội thám hiểm chẳng để ý gì đến bạn khi bạn bước vào lều của bà. Đôi mắt bà dán chặt vào kính hiển vi trước mặt. Bà dường như đang nghiên cứu một cục chất lỏng nhỏ giọt sặc sỡ, đen kịt trong một đĩa petri nhỏ. Chắc hẳn bà đã thu hồi thứ chất nhầy đó từ trước. Bạn hỏi liệu bà có nghĩ việc nghiên cứu nó gần vậy có an toàn không. “Dĩ nhiên là không,” bà đáp bằng giọng đều đều khô khốc. “Nhưng đôi khi, tiến bộ khoa học đòi hỏi một chút… mạo hiểm.” Điều đó đúng, theo một cách nào đó—bạn chỉ có mặt ở đây vì đội đã quyết định đặt mình vào nguy hiểm để xác nhận sự thật đằng sau báo cáo của Dyer. Bạn hỏi Tiến sĩ Kensler đã phát hiện ra gì. “Thật đáng thất vọng, rất ít. Về mặt sinh lý, chất này không giống bất cứ thứ gì tôi từng thấy. Tôi… thậm chí không chắc nó là chất lỏng. Nó dường như có đặc tính của cả ba trạng thái vật chất.” Cuối cùng bà đặt kính hiển vi sang một bên, đậy đĩa petri lại, và nhìn vào mắt bạn. “Nó sẽ rất hấp dẫn, nếu nó không đang cố giết chúng ta.”</p><p class='basic'>Nghiên cứu của Tiến sĩ Kensler giúp bạn nhìn nhận tình hình rõ ràng hơn. Trong Nhật ký Chiến dịch, ghi lại *Tiến sĩ Kensler đang chia sẻ nghiên cứu của bà với bạn.*</p>",
+    "sinhaIsAlive": "<p>Nếu Tiến sĩ Mala Sinha còn sống</p><p>Tiến sĩ Sinha nhìn bạn chằm chằm khi bạn đến gần. “Nếu cậu bảo tôi rằng cậu ‘quá lạnh để ngủ,’ thì trời giúp tôi…” bà bắt đầu, nhưng thở dài khi bạn lắc đầu. “Xin lỗi. Tôi biết, tôi biết. Cho tôi xem vết thương của cậu đi. Để tôi làm việc.” Bà lấy ra bộ dụng cụ y tế và ra hiệu cho bạn ngồi xuống tấm chăn gần đó. “Không có dấu hiệu của tê cóng, hạ thân nhiệt, hay hoại tử, tốt lắm…” Trong im lặng, bà xem xét những vết bầm và thương tích bề mặt bạn chịu từ vụ rơi máy bay. Cuối cùng, bà chép miệng và lắc đầu. “Kỳ lạ,” bà thì thầm dưới hơi thở. Bạn nhìn bà đầy thắc mắc. “Hai chiếc máy bay,” bà giải thích, “hơn chục người chúng ta chia ra hai chiếc, vậy mà chúng ta chịu nhiều vết thương từ chuyến đi qua thềm băng hơn là từ vụ tai nạn. Trừ khi…” bà bỏ lửng trong im lặng nặng nề. Khi bà băng bó vết thương cho bạn, bạn nghĩ về ý nghĩa đằng sau lời nói của bà, sự thật mà bà không muốn nói ra. Thực thể đã buộc máy bay của bạn rơi xuống có thực sự muốn giết bạn không? Hay nó chỉ đang dẫn dắt bạn? Và nếu vậy, đến đâu?</p><p class='basic'>Chuyên môn của Tiến sĩ Sinha giúp bạn hồi phục vết thương. Bất kỳ điều tra viên nào cũng có thể chọn chữa 1 chấn thương thể chất hoặc xóa 1 sát thương từ một tài sản đồng đội được ghi trong Nhật ký Chiến dịch.<p>",
+    "cookieIsAlive": "<p>Nếu James \"Cookie\" Fredericks còn sống</p><p>Cookie nhìn chằm chằm vào đống lửa trại khi bạn đến gần, rõ ràng đang lạc trong thế giới của riêng mình. Đôi mắt xa xăm của ông phản chiếu ánh lửa mờ nhạt, chập chờn. Ai biết ông thực sự thấy gì trong đó? Khi bạn bắt đầu nói, ông giật mình thoát khỏi cơn mơ màng. “À. Chỉ là cậu thôi,” ông lẩm bẩm, giọng khàn khàn. “Ngồi xuống đi. Lửa không chỉ dành cho tôi.” Bạn làm theo, tháo găng tay và sưởi ấm tay một lúc trước khi hỏi Cookie nghĩ gì về kế hoạch. “Tôi nghĩ gì à?” Ông gần như cười phá lên. “Tôi nghĩ cả đám các cậu bị ảo tưởng hết rồi. Nhưng tôi biết gì chứ.” Bạn nói to suy nghĩ rằng ông biết nhiều hơn những gì người khác nghĩ. “Vậy sao?” ông hỏi bằng giọng đều đều u ám. “Về chiến tranh, có lẽ,” ông gầm gừ. “Nhưng có khi đây cũng là chiến tranh đấy. Được rồi. Cậu muốn biết tôi biết gì? Tốt thôi.” Bạn chăm chú lắng nghe khi Cookie kể lại những câu chuyện kinh hoàng của mình từ Đại Chiến, những câu chuyện chắc chắn sẽ khiến bạn gặp ác mộng nếu bạn chưa thực sự ở trong một cơn ác mộng.</p><p class='basic'>Lời khuyên của Cookie giúp bạn chuẩn bị cho hành trình phía trước. Bất kỳ điều tra viên nào cũng nhận được 1 kinh nghiệm thưởng.</p>",
+    "claypoolIsAlive": "<p>Nếu Avery Claypool còn sống</p><p> Claypool đang xem xét bản đồ của Ross Ice Shelf (Thềm Băng Ross) khi bạn đến gần, lần theo các đường địa hình bằng ngón tay. “Chúng ta đáng lẽ có điều kiện thời tiết tốt hơn,” anh ta giải thích khi bạn cúi xuống bên cạnh. “Tôi không biết vì sao hay thế nào, nhưng có thứ gì đó đang làm rối loạn thời tiết ở đây. Chúng ta bị những cơn bão bất ngờ đánh trúng, ngay cả với tiêu chuẩn của Nam Cực, và sự biến đổi nhiệt độ giống mùa đông hơn.” Bạn hỏi Claypool liệu có thể làm gì để tránh thêm khó khăn không. “Bản năng có thể là trú ẩn,” anh ta đáp, “và chắc chắn có vài người trong chúng ta quá kiệt sức để tiếp tục. Có người lại nghĩ ngược lại: rằng chúng ta nên rời đi ngay lập tức và tìm nơi an toàn khác. Tôi tin cách tốt nhất là ở giữa hai lựa chọn đó.” Anh ta gõ lên bản đồ trước mặt lần nữa, ra hiệu bạn lại gần. “Những cơn bão này đến nhanh và mạnh. Chúng ta phải tìm cơ hội và di chuyển ngay khi cơn này dịu xuống,” anh ta giải thích. Bạn gật đầu đồng ý.</p><p class='basic'>Dự đoán của Claypool giúp bạn an toàn trước thời tiết xấu. Loại bỏ 1 thẻ {'{'}frost{'}'} khỏi túi hỗn mang.</p>",
+    "ellsworthIsAlive": "<p>Nếu Roald Ellsworth còn sống</p><p>Ellsworth ném cho bạn một kính viễn vọng bỏ túi khi bạn lang thang qua trại, tìm việc để làm. “Cậu trông rảnh đấy. Đi theo tôi,” anh ta ra lệnh. Bạn đảo mắt và miễn cưỡng theo sau khi anh ta dẫn bạn ra vùng hoang dã đầy tuyết. Qua tiếng gió rít, bạn hỏi to anh ta đang dẫn bạn đi đâu. “Lên cao hơn,” Ellsworth đáp ngắn gọn. Gần một giờ, bạn theo anh ta lên con đường hiểm trở qua những khe đá đến một vách băng nhìn ra thềm băng. Những ngọn núi đen, lởm chởm hiện lên xa xa, mờ nhạt qua trận tuyết dày. “Kia,” anh ta nói, chỉ vào giữa hai đỉnh núi. “Cậu thấy nó giống gì?” Bạn đưa kính viễn vọng lên mắt, cẩn thận không để kính lạnh chạm vào da kẻo bị dính chặt. Qua ống kính phóng đại, bạn vừa đủ nhận ra một lối hẹp giữa các đỉnh núi. Có lẽ đây là tuyến đường tối ưu cho ngày mai? Bạn nói suy nghĩ của mình với Ellsworth, và anh ta gật đầu đồng tình. “Tôi đồng ý. Tôi sẽ đánh dấu nó trên bản đồ khi về trại.”</p><p class='basic'>Trinh sát cùng Ellsworth giúp bạn hiểu rõ hơn về hành trình phía trước. Trong Nhật ký Chiến dịch, ghi lại *các điều tra viên đã trinh sát lối qua núi.*</p>",
+    "ashevakIsAlive": "<p>Nếu Eliyah Ashevak còn sống</p><p>Bạn tìm thấy Eliyah ở rìa trại, đang chăm sóc đàn chó và đảm bảo chúng sẵn sàng cho hành trình ngày mai. Người bạn trung thành Anyu luôn ở bên anh ta như thường lệ. Đuôi con chó vẫy qua lại nhanh chóng khi bạn đến gần. “Ồ, chào cậu,” Eliyah nói qua vai khi nhận ra Anyu đã phát hiện bạn. “Bình tĩnh nào, Anyu nhé?” anh ta mắng yêu, cúi xuống xoa tai nó. Bạn tự hỏi to liệu nó có nhận ra nguy hiểm mà tất cả đang đối mặt không. “Ồ, nó biết,” Eliyah đáp. “Nó rất giỏi làm tan biến mọi rắc rối trên đời. Không phải lần đầu đâu.” Bạn tò mò tự hỏi Eliyah và Anyu đã trải qua những cuộc phiêu lưu nào trong quá khứ. Nhưng trước khi bạn kịp hỏi, một bình rượu lạnh đập vào ngực bạn và rơi vào tay. “Uống đi,” Eliyah mời. “Nó sẽ làm cậu ấm lên.” Anh ta ngồi xuống và uống từ bình của mình, ra hiệu bạn ngồi cùng. Bạn làm theo, nuốt một ngụm lớn. Nó bỏng rát khi trôi xuống. Anyu nằm giữa hai người, dụi tay bạn như cầu xin. Không còn lời nào được nói, nhưng Eliyah đúng. Trong khoảnh khắc, mọi thứ ổn.</p><p class='basic'>Gắn bó với Eliyah và Anyu khiến mọi thứ tốt hơn một chút. Bất kỳ điều tra viên nào cũng có thể chọn chữa 1 chấn thương tinh thần hoặc xóa 1 kinh hoàng từ một tài sản đồng đội được ghi trong Nhật ký Chiến dịch.</p>"
+  },
+  "interlude2": {
+    "endlessNight1": {
+      "title": "Chuyển tiếp II: Đêm Dài Vô Tận"
+    },
+    "endlessNight2": {
+      "title": "Chuyển tiếp II: Đêm Dài Vô Tận"
+    },
+    "endlessNight3": {
+      "title": "Chuyển tiếp II: Đêm Dài Vô Tận"
+    },
+    "endlessNight4": {
+      "title": "Chuyển tiếp II: Đêm Dài Vô Tận"
+    },
+    "kenslerIsAlive": "<p>Nếu Tiến sĩ Amy Kensler còn sống, nhưng *Tiến sĩ Kensler đang chia sẻ nghiên cứu với bạn* không được ghi trong Nhật ký Chiến dịch</p><p>Tiến sĩ Kensler liếc bạn lạnh lùng khi bạn vào lều, rồi quay lại công việc. “Xin lỗi, nhưng tôi quá bận để tiếp những mối quan ngại tầm phào của cậu, và tôi không có thời gian để lề mề. Tìm người khác mà trò chuyện, và làm ơn để tôi làm việc.”</p><p class='basic'>Cô ấy không muốn gặp bạn lúc này. Chọn người khác. *(Điều này không tính vào số phần bạn có thể đọc.)*</p>",
+    "ellsworthIsAlive": "<p>Nếu Roald Ellsworth còn sống</p><p>Ellsworth ném cho bạn một kính viễn vọng bỏ túi khi bạn lang thang qua trại, tìm việc để làm. “Cậu trông rảnh đấy. Đi theo tôi,” anh ta ra lệnh. Bạn đảo mắt và miễn cưỡng theo sau khi anh ta dẫn bạn ra vùng hoang dã đầy tuyết. Qua tiếng gió rít, bạn hỏi to anh ta đang dẫn bạn đi đâu. “Lên cao hơn,” Ellsworth đáp ngắn gọn. Gần một giờ, bạn theo anh ta lên con đường hiểm trở qua những khe đá đến một vách băng nhìn ra thềm băng. Những ngọn núi đen, lởm chởm hiện lên xa xa, mờ nhạt qua trận tuyết dày. “Kia,” anh ta nói, chỉ vào giữa hai đỉnh núi. “Cậu thấy nó giống gì?” Bạn đưa kính viễn vọng lên mắt, cẩn thận không để kính lạnh chạm vào da kẻo bị dính chặt. Qua ống kính phóng đại, bạn vừa đủ nhận ra một lối hẹp giữa các đỉnh núi. Có lẽ đây là tuyến đường tối ưu cho ngày mai? Bạn nói suy nghĩ của mình với Ellsworth, và anh ta gật đầu đồng tình. “Tôi đồng ý. Tôi sẽ đánh dấu nó trên bản đồ khi về trại.”</p><p class='basic'>Trinh sát cùng Ellsworth giúp bạn hiểu rõ hơn về hành trình phía trước. Trong Nhật ký Chiến dịch, ghi lại *các điều tra viên đã trinh sát lối qua núi.*</p>"
+  },
+  "interlude3": {
+    "finalNight1": {
+      "title": "Chuyển tiếp III: Đêm Cuối"
+    },
+    "kenslerIsAlive": "<p class='basic'>Nếu Tiến sĩ Amy Kensler còn sống, nhưng *Tiến sĩ Kensler sắp hiểu ra* không được ghi trong Nhật ký Chiến dịch của bạn</p><p>Tiến sĩ Kensler liếc bạn lạnh lùng khi bạn vào lều, rồi quay lại công việc. “Xin lỗi, nhưng tôi quá bận để tiếp những mối quan ngại tầm phào của cậu, và tôi không có thời gian để lề mề. Tìm người khác mà trò chuyện, và làm ơn để tôi làm việc.”</p><p class='basic'>Cô ấy không muốn gặp bạn lúc này. Chọn người khác. *(Điều này không tính vào số phần bạn có thể đọc.)*</p>",
+    "sinhaIsAlive": "<p class='basic'>Nếu Tiến sĩ Mala Sinha còn sống</p><p>Lần đầu tiên kể từ khi cuộc thám hiểm bắt đầu, Tiến sĩ Sinha chủ động tìm bạn, hỏi han về vết thương. Bạn cho cô ấy xem những vết thương, và cô ấy gật đầu, kìm lại lời trách móc thường lệ. Cô ấy băng bó trong im lặng cho đến khi cuối cùng lên tiếng. \"Tôi đã mất quá nhiều bệnh nhân, đến mức không còn đếm xuể,\" cô ấy tiết lộ. \"Hầu hết thời gian, chẳng thể làm gì được. Đó là bản chất của mọi thứ, tôi đoán vậy. Chúng ta là những sinh vật mong manh, xét cho cùng. Chỉ cần bẻ nhẹ một chút, chúng ta dễ vỡ tan.\" Cô ấy quấn băng quanh tay bạn với sự chính xác lành nghề, nhưng bạn nhận ra bàn tay cô khẽ run. \"Tôi chọn nghề này vì không chịu nổi thấy người khác đau đớn. Nghĩ lại thì đó là một quyết định khá ngốc nghếch. Xét cho cùng, trong nghề này, tôi chỉ toàn thấy người ta đau khổ.\" Bạn hỏi liệu cô ấy có thấy thỏa mãn khi họ khỏe lại sau khi cô hoàn thành công việc không. \"Tất nhiên,\" cô trả lời, sau một tiếng thở dài. \"Nhưng lần này…\" Cô tránh ánh mắt bạn, giọng gần như thì thầm. \"Tôi không nghĩ mình sẽ có được sự thỏa mãn đó. Cậu nghĩ sao?\"</p><p class='basic'>Chuyên môn của Tiến sĩ Sinha giúp bạn hồi phục vết thương. Bất kỳ điều tra viên nào cũng có thể chọn chữa 1 chấn thương thể chất hoặc xóa 1 sát thương từ một tài sản đồng đội được ghi trong Nhật ký Chiến dịch.</p>",
+    "ellsworthIsAlive": "<p class='basic'>Nếu Roald Ellsworth còn sống</p><p>Bạn đã biết Ellsworth nghĩ gì khi anh ta đến gần, một tay cầm đèn lồng, tay kia cầm cuốc phá băng. \"Cậu muốn đi một chuyến nhỏ không?\" Anh ta đưa đèn lồng cho bạn, và cả hai tách khỏi trại. Bạn trò chuyện khe khẽ, thận trọng khi khám phá chiều sâu băng giá, đi được quãng đường xa hơn nhiều so với khi đi cùng đội và số vật tư còn lại. \"Cậu chắc nghĩ tôi hơi điên hoặc ngốc,\" anh ta đoán sau một giờ di chuyển nhanh. \"Luôn đi một mình, lao vào nguy hiểm thế này. Vào những nơi lẽ ra chúng ta không nên đến.\" Bạn nhún vai và chỉ ra rằng bạn cũng đang ở đây với anh ta. \"Đúng vậy. Nên tôi nghi ngờ ý kiến của cậu về tôi là không thiên vị,\" anh ta đùa. Một luồng khí lạnh lẽo, hôi thối tràn qua hang như hơi thở của một con quái thú, với bạn đang ở trong cổ họng nó. \"Dù sao, tôi thực sự mừng vì có cậu ở đây,\" nhà thám hiểm thừa nhận, giọng hơi run. \"Nhìn kìa—\" anh ta chỉ về phía trước, nơi đường hầm rẽ đôi. Luồng khí hôi yếu dần quanh bạn, nhưng rõ ràng nó đến từ lối bên trái. \"Thứ gì đó bên kia đang lưu thông không khí. Điều đó phải có ý nghĩa gì đó, đúng không?\" Bạn gật đầu đồng ý, nhưng chết tiệt, bạn không thích mùi đó chút nào…</p><p class='basic'>Trinh sát cùng Ellsworth giúp bạn hiểu rõ hơn về hành trình phía trước. Trong Nhật ký Chiến dịch, ghi lại *các điều tra viên đã trinh sát lối rẽ đôi.*</p>",
+    "ashevakIsAlive": "<p>Nếu Eliyah Ashevak còn sống</p><p>Không khó để tìm Eliyah. Tiếng sủa dai dẳng của Anyu khiến vị trí của anh ta quá rõ ràng. \"Dừng lại, cô gái!\" anh ta ra lệnh, cố gắng giữ cô chó bình tĩnh. Con chó đứng ở rìa trại, sủa vào bóng tối phía xa như thể có thứ gì đang rình rập ở ranh giới tầm nhìn của bạn. Có lẽ là có. Thứ gì đó chỉ cô ấy thấy được. \"Nghiêm túc đấy, Anyu! Dừng lại! Cô ồn ào quá!\" Eliyah hét lên. Khi thấy bạn đến gần, anh ta ra hiệu nhờ bạn kéo cô ấy đi. \"Cậu có thể nắm cổ cô ấy không? Chúng ta cần đưa cô ấy về lều.\" Sau một hồi vật lộn, bạn cuối cùng cũng lôi được con chó đi và dẫn về trại. Cô ấy rên rỉ suốt đường, mõm khịt khịt. \"Cô ấy ngửi thấy gì đó,\" Eliyah nói khi cô ấy đã yên. \"Chưa bao giờ thấy cô ấy hành động thế này. Dù thứ gì ở phía trước, nó không thể là tốt. Hay bình thường.\" Anh ta vuốt tay qua tóc và nhún vai. \"Nhưng còn gì mới mẻ ở cái nơi chết tiệt này nữa đâu?\"</p><p class='basic'>Gắn bó với Eliyah và Anyu khiến mọi thứ tốt hơn một chút. Bất kỳ điều tra viên nào cũng có thể chọn chữa 1 chấn thương tinh thần hoặc xóa 1 kinh hoàng từ một tài sản đồng đội được ghi trong Nhật ký Chiến dịch.</p>",
+    "finalNight2": {
+      "title": "Chuyển tiếp III: Đêm Cuối"
+    },
+    "finalNight3": {
+      "title": "Chuyển tiếp III: Đêm Cuối"
+    },
+    "finalNight4": {
+      "title": "Chuyển tiếp III: Đêm Cuối"
+    }
+  },
+  "epilogue": {
+    "epilogue": {
+      "title": "Phần kết"
+    }
+  },
+  "key": {
+    "camp_BarrierCamp": "Trại - Barrier Camp (Trại Rào chắn) (7)",
+    "camp_BroadSnowdrifts": "Trại - Broad Snowdrifts (Đụn Tuyết Rộng) (4)",
+    "camp_CrashSite": "Trại - Crash Site (Nơi Máy bay Rơi) (0)",
+    "camp_CrystallineCavern": "Trại - Crystalline Cavern (Hang Pha lê) (8)",
+    "camp_FrigidCave": "Trại - Frigid Cave (Hang Băng Lạnh lẽo) (6)",
+    "camp_FrozenShores": "Trại - Frozen Shores (Bờ Băng Giá) (2)",
+    "camp_IcebreakerLanding": "Trại - Icebreaker Landing (Điểm Đổ bộ Phá Băng) (5)",
+    "camp_IcyWastes": "Trại - Icy Wastes (Vùng Đất Băng Giá) (4)",
+    "camp_PrecariousIceSheet": "Trại - Precarious Ice Sheet (Tấm Băng Nguy hiểm) (2)",
+    "camp_RemnantsOfLakesCamp": "Trại - Remnants of Lake's Camp (Tàn tích Trại của Lake) (7)",
+    "camp_RockyCrags": "Trại - Rocky Crags (Vách Đá Gồ ghề) (3)",
+    "camp_SnowGraves": "Trại - Snow Graves (Mộ Tuyết) (5)",
+    "camp_TreacherousPath": "Trại - Treacherous Path (Con đường Lừa dối) (1)",
+    "claypoolHasConfrontedHisDemons": "Claypool đã đối mặt với con quỷ của mình.",
+    "cookieHasConfrontedHisDemons": "Cookie đã đối mặt với con quỷ của mình.",
+    "danforthHasConfrontedHisDemons": "Danforth đã đối mặt với con quỷ của mình.",
+    "drKenslerHasAPlan": "Tiến sĩ Kensler có một kế hoạch.",
+    "drKenslerHasConfrontedHerDemons": "Tiến sĩ Kensler đã đối mặt với con quỷ của mình.",
+    "drKenslerIsOnTheVergeOfUnderstanding": "Tiến sĩ Kensler đang trên đà hiểu rõ mọi chuyện.",
+    "drKenslerIsSharingHerResearchWithYou": "Tiến sĩ Kensler đang chia sẻ nghiên cứu của bà với bạn.",
+    "drKenslerUnderstandsTheTrueNatureOfTheMiasma": "Tiến sĩ Kensler hiểu bản chất thực sự của sương mù.",
+    "drSinhaHasConfrontedHerDemons": "Tiến sĩ Sinha đã đối mặt với con quỷ của mình.",
+    "dyerHasConfrontedHisDemons": "Dyer đã đối mặt với con quỷ của mình.",
+    "eliyahHasConfrontedHisDemons": "Eliyah đã đối mặt với con quỷ của mình.",
+    "ellsworthHasConfrontedHisDemons": "Ellsworth đã đối mặt với con quỷ của mình.",
+    "locationsRevealed": "Địa Điểm Đã Lật",
+    "memoriesBanished": "Ký Ức Bị Xóa",
+    "memoriesDiscovered": "Ký Ức Đã Được Khám Phá",
+    "sealsPlaced": "Phong Ấn Đã Đặt",
+    "sealsRecovered": "Phong Ấn Đã Thu Hồi",
+    "suppliesRecovered": "Vật Tư Tìm Lại",
+    "takadaHasConfrontedHerDemons": "Takada đã đối mặt với con quỷ của mình.",
+    "theFacilityWasDestroyed": "Cơ sở đã bị phá hủy.",
+    "theInvestigatorsConvincedDyerToAllowTheExpedition": "Các điều tra viên đã thuyết phục Dyer đồng ý cho cuộc thám hiểm.",
+    "theInvestigatorsDidNotBelieveDyersReport": "Các điều tra viên không tin vào báo cáo của Dyer.",
+    "theInvestigatorsScoutedTheCityOutskirts": "Các điều tra viên đã thám thính ngoại ô thành phố.",
+    "theInvestigatorsScoutedTheForkedPass": "Các điều tra viên đã trinh sát lối rẽ đôi.",
+    "theInvestigatorsScoutedTheMountainPass": "Các điều tra viên đã trinh sát lối qua núi.",
+    "theNamelessMadnessEscaped": "Sự điên loạn không tên đã thoát ra.",
+    "theSurvivorsOfTheExpeditionWere": "Những người sống sót của chuyến thám hiểm là",
+    "theTeamBarelyEscapedTheIceShelf": "Nhóm bạn vừa thoát khỏi thềm băng trong gang tấc.",
+    "theTeamClimbedToTheSummit": "Đội đã leo lên đỉnh núi.",
+    "theTeamDefeatedTheHuntingCreatures": "Nhóm bạn đã đánh bại lũ sinh vật săn mồi.",
+    "theTeamDiscoveredAnAncientVault": "Đội đã phát hiện một hầm cổ.",
+    "theTeamEscapedTheFacility": "Đội đã thoát khỏi cơ sở.",
+    "theTeamFledToTheMountains": "Nhóm bạn đã chạy trốn lên núi.",
+    "theTeamFoundAnotherWayThroughTheMountains": "Đội đã tìm ra một lối khác qua dãy núi.",
+    "theTeamFoundTheHiddenTunnel": "Đội đã tìm thấy đường hầm ẩn.",
+    "theTeamPhotographedTheAstronomicalCharts": "Đội đã chụp ảnh các biểu đồ thiên văn.",
+    "theTeamWasGuidedToTheHiddenTunnel": "Đội đã được dẫn đến đường hầm ẩn.",
+    "theTruthOfTheMirageEludesYou": "Sự thật về ảo ảnh vượt ngoài tầm hiểu biết của bạn."
+  },
+  "label": {
+    "openTheDoorAndVenture": "*Mở cửa và bước vào ảo ảnh.*",
+    "ignoreTheDoor": "*Bỏ qua cánh cửa và để nó biến mất.*",
+    "openTheDoorAndVentureOnceMore": "*Mở cửa và bước vào ảo ảnh thêm lần nữa.*",
+    "drAmyKensler": "Tiến sĩ Amy Kensler",
+    "drMalaSinha": "Tiến sĩ Mala Sinha"
+  },
+  "apeirophobia": {
+    "label": {
+      "addFrostToken": "Thêm 1 token {'{'}frost{'}'} (băng giá) vào túi hỗn mang."
+    }
+  },
+  "partnerNames": {
+    "08720": "Tiến sĩ Amy Kensler",
+    "08714": "Giáo sư William Dyer",
+    "08717": "Tiến sĩ Mala Sinha"
+  }
+}

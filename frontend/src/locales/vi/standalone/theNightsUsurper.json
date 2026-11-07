@@ -1,0 +1,17 @@
+{
+  "setup": {
+    "placeLocations": "Đặt Expedition Camp vào khu vực chơi. Mỗi điều tra viên bắt đầu màn chơi tại Expedition Camp.",
+    "explorationDeck": "Tạo exploration deck. Việc này được thực hiện bằng cách xào chung 7 địa điểm một mặt còn lại, cùng với 1 bản sao của mỗi lá bài treachery sau: Abyssal Reach, The Black Wind, Terror Under the Pyramids, và Swarm of Locusts."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

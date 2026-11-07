@@ -1,0 +1,36 @@
+{
+  "setup": {
+    "begin": "Bây giờ bạn đã sẵn sàng để bắt đầu."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "resolution5": {
+      "title": "Giải pháp thứ 5"
+    }
+  },
+  "label": {
+    "hungryVoid": {
+      "placeDoom": "Đặt 1 doom lên agenda hiện tại."
+    },
+    "disappearingEvidence": {
+      "discard": "Discard 1 lá bài ngẫu nhiên từ trên tay bạn."
+    },
+    "ambushingShadow": {
+      "discardCard": "Discard 1 lá bài ngẫu nhiên từ trên tay bạn."
+    },
+    "charlesTamm": {
+      "continue": "Tiếp tục"
+    }
+  }
+}

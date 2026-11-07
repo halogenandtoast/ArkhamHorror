@@ -1,0 +1,22 @@
+{
+  "heading": "Màn III",
+  "intro": {
+    "title": "Màn III: Chuyến Tàu Tốc Hành Essex"
+  },
+  "setup": {
+    "placeLocations": "Đặt ngẫu nhiên 1 trong 3 vị trí Engine Car vào màn chơi. Loại bỏ các phiên bản khác của Engine Car khỏi màn chơi. Sau đó, đặt ngẫu nhiên 6 trong 8 vị trí Train Car vào màn chơi, theo một đường thẳng nằm bên trái Engine Car. Loại bỏ 2 vị trí Train Car còn lại khỏi màn chơi.",
+    "revealTrainCar": "Để lộ vị trí Train Car ngoài cùng bên trái. Mỗi điều tra viên bắt đầu màn chơi tại vị trí này. (Nếu vị trí đó có hiệu ứng \"forced\" được kích hoạt khi di chuyển vào vị trí thì bỏ qua nó.)",
+    "setAside": "Đặt 4 bản sao của Across Space and Time một bên, ngoài vùng chơi."
+  },
+  "moving": {
+    "title": "Di chuyển trên con tàu: “Trái” và “Phải”"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "heading": "Màn V",
+  "intro": {
+    "label": {
+      "dream10": {
+        "dream11": "*\"Làm thế nào mà những thứ này lại trông tuyệt đẹp với anh?\"*",
+        "dream12": "*\"Thật sự thì mình đang nhìn thấy cái gì?\"*"
+      }
+    },
+    "title": "Màn V: Bóng Ma Sự Thật"
+  },
+  "setup": {
+    "doubt": {
+      "remove": "Tìm trong chồng bài encounter tập hợp được cả 2 bản sao của Twin Suns và 3 bản sao của Hunting Shadow, và loại bỏ chúng khỏi màn chơi.",
+      "act": "Trong màn chơi này, sử dụng Act 1—The Parisian Conspiracy (v. I). Các phiên bản Act 1 khác bị loại bỏ khỏi màn chơi."
+    },
+    "conviction": {
+      "remove": "Tìm trong chồng bài encounter tập hợp được cả 2 bản sao của Black Stars Rise và cả 2 bản sao của False Lead, và loại bỏ chúng khỏi màn chơi.",
+      "act": "Trong màn chơi này, sử dụng Act 1—The Parisian Conspiracy (v. II). Các phiên bản Act 1 khác bị loại bỏ khỏi màn chơi."
+    },
+    "lostSoul": "Nếu có bất kỳ bản sao của điểm yếu Lost Soul nào còn lại, đặt chúng một bên, ngoài khu vực chơi."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

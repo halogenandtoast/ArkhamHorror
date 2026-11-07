@@ -1,0 +1,14 @@
+{
+  "heading": "Màn IX",
+  "setup": {
+    "placeLocations": "Đưa Entryway vào cuộc chơi. Mỗi điều tra viên bắt đầu chơi tại Entryway.",
+    "setAside": "Đặt kẻ địch Harbinger of Valusia và địa điểm Chamber of Time sang một bên, out of play.",
+    "chaosBag": "Thêm 1 token {'{'}elderThing{'}'} vào chaos bag trong phần còn lại của campaign.",
+    "poisoned": "Đặt mỗi điểm yếu Poisonsed đang không ở trong chồng bài của một điều tra sang một bên."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    }
+  }
+}

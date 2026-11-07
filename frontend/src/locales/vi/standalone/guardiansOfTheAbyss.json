@@ -1,0 +1,10 @@
+{
+  "rules": {
+    "storyCards": {
+      "title": "Lá bài Cốt truyện"
+    },
+    "strengthOfTheAbyss": {
+      "body": "<p class='basic'>Trong scenario này, các resource trên lá bài scenario reference đại diện cho sức mạnh hiện tại của vực thẳm. Khi bạn được hướng dẫn thêm sức mạnh vào vực thẳm hoặc loại bỏ sức mạnh khỏi vực thẳm, hãy điều chỉnh số lượng resource token trên lá bài scenario reference cho phù hợp. Bản thân sức mạnh của vực thẳm không có hiệu ứng trò chơi nội tại, mặc dù một số hiệu ứng của lá bài encounter có thể mạnh lên hoặc thay đổi tùy thuộc vào sức mạnh hiện tại của vực thẳm. Hãy cẩn thận—khi vực thẳm mạnh lên, các thế lực chống lại bạn cũng vậy. Nếu nó trở nên quá mạnh, bạn chắc chắn sẽ thất bại với tư cách là Guardians of the Abyss.</p>"
+    }
+  }
+}

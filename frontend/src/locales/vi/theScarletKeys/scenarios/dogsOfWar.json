@@ -1,0 +1,73 @@
+{
+  "heading": "Hồ sơ #38-N",
+  "intro": {
+    "label": {
+      "weAccept": "*“Được thôi, chúng tôi chấp nhận.”*"
+    }
+  },
+  "version1": {
+    "setup": {
+      "title": "Chuẩn bị (v. I)",
+      "placeLocations": "Đặt các địa điểm sau vào khu vực chơi: Windsor Palace Hotel, Victoria College, Qaitbay Citadel, The Corniche, và Zan’et el Settat.",
+      "startAt": "Mỗi điều tra viên bắt đầu chơi tại Qaitbay Citadel.",
+      "agendaDeck": "Tạo agenda deck chỉ sử dụng Agenda 1a—”Brewing Catastrophe (v. I).” Loại bỏ các agenda khác khỏi trò chơi.",
+      "actDeck": "Tạo act deck chỉ sử dụng Act 1a—”Rabbits Who Run (v. I).” Loại bỏ các act khác khỏi trò chơi.",
+      "doom": "Đặt 1 doom lên mỗi vị trí đó.",
+      "theClaretKnight": "Đặt The Claret Knight vào chơi tại The Bourse, với mặt story asset ngửa lên. Đính kèm key The Light of Pharos vào The Claret Knight. Cả The Claret Knight và The Light of Pharos đều được điều khiển bởi tất cả các điều tra viên.",
+      "theBeast": "Trưởng nhóm spawn kẻ địch The Beast in a Cowl of Crimson tại Catacombs of Kom el Shoqafa, với mặt *(Ravager in Red)* ngửa lên."
+    }
+  },
+  "version2": {
+    "setup": {
+      "title": "Chuẩn bị (v. II)",
+      "placeLocations": "Đặt các địa điểm sau vào khu vực chơi: Windsor Palace Hotel, Victoria College, Qaitbay Citadel, The Corniche, và Zan’et el Settat.",
+      "startAt": "Mỗi điều tra viên bắt đầu chơi tại Qaitbay Citadel.",
+      "agendaDeck": "Tạo agenda deck chỉ sử dụng Agenda 1a—”Brewing Catastrophe (v. II).” Loại bỏ các agenda khác khỏi trò chơi.",
+      "actDeck": "Tạo act deck chỉ sử dụng Act 1a—”Rabbits Who Run (v. II).” Loại bỏ các act khác khỏi trò chơi.",
+      "otherLocations": "Đặt The Bourse *(Coterie Post)* và Catacombs of Kom el Shoqafa *(Ancient Tomb)* vào chơi. Loại bỏ các phiên bản khác của The Bourse và Catacombs of Kom el Shoqafa khỏi trò chơi.",
+      "theClaretKnight": "Spawn The Claret Knight tại The Bourse, với mặt kẻ địch ngửa lên. Đính kèm key The Light of Pharos vào The Claret Knight, dưới quyền kiểm soát của hắn.",
+      "theBeast": "Loại bỏ kẻ địch hai mặt The Beast in a Cowl of Crimson khỏi trò chơi.",
+      "miniCards": "Tập hợp các mini-card decoy và các mini-card sau: Coterie Assassins (A và B) và Coterie Enforcers (A và B). Đặt chúng sang một bên, ngoài cuộc chơi.",
+      "coterieAssassin": "Trưởng nhóm tìm lá Coterie Assassin (A) trong các lá bài encounter đã tập hợp và rút nó, giải quyết keyword concealed của nó, với thêm 1 decoy cho mỗi điều tra viên khác trong trò chơi."
+    }
+  },
+  "version3": {
+    "setup": {
+      "title": "Chuẩn bị (v. III)",
+      "placeLocations": "Đặt các địa điểm sau vào khu vực chơi: Windsor Palace Hotel, Victoria College, Qaitbay Citadel, The Corniche, và Zan’et el Settat.",
+      "startAt": "Mỗi điều tra viên bắt đầu chơi tại Qaitbay Citadel.",
+      "agendaDeck": "Tạo agenda deck chỉ sử dụng Agenda 1a—”Brewing Catastrophe (v. III).” Loại bỏ các agenda khác khỏi trò chơi.",
+      "actDeck": "Tạo act deck chỉ sử dụng Act 1a—”Rabbits Who Run (v. III).” Loại bỏ các act khác khỏi trò chơi.",
+      "otherLocations": "Đặt The Bourse *(Commercial Center)* và Catacombs of Kom el Shoqafa *(Den of the Beast)* vào chơi. Loại bỏ các phiên bản khác của The Bourse và Catacombs of Kom el Shoqafa khỏi trò chơi.",
+      "theBeast": "Spawn kẻ địch The Beast in a Cowl of Crimson tại Catacombs of Kom el Shoqafa, với mặt (Wolf in Sheep’s Clothing) ngửa lên. Đính kèm key The Light of Pharos vào The Beast in a Cowl of Crimson, dưới quyền kiểm soát của nó.",
+      "theClaretKnight": "Loại bỏ kẻ địch/asset hai mặt The Claret Knight khỏi trò chơi.",
+      "miniCards": "Tập hợp các mini-card decoy và các mini-card sau: Coterie Assassins (A và B) và Coterie Enforcers (A và B). Đặt chúng sang một bên, ngoài cuộc chơi."
+    }
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "resolution5": {
+      "title": "Giải pháp thứ 5"
+    },
+    "resolution6": {
+      "title": "Kết quả 6"
+    },
+    "resolution7": {
+      "title": "Kết cục 7"
+    },
+    "resolution8": {
+      "title": "Giải pháp thứ 8"
+    }
+  }
+}

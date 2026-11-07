@@ -1,0 +1,219 @@
+{
+  "flavorText": {
+    "prologueOpening": {
+      "title": "Thế Giới Thực Chỉ Là Một Thực Tại"
+    },
+    "theBlackCat": {
+      "title": "Chuyển tiếp I: Con Mèo Đen"
+    },
+    "theBlackCat1": {
+      "title": "Chuyển tiếp I: Con Mèo Đen"
+    },
+    "theBlackCat2": {
+      "title": "Chuyển tiếp I: Con Mèo Đen"
+    },
+    "theBlackCat3": {
+      "title": "Chuyển tiếp I: Con Mèo Đen"
+    },
+    "youAreOnYourOwn": {
+      "title": "Chuyển tiếp I: Con Mèo Đen"
+    },
+    "theBlackCatSharedKnowledgeOfTheDreamlands": {
+      "title": "Chuyển tiếp I: Con Mèo Đen"
+    },
+    "theBlackCatDeliveredNewsOfYourPlight": {
+      "title": "Chuyển tiếp I: Con Mèo Đen"
+    },
+    "theBlackCatWarnedTheOthers": {
+      "title": "Chuyển tiếp I: Con Mèo Đen"
+    },
+    "okayFineHaveItYourWayThen": {
+      "title": "Chuyển tiếp I: Con Mèo Đen"
+    },
+    "theOneironauts1": {
+      "title": "Chuyển tiếp II: The Oneironauts"
+    },
+    "wheresBlondie": {
+      "title": "Chuyển tiếp II: The Oneironauts"
+    },
+    "youAskedForIt": {
+      "title": "Chuyển tiếp II: The Oneironauts"
+    },
+    "youDidNotAskForIt": {
+      "title": "Chuyển tiếp II: The Oneironauts"
+    },
+    "theOneironauts2": {
+      "title": "Chuyển tiếp II: The Oneironauts"
+    },
+    "atLeastOneNotCaptured": {
+      "title": "Chuyển tiếp II: The Oneironauts"
+    },
+    "allCaptured": {
+      "body": "<p class='basic'>Nếu tất cả điều tra viên đã bị bắt giữ</p><p>Bạn cố gắng làm con mèo đen im lặng, nhưng nó phớt lờ bạn. \"Thư giãn. Những kẻ bắt giữ của bạn đều đã ở trên boong tàu vào lúc này. Bạn cay đắng hỏi tại sao sinh vật đó lại vô lễ bắt bạn như vậy và yêu cầu nó thả bạn ra. Nó trả lời một cách bí ẩn, “Nah. Nếu tôi không nhầm thì có ai đó đã lo liệu việc đó rồi.”.</p>",
+      "title": "Chuyển tiếp II: The Oneironauts"
+    },
+    "searchingForTheTruth": {
+      "title": "Chuyển tiếp II: The Oneironauts"
+    },
+    "nowWhereWasI": {
+      "title": "Chuyển tiếp II: The Oneironauts"
+    },
+    "theBlackCatRequestedAidFromTheOthers": {
+      "title": "Chuyển tiếp II: The Oneironauts"
+    },
+    "warnedTheOthersStory": {
+      "title": "Chuyển tiếp II: The Oneironauts"
+    },
+    "sharedTheKnowledgeStory": {
+      "title": "Chuyển tiếp II: The Oneironauts"
+    },
+    "theGreatOnes1": {
+      "title": "Chuyển tiếp III: Các Đại Cổ Thần"
+    },
+    "theGreatOnes1GrowWeaker": {
+      "title": "Chuyển tiếp III: Các Đại Cổ Thần"
+    },
+    "theGreatOnes1Searching": {
+      "title": "Chuyển tiếp III: Các Đại Cổ Thần"
+    },
+    "theGreatOnes1YouAskedForIt": {
+      "title": "Chuyển tiếp III: Các Đại Cổ Thần"
+    },
+    "theGreatOnes1Part2": {
+      "title": "Chuyển tiếp III: Các Đại Cổ Thần"
+    },
+    "theGreatOnes2": {
+      "title": "Chuyển tiếp III: Các Đại Cổ Thần"
+    },
+    "theGreatOnes2TheSilverKey": {
+      "title": "Chuyển tiếp III: Các Đại Cổ Thần"
+    },
+    "theGreatOnes2Searching": {
+      "title": "Chuyển tiếp III: Các Đại Cổ Thần"
+    },
+    "theGreatOnes2Part2": {
+      "title": "Chuyển tiếp III: Các Đại Cổ Thần"
+    },
+    "theGreatOnes2Nyarlathotep": {
+      "title": "Chuyển tiếp III: Các Đại Cổ Thần"
+    },
+    "theGreatOnes2AtlachNacha": {
+      "title": "Chuyển tiếp III: Các Đại Cổ Thần"
+    },
+    "epilogueMatrix": {
+      "title": "Phần kết"
+    },
+    "epilogue1": {
+      "title": "Phần kết"
+    },
+    "epilogue2": {
+      "title": "Phần kết"
+    },
+    "epilogue3": {
+      "title": "Phần kết"
+    },
+    "epilogue4": {
+      "title": "Phần kết"
+    },
+    "epilogue5": {
+      "title": "Phần kết"
+    },
+    "epilogue6": {
+      "title": "Phần kết"
+    },
+    "epilogue7": {
+      "title": "Phần kết"
+    },
+    "epilogue8": {
+      "title": "Phần kết"
+    },
+    "epilogue9": {
+      "title": "Phần kết"
+    },
+    "epilogue10": {
+      "title": "Phần kết"
+    },
+    "epilogue11": {
+      "title": "Phần kết"
+    },
+    "epilogue12": {
+      "title": "Phần kết"
+    },
+    "epilogue13": {
+      "title": "Phần kết"
+    },
+    "epilogue14": {
+      "title": "Phần kết"
+    },
+    "epilogue15": {
+      "title": "Phần kết"
+    },
+    "epilogue16": {
+      "title": "Phần kết"
+    },
+    "brokeTheLawOfUlthar": {
+      "title": "Phần kết"
+    }
+  },
+  "key": {
+    "theCatsCollectedTheirTributeFromTheZoogs": "Những con mèo đã thu thập cống phẩm của chúng từ Zoogs.",
+    "theInvestigatorsParleyedWithTheZoogs": "Các điều tra viên đã đàm phán với Zoogs.",
+    "drMaheswaranJoinedTheInvestigation": "Bác sĩ Maheswaran đã tham gia cuộc điều tra.",
+    "drMaheswaranStayedWithHerPatients": "Bác sĩ Maheswaran đã ở lại với bệnh nhân của cô ấy.",
+    "stepsOfTheBridge": "Những bậc thang của cây cầu",
+    "drMaheswaransFateIsUnknown": "Tình trạng của Bác sĩ Maheswaran chưa được xác định.",
+    "randolphEscapedTheHospitalOnHisOwn": "Randolph đã tự mình trốn khỏi bệnh viện.",
+    "randolphEscapedTheHospitalWithTheInvestigators": "Randolph đã trốn khỏi bệnh viện cùng với các điều tra viên.",
+    "drMaheswaranIsAlive": "Bác sĩ Maheswaran còn sống.",
+    "drMaheswaranIsMissing": "Bác sĩ Maheswaran bị mất tích.",
+    "youAreOnYourOwn": "Bạn phải tự mình làm.",
+    "theBlackCatHasAHunch": "Con mèo đen có linh cảm.",
+    "theBlackCatIsAtYourSide": "Con mèo đen ở bên cạnh bạn.",
+    "youAskedForIt": "Tự làm tự chịu đi.",
+    "theInvestigatorsForcedTheirWayIntoTheTemple": "Các điều tra viên cưỡng ép tiến vào ngôi đền.",
+    "evidenceOfKadath": "Bằng chứng về Kadath",
+    "virgilWasCaptured": "Virgil đã bị bắt giữ.",
+    "randolphEludedCapture": "Randolph trốn thoát việc bị bắt giữ.",
+    "randolphWasCaptured": "Randolph đã bị bắt giữ.",
+    "randolphSurvivedTheDescent": "Randolph sống sót sau khi hạ xuống.",
+    "randolphDidNotSurviveTheDescent": "Randolph đã không sống sót sau khi hạ xuống.",
+    "theInvestigatorsPossessTheSilverKey": "Các điều tra viên sở hữu Silver Key.",
+    "theDreamersKnowOfAnotherPath": "Những người nằm mơ biết về một con đường khác.",
+    "theInvestigatorsWereCarriedToTheColdWastes": "Các điều tra viên đã được đưa đến Cold Wastes.",
+    "theInvestigatorsTraveledToTheColdWastes": "Các điều tra viên đã đi đến Cold Wastes.",
+    "randolphCarterDidNotSurviveTheVoyage": "Randolph Carter đã không sống sót sau chuyến đi.",
+    "randolphSurvivedTheVoyage": "Randolph sống sót sau chuyến đi.",
+    "theBlackCatSpokeOfAtlachNacha": "Con mèo đen đã nói về Atlach-Nacha.",
+    "theBlackCatKnowsTheTruth": "Con mèo đen biết sự thật.",
+    "nyarlathotepsInvasionHasBegun": "Sự xâm lược của Nyarlathotep đã bắt đầu.",
+    "theDreamersEscapedFromNyarlathotepsGrasp": "Những người ngủ mơ đã thoát khỏi bàn tay của Nyarlathotep.",
+    "theDreamersBanishedNyarlathotep": "Những người ngủ mơ đã trục xuất Nyarlathotep.",
+    "theInvestigatorsAreTrappedInAtlachNachasRealm": "Các điều tra viên bị mắc kẹt trong địa hạt của Atlach-Nacha.",
+    "theBridgeWasDestroyed": "Cây cầu đã bị phá hủy."
+  },
+  "label": {
+    "theBlackCat2NewsOfYourPlight": "*Nói với những người bạn của bạn về nhiệm vụ, hoàn cảnh và nguy nan của bạn.*",
+    "theBlackCat2KnowledgeOfDreamlands": "*Nói với những người bạn đồng hành của bạn về những người bạn mới của bạn và về Vùng đất giấc mơ.*",
+    "theBlackCat2WarnTheOthers": "*Nói với bạn bè của bạn rằng họ đang gặp nguy hiểm, và bạn thì an toàn.*",
+    "theBlackCat2DontTrust": "*Bạn không tin tưởng sinh vật này chút nào.*",
+    "blackCatWandersOff": "Con mèo đen rời đi trước khi bạn có thể trả lời, bộ lông đen tuyền của nó hòa vào bóng tối của Underworld.",
+    "blackCatBoundsOff": "Con mèo đen bay vào khoảng không trước khi bạn có cơ hội hỏi nó bất cứ điều gì khác."
+  },
+  "additionalRulesAndClarifications": {
+    "alert": {
+      "title": "Cảnh Giác",
+      "body": "<p class='basic'>Mỗi khi một điều tra viên thất bại trong bài kiểm tra kỹ năng khi cố gắng né tránh một kẻ địch có từ khóa Alert (cảnh giác), sau khi áp dụng tất cả kết quả của bài kiểm tra kỹ năng, kẻ địch đó sẽ tấn công điều tra viên đang né tránh. Kẻ địch không bị kiệt sức sau khi thực hiện một cuộc tấn công Alert. Cuộc tấn công này xảy ra bất kể kẻ địch có đang engage với điều tra viên né tránh hay không.</p>"
+    },
+    "storyCards": {
+      "title": "Lá bài Cốt truyện",
+      "body": "<div class='story-card-rule'><div><p class='basic'>Các lá bài câu chuyện đóng vai trò như một cách bổ sung các câu chuyện và thường xuất hiện ở mặt còn lại của một lá bài màn chơi khác. Khi bạn được hướng dẫn giải quyết một lá bài câu chuyện, chỉ cần đọc nội dung câu chuyện và giải quyết hiệu ứng trò chơi của nó.</p></div><img src='{setImgPath}/../cards/06057b.avif' alt='The Trial of Kaman-Thah story card' /></div>"
+    },
+    "swarming": {
+      "body": "<p class='basic'>Một kẻ địch có keyword swarming X thực chất là một bầy kẻ địch hoạt động cùng nhau. Sau khi bạn đưa một kẻ địch có keyword swarming X vào in play, đặt X lá bài trên cùng của deck của bạn úp xuống bên dưới kẻ địch đó dưới dạng các lá bài swarm, mà không được nhìn chúng. Kẻ địch mà chúng nằm bên dưới được gọi là “host enemy.” Một số hiệu ứng lá bài scenario cũng có thể hướng dẫn người chơi thêm các lá bài swarm vào một kẻ địch. Việc này được thực hiện theo cùng một quy trình.</p><ul><li>Nếu không rõ điều tra viên nào nên thêm các lá bài swarm, trưởng nhóm sẽ làm điều đó.</li><li>Mỗi lá bài swarm nằm dưới host enemy hoạt động như một bản thể riêng biệt của kẻ địch đó cho hầu hết các mục đích. Mỗi lá bài swarm có cùng các giá trị và text như lá bài host của nó. *(Ví dụ, nếu một điều tra viên đang engaged với một host enemy có 2 lá bài swarm nằm dưới nó, điều tra viên đó đang engaged với tổng cộng 3 kẻ địch.)*</li><li>Mỗi lá bài swarm tấn công riêng biệt khi kẻ địch tấn công trong enemy phase. Một khi host enemy và tất cả các lá bài swarm của nó đã tấn công trong bước này, exhaust tất cả chúng.</li><li>Mỗi lá bài swarm có thể bị tấn công hoặc chịu damage riêng biệt, nhưng host enemy không thể bị defeat khi nó vẫn còn các lá bài swarm nằm bên dưới. Khi một lá bài swarm bị defeat, bất kỳ damage dư nào cũng có thể được gây cho một lá bài swarm khác nằm dưới cùng một host enemy hoặc cho chính host enemy đó. *(Ví dụ, Tony Morgan sử dụng .41 Derringer để tấn công một Stealthy Zoog có 2 lá bài swarm. Đòn tấn công gây 2 damage. Điểm damage đầu tiên defeat 1 trong 2 lá bài swarm, vì vậy điểm damage dư có thể được gây cho lá bài swarm khác, đồng thời defeat nó.)*</li><li>Bất cứ khi nào một lá bài swarm rời khỏi khu vực chơi, hãy đặt nó xuống dưới cùng deck của chủ sở hữu. Nếu bạn không chắc chắn về chủ sở hữu của lá bài swarm, bạn có thể xem nó để xác định chủ sở hữu.</li><li>Kẻ địch host và tất cả các lá bài swarm của nó move, engage, và exhaust như một thực thể duy nhất. (Ví dụ, nếu một kẻ địch host hoặc bất kỳ lá bài swarm nào của nó bị evade, tất cả chúng đều exhaust và trở nên disengaged.)</li></ul>"
+    },
+    "hidden": {
+      "title": "Ẩn",
+      "body": "<p class='basic'>Một lá bài encounter hoặc điểm yếu với từ khóa hidden có khả năng revelation thêm lá bài đó vào tay bạn. Điều này nên được thực hiện mà không tiết lộ lá bài đó hoặc nội dung của nó cho các điều tra viên khác.</p><ul><li>Trong khi một lá bài treachery hidden có trên tay, xem nó như nó đang ở threat area của bạn. Constant abilities của nó được hoạt động, và khả năng trên lá bài có thể được kích hoạt, nhưng chỉ có thể là bạn kích hoạt.</li><li>Trong khi một kẻ địch hidden ở trên tay, nó không được xem là engage với bạn hoặc ở trong threat area, và nó không tấn công trừ khi có chỉ dẫn cụ thể. Tuy nhiên, constant abilities của nó được hoạt động, và khả năng trên lá bài có thể được kích hoạt, nhưng chỉ có thể là bạn kích hoạt.</li><li>Một lá bài hidden tính vào giới hạn số bài trên tay, nhưng nó không thể bị discard khỏi tay bằng bất cứ cách nào, ngoại trừ cách được mô tả trên lá bài. Khi bị discard, một lá bài hidden được đặt vào chồng bài bỏ tương ứng.</li></ul>"
+    }
+  }
+}

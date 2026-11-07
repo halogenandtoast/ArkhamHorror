@@ -1,0 +1,42 @@
+{
+  "heading": "Màn IV",
+  "setup": {
+    "placeKeys": "Đặt từng chìa khóa sang một bên, như sau:",
+    "faceupKeys": "Đặt các chìa khoá màu tím, trắng và đen sang một bên, ngửa lên.",
+    "facedownKeys": "Đặt các chìa khoá màu vàng, xanh lá cây, đỏ và xanh biển sang một bên, úp xuống. Xáo trộn chúng để bạn không biết cái nào là cái nào.",
+    "churningWaters": "Đặt vị trí Churning Waters vào chơi. *(Nó bắt đầu với việc bị ngập hoàn toàn.)*",
+    "fishingVessel": "Đặt lá bài câu chuyện Fishing Vessel vào chơi tại Churning Waters.",
+    "setAsideRelics": "Đặt các lá bài tài sản câu chuyện sau một bên, ngoài khu vực chơi: Awakened Mantle, Headdress of Y'ha-nthlei, và Waveworn Idol.",
+    "devilReefLocations": "Xào 5 vị trí Devil Reef và đặt chúng vào chơi, mặt chưa để lộ ngửa lên.",
+    "notAdjacent": "Không đặt chúng *liền kề* với Churning Waters — các vị trí này được kết nối không phải thông qua sự liền kề mà thông qua các ký hiệu kết nối của chúng.",
+    "unfathomableDepths": "Chuẩn bị Unfathomable Depths (Độ sâu không thể đo lường) bằng cách thực hiện các bước sau:",
+    "removeThree": "Trước tiên, hãy loại bỏ1 trong số các địa điểm sau khỏi trò chơi mà không nhìn vào chúng: Cyclopean Ruins, Deep One Grotto, va2 Temple of the Union. Mỗi địa điểm này đều là mặt để lộ của một vị trí Unfathomable Depths.",
+    "setAsideThree": "Đặt 3 vị trí Unfathomable Depths còn lại sang một bên, ngoài khu vực chơi.",
+    "placeNearEncounterDeck": "Đặt chồng bài này gần chồng bài encounter.",
+    "checkCampaignLog": "Kiểm tra phần \"Ký ức đã được khôi phục\" trong Nhật ký Chiến dịch. Tùy thuộc vào các trường hợp sau đây, một phiên bản khác của agenda 1 sẽ được sử dụng trong màn chơi này. Loại bỏ các phiên bản khác của agenda 1 khỏi màn chơi.",
+    "floodTokens": "Thêm token lũ lụt vào kho chứa token."
+  },
+  "intro1": {
+    "title": "Màn IV: Rạn San Hô Quỷ"
+  },
+  "intro2": {
+    "title": "Màn IV: Rạn San Hô Quỷ"
+  },
+  "intro3": {
+    "title": "Màn IV: Rạn San Hô Quỷ"
+  },
+  "flashback9": {
+    "title": "Hồi tưởng IX"
+  },
+  "flashback10": {
+    "title": "Hồi tưởng X"
+  },
+  "flashback11": {
+    "title": "Hồi tưởng XI"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    }
+  }
+}

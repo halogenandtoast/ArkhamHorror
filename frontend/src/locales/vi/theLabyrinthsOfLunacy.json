@@ -1,0 +1,13 @@
+{
+  "key": {
+    "[groupA]": {
+      "title": "Nhóm A"
+    },
+    "[groupB]": {
+      "title": "Nhóm B"
+    },
+    "[groupC]": {
+      "title": "Nhóm C"
+    }
+  }
+}

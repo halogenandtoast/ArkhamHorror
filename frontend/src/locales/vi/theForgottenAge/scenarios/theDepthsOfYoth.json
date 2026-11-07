@@ -1,0 +1,38 @@
+{
+  "heading": "Màn VII",
+  "xp": {
+    "depth": "Độ Sâu"
+  },
+  "intro": {
+    "title": "Màn VII: The Depths of Yoth"
+  },
+  "setup": {
+    "placeLocations": "Đặt mỗi lá bài của 10 vị trí một mặt sang một bên, ngoài khu vực chơi. Rút 1 vị trí ngẫu nhiên từ những lá bài đó ngoại trừ vị trí Steps of Yoth, và đặt nó vào chơi. Mỗi điều tra viên bắt đầu chơi tại vị trí ngẫu nhiên được chọn.",
+    "yig": {
+      "description": "Đặt kẻ địch Yig sang một bên, ngoài khu vực chơi."
+    },
+    "explorationDeck": "Tạo chồng bài khám phá. Điều này được thực hiện bằng cách lấy lá bài Steps of Yoth và ngẫu nhiên 4 trong 8 lá bài một mặt còn lại được đặt một bên hồi đầu và xào chúng lại với nhau.",
+    "currentDepth": "Đặt 1 token tài nguyên lên lá bài tham chiếu của màn chơi, dưới phần \"Độ Sâu Hiện Tại.\" Cho phần còn lại của màn chơi, số lượng tài nguyên dưới phần \"Độ Sâu Hiện Tại\" đại diện cho mức độ sâu hiện tại. (Xem thêm phần \"Độ Sâu\" ở dưới.)",
+    "poisoned": "Đặt mỗi điểm yếu Poisonsed đang không ở trong chồng bài của một điều tra sang một bên."
+  },
+  "depthLevel": {
+    "title": "Độ Sâu"
+  },
+  "pursuit": {
+    "title": "Truy Đuổi"
+  },
+  "label": {
+    "chooseYigsFury": "Các điều tra viên có thể chọn số lượng kiểm đếm dưới phần \"Cơn giận dữ của Yig.\" Con số càng nhỏ được chọn, màn chơi càng an toàn và dễ dàng."
+  },
+  "resolutions": {
+    "xp": {
+      "depth": "Độ Sâu"
+    },
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

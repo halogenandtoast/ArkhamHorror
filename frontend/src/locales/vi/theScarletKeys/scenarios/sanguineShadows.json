@@ -1,0 +1,38 @@
+{
+  "heading": "Hồ sơ #16-D",
+  "intro": {
+    "label": {
+      "everything": "Kể cho Bolívar mọi thứ về mục tiêu.",
+      "breadcrumbs": "Cho Bolívar một vài manh mối nhỏ.",
+      "insist": "Khăng khăng yêu cầu Bolívar kể cho bạn những gì anh ta biết."
+    },
+    "intro2Part2": "<p>Bạn nói với Oficial Bolívar rằng bạn sẽ giúp anh ta tìm Girl in the Carmine Coat, nhưng chỉ khi anh ta giúp bạn trong cuộc điều tra. “Tất nhiên,” anh ta nói với một nụ cười. “Nếu điều đó có nghĩa là chúng ta cuối cùng cũng có thể tống tên trộm đó vào tù, tôi sẽ làm những gì có thể.” Bạn bắt tay người đàn ông và cùng nhau, một kế hoạch bắt đầu được ấp ủ.</p><ul><li>Ghi nhớ rằng “Matias Bolívar tin tưởng bạn.”</li><li>Loại bỏ 1 token {'{'}elderThing{'}'} khỏi chaos bag. Thêm 1 token {'{'}tablet{'}'} (nếu đã có 4, thay vào đó mỗi điều tra viên nhận 1 experience).</li></ul><p class='basic right'>Tiếp tục đến _Setup_</p>"
+  },
+  "setup": {
+    "decks": "Tạo agenda deck chỉ sử dụng agenda 1 và act deck chỉ sử dụng act 1 và 2.",
+    "placeStart": "Đưa địa điểm Avenida de Mayo vào cuộc chơi.",
+    "beginPlay": "Mỗi điều tra viên bắt đầu tại Avenida de Mayo.",
+    "placeRemaining": "Chọn ngẫu nhiên một trong 7 địa điểm còn lại và loại nó khỏi trò chơi. Đưa 6 địa điểm kia vào cuộc chơi, bao quanh Avenida de Mayo.",
+    "placeTargets": "Đặt một resource lên mỗi địa điểm đang trong cuộc chơi ngoại trừ Avenida de Mayo, làm mục tiêu. *(Sẽ có tổng cộng 6 mục tiêu).*",
+    "targets": "Những mục tiêu này đại diện cho các địa điểm mà bạn nghi ngờ La Chica Roja đang tìm cách trộm đồ.",
+    "miniCards": "Tập hợp từng decoy mini-card và từng mini-card sau: La Chica Roja và Apportioned Ka. Để chúng sang một bên, ngoài cuộc chơi.",
+    "setAside": "Để các lá bài sau sang một bên, ngoài cuộc chơi: kẻ địch The Sanguine Watcher, kẻ địch Apportioned Ka, act/agenda Seeing Red, và key The Weeping Lady."
+  },
+  "interlude": {
+    "label": {
+      "believe": "*“Tôi tin cô.”*",
+      "doNotBelieve": "*“Tôi xin lỗi, nhưng tôi không thể tin cô.”*"
+    }
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

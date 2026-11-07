@@ -1,0 +1,47 @@
+{
+  "intro": {
+    "mustDecide": "Điều tra viên phải đưa ra quyết định (chọn một):",
+    "alliesIntoPlay": "Tìm kiếm trong các chồng bài encounter *Expedition* và *The Doom of Arkham*, deck của mỗi điều tra viên, và tất cả các khu vực in-play và out-of-play để tìm các story asset sau: John Raymond Legrasse, Ruby Standish, và Andy Van Nortwick. Đặt mỗi asset này vào chơi dưới quyền kiểm soát của bất kỳ điều tra viên nào. Mỗi asset này không chiếm ally slot trong scenario này.",
+    "alliesSetAside": "Tìm kiếm trong các chồng bài encounter *Expedition* và *The Doom of Arkham*, deck của mỗi điều tra viên, và tất cả các khu vực in-play và out-of-play để tìm các story asset sau: John Raymond Legrasse, Ruby Standish, và Andy Van Nortwick. Để chúng sang một bên, out of play.",
+    "addToken": "Thêm 1 token {elderThing} vào chaos bag trong phần còn lại của chiến dịch.",
+    "proceedToSetup": "Tiếp tục đến _Setup_",
+    "label": {
+      "lastStand": "*\"Chúng ta cần phải tử thủ và đánh đuổi hắn bằng hỏa lực áp đảo.\"*",
+      "anotherWay": "*\"Chắc chắn phải có cách khác.\"*"
+    }
+  },
+  "setup": {
+    "placeLocations": "Đặt mỗi địa điểm vào chơi theo sơ đồ sắp xếp địa điểm.",
+    "setAsideLocations": "Đặt tất cả các địa điểm khác sang một bên, ngoài màn chơi.",
+    "cthulhuAtRivertown": "Đặt kẻ địch một mặt Cthulhu *(Ancient Evil)* tại Rivertown.",
+    "startAtRivertown": "Mỗi điều tra viên bắt đầu chơi tại Rivertown.",
+    "placeBoard": "Tìm bảng punchboard hai mặt đi kèm trong hộp này và đặt nó phía trên chồng bài act và agenda, ngửa mặt Cthulhu lên.",
+    "artifacts": "Tập hợp tất cả các artifact đã thu thập được mà không bị gạch bỏ dưới mục \"Artifacts Earned.\" Đưa mỗi lá bài đó vào chơi dưới quyền kiểm soát của một điều tra viên, chia đều nhất có thể.",
+    "floodedNeighborhoods": "Thêm các flood token vào token pool và tăng flood level của mỗi địa điểm được liệt kê dưới mục \"Flooded Neighborhoods.\"",
+    "starSpawnAside": "Đặt encounter set *Star Spawn* sang một bên, out of play.",
+    "readyToBegin": "Số phận của Arkham nằm trong tay bạn. Giờ bạn đã sẵn sàng để bắt đầu."
+  },
+  "rules": {
+    "cthulhuBoard": {
+      "title": "Bảng Cthulhu"
+    },
+    "cthulhuDeck": {
+      "title": "Chồng bài Cthulhu"
+    },
+    "cthulhusRage": {
+      "title": "Cơn thịnh nộ của Cthulhu",
+      "body": "<p class='basic'>Trong suốt màn chơi này, số lượng resource dưới \"Cthulhu's Rage\" trên lá bài scenario reference biểu thị sự tức giận của Cthulhu đối với các điều tra viên. Cthulhu's Rage càng cao, kẻ ngủ say thức tỉnh càng trở nên nguy hiểm và chết chóc hơn. Bản thân Cthulhu's Rage không có hiệu ứng trò chơi nội tại; tuy nhiên, một số hiệu ứng lá bài encounter có thể thay đổi hoặc trở nên mạnh hơn tùy thuộc vào mức độ hiện tại của Cthulhu's Rage.</p>"
+    }
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

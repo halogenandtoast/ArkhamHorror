@@ -1,0 +1,48 @@
+{
+  "title": "Lịch sử",
+  "round": "Vòng",
+  "phase": "Phase",
+  "turn": "Lượt",
+  "empty": "Chưa có gì được ghi lại cho phạm vi này.",
+  "section": {
+    "counts": "Số liệu",
+    "playedCards": "Bài đã chơi",
+    "treacheriesDrawn": "Treachery đã rút",
+    "enemiesDrawn": "Kẻ địch đã rút",
+    "enemiesDefeated": "Kẻ địch bị đánh bại",
+    "enemiesAttackedBy": "Bị kẻ địch tấn công",
+    "dealtDamageTo": "Gây tổn thương thể chất cho",
+    "locationsInvestigated": "Địa điểm đã điều tra",
+    "cluesDiscovered": "Clue đã discover",
+    "skillTests": "Skill test"
+  },
+  "field": {
+    "actionsCompleted": "Action đã hoàn thành",
+    "actionsSpent": "Action đã tiêu",
+    "moved": "Đã di chuyển",
+    "cardsDrawn": "Bài đã rút",
+    "resourcesGained": "Tài nguyên đã nhận",
+    "attacksOfOpportunity": "Attack of opportunity",
+    "successfulAttacks": "Đòn tấn công thành công",
+    "successfulEvasions": "Evade thành công",
+    "successfulInvestigations": "Điều tra thành công",
+    "successfulExplore": "Explore thành công"
+  },
+  "playedCard": {
+    "at": "Tại {location}",
+    "target": "Mục tiêu: {target}",
+    "paid": "Đã trả {n} tài nguyên"
+  },
+  "skillResult": {
+    "unrun": "Chưa chạy",
+    "succeededBy": "Thành công (dư {n})",
+    "failedBy": "Thất bại (thiếu {n})"
+  },
+  "enemy": {
+    "health": "Health: {n}",
+    "defeated": "Bị đánh bại"
+  },
+  "clues": {
+    "count": "Clue: {n}"
+  }
+}

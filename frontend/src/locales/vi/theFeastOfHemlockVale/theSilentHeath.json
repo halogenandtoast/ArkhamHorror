@@ -1,0 +1,125 @@
+{
+  "tooltips": {
+    "pearlEstateRuins": {
+      "resign": "Bạn bỏ lại heath phía sau"
+    }
+  },
+  "intro": {
+    "title": "Kịch bản: The Silent Heath",
+    "body": "<p class='basic unindented'>Kiểm tra Nhật ký Chiến dịch của bạn.</p>",
+    "nightSkip": "Nếu đang là _Night 1_ hoặc _Night 2_, chuyển đến _Intro 4_. Nếu không:",
+    "day1": "Nếu đang là _Day 1_, tiếp tục đến _Intro 1_.",
+    "day2": "Nếu đang là _Day 2_, chuyển đến _Intro 2_.",
+    "day3": "Nếu đang là _Day 3_, chuyển đến _Intro 3_.",
+    "intro1": {
+      "title": "Intro 1",
+      "body": "<p>_Intro 1_: Bạn bước ra khỏi xe tải của Theo cùng với Leah Atwood và nhìn lên điểm cao nhất của Hemlock Isle. Con đường hẹp quanh co nhường chỗ cho lớp tro mềm như cát bao phủ vùng hoang dã. Những tảng đá đen trên đỉnh đồi trông như những chiếc răng lởm chởm. Một sự im lặng đáng sợ bao trùm mọi thứ khi bạn đi lên đồi cùng với đầu bếp của The Vale. “Có lý do khiến người ta không sống ở đây nữa. Hãy cẩn thận khi ở trên này. Tôi không biết thứ gì sống trong các hang động, và tôi cũng không có ý định tìm hiểu,” cô ấy nói. Như để đáp lại, một cơn gió mạnh thổi tung những đám mây tro trắng.</p><p class='basic right'>Chuyển đến _Intro 5_.</p>"
+    },
+    "intro2": {
+      "title": "Intro 2",
+      "body": "<p>_Intro 2_: Bạn bước ra khỏi xe tải của Theo dưới cơn mưa tầm tã, đi cùng với Dr. Marquez. Con đường hẹp quanh co nhường chỗ cho lớp tro mềm như cát bao phủ vùng hoang dã. Những tảng đá đen trên đỉnh đồi trông như những chiếc răng lởm chởm. Một sự im lặng đáng sợ bao trùm mọi thứ khi bạn đi lên đồi cùng vị giáo sư đang mặc một chiếc áo mưa poncho màu vàng và xanh lam rực rỡ. “Nếu những người dân địa phương nói đúng, chúng ta cần đi hướng này,” cô chỉ lên sườn đồi về phía một vườn cây ăn quả lấp lánh. Sau khi leo lên con dốc đứng, vị giáo sư thốt lên kinh ngạc.</p><p>Những hàng cây pha lê tỏa sáng lấp lánh trong ánh sáng. Một tia chớp từ những đám mây phía nam khúc xạ một dải ánh sáng rực rỡ, đa sắc qua những quả táo treo lơ lửng và những thân cây thủy tinh vặn vẹo. Mặc dù tuyệt đẹp, bạn không khỏi cảm thấy một cảm giác lo âu nhói lên: những cái cây này thật kỳ diệu, nhưng chúng đã chết từ lâu, bị đóng băng trong thời gian. Dr. Marquez bắt đầu dùng búa và đục đẽo vào một cây non. “Hãy tản ra và khám phá khu tàn tích. Leah đã cảnh báo tôi phải tránh xa lũ kiến, dù điều đó có nghĩa là gì đi nữa. Đừng đá vào bất kỳ tổ kiến nào, tôi đoán vậy.” cô nói, đã hoàn toàn say sưa với công việc của mình.</p><p class='basic right'>Chuyển đến _Intro 5_.</p>"
+    },
+    "intro3": {
+      "title": "Intro 3",
+      "body": "<p>_Intro 3_: Bạn bước ra khỏi xe tải của Theo và nhìn lên điểm cao nhất của Hemlock Isle. Con đường hẹp quanh co nhường chỗ cho lớp tro mềm như cát phủ kín vùng hoang dã. Những tảng đá đen trên đỉnh đồi trông như những chiếc răng lởm chởm. Một sự im lặng đáng sợ bao trùm mọi thứ khi bạn đi lên đồi và phát hiện một bóng người mặc áo choàng đứng trên một tảng đá nhô ra, nhìn chằm chằm xuống Hemlock Isle. Bạn nhận ra bóng người đó là Mother Rachel khi bạn tiến lại gần hơn. Bà gật đầu như để ghi nhận sự hiện diện của bạn, sau đó dang rộng hai tay trong một tư thế hân hoan. Bầu trời trên đầu lấp lánh với một dải màu sắc kỳ lạ.</p><p class='basic right'>Chuyển đến _Intro 5_.</p>"
+    },
+    "intro4": {
+      "title": "Intro 4",
+      "body": "<p>_Intro 4_: Bạn bước ra khỏi xe tải của Theo và nhìn lên điểm cao nhất của Hemlock Isle. Con đường hẹp quanh co nhường chỗ cho lớp tro mềm như cát phủ kín vùng hoang dã: lấp lánh ánh bạc và sáng tỏ dưới ánh trăng. Những tảng đá đen trên đỉnh đồi trông như những chiếc răng lởm chởm. Bạn cảm thấy bình tâm một cách kỳ lạ bởi sự im lặng khi bạn đi lên đồi, và nhìn thấy những dải màu rực rỡ trong ánh sao trên đầu.</p><p class='basic right'>Tiếp tục đến _Setup_.</p>"
+    },
+    "intro5": {
+      "title": "Intro 5",
+      "body": "<p>_Intro 5_: Bạn đến Pearl Estate cũ và dừng lại trước khi bước vào vực thẳm tối tăm sâu hoắm trước ngôi nhà đổ nát. Một mái nhà vỡ nát ở phía bắc của khu đất cho thấy dấu vết của một vụ va chạm dữ dội nào đó: đánh giá qua những tấm ván nằm rải rác, một thứ gì đó đã bắn ra từ bên trong với lực của một quả đạn pháo. Khi bạn khảo sát đống đổ nát, bạn tự hỏi thảm họa tồi tệ nào đã giáng xuống gia đình Pearl. Một cái bóng đen chạy xẹt qua ở rìa tầm nhìn của bạn. Khi bạn quay lại nhìn, nó đã biến mất.</p><p class='basic right'>Tiếp tục đến _Setup_.</p>"
+    }
+  },
+  "setup": {
+    "gatherSets": "Tập hợp tất cả lá bài từ các chồng bài encounter sau: *The Silent Heath*, *Agents of the Colour*, *Blight*, *Horrors in the Rock*, *Refractions*, *Transfiguration* và *Striking Fear*. Các chồng bài này được đánh dấu bằng các biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/the-silent-heath.png' /><img src='{setImgPath}/agents-of-the-colour.png' /><img src='{setImgPath}/blight.png' /><img src='{setImgPath}/horrors-in-the-rock.png' /><img src='{setImgPath}/refractions.png' /><img src='{setImgPath}/transfiguration.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "currentDaySet": "Ngoài ra, kiểm tra Nhật ký Chiến dịch để biết ngày hiện tại và tập hợp chồng bài encounter tương ứng: *The First Day*, *The Second Day* hoặc *The Final Day*. Các chồng bài này được đánh dấu bằng các biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/the-first-day.png' /><img src='{setImgPath}/the-second-day.png' /><img src='{setImgPath}/the-final-day.png' /></section>",
+    "currentDayMarker": "Kiểm tra Nhật ký Chiến dịch của bạn để biết ngày và giờ hiện tại. Đưa lá Time Marker vào chơi ở mặt tương ứng (_Day {'{'}day{'}'}_) hoặc (_Night {'{'}night{'}'}_).",
+    "desolationV1": "Nếu đang là _Day 1_ hoặc _Night 1_, loại bỏ Agenda 2a: _Desolation (v.II)_ khỏi trò chơi.",
+    "desolationV2": "Nếu không, loại bỏ Agenda 2a: _Desolation (v.I)_ khỏi trò chơi.",
+    "locations": "Đặt các địa điểm sau vào chơi: Crystal Grove, Pearl Estate Ruins và Ashen Slope. Dùng sơ đồ trên trang này để tham khảo.",
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Pearl Estate Ruins.",
+    "setAside": "Đặt mỗi lá sau sang một bên, ngoài cuộc chơi: kẻ thù Brood Queen, cả hai bản sao của kẻ thù Crystal Parasite, và các địa điểm một mặt Salt Chamber, Larval Tunnel, và Crystal Nursery.",
+    "crystalRemains": "Xáo trộn 3 lá bài story asset Crystal Remains úp xuống *(để bạn không biết lá nào là lá nào)* và đặt chúng sang một bên, ngoài cuộc chơi.",
+    "horrorsInTheRock": "Chọn ngẫu nhiên 3 địa điểm từ tập encounter *Horrors in the Rock* và đặt chúng sang một bên mà không nhìn vào mặt được lật của chúng. Loại bỏ các địa điểm *Horrors in the Rock* còn lại khỏi trò chơi.",
+    "residents": "Nếu đang là (_Day {'{'}day{'}'}_), tập hợp mỗi story asset từ chồng bài encounter *Residents*. Chồng bài này được đánh dấu bằng biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/residents.png' /></section>",
+    "leahAtwood": "Nếu đang là _Day 1_, đặt Leah Atwood tại địa điểm Pearl Estate Ruins.",
+    "drRosaMarquez": "Nếu đang là _Day 2_, đặt Dr. Rosa Marquez tại địa điểm Crystal Grove.",
+    "motherRachel": "Nếu đang là _Day 3_, đặt Mother Rachel tại địa điểm Ashen Slope.",
+    "removeResidents": "Loại bỏ phần còn lại của tập bài encounter *Residents* khỏi trò chơi."
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X bằng một nửa số kẻ địch _Insect_ đang in play và trong victory display (làm tròn lên).",
+      "cultist": "-1. Bạn có thể xào một kẻ địch không phải _Elite_ trong victory display vào encounter deck.",
+      "tablet": "-3. Nếu bạn thất bại, chọn một kẻ địch _Insect_ tại địa điểm của bạn. Nó engage bạn và tấn công ngay lập tức.",
+      "elderThing": "-2. Nếu bạn đang ở một địa điểm _Lair_, lật thêm một token khác."
+    },
+    "hardExpert": {
+      "skull": "-X. X bằng số kẻ địch _Insect_ đang in play và trong victory display.",
+      "cultist": "-3. Nếu bạn thành công, bạn có thể xào một kẻ địch không phải _Elite_ trong victory display vào encounter deck.",
+      "tablet": "-5. Ready kẻ địch _Insect_ gần nhất. Nó di chuyển và tấn công như thể đang ở enemy phase.",
+      "elderThing": "-4. Nếu bạn đang ở một địa điểm _Lair_, bạn tự động thất bại."
+    }
+  },
+  "codex": {
+    "motherRachel": {
+      "title": "{'{'}codex{'}'} Codex 1: Mother Rachel",
+      "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.motherRachel.title </h3><p>“Chúng ta không chọn con đường của mình. Dù là kẻ khờ dại, người khôn ngoan, hay những kẻ ngốc tự cho mình là khôn ngoan, thì cũng đều như vậy. Các lựa chọn đã được định sẵn cho chúng ta. Điều tốt nhất chúng ta có thể làm là chấp nhận chỗ đứng của mình,” bà quản sự nói, quỳ xuống. Bà ta nhìn lướt qua bạn về phía ngôi nhà hoang tàn. “Các người sẽ sớm biết chỗ đứng của mình. Cũng như những người dân của Vale.”</p><p class='basic right'>Tăng Relationship Level của Mother Rachel. Mỗi điều tra viên nhận 1 experience thưởng.</p>"
+    },
+    "leahAtwood": {
+      "title": "{'{'}codex{'}'} Codex 2: Leah Atwood",
+      "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.leahAtwood.title </h3><p>“Trước đây, chỗ này gần như là nơi duy nhất trên đảo mà người ta có thể trồng trọt được bất cứ thứ gì. Thực tế là, người ta không thể ngăn mọi thứ phát triển. Gia tộc Pearl đã có cả một cơ ngơi: những vườn cây ăn quả và vườn nho, chưa kể đến việc khai mỏ và săn bắt cá voi. Rồi, hai mươi năm trước, gần như chính xác vào ngày này, một chuyện đã xảy ra. Các người có tin được là chị gái tôi lại nói về chuyện đó như thể nó là một phép màu nào đó không?” cô ta chế nhạo.</p><p class='basic right'>Trong Ghi chú của Leah Atwood, ghi lại *Leah đã tìm kiếm ở Pearl Ruins*. Mỗi điều tra viên nhận 1 clue (từ token pool).</p>"
+    },
+    "drRosaMarquez": {
+      "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
+      "act1": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.drRosaMarquez.title </h3><p>_If it is Act 1:_</p><p>Tiến sĩ Marquez giơ một mảnh kính tròn lên trước ánh sáng. Đó là mặt cắt ngang của một cái cây hóa thạch, chằng chịt những hoa văn mỏng manh như tơ. Vị giáo sư bỏ mẫu vật vào túi. “Vườn táo không bị hóa thạch: chính cấu trúc của gỗ đã thay đổi. Mặt cắt này là của hàng tá những cái cây khác nhau, mỗi cái có lịch sử và vòng tuổi riêng. Tất cả đều đã kết tinh.”</p><p class='basic right'>Rút 3 lá bài. Một điều tra viên có thể kích hoạt codex này một lần nữa trong một act khác.</p>",
+      "act2": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.drRosaMarquez.title </h3><p>_If it is Act 2:_</p><p>Vị giáo sư nâng một chiếc hàm dưới khô quắt có kích thước bằng cẳng tay của bà. “Những sinh vật này có cả đặc điểm của mối, ong bắp cày và các đặc điểm khác từ một số loài côn trùng. Nó nằm ngoài lĩnh vực của tôi—Tiến sĩ Christopher sẽ phát điên nếu ông ấy nhìn thấy thứ này—nhưng tôi đã tìm ra một số phát hiện thú vị trong các đường hầm. Nhìn này.”</p><p class='basic right'>Chọn một vị trí đang trong cuộc chơi. Lật ngửa tất cả các lá bài bên dưới vị trí đã chọn. Discard mỗi lá treachery được lật và đặt phần còn lại trở lại theo bất kỳ thứ tự nào.</p>"
+    },
+    "larvalTunnel": {
+      "title": "{'{'}codex{'}'} Codex Ψ: Larval Tunnel",
+      "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.larvalTunnel.title </h3><p>Một mùi hôi thối buồn nôn bốc lên từ một đường hầm nhung nhúc những con côn trùng trắng muốt, mềm nhũn. Những ấu trùng khổng lồ từ trong bóng tối nhìn chằm chằm ra ngoài một cách vô hồn bằng đôi mắt trắng đục. Bầy côn trùng giữ những con non của chúng trong đường hầm này để trưởng thành. Đánh giá qua những tàn tích đẫm máu và khô quắt trên sàn, những con lính lớn hơn trong bầy nuôi chúng bằng nguồn thức ăn ổn định từ động vật hoang dã địa phương và bất kỳ kẻ nào đủ ngu ngốc để mạo hiểm vào hang động của chúng.</p><p class='basic right'>Tập hợp 1 trong số các lá bài Crystal Remains đã để riêng cùng với 2 lá bài trên cùng của encounter deck. Xào chúng lại với nhau và đặt 3 lá bài úp xuống thành một chồng bên dưới Larval Tunnel.</p>"
+    },
+    "saltChamber": {
+      "title": "{'{'}codex{'}'} Codex Ω: Salt Chamber",
+      "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.saltChamber.title </h3><p>Một khe hẹp ở bên hông một đường hầm dẫn vào một hang động rộng rãi. Các khối muối tạo thành những hoa văn mỏng manh, giống như mạng nhện treo lơ lửng trên trần nhà và nhô lên từ sàn nhà. Không khí hăng hắc vị đắng, kiềm, hòa quyện với một mùi ngai ngái kinh tởm. Vài xác chết khô quắt—một số trong đó là con người—nằm rải rác trên sàn, bị muối bám đầy. Có lẽ các sinh vật địa phương sử dụng muối trong căn phòng này như một chất bảo quản tự nhiên. Một kiểu phòng đựng thức ăn.</p><p class='basic right'>Tập hợp 1 trong số các lá bài Crystal Remains đã để riêng cùng với 2 lá bài trên cùng của encounter deck. Xào chúng lại với nhau và đặt 3 lá bài úp xuống thành một chồng bên dưới Salt Chamber.</p>"
+    },
+    "crystalNursery": {
+      "title": "{'{'}codex{'}'} Codex Φ: Crystal Nursery",
+      "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.crystalNursery.title </h3><p>Bạn bước vào một hang động khổng lồ có kích thước bằng một nhà hát vòng tròn, chứa đầy những tinh thể trắng đục. Vô số côn trùng bám trên tường và phơi mình trên sàn dưới ánh sáng nhạt nhòa lọt xuống từ một cái lỗ trên trần nhà. Bạn nhận ra lỗ hổng phía trên chính là vực thẳm khổng lồ phía trước Pearl Estate. Một tiếng vo ve trầm thấp lan tỏa khắp căn phòng. Bạn cảm thấy như thể mình đã bước vào một không gian linh thiêng.</p><p class='basic right'>Tập hợp 1 trong số các lá bài Crystal Remains đã để riêng cùng với 2 lá bài trên cùng của encounter deck. Xào chúng lại với nhau và đặt 3 lá bài úp xuống thành một chồng bên dưới Crystal Nursery.</p>"
+    },
+    "broodQueen": {
+      "title": "{'{'}codex{'}'} Codex Σ: Brood Queen",
+      "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.broodQueen.title </h3><p>Thân hình to lớn, béo mập của một con côn trùng lảo đảo chui ra từ một đường hầm tối tăm. Cặp râu của Brood Queen quờ quạng trong bóng tối, phát ra những rung động đáng lo ngại. Trong chốc lát, hang động tràn ngập bầy con của nó, mỗi con đều phát ra ánh sáng xanh mờ ảo.</p><p class='basic right'>Spawn Brood Queen tại vị trí gần nhất với nhiều điều tra viên nhất (tại một vị trí _Cave_, nếu có thể). Loại bỏ mỗi kẻ địch _Insect_ khỏi victory display và spawn nó tại vị trí của Brood Queen.</p>"
+    },
+    "xp": {
+      "bonus": "Kinh nghiệm thưởng"
+    }
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "Không có Resolution",
+      "body": "<p>_Nếu không đạt được resolution nào (mỗi điều tra viên đều đã resign hoặc bị đánh bại)_: Khi bạn bước xuống con dốc, hoàn toàn kiệt sức, bạn nghe thấy tiếng của hàng trăm đôi cánh đập. Những con côn trùng nhợt nhạt, trong suốt phủ kín các tảng đá đen trên đỉnh đồi, vo ve không ngừng. Chúng đang nói gì với nhau bằng ngôn ngữ xa lạ của chúng? Chúng có biết về thế giới bên ngoài heath không? Bạn rùng mình khi tự hỏi còn bao nhiêu con nữa đang ẩn nấp trong các hang động bên dưới.</p><p class='basic'>Kiểm tra Nhật ký Chiến dịch của bạn.</p>",
+      "proceedToResolution1": "Nếu có đúng 3 Crystal Remains trong victory display, tiếp tục đến _Resolution 1_.",
+      "skipToResolution2": "Nếu có đúng 1 hoặc 2 Crystal Remains trong victory display, chuyển đến _Resolution 2_.",
+      "skipToResolution4": "Nếu không, chuyển đến _Resolution 4_."
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Bạn đặt ba cái xác khô đét vào thùng xe tải. Sự tích tụ của các khoáng chất khiến chúng vừa nặng vừa vô cùng giòn. Bụng của người con trai phình to với những khối tinh thể to bằng quả bóng rổ, và da của người mẹ thì dai như da thuộc vì muối. Bạn không biết điều gì đã làm biến dạng cơ thể của gia đình Pearl, nhưng chắc chắn quá trình đó không hề diễn ra nhanh chóng; họ hẳn đã bị biến dạng một cách khủng khiếp khi chết. Bạn ghi chép lại tình trạng hài cốt và thu thập một vài mẫu vật của các khối tinh thể. Gia đình Pearl xứng đáng có một kết cục tốt đẹp hơn thế này. Với một chiếc xẻng từ phía sau xe tải của Theo, bạn bắt tay vào việc đào cho ba cái xác một ngôi mộ tử tế.</p><ul><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *các điều tra viên đã an táng gia đình Pearl*.</li><li>Chuyển đến _Resolution 3_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: Bạn đặt những hài cốt mà mình thu thập được vào thùng chiếc xe tải màu xanh da trời của Theo. Sự tích tụ của các khoáng chất khiến chúng vừa nặng lại vừa vô cùng giòn. Bạn không biết điều gì đã làm biến dạng cơ thể của gia đình Pearl, nhưng chắc chắn quá trình đó không diễn ra nhanh chóng; họ hẳn đã bị biến dạng một cách khủng khiếp khi chết. Bạn ghi chép lại tình trạng hài cốt và thu thập một vài mẫu vật của các khối tinh thể, sau đó chôn cất các hài cốt trong một ngôi mộ nông ở chân đồi Pearl Ridge.</p><ul><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *hài cốt đã được tìm lại một phần*.</li><li>Tiếp tục đến _Resolution 3_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: Sau khi bỏ lại Pearl Ridge phía sau, bạn nghiên cứu cuốn nhật ký của Susan Pearl. Bản ghi chép kể lại sự thăng trầm trong các khoản đầu tư của Susan Pearl vào nông nghiệp và khai khoáng trên Hemlock Isle trong thập kỷ dẫn đến năm 1906. Các mục ghi chép kinh doanh được xen kẽ với những lời cầu nguyện, hình minh họa các loài chim, và đôi khi là những chi tiết về khu “Warrens” kỳ lạ bên dưới Pearl Ridge. Các mục khác đề cập đến căn bệnh lây lan trong số các công nhân vườn cây ăn quả và gia đình Pearl, cùng với những khó khăn liên tiếp trong nỗ lực khai thác mỏ của họ. Mục cuối cùng, được viết bằng những nét chữ nguệch ngoạc, thất thường, thu hút sự chú ý của bạn:</p><p class='italic'>Tôi vẫn không chắc liệu những gì mình trải qua là một giấc mơ hay một khải tượng. Vào lúc nửa đêm, tôi tỉnh dậy với cảm giác kỳ lạ như đang bị theo dõi, và khi mở mắt ra, tôi thấy một quả cầu ánh sáng nhạt nhòa như nước ở góc phòng, nhảy múa như một thứ gì đó trong truyện cổ tích. Ngay khi tôi nhìn thấy nó, thứ đó bay ra ngoài cửa sổ, và tôi đi theo nó ra ngoài vườn cây ăn quả. Những gì tôi thấy là một thứ mà tôi chỉ có thể mô tả như một phép màu: Hàng trăm đốm sáng thần tiên khác đang nhảy múa trong vườn cây. Khi tôi nhìn những ánh sáng đó, chúng trở nên sáng hơn, và tôi cảm thấy gần như mình đang bay. Một niềm hạnh phúc ngây ngất chiếm lấy tâm trí tôi, và tôi cảm thấy khác biệt, bằng một cách nào đó. Như thể có một tôi khác—năm bản ngã khác của tôi—đang đập trong lồng ngực. Và khi tôi nhìn ra những cái cây, tôi cũng thấy chính mình trong đó. Trong tất cả những thứ này. Mạnh mẽ và cứng cáp với lớp vỏ sần sùi và những cành cây làm cánh tay. Tôi thấy chính mình, vị trí của mình, trong toàn bộ vạn vật. Và tất cả những nỗi sợ hãi của tôi—cho Ezra, cho khu mỏ, cho sức khỏe của chúng tôi—đều tan biến. Tôi chỉ biết đến niềm vui. Thật là một niềm vui tột độ!</p><p class='italic'>Tôi là những con mắt. Tất cả những con mắt nhìn thấy. Tôi là ánh sáng rực rỡ.</p><p class='italic right'>Susan Pearl. Ngày 22 tháng 6 năm 1906</p><ul><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *Cuốn nhật ký của Madame Pearl đã được tìm lại*.</li><li>Tiếp tục đến _Resolution 4_.</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_Resolution 4_: “Khảo sát Miskatonic, tháng 6 năm 1926. Các thành viên Marquez, Musgrave, và cộng sự. Đã khảo sát Pearl Ridge. Những ngọn đồi phía bắc đã bị tàn phá trong một sự kiện không xác định. Sự ô nhiễm dai dẳng đã dẫn đến quá trình khoáng hóa và tinh thể hóa của các sinh vật hữu cơ. Các hang động trong khu vực bị tràn ngập bởi một đàn côn trùng khổng lồ. Côn trùng thể hiện các hành vi và đặc điểm sinh lý của loài ong bắp cày và mối. Cần nghiên cứu thêm.”</p><ul><li>Mỗi điều tra viên nhận kinh nghiệm bằng với giá trị Victory X của mỗi lá bài trong victory display. _Mỗi điều tra viên bây giờ có thể tiêu kinh nghiệm được ghi dưới mục “Unspent Experience” trong Nhật ký Chiến dịch của bạn._</li><li>Trong phần “Areas Surveyed” của Nhật ký Chiến dịch, đánh dấu *Pearl Ridge*.</li><li>Kiểm tra Nhật ký Chiến dịch của bạn.<ul><li>Nếu đang là Day 1, lật đến _Prelude: The First Evening_ (*trang 31*).</li><li>Nếu đang là Night 1, lật đến _Prelude: Dawn of the Second Day_ (*trang 39*).</li><li>Nếu đang là Day 2, lật đến _Prelude: The Second Evening_ (*trang 43*).</li><li>Nếu đang là Night 2, lật đến _Prelude: Dawn of the Final Day_ (*trang 51*).</li><li>Nếu đang là Day 3, lật đến _Prelude: The Final Evening_ (*trang 55*).</li></ul></li></ul>"
+    }
+  }
+}

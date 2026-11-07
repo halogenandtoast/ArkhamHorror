@@ -1,0 +1,23 @@
+{
+  "heading": "Màn III-A",
+  "setup": {
+    "putLocations": "Đặt vị trí City of the Moon-Beasts, Temple of the Moon Lizard, Moon-Forest, và The Dark Crater vào chơi.",
+    "setOtherLocationsAside": "Đặt tất cả các địa điểm khác sang một bên, ngoài màn chơi.",
+    "setCardsAside": "Đặt những lá bài sau một bên, ngoài khu vực chơi: kẻ địch Moon Lizard, lá bài tài sản Virgil Gray *(Truly Inspired)*, lá bài tài sản The Captain, and điểm yếu False Awakening.",
+    "buildEncounterDeck": "Xáo trộn các lá bài encounter còn lại để tạo thành chồng bài encounter."
+  },
+  "intro": {
+    "title": "Màn III–A: Dark Side of the Moon"
+  },
+  "intro1": {
+    "title": "Màn III–A: Dark Side of the Moon"
+  },
+  "intro2": {
+    "title": "Màn III–A: Dark Side of the Moon"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    }
+  }
+}

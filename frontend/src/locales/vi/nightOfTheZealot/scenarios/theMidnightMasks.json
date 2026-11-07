@@ -1,0 +1,16 @@
+{
+  "heading": "Phần II",
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  },
+  "setup": {
+    "acolytes": {
+      "instructions": "Dựa vào số lượng người chơi trong màn chơi:"
+    }
+  }
+}

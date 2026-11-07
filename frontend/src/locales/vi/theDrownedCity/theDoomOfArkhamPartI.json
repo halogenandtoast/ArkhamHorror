@@ -1,0 +1,29 @@
+{
+  "intro": {
+    "proceedToSetup": "Tiếp tục đến _Setup_"
+  },
+  "setup": {
+    "setAsideLocations": "Đặt tất cả các địa điểm khác sang một bên, ngoài màn chơi.",
+    "startAtRivertown": "Mỗi điều tra viên bắt đầu chơi tại Rivertown.",
+    "starSpawn": "Xào các kẻ địch từ bộ bài encounter *Star Spawn* và loại bỏ ngẫu nhiên hai lá khỏi trò chơi. (Thay vào đó loại bỏ ba lá nếu chơi ở chế độ Dễ.)",
+    "legrasse": "Chọn một điều tra viên để thêm story asset John Raymond Legrasse vào bộ bài của họ. Lá bài này không tính vào kích cỡ bộ bài của họ.",
+    "legrasseInPlay": "Đưa story asset John Raymond Legrasse vào chơi dưới quyền kiểm soát của điều tra viên đó. Ông ấy không chiếm ally slot trong Phần I hoặc Phần II của màn chơi này.",
+    "doomOnAgenda": "Đặt doom lên agenda bằng với số lượng điều tra viên.",
+    "floodTokens": "Thêm token lũ lụt vào kho chứa token."
+  },
+  "resolutions": {
+    "label": {
+      "readyToFight": "*\"Chúng tôi đã sẵn sàng chiến đấu.\"*",
+      "needMoreTime": "*\"Chúng tôi cần thêm thời gian.\"*"
+    },
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

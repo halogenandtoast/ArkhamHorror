@@ -1,0 +1,62 @@
+{
+  "difficulty": {
+    "Easy": "*Tôi muốn xem vở kịch*",
+    "Standard": "*Tôi muốn đọc các dấu hiệu*",
+    "Hard": "*Tôi muốn nói lời tuyên thệ*",
+    "Expert": "*Tôi muốn Vị Vua Áo Vàng*"
+  },
+  "interludes": {
+    "2": "Đánh Mất Linh Hồn"
+  },
+  "label": {
+    "conviction": "Sự tin chắc",
+    "doubt": "Sự nghi ngờ"
+  },
+  "key": {
+    "theStrangerIsOnToYou": "Kẻ Lạ đi theo bạn.",
+    "youTriedToWarnThePolice": "Bạn cố gắng cảnh báo cảnh sát.",
+    "thePoliceAreSuspiciousOfYou": "Cảnh sát nghi ngờ bạn.",
+    "youChoseNotToGoToThePolice": "Bạn chọn không đến chỗ cảnh sát.",
+    "doubt": "Sự nghi ngờ",
+    "conviction": "Sự tin chắc",
+    "vIPsInterviewed": "VIP Đã Phỏng Vấn",
+    "vIPsSlain": "VIP Đã Bị Giết",
+    "youIntrudedOnASecretMeeting": "Bạn đã xâm nhập vào một cuộc họp bí mật.",
+    "youFledTheDinnerParty": "Bạn trốn thoát khỏi bữa tiệc tối.",
+    "youSlayedTheMonstersAtTheDinnerParty": "Bạn đã giết những con quái vật ở bữa tiệc tối.",
+    "youTookTheOnyxClasp": "Bạn lấy chiếc móc mã não đi.",
+    "youLeftTheOnyxClaspBehind": "Bạn bỏ cái móc mã não ở lại.",
+    "youDestroyedTheOathspeaker": "Bạn tiêu diệt người tuyên thệ.",
+    "theFollowersOfTheSignHaveFoundTheWayForward": "Những kẻ theo đuổi dấu hiệu đã tìm thấy con đường tiến về phía trước.",
+    "theInvestigatorsWereAttackedAsTheyEscapedTheAsylum": "Các điều tra viên bị tấn công khi trốn thoát khỏi Nhà thương điên.",
+    "theInvestigatorsEscapedTheAsylum": "Các điều tra viên trốn thoát khỏi Nhà thương điên.",
+    "youIgnoredDanielsWarning": "Bạn bỏ qua lời cảnh báo của Daniel.",
+    "youHeadedDanielsWarning": "Bạn lưu ý lời cảnh báo của Daniel.",
+    "youDidNotEscapeTheGazeOfThePhantom": "Bạn đã không thoát khỏi cái nhìn của bóng ma.",
+    "youFoundNigelEngram": "Bạn đã tìm thấy Nigel Engram.",
+    "youWereUnableToFindNigel": "Bạn không tìm thấy Nigel.",
+    "youAwokeInsideTheCatacombs": "Bạn tỉnh dậy bên trong hầm mộ.",
+    "youEnteredTheCatacombsOnYourOwn": "Bạn đã tự mình bước vào hầm mộ.",
+    "youKnowTheSiteOfTheGate": "Bạn biết vị trí của cánh cổng.",
+    "readActII": "Đọc Act II",
+    "youOpenedThePathBelow": "Bạn đã mở con đường phía dưới.",
+    "youOpenedThePathAbove": "Bạn đã mở con đường phía trên.",
+    "theRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth": "Địa hạt của thành phố Carcosa hợp nhất với thế giới chúng ta, và Hastur cai trị cả hai.",
+    "theInvestigatorsPreventedHasturFromEscapingHisPrison": "Các điều tra viên đã ngăn chặn Hastur thoát khỏi nhà tù của hắn.",
+    "hasturHasYouInHisGrasp": "Hastur bắt giữ được bạn trong tầm tay của hắn."
+  },
+  "prologue": {
+    "yellowSign": {
+      "title": "Bạn Đã Từng Thấy Dấu Hiệu Màu Vàng Chưa?"
+    }
+  },
+  "interlude1": {
+    "title": "Chuyển tiếp I: Phần thưởng của Sự điên loạn"
+  },
+  "interlude2": {
+    "title": "Chuyển tiếp II: Đánh Mất Linh Hồn"
+  },
+  "epilogue": {
+    "title": "Phần kết"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "setup": {
+    "placeLocations": "Đặt địa điểm Court of the Outsiders vào cuộc chơi.",
+    "startAt": "Mỗi điều tra viên bắt đầu cuộc chơi tại Court of the Outsiders.",
+    "setAside": "Đặt các lá bài sau sang một bên, out of play: story asset The Red-Gloved Man, kẻ địch Mimetic Nemesis, kẻ địch Protoplasmic Reassembler, và kẻ địch Apocalyptic Presage.",
+    "otherworldDeck": "Chuẩn bị chồng bài Otherworld. Việc này được thực hiện bằng cách làm theo các bước sau:",
+    "bottomOfDeck": "Tìm địa điểm Outsiders’ Lair và cả hai bản sao của địa điểm Cliffs of Insanity. Xào các địa điểm này lại với nhau, với mặt chưa được hé lộ ngửa lên, để tạo thành một chồng bài. Chồng bài này được gọi là chồng bài Otherworld.",
+    "topOfDeck": "Tìm 7 địa điểm City of Remnants còn lại. Xào các địa điểm này lại với nhau, với mặt chưa được hé lộ ngửa lên. Nếu có chính xác 2 điều tra viên trong trò chơi, loại bỏ ngẫu nhiên 1 trong các địa điểm đó khỏi trò chơi mà không nhìn. Nếu chỉ có 1 điều tra viên, loại bỏ ngẫu nhiên 2 trong các địa điểm đó khỏi trò chơi mà không nhìn. Đặt phần còn lại lên trên cùng của chồng bài Otherworld.",
+    "placeDeck": "Đặt chồng bài Otherworld gần lá bài scenario reference.",
+    "placeTopOfOtherworld": "Lấy 3 địa điểm trên cùng của chồng bài Otherworld và đặt chúng vào bóng tối, sắp xếp thành một đường thẳng từ trái sang phải (không được nhìn mặt còn lại của chúng).",
+    "miniCards": "Tập hợp từng mini-card decoy và 3 mini-card City of Remnants (L, M và R). Đặt chúng sang một bên, ra ngoài khu vực chơi.",
+    "placeMiniCards": "Lấy 1 mini-card decoy và 3 mini-card City of Remnants (L, M và R), xào úp mặt, và sắp xếp chúng xung quanh Court of the Outsiders như sau: Một lá bên trái, một lá bên phải, một lá bên trên, và một lá bên dưới. "
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "intro": {
+    "proceedToSetup": "Tiếp tục đến _Setup_",
+    "label": {
+      "toeTheLine": {
+        "oldJob": "*Lấy lại công việc cũ của bạn, bằng bất cứ giá nào.*",
+        "highRoad": "*Chọn con đường cao thượng. Nó không đáng đâu.*"
+      }
+    }
+  },
+  "setup": {
+    "title": "Chuẩn bị màn chơi",
+    "placeFixedLocations": "Đặt các vị trí Great Stair, Moving Platform, Sealed Chamber, và Core of the Vault vào chơi, như được chỉ ra trong sơ đồ sắp xếp vị trí.",
+    "removeOtherworldlyMechanisms": "Loại bỏ ngẫu nhiên một bản sao của Otherworldly Mechanisms khỏi trò chơi (Otherworldly Mechanisms nằm ở mặt đã lật của một số vị trí Vault Chamber).",
+    "placeVaultChambers": "Xào các bản sao còn lại của Vault Chamber với nhau và đặt chúng vào chơi theo sơ đồ sắp xếp vị trí.",
+    "beginAtTheGreatStair": "Mỗi điều tra viên bắt đầu tại Great Stair.",
+    "starSpawn": "Xào các kẻ địch từ bộ encounter *Star Spawn* và loại bỏ ngẫu nhiên 2 lá khỏi trò chơi. Đặt phần còn lại sang một bên, out of play.",
+    "addFloodTokens": "Thêm token lũ lụt vào kho chứa token.",
+    "floodBottomRow": "Tăng flood level của ba địa điểm Vault Chamber ở hàng dưới cùng.",
+    "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu."
+  },
+  "theVaultCore": {
+    "title": "Màn Chuyển tiếp: The Vault Core",
+    "label": {
+      "pushTheButton": "*Nhấn nút.*",
+      "leaveItAlone": "*Để nó yên.*"
+    }
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "label": {
+      "goodMoney": {
+        "playItSafe": "*Chơi an toàn.*",
+        "playBothSides": "*Chơi cả hai phe để kiếm chác tối đa.*"
+      }
+    }
+  }
+}

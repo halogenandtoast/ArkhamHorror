@@ -1,0 +1,233 @@
+{
+  "intro": {
+    "title": "Kịch bản: Fate of the Vale",
+    "body": "<p>Đầu óc quay cuồng, bạn đứng dậy trong một hang động óng ánh. Những bức tường nhẵn bóng nhấp nháy ánh sáng xanh lam lạnh lẽo, phản chiếu những hình ảnh ác mộng. Những măng đá xoắn xuýt cuộn lại và mở ra thành những vòng xoắn ốc, vươn lên trần nhà như những thân cây của một loài thực vật thời tiền sử. Tiếng la hét vang vọng trong không trung: nền hang động phủ kín những người tham gia lễ hội đang ôm chặt tay chân hoặc đầu của họ. Những vết nứt ánh sáng chói lọi hình thành trên da họ và ngày càng dữ dội. Mọi thứ trong căn phòng tỏa sáng đều bị bóp méo bởi một lớp lân quang lạnh lẽo. Bạn cảm thấy như thể mình đang hít thở khói đặc trong không khí ấm áp dày đặc.</p><p>Những hình bóng phù du xoáy quanh một luồng sáng chói lọi rực rỡ ở trung tâm căn phòng. In bóng trước lõi ánh sáng trắng tinh khiết là Mother Rachel, mái tóc bà xõa tung và bồng bềnh như đang ở dưới vùng nước sâu. Đầu bạn đau như búa bổ khi nhìn chằm chằm vào luồng sáng, và bạn nhìn xuống nền hang động. Những người tham gia lễ hội bị thương đã ngừng cử động, và trở nên xám xịt và đầy bụi. Một vài người trong suốt như thủy tinh, khúc xạ ánh sáng trong trẻo của vực thẳm thành những mảng lăng kính. Những người khác đứng sững sờ, hóa đá, giang tay về phía luồng sáng, mỗi khuôn mặt đều đông cứng trong một nụ cười ma quái.</p><p>Tiếng cười của Mother Rachel vang vọng khắp căn phòng khi Mẹ bề trên nhìn chằm chằm vào vực thẳm, giơ hai tay lên quá đầu. Khói tụ lại quanh bà khi cơ thể bà tan biến thành khí. Không chắc chuyện gì đang xảy ra, bạn chạy lên một ngọn đồi gồm những hình hài con người hóa đá về phía Mother Rachel và vực thẳm. Xương và những xác chết khô nứt nẻ dưới chân khi bạn leo lên đỉnh. Mother Rachel nhìn bạn, hân hoan, trước khi cơ thể bà thăng hoa thành ngọn lửa nhợt nhạt.</p><p>Một cảm giác hưng phấn quá đỗi quen thuộc tràn ngập các giác quan của bạn khi ánh sáng xa lạ rung động và uốn cong căn phòng xung quanh nó. Bạn cảm thấy một bàn tay vô hình trên vai mình; bạn gạt nó đi. Có điều gì đó khác biệt. Bạn giơ một tay lên và thấy một vết nứt ánh sáng nhỏ, ngoằn ngoèo như mạng nhện hình thành trên lòng bàn tay. Vết nứt dài ra và lan lên cổ tay, rồi đến cánh tay bạn. Cơn đau đi kèm khiến bạn ngất lịm đi.</p><p>Bạn tỉnh dậy và bạn thấy ch ínhm ìnhđ an gđ ứ ngở b ênm épcủ amộ tvự cth ẳmr ộngl ớnnh ìn xUống bạN thẤy ch ính m ìnhT rong cơ th ểcủ amộ tcon m èođ enV àNhưm ộtNữH oàngm ộtTh ứĐangb ƠiL ộim ộtBóngT ốiH ỗnL oạnBòT rườnA ilà bạnvÀTẠISAObạNlạIởĐÂy?</p><p class='basic right'>Tiếp tục đến _Setup_.</p>"
+  },
+  "remembered": {
+    "bertieIsFleeing": "Bertie đang bỏ chạy",
+    "theInvestigatorsFoundGas": "Các điều tra viên đã tìm thấy xăng",
+    "theInvestigatorsFoundTheosTruck": "Các điều tra viên đã tìm thấy xe tải của Theo",
+    "theRoadIsClear": "Con đường đã thông",
+    "theSamplesWereFound": "Các mẫu vật đã được tìm thấy",
+    "theSurveyNotesWereRecovered": "Ghi chép khảo sát đã được tìm lại"
+  },
+  "interlude": {
+    "title": "Scenario Interlude: Fate of the Vale",
+    "label": {
+      "letsEndThis": "Kết thúc chuyện này thôi.",
+      "saveTheVale": "Cứu lấy Vale!",
+      "burnItAll": "Đốt sạch tất cả.",
+      "escape": "Thoát thân bảo toàn tính mạng."
+    },
+    "fateOfTheVale1": "<p>_Fate of the Vale 1:_ Dr. Marquez nhìn chằm chằm vào những hoa văn chạm trổ tinh xảo hình thành rồi mờ dần trong căn phòng bằng kính. “Nó đang nuốt chửng chúng ta. Nếu chúng ta không làm gì đó, nó sẽ phá hủy hòn đảo này, và mọi thứ trên đó. Nhưng tôi có một ý tưởng,” cô giơ lên một mảnh vỡ óng ánh và mỉm cười đầy tự tin. “Các bạn có tin tôi không?”</p><ul><li>Nếu story asset Dr. Marquez đang không in play, tìm trong deck của mỗi điều tra viên và tất cả các khu vực out-of-play để lấy Dr. Marquez và đưa cô ấy vào in play dưới sự điều khiển của một điều tra viên. Cô ấy không chiếm ally slot trong phần còn lại của scenario này.</li><li>Lật lá bài story The Abyss sang mặt vị trí của nó.</li><li>Lật mỗi kẻ địch Cosmic Emissary sang mặt _Shattered_ của nó *(phá vỡ đội hình của chúng)*. Đặt kẻ địch Cosmic Emissary *(The Abyss)* tại vị trí The Abyss. Đặt mỗi kẻ địch Cosmic Emissary khác tại vị trí Mirror Nest mà nó đang tiếp giáp vật lý.</li><li>Đặt Act 3a—Fate of the Vale (v.I) vào in play. Loại bỏ mọi act khác khỏi trò chơi.</li><li>Tiếp tục chơi.</li></ul>",
+    "fateOfTheVale2": "<p>_Fate of the Vale 2:_ Với sự giúp đỡ của Dr. Marquez, các bạn leo ra khỏi hố sụt và thấy Hemlock Vale bị nhấn chìm trong màn sương mù đỏ như máu. Sau khi lùng sục ngôi làng để tìm những người sống sót, các bạn tìm thấy một vài người bạn. “Chúng ta phải cứu càng nhiều người càng tốt,” Dr. Marquez nói. Khi các bạn bắt đầu cuộc tìm kiếm, thực thể phát sáng trồi lên từ hố sụt, khúc xạ như những mảnh kính vỡ.</p>",
+    "removeEachMirrorNestAndCave": "Loại bỏ mỗi địa điểm Mirror Nest và _Cave_ khỏi trò chơi.",
+    "putEachSetAsideHemlockValeLocationIntoPlay": "Đặt mỗi địa điểm *Hemlock Vale* đang để riêng vào chơi ở mặt (*Night*) của chúng.",
+    "moveEachInvestigatorToTheCrossroads": "Di chuyển mỗi điều tra viên đến The Crossroads.",
+    "checkYourCampaignLog": "Kiểm tra Nhật ký Chiến dịch của bạn.",
+    "ifThePetersFamilyWasReunited": "*Nếu gia đình Peters đã đoàn tụ*, tìm trong mọi khu vực đang in play và out of play để lấy Helen Peters và Theo Peters, rồi đưa mỗi người vào chơi dưới quyền kiểm soát của bất kỳ điều tra viên nào, với mặt asset ngửa lên.",
+    "ifTheHemlocksMadeATruce": "*Nếu nhà Hemlock đã đình chiến*, tìm trong mọi khu vực đang in play và out of play để lấy River Hawthorne và William Hemlock, rồi đưa mỗi người vào chơi dưới quyền kiểm soát của bất kỳ điều tra viên nào, với mặt asset ngửa lên.",
+    "putAct3aFateOfTheValeV1IntoPlay": "Đặt Act 3a—Fate of the Vale (v.I) vào in play. Loại bỏ mọi act khác khỏi trò chơi.",
+    "placeCards": "Tìm trong encounter set *Day of the Feast* để lấy 2 bản sao của Frenzied Reveler, xào chúng cùng với các lá bài _Resident_ đã để riêng, và đặt chúng, với mặt kẻ địch ngửa lên, bên dưới từng vị trí ngoại trừ The Crossroads, phân bố đều nhất có thể.",
+    "flipCosmicEmissaryEnemies": "Lật mỗi kẻ địch Cosmic Emissary sang mặt _Shattered_ của nó. Đặt Cosmic Emissary (*The Abyss*) tại The Crossroads. Xào các kẻ địch Cosmic Emissary còn lại và đặt mỗi loại một con tại The Boarding House, The Commons và The Atwood House.",
+    "resumePlaying": "Tiếp tục chơi.",
+    "fateOfTheVale3": "<p>_Fate of the Vale 3:_ Với sự giúp đỡ của Dr. Marquez, các bạn leo ra khỏi hố sụt và thấy Hemlock Vale bị nhấn chìm trong màn sương mù đỏ như máu. Nếu thực thể ngoại lai này đang lấy người dân, hệ thực vật và động vật của hòn đảo làm thức ăn, các bạn vẫn có thể tước đi bữa ăn của nó. Ngôi làng chứa đầy pháo hoa. Có lẽ chừng đó là đủ để thiêu rụi hòn đảo...</p><ul><li>Đặt Act 3a—Fate of the Vale (v.III) vào in play. Loại bỏ mọi act khác khỏi trò chơi.</li><li>Chuyển đến _Fate of the Vale 5._</li></ul>",
+    "fateOfTheVale4": "<p>_Fate of the Vale 4:_ Với sự giúp đỡ của Dr. Marquez, các bạn leo ra khỏi hố sụt và thấy Hemlock Vale bị nhấn chìm trong màn sương mù đỏ như máu. Vị giáo sư ấn tay vào thái dương khi đánh giá tình hình. “Chúng ta cần tìm ghi chép của tôi. Và Bertie nữa, nếu anh ấy còn sống. Tôi—Tôi không thích điều này, nhưng chúng ta phải trốn thoát. South Point Lighthouse có lẽ đủ xa. Có thể chúng ta sẽ an toàn ở đó.”</p><ul><li>Đặt Act 3a—Fate of the Vale (v.IV) vào in play. Loại bỏ mọi act khác khỏi trò chơi.</li><li>Tiếp tục đến _Fate of the Vale 5._</li></ul>",
+    "fateOfTheVale5": "<p>_Fate of the Vale 5:_ Ánh sáng bạc chiếu xuyên qua màn sương mù, tạo ra những cái bóng kỳ lạ. Một số trong đó là hình bóng của những dân làng điên loạn.</p><ul><li>Loại bỏ mỗi địa điểm Mirror Nest và _Cave_ khỏi trò chơi.</li><li>Đặt mỗi địa điểm _Hemlock Vale_ đang để riêng vào chơi ở mặt (*Night*) của chúng.<ul><li>Di chuyển mỗi điều tra viên đến The Crossroads.</li></ul></li><li>Kiểm tra Nhật ký Chiến dịch của bạn.<ul><li>*Nếu Bertie đã thiệt mạng*, loại bỏ lá story asset Bertie Musgrave đang để riêng khỏi trò chơi. Nếu không, đưa cậu ấy vào chơi tại The Boarding House, với mặt asset ngửa lên.</li><li>Tìm trong bộ encounter *Day of the Feast* 2 bản sao của Frenzied Reveler, xào chúng với mỗi lá bài _Resident_ đã để riêng, và đặt chúng, mặt enemy ngửa lên, tại mỗi địa điểm trống ngoại trừ The Crossroads, phân bố đều nhất có thể. (Nếu không còn địa điểm trống nào, dừng lại ngay lập tức.)</li><li>Loại bỏ mỗi lá _Resident_ còn lại khỏi trò chơi.</li></ul></li><li>Lật mỗi kẻ địch Cosmic Emissary sang mặt _Shattered_ của nó *(phá vỡ đội hình của chúng)*. Đặt Cosmic Emissary *(The Abyss)* tại The Crossroads. Xào các kẻ địch Cosmic Emissary còn lại và đặt một lá tại mỗi vị trí The Boarding House, The Commons, và The Atwood House.</li><li>Tiếp tục chơi.</li></ul>"
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X bằng số act hiện tại cộng 1.",
+      "cultist": "-4. Nếu bạn thất bại, bỏ ngẫu nhiên 1 lá bài từ tay bạn.",
+      "tablet": "-5. Bạn có thể đặt 1 doom lên lá bài investigator của mình để thay vào đó coi chỉ số của token này là 0.",
+      "elderThing": "-2. Nếu đây là một nỗ lực fight hoặc evade nhắm vào Cosmic Emissary, lật thêm một token khác."
+    },
+    "hardExpert": {
+      "skull": "-X. X bằng số kẻ địch _Colour_ đang in play.",
+      "cultist": "-6. Bỏ ngẫu nhiên 1 lá bài từ tay bạn.",
+      "tablet": "-8. Bạn có thể đặt 1 doom lên lá bài investigator của mình để thay vào đó coi chỉ số của token này là -3.",
+      "elderThing": "-5. Nếu đây là một nỗ lực fight hoặc evade nhắm vào Cosmic Emissary, thay vào đó bạn tự động thất bại."
+    }
+  },
+  "tooltips": {
+    "fateOfTheValeV3": {
+      "placeKindling": "{'{'}action{'}'} Tiêu X {'{'}perPlayer{'}'} clue: Đặt X resource lên địa điểm của bạn, như kindling (bạn có thể tiêu 5 tài nguyên hoặc bỏ một asset _Item_ bạn kiểm soát để đặt thêm 1 kindling).",
+      "drawFire": "{'{'}action{'}'} Nếu địa điểm của bạn có kindling bằng hoặc lớn hơn giá trị shroud của nó, loại bỏ toàn bộ kindling khỏi nó: Rút 1 lá treachery Fire! đang để riêng. (Giới hạn nhóm một lần mỗi địa điểm.)",
+      "placeKindlingMiners": "{'{'}action{'}'} Tiêu X clue: Đặt X resource lên địa điểm của bạn, như kindling (bạn có thể tiêu 5 tài nguyên hoặc bỏ một asset _Item_ bạn kiểm soát để đặt thêm 1 kindling).",
+      "drawFireMiners": "{'{'}fast{'}'} Nếu địa điểm của bạn có 1 {'{'}perPlayer{'}'} kindling, loại bỏ toàn bộ kindling khỏi nó: Rút 1 lá treachery Fire! đang để riêng. (Giới hạn nhóm một lần mỗi địa điểm.)"
+    }
+  },
+  "label": {
+    "spendCluesToAutomaticallySucceed": "Tiêu clue để tự động thành công",
+    "tablet": {
+      "easyStandard": "Đặt 1 doom lên lá investigator của bạn để thay vào đó coi chỉ số của token này là 0",
+      "hardExpert": "Đặt 1 doom lên lá investigator của bạn để thay vào đó coi chỉ số của token này là -3"
+    },
+    "euphoria": {
+      "placeAssetOnAbyss": "Đặt một non-story asset do bạn kiểm soát lên trên The Abyss"
+    },
+    "fragmentation": {
+      "placeAssetOnAbyss": "Đặt asset có chi phí in trên bài cao nhất của bạn lên trên The Abyss",
+      "nearestEmissaryAttacks": "Cosmic Emissary gần nhất tấn công bạn"
+    },
+    "sublimation": {
+      "placeHandOnAbyss": "Đặt các lá bài trên tay bạn lên trên The Abyss",
+      "nearestEmissaryAttacks": "Cosmic Emissary gần nhất tấn công bạn"
+    },
+    "theSilence": {
+      "shuffleTopCardIntoAbyss": "Xào lá trên cùng của deck bạn vào The Abyss"
+    },
+    "theMiasma": {
+      "shuffleTopCardIntoAbyss": "Xào lá trên cùng của deck bạn vào The Abyss"
+    },
+    "fateOfTheValeV1": {
+      "letMarquezCarryOutPlan": "Để Dr. Marquez thực hiện kế hoạch của bà",
+      "doItOurselves": "Tự mình làm lấy"
+    },
+    "fateOfTheValeV3": {
+      "spendResourcesForKindling": "Tiêu 5 tài nguyên để đặt thêm 1 kindling"
+    },
+    "shatteredMemories": {
+      "doNotTakeControl": "Không nhận quyền kiểm soát cư dân nào"
+    },
+    "oldMemory": {
+      "chooseInvestigator": "Chọn một điều tra viên để rút lá bài đó",
+      "cancelRevelation": "Hủy hiệu ứng revelation của lá bài đó và loại bỏ nó khỏi trò chơi"
+    }
+  },
+  "setup": {
+    "gatherSets": "Tập hợp tất cả lá bài từ các chồng bài encounter sau: *The Final Day*, *Fate of the Vale*, *Day of the Feast*, *Agents of the Colour*, *Fire!*, *Horrors in the Rock*, *Refractions*, *Residents*, *Transfiguration* và *The Vale*. Các chồng bài này được đánh dấu bằng các biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/the-final-day.png' /><img src='{setImgPath}/fate-of-the-vale.png' /><img src='{setImgPath}/day-of-the-feast.png' /><img src='{setImgPath}/agents-of-the-colour.png' /><img src='{setImgPath}/fire.png' /><img src='{setImgPath}/horrors-in-the-rock.png' /><img src='{setImgPath}/refractions.png' /><img src='{setImgPath}/residents.png' /><img src='{setImgPath}/transfiguration.png' /><img src='{setImgPath}/the-vale.png' /></section>",
+    "nightThree": "Đưa lá bài Time Marker _Night Three_ vào khu vực chơi. Bạn không đơn độc.",
+    "shatteredSelf": "Thay thế lá bài investigator của mỗi người chơi bằng một lá bài investigator Shattered Self *(xem* _Shattered Self_ *bên dưới)*. Loại bỏ các lá bài Shattered Self còn lại khỏi trò chơi.",
+    "mirrorNests": "Tập hợp tất cả các địa điểm từ encounter set *Fate of the Vale* cùng với tất cả các bản sao của kẻ địch Cosmic Emissary hai mặt.",
+    "shuffleMirrorNests": "Xào 4 địa điểm Mirror Nest sao cho bạn không biết cái nào là cái nào và đặt chúng vào chơi, chưa lật, cùng với các kẻ địch Cosmic Emissary theo sơ đồ bố trí. Mỗi kẻ địch Cosmic Emissary bắt đầu chơi với mặt _Colour_ ngửa lên.",
+    "connections": "Lưu ý rằng mỗi địa điểm Mirror Nest được kết nối với địa điểm theo chiều kim đồng hồ và ngược chiều kim đồng hồ so với nó.",
+    "startingLocation": "Mỗi điều tra viên bắt đầu màn chơi tại một địa điểm Mirror Nest khác nhau tùy chọn.",
+    "setAside": "Để riêng các lá bài sau bên ngoài khu vực chơi: lá bài story The Abyss, tất cả các địa điểm từ các encounter set *The Vale* và *Horrors in the Rock*, các encounter set *Day of the Feast*, *Residents*, và *Fire!*, tất cả các bản sao của Act 3a—Fate of the Vale (v.I-IV), và cả hai kẻ địch Crystal Parasite.",
+    "removeScenarioReference": "Loại bỏ lá bài scenario reference từ encounter set *The Vale* khỏi trò chơi.",
+    "createTheAbyss": "Sau khi rút những lá bài trên tay ban đầu, tạo The Abyss *(xem* _The Abyss_*bên dưới)*.",
+    "seedAbyssDeck": "Xào tất cả các lá bài encounter còn lại cùng với 5 lá bài trên cùng của bộ bài mỗi điều tra viên lại với nhau.",
+    "shuffleTrueSelves": "Chia bộ bài đã xào làm hai nửa và để riêng một nửa. Xào tất cả các lá bài điều tra viên “thực” vào một nửa, và đặt nửa này lên trên nửa kia. Đây là The Abyss.",
+    "placeTheAbyss": "Đặt lá bài The Abyss hai mặt lên trên cùng của The Abyss, mặt story card ngửa lên."
+  },
+  "theAbyss": {
+    "title": "The Abyss",
+    "body": "<h3>The Abyss</h3><p class='basic'>Lá bài The Abyss hai mặt luôn che phần trên cùng của The Abyss, và không bao giờ bị xào vào. Nếu 1 hoặc nhiều lá bài được đặt lên trên cùng của The Abyss, chúng được đặt ngay bên dưới lá bài The Abyss, lên trên tất cả các lá bài khác trong The Abyss. Nếu 1 hoặc nhiều lá bài được xào vào The Abyss, hãy lấy lá bài The Abyss ra, xào các lá bài đó vào The Abyss, sau đó đặt lá bài The Abyss trở lại lên trên cùng.</p><p class='basic'>Mỗi khi một điều tra viên đáng lẽ phải rút 1 hoặc nhiều lá bài từ encounter deck *(ví dụ: trong mythos phase, hoặc qua một hiệu ứng bài)*, thay vào đó họ lật các lá bài từ dưới cùng của The Abyss cho đến khi lật được một lá bài có mặt lưng của encounter card, và rút lá bài đó. Các lá bài được lật còn lại sẽ được xào và đặt trở lại lên trên cùng của The Abyss *(bên dưới lá bài The Abyss)*.</p><ul><li>Bất cứ khi nào một lá bài được rút từ The Abyss, hãy tham khảo lá bài story The Abyss hai mặt để xác định cách giải quyết lá bài đó.</li><li>_Các hiệu ứng từ player card và weakness cho phép nhìn, tìm kiếm, thêm bài vào, hoặc loại bỏ bài từ encounter deck không thể tương tác với The Abyss và đều sẽ thất bại._</li><li>_Khi một encounter card đáng lẽ bị loại bỏ trong kịch bản này, nó luôn được đặt lên trên cùng của The Abyss._</li></ul>"
+  },
+  "cosmicEmissary": {
+    "title": "The Cosmic Emissary",
+    "body": "<h3>The Cosmic Emissary</h3><p class='basic'>The Cosmic Emissary được tạo thành từ nhiều kẻ địch Cosmic Emissary.</p><ul><li>Mỗi kẻ địch Cosmic Emissary vào chơi \"theo đội hình\" như trong sơ đồ bố trí.</li><li>Mỗi kẻ địch Cosmic Emissary phải luôn ở trong đội hình trừ khi có hướng dẫn khác. Nếu Cosmic Emissary phá vỡ đội hình, mỗi kẻ địch sẽ di chuyển độc lập với nhau.</li><li>Mỗi kẻ địch Cosmic Emissary có thể bị tấn công và lẩn tránh riêng biệt. (Trừ khi chúng có giá trị health, không thể gây damage cho những kẻ địch này.)</li><li>Trong khi ở trong đội hình, mỗi kẻ địch Cosmic Emissary được coi là đang ở tại Mirror Nest mà lá bài của nó tiếp giáp vật lý.</li></ul>",
+    "prompt": {
+      "title": "Cosmic Emissary nhìn chằm chằm lại",
+      "body": "Bạn đã nhìn kẻ địch Cosmic Emissary hơn 15 giây. Bạn phát điên.",
+      "continue": "Tiếp tục",
+      "agendaAlt": "Lá agenda hiện tại"
+    }
+  },
+  "shatteredSelf": {
+    "title": "Shattered Self",
+    "body": "<h3>Shattered Self</h3><p class='basic'>Trong quá trình chuẩn bị cho scenario này, mỗi điều tra viên được hướng dẫn thay thế lá bài điều tra viên của họ bằng một lá bài điều tra viên Shattered Self có trong bộ encounter *Fate of the Vale*.</p><ul><li>Deck của mỗi điều tra viên giữ nguyên. Trong một phần của scenario này, các điều tra viên phải dùng lá investigator Shattered Self và không thể dùng bất kỳ khả năng nào của điều tra viên của mình. Mỗi điều tra viên vẫn nên dùng mini-card investigator của mình để phân biệt ai là ai. Mọi hiệu ứng trên lá investigator của bạn yêu cầu bắt đầu chơi với một asset cụ thể sẽ được giải quyết trước khi đổi lá investigator của bạn sang lá investigator Shattered Self.</li><li>Bất kỳ trauma nào bình thường sẽ được đặt lên điều tra viên của bạn đều được chuyển sang lá bài điều tra viên Shattered Self của bạn.</li><li>Bất kỳ lá bài nào được đính kèm hoặc đặt bên dưới lá bài điều tra viên của bạn đều được đính kèm hoặc đặt bên dưới lá bài Shattered Self của bạn.</li><li>Bất kỳ hiệu ứng bài nào đề cập đến lá bài điều tra viên \"thật\" của bạn đều đề cập đến lá bài điều tra viên gốc của bạn chứ không phải lá bài Shattered Self của bạn.</li><li>Lá bài Shattered Self của bạn có cùng tên lá bài với lá bài điều tra viên \"thật\" của bạn *(ví dụ: Nếu bạn đang chơi Kōhaku Narukami, hãy coi lá bài Shattered Self như thể tên của nó là \"Kōhaku Narukami\".)*</li><li>Nếu Shattered Self của bạn bị đánh bại trong scenario này, bạn bị _driven insane_.</li></ul>"
+  },
+  "resolutions": {
+    "xp": {
+      "cosmicEmissary": "Đã đánh bại Cosmic Emissary và Colour Out of Space.",
+      "savedTheVale": "Đã cứu người dân Hemlock Isle khỏi một số phận khủng khiếp.",
+      "eradicatedTheColour": "Đã diệt trừ Colour Out of Space…phải không nhỉ?",
+      "survivedTheFeast": "Đã sống sót qua Feast."
+    },
+    "noResolution": {
+      "title": "Không có Resolution",
+      "body": "<div class='resolution'><p>_Nếu không đạt được resolution nào (mỗi điều tra viên đều đã resign hoặc bị đánh bại)_: Xung quanh bạn bị nuốt chửng bởi một ánh sáng rực rỡ không thể diễn tả. Một cảm giác hưng phấn quen thuộc siết lấy bạn khi chính thực tại vỡ vụn quanh bạn, và bạn thoáng thấy những gương mặt khác: người, ngoại lai, thú vật. Niềm hạnh phúc hóa thành cơn đau đớn tột cùng khi cơ thể bạn thăng hoa thành khí đỏ. Khi bạn gào thét, hàng ngàn gương mặt khác cùng gào thét trong tâm trí bạn: bạn nhận ra mỗi gương mặt đều là một bạn khác ở những thời điểm, những thực tại khác. Những gương mặt khác khúc xạ, tách làm đôi, rồi lại vỡ vụn như tấm gương vỡ, khi mọi phiên bản của bạn được tái tạo thành một thứ gì đó mới. Rồi, một hơi ấm. Một sự trọn vẹn. Không còn bạn nữa. Chỉ còn màu sắc và ánh sáng. Cuối cùng, bạn đã tìm thấy vị trí của mình.</p><ul><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *các điều tra viên đã trở thành Feast thật sự của Hemlock Vale*.</li><li>Các điều tra viên bị _nuốt chửng_ *(mỗi điều tra viên bị* _giết_*)*.</li><li>Các điều tra viên thua chiến dịch.</li></ul></div>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<div class='resolution'><p>_Resolution 1_: “Đừng quên tôi.” Dr. Marquez trèo lên rìa của khoảng không chói lòa và nhìn xuống bạn với sự quyết tâm kiên định trước khi cô gieo mình vào quầng sáng. Hình dáng con người bằng khói bên trong vòng sáng rực rỡ dao động, rồi hòa vào một dải cầu vồng phi không gian bắn vọt lên từ ánh sáng huỳnh quang đang tàn lụi. Một làn sóng xung kích nhỏ hất bạn ngã sấp.</p><p>Trong bóng tối, hang ngầm khổng lồ mang lại cảm giác như một nấm mồ. Bạn leo lên đỉnh gò đất và nhìn lên qua hố sụt thấy một bầu trời đầy sao. Ánh sáng bạc xoắn ốc yếu ớt xa dần vào khoảng không. Lòng bạn trĩu nặng khi ôm chặt chiếc túi xách của Dr. Marquez: tất cả những gì còn lại của vị giáo sư, theo như bạn biết.</p><p>\"Có ai ở dưới đó không?\" một giọng run rẩy vang lên. Bạn nhìn lên và thấy bóng dáng một cư dân của Vale, khoác chiếc áo choàng trắng-vàng rách nát. Họ trông như người vừa tỉnh dậy sau một cơn ác mộng. Bạn do dự, rồi cũng lên tiếng đáp lại. Một phút sau, một sợi dây thừng dày thả xuống, và bạn được kéo lên đứng giữa đống đổ nát tơi tả của Hemlock Vale. Những người sống sót tụ lại quanh bạn.</p><p>\"Làm ơn, nếu trong lòng các vị còn chút thương xót, xin hãy tha thứ cho chúng tôi,\" một người nói. Một người khác cởi bỏ mặt nạ và chiếc áo choàng rách. Ở rìa đám đông, bạn tưởng như thấy một chiếc mặt nạ thỏ quen thuộc ló ra từ bóng tối, nhưng khi quay đầu nhìn lại thì nó đã biến mất.</p><ul><li>Cập nhật Nhật ký Chiến dịch của bạn.<ul><li>Gạch bỏ tên của mỗi cư dân không nằm dưới quyền kiểm soát của một điều tra viên khi kết thúc ván chơi.</li><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *Dr. Marquez đã hy sinh bản thân vì Vale*.</li></ul></li><li>Nếu Dr. Rosa Marquez nằm trong bộ bài của một điều tra viên, hãy loại bỏ cô ấy khỏi bộ bài của điều tra viên đó.</li><li>Mỗi điều tra viên nhận 1 physical trauma và 1 mental trauma khi họ tiếc thương sự ra đi của Dr. Marquez và hồi phục khỏi những tác động thoái hóa của the Colour.</li><li>Mỗi điều tra viên nhận số điểm kinh nghiệm bằng giá trị Victory X của mỗi lá bài trong victory display. Mỗi điều tra viên nhận 5 điểm kinh nghiệm thưởng, vì họ đã đánh bại Cosmic Emissary và Colour Out of Space.<ul><li>_Experience_: {xp}</li></ul></li><li>Các điều tra viên thắng chiến dịch!</li><li>Tiếp tục đến _Epilogue_.</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<div class='resolution'><p>_Resolution 2_: Nhận ra ý định của vị giáo sư, bạn nhét lại chiếc túi xách vào tay cô ấy và leo lên đống xác chết đã hóa đá để đứng trước vực thẳm chói lòa. Bạn nắm chặt mảnh vỡ lăng kính trong tay và nhìn lại lần cuối. Vị giáo sư nhìn lên bạn với vẻ mặt hoàn toàn không thể tin nổi. Cô ấy hét gọi tên bạn khi bạn quay lại đối mặt với cái miệng vực xoắn ốc rực rỡ. Ôm chặt mảnh vỡ lăng kính vào ngực, bạn gieo mình vào khoảng không vô tận.</p><p>Một cảm giác hưng phấn tột độ chào đón bạn. Cuộn trong ánh sáng xoắn ốc là những khuôn mặt: con người, động vật, người ngoài hành tinh. Bạn mỉm cười, và hàng ngàn cái miệng cùng mỉm cười với bạn: mỗi cái là một hình ảnh phản chiếu của bạn ở một thời gian khác, một nơi khác, một thực tại khác. Bạn cảm thấy một sự gắn kết ấm áp với những bản ngã khác này khi bạn chìm sâu hơn vào khoảng không. Sự sung sướng nhường chỗ cho sự bình tĩnh, rồi đến sự tê liệt. Những khuôn mặt khác khúc xạ, tách làm hai, và khúc xạ lần nữa, khi chính bản thể của bạn bị xé toạc.</p><p>Một tiếng thét không lời vang lên trong tâm trí vỡ vụn của bạn, kèm theo cơn đau đớn tột cùng. Bạn cảm thấy mình tan biến, cùng với vực thẳm. Và rồi, hư vô.</p><ul><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *các điều tra viên đã hy sinh bản thân vì Vale*.</li><li>Các điều tra viên bị _nuốt chửng_ *(mỗi điều tra viên bị* _giết_*)*.</li><li>Các điều tra viên chiến thắng chiến dịch, nhưng bị hủy diệt.</li><li>Tiếp tục đến _Epilogue_.</li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<div class='resolution'><p>_Resolution 3_: Bạn gần như gục ngã vì kiệt sức ngay khi bước vào ngọn hải đăng bỏ hoang. Nhóm người sống sót hỗn tạp của bạn bao gồm nhiều người dân địa phương đang bàng hoàng, những thủy thủ từ Akwan, và những du khách bối rối. Khi bạn băng bó vết thương cho họ, họ nhìn bạn một cách bất lực. Bên ngoài, mặt trời tô điểm bầu trời bằng những sắc màu rực rỡ.</p><p>Bạn bước ra ngoài ánh sáng buổi sáng trong trẻo và hít một hơi thở thoải mái đầu tiên trong nhiều ngày. Toàn bộ Hemlock Isle bị chôn vùi dưới lớp tro trắng như tuyết, mang lại cho nó vẻ ngoài của đầu mùa đông. Tất cả những gì còn lại của khu rừng phía tây màu mỡ là cái gốc rỗng lớn, sần sùi của một cái cây cổ thụ, những cành cây rối rắm của nó cào xé bầu trời.</p><p>“Chúng ta có rất nhiều điều để kể cho hội đồng tại Miskatonic University,” Dr. Marquez tiến đến bên cạnh bạn, rồi buông một tiếng thở dài mệt mỏi. “Nhưng tôi nghi ngờ họ sẽ hiểu những gì thực sự đã xảy ra ở đây.” Bạn gật đầu, lơ đãng. Bên kia vịnh, một dải mây mỏng manh, ngắn ngủi bắt lấy ánh sáng mặt trời. Khi bạn chớp mắt, nó đã biến mất.</p><ul><li>Cập nhật Nhật ký Chiến dịch của bạn.<ul><li>Gạch bỏ tên của mỗi cư dân có trong victory display khi kết thúc ván chơi.</li><li>Ghi lại *Vale đã được cứu*.</li></ul></li><li>Mỗi điều tra viên chịu 2 physical trauma và 2 mental trauma khi họ phải vật lộn với những mất mát to lớn về sinh mạng và nỗi kinh hoàng vẫn đang hiện diện bên dưới Hemlock Isle.</li><li>Mỗi điều tra viên nhận số điểm kinh nghiệm bằng giá trị Victory X của mỗi lá bài trong victory display. Mỗi điều tra viên nhận 3 điểm kinh nghiệm thưởng, vì họ đã cứu người dân Hemlock Isle khỏi một số phận khủng khiếp.<ul><li>_Experience_: {xp}</li></ul></li><li>Các điều tra viên thắng chiến dịch!</li><li>Tiếp tục đến _Epilogue_.</li></ul></div>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<div class='resolution'><p>_Resolution 4_: Ngọn hải đăng bị bao phủ bởi một làn khói xám đục. Bạn và những người sống sót còn lại cố gắng ngủ qua đêm, nhưng bạn bị ám ảnh bởi những cơn ác mộng. Một cái cây bốc cháy. Một ngôi sao băng. Hình bóng ma quái của Mother Rachel, chĩa một con dao nghi lễ dài vào bạn với vẻ buộc tội.</p><p>Vào buổi sáng, bạn bước ra ngoài vào khung cảnh xám xịt, trống trải. Không có gì thoát khỏi ngọn lửa. Hòn đảo được bao phủ bởi lớp tro xám mịn, chỉ lác đác vài cái cây cong queo.</p><p>“Chúng ta có rất nhiều điều để kể cho hội đồng tại Miskatonic University,” Dr. Marquez tiến đến bên cạnh bạn, rồi buông một tiếng thở dài mệt mỏi. “Nhưng tôi nghi ngờ họ sẽ hiểu những gì thực sự đã xảy ra ở đây.” Bạn gật đầu, lơ đãng. Bên kia vịnh, một dải mây mỏng manh, ngắn ngủi bắt lấy ánh sáng mặt trời. Khi bạn chớp mắt, nó đã biến mất.</p><ul><li>Cập nhật Nhật ký Chiến dịch của bạn.<ul><li>Gạch bỏ tên của mỗi cư dân không nằm dưới quyền kiểm soát của một điều tra viên khi kết thúc ván chơi.</li><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *Vale đã bị thiêu rụi*.</li></ul></li><li>Mỗi điều tra viên chịu 2 physical trauma và 2 mental trauma khi họ phải vật lộn với những mất mát to lớn về sinh mạng và nỗi kinh hoàng vẫn đang hiện diện bên dưới Hemlock Isle.</li><li>Mỗi điều tra viên nhận số điểm kinh nghiệm bằng giá trị Victory X của mỗi lá bài trong victory display. Mỗi điều tra viên nhận 3 điểm kinh nghiệm thưởng vì đã diệt trừ Colour Out of Space…phải không nhỉ?<ul><li>_Experience_: {xp}</li></ul></li><li>Các điều tra viên thắng chiến dịch?</li><li>Tiếp tục đến _Epilogue_.</li></ul></div>"
+    },
+    "resolution5": {
+      "title": "Resolution 5",
+      "body": "<div class='resolution'><p>_Resolution 5_: Dr. Marquez lay bạn tỉnh dậy. “Bạn đã nói mớ trong lúc ngủ. Tuy nhiên, nghe không giống giọng của bạn. Đó không phải là bất kỳ ngôn ngữ nào tôi từng nghe.” Tâm trí bạn tràn ngập những ký ức xa lạ. Bạn, trong một quán rượu lậu đầy khói, nói bằng giọng của người khác. Lẩn khuất trong bóng tối của một góc phố dưới hình hài một con mèo mướp. Tắm mình trong ánh nắng như một bông hoa tử đinh hương. Khóc vùi vào hai bàn tay trong một nhà nguyện.</p><p>Thay vì chia sẻ, bạn theo vị giáo sư ra ngoài dưới ánh nắng giữa buổi sáng chói chang. Bản thân ánh sáng đó nhắc bạn nhớ đến vực thẳm xoắn ốc sâu bên dưới Vale, và khiến bạn buồn nôn. Toàn bộ Hemlock Isle bị chôn vùi dưới lớp tro trắng như tuyết, mang lại cho nó vẻ ngoài của đầu mùa đông.</p><p>“Chúng ta có rất nhiều điều để kể cho hội đồng tại Miskatonic University,” Dr. Marquez tiến đến bên cạnh bạn, rồi buông một tiếng thở dài mệt mỏi. “Nhưng tôi nghi ngờ họ sẽ hiểu những gì thực sự đã xảy ra ở đây.” Bạn gật đầu theo, tầm nhìn quay cuồng. Ngay cả khi nhắm mắt lại, bạn vẫn có thể nhìn thấy sự rực rỡ không tưởng đó.</p><p>“Bạn ổn chứ?” Dr. Marquez lặp lại tên bạn. Càng nghe, nó càng trở nên vô lý. Bạn lặp lại nó với cô ấy, cười khúc khích. Thế giới xung quanh bạn tỏa sáng với một sự chói lóa khủng khiếp.</p><p>Dù cố gắng thế nào, bạn cũng không thể ngừng cười.</p><ul><li>Cập nhật Nhật ký Chiến dịch của bạn.<ul><li>Gạch bỏ tên của mỗi cư dân không nằm dưới quyền kiểm soát của một điều tra viên khi kết thúc ván chơi.</li><li>Ghi lại *các điều tra viên suýt không sống sót qua Feast of Hemlock Vale*.</li></ul></li><li>Mỗi điều tra viên chịu 3 physical trauma và 3 mental trauma do họ bị ám ảnh bởi những tác động chói lòa, gây điên loạn của Colour Out of Space.</li><li>Mỗi điều tra viên nhận số điểm kinh nghiệm bằng giá trị Victory X của mỗi lá bài trong victory display. Mỗi điều tra viên nhận 2 điểm kinh nghiệm thưởng vì đã sống sót qua Feast.<ul><li>_Experience_: {xp}</li></ul></li><li>Các điều tra viên chiến thắng chiến dịch... nhưng không một ai khác làm được.</li><li>Tiếp tục đến _Epilogue_.</li></ul></div>"
+    }
+  },
+  "codex": {
+    "leahAtwood": {
+      "title": "{'{'}codex{'}'} Codex 2: Leah Atwood",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.leahAtwood.title </h3><p>_If it is Act 2:_</p><p>“Cái quái gì vậy?” Leah thở hắt ra đầy kinh ngạc và giơ một tay lên trước ánh sáng, như thể đang áp nó vào một tấm kính. “Thật không thể tin được.”</p><p class='basic right'>Tìm kiếm tất cả các khu vực out-of-play để lấy một asset _Item_ và rút nó. Một điều tra viên có thể kích hoạt codex này một lần nữa trong một act khác.</p>",
+      "act3": "<p>_Otherwise:_</p><p>“Đây từng là nhà của chúng ta,” Leah khóc. “Rachel, cô đã nghĩ gì vậy? Tất cả là lỗi của tôi. Tôi đã đứng nhìn và để chuyện này xảy ra.”</p><p class='basic right'>Mỗi điều tra viên có thể rút 2 lá bài hoặc hồi 1 tổn thương tinh thần.</p>",
+      "label": {
+        "drawTwo": "Rút 2 lá bài",
+        "healHorror": "Chữa 1 tổn thương tinh thần",
+        "doNotExtend": "Không mở rộng cuộc tìm kiếm",
+        "drawItem": "Rút một asset Item, hoặc mở rộng cuộc tìm kiếm sang một deck"
+      }
+    },
+    "simeonAtwood": {
+      "title": "{'{'}codex{'}'} Codex 3: Simeon Atwood",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.simeonAtwood.title </h3><p>_If it is Act 2:_</p><p>Simeon mở to mắt nhìn ánh sáng chói lóa. “Thứ này còn đẹp hơn bất kỳ màn pháo hoa nào,” cậu nói, bị mê hoặc.</p><p class='basic right'>Tự động evade mỗi kẻ địch Cosmic Emissary đang trong khu vực chơi. Một điều tra viên có thể kích hoạt codex này một lần nữa trong một act khác.</p>",
+      "act3": "<p>_Nếu đang là Act 3a: Fate of the Vale (v.III):_</p><p>Simeon nhảy lên trên một kiện cỏ khô đang bốc khói, cười khanh khách. “Thật tuyệt vời! Nhận lấy này, dì Rachel!” Cậu ta ném một quả pháo.</p><p class='basic right'>Chọn một địa điểm và đặt 3 tài nguyên lên đó, làm mồi lửa.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>“Mọi người có thấy Digby không?” Simeon nhìn quanh, có vẻ lạc lõng.</p><p class='basic right'>Mỗi điều tra viên có thể rút 1 lá bài hoặc nhận 2 tài nguyên.</p>",
+      "label": {
+        "drawOne": "Rút 1 lá bài",
+        "gainResources": "Nhận 2 tài nguyên"
+      }
+    },
+    "williamHemlock": {
+      "title": "{'{'}codex{'}'} Codex 4: William Hemlock",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.williamHemlock.title </h3><p>_If it is Act 2:_</p><p>“Tôi chưa bao giờ tưởng tượng một thứ gì đó siêu việt và khủng khiếp như vậy có thể tồn tại.” Người thừa kế nhà Hemlock sững sờ nhìn chằm chằm vào ánh sáng đang cuộn xoáy.</p><p class='basic right'>Mỗi điều tra viên nhận 1 manh mối *(từ token pool)*. Một điều tra viên có thể kích hoạt codex này một lần nữa trong một act khác.</p>",
+      "act3": "<p>_Nếu đang là Act 3a: Fate of the Vale (v.II):_</p><p>“Đưa tất cả họ đến nơi an toàn!” William hét lên, vung một cái chân bàn.</p><p class='basic right'>Rút một lá bài _Resident_ bên dưới bất kỳ địa điểm nào và đưa nó vào khu vực chơi tại địa điểm đó, ở trạng thái exhausted, ngửa mặt kẻ địch lên.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>William ghi vội một câu thơ hoa mỹ khác vào sổ tay của mình. “Di sản của gia đình tôi thật giống như chén độc của Socrates. Cái chết nằm trong đó, nhưng tự do và sự giải thoát cũng vậy... Ồ, và. Và... 'release' vần với 'feast'...”</p><p class='basic right'>Mỗi điều tra viên có thể rút tối đa 2 lá bài.</p>",
+      "label": {
+        "drawNone": "Không rút lá bài nào",
+        "drawOne": "Rút 1 lá bài",
+        "drawTwo": "Rút 2 lá bài"
+      }
+    },
+    "riverHawthorne": {
+      "title": "{'{'}codex{'}'} Codex 5: River Hawthorne",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.riverHawthorne.title </h3><p>_If it is Act 2:_</p><p>“Ôi, trời đất ơi—” River nhìn chằm chằm vào nỗi kinh hoàng lấp lánh ở giữa căn phòng. Hiếm hoi lắm họ mới không thốt nên lời.</p><p class='basic right'>Bạn có thể play một lá bài _Item_ từ trên tay, bỏ qua mọi cost. Một điều tra viên có thể kích hoạt codex này một lần nữa trong một act khác.</p>",
+      "act3": "<p>_Nếu đang là Act 3a: Fate of the Vale (v.II):_</p><p>“Nhanh lên. Bạn còn chậm hơn cả một buổi tối với đại gia đình của tôi,” River lùa một người dân địa phương về phía bạn. “Đây, dẫn người này theo đi!”</p><p class='basic right'>Rút một lá bài _Resident_ bên dưới bất kỳ địa điểm nào và đưa nó vào khu vực chơi tại địa điểm đó, ở trạng thái exhausted, ngửa mặt kẻ địch lên.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>“Chà, toàn bộ chuyện này đúng là công cốc.” River nhìn bạn ủ rũ. “Nhưng tôi cho rằng hòn đảo đá khốn khổ này vốn dĩ đã vô phương cứu chữa.” Biểu cảm của họ trở nên tinh quái. “Ít nhất thì gia tài Hemlock đã ở đúng nơi nó thuộc về.”</p><p class='basic right'>Nhận 4 tài nguyên.</p>"
+    },
+    "gideonMizrah": {
+      "title": "{'{'}codex{'}'} Codex 6: Gideon Mizrah",
+      "additionalActions": "Gideon Mizrah",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.gideonMizrah.title </h3><p>_If it is Act 2:_</p><p>Vực thẳm nhiều màu sắc phản chiếu trong đôi mắt của người thủy thủ già. “Đây đâu phải lần đầu tôi thấy cảnh này,” ông lão nghiêm nghị nói, nhưng không nói gì thêm.</p><p class='basic right'>Mỗi điều tra viên có thể thực hiện thêm một action trong lượt tiếp theo của họ. Một điều tra viên có thể kích hoạt codex này một lần nữa trong một act khác.</p>",
+      "act3": "<p>_Nếu đang là Act 3a: Fate of the Vale (v.I):_</p><p>Gideon giơ lên một mảnh vỡ như thủy tinh. \"Nó rơi ra từ tảng đá đó. Tảng đá mà thuyền trưởng đã ném xuống giếng. Nhưng chúng ta chưa từng tống khứ được nó. Chưa bao giờ.\"</p><p class='basic right'>Tự động evade kẻ địch Cosmic Emissary tại địa điểm của bạn.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>\"Nếu tôi không thể thoát khỏi đây, hãy tìm cháu gái tôi và đưa cho con bé thứ này. Con bé là tất cả những gì tôi còn lại,\" Gideon nói, đưa cho bạn một cuốn nhật ký hoen ố vì muối biển.</p><p class='basic right'>Loại bỏ 1 doom khỏi agenda hiện tại.</p>"
+    },
+    "judithPark": {
+      "title": "{'{'}codex{'}'} Codex 7: Judith Park",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.judithPark.title </h3><p>_If it is Act 2:_</p><p>Judith bắn vào hư không phát sáng, rồi hạ súng trường xuống và nhìn chằm chằm vào những vòng xoáy ánh sáng và màu sắc. \"Thứ quái quỷ gì thế này?\"</p><p class='basic right'>Chọn một kẻ địch ở bất kỳ địa điểm nào và tự động evade nó. Một điều tra viên có thể kích hoạt codex này một lần nữa trong một act khác.</p>",
+      "act3": "<p>_Otherwise:_</p><p>“Nếu chúng ta sống sót ra khỏi đây, bạn phải mời tôi một ly. Có một quán rượu lậu ở Boston pha loại rượu ngon nhất.” Cô ấy nhìn thẳng vào mắt bạn. “Và không, tôi không chấp nhận lời từ chối đâu.”</p><p class='basic right'>Tìm trong deck, trên tay, và discard pile của bạn một lá bài _Weapon_ và play nó, bỏ qua mọi cost.</p>"
+    },
+    "theoPeters": {
+      "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.theoPeters.title </h3><p>_If it is Act 2:_</p><p>“Nó thật đẹp,” Theo nhìn lên ánh sáng lung linh và đưa một tay ra, như thể muốn chạm vào nó. “Đẹp bằng ít nhất năm buổi hoàng hôn cộng lại. Tôi ước Lizzie có thể nhìn thấy cảnh này.” Anh dừng lại. “Thực ra, tôi mừng vì cô ấy không thể.”</p><p class='basic right'>Bạn có thể tìm một địa điểm trong The Abyss, đưa nó vào khu vực chơi, và ngay lập tức di chuyển đến đó. Một điều tra viên có thể kích hoạt codex này một lần nữa trong một act khác.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>“Chị tôi đã đúng,” Theo trầm ngâm nói. “Chị ấy đã đúng về mọi thứ. Tôi chỉ hy vọng mình sẽ được gặp lại chị ấy.”</p><p class='basic right'>Disengage khỏi mọi kẻ địch và di chuyển đến bất kỳ địa điểm nào.</p>"
+    },
+    "drRosaMarquez": {
+      "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
+      "act1": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.drRosaMarque.title </h3><p>_If it is Act 1:_</p><p>“Marika?” Người phụ nữ có mái tóc đen đờ đẫn nhìn bạn. Bạn không thể nhớ tên mình, nhưng Marika nghe không đúng lắm... phải không? “Tôi đã quên mất điều gì đó, Marika. Nhưng tôi nhớ bạn.”</p><p class='basic right'>Lật 6 lá bài dưới cùng của The Abyss. Bạn có thể rút bất kỳ lá nào trong số đó. Đặt phần còn lại lên trên cùng của The Abyss theo thứ tự bất kỳ. Một điều tra viên có thể kích hoạt codex này một lần nữa trong một act khác.</p>",
+      "act3": "<p>_Nếu đang là Act 3a: Fate of the Vale (v.I):_</p><p>“Tôi đã hiểu nó là gì,” Tiến sĩ Marquez nói. “Nó là một sinh vật sống. Một loài nguyên thủy nào đó, hoặc thứ gì đó không thuộc về thế giới này. Nó được mang đến đây—có lẽ bởi Captain Hemlock—và chui rúc sâu dưới lòng đất, nơi nó thẩm thấu vào nước, đất đai, mùa màng. Mọi thứ. Bản thân nó là thứ độc hại đối với mọi thứ xung quanh. Giống như một chướng khí sống. Một căn bệnh tê liệt gần như vô tri. Nó đã trồi lên từ Pearl Ridge 20 năm trước, nhưng nó chưa sẵn sàng để... để rời đi.” Vị giáo sư lấy ra một mảnh vỡ phát quang. “Tôi nghĩ nó bắt nguồn từ thứ này. Một trong những mảnh vỡ ban đầu đã mang nó đến hòn đảo. Sinh vật này hút cạn vật chủ của nó như một loài ký sinh và để lại một cái vỏ kết tinh. Đóng băng vật chủ trong thời gian. Và sau đó ký sinh trùng nở ra dưới dạng khí từ ‘cái vỏ’ đó, hòa nhập vào... Nó.” Cô thở dài. “Ủy ban tài trợ sẽ không bao giờ tin điều này.”</p><p class='basic right'>Mỗi điều tra viên nhận 1 manh mối *(từ token pool)*.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>“Lẽ ra chúng ta không bao giờ nên đến đây. Tất cả là lỗi của tôi.” Tiến sĩ Marquez tuyệt vọng nói.</p><p class='basic right'>Mỗi điều tra viên nhận 1 manh mối *(từ token pool)*. Một điều tra viên có thể kích hoạt codex này một lần nữa trong một act khác.</p>",
+      "label": {
+        "doneDrawing": "Đã rút xong"
+      }
+    },
+    "bertieMusgrave": {
+      "title": "{'{'}codex{'}'} Codex Ω: Bertie Musgrave",
+      "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.bertieMusgrave.title </h3><p>“Nó khá giống một cái bẫy, phải không?” Chàng trai trẻ lộ vẻ nghiêm trọng khi nhìn sự tàn phá đang diễn ra khắp ngôi làng. “Cảm giác hưng phấn lây lan là cách để kẻ săn mồi vô hình này giữ cho các nạn nhân của nó dễ bảo.” Anh ta cười vô hồn. “Tôi là một nhà khoa học. Đáng lẽ tôi nên ghi chép và lấy mẫu. Nhưng tất cả những gì tôi muốn làm lúc này là đi đến một nơi nào đó ấm áp và an toàn.”</p><p class='basic right'>Nhận quyền kiểm soát Bertie Musgrave. Nếu đang là Act 3a: Fate of the Vale (v.IV), hãy ghi nhớ rằng \"Bertie đang bỏ chạy.\"</p>"
+    }
+  }
+}

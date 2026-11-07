@@ -1,0 +1,55 @@
+{
+  "heading": "Màn III",
+  "intro": {
+    "title": "Màn III: Thành phố của Các Sinh Vật Cổ Xưa"
+  },
+  "descend": "Khi bạn xuống từ các đỉnh núi bao quanh thành phố, lén lút vượt qua tường thành, những triền dốc dần nhường chỗ cho các chân đồi thoai thoải, rải rác những công trình bằng đá đen nguyên thủy. Có lẽ là tháp canh hoặc tiền đồn, nối liền các bức tường tự nhiên bên ngoài thành phố với vùng ngoại ô. \"Chúng ta nên khám phá một trong những tháp canh đó,\" một thành viên trong đội đề xuất, chỉ tay vào công trình gần nhất. Bạn gật đầu đồng ý. Báo cáo của Dyer đã ghi nhận vô số thông tin được khắc trên tường của nhiều công trình trong thành phố, xét cho cùng—có lẽ bạn sẽ tình cờ tìm thấy một bản đồ hay sơ đồ của thành phố để hỗ trợ cuộc thám hiểm.",
+  "scoutedTheCityOutskirts": {
+    "yes": "<p>*Nếu các điều tra viên đã trinh sát vùng ngoại ô thành phố:*</p><p>Thay vì đi đến tháp canh, bạn gọi mọi người theo mình. Nhớ lại tuyến đường mà bạn và Ellsworth đã trinh sát đêm trước, bạn dẫn nhóm đến công trình nửa chìm bạn đã phát hiện. Mất nhiều thời gian hơn để đến đó so với tháp canh, nhưng nó cung cấp một lối tắt dễ dàng vào trung tâm thành phố.</p><p class='basic'>Trong quá trình thiết lập, sau khi bạn lật địa điểm bắt đầu, điều tra viên chính phát hiện số manh mối từ địa điểm đó bằng một nửa giá trị manh mối của nó (làm tròn lên).</p>"
+  },
+  "trail": "<p>Dòng máu xanh nhợt nhạt dẫn ra ngoài, nhỏ giọt xuống một con đường mượt mà như được tạc từ sườn núi bởi một chất axit. Ở hướng ngược lại, dãy núi tiếp tục chạy dọc theo rìa thành phố. Xa xa, bạn vừa đủ thấy một khu vực tối tăm, nửa chìm của thành phố, cách bố trí các công trình hoàn toàn xa lạ với bạn, dù đã nghiên cứu kỹ ghi chú của Dyer. Cuối cùng, ở trung tâm thành phố, một kim tự tháp khổng lồ và nhiều đền thờ nổi bật nằm rải rác, vươn cao kỳ diệu bất chấp sự tàn phá của bao thời đại.</p>",
+  "vote": {
+    "kensler": "Tiến sĩ Amy Kensler",
+    "sinha": "Tiến sĩ Mala Sinha"
+  },
+  "interlude": {
+    "part1": "<p>Bạn không nhận ra tác động của những tiếng thì thầm lên nhóm mình cho đến khi quá muộn. Đồng đội của bạn không chỉ đang nghiên cứu bức tường, họ còn tựa vào nó, áp tai lên đó, mắt đờ đẫn trong trạng thái mê muội ngây ngất. Khi họ đến gần cánh cửa, họ либо không nhận ra—hoặc cố tình phớt lờ—dòng sương mù ghê tởm rỉ ra từ các kẽ hở; làn sương xám dày đặc đe dọa nuốt chửng họ hoàn toàn. Bạn hét lên cảnh báo ngay khi cánh cửa mở ra, và đủ khôn ngoan để nhìn đi chỗ khác đúng lúc sương mù vươn tới. Thứ mà đồng đội bạn nhìn thấy, bạn sẽ không bao giờ thực sự biết. Bạn chỉ thoáng thấy nỗi khốn khổ không thể diễn tả, sâu thẳm vô tận ẩn sau bên kia.</p>"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  },
+  "setup": {
+    "v1": {
+      "setAside": "Đặt sang một bên bộ encounter *Shoggoths* (Shoggoth).",
+      "createActDeck": "Tạo chồng bài act chỉ sử dụng Sprawling City (Thành phố Lan tỏa) (phiên bản I) và Pursuit of the Unknown (Truy đuổi Điều Bí Ẩn) (phiên bản I). Loại bỏ tất cả các lá bài act khác khỏi màn chơi.",
+      "startAt": "Điều tra viên chính chọn một trong tám địa điểm ngoài cùng. Mỗi điều tra viên bắt đầu màn chơi tại địa điểm được chọn.",
+      "addElderThingToken": "Thêm 1 token {'{'}elderThing{'}'} (elder thing) vào túi hỗn mang."
+    },
+    "v2": {
+      "setAside": "Đặt sang một bên bộ encounter *Creatures in the Ice* (Sinh vật trong Băng).",
+      "createActDeck": "Tạo chồng bài act chỉ sử dụng Sprawling City (Thành phố Lan tỏa) (phiên bản II) và Pursuit of the Unknown (Truy đuổi Điều Bí Ẩn) (phiên bản II). Loại bỏ tất cả các lá bài act khác khỏi màn chơi.",
+      "startAt": "Mỗi điều tra viên bắt đầu màn chơi tại địa điểm ở góc dưới bên phải.",
+      "addElderThingToken": "Thêm 1 token {'{'}elderThing{'}'} (elder thing) vào túi hỗn mang.",
+      "removals": "Loại bỏ kẻ địch Terror of the Stars (Nỗi Kinh hoàng từ Các Vì sao) và cả ba bản sao của kẻ địch Benign Elder Thing (Elder Thing Hiền lành) khỏi màn chơi."
+    },
+    "v3": {
+      "setAside": "Đặt sang một bên bộ encounter *Shoggoths* (Shoggoth).",
+      "createActDeck": "Tạo chồng bài act chỉ sử dụng Sprawling City (Thành phố Lan tỏa) (phiên bản III) và Pursuit of the Unknown (Truy đuổi Điều Bí Ẩn) (phiên bản III). Loại bỏ tất cả các lá bài act khác khỏi màn chơi.",
+      "startAt": "Mỗi điều tra viên bắt đầu màn chơi tại địa điểm ở góc trên bên trái.",
+      "removals": "Loại bỏ kẻ địch Terror of the Stars (Nỗi Kinh hoàng từ Các Vì sao) và cả ba bản sao của kẻ địch Reawakened Elder Thing (Elder Thing Tái Hồi Sinh) khỏi màn chơi."
+    },
+    "checkDifficulty": "Kiểm tra cấp độ khó.",
+    "tekelili": "Xáo trộn tất cả các lá bài điểm yếu Tekeli-li! chưa nằm trong bộ bài của điều tra viên để tạo thành chồng bài Tekeli-li. Đặt chồng bài này gần chồng bài agenda."
+  },
+  "pursuitOfTheUnknown": {
+    "label": {
+      "healPhysicalTrauma": "Chữa 1 chấn thương thể chất",
+      "healMentalTrauma": "Chữa 1 sang chấn tinh thần"
+    }
+  }
+}

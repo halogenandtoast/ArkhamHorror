@@ -1,0 +1,42 @@
+{
+  "heading": "Màn VIII",
+  "intro": {
+    "title": "Màn VIII: Đứng Trước Ngai Vàng Tối Tăm"
+  },
+  "setup": {
+    "setLocationsAside": "Tìm vị trí Hideous Palace, Court of the Great Old Ones, và The Black Throne. (Chúng ở mặt để lộ của 3 lá vị trí \"Cosmos\".) Đặt những vị trí này một bên, ngoài khu vực chơi.",
+    "placeStart": "Đặt vị trí Cosmic Ingress vào chơi. Mỗi điều tra viên bắt đầu chơi tại Cosmic Ingress.",
+    "setAside": "Đặt kẻ địch Piper of Azathoth sang một bên, ngoài khu vực chơi.",
+    "placeAzathoth": "Đặt Azathoth vào chơi kế bên chồng bài agenda. Trong phần còn lại của màn chơi, Azathoth được chơi, nhưng không ở vị trí cụ thể nào.",
+    "thePathWindsBeforeYou": "Kiểm tra Nhật ký Chiến dịch. Đối với mỗi kiểm đếm được ghi bên cạnh con đường uốn lượn trước mặt bạn, hãy đặt 1 tài nguyên trên lá bài scenario reference."
+  },
+  "theCosmos": {
+    "title": "Vũ Trụ"
+  },
+  "emptySpace": {
+    "title": "Ô trống"
+  },
+  "resolutions": {
+    "investigatorDefeat": {
+      "title": "Điều tra viên bị hạ gục"
+    },
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "resolution5": {
+      "title": "Giải pháp thứ 5"
+    },
+    "resolution6": {
+      "title": "Kết quả 6"
+    }
+  }
+}

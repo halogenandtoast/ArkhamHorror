@@ -1,0 +1,167 @@
+{
+  "specialRules": [
+    {
+      "title": "Đường Ray và Tính Liền Kề trong Act 2",
+      "body": "<p class='basic'>Mỗi vị trí _Rail_ có in 1 hoặc nhiều rail icon trên đó. Những rail icon này đại diện cho đường ray mà Mine Cart di chuyển dọc theo.</p><ul><li>Khi một rail icon trên một vị trí đối diện với một rail icon trên một vị trí liền kề, các rail icon đó được coi là _thẳng hàng_.</li><li>Các vị trí liền kề với các rail icon thẳng hàng được kết nối với nhau và tạo thành một rail line. Các vị trí liền kề không có các rail icon thẳng hàng thì không được kết nối với nhau.</li></ul>"
+    },
+    {
+      "title": "Trượt và Hoán Đổi Vị Trí",
+      "body": "<p class='basic'>Trượt và hoán đổi các vị trí cho phép các điều tra viên tạo ra một con đường tới Rail Exit bằng cách làm thẳng hàng rail line.</p><p class='basic'>Để trượt một vị trí, chọn một vị trí có một khoảng trống liền kề với nó. Di chuyển vị trí đó (và tất cả các lá bài tại vị trí đó) vào khoảng trống đó.</p><p class='basic'>Để hoán đổi 2 vị trí, đồng thời di chuyển mỗi vị trí đó (và tất cả các lá bài tại đó) tới khoảng trống mà vị trí kia đang chiếm giữ.</p><ul><li>_Các vị trí có story asset không thể bị trượt hoặc hoán đổi._</li></ul>"
+    },
+    {
+      "title": "Mine Cart",
+      "body": "<p class='basic'>Mini-card của mỗi điều tra viên được đặt chồng lên Mine Cart.</p><ul><li>Một điều tra viên trong Mine Cart cũng ở tại vị trí của nó. Các điều tra viên không thể di chuyển độc lập khỏi Mine Cart. Khi Mine Cart di chuyển, mỗi điều tra viên di chuyển cùng với nó.</li><li>Story asset Mine Cart có một rail icon ở phía bên phải chỉ ra hướng mà nó đang hướng về. Rail icon của Mine Cart phải luôn hướng về cùng một hướng với một trong các rail icon tại vị trí của nó.</li><li>Khi di chuyển Mine Cart, nó chỉ có thể di chuyển dọc theo một rail line tới một vị trí được kết nối.</li><li>Khi Mine Cart tiến vào một vị trí, các điều tra viên có thể xoay nó 90 độ theo một trong hai hướng để hướng về cùng một hướng với một rail icon tại vị trí đó.</li><li>Mine Cart chỉ có thể di chuyển theo hướng mà rail icon của nó đang hướng về. Nếu vị trí mà nó tiến vào không tạo thành một rail line hoàn chỉnh *(chúng không thẳng hàng)*, Mine Cart sẽ trật khỏi rail line.</li></ul>"
+    }
+  ],
+  "act1": {
+    "tokens": {
+      "easyStandard": {
+        "skull": "-X. X là số cột tại vị trí của bạn.",
+        "cultist": "-1. Đặt 1 tài nguyên lên lá bài này, như một scrap.",
+        "tablet": "-2. Nếu bạn thất bại, loại bỏ 1 scrap khỏi lá bài này.",
+        "elderThing": "-3. Nếu bạn thất bại, nhận 1 tổn thương thể chất."
+      },
+      "hardExpert": {
+        "skull": "-X. X bằng gấp đôi số cột tại vị trí của bạn.",
+        "cultist": "-3. Nếu bạn thành công, đặt 1 tài nguyên lên lá bài này, như một scrap.",
+        "tablet": "-4. Loại bỏ 1 scrap khỏi lá bài này.",
+        "elderThing": "-5. Nhận 1 tổn thương thể chất."
+      }
+    }
+  },
+  "act2": {
+    "tokens": {
+      "easyStandard": {
+        "skull": "-X. X là số cột tại vị trí của bạn.",
+        "cultist": "-2. Đặt 1 tài nguyên lên lá bài này, như một switch.",
+        "tablet": "-3. Nếu bạn thất bại, di chuyển Mine Cart một lần.",
+        "elderThing": "-4. Nếu bạn thất bại, loại bỏ 1 switch khỏi lá bài này."
+      },
+      "hardExpert": {
+        "skull": "-X. X bằng gấp đôi số cột tại vị trí của bạn.",
+        "cultist": "-3. Nếu bạn thành công, đặt 1 tài nguyên lên lá bài này, như một switch.",
+        "tablet": "-4. Di chuyển Mine Cart một lần.",
+        "elderThing": "-5. Loại bỏ 1 switch khỏi lá bài này."
+      }
+    }
+  },
+  "label": {
+    "mineCart": {
+      "facing": "Chọn hướng mà Mine Cart đang quay về",
+      "faceNorth": "Quay mặt về phía Bắc",
+      "faceSouth": "Quay mặt về phía Nam",
+      "faceEast": "Quay mặt về phía Đông",
+      "faceWest": "Quay mặt về phía Tây",
+      "cancelMove": "Hủy việc di chuyển",
+      "moveAgain": "Di chuyển thêm một lần"
+    },
+    "wildRide": {
+      "moveAgain": "Di chuyển thêm 2 lần",
+      "damage": "Gây 1 direct damage và 1 direct horror cho mỗi điều tra viên, mỗi asset _Ally_ và mỗi lá _Resident_ mà họ kiểm soát"
+    }
+  },
+  "tooltips": {
+    "theUndergroundMaze": {
+      "slide": "{'{'}action{'}'} Tiêu 1 {'{'}perPlayer{'}'} resource: Trượt một địa điểm đã lật vào ô trống liền kề. (Giới hạn nhóm một lần mỗi vòng.)",
+      "prismaticShard": "{'{'}action{'}'} Nếu story asset Prismatic Shard đang ở địa điểm của bạn: Nhận quyền kiểm soát nó."
+    }
+  },
+  "intro": {
+    "title": "Scenario: Written in Rock",
+    "body": "<p>Con đường dẫn đến North Point Mine chạy qua một khe núi hẹp ở trung tâm Pearl Ridge. Với rất ít manh mối, bạn đã hỏi thăm quanh Vale để biết thêm thông tin về khu mỏ, nhưng tất cả những gì bạn thu thập được chỉ là vài lời kể mâu thuẫn. Gần đây có người mất tích trong mỏ, mặc dù hoạt động khai thác được cho là đã ngừng lại. Địa y và rêu được cho là có nhiều dinh dưỡng, nhưng một số lại gây chết người? Cũng không ai giải thích lý do tại sao khu mỏ lại đóng cửa ngay từ đầu.</p><p>Con đường kết thúc tại miệng một hang động sâu hoắm. Đi theo một đường ray cũ vào trong, bạn tìm thấy những đống thiết bị bị bỏ hoang mọc đầy nấm màu vàng rực. Loại nấm này trông không có vẻ gì là ăn được, và tỏa ra một mùi hôi thối. Cuối cùng, đường hầm mở ra một hang động khổng lồ chứa đầy những cây nấm phát quang và những khối tinh thể cao chót vót. Mặt đất chuyển động với một cơn chấn động nhẹ, theo sau là một tiếng kêu vang vọng từ sâu trong mỏ. Lấy lại tinh thần, bạn tiến sâu hơn vào hang. Ít nhất thì Dr. Marquez cũng sẽ muốn có các mẫu vật của đám thực vật kỳ lạ mọc um tùm trên đống thiết bị rỉ sét kia.</p><p class='basic right'>Tiếp tục đến _Setup_.</p>"
+  },
+  "setup": {
+    "gatherSets": "Tập hợp tất cả lá bài từ các chồng bài encounter sau: *Written in Rock*, *Horrors in the Rock*, *Refractions*, *Chilling Cold* và *Ghouls*. Các chồng bài này được đánh dấu bằng các biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/written-in-rock.png' /><img src='{setImgPath}/horrors-in-the-rock.png' /><img src='{setImgPath}/refractions.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/ghouls.png' /></section>",
+    "currentDaySet": "Ngoài ra, kiểm tra Nhật ký Chiến dịch để biết ngày hiện tại và tập hợp chồng bài encounter tương ứng: *The First Day*, *The Second Day* hoặc *The Final Day*. Các chồng bài này được đánh dấu bằng các biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/the-first-day.png' /><img src='{setImgPath}/the-second-day.png' /><img src='{setImgPath}/the-final-day.png' /></section>",
+    "currentDayMarker": "Kiểm tra Nhật ký Chiến dịch của bạn để biết ngày và giờ hiện tại. Đưa lá Time Marker vào chơi ở mặt tương ứng (_Day {'{'}day{'}'}_) hoặc (_Night {'{'}night{'}'}_).",
+    "caves": "Tập hợp 6 địa điểm _Cave_ và loại bỏ ngẫu nhiên 2 địa điểm khỏi trò chơi. Đặt số còn lại như trong sơ đồ Location Placement ở trang 11 (xem _Location Adjacency_ ở trang 3).",
+    "otherLocations": "Tập hợp mỗi vị trí từ chồng bài encounter *Written in Rock*. Đặt vị trí Control Station vào khu vực chơi như hình minh họa. Để riêng 15 vị trí _Rail_ còn lại sang một bên, ngoài khu vực chơi.",
+    "scrap": "Đặt 1 tài nguyên lên mỗi vị trí, như một scrap. *(Gợi ý: Các scrap thu thập được trong Act 1 sẽ giúp ích cho các điều tra viên trong Act 2)*.",
+    "startAt": "Các điều tra viên bắt đầu chơi tại vị trí ngoài cùng bên trái.",
+    "residents": "Nếu đang là (_Day {'{'}day{'}'}_), tập hợp mỗi story asset từ chồng bài encounter *Residents*. Chồng bài này được đánh dấu bằng biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/residents.png' /></section>",
+    "riverHawthorne": "Nếu đang là _Day 1_, đặt River Hawthorne tại địa điểm ở cột 3.",
+    "simeonAtwood": "Nếu đang là _Day 1_ hoặc _Day 2_, để Simeon Atwood riêng ra ngoài khu vực chơi.",
+    "leahAtwood": "Nếu đang là _Day 3_, để Leah Atwood riêng ra ngoài khu vực chơi.",
+    "remainingResidents": "Loại bỏ phần còn lại của tập bài encounter *Residents* khỏi trò chơi.",
+    "subterraneanBeast": "Nếu đang là (_Day {'{'}day{'}'}_), loại bỏ kẻ địch Subterranean Beast khỏi trò chơi.",
+    "scenarioReference": "Đưa lá bài scenario reference vào khu vực chơi ở mặt Act 1.",
+    "setOutOfPlay": "Đặt cả hai bản sao của kẻ địch Crystal Parasite và các lá bài khác từ tập bài encounter *Written in Rock* sang một bên, ngoài khu vực chơi."
+  },
+  "codex": {
+    "leahAtwood": {
+      "title": "{'{'}codex{'}'} Codex 2: Leah Atwood",
+      "body": "<h3>@:theFeastOfHemlockVale.writtenInRock.codex.leahAtwood.title </h3><p>_Nếu Leah Atwood không nằm dưới quyền kiểm soát của một điều tra viên:_</p><p>Bạn tìm thấy Leah đang nhìn chằm chằm xuống một vũng chất lỏng phát sáng, đục như sữa. Cô ấy gạt nước mắt khi bạn đến gần, và chống cự khi bạn yêu cầu cô ấy rời đi. “Đây là nơi tôi muốn ở,” cô ấy nói. Bạn mô tả vụ sập hang ở lối vào, và mối nguy hiểm hiện tại. “Không có gì quan trọng cả,” cô ấy nói một cách lạnh lùng, nhưng cuối cùng cũng nhượng bộ. Khi bạn dẫn cô ấy đến chiếc xe goòng, bạn quay lại và nhìn thấy một hình dáng giống người, tròn trịa in bóng trên vũng chất lỏng rực sáng. Nó bay vụt qua và nấp sau một tảng đá.</p><p class='basic right'>Chọn một điều tra viên để nhận quyền kiểm soát Leah Atwood. Một điều tra viên có thể kích hoạt codex này lần nữa.</p><hr><p>_Otherwise:_</p><p>Leah phá vỡ sự im lặng để chộp lấy cần gạt bị gãy của chiếc xe goòng. “Không phải trái! Phải!” Chiếc xe goòng lắc lư trên đường ray, rồi tự thăng bằng lại. Bạn chia sẻ ánh mắt nhẹ nhõm với người đầu bếp của Vale khi chiếc xe lao về phía trước.</p><p class='basic right'>Đặt 1 tài nguyên lên lá bài scenario reference để làm một công tắc.</p>"
+    },
+    "simeonAtwood": {
+      "title": "{'{'}codex{'}'} Codex 3: Simeon Atwood",
+      "body": "<h3>@:theFeastOfHemlockVale.writtenInRock.codex.simeonAtwood.title </h3><p>_Nếu Simeon Atwood không nằm dưới quyền kiểm soát của một điều tra viên:_</p><p>Khi chiếc xe goòng rung lắc qua một cây cầu ọp ẹp, bạn nhận ra một dáng người nhỏ bé đang lủng lẳng bên rìa vách đá. Hành động theo bản năng, bạn nhoài người xuống mép xe goòng và tóm lấy cẳng tay của người đó khi bạn lao vút qua. Khi kéo anh ta vào xe, bạn nhận ra đó là Simeon, kẻ đầu sỏ gây rối của Vale. Anh ta phủi bụi trên người, đôi má trắng bệch như tờ giấy. “Tôi đang tìm chỗ giấu đồ của mình. Tất cả đều nằm trong kế—” anh ta thở khò khè, rồi bỏ cuộc. “Cảm ơn vì đã cứu tôi. Tôi không biết mình sẽ làm gì nếu không có bạn.”</p><p class='basic right'>Chọn một điều tra viên để nắm quyền điều khiển Simeon Atwood. Một điều tra viên có thể kích hoạt codex này một lần nữa.</p><hr><p>_Otherwise:_</p><p>“Không, không, đừng làm thế.” Simeon kéo cần gạt trên xe. “Sao bạn vẫn còn sống vậy? Tôi ngạc nhiên là bạn thậm chí còn tìm thấy tôi.” Anh ta đập vào một công tắc bên hông đường hầm và cười ranh mãnh. “Phải làm như thế này chứ.”</p><p class='basic right'>Đặt 2 tài nguyên lên scenario reference card, làm các công tắc.</p>"
+    },
+    "riverHawthorne": {
+      "title": "{'{'}codex{'}'} Codex 5: River Hawthorne",
+      "body": "<h3>@:theFeastOfHemlockVale.writtenInRock.codex.riverHawthorne.title </h3><p>“Thật bất ngờ khi gặp bạn ở đây,” River đứng dậy khi bạn tiến đến. Họ cầm một chiếc giỏ đan chứa đầy nấm phát quang và địa y đỏ như máu. “Để tôi nói cho bạn biết, tôi có một khẩu vị khá tinh tế. Chính Eugénie Brazier đã nói rằng tôi là vị thực khách khó tính nhất từng ghé qua bàn ăn của bà ấy. Những thứ này thật tuyệt hảo,” họ hít hà từ chiếc giỏ của mình một cách đầy tận hưởng, rồi chỉ tay về phía đường hầm tăm tối. “Những điều chúng ta làm vì tình yêu.” Bạn đề nghị giúp họ tìm kiếm; rốt cuộc thì, Dr. Marquez sẽ muốn có các mẫu vật của những sinh trưởng bất thường này.</p><p class='basic right'>Nắm quyền điều khiển River Hawthorne. Nếu các điều tra viên kết thúc scenario với cả River Hawthorne và ít nhất 2{'{'}perPlayer{'}'} manh mối dưới quyền kiểm soát của họ, hãy ghi nhớ rằng “bạn đã giúp River.”</p>"
+    },
+    "drRosaMarquez": {
+      "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
+      "body": "<h3>@:theFeastOfHemlockVale.writtenInRock.codex.drRosaMarquez.title </h3><p>_If it is Act 1:_</p><p>“Tôi tự hỏi Simeon đang ở đâu. Đêm qua Leah có vẻ rất lo lắng,” Dr. Marquez nói một cách lơ đãng khi bà giơ lên một mẫu tinh thể màu trắng và xanh lam. “Những cấu trúc này không tự nhiên. Tôi không phải là nhà địa chất, nhưng cấu trúc này bị... biến dạng. Một số trong chúng thiếu đi sự đối xứng cơ bản.”</p><p class='basic right'>Đặt 1 tài nguyên lên scenario reference card, dưới dạng một scrap. Một điều tra viên có thể kích hoạt codex này lần nữa trong một act khác.</p><hr><p>_If it is Act 2:_</p><p>“Tôi quá già cho việc này rồi!” Dr. Marquez hét lên khi bà giữ chặt chiếc mũ của mình. Những thanh xà mục nát rít qua trên đầu khi chiếc xe goòng lao về phía trước. Vị giáo sư dùng cây gậy của mình gạt một công tắc gần đó khi bạn lao vút qua bóng tối. Đâu đó sâu hơn trong khu mỏ, có thứ gì đó đang chuyển động.</p><p class='basic right'>Hoán đổi 2 vị trí liền kề.</p>"
+    }
+  },
+  "resolutions": {
+    "xp": {
+      "bonus": {
+        "simeon": "Kinh nghiệm thưởng",
+        "leah": "Kinh nghiệm thưởng",
+        "river": "Bạn đã giúp River"
+      }
+    },
+    "noResolution": {
+      "title": "Không có Resolution",
+      "body": "<p>_Nếu không đạt được resolution nào (mỗi điều tra viên đều bị đánh bại)_: Điều cuối cùng bạn nhớ trước khi bị đánh ngất là chiếc xe goòng lao vào một hẻm núi ngập ánh sáng. Đầu bạn đau như búa bổ khi tỉnh dậy, xung quanh là những cụm nấm xanh phát sáng và các khối tinh thể lộng lẫy. Có một lối đi lên theo vách đá, nhưng phải mất hàng giờ mới quay lại được dù chỉ đến đầu các đường hầm đường ray. Bạn thở dài, kiệt sức, và lội qua con sông ngầm.</p><p class='basic'>Kiểm tra Nhật ký Chiến dịch của bạn.</p>",
+      "skipToResolution6": "Nếu đang là _Night 1_ hoặc _Night 2_, gạch tên Simeon Atwood và chuyển đến _Resolution 6_.",
+      "skipToResolution3": "Nếu đang là _Day 1_ hoặc _Day 2_, chuyển đến _Resolution 3_.",
+      "skipToResolution4": "Nếu đang là _Day 3_, chuyển đến _Resolution 4_."
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Simeon bước ra khỏi chiếc xe goòng với vẻ mặt bàng hoàng. “Thật là một chuyến đi!” anh ta hét lên, bình thản đến đáng lo. “Dù thế nào đi nữa, bạn chắc chắn sẽ được ghi danh vào Đại sảnh Danh vọng của Hội Kín Những Trò Tinh Nghịch của Thợ Mỏ! Bạn sẽ được sánh vai cùng George Washington Carver và mẹ tôi.” Anh ta suýt vấp ngã khi đường ray dốc lên trên, hướng về bầu trời rực rỡ. Bạn đỡ anh ta đứng dậy và dẫn anh ta ra ngoài, vào bầu không khí trong lành.</p><ul><li>Cập nhật Nhật ký Chiến dịch của bạn.<ul><li>Trong Ghi chú của Simeon Atwood, ghi lại *Simeon đã sống sót*.</li><li>Tăng Mức độ Quan hệ của Simeon Atwood thêm 2. Mỗi điều tra viên nhận 2 kinh nghiệm thưởng.</li></ul></li><li>Chuyển đến _Resolution 6_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: Leah bám chặt vào thành xe goòng khi bạn bước xuống. Cô cắn chặt môi kìm nén những giọt nước mắt, ánh mắt vô hồn. Khi bạn dẫn cô ấy quay lại đường hầm, tiếng khóc thút thít vang vọng trên những bức tường đá. Khi bạn bước ra ngoài tận hưởng bầu không khí trong lành, tươi mát, bạn lấy hết can đảm để hỏi Leah xem cô ấy đã thấy gì.</p><p>“Cậu ấy đi rồi. Simeon đi rồi,” cô trả lời.</p><ul><li>Cập nhật Nhật ký Chiến dịch của bạn.<ul><li>Trong Ghi chú của Leah Atwood, ghi lại *Leah đã thấy thứ gì đó trong khu mỏ*.</li><li>Tăng Mức độ Quan hệ của Leah Atwood. Mỗi điều tra viên nhận 2 kinh nghiệm thưởng.</li></ul></li><li>Chuyển đến _Resolution 6_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: Bạn dám thề là mình đã nghe thấy tiếng Simeon Atwood gọi vọng qua những đường hầm trống rỗng khi bước xuống. Không thể xua đi âm thanh đó, bạn quay ngược lại các đường hầm với hy vọng tìm thấy chàng trai trẻ. Cuối cùng bạn đến một vực thẳm lấp lánh đầy pha lê. Một bóng đen hình người đang ngồi khom lưng trên xác một con vật nhỏ. Nó lao nhanh vào bóng tối khi bạn cất tiếng gọi. Bạn hét tên Simeon cho đến khi khản cả giọng, rồi quay lại lối ra với cảm giác nghẹn đắng ở cổ họng.</p><ul><li>Cập nhật Nhật ký Chiến dịch của bạn.<ul><li>Trong Ghi chú của Simeon Atwood, ghi lại *Simeon đã biến mất*.</li><li>Gạch bỏ tên của Simeon Atwood.</li></ul></li><li>Chuyển đến _Resolution 6_.</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_Resolution 4_: Bạn dám thề là mình đã nghe thấy tiếng Leah Atwood gọi vọng qua những đường hầm trống rỗng khi bước xuống. Không thể xua đi âm thanh đó, bạn quay ngược lại các đường hầm với hy vọng tìm thấy người đầu bếp của Vale. Cuối cùng bạn đến một vực thẳm lấp lánh đầy pha lê. Một bóng đen hình người đang ngồi khom lưng trên xác của Leah ở dưới đáy. Nó lao nhanh vào bóng tối khi bạn cất tiếng gọi. Bạn nhìn thi thể vô hồn của Leah lần cuối, rồi quay lại lối ra với cảm giác nghẹn đắng ở cổ họng.</p><ul><li>Cập nhật Nhật ký Chiến dịch của bạn.<ul><li>Trong Ghi chú của Leah Atwood, ghi lại *Leah và Simeon đã đoàn tụ*.</li><li>Gạch bỏ tên của Leah Atwood.</li></ul></li><li>Chuyển đến _Resolution 6_.</li></ul>"
+    },
+    "resolution5": {
+      "title": "Resolution 5",
+      "body": "<p>_Resolution 5_: Bạn nghe thấy một tràng tiếng kêu lạch cạch ngắt quãng quen thuộc khi bước xuống, theo sau là mùi thối rữa. Thêm nhiều tiếng hú và tiếng hét vang vọng qua hang động ngoằn ngoèo, thúc giục bạn chạy ra lối thoát. Khi bước ra ngoài tận hưởng bầu không khí trong trẻo của màn đêm, bạn quay lại và tự hỏi những nỗi kinh hoàng nào khác đang được khắc trên đá bên dưới hòn đảo.</p><ul><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *các điều tra viên đã sống sót qua những nỗi kinh hoàng trong lòng đá*.</li><li>Tiếp tục đến _Resolution 6_.</li></ul>"
+    },
+    "resolution6": {
+      "title": "Kết quả 6",
+      "body": "<p>_Resolution 6_: “Khảo sát Miskatonic, tháng 6 năm 1926. Các thành viên Marquez, Musgrave, và những người khác. Chúng tôi đã may mắn sống sót trốn thoát khỏi North Point Mine. Bất ổn cực độ và chấn động địa chấn. Những phát hiện bao gồm các cấu trúc pha lê bất đối xứng, các loài gặm nhấm có kích thước bất thường, và một quần thể côn trùng hung hãn bất thường.”</p><ul><li>Nếu story asset Prismatic Shard nằm dưới quyền kiểm soát của một điều tra viên khi scenario kết thúc, chọn một điều tra viên để thêm nó vào deck của họ. Nó không được tính vào kích thước deck của họ.</li><li>Cập nhật Nhật ký Chiến dịch của bạn.<ul><li>Nếu \"bạn đã giúp River\", tăng Relationship Level của River Hawthorne. Mỗi điều tra viên nhận 1 điểm kinh nghiệm thưởng.</li><li>Nếu một điều tra viên đang kiểm soát River Hawthorne và điều kiện trên không đúng: Giảm Relationship Level của River Hawthorne.</li></ul></li><li>Mỗi điều tra viên nhận kinh nghiệm bằng với giá trị Victory X của mỗi lá bài trong victory display. _Mỗi điều tra viên bây giờ có thể tiêu kinh nghiệm được ghi dưới mục “Unspent Experience” trong Nhật ký Chiến dịch của bạn._</li><li>Trong phần “Areas Surveyed” của Nhật ký Chiến dịch, đánh dấu *North Point Mine*.</li><li>Kiểm tra Nhật ký Chiến dịch của bạn.<ul><li>Nếu đang là Day 1, lật đến _Prelude: The First Evening_ (*trang 31*).</li><li>Nếu đang là Night 1, lật đến _Prelude: Dawn of the Second Day_ (*trang 39*).</li><li>Nếu đang là Day 2, lật đến _Prelude: The Second Evening_ (*trang 43*).</li><li>Nếu đang là Night 2, lật đến _Prelude: Dawn of the Final Day_ (*trang 51*).</li><li>Nếu đang là Day 3, lật đến _Prelude: The Final Evening_ (*trang 55*).</li></ul></li></ul>"
+    },
+    "standalone": {
+      "title": "Chế độ Standalone",
+      "body": "<p>_Chỉ dành cho Chế độ Standalone._ Đường ray biến mất dưới chân bạn. Mỏ này chưa bao giờ có lối thoát, và đá đang khép lại quanh bạn.</p><p>Có {doom} doom trên agenda khi người cuối cùng trong các bạn gục ngã.</p>"
+    }
+  },
+  "theCaveIn": "Chuyển cảnh: Vụ Sập Hầm",
+  "theCaveIn1": "<p>_The Cave-In 1_: Khi tiếng ầm ầm lắng xuống, bạn nhìn lại đường hầm đã sập. Không có đường lui. Không còn cách nào khác, bạn đi theo tuyến đường sắt cũ vào trong bóng tối. Sau một lúc, bạn bắt gặp một căn lán sáng rực bên cạnh một chiếc xe goòng cũ trên đường ray gần đó.</p><p class='basic'>Kiểm tra Nhật ký Chiến dịch của bạn.</p>",
+  "proceedToTheCaveIn2": "Nếu đang là (_Day {'{'}day{'}'}_), tiếp tục đến _The Cave-In 2_.",
+  "skipToTheCaveIn3": "Nếu không, chuyển đến _The Cave-In 3_.",
+  "theCaveIn2": "<p>_The Cave-In 2_: Căn lán này từng là trạm điều khiển đường sắt được cải tạo thành một căn cứ. Những tấm bản đồ và biểu đồ vẽ tay phủ kín các bức tường và trần nhà; chúng có vẻ là nét chữ của một người trẻ tuổi. Nếu gần đây có ai đó ở đây, có thể họ hiện cũng đang bị mắc kẹt trong khu mỏ cùng với bạn.</p><p class='basic right'>Chuyển đến _The Cave-In 4_.</p>",
+  "theCaveIn3": "<p>_The Cave-In 3_: Một tiếng rít chói tai vang vọng khắp hang động, theo sau là một tiếng lách cách ghê tởm. Dưới một đường hầm nối tiếp, một cái mõm đen ngòm nằm giữa những xúc tu đang quằn quại tiến tới. Tim bạn gần như ngừng đập khi con quái vật phát ra một tràng âm thanh the thé ngắt quãng khác và lao về phía bạn.</p><p class='basic right'>Tiếp tục đến _The Cave-In 4_.</p>",
+  "theCaveIn4": "<p>_The Cave-In 4_: Với lối vào đã sập, cách duy nhất để thoát khỏi khu mỏ là đi xuyên qua nó. Bạn dùng hết sức bình sinh đẩy chiếc xe goòng về phía trước và nhảy vào trong, hy vọng những đường ray rỉ sét vẫn còn trụ vững.</p><ul><li>Tập hợp tất cả 15 địa điểm _Rail_ đang để riêng.<ul><li>Đặt Rail Exit và 7 địa điểm Rail Tunnel được hiển thị như trong sơ đồ Sắp xếp Địa điểm.</li><li>Xào các địa điểm _Rail_ còn lại và đặt 1 địa điểm vào mỗi ô được đánh dấu “?” trên sơ đồ Sắp xếp Địa điểm.</li></ul></li><li>Đặt 1 tài nguyên lên lá bài scenario reference để làm một công tắc.</li><li>Đặt asset Mine Cart đang để riêng tại Control Station và chọn hướng mà nó đang quay về (*xem* _Sliding and Swapping Locations_ *và* _The Mine Cart_ *ở trang 11*).<ul><li>Đặt mini-card của mỗi điều tra viên vào Mine Cart.</li><li>Nếu Simeon Atwood hoặc Leah Atwood đang được để riêng, đặt họ tại vị trí trên cùng ở cột 2.</li><li>Đặt asset Prismatic Shard đang để riêng tại địa điểm dưới cùng ở cột 4.</li></ul></li><li>Nếu đang là (_Night {'{'}night{'}'}_), đặt kẻ địch Subterranean Beast đang để riêng tại Control Station, trong trạng thái exhausted.</li><li>Xào các lá bài encounter *Written in Rock* đang để riêng còn lại và encounter discard pile vào encounter deck.</li><li>Tiếp tục chơi.</li></ul>",
+  "slidingAndSwappingLocations": {
+    "title": "Trượt và Hoán Đổi Vị Trí",
+    "body": "<h3>Trượt và Hoán Đổi Vị Trí</h3><p class='basic'>Trượt và hoán đổi các vị trí cho phép các điều tra viên tạo ra một con đường tới Rail Exit bằng cách làm thẳng hàng rail line.</p><p class='basic'>Để trượt một vị trí, chọn một vị trí có một khoảng trống liền kề với nó. Di chuyển vị trí đó (và tất cả các lá bài tại vị trí đó) vào khoảng trống đó.</p><p class='basic'>Để hoán đổi 2 vị trí, đồng thời di chuyển mỗi vị trí đó (và tất cả các lá bài tại đó) tới khoảng trống mà vị trí kia đang chiếm giữ.</p><ul><li>_Các vị trí có story asset không thể bị trượt hoặc hoán đổi._</li></ul>"
+  },
+  "theMineCart": {
+    "title": "Mine Cart",
+    "body": "<h3>Mine Cart</h3><p class='basic'>Mini-card của mỗi điều tra viên được đặt chồng lên Mine Cart.</p><ul><li>Một điều tra viên trong Mine Cart cũng ở tại vị trí của nó. Các điều tra viên không thể di chuyển độc lập khỏi Mine Cart. Khi Mine Cart di chuyển, mỗi điều tra viên di chuyển cùng với nó.</li><li>Story asset Mine Cart có một rail icon ở phía bên phải chỉ ra hướng mà nó đang hướng về. Rail icon của Mine Cart phải luôn hướng về cùng một hướng với một trong các rail icon tại vị trí của nó.</li><li>Khi di chuyển Mine Cart, nó chỉ có thể di chuyển dọc theo một rail line tới một vị trí được kết nối.</li><li>Khi Mine Cart tiến vào một vị trí, các điều tra viên có thể xoay nó 90 độ theo một trong hai hướng để hướng về cùng một hướng với một rail icon tại vị trí đó.</li><li>Mine Cart chỉ có thể di chuyển theo hướng mà rail icon của nó đang hướng về. Nếu vị trí mà nó tiến vào không tạo thành một rail line hoàn chỉnh *(chúng không thẳng hàng)*, Mine Cart sẽ trật khỏi rail line.</li></ul>"
+  }
+}

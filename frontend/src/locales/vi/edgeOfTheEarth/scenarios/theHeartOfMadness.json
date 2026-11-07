@@ -1,0 +1,81 @@
+{
+  "heading": "Màn IV",
+  "part1": {
+    "setup": {
+      "gateOfYquaa": "Đặt Cổng Y'quaa vào màn chơi, mặt đã lật ngửa lên.",
+      "startAt": "Mỗi điều tra viên bắt đầu màn chơi tại Cổng Y'quaa.",
+      "unrevealedSideUnused": "*Lưu ý: Mặt chưa lật của Cổng Y'quaa không được sử dụng trong phần này của màn chơi.*",
+      "spokesAndRings": "Các địa điểm Ancient Facility trong màn chơi này được sắp xếp thành năm nhánh tỏa ra từ Cổng Y'quaa, và ba vòng tròn bao quanh Cổng Y'quaa.",
+      "setSealsAside": "Đặt năm token phong ấn sang một bên, ngoài màn chơi.",
+      "checkDifficulty": "Kiểm tra cấp độ khó.",
+      "tekelili": "Xáo trộn tất cả các lá bài điểm yếu Tekeli-li! chưa nằm trong bộ bài của điều tra viên để tạo thành chồng bài Tekeli-li. Đặt chồng bài này gần chồng bài agenda."
+    },
+    "part1Intro": {
+      "title": "Trái Tim của Sự Điên Loạn, Phần I",
+      "body": "<p>Bạn quyết định nghiên cứu cánh cửa và nhiều con đường phân nhánh từ đường hầm rộng lớn này, hy vọng tìm ra cách ngăn thực thể phía bên kia thoát ra. Bạn tin rằng công nghệ dùng để niêm phong cánh cửa này có liên quan đến năm ký tự này. Có lẽ nếu khám phá khu vực xung quanh, bạn sẽ tìm thấy những mảnh ghép còn thiếu.</p><p class='basic right'>Tiếp tục đến _Setup_</p>"
+    },
+    "intro": {
+      "title": "Màn IV: Trái tim của Điên loạn",
+      "body": "<p class='basic'>Khi bạn đọc phần giới thiệu màn chơi, kiểm tra Nhật ký Chiến dịch và đọc đoạn văn tương ứng với tình huống của bạn.</p><p>Ngày hôm sau, bạn lặn sâu hơn vào các hang động và hố sâu dưới lớp vỏ băng của Nam Cực. Bạn đi qua những vòm đá obsidian khổng lồ và đá phiến nguyên thủy, qua các hành lang được chạm khắc tinh xảo và những đại sảnh nhiều cột đồ sộ, xuống đến những chiều sâu không thể biết và không thể đo lường.</p>"
+    },
+    "scoutedTheForkedPass": {
+      "yes": "<p class='basic'>*Nếu các điều tra viên đã trinh sát lối rẽ đôi:*</p><p>Cuối cùng, bạn đến một ngã rẽ quen thuộc trong hang, chính là lối đi bạn và Ellsworth đã trinh sát đêm trước. Bạn giải thích với mọi người rằng đêm qua bạn cảm nhận được không khí lưu thông qua lối bên trái nhất, nên nó khó có thể là ngõ cụt. Những người khác gật đầu đồng ý, và cùng nhau bạn mạo hiểm bước vào lối đi mà bạn tin là đúng.</p><p>Sau khi thiết lập, trước khi màn chơi tiếp theo bắt đầu, điều tra viên chính có thể xem mặt đã lật của bất kỳ hai địa điểm Ancient Facility (Cơ sở Cổ xưa) nào trong màn chơi.</p>"
+    },
+    "danforth": {
+      "alive": "<p class='basic'>Nếu Danforth còn sống</p><p>\"Những sinh vật—chúng đã tạo ra nơi này,\" Danforth suy luận khi bạn đi qua dưới vòm cuối cùng. \"Đúng như tôi nghi ngờ lần trước khi ở đây. Đây không phải phần tự nhiên của Nam Cực. Tất cả đều liên kết. Đây là trái tim thực sự của nền văn minh của chúng.\" Bạn hỏi Danforth ý anh ta là gì—hôm qua bạn đã khám phá gì, nếu không phải thành phố của chúng? \"Chỉ là phần nổi của tảng băng, nếu cậu tha thứ cho cách diễn đạt này,\" anh ta nói. \"Như tầng cao nhất của một tòa nhà chọc trời. Nhưng băng và tuyết đã chôn vùi phần còn lại. Chúng ta không thể nhận ra.\" Bạn hỏi anh ta nghĩ thành phố này sâu đến đâu. \"Từ những gì chúng ta thấy về lịch sử của chúng?\" Anh ta nhìn bạn, mồ hôi lăn dài trên trán. Với vẻ nghiêm túc, anh ta đáp, \"đến tận đáy đại dương.\"</p><p class='basic'>Các điều tra viên không chịu ảnh hưởng xấu nào.</p>"
+    },
+    "proceed": {
+      "title": "Màn IV: Trái tim của Điên loạn"
+    },
+    "interlude": {
+      "instructions": {
+        "title": "Phần Giữa Màn chơi: Giọt Nước Tràn Ly"
+      }
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Kết thúc thứ nhất"
+      },
+      "resolution2": {
+        "title": "Kết thúc thứ hai"
+      },
+      "resolution3": {
+        "title": "Kết thúc thứ ba"
+      }
+    }
+  },
+  "part2": {
+    "setup": {
+      "strikingFear": "Khi thu thập bộ encounter *Striking Fear*, chỉ lấy 2x Dissonant Voices và 2x Frozen in Fear (không lấy 3x Rotting Remains).",
+      "flipGate": "Lật Cổng Y'quaa sang mặt chưa lật.",
+      "startAt": "Điều tra viên chính chọn một địa điểm Ancient Facility gần Cổng Y'quaa nhất. Mỗi điều tra viên bắt đầu màn chơi tại địa điểm được chọn.",
+      "setAside": "Đặt các lá bài sau sang một bên, ngoài màn chơi: Tất cả 15 bản sao của kẻ thù The Nameless Madness, act The Final Mirage, bốn địa điểm Titanic Ramp, và địa điểm Hidden Tunnel.",
+      "seals": "Đặt các thẻ phong ấn như sau:",
+      "dormant": "Mỗi điều tra viên có phong ấn ngủ bắt đầu màn chơi với nó dưới sự kiểm soát của họ.",
+      "removeOthers": "Loại bỏ mọi phong ấn khác khỏi màn chơi."
+    },
+    "intro1": {
+      "check": "Kiểm tra Nhật ký Chiến dịch.",
+      "main": {
+        "title": "Trái Tim của Sự Điên Loạn, Phần II"
+      }
+    },
+    "intro2": {
+      "title": "Trái Tim của Sự Điên Loạn, Phần II"
+    },
+    "intro3": {
+      "title": "Trái Tim của Sự Điên Loạn, Phần II"
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Kết thúc thứ nhất"
+      },
+      "resolution2": {
+        "title": "Kết thúc thứ hai"
+      },
+      "resolution3": {
+        "title": "Kết thúc thứ ba"
+      }
+    }
+  }
+}

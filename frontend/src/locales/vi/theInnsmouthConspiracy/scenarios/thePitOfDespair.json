@@ -1,0 +1,32 @@
+{
+  "heading": "Màn I",
+  "setup": {
+    "placeKeys": "Đặt mỗi chìa khoá như sau:",
+    "facedownKeys": "Đặt các chìa khóa màu đỏ, vàng và tím sang một bên, úp xuống. Xáo trộn chúng để bạn không biết cái nào là cái nào.",
+    "removeKeys": "Loại bỏ các chìa khóa đen và trắng khỏi màn chơi. Chúng không được sử dụng trong màn chơi này.",
+    "tidalTunnels": "Xào những vị trí Tidal Tunnel còn lại và đặt ngẫu 3 trong số chúng vào chơi ở bên dưới, bên trái, và bên phải của Unfamiliar Chamber, với mặt không để lộ.",
+    "setAsideTidalTunnels": "Đặt các vị trí Tidal Tunnel còn lại sang một bên, ngoài khu vực chơi.",
+    "setAsideCards": "Đặt từng lá bài sau đây sang một bên, ngoài khu vực chơi: kẻ địch Amalgam, cả hai bản sao của lá bài treachery Blindsense và cả 3 bản sao của lá bài treachery From the Depths.",
+    "floodTokens": "Thêm token lũ lụt vào kho chứa token."
+  },
+  "intro": {
+    "title": "Màn I: Hố của Sự Tuyệt Vọng"
+  },
+  "flashback1": {
+    "title": "Hồi tưởng I"
+  },
+  "flashback2": {
+    "title": "Hồi tưởng II"
+  },
+  "flashback3": {
+    "title": "Hồi tưởng III"
+  },
+  "flashback4": {
+    "title": "Hồi tưởng IV"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    }
+  }
+}

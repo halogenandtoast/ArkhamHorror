@@ -1,0 +1,40 @@
+{
+  "intro": {
+    "guestStoryAssets": {
+      "title": "Story Asset của Khách"
+    }
+  },
+  "setup": {
+    "placeLocations": "Để riêng 3 vị trí Second-Floor Room ra ngoài cuộc chơi. Đặt Lobby và Lantern Chamber vào chơi. Đặt ngẫu nhiên 3 vị trí Ground-Floor Room vào chơi thành một hàng ở bên phải Lobby.",
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Lobby.",
+    "placeGuests": "Đưa 3 lá bài trên cùng của Guest deck vào khu vực chơi ở trạng thái ngửa, đặt một lá tại mỗi vị trí Ground-Floor Room.",
+    "theBloodlessMan": "Đưa kẻ địch The Bloodless Man *(Silent Lurker)* vào khu vực chơi ở trạng thái exhausted tại Lantern Chamber, và đính kèm story asset The Pale Lantern vào hắn, với mặt *(Hypnotic Glow)* ngửa lên.",
+    "shuffleRemainder": "Xào 23 lá bài encounter còn lại để tạo thành encounter deck."
+  },
+  "theFabledJewel": {
+    "title": "Viên ngọc huyền thoại"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "resolution5": {
+      "title": "Giải pháp thứ 5"
+    },
+    "resolution6": {
+      "title": "Kết quả 6"
+    },
+    "resolution7": {
+      "title": "Kết cục 7"
+    }
+  }
+}

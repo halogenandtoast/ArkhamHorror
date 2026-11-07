@@ -1,0 +1,490 @@
+{
+  "entries": {
+    "ZealotLineInTheSand": {
+      "name": "Lằn Ranh Trên Cát"
+    },
+    "TheGangsAllHere": {
+      "name": "Cả Hội Đều Ở Đây"
+    },
+    "DunwichLineInTheSand": {
+      "name": "Lằn Ranh Trên Cát"
+    },
+    "ThePathIsMine": {
+      "name": "Con đường là của tôi"
+    },
+    "CarcosaLineInTheSand": {
+      "name": "Lằn Ranh Trên Cát"
+    },
+    "MemberThese": {
+      "items": {
+        "MesmerizingFlute": "Mesmerizing Flute (Sáo mê hoặc)",
+        "KeziahsFormulae": "Công thức của Keziah",
+        "RitualComponents": "Ritual Components (Thành phần nghi lễ)",
+        "WornCrucifix": "Thánh Giá Hao Mòn",
+        "GilmansJournal": "Nhật ký của Gilman"
+      }
+    },
+    "OneFirstLastJob": {
+      "name": "Một Phi Vụ Cuối Cùng Đầu Tiên",
+      "text": "Hoàn thành chiến dịch *The Drowned City* một lần ở bất kỳ độ khó nào."
+    },
+    "SeasonTwo": {
+      "name": "Mùa Hai"
+    },
+    "CliffDiver": {
+      "name": "Nhảy Vách Đá",
+      "text": "Hoàn thành chiến dịch mà không bao giờ mang theo một diving suit."
+    },
+    "ThisIsACoup": {
+      "name": "Đây Là Một Cuộc Đảo Chính",
+      "text": "Đánh bại cả Naomi O’Bannion và Sadie Sheldon trong *One Last Job* chỉ bằng cách sử dụng khả năng parley của act 3a."
+    },
+    "ThoroughSearch": {
+      "name": "Tìm Kiếm Kỹ Lưỡng",
+      "text": "Kết thúc *The Western Wall* với mọi địa điểm đã được lật mở."
+    },
+    "TidalFlipMinigame": {
+      "text": "Hoàn thành *The Drowned Quarter* với mọi địa điểm đã được lật mở và không bị flooded."
+    },
+    "NoAcolyteLeftBehind": {
+      "name": "Không Một Acolyte Nào Bị Bỏ Lại"
+    },
+    "KillTheAdds": {
+      "name": "Tiêu Diệt Quái Phụ",
+      "text": "Đánh bại Mother trong *The Apiary* chỉ bằng hiệu ứng _Forced_ của bà ta."
+    },
+    "InTheDeepEnd": {
+      "name": "Ở Vùng Nước Sâu"
+    },
+    "SorryDidntSeeYouThere": {
+      "name": "Xin Lỗi, Không Thấy Bạn Ở Đó",
+      "text": "Hoàn thành *Court of the Ancients* mà không di chuyển Great Lift sau khi Colossal Tyrant xuất hiện."
+    },
+    "SkyRider": {
+      "name": "Kỵ Sĩ Bầu Trời"
+    },
+    "SkipToTheEnd": {
+      "name": "Đi Thẳng Đến Cuối"
+    },
+    "AlienSchoolDropout": {
+      "name": "Bỏ Học Trường Ngoại Lai",
+      "text": "Hoàn thành chiến dịch mà không dịch bất kỳ một ký tự ngoại lai nào."
+    },
+    "AlienSchoolGraduate": {
+      "name": "Tốt Nghiệp Trường Ngoại Lai",
+      "text": "Dịch toàn bộ 26 ký tự ngoại lai trong một lần chơi duy nhất của chiến dịch *The Drowned City*."
+    },
+    "EmptyHanded": {
+      "name": "Trắng Tay"
+    },
+    "WhyWontYouStayDead": {
+      "name": "TẠI. SAO. NGƯƠI. KHÔNG. CHỊU. CHẾT?!",
+      "text": "Thêm The Inescapable vào victory display ít nhất 20 lần trong một chiến dịch duy nhất."
+    },
+    "DrownedCityLineInTheSand": {
+      "name": "Lằn Ranh Trên Cát",
+      "text": "Chiến thắng chiến dịch *The Drowned City* với ít nhất ba Ultimatum đang kích hoạt."
+    },
+    "RlyehExpertise": {
+      "name": "Am Hiểu R’lyeh",
+      "text": "Chiến thắng chiến dịch *The Drowned City* ở độ khó Expert."
+    },
+    "WithYourPowersCombined": {
+      "name": "Khi Sức Mạnh Được Kết Hợp…",
+      "text": "Hoàn thành chiến dịch *The Drowned City* sau khi đã kiếm được các artifact sau:",
+      "items": {
+        "GrislyMask": "\"Mặt Nạ\" Rùng Rợn"
+      }
+    },
+    "Obligations": {
+      "name": "Nghĩa vụ",
+      "text": "Hoàn thành chiến dịch *The Drowned City* với các nhiệm vụ sau được hoàn tất:"
+    },
+    "DoYouAlwaysFollowOrders": {
+      "name": "Bạn Có Luôn Tuân Lệnh Không?"
+    },
+    "AwwButTheyreSoCute": {
+      "name": "Aww, Nhưng Chúng Thật Đáng Yêu"
+    },
+    "LosingMyReligion": {
+      "name": "Đánh Mất Đức Tin"
+    },
+    "FantasyFlightGamesDoesNotCondoneAccomplishingThisAchievement": {
+      "name": "Fantasy Flight Games (®) Không Dung Túng Việc Đạt Được Thành Tựu Này"
+    },
+    "TacticalEspionageAction": {
+      "name": "Hành Động Gián Điệp Chiến Thuật",
+      "text": "Hoàn thành *Dark Side of the Moon* với alarm level của mỗi điều tra viên ở mức 0."
+    },
+    "MoonLizardsIDontBelieveTheyExist": {
+      "name": "Moon Lizards? Tôi Không Tin Chúng Tồn Tại"
+    },
+    "BarkhamHorrorEnthusiast": {
+      "name": "Người Đam Mê Barkham Horror",
+      "text": "Đánh bại 1 hoặc nhiều Cats from Saturn bằng cách sử dụng năng lực fight trên một đồng minh cat hoặc đồng minh dog."
+    },
+    "OnlyWayToBeSure": {
+      "name": "Cách Duy Nhất Để Chắc Chắn"
+    },
+    "GiveThemSomethingToTalkAbout": {
+      "name": "Cho Họ Thứ Gì Đó Để Bàn Tán"
+    },
+    "ThisIsntEvenMyFinalForm": {
+      "name": "Đây Thậm Chí Chưa Phải Dạng Cuối Của Ta!"
+    },
+    "DontTellAnyoneBut": {
+      "name": "Đừng Nói Với Ai, Nhưng..."
+    },
+    "DreamQuestLineInTheSand": {
+      "name": "Lằn Ranh Trên Cát",
+      "text": "Chiến thắng campaign *The Dream-Quest* với ít nhất ba Ultimatum đang kích hoạt."
+    },
+    "DreamlandsExpertise": {
+      "name": "Chuyên Gia Dreamlands"
+    },
+    "BewareTheBlackCat": {
+      "name": "Cẩn Thận The Black Cat",
+      "text": "Hoàn thành campaign *The Dream-Eaters* với *được rồi, tốt thôi, vậy thì làm theo ý bạn đi* được ghi vào Sổ Ghi Chép Campaign của bạn."
+    },
+    "ReunitedAndItFeelsSoGood": {
+      "name": "Đoàn Tụ Và Cảm Giác Thật Tuyệt",
+      "text": "Chiến thắng *The Dream-Eaters* dưới dạng một campaign 8 phần liên kết, và để cả hai nhóm đoàn tụ trong phần kết."
+    },
+    "EveryonesAFeministUntilThereIsASpiderAround": {
+      "name": "Ai cũng là người theo chủ nghĩa nữ quyền cho đến khi có nhện xuất hiện"
+    },
+    "TheCarterMethod": {
+      "name": "Phương pháp Carter"
+    },
+    "TheDoctorIsIn": {
+      "name": "Bác sĩ đã có mặt"
+    },
+    "DejaVu": {
+      "text": "Giải quyết mọi free triggered ability trên mọi địa điểm trong *A Thousand Shapes of Horror* (không tính Mysterious Stairs trong act 2)."
+    },
+    "TheCasaLomaManeuver": {
+      "name": "Chiến thuật Casa Loma"
+    },
+    "IRememberThisPlace": {
+      "name": "Tôi Nhớ Nơi Này"
+    },
+    "BadAdvice": {
+      "name": "Lời Khuyên Tồi"
+    },
+    "MarchOfTheGhouls": {
+      "name": "Cuộc Hành Quân Của Ghoul"
+    },
+    "MasterOfUnlocking": {
+      "text": "Sử dụng The Silver Key để hủy tổng cộng ít nhất 10 horror trong cùng một scenario."
+    },
+    "WebOfDreamsLineInTheSand": {
+      "name": "Lằn Ranh Trên Cát",
+      "text": "Chiến thắng campaign *The Web of Dreams* với ít nhất ba Ultimatum được kích hoạt."
+    },
+    "WouldYouJustDieAlready": {
+      "name": "Sao Ngươi Không Chết Quách Đi Cho Rồi"
+    },
+    "ElementaryDearDawson": {
+      "name": "Cơ Bản Thôi, Dawson Thân Mến"
+    },
+    "AintNothinGonnaBreakMyStride": {
+      "name": "Không Gì Có Thể Cản Bước Tôi"
+    },
+    "SpeedingTicket": {
+      "name": "Vé Phạt Quá Tốc Độ"
+    },
+    "YoureLockedInHereWithMe": {
+      "name": "Các người bị nhốt ở đây cùng ta",
+      "text": "Hoàn thành *A Light in the Fog* mà không có điều tra viên nào bị bắt."
+    },
+    "FishOutOfWater": {
+      "name": "Cá mắc cạn",
+      "text": "Hoàn thành *Into the Maelstrom* trong khi mỗi điều tra viên vẫn đang mặc Diving Suits của mình."
+    },
+    "DontWakeDaddy": {
+      "name": "Đừng đánh thức bố",
+      "text": "Hoàn thành cả *The Lair of Dagon* và *Into the Maelstrom* mà không đánh thức Dagon hoặc Hydra."
+    },
+    "GoneFishing": {
+      "name": "Đi Câu Cá"
+    },
+    "FullBuild": {
+      "name": "Trang Bị Đầy Đủ",
+      "text": "Trang bị Waveworn Idol, Awakened Mantle và Headdress of Y’ha-nthlei cùng một lúc."
+    },
+    "YouWakeUpInARoom": {
+      "name": "“Bạn Tỉnh Dậy Trong Một Căn Phòng...”",
+      "text": "Khôi phục từng ký ức sau đây trong suốt chiến dịch *The Innsmouth Conspiracy*:",
+      "items": {
+        "TheHorribleTruth": "Sự thật kinh hoàng."
+      }
+    },
+    "BiggerFishToFry": {
+      "name": "Có việc lớn hơn phải làm"
+    },
+    "InnsmouthLineInTheSand": {
+      "name": "Lằn Ranh Trên Cát",
+      "text": "Chiến thắng chiến dịch *The Innsmouth Conspiracy* với ít nhất ba Ultimatum đang kích hoạt."
+    },
+    "InnsmouthExpertise": {
+      "name": "Sự am hiểu Innsmouth",
+      "text": "Chiến thắng chiến dịch *The Innsmouth Conspiracy* ở độ khó Expert."
+    },
+    "SafeBet": {
+      "name": "Cược An Toàn"
+    },
+    "LookAtAllThisStuff": {
+      "name": "Nhìn Kìa, Bao Nhiêu Thứ!"
+    },
+    "InYourHead": {
+      "name": "Trong Đầu Bạn",
+      "text": "Hoàn thành *Fatal Mirage* (Ảo Ảnh Chết Người) với chín lá bài câu chuyện trong khu vực trưng bày thành tích."
+    },
+    "ChaosChaos": {
+      "name": "Hỗn Loạn Hỗn Loạn"
+    },
+    "KnockKnock": {
+      "name": "Cốc, Cốc"
+    },
+    "MadWithPower": {
+      "name": "Điên Vì Quyền Lực"
+    },
+    "ConstructAdditionalPylons": {
+      "name": "Xây Thêm Cột Sương"
+    },
+    "TheSoundOfMadness": {
+      "name": "Âm Thanh của Điên Loạn"
+    },
+    "SorryImAllOutOfDogPuns": {
+      "name": "Xin Lỗi, Tôi Hết Trò Chơi Chữ Về Chó Rồi",
+      "text": "Có Anyu và bốn tài sản khác với \"Dog\" (Chó) trong tiêu đề cùng trong màn chơi một lúc."
+    },
+    "KindOfAHatOnAHat": {
+      "name": "Kiểu Như Mũ Đội Lên Mũ",
+      "text": "Chơi một Wooden Sledge (Xe Trượt Gỗ) từ một Backpack (Ba Lô), rồi ngay lập tức dùng khả năng của nó để gắn một ba lô vào đó."
+    },
+    "ThisWasYourIdea": {
+      "name": "Đây Là Ý Tưởng Của Cậu",
+      "text": "Dùng khả năng của Giáo sư William Dyer để chữa ít nhất 4 chấn thương tinh thần cho Danforth trong một màn duy nhất."
+    },
+    "NoRespectForTheDead": {
+      "name": "Không Tôn Trọng Người Chết",
+      "text": "Kiểm soát ít nhất năm tài sản từ bộ gặp gỡ *Memorials of the Lost* (Tưởng Niệm Những Kẻ Đã Mất) cùng một lúc."
+    },
+    "WukWukBoom": {
+      "name": "Wuk Wuk Bùm",
+      "text": "Dùng Dynamite (Thuốc Nổ) để đánh bại hai Giant Albino Penguins (Chim Cánh Cụt Bạch Tạng Khổng Lồ) cùng lúc."
+    },
+    "HellFrozeOver": {
+      "name": "Địa Ngục Đóng Băng"
+    },
+    "AbandonedAndAlone": {
+      "name": "Bị Bỏ Rơi và Cô Độc",
+      "text": "Thắng chiến dịch *Edge of the Earth* (Rìa Trái Đất) mà không mang theo tài sản đồng hành nào trong bất kỳ màn nào."
+    },
+    "FriendsForever": {
+      "name": "Bạn Bè Mãi Mãi",
+      "text": "Mang cùng một đồng hành trong mỗi màn, đảm bảo họ đã đối mặt với con quỷ của mình, và thắng chiến dịch *Edge of the Earth* (Rìa Trái Đất) với họ vẫn còn sống."
+    },
+    "ThereAndBackAgain": {
+      "name": "Đi Và Về Lại",
+      "text": "Thắng chiến dịch *Edge of the Earth* (Rìa Trái Đất) với mỗi người sống sót sau đây:",
+      "items": {
+        "DrAmyKensler": "Tiến sĩ Amy Kensler",
+        "ProfWilliamDyer": "Giáo sư William Dyer",
+        "DrMalaSinha": "Tiến sĩ Mala Sinha"
+      }
+    },
+    "SnowLineInTheSand": {
+      "text": "Thắng chiến dịch *Edge of the Earth* (Rìa Trái Đất) với ít nhất ba Ultimatums (Tối Hậu Thư) đang hoạt động."
+    },
+    "AntarcticExpertise": {
+      "name": "Chuyên Gia Nam Cực",
+      "text": "Thắng chiến dịch *Edge of the Earth* (Rìa Trái Đất) ở độ khó Expert (Chuyên Gia)"
+    },
+    "CluedIn": {
+      "name": "Nắm Rõ Manh Mối"
+    },
+    "TakeThatGhulat": {
+      "name": "Nhận Lấy Này, Ghulat"
+    },
+    "WhatsInAName": {
+      "name": "Có Gì Trong Một Cái Tên?"
+    },
+    "LostAndFound": {
+      "name": "Thất Lạc và Tìm Thấy"
+    },
+    "ILikeTowerDefenseGames": {
+      "name": "Tôi Thích Trò Chơi Thủ Thành",
+      "text": "Bảo vệ The Claret Knight mà không để bất kỳ Key Locuses nào bị phá hủy trong *Dogs of War v. I.*"
+    },
+    "PlayWithYourFood": {
+      "name": "Chơi Đùa Với Thức Ăn"
+    },
+    "MoreLikeDestroyedChimera": {
+      "name": "Giống Chimera “Bị tiêu diệt” hơn"
+    },
+    "WhoWatchesTheWatcher": {
+      "name": "Ai Canh Chừng Kẻ Canh Chừng?"
+    },
+    "UnderMyUmbrella": {
+      "name": "Dưới Chiếc Ô Của Tôi"
+    },
+    "AllHollow": {
+      "name": "Hoàn Toàn Trống Rỗng"
+    },
+    "RedLooksGoodOnMe": {
+      "name": "Màu Đỏ Rất Hợp Với Tôi"
+    },
+    "BloodyRedRevolution": {
+      "name": "Cuộc Cách Mạng Đỏ Đẫm Máu"
+    },
+    "ScarletWithYourPowersCombined": {
+      "name": "Khi Sức Mạnh Được Kết Hợp…",
+      "text": "Shift 5 chìa khóa trong cùng một lượt."
+    },
+    "GiftOfGab": {
+      "name": "Tài Ăn Nói",
+      "text": "Đảm bảo rằng Commissioner Taylor ra lệnh cho bạn “nói chuyện” 3 lần trong cùng một chiến dịch."
+    },
+    "ImJustHereForTheLocalCuisine": {
+      "name": "“Tôi Chỉ Đến Đây Vì Ẩm Thực Địa Phương”",
+      "text": "Trong cùng một chiến dịch, nếm thử ẩm thực và/hoặc ghé thăm các quán bar hoặc quán cà phê tại các địa điểm sau: Marrakesh, Havana, Buenos Aires, Tokyo, và Kuala Lumpur."
+    },
+    "SpeedDemon": {
+      "name": "Quỷ Tốc Độ",
+      "text": "Chiến thắng chiến dịch *The Scarlet Keys* với chỉ 17 thời gian đã trôi qua hoặc ít hơn."
+    },
+    "TrustNobody": {
+      "name": "Đừng Tin Một Ai"
+    },
+    "TrustEverybody": {
+      "name": "Tin Tất Cả Mọi Người"
+    },
+    "HereIsYourBadge": {
+      "name": "Đây Là Huy Hiệu Của Bạn",
+      "text": "Chiến thắng campaign *The Scarlet Keys* và giành cho mình một vị trí chính thức trong Foundation."
+    },
+    "KeyToMyHeart": {
+      "name": "Chìa Khóa Đến Trái Tim Tôi",
+      "text": "Thu thập từng chìa khóa dưới đây trong suốt campaign *The Scarlet Keys*:",
+      "items": {
+        "TheTwistedAntiprism": "Khối Lăng Kính Vặn Xoắn",
+        "TheShadeReaper": "Lưỡi Hái Bóng Tối",
+        "TheMirroringBlade": "Lưỡi Kiếm Phản Chiếu",
+        "TheBaleEngine": "Cỗ Máy Tai Ương",
+        "TheRuinousChime": "Hồi Chuông Hủy Diệt"
+      }
+    },
+    "ScarletLineInTheSand": {
+      "name": "Lằn Ranh Trên Cát",
+      "text": "Chiến thắng campaign *The Scarlet Keys* với ít nhất ba Ultimatum đang kích hoạt."
+    },
+    "GlobalExpertise": {
+      "name": "Chuyên Môn Toàn Cầu",
+      "text": "Chiến thắng campaign *The Scarlet Keys* ở độ khó Expert."
+    },
+    "Aperitif": {
+      "name": "Khai vị",
+      "text": "Hoàn thành chiến dịch *The Feast of Hemlock Vale* một lần ở bất kỳ độ khó nào."
+    },
+    "Unshattered": {
+      "name": "Không vỡ vụn",
+      "text": "Đạt được mọi kết thúc trong chiến dịch này.",
+      "items": {
+        "MarquezSacrificedHerself": "Dr. Marquez đã hy sinh bản thân cho Vale.",
+        "TheInvestigatorsSacrificedThemselves": "Các điều tra viên đã hy sinh bản thân cho Vale.",
+        "TheValeWasSaved": "The Vale đã được cứu.",
+        "TheValeBurned": "The Vale đã bị thiêu rụi."
+      }
+    },
+    "AStrongSilentType": {
+      "name": "Kiểu Người Mạnh Mẽ, Trầm Lặng",
+      "text": "Hoàn thành campaign *The Feast of Hemlock Vale* mà không chủ động kích hoạt bất kỳ mục codex nào."
+    },
+    "ColourOutsideTheLines": {
+      "name": "Tô Màu Ngoài Đường Kẻ",
+      "text": "Bỏ qua cả *The Twisted Hollow* và *The Longest Night* trong một lần chơi."
+    },
+    "LifeOfTheParty": {
+      "name": "Tâm Điểm Bữa Tiệc",
+      "text": "Hoàn thành campaign *The Feast of Hemlock Vale* với mỗi cư dân đạt Relationship Level 2 trở lên."
+    },
+    "DancingQueen": {
+      "name": "Nữ Hoàng Khiêu Vũ",
+      "text": "*Chia sẻ một điệu nhảy* với 4 cư dân khác nhau trong prelude *The Second Evening*."
+    },
+    "AudreyIII": {
+      "text": "Hoàn thành một scenario trong khi đang giao chiến với một Poisonblossom có từ 10 overgrowth trở lên."
+    },
+    "HoldOnToYourPotatoes": {
+      "name": "Giữ Chặt Khoai Tây Nào!",
+      "text": "Hoàn thành *Written in Rock* với cả một cư dân và asset Prismatic Shard dưới quyền kiểm soát của bạn."
+    },
+    "DreamHomeBreakover": {
+      "text": "Hoàn thành *Hemlock House* với 10 địa điểm trong victory display."
+    },
+    "SettlingTheScore": {
+      "name": "Thanh Toán Nợ Nần"
+    },
+    "HereCrabbyCrabby": {
+      "name": "“Lại Đây Nào, Bé Cua!”"
+    },
+    "ADifferentKindOfStingOps": {
+      "name": "Một Kiểu Chiến Dịch Mật Phục Khác",
+      "text": "Hoàn thành *The Silent Heath* mà không spawn Brood Queen."
+    },
+    "WaitTheresNoShroudedShrine": {
+      "name": "Khoan đã, không có Shrouded Shrine sao?",
+      "text": "Sống sót qua *The Twisted Hollow* trong chế độ Standalone cho đến khi bạn đạt ít nhất Darkness Level 10."
+    },
+    "BearNecessities": {
+      "name": "Nhu Cầu Thiết Yếu Của Gấu",
+      "text": "Đánh bại Ursine Hybrid trong *The Longest Night* chỉ bằng các hiệu ứng của thẻ scenario."
+    },
+    "LetsDoTheTimeWarp": {
+      "name": "Hãy Cùng Bẻ Cong Thời Gian!"
+    },
+    "OblivionShmoblivion": {
+      "text": "Chiến thắng *Fate of the Vale* với mọi kẻ địch Cosmic Emissary trong victory display."
+    },
+    "HighDive": {
+      "name": "Cú Nhảy Từ Trên Cao"
+    },
+    "BestFriendsForever": {
+      "name": "Mãi Mãi Là Bạn Thân!",
+      "text": "Đạt Relationship Level 6 với các cư dân sau:"
+    },
+    "KnowYourPlace": {
+      "name": "Biết Thân Biết Phận"
+    },
+    "HeartOfSteel": {
+      "name": "Trái Tim Thép",
+      "text": "Chiến thắng campaign *The Feast of Hemlock Vale* với Judith Park đạt Relationship Level 7."
+    },
+    "HoldingOutForAHimbo": {
+      "name": "Chờ Đợi Một Himbo",
+      "text": "Chiến thắng campaign *The Feast of Hemlock Vale* với Theo Peters đạt Relationship Level 7."
+    },
+    "CaptivatingScream": {
+      "name": "Tiếng Hét Quyến Rũ",
+      "text": "Chiến thắng campaign *The Feast of Hemlock Vale* trong vai Patrice Hathaway."
+    },
+    "HemlockLineInTheSand": {
+      "name": "Lằn Ranh Trên Cát",
+      "text": "Chiến thắng chiến dịch *The Feast of Hemlock Vale* với ít nhất ba Ultimatum đang kích hoạt."
+    },
+    "HemlockExpertise": {
+      "name": "Chuyên Môn Hemlock",
+      "text": "Chiến thắng chiến dịch *The Feast of Hemlock Vale* ở độ khó Expert"
+    },
+    "WaterfrontWetWork": {
+      "items": {
+        "Easy": "Dễ",
+        "Standard": "Cơ bản",
+        "Hard": "Khó",
+        "Expert": "Chuyên gia"
+      }
+    }
+  }
+}

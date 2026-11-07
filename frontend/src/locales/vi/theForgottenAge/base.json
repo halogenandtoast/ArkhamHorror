@@ -1,0 +1,144 @@
+{
+  "interludes": {
+    "1": "Những Đêm Trằn Trọc",
+    "2": "Cuộc thám hiểm kết thúc",
+    "3": "Rừng rậm vẫy gọi",
+    "4": "Những người bị giam cầm"
+  },
+  "key": {
+    "theInvestigatorsWereForcedToWaitForAdditionalSupplies": "Các điều tra viên buộc phải chờ nguồn vật tư dự trữ bổ sung.",
+    "ichtacaObservedYourProgressWithKeenInterest": "Ichtaca quan sát sự tiến tới của bạn bằng một sự chú ý mãnh liệt.",
+    "alejandroFollowedTheInvestigatorsIntoTheRuins": "Alejandro đã theo chân các điều tra viên vào các tàn tích.",
+    "ichtacaIsWaryOfTheInvestigators": "Ichtaca cảnh giác với các điều tra viên.",
+    "theInvestigatorsHaveEarnedIchtacasTrust": "Các điều tra viên đã giành được sự tin tưởng của Ichtaca.",
+    "alejandroChoseToRemainAtCamp": "Alejandro đã chọn ở lại trại.",
+    "theInvestigatorsClearedAPathToTheEztliRuins": "Các điều tra viên đã mở một con đường dẫn đến các tàn tích Eztli.",
+    "yigsFury": "Cơn thịnh nộ của Yig",
+    "theInvestigatorsRecoveredTheRelicOfAges": "Các điều tra viên đã khôi phục được Relic of Ages.",
+    "alejandroRecoveredTheRelicOfAges": "Alejandro đã khôi phục được Relic of Ages.",
+    "theInvestigatorsGaveCustodyOfTheRelicToAlejandro": "Các điều tra viên giao việc canh giữ cổ vật cho Alejandro.",
+    "theInvestigatorsHaveEarnedAlejandrosTrust": "Các điều tra viên nhận được sự tin tưởng của Alenjandro.",
+    "theInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone": "Các điều tra viên giao việc canh giữ cổ vật cho Harlan Earnstone.",
+    "alejandroIsContinuingHisResearchOnHisOwn": "Alejandro đang tiếp tục tự nghiên cứu.",
+    "theInvestigatorsFoundTheMissingRelic": "Các điều tra viên đã tìm thấy cổ vật bị mất tích.",
+    "theInvestigatorsRescuedAlejandro": "Các điều tra viên đã cứu được Alejandro.",
+    "alejandroIsMissing": "Alejandro bị mất tích.",
+    "theInvestigatorsForgedABondWithIchtaca": "Các điều tra viên đã tạo được mối quan hệ với Ichtaca.",
+    "ichtacaIsInTheDark": "Ichtaca ở trong bóng tối",
+    "ichtacaHasConfidenceInYou": "Ichtaca có niềm tin vào bạn.",
+    "theInvestigatorsMappedOutTheWayForward": "Các điều tra viên vạch ra con đường tiến về phía trước.",
+    "ichtacasFaithIsRestored": "Niềm tin của Ichtaca được khôi phục.",
+    "theInvestigatorsCooperatedWithTheYithians": "Các điều tra viên đã hợp tác với sinh vật Yithians.",
+    "theInvestigatorsResistedCaptivity": "Các điều tra viên đã chống lại việc bị giam cầm.",
+    "theInvestigatorsHadTheirMemoriesExpunged": "Các điều tra viên đã bị xóa trí nhớ.",
+    "theProcessWasPerfected": "Quá trình chuyển đổi đã thành công một cách hoàn hảo.",
+    "theProcessWasSuccessful": "Quá trình chuyển đổi đã thành công.",
+    "theProcessBackfired": "Quá trình chuyển đổi đã phản tác dụng.",
+    "theProcessBackfiredSpectacularly": "Quá trình chuyển đổi đã phản tác dụng một cách ngoạn mục.",
+    "alejandroRemembersEverything": "Alejandro ghi nhớ mọi thứ.",
+    "alejandroIsSetAgainstYou": "Alejandro chống lại bạn.",
+    "ichtacaIsSetAgainstYou": "Ichtaca chống lại bạn.",
+    "theInvestigatorsFellIntoTheDepths": "Các điều tra viên ngã xuống vực sâu.",
+    "theNexusIsNear": "Nexus ở gần kề.",
+    "theBraziersAreLit": "Các lò than được thắp sáng.",
+    "theBraziersRemainUnlit": "Các lò than không được thắp sáng.",
+    "theInvestigatorsSavedTheCivilizationOfTheSerpents": "Các điều tra viên đã cứu nền văn minh của Serpents.",
+    "theInvestigatorsSavedTheCivilizationOfTheYithians": "Các nhà điều tra đã cứu nền văn minh của người Yithian.",
+    "theFabricOfTimeIsUnwoven": "Sợi chỉ của thời gian bị thay đổi.",
+    "theInvestigatorsSealedTheRelicOfAgesForever": "Các điều tra viên đã phong ấn Relic of Ages mãi mãi."
+  },
+  "prologue": {
+    "earthIsNotOurs": {
+      "title": "Trái Đất không phải của Chúng Ta"
+    },
+    "expeditionLeader": "Nếu Ursula Downs, Leo Anderson, hoặc Monterey Jack được chọn làm điều tra viên cho chiến dịch này: Hãy chọn một trong những điều tra viên đó làm trưởng đoàn thám hiểm. Điều tra viên đó bắt đầu Màn chơi I và II với tư cách là trưởng nhóm."
+  },
+  "interlude1": {
+    "title": "Chuyển tiếp I: Những Đêm Trằn Trọc",
+    "provisions": "Kiểm tra vật tư của bạn. Với tư cách một nhóm, mỗi điều tra viên phải gạch bỏ 1 khẩu phần ăn cho mỗi điều tra viên từ kho vật tư của mình. Với mỗi vật tự không thể gạch bỏ, chọn một điều tra viên đọc phần Thiếu Khẩu Phần Ăn."
+  },
+  "interlude2": {
+    "title": "Chuyển tiếp II: Cuộc thám hiểm kết thúc"
+  },
+  "interlude3": {
+    "title": "Chuyển tiếp III: Khu Rừng Vẫy Gọi",
+    "body": "<p>Một lần nữa, bạn phiêu lưu về phía nam, bỏ lại sự an toàn của nền văn minh phía sau. Không có thời gian để lãng phí. Con đường đến Nexus nằm trên vùng đất quen thuộc, không xa đường mòn của chuyến thám hiểm trước. Sử dụng cuốn nhật ký bìa da làm chỉ dẫn cho mình, bạn hồi tưởng lại hành trình của cuộc thám hiểm. Chẳng mấy chốc, bạn đã ở sâu trong rừng rậm, bị bao vây tứ phía bởi những mối nguy hiểm—một số là của thiên nhiên, số khác khá kỳ lạ...</p>",
+    "provisions": "Kiểm tra vật tư của bạn. Với tư cách một nhóm, mỗi điều tra viên phải gạch bỏ 1 khẩu phần ăn cho mỗi điều tra viên từ kho vật tư của mình. Với mỗi vật tự không thể gạch bỏ, chọn một điều tra viên đọc phần Thiếu Khẩu Phần Ăn.",
+    "cultistCount": "Có 2 hoặc nhiều hơn số token {'{'}cultist{'}'} trong túi hỗn mang.",
+    "forgedBond": "các điều tra viên đã tạo được mối quan hệ với Ichtaca.",
+    "hasConfidence": "Ichtaca có niềm tin vào bạn."
+  },
+  "interlude4": {
+    "title": "Chuyển tiếp IV: Those Held Captive",
+    "checkAMindRecovered": {
+      "tabletCount": "Có từ 2 trở lên token {'{'}tablet{'}'} trong túi hỗn mang.",
+      "rescuedAlejandro": "các điều tra viên đã cứu được Alejandro."
+    },
+    "provisions": "Kiểm tra vật tư của bạn. Với tư cách một nhóm, mỗi điều tra viên phải gạch bỏ 1 khẩu phần ăn cho mỗi điều tra viên từ kho vật tư của mình. Với mỗi vật tự không thể gạch bỏ, chọn một điều tra viên đọc phần Thiếu Khẩu Phần Ăn."
+  },
+  "interlude5": {
+    "title": "Chuyển tiếp V: The Darkness",
+    "senseOfTime": "<p>Bạn không biết bao nhiêu thời gian đã trôi qua trong vực thẳm lạnh lẽo, khủng khiếp của N'kai.</p><p class='basic right'>Gạch bỏ tất cả các khẩu phần ăn và thuốc mà các điều tra viên còn lại trong vật tư dự trữ của họ.</p>"
+  },
+  "epilogue": {
+    "title": "Phần kết"
+  },
+  "supplies": {
+    "title": "Vật Tư Dự Trữ",
+    "provisions": {
+      "name": "Khẩu phần ăn",
+      "description": "Phần thức ăn và nước uống cho một người. Đồ phải có cho bất kỳ cuộc hành trình nào."
+    },
+    "medicine": {
+      "name": "Thuốc",
+      "description": "Để ngăn ngừa bệnh tật, nhiễm trùng hoặc nọc độc."
+    },
+    "rope": {
+      "name": "Dây thừng",
+      "description": "Vài cuộn dây dài chắc chắn. Rất quan trọng cho việc leo núi và khảo sát hang động."
+    },
+    "blanket": {
+      "name": "Chăn",
+      "description": "Giữ ấm vào ban đêm."
+    },
+    "canteen": {
+      "name": "Bi đông",
+      "description": "Có thể làm đầy lại tại các con sông suối."
+    },
+    "torches": {
+      "name": "Đuốc",
+      "description": "Có thể thắp sáng các khu vực tối, hoặc làm bánh."
+    },
+    "compass": {
+      "name": "La bàn",
+      "description": "Có thể dẫn đường cho bạn khi bạn lạc đường trong vô vọng."
+    },
+    "map": {
+      "name": "Bản đồ",
+      "description": "Hiện chưa được đánh dấu, nhưng theo thời gian, bạn có thể vạch ra khu vực xung quanh mình."
+    },
+    "binoculars": {
+      "name": "Ống nhòm",
+      "description": "Để giúp bạn nhìn thấy những nơi ở xa."
+    },
+    "chalk": {
+      "name": "Phấn",
+      "description": "Dùng để viết lên bề mặt đá gồ ghề."
+    },
+    "pendant": {
+      "name": "Mặt dây chuyền",
+      "description": "Vô dụng, nhưng đem lại những kỷ niệm giúp cảm thấy thoải mái hơn khi đi xa nhà."
+    },
+    "gasoline": {
+      "name": "Bình xăng"
+    },
+    "pocketknife": {
+      "name": "Dao bỏ túi",
+      "description": "Quá nhỏ để được sử dụng như một vũ khí đáng tin cậy, nhưng dễ che giấu."
+    },
+    "pickaxe": {
+      "name": "Cuốc chim",
+      "description": "Để phá vỡ các bề mặt đá."
+    }
+  }
+}

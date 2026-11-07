@@ -1,0 +1,17 @@
+{
+  "setup": {
+    "removeCards": "Loại bỏ The Man in the Pallid Mask và Royal Emissary khỏi trò chơi.",
+    "setAside": "Đặt mỗi bản sao của Lobby Doorway và mỗi bản sao của Backstage Doorway sang một bên, ngoài khu vực chơi.",
+    "placeLocations": "Đặt các địa điểm Theatre, Lobby, Balcony, và Backstage vào khu vực chơi.",
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Theatre.",
+    "sinisterSoloist": "Đặt kẻ địch Sinister Soloist vào khu vực chơi tại Backstage."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

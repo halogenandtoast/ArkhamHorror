@@ -1,0 +1,24 @@
+{
+  "theSpectralEncounterDeck": {
+    "title": "Chồng bài encounter Spectral"
+  },
+  "theBeyondAndTheSpiritDeck": {
+    "title": "The Beyond và chồng bài Spirit"
+  },
+  "setup": {
+    "removeCards": "Loại bỏ scenario reference card, các lá bài act, agenda, và story asset Spectral Web gốc từ bộ encounter *The Wages of Sin* khỏi trò chơi. Sử dụng scenario reference card, các lá bài act, và agenda mới được cung cấp trong bộ encounter *Laid to Rest* bản tải về khi thiết lập trò chơi.",
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại vị trí Hangman’s Brook.",
+    "heretics": "Loại bỏ ngẫu nhiên hai kẻ địch Heretic khỏi trò chơi. Xào mỗi kẻ địch Heretic còn lại vào chồng bài spirit, ngửa mặt kẻ địch lên.",
+    "jeanDevereux": "Tạo ra kẻ địch Jean Devereux hai mặt tại Hangman’s Brook, ngửa mặt *(Seeking Closure)* lên.",
+    "ravenousSpirits": "Đặt một kẻ địch Ravenous Spirit úp mặt bên dưới các địa điểm sau: The Gallows, Heretics’ Graves, Chapel Attic, và Chapel Crypt.",
+    "encounterDecks": "Màn chơi này sử dụng 2 chồng bài encounter khác nhau."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

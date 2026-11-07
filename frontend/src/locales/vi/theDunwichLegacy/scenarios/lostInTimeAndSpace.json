@@ -1,0 +1,26 @@
+{
+  "heading": "Màn VII",
+  "intro": {
+    "title": "Màn VII: Lạc trong Không gian và Thời gian"
+  },
+  "setup": {
+    "placeLocations": "Đặt vị trí Another Dimension vào màn chơi. Mỗi điều tra viên bắt đầu chơi tại vị trí Another Dimension."
+  },
+  "locationsInTheEncounterDeck": {
+    "title": "Vị trí trong Chồng Bài Encounter"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    }
+  }
+}

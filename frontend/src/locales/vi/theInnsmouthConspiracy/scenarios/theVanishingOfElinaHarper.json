@@ -1,0 +1,47 @@
+{
+  "heading": "Màn II",
+  "setup": {
+    "placeLocations": "Đưa các địa điểm sau vào chơi: Innsmouth Square, Marsh Refinery, Innsmouth Harbour, Fish Street Bridge, First National Grocery, Gilman House, và The Little Bookshop.",
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Innsmouth Square.",
+    "leadsDeck": "Chuẩn bị chồng bài Leads. Việc này được thực hiện bằng cách làm theo các bước sau:",
+    "findingAgentHarper": "Đặt lá bài Finding Agent Harper hai mặt vào chơi, bên cạnh lá bài tham chiếu của màn chơi.",
+    "shuffleRemaining": "Xào 10 lá bài còn lại từ hai chồng bài lại với nhau để tạo thành một chồng bài. Bộ bài này được gọi là chồng bài Leads. Đặt nó gần lá bài tham chiếu của màn chơi.",
+    "setAsideAgendaAndAct": "Đặt agenda 3 và act 2 sang một bên, ngoài khu vực chơi. *(Không sử dụng chúng khi xây dựng chồng bài agenda và act.)*",
+    "setAsideCards": "Đặt các lá bài sau đây sang một bên, ngoài khu vực chơi: lá bài câu chuyện Thomas Dawson và Elina Harper, cả 2 bản sao của kẻ địch Hunting Nightgaunt và 1 kẻ địch Winged One."
+  },
+  "intro1": {
+    "title": "Màn II: Sự biến mất của Elina Harper"
+  },
+  "intro2": {
+    "title": "Màn II: Sự biến mất của Elina Harper"
+  },
+  "interlude": {
+    "advanceAct": "Tiến trực tiếp tới act 2a được đặt một bên.",
+    "advanceAgenda": "Tiến trực tiếp tới agenda 3a được đặt một bên.",
+    "removeLeadsDeck": "Loại bỏ chồng bài Leads khỏi màn chơi.",
+    "readyToProceed": "Bạn đã sẵn sàng để tiến vào act và agenda cuối."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "resolution5": {
+      "title": "Giải pháp thứ 5"
+    },
+    "resolution6": {
+      "title": "Kết quả 6"
+    },
+    "resolution7": {
+      "title": "Kết cục 7"
+    }
+  }
+}

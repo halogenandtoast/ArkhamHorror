@@ -1,0 +1,36 @@
+{
+  "intro": {
+    "proceedToSetup": "Tiếp tục đến _Setup_",
+    "noPlaceLikeHome": {
+      "title": "Nhiệm vụ: No Place Like Home"
+    },
+    "label": {
+      "noPlaceLikeHome": {
+        "trustHim": "*\"Ông Tillinghast đã đối xử tốt với tôi. Tôi tin tưởng ông ấy.\"*",
+        "onMyOwn": "*\"Tôi chỉ có một mình. Không có ai mà tôi có thể tin tưởng.\"*",
+        "healPhysicalTrauma": "Chữa 1 chấn thương thể chất",
+        "healMentalTrauma": "Chữa 1 sang chấn tinh thần"
+      }
+    }
+  },
+  "setup": {
+    "title": "Chuẩn bị màn chơi",
+    "placeBarrierCore": "Đặt Barrier Core vào khu vực chơi, lật ngửa mặt *(Inactive)*.",
+    "gatherSeaFloorLocations": "Tập hợp tất cả các địa điểm Sea Floor và loại bỏ ngẫu nhiên một bản sao của Coral Reef cùng một bản sao của Drowned Acropolis khỏi trò chơi.",
+    "placeSeaFloorLocations": "Xào 8 địa điểm Sea Floor còn lại với nhau và đặt chúng vào khu vực chơi theo một lưới 3x3 xung quanh Barrier Core như được hiển thị trong sơ đồ sắp xếp địa điểm.",
+    "beginAtBarrierCore": "Mỗi điều tra viên bắt đầu chơi tại Barrier Core.",
+    "addFloodTokens": "Thêm các flood token vào token pool và kiểm tra Nhật ký Chiến dịch của bạn",
+    "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

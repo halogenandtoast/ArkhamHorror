@@ -1,0 +1,11 @@
+{
+  "setup": {
+    "locations": "Loại bỏ các vị trí sau khỏi trò chơi: St. Mary's Hospital, Southside, Graveyard, Your House, và ngẫu nhiên một trong hai bản sao của Downtown.",
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Tillinghast Esoterica."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    }
+  }
+}

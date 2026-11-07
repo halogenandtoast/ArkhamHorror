@@ -1,0 +1,128 @@
+{
+  "specialRules": [
+    {
+      "title": "Các địa điểm Sinking",
+      "body": "<p class='basic'>Trong kịch bản này, các damage token được đặt lên các vị trí, như là các hố sụt, để đại diện cho sự sụt lún của đầm lầy. Khi một vị trí có từ ba hố sụt trở lên, nó sẽ lật thông qua hiệu ứng Forced của agenda.</p><ul><li>Khi được yêu cầu lật một vị trí, loại bỏ tất cả damage token trên vị trí đó *(không phải trên điều tra viên hoặc kẻ địch)*. Sau đó, lật nó, giữ nguyên tất cả điều tra viên, kẻ địch, treachery đính kèm, và manh mối trên vị trí đó. Hủy tất cả các lá bài người chơi đính kèm khỏi vị trí đó.</li></ul>"
+    }
+  ],
+  "intro": {
+    "title": "Kịch bản: The Thing in the Depths",
+    "body": "<p class='basic unindented'>Kiểm tra Nhật ký Chiến dịch của bạn.</p>",
+    "nightSkip": "Nếu đang là _Night 1_ hoặc _Night 2_, chuyển đến _Intro 8_. Nếu không:",
+    "day1": "Nếu đang là _Day 1_, tiếp tục đến _Intro 1_.",
+    "day2": "Nếu đang là _Day 2_, chuyển đến _Intro 4_.",
+    "day3": "Nếu đang là _Day 3_, chuyển đến _Intro 7_.",
+    "intro1": "<p>_Intro 1_: Con đường đến Eastwick Bog rẽ ngoặt từ chính con đường bạn đã đi từ Akwan. Cảnh quan vô cùng rực rỡ, gần như nhiệt đới, với những thân cây có hoa văn cầu vồng đứng gác ở rìa những ao nước đen như gương. Tiến sĩ Marquez và Judith trao đổi những lời châm chọc thân thiện trên thùng xe tải, thỉnh thoảng xua đuổi những con muỗi mắt. Khi cuộc trò chuyện trở nên căng thẳng, bạn cố gắng phá vỡ bầu không khí bằng cách hỏi Judith về một câu chuyện đi săn.</p>",
+    "checkJudith": "<p class='basic unindented'>Kiểm tra Nhật ký Chiến dịch của bạn.</p>",
+    "judithHigh": "Nếu Judith Park có Relationship Level từ 1 trở lên, tiếp tục đến _Intro 2_.",
+    "judithLow": "Nếu không, chuyển đến _Intro 3_.",
+    "intro2": "<p>_Intro 2_: Judith đáp ngay tắp lự. “Thấy vết sẹo này không? Tôi có nó trong một vụ đánh nhau ở một quán rượu lậu. Một thằng nhóc nhà giàu đã rạch tôi bằng một cái chai vỡ. Một vụ ẩu đả thân thiện thôi, bạn biết đấy. Gia đình hắn đến từ khu vực này, và rất giàu có, tôi xin nói thêm, và họ quá sợ một vụ bê bối nổ ra nên đã đề nghị cho tôi một công việc. Không phải là tôi định tố cáo hắn đâu.”</p><p>“Tôi không biết mình mong đợi nghe điều gì từ một vệ sĩ, nhưng không phải là chuyện đó,” Tiến sĩ Marquez nói, có vẻ khó chịu. Một cơn gió hăng hắc, mang theo mùi ngòn ngọt của cái chết, thổi qua đầm lầy và kết thúc cuộc trò chuyện. Chiếc xe tải dừng lại. Judith đảo mắt, xỏ vào một đôi ủng lội nước cũ kỹ, và bước ra đầm lầy, khẩu súng trường vắt qua vai.</p><p>“Tin tôi hay không thì tùy. Tôi ở đây chỉ vì tiền thôi.”</p><ul><li>Tăng Cấp độ Quan hệ của Judith Park. Mỗi điều tra viên nhận 1 kinh nghiệm thưởng.</li></ul><p class='basic right'>Tiếp tục đến _Setup_.</p>",
+    "intro3": "<p>_Intro 3_: Vẻ mặt cứng rắn của cô gái trẻ chùng xuống. \"Có một thứ gì đó to lớn sống ở Eastwick Bog. Một kẻ săn mồi đầu bảng với kích thước của một con cá voi sát thủ, với hàm răng sắc như dao cạo và quá nhiều mắt. Có mùi như rong biển thối.\" Bạn nói với cô ấy nghe có vẻ như cô ấy có trải nghiệm cá nhân với sinh vật này, và cô ấy gật đầu. \"Tôi nợ nó. Hoặc nó nợ tôi. Thấy cái này không?\" Cô ấy chỉ vào vết sẹo gớm ghiếc trên má. \"Thứ đó suýt lấy đi con mắt của tôi. Tôi dự định sẽ thanh toán món nợ này.\" Tiến sĩ Marquez tỏ vẻ không tin. \"Tôi đoán cô nghĩ một học giả sẽ tin bất kỳ câu chuyện nào, nhưng nếu cô mong tôi tin—\" Một cơn gió hăng hắc, mang theo mùi ngòn ngọt của cái chết, thổi từ đầm lầy và ngăn Judith phản bác lại. Chiếc xe tải dừng lại. Judith kéo một chiếc khăn rằn che mũi và miệng, xỏ vào một đôi ủng lội nước cũ và bước ra đầm lầy, khẩu súng trường vắt qua vai.</p><p>\"Có lẽ nếu gặp nó, các người sẽ nghĩ khác.\"</p><ul><li>Trong Judith Park’s Notes, ghi lại *Judith đã chia sẻ một mối hận thù*.</li></ul><p class='basic right'>Tiếp tục đến _Setup_.</p>",
+    "intro4": "<p>_Intro 4_: \"Tôi thực sự không hiểu mọi người thích gì ở Journey to the Center of the Earth. Một trái đất rỗng? Nghe thật điên rồ,\" Theo luyên thuyên khi mưa trút xuống cabin xe tải. Cảnh quan vô cùng rực rỡ, gần như nhiệt đới, với những thân cây có hoa văn cầu vồng đứng gác ở rìa những ao nước đen như gương. Chiếc xe tải đột nhiên đâm vào một bãi bùn sâu, kêu lép nhép rồi dừng lại. \"Tôi nghĩ tôi cần giúp một tay,\" Theo nói.</p><p class='basic'>Các điều tra viên phải quyết định *(chọn một)*:</p><ul><li>*\"Chúng ta đẩy được mà!\"* Tiếp tục đến _Intro 5_.</li><li>*\"Chúng ta sẽ nổ máy.\"* Chuyển đến _Intro 6_.</li></ul>",
+    "label": {
+      "push": "*“Chúng ta có thể đẩy!”*",
+      "rev": "*“Chúng ta sẽ rồ ga.”*"
+    },
+    "intro5": "<p>_Intro 5_: Sau một hồi vật lộn, bạn kéo được chiếc xe tải ra khỏi ổ gà và chỉ đường cho Theo đi qua một mớ ổ gà khác để lên một bờ đá. Vài túi đồ tiếp tế rơi khỏi thùng xe. Theo xua tay gạt đi. “Tôi có thể nhặt chúng trên đường về. Tôi có chút việc gia đình ở Akwan cần giải quyết.” Theo để bạn lại ở rìa đầm lầy, chìm trong sương mù dưới cơn mưa lạnh lẽo.</p><ul><li>Mỗi điều tra viên bắt đầu kịch bản tiếp theo với ít hơn 2 tài nguyên.</li></ul><p class='basic right'>Tiếp tục đến _Setup_.</p>",
+    "intro6": "<p>_Intro 6_: Theo tì vai vào đuôi xe tải khi bạn rồ ga. Chiếc xe chồm lên phía trước chỉ để lún lốp trước vào một ổ gà khác. Theo nhảy lên xe ngồi cạnh bạn và buông một tiếng thở dài ngao ngán. “Tôi nghĩ bạn sẽ phải đi bộ tiếp từ đây. Cũng không xa lắm đâu.”</p><ul><li>Mỗi điều tra viên bắt đầu kịch bản tiếp theo với ít hơn 1 hành động.</li></ul><p class='basic right'>Tiếp tục đến _Setup_.</p>",
+    "intro7": "<p>_Intro 7_: Con đường đến Eastwick Bog đầy những ổ gà lởm chởm phản chiếu ánh sáng rực rỡ, lấp lánh như lăng kính trên bầu trời. Theo dừng xe tải khi con đường trở nên nguy hiểm. “Tôi xin lỗi phải làm thế này, nhưng cô nàng già cỗi này không thể vượt qua ngần ấy bùn lầy được,” Theo nói. Bạn bước xuống khỏi thùng xe, chào tạm biệt Theo, và đi bộ dọc theo con đường bùn lầy qua một bụi cây rậm rạp sặc sỡ, đầy màu sắc bị xẻ dọc bởi những khe sáng.</p><p class='basic right'>Tiếp tục đến _Setup_.</p>",
+    "intro8": "<p>_Intro 8_: Ánh trăng sáng như ban ngày, chiếu rọi cảnh quan hoang lương quanh chiếc xe tải giống như một thứ gì đó trong truyện cổ Grimm. Một cơn gió hăng hắc thổi từ đầm lầy, mang theo mùi ngòn ngọt của cái chết, khi bạn dừng lại trên bờ và ngước nhìn mặt trăng đang bị che khuất bởi những đám mây tụ lại. Một cái cây mỏng manh duy nhất in bóng trên nền trăng, vươn lên như một bàn tay đang chới với. Bạn nhấc đồ tiếp tế ra khỏi xe tải và nhìn lại. Cái cây mỏng manh đã biến mất, để lại một gợn sóng đen tối ở chỗ nó từng đứng.</p><p class='basic right'>Tiếp tục đến _Setup_.</p>",
+    "xp": {
+      "bonus": "Kinh nghiệm thưởng"
+    }
+  },
+  "setup": {
+    "gatherSets": "Tập hợp tất cả lá bài từ các chồng bài encounter sau: *The Thing in the Depths*, *Blight*, *The Forest* và *Mutations*. Các chồng bài này được đánh dấu bằng các biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/the-thing-in-the-depths.png' /><img src='{setImgPath}/blight.png' /><img src='{setImgPath}/the-forest.png' /><img src='{setImgPath}/mutations.png' /></section>",
+    "currentDaySet": "Ngoài ra, kiểm tra Nhật ký Chiến dịch để biết ngày hiện tại và tập hợp chồng bài encounter tương ứng: *The First Day*, *The Second Day* hoặc *The Final Day*. Các chồng bài này được đánh dấu bằng các biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/the-first-day.png' /><img src='{setImgPath}/the-second-day.png' /><img src='{setImgPath}/the-final-day.png' /></section>",
+    "currentDayMarker": "Kiểm tra Nhật ký Chiến dịch của bạn để biết ngày và giờ hiện tại. Đưa lá Time Marker vào chơi ở mặt tương ứng (_Day {'{'}day{'}'}_) hoặc (_Night {'{'}night{'}'}_).",
+    "doomDay2": "Nếu đang là _Day 2_ hoặc _Night 2_, đặt 1 doom lên agenda.",
+    "doomDay3": "Nếu đang là _Day 3_, đặt 2 doom lên agenda.",
+    "locations": "Tập hợp 10 địa điểm hai mặt và xào chúng. Loại bỏ ngẫu nhiên một trong các địa điểm này khỏi trò chơi. Đặt 9 địa điểm còn lại vào chơi theo lưới 3×3, với mặt _Bog_ ngửa lên.",
+    "shuffleLocations": "Xem Location Adjacency bên dưới.",
+    "startingLocation": "Mỗi điều tra viên bắt đầu chơi tại “Starting Location.”",
+    "residents": "Nếu đang là (_Day {'{'}day{'}'}_), tập hợp mỗi story asset từ chồng bài encounter *Residents*. Chồng bài này được đánh dấu bằng biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/residents.png' /></section>",
+    "residentsDay1": "Nếu đang là _Day 1_, đặt Judith Park tại địa điểm North Shore. Đưa Dr. Rosa Marquez vào chơi dưới quyền kiểm soát của một điều tra viên. Cô ấy không chiếm ally slot nào trong scenario này.",
+    "residentsDay2Or3": "Nếu đang là _Day 2_ hoặc _Day 3_, đặt River Hawthorne tại địa điểm North Shore.",
+    "removeResidents": "Loại bỏ mỗi lá bài khác trong chồng bài encounter *Residents* khỏi trò chơi.",
+    "setAsideEnemies": "Tách các lá bài sau ra, để ngoài cuộc chơi: kẻ địch Thing in the Depths, kẻ địch Chelydran Hybrid, và cả năm bản sao của kẻ địch Grasping Tendril."
+  },
+  "sinkingLocations": {
+    "title": "Các địa điểm Sinking",
+    "body": "<h3>Các địa điểm Sinking</h3><p class='basic'>Trong kịch bản này, các damage token được đặt lên các vị trí, như là các hố sụt, để đại diện cho sự sụt lún của đầm lầy. Khi một vị trí có từ ba hố sụt trở lên, nó sẽ lật thông qua hiệu ứng Forced của agenda.</p><ul><li>Khi được yêu cầu lật một vị trí, loại bỏ tất cả damage token trên vị trí đó *(không phải trên điều tra viên hoặc kẻ địch)*. Sau đó, lật nó, giữ nguyên tất cả điều tra viên, kẻ địch, treachery đính kèm, và manh mối trên vị trí đó. Hủy tất cả các lá bài người chơi đính kèm khỏi vị trí đó.</li></ul>"
+  },
+  "ui": {
+    "northShore": "North Shore",
+    "startingLocation": "Địa điểm khởi đầu",
+    "cranberryBog": "Cranberry Bog"
+  },
+  "label": {
+    "groundDisturbance": {
+      "placeSinkhole": "Đặt 1 tổn thương thể chất lên địa điểm _Bog_ gần nhất, như một sinkhole"
+    },
+    "removeSinkhole": "Loại bỏ 1 sinkhole khỏi địa điểm _Bog_ gần nhất",
+    "doNotRemoveSinkhole": "Không loại bỏ sinkhole"
+  },
+  "codex": {
+    "riverHawthorne": {
+      "title": "{'{'}codex{'}'} Codex 5: River Hawthorne",
+      "uncontrolled": "<h3>@:theFeastOfHemlockVale.theThingInTheDepths.codex.riverHawthorne.title </h3><p>_If you do not control River Hawthorne:_</p><p>“Tôi ghét cái đầm lầy này. Tôi cho rằng tất cả những người mất tích khỏi Vale đều bị gửi đến đây, nó quá nguy hiểm. Dù vậy, Mother Rachel vẫn bảo tôi đến đây. Ước gì tôi đang ở New York,” River nói, trông có vẻ lạc lõng trong bộ quần áo lội nước quá khổ của họ. Họ dúi một cái giỏ vào tay bạn. “Đưa tôi đến chỗ có nam việt quất và nhanh lên.”</p><p class='basic right'>Ghi nhớ rằng \"River đã 'nhờ' giúp đỡ\". Nhận quyền kiểm soát River Hawthorne. Bạn có thể kích hoạt lại codex này tại địa điểm Cranberry Bog (xem sơ đồ Location Placement ở trang 28).</p>",
+      "controlled": "<h3>@:theFeastOfHemlockVale.theThingInTheDepths.codex.riverHawthorne.title </h3><p>_Nếu bạn đang kiểm soát River Hawthorne và đang ở địa điểm Cranberry Bog (xem sơ đồ Location Placement ở trang 28):_</p><p>“Cảm ơn. Có lẽ tôi có thể tự làm việc này, nhưng tôi ghi nhận thiện ý đó,” River nói, gom lại một bó hoa nam việt quất. “Ai lại muốn hoa nam việt quất chứ? Mother Rachel. Tôi cho rằng bà ta gửi những người bà ta không thích ra đây với hy vọng họ sẽ ‘biến mất.’ Tôi đã cố gắng hết sức để lấy lòng con lửng già đó. Một khi tôi lấy lại hòn đảo này từ nhà Atwood, bà ta sẽ là người đầu tiên phải ra đi.”</p><p class='basic right'>Tăng Relationship Level của River Hawthorne. Mỗi điều tra viên nhận 1 điểm kinh nghiệm thưởng. Loại bỏ River Hawthorne khỏi trò chơi.</p>"
+    },
+    "judithPark": {
+      "title": "{'{'}codex{'}'} Codex 7: Judith Park",
+      "grudge": "<h3>@:theFeastOfHemlockVale.theThingInTheDepths.codex.judithPark.title </h3><p>_If Judith shared a grudge:_</p><p>“Nằm xuống!” Judith hét lên. Bạn cúi người xuống khi người phụ nữ nhỏ nhắn nâng súng trường lên, ngắm bắn và nã đạn vào ngay vị trí đầu bạn vừa ở đó. Một tiếng rít vang lên, tiếp theo là một tiếng tõm lớn. Judith kéo bạn đứng dậy với một nụ cười nửa miệng. “Tốt nhất là bạn nên giúp tôi giết thứ dưới đáy sâu kia. Ngay hôm nay.”</p><p class='basic right'>Chọn một kẻ địch không phải Elite đang in play. Đánh bại kẻ địch đó. Nhận quyền kiểm soát Judith Park.</p>",
+      "noGrudge": "<h3>@:theFeastOfHemlockVale.theThingInTheDepths.codex.judithPark.title </h3><p>_Otherwise:_</p><p>Judith bám vào một cành cây để giữ thăng bằng. “Cả cái đầm lầy này đang chìm dần. Trước đây nó không tệ đến mức này. Cảm giác như có thứ gì đó đã dịch chuyển dưới đáy sâu. Thứ gì đó rất lớn. Tôi đoán chúng ta nên đi cùng nhau. Biết đâu đấy. Để tôi có thể bảo vệ bạn,” cô ấy nở một nụ cười.</p><p class='basic right'>Giành quyền điều khiển Judith Park.</p>"
+    },
+    "drRosaMarquez": {
+      "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
+      "body": "<h3>@:theFeastOfHemlockVale.theThingInTheDepths.codex.drRosaMarquez.title </h3><p>“Hãy nhìn cái này xem,” Tiến sĩ Marquez gọi bạn lại gần một thân cây có sọc. “Thật không thể nào. Năm loài khác nhau trong cùng một cây. Tôi không thể nghĩ ra phương pháp ghép cành nào có thể tạo ra thứ như thế này.” Cô gõ gậy vào thân cây, cúi xuống và kéo lên một bó rễ dày nhiều màu sắc trông giống như tóc thiên thần. “Tuy nhiên, chúng rất chắc chắn. Rễ của chúng giống như mạng lưới sợi nấm của một cụm nấm, nhưng dày hơn nhiều. Cứ bám vào những cái cây, và bạn sẽ không bị chìm.”</p><p class='basic right'>Chọn bất kỳ địa điểm nào đang trên bàn chơi. Nếu đó là một địa điểm _Bog_, loại bỏ tất cả sinkhole khỏi nó. Nếu đó là một địa điểm _Sunken_, lật nó lại, giữ nguyên tất cả token và attachment.</p>"
+    },
+    "xp": {
+      "bonus": "Kinh nghiệm thưởng"
+    }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X bằng một nửa số địa điểm Sunken đang in play (làm tròn lên).",
+      "cultist": "-1. Bạn có thể loại bỏ 1 sinkhole khỏi địa điểm Bog gần nhất.",
+      "tablet": "-3. Nếu bạn thất bại, đặt 1 tổn thương thể chất lên địa điểm Bog gần nhất, như một sinkhole.",
+      "elderThing": "-4. Nếu bạn thất bại, tìm trong encounter deck và discard pile một kẻ địch Grasping Tendril và rút nó, bỏ qua keyword surge của nó."
+    },
+    "hardExpert": {
+      "skull": "-X. X bằng số địa điểm Sunken đang in play (làm tròn lên).",
+      "cultist": "-3. Nếu bạn thành công, bạn có thể loại bỏ 1 sinkhole khỏi địa điểm Bog gần nhất.",
+      "tablet": "-5. Đặt 1 tổn thương thể chất lên địa điểm Bog gần nhất, như một sinkhole.",
+      "elderThing": "-5. Tìm trong encounter deck và discard pile một kẻ địch Grasping Tendril và rút nó, bỏ qua keyword surge của nó."
+    }
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "Không có Resolution",
+      "body": "<p>_Nếu không đạt được resolution nào (mỗi điều tra viên đều bị đánh bại)_: Bạn tỉnh dậy trong một khoảng đất trống gần bờ đầm lầy, với Theo ngồi gần đó. Trước khi bạn kịp nói gì, chàng trai trẻ ra hiệu im lặng và chỉ về một khoảng hở giữa những tán cây. Hiện lên trước một vệt sáng mảnh là một con hươu đực tráng lệ. Cặp gạc dài cong vòng của nó phủ đầy rêu và nấm, và nó phát ra ánh sáng nhợt nhạt như đang cháy. Theo cười toe. \"Đẹp không? Ý tôi là, tôi chắc nó sẽ giết chúng ta nếu nó thấy. Nhưng mà, thôi,\" anh vẫy tay. \"Tôi mừng vì đã tìm thấy bạn. Có thứ gì đó đang di chuyển dưới bờ, nhưng tôi không buồn kiểm tra. Tôi chỉ mừng là bạn không sao.\"</p><ul><li>Mỗi điều tra viên nhận 1 kinh nghiệm thưởng khi họ thu được hiểu biết về hệ sinh thái độc đáo của Hemlock Isle.</li><li>Chuyển đến _Resolution 5_.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Bạn có thể nhận ra ngay từ khoảnh khắc chiếc kéo cắt đứt cuống hoa rằng có điều gì đó không ổn. Sinh vật bò sát rên rỉ khi bạn nhấc bông hoa màu xám phát sáng khỏi lưng nó, sau đó mở miệng để lộ những hàng răng cưa và táp vào bạn. Chất lỏng màu trắng thạch tín phun ra từ cuống rỗng, phủ lên bạn một chất tiết hôi thối làm bỏng rát da. Bạn suýt làm rơi bông hoa khi lảo đảo lùi lại, nhận ra sai lầm của mình. Hơi bốc lên từ chất lỏng làm bạn chóng mặt và khiến khu rừng mang một vẻ huỳnh quang chói lóa. Sinh vật bò sát tội nghiệp vùng vẫy trong đau đớn và chìm xuống, để lại những vòng xoáy máu màu trắng đục trên mặt nước. Một cơn đau nhói buộc bạn phải buông bông hoa alkaloid xuống, và bạn kiểm tra tay mình để thấy một vết cắt sâu trên lòng bàn tay. Hình dạng của vết thương cho thấy cuống hoa đã bắt đầu đâm xuyên qua da thịt. Bạn đặt mẫu vật vào một lọ chứa và hướng về bờ phía nam.</p><ul><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *Chelydran Hybrid đã chết*.</li><li>Mỗi điều tra viên nhận 1 kinh nghiệm thưởng khi họ nghiên cứu một phần hệ động thực vật độc đáo của Eastwick Bog.</li><li>Chuyển đến _Resolution 5_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: Tiếng lên nòng súng vang lên phía sau bạn. “Lùi lại,” Judith nói khi bước ra từ bụi rậm. Cô chĩa súng vào sinh vật lai bò sát. “Tránh xa thứ đó ra.”</p><p>Tiến sĩ Marquez bước vào giữa Judith và sinh vật. “Nói thật nhé, ‘thứ’ đó hoàn toàn vô hại.” Như để nhấn mạnh quan điểm của mình, sinh vật đang nhai một cành hoa.</p><p>“Không có gì trên hòn đảo này là vô hại cả,” Judith vặn lại. “Mọi thứ, ngay cả những con rùa hiền lành, những con hươu dễ thương và lũ thỏ chết tiệt đều có thể gây chết người. Tôi không hiểu tại sao dân làng lại không sợ hãi hơn. Tôi dám chắc với cô rằng cái thứ... giống rùa này không chỉ nhai hoa đâu.”</p><p>“Nếu cô bắn thứ mà tôi đến đây để khảo sát, cô sẽ không được trả tiền,” Tiến sĩ Marquez lạnh lùng nói. Vị giáo sư lấy ra một cuốn sổ tay và bắt đầu phác họa sinh vật. Một sự im lặng bao trùm cả nhóm khi một cặp ếch bơi ngang qua ao ngay trước mặt sinh vật. Trong chớp mắt, sinh vật lai chelydran há miệng để lộ 4 hàng răng riêng biệt xếp dọc phía sau cổ họng, rồi đớp gọn cả hai con ếch.</p><p>Tiến sĩ Marquez đặt cuốn sổ phác thảo xuống. “Cái quái gì—”</p><ul><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *Chelydran Hybrid vẫn sống*.</li><li>Mỗi điều tra viên nhận 3 kinh nghiệm thưởng, khi họ chứng kiến một phần hệ động thực vật độc đáo của Eastwick Bog.</li><li>Chuyển đến _Resolution 5_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: Bạn tìm thấy loài bò sát nở hoa trong một mặt ao đen như gương. Trước khi bạn kịp nhúc nhích, một xúc tu đầy gai nhấc bổng sinh vật lai lên không trung, lơ lửng trên một cái miệng đầy tử khí. Sinh vật phát ra một tiếng rên rỉ thảm thương cuối cùng khi bị thả vào cái miệng đầy nanh vuốt. Dạ dày bạn quặn lại khi nghe thấy tiếng mai của nó vỡ vụn giữa bộ hàm mạnh mẽ của con quái vật. Một tiếng gầm gừ trầm thấp, thỏa mãn vang lên sau đó khi Thứ Đó chìm xuống dưới đầm lầy.</p><ul><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *Chelydran Hybrid đã bị nuốt chửng*.</li><li>Mỗi điều tra viên nhận 1 mental trauma.</li><li>Mỗi điều tra viên nhận 1 kinh nghiệm thưởng khi họ thu được hiểu biết về hệ sinh thái độc đáo của Hemlock Isle.</li><li>Chuyển đến _Resolution 5_.</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_Resolution 4_: Thứ Đó gầm lên đau đớn khi vùng vẫy vô số chi của nó. Những làn sóng xung kích lan truyền qua nền đất mềm, ẩm ướt, nghiền nát những lùm cây thành củi vụn. Bạn cố gắng bám víu khi hai tiếng nổ chát chúa vang lên trong không trung. Sinh vật gớm ghiếc phát ra tiếng ọc ọc khi những bong bóng khí xẹp lép của nó vật lộn để giữ nó nổi lên. Tiếng gầm cuối cùng của nó bị cắt ngang khi Thứ Đó chìm xuống dưới đầm lầy hôi thối.</p><ul><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *The Thing in the Depths đã bị đánh bại*.</li><li>Tiếp tục đến _Resolution 5_.</li></ul>"
+    },
+    "resolution5": {
+      "title": "Resolution 5",
+      "body": "<p>_Resolution 5_: “Khảo sát Miskatonic, tháng 6 năm 1926. Các thành viên: Marquez, Musgrave, cùng những người khác. Khu vực khảo sát: Eastwick Bog. Vô số thực vật có kích thước bất thường, giống ký sinh có khả năng kiểm soát vật chủ của nó. Hệ sinh thái phong phú đến ngột ngạt. Thủy sinh vật hung hãn. Giống rừng rậm hơn là rừng thông thường. Không phải là đầm lầy bình thường. Sẽ cần quay lại với nhiều kinh phí hơn.”</p><ul><li>Mỗi điều tra viên nhận số điểm kinh nghiệm bằng giá trị Victory X của mỗi lá bài trong victory display ({xp}). _Giờ đây mỗi điều tra viên có thể tiêu số điểm kinh nghiệm được ghi dưới mục \"Unspent Experience\" trong Nhật ký Chiến dịch của bạn._</li><li>Trong phần “Areas Surveyed” của Nhật ký Chiến dịch, đánh dấu vào *Eastwick Bog*.</li></ul>"
+    },
+    "xp": {
+      "bonus": "Kinh nghiệm thưởng",
+      "bonusJudith": "Kinh nghiệm thưởng"
+    }
+  }
+}

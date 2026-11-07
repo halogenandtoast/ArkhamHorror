@@ -1,0 +1,54 @@
+{
+  "heading": "Màn VI",
+  "intro": {
+    "title": "Màn VI: Hợp nhất và Tỉnh ngộ",
+    "label": {
+      "complete": "*\"Chúng ta phải giúp Lodge hoàn thành nghi lễ.\"*",
+      "stop": "*\"Chúng ta phải dừng nghi lễ của Lodge lại.\"*"
+    }
+  },
+  "setup": {
+    "placeLocations": "Đặt vị trí Miskatonic River và Forbidding Shore vào chơi. Mỗi điều tra viên bắt đầu chơi tại vị trí Miskatonic River. Sau đó, xào 6 vị trí Unvisited Isle và chọn ngẫu nhiên 2 vị trí đặt vào chơi. Đặt phần còn lại sang một bên, ngoài khu vực chơi.",
+    "setAside": "Đặt vị trí The Geist-Trap và treachery Watcher’s Gaze một bên, ngoài khu vực chơi.",
+    "setEnemiesAside": "Tìm trong bộ sưu tập Anette Mason (The Circle Undone #57) và Josef Meiger (The Circle Undone #85) và đặt sang một bên, ngoài khu vực chơi.",
+    "acts": "Tùy thuộc vào các trường hợp sau, một phiên bản khác của Act 3 và 4 sẽ được sử dụng trong màn chơi này. Mỗi phiên bản khác của Act 3 hoặc 4 đều bị loại bỏ khỏi màn chơi."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "returnToResolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "resolution5": {
+      "title": "Giải pháp thứ 5",
+      "spellBroken": "bùa phép của các phù thủy đã bị phá vỡ.",
+      "spellCast": "bùa phép của các phù thủy đã được thực hiện.",
+      "disappeared": "Josef bị biến mất trong màn sương."
+    },
+    "resolution6": {
+      "title": "Kết quả 6"
+    },
+    "resolution7": {
+      "title": "Kết cục 7"
+    },
+    "resolution8": {
+      "title": "Giải pháp thứ 8"
+    },
+    "resolution9": {
+      "title": "Kết cục 9"
+    },
+    "resolution10": {
+      "title": "Kết cục 10"
+    }
+  }
+}

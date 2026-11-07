@@ -1,0 +1,27 @@
+{
+  "heading": "Màn II",
+  "intro": {
+    "title": "Màn II: Vị Vua Cuối Cùng",
+    "body": "<p>Nếu có ai có câu trả lời cho những câu hỏi đang nung nấu trong đầu bạn thì đó chính là dàn diễn viên và đoàn làm vở kịch Vị Vua Áo Vàng. Không có hướng đi nào khác, bạn mặc bộ quần áo đẹp nhất của mình và đi đến địa điểm 1452 Đại lộ Atlantic, nơi một người phụ nữ tên là Constance Dumaine đang tổ chức một sự kiện kỷ niệm buổi diễn một đêm của vở kịch ở thị trấn Arkham.</p>"
+  },
+  "setup": {
+    "bystanders": {
+      "note": "*Lưu ý: Những lá bài này có hai mặt và có câu chuyện ở mặt bên kia. Để có trải nghiệm tốt nhất, đừng nhìn vào mặt bên kia trừ khi có hiệu ứng hướng dẫn bạn làm như vậy.*"
+    },
+    "setAside": "Đặt kẻ địch Dianne Devine sang một bên, ngoài khu vực chơi.",
+    "sickeningReality": {
+      "instructions": "Đặt 5 lá bài câu chuyện “Sickening Reality” bên dưới lá bài scenario."
+    }
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

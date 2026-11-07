@@ -1,0 +1,217 @@
+{
+  "difficulty": {
+    "Easy": "*Tôi muốn nắm giữ các Key*",
+    "Standard": "*Tôi muốn bị ràng buộc trong Sắc Đỏ*",
+    "Hard": "*Tôi muốn đối mặt với the Outside*",
+    "Expert": "*Tôi muốn bị Hollowed*"
+  },
+  "headings": {
+    "interludes": {
+      "1": "Chuyển cảnh",
+      "14": "Hồ sơ #14-C",
+      "20": "Hồ sơ #20-E",
+      "26": "Hồ sơ #26-G",
+      "27": "Hồ sơ #27-H",
+      "32": "Hồ sơ #32-J",
+      "36": "Hồ sơ #36-L",
+      "37": "Hồ sơ #37-M",
+      "45": "Hồ sơ #45-P",
+      "50": "Hồ sơ #50-S",
+      "51": "Hồ sơ #51-T",
+      "52": "Hồ sơ #52-U",
+      "53": "Hồ sơ #53-V"
+    }
+  },
+  "locations": {
+    "Alexandria": {
+      "subtitle": "Hồ sơ #38-N"
+    },
+    "Anchorage": {
+      "subtitle": "Hồ sơ #33-K"
+    },
+    "Bermuda": {
+      "subtitle": "Hồ sơ #20-E"
+    },
+    "Bombay": {
+      "subtitle": "Hồ sơ #36-L"
+    },
+    "BuenosAires": {
+      "subtitle": "Hồ sơ #16-D"
+    },
+    "Constantinople": {
+      "subtitle": "Hồ sơ #21-F"
+    },
+    "Havana": {
+      "subtitle": "Hồ sơ #28-I"
+    },
+    "Kabul": {
+      "subtitle": "Hồ sơ #14-C"
+    },
+    "Kathmandu": {
+      "subtitle": "Hồ sơ #53-V"
+    },
+    "Lagos": {
+      "subtitle": "Hồ sơ #37-M"
+    },
+    "Marrakesh": {
+      "subtitle": "Hồ sơ #11-B"
+    },
+    "Moscow": {
+      "subtitle": "Hồ sơ #26-G"
+    },
+    "Quito": {
+      "subtitle": "Hồ sơ #14-C"
+    },
+    "Reykjavik": {
+      "subtitle": "Hồ sơ #14-C"
+    },
+    "Rome": {
+      "subtitle": "Hồ sơ #51-T"
+    },
+    "SanFrancisco": {
+      "subtitle": "Hồ sơ #26-G"
+    },
+    "SanJuan": {
+      "subtitle": "Hồ sơ #14-C"
+    },
+    "Shanghai": {
+      "subtitle": "Hồ sơ #32-J"
+    },
+    "Stockholm": {
+      "subtitle": "Hồ sơ #36-L"
+    },
+    "Tokyo": {
+      "subtitle": "Hồ sơ #37-M"
+    },
+    "YborCity": {
+      "subtitle": "Hồ sơ #52-U"
+    }
+  },
+  "interludes": {
+    "26": "Có Qua Có Lại",
+    "37": "Chuyến Giao Hàng Đặc Biệt",
+    "51": "Romulus và Remus",
+    "53": "Tiếng Sáo Trong Gió"
+  },
+  "statusReport": {
+    "alpha": "<div class='red bordered'><p class='basic'>Báo cáo Tình trạng Alpha (α)</p><p>Khi hành trình của bạn tiếp tục, Foundation nhận được ngày càng nhiều báo cáo về những vụ mất tích kỳ lạ. Với mỗi hồ sơ mới bạn đọc, bạn lo lắng rằng chỉ là vấn đề thời gian trước khi không còn gì sót lại.</p><p class='basic right'>Thêm 1 token {'{'}cultist{'}'} vào chaos bag.</p></div>",
+    "beta": "<div class='red bordered'><p class='basic'>Báo cáo Tình trạng Beta (β)</p><p>Bạn nhận được một bức thư mã hóa từ chính Commissioner Taylor: “Các đặc vụ—cách đây không lâu, một vụ nổ lớn đã xảy ra gần Sông Podkamennaya Tunguska ở Siberia. Nó được phân loại là một sự kiện va chạm, nhưng đây chỉ là vỏ bọc. Tình báo của chúng ta hiện chỉ ra sự dính líu của Coterie. Tôi có lý do để tin rằng đây có thể là địa điểm của một trong những thánh địa của chúng. Thậm chí có thể là nơi trú ẩn chính của chúng. Các bạn được phép điều tra địa điểm này, nhưng hãy chuẩn bị cho mọi tình huống.”</p><p class='basic right'>Thêm 1 token {'{'}cultist{'}'} vào chaos bag.</p><p class='basic right'>Trong phần Central Asia của Nhật ký Chiến dịch, tìm Tunguska. Tại chỗ đó, viết “59–Z.” Bây giờ bạn được phép di chuyển đến địa điểm này bất cứ khi nào bạn embark. *(Lưu ý: Điều này sẽ kết thúc chiến dịch. Bạn có thể muốn điều tra thêm trước khi tiến đến Tunguska… nhưng hãy cẩn thận với lượng thời gian bạn dành ra.)*</p></div>",
+    "theta": "<div class='red bordered'><p class='basic'>Báo cáo Tình trạng Theta (Θ)</p><p>Khi bạn đi về phòng khách sạn của mình, bạn phát hiện một phong bì màu đỏ được luồn dưới khe cửa. Bên trong là một tin nhắn đơn giản: “Người của tôi ở Ybor City đã biết về mật khẩu mới và biết bạn đang đến. Hãy ghé qua khi bạn có cơ hội.” Bức thư ký tên “Desi.”</p></div>"
+  },
+  "key": {
+    "agentFlintIsDead": "Đặc vụ Flint đã chết.",
+    "agentFlintIsMissing": "Đặc vụ Flint đang mất tích.",
+    "agentQuinnDoesNotTrustTheCell": "Đặc vụ Quinn không tin tưởng nhóm.",
+    "agentQuinnVanishedFromExistence": "Đặc vụ Quinn đã biến mất khỏi sự tồn tại.",
+    "amaranthHasLeftTheCoterie": "Amaranth đã rời khỏi Coterie.",
+    "drIrawanJoinedTheCell": "Dr. Irawan đã gia nhập nhóm.",
+    "drIrawanTraveledToNewGuinea": "Dr. Irawan đã đến New Guinea.",
+    "drIrawanVanishedFromExistence": "Dr. Irawan đã biến mất khỏi sự tồn tại.",
+    "erasedFromExistence": "Bị xóa sổ khỏi sự tồn tại",
+    "flintAbandonedHisSearch": "Flint đã từ bỏ cuộc tìm kiếm của mình.",
+    "flintIsWorkingSolo": "Flint đang làm việc một mình.",
+    "flintRejoinedTheCell": "Flint đã gia nhập lại nhóm.",
+    "flintTraveledToKualaLumpur": "Flint đã tới Kuala Lumpur.",
+    "theCellAidedInFlintsInvestigation": "Nhóm đã hỗ trợ cuộc điều tra của Flint.",
+    "theCellAppreciatedTheArchitecture": "Nhóm đã tán thưởng kiến trúc.",
+    "theCellBlewTheWhistle": "Nhóm đã thổi còi.",
+    "theCellDidntDiscoverTheTruthInHavana": "Nhóm không khám phá ra sự thật ở Havana.",
+    "theCellEscapedTheRedCoterie": "Nhóm đã trốn thoát khỏi Red Coterie.",
+    "theCellHasBeenAmbushed": "Nhóm đã bị phục kích!",
+    "theCellIsDecievingEce": "Nhóm đang lừa dối Ece.",
+    "theCellIsDeliveringFoundationIntel": "Nhóm đang giao Foundation intel.",
+    "theCellIsWorkingWithEce": "Nhóm đang hợp tác với Ece.",
+    "theCellJoinedTheRedCoterie": "Nhóm đã gia nhập Red Coterie.",
+    "theCellKnowsAmaranthsRealName": "Nhóm biết tên thật của Amaranth.",
+    "theCellMadeADealWithDesi": "Nhóm đã thỏa thuận với Desi.",
+    "theCellMadeADealWithTheClaretKnight": "Nhóm đã lập giao kèo với Claret Knight.",
+    "theCellMeddledInAbarransAffairs": "Nhóm đã can thiệp vào chuyện của Abarran.",
+    "theCellMetDrIrawan": "Nhóm đã gặp Tiến sĩ Irawan.",
+    "theCellOverthrewTheRedCoterie": "Nhóm đã lật đổ Red Coterie.",
+    "theCellPossessesAMysteriousWhistle": "Nhóm sở hữu một chiếc còi bí ẩn.",
+    "theCellRefusedAlikisOffer": "Nhóm đã từ chối lời đề nghị của Aliki.",
+    "theCellRefusedEcesOffer": "Nhóm đã từ chối lời đề nghị của Ece.",
+    "theCellThrewAwayTheWhistle": "Nhóm đã vứt bỏ chiếc còi.",
+    "theCellWasDismantled": "Nhóm đã bị giải tán.",
+    "theCellWasGivenAPermanentPosition": "Nhóm đã được cấp một vị trí chính thức.",
+    "theCellWasHollowed": "Nhóm đã bị rút ruột.",
+    "theDogsAreAtWar": "Những con chó đang giao chiến.",
+    "theFoundationRemainsInTheDark": "The Foundation vẫn không hay biết gì.",
+    "theLoversAreReunited": "Những người yêu nhau đã đoàn tụ.",
+    "theOutsidersWereStopped": "Những Outsider đã bị ngăn chặn.",
+    "theRedCoterieSparedTheCell": "Red Coterie đã tha mạng cho nhóm.",
+    "theRedCoterieWasDestroyedFromWithin": "Red Coterie đã bị tiêu diệt từ bên trong.",
+    "theSanguineWatchersTormentContinues": "Sự dằn vặt của The Sanguine Watcher vẫn tiếp diễn.",
+    "theVoidChimeraEscaped": "The Void Chimera đã trốn thoát.",
+    "thereIsNothingOfNoteInAnchorage": "Không có gì đáng chú ý ở Anchorage.",
+    "thorneDisappeared": "Thorne đã biến mất.",
+    "tuwileMasaiFledToBermuda": "Tuwile Masai đã bỏ trốn đến Bermuda.",
+    "tzuSanNiangHasYouUnderHerSway": "Tzu San Niang chi phối bạn.",
+    "tzuSanNiangIsUnderYourSway": "Tzu San Niang chịu sự chi phối của bạn.",
+    "youHaventSeenTheLastOfAmaranth": "Bạn vẫn chưa thấy lần cuối của Amaranth.",
+    "youHaventSeenTheLastOfDesiderioDelgadoAlvarez": "*Bạn sẽ còn gặp lại Desi.*",
+    "youHaventSeenTheLastOfTheRedGlovedMan": "Đây chưa phải là lần cuối bạn đụng độ The Red-Gloved Man.",
+    "youHaventSeenTheLastOfTheSanguineWatcher": "Bạn sẽ còn gặp lại The Sanguine Watcher.",
+    "youHaventSeenTheLastOfTzuSanNiang": "Đây chưa phải là lần cuối bạn chạm trán Tzu San Niang.",
+    "youKnowThePassphrase": "Bạn biết mật khẩu."
+  },
+  "interlude1": {
+    "label": {
+      "tell": "*Kể cho Taylor về những vụ mất tích.*",
+      "doNotTell": "*Không kể cho Taylor về những vụ mất tích.*"
+    },
+    "title": "Chuyển cảnh: The Foundation"
+  },
+  "embarkingAndTravel": {
+    "title": "Khởi hành và Di chuyển"
+  },
+  "theFoundationDossiers": {
+    "title": "Hồ sơ The Foundation"
+  },
+  "quidProQuo": {
+    "xp": {
+      "supplies": "Vật Tư Dự Trữ"
+    },
+    "label": {
+      "ticket": "*“Chúng tôi muốn di chuyển nhanh hơn.”*",
+      "supplies": "*“Chúng tôi muốn một số vật tư.”*",
+      "intel11": "*“Chúng tôi muốn một số thông tin tình báo về ‘Subject #11–B.’”*",
+      "intel28": "*“Chúng tôi muốn một số thông tin tình báo về ‘Subject #28–I.’”*"
+    },
+    "title": "Có Qua Có Lại"
+  },
+  "specialDelivery": {
+    "title": "Chuyến Giao Hàng Đặc Biệt"
+  },
+  "theCoiledSerpent": {
+    "label": {
+      "keepInquiring": "*“Hãy tiếp tục dò hỏi, và báo cho chúng tôi biết khi anh có thông tin gì.”*",
+      "stickAround": "*“Chúng tôi sẽ ở lại và giúp đỡ.”*",
+      "forgetHer": "*“Quên cô ta đi. Chúng tôi cần anh giúp.”*"
+    }
+  },
+  "romulusAndRemus": {
+    "title": "Romulus và Remus",
+    "body": "Kiểm tra Nhật ký Chiến dịch."
+  },
+  "whistleOnTheWind": {
+    "title": "Tiếng Sáo Trong Gió",
+    "label": {
+      "accept": "*Chấp nhận thứ cô ấy đang trao cho bạn.*",
+      "reject": "*Không chấp nhận lời đề nghị của cô ấy.*"
+    }
+  },
+  "bloodSweatAndTea": {
+    "body": "Kiểm tra Nhật ký Chiến dịch."
+  },
+  "deadAndGone": {
+    "swapElderThingForTablet": "Loại bỏ 1 token {'{'}elderThing{'}'} khỏi chaos bag. Thêm 1 token {'{'}tablet{'}'} (nếu đã có 4, thay vào đó mỗi điều tra viên nhận 1 experience).",
+    "check": "Kiểm tra Nhật ký Chiến dịch."
+  },
+  "rusesAndReclamation": {
+    "continue": "<p class='basic right'>Cập nhật phần Keys trong Nhật ký Chiến dịch của bạn sao cho (các) Key bị đánh cắp được trả lại cho người sở hữu ban đầu.</p><p class='basic right'>Mỗi điều tra viên nhận 1 điểm kinh nghiệm, cộng thêm 1 điểm kinh nghiệm cho mỗi dấu kiểm được ghi lại bên cạnh wrong leads.</p><p class='basic right'>Gạch bỏ “14–C” ở mỗi địa điểm còn lại trong Nhật ký Chiến dịch.</p>"
+  },
+  "epilogue": {
+    "title": "Phần kết"
+  }
+}

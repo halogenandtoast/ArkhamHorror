@@ -1,0 +1,52 @@
+{
+  "setup": {
+    "agendaDecks": "Khi thiết lập agenda deck, đặt cả ba agenda deck vào khu vực chơi, theo thứ tự này (từ trên xuống dưới): xanh lá, xanh dương, và sau đó là đỏ.",
+    "placeLocations": "Đặt địa điểm Hub Dimension sang một bên và đặt 10 địa điểm còn lại vào khu vực chơi.",
+    "beginAtArkham": "Mỗi điều tra viên bắt đầu chơi tại Arkham.",
+    "shuffleRemainder": "Xào 19 lá bài encounter còn lại để tạo thành encounter deck."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "resolution5": {
+      "title": "Giải pháp thứ 5"
+    },
+    "resolution6": {
+      "title": "Kết quả 6"
+    },
+    "resolution7": {
+      "title": "Kết cục 7"
+    }
+  },
+  "rules": {
+    "factions": {
+      "title": "Các phe phái"
+    },
+    "factionAgendas": {
+      "title": "Agenda của các phe phái"
+    },
+    "inTheLead": {
+      "title": "\"Đang dẫn đầu\""
+    },
+    "warring": {
+      "title": "Giao tranh"
+    },
+    "wards": {
+      "title": "Bùa bảo vệ"
+    },
+    "placeAroundThisLocation": {
+      "title": "\"Đặt xung quanh vị trí này\"",
+      "body": "Nếu các điều tra viên được hướng dẫn đặt 1 hoặc nhiều clue \"xung quanh\" một location, những clue đó nên được đặt sao cho chúng nằm sát mép lá bài location, nhưng không được đặt lên trên chính lá bài location đó. Các clue nằm \"xung quanh\" một location không được coi là nằm \"trên\" location đó và không thể được discover bằng bất kỳ cách nào.<div class='place-around'><img src='{setImgPath}/../cards/86024b.avif' /><div class='clues left'><img src='{setImgPath}/../tokens/clue.png' /><img src='{setImgPath}/../tokens/clue.png' /></div><div class='clues right'><img src='{setImgPath}/../tokens/clue.png' /><img src='{setImgPath}/../tokens/clue.png' /><img src='{setImgPath}/../tokens/clue.png' /><img src='{setImgPath}/../tokens/clue.png' /><img src='{setImgPath}/../tokens/clue.png' /><img src='{setImgPath}/../tokens/clue.png' /><img src='{setImgPath}/../tokens/clue.png' /><img src='{setImgPath}/../tokens/clue.png' /></div><div class='clues top'><img src='{setImgPath}/../tokens/clue.png' /><img src='{setImgPath}/../tokens/clue.png' /></div><div class='clues bottom'><img src='{setImgPath}/../tokens/clue.png' /><img src='{setImgPath}/../tokens/clue.png' /><img src='{setImgPath}/../tokens/clue.png' /><img src='{setImgPath}/../tokens/clue.png' /></div></div>"
+    }
+  }
+}

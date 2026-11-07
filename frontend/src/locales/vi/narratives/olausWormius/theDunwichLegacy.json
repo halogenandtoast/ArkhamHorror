@@ -1,0 +1,148 @@
+{
+  "interlude1": {
+    "title": "Chuyển tiếp I: Vận mệnh của Armitage"
+  },
+  "interlude2": {
+    "title": "Chuyển tiếp II: Những Người Sống Sót"
+  },
+  "epilogue": {
+    "title": "Phần kết"
+  },
+  "extracurricularActivity": {
+    "intro": {
+      "title": "Màn I-A: Hoạt Động Ngoại Khóa"
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Kết thúc thứ nhất"
+      },
+      "resolution2NotMiskatonic": {
+        "title": "Kết thúc thứ hai"
+      },
+      "resolution2Miskatonic": {
+        "title": "Kết thúc thứ hai"
+      },
+      "resolution3": {
+        "title": "Kết thúc thứ ba"
+      },
+      "resolution4": {
+        "title": "Kết thúc thứ 4"
+      }
+    }
+  },
+  "theHouseAlwaysWins": {
+    "intro": {
+      "title": "Màn I-B: Nhà Cái Luôn Thắng"
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Kết thúc thứ nhất"
+      },
+      "resolution2": {
+        "title": "Kết thúc thứ hai"
+      },
+      "resolution3": {
+        "title": "Kết thúc thứ ba"
+      },
+      "resolution4": {
+        "title": "Kết thúc thứ 4"
+      }
+    }
+  },
+  "theMiskatonicMuseum": {
+    "intro": {
+      "title": "Màn II: Viện bảo tàng Miskatonic",
+      "part1": {
+        "title": "Màn II: Viện bảo tàng Miskatonic"
+      },
+      "part2": {
+        "title": "Màn II: Viện bảo tàng Miskatonic"
+      }
+    },
+    "resolutions": {
+      "resolution1BelieverOrWarden": {
+        "title": "Kết thúc thứ nhất"
+      },
+      "resolution1Otherwise": {
+        "title": "Kết thúc thứ nhất"
+      },
+      "resolution2SorcererOrMiskatonic": {
+        "title": "Kết thúc thứ hai"
+      },
+      "resolution2Otherwise": {
+        "title": "Kết thúc thứ hai"
+      }
+    }
+  },
+  "theEssexCountyExpress": {
+    "intro": {
+      "title": "Màn III: Chuyến Tàu Tốc Hành Essex"
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Kết thúc thứ nhất"
+      },
+      "resolution2": {
+        "title": "Kết thúc thứ hai"
+      }
+    }
+  },
+  "bloodOnTheAltar": {
+    "resolutions": {
+      "resolution1": {
+        "title": "Kết thúc thứ nhất"
+      },
+      "resolution2": {
+        "title": "Kết thúc thứ hai"
+      },
+      "resolution3": {
+        "title": "Kết thúc thứ ba"
+      }
+    }
+  },
+  "undimensionedAndUnseen": {
+    "intro": {
+      "title": "Màn V: Vô Hình Vô Dạng"
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Kết thúc thứ nhất"
+      },
+      "resolution2": {
+        "title": "Kết thúc thứ hai"
+      }
+    }
+  },
+  "whereDoomAwaits": {
+    "intro": {
+      "title": "Màn VI: Nơi Diệt Vong Chờ Đón"
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Kết thúc thứ nhất"
+      },
+      "resolution2": {
+        "title": "Kết thúc thứ hai"
+      }
+    }
+  },
+  "lostInTimeAndSpace": {
+    "intro": {
+      "title": "Màn VII: Lạc trong Không gian và Thời gian"
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Kết thúc thứ nhất"
+      },
+      "resolution2": {
+        "title": "Kết thúc thứ hai"
+      },
+      "resolution3": {
+        "title": "Kết thúc thứ ba"
+      },
+      "resolution4": {
+        "title": "Kết thúc thứ 4"
+      }
+    }
+  }
+}

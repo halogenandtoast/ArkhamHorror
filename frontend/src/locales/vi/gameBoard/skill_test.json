@@ -1,0 +1,15 @@
+{
+  "expandPanel": "Mở rộng skill test",
+  "collapsePanel": "Thu gọn skill test",
+  "fastPlayerWindow": "{'{'}fast{'}'} PLAYER WINDOW",
+  "determineSkillOfTestStep": "Xác định skill của bài thử. Skill test thuộc loại đó bắt đầu.",
+  "commitCardsFromHandToSkillTestStep": "Commit bài từ tay vào skill test.",
+  "revealChaosTokenStep": "Lật chaos token.",
+  "resolveChaosSymbolEffectsStep": "Giải quyết hiệu ứng chaos symbol.",
+  "determineInvestigatorsModifiedSkillValueStep": "Xác định skill value đã được điều chỉnh của điều tra viên.",
+  "determineSuccessOrFailureOfSkillTestStep": "Xác định thành công/thất bại của skill test.",
+  "applySkillTestResultsStep": "Áp dụng kết quả skill test.",
+  "skillTestEndsStep": "Skill test kết thúc.",
+  "skipTriggersActiveNotice": "Bỏ qua việc kích hoạt đang bật — các trigger fast không liên quan đến bài thử này đang bị ẩn.",
+  "skipTriggersAdjust": "Điều chỉnh"
+}

@@ -1,0 +1,47 @@
+{
+  "heading": "Màn III",
+  "remembered": {
+    "ichtacaLeftWithoutYou": "Ichtaca đã rời đi mà không có bạn."
+  },
+  "intro": {
+    "title": "Màn III: Sợi chỉ số phận",
+    "beWary": "\"Chúng ta nên cảnh giác với chúng.\"",
+    "listed": "“Có lẽ sau cùng thì tôi nên lắng nghe chúng…”",
+    "label": {
+      "beWary": "\"Chúng ta nên cảnh giác với chúng.\"",
+      "listen": "“Có lẽ sau cùng thì tôi nên lắng nghe chúng…”"
+    }
+  },
+  "standalone": {
+    "label": {
+      "gaveCustodyToAlejandro": "Các điều tra viên giao việc canh giữ cổ vật cho Alejandro.",
+      "gaveCustodyToHarlan": "Các điều tra viên giao việc canh giữ cổ vật cho Harlan Earnstone."
+    }
+  },
+  "setup": {
+    "beforeDrawingOpeningHands": "Trước khi rút bài trên tay đầu game, hãy tìm kiếm Alejandro Vela và Relic of Ages trong bộ sưu tập và bộ bài của mỗi người chơi, rồi đặt chúng sang một bên, ngoài khu vực chơi.",
+    "placeLocations": "Đặt vị trí Northside, Downtown, Easttown, Miskatonic University, Rivertown, Velma’s Diner, và Curiositie Shoppe vào chơi. Mỗi điều tra viên bắt đầu chơi tại Rivertown.",
+    "setAside": "Đặt vị trí Town Hall, tài sản Ichtaca *(The Forgotten Guardian)* và tài sản Expedition Journal sang một bên, ngoài khu vực chơi."
+  },
+  "threeActsThreeThreads": {
+    "title": "Ba Act, Ba Tuyến.",
+    "adjustAB": {
+      "body": "Điều chỉnh nội dung của chồng bài “a/b” như sau:"
+    },
+    "adjustCD": {
+      "body": "Các điều tra viên phải chọn một trong các phương án sau và điều chỉnh nội dung của chồng bài “c/d” tương ứng theo đó:"
+    },
+    "adjustEF": {
+      "body": "Điều chỉnh nội dung của chồng bài “e/f” như sau:"
+    }
+  },
+  "resolutions": {
+    "xp": {
+      "forgingYourOwnPath": "Bạn đang tạo ra con đường của riêng mình."
+    },
+    "resolution1": {
+      "title": "Kết thúc thứ nhất",
+      "expeditionJournal": "Trưởng nhóm nhận lá bài Expedition Journal và có thể thêm nó vào chồng bài của mình. Lá bài này không tính vào giới hạn bộ bài của điều tra viên đó."
+    }
+  }
+}

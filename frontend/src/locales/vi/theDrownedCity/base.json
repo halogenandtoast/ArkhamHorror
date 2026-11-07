@@ -1,0 +1,36 @@
+{
+  "difficulty": {
+    "Easy": "*Tôi muốn trôi dạt*",
+    "Standard": "*Tôi muốn mơ*",
+    "Hard": "*Tôi muốn lặn*",
+    "Expert": "*Tôi muốn R'lyeh*"
+  },
+  "glyphs": {
+    "title": "Ký tự Ngoại lai"
+  },
+  "artifactsEarned": {
+    "title": "Cổ vật đã thu thập"
+  },
+  "key": {
+    "rubyWonTheBet": "Ruby đã thắng cược.",
+    "rubyLostTheBet": "Ruby đã thua cược.",
+    "theExpeditionHeadedWest": "Đoàn thám hiểm đã tiến về phía tây.",
+    "theExpeditionHeadedEast": "Đoàn thám hiểm đã tiến về phía đông.",
+    "theExpeditionHelpedThePilgrim": "Đoàn thám hiểm đã giúp đỡ người hành hương.",
+    "grislyMask": "\"Mặt Nạ\" Rùng Rợn",
+    "discoveredGlyphs": "Ký tự Ngoại lai",
+    "thePilgrimsWereSaved": "Những người hành hương đã được cứu.",
+    "thePilgrimsWereDevoured": "Những người hành hương đã bị nuốt chửng.",
+    "theInvestigatorsExterminatedTheAlienParasites": "Các điều tra viên đã tiêu diệt những ký sinh trùng ngoài hành tinh.",
+    "thePowerWasDiverted": "Năng lượng đã bị chuyển hướng.",
+    "theInnerSanctumWasUnsealed": "Thánh địa bên trong đã được mở niêm phong.",
+    "yourAlliesHaveAPlan": "Đồng minh của bạn có một kế hoạch.",
+    "theInvestigatorsStoodTogether": "Các điều tra viên đã sát cánh cùng nhau.",
+    "theInvestigatorsDidNotConfrontTheNightmare": "Các điều tra viên đã không đối đầu với cơn ác mộng.",
+    "theInvestigatorsHaltedCthulhusAwakening": "Các điều tra viên đã ngăn chặn sự thức tỉnh của Cthulhu.",
+    "floodedNeighborhoods": "Các khu phố bị ngập lụt",
+    "cthulhuWasDrivenAway": "Cthulhu đã bị xua đuổi.",
+    "cthulhuAnnihilatedTheCityOfArkham": "Cthulhu đã hủy diệt thành phố Arkham.",
+    "cthulhuWasBanished": "Cthulhu đã bị trục xuất."
+  }
+}

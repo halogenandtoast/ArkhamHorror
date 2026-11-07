@@ -1,0 +1,25 @@
+{
+  "heading": "Màn VII",
+  "intro": {
+    "title": "Màn VII: Các Ngôi Sao Đen Trỗi Dậy"
+  },
+  "setup": {
+    "version": {
+      "instructions": "Sắp xếp từng bản sao của các lá bài sau thành 2 chồng riêng biệt, dựa trên biểu tượng encounter ở mặt bên kia của chúng: Agenda 2a—Let The Storm Rage, Agenda 2c—The Entity Above, Chapel of St. Aubert, và Abbey Tower.",
+      "createPiles": "Bạn nên có 2 chồng bài với chính xác 4 lá mỗi chồng. Mỗi chồng nên có 1 phiên bản của mỗi lá bài được liệt kê ở trên. Các lá bài ở trong chồng đầu tiên nên có biểu tượng encounter The Flood Below ở mặt bên kia của chúng, và các lá bài ở trong chồng thứ hai nên có biểu tượng encounter The Vortex Above ở mặt bên kia của chúng.",
+      "randomizePiles": "Lật mỗi chồng bài lại sao cho chỉ có mặt chứa biểu tượng encounter Black Stars Rise để lộ. Làm ngẫu nhiên 2 chồng bài để bạn không phân biệt chồng nào là chồng nào."
+    },
+    "chooseSetAsideLocations": "Chọn ngẫu nhiên 1 trong 2 vị trí Choeur Gothique và đặt một bên. Loại bỏ các phiên bản Choeur Gothique khỏi màn chơi."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

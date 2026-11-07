@@ -1,0 +1,39 @@
+{
+  "heading": "Màn III",
+  "setup": {
+    "placeLocations": "Đặt tất cả 15 vị trí vào chơi.",
+    "barriers": "Đặt 24 rào chắn (sử dụng token tài nguyên) giữa các vị trí này, như hình.",
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Desolate Coastline (bờ biển hoang vắng).",
+    "placeKeys": "Đặt mỗi chìa khoá như sau:",
+    "otherKeys": "Đặt mỗi chìa khóa khác sang một bên, úp mặt xuống. Xáo trộn chúng để bạn không phân biệt được.",
+    "setAsideCards": "Đặt các lá bài sau một bên, nằm ngoài khu vực chơi: 2 bản sao của Ravager from the Deep, 2 bản sao của Young Deep One, Joe Sargent, Teachings of the Order và kẻ địch Innsmouth Shoggoth.",
+    "angryMob": "Tìm trong bộ sưu tập lá bài Angry Mob *(The Innsmouth Conspiracy card #62b)* và đặt nó một bên, ngoài khu vực chơi. (Lá bài này là mặt bên kia của lá bài \"Finding Agent Harper\".)",
+    "floodTokens": "Thêm token lũ lụt vào kho chứa token.",
+    "increaseFloodLevel": "Tăng mực nước lũ ở từng địa điểm sau: The House on Water Street, Innsmouth Harbour và Desolate Coastline."
+  },
+  "label": {
+    "removeCultist": "Loại bỏ {'{'}cultist{'}'}",
+    "removeTablet": "Loại bỏ {'{'}tablet{'}'}",
+    "removeElderThing": "Loại bỏ {'{'}elderThing{'}'}"
+  },
+  "intro": {
+    "title": "Màn III: Tiến Vào Sâu"
+  },
+  "flashback5": {
+    "title": "Hồi tưởng V"
+  },
+  "flashback6": {
+    "title": "Hồi tưởng VI"
+  },
+  "flashback7": {
+    "title": "Hồi tưởng VII"
+  },
+  "flashback8": {
+    "title": "Hồi tưởng VIII"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    }
+  }
+}

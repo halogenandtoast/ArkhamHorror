@@ -1,0 +1,32 @@
+{
+  "heading": "Màn VIII",
+  "intro": {
+    "title": "Màn VIII: Shattered Aeons"
+  },
+  "setup": {
+    "placeLocations": "Đặt vị trí Nexus of N’kai vào chơi. Mỗi điều tra viên bắt đầu chơi tại Nexus of N’kai.",
+    "setAsideEnemiesNote": "<div class='columns' style='overflow: none;padding-bottom: 40px;'><div style='flex-basis: 20%;'>*Lưu ý: Những lá bài này có hai mặt và có câu chuyện ở mặt bên kia. Để có trải nghiệm tốt nhất, đừng nhìn vào mặt bên kia trừ khi có hiệu ứng hướng dẫn bạn làm như vậy.*</div><div style='flex:1; margin-top: 30px;' class='fan'><img src='{setImgPath}/../cards/04325.avif' /><img src='{setImgPath}/../cards/04326.avif' /></div></div>",
+    "explorationDeck": "Tạo chồng bài khám phá. Điều này được thực hiện bằng cách lấy 3 vị trí một mặt còn lại và xào chúng vào với nhau, cùng với 1 bản sao của mỗi lá bài encounter sau: Wracked by Time, Between Worlds, và Ancient Evils.",
+    "yigsFury": "Kiểm tra Nhật ký Chiến dịch. Với mỗi 10 kiểm đếm dưới phần \"Cơn giận dữ của Yig\", đặt lá bài trên đầu trong chồng bài của trưởng nhóm vào khu vực trưng bày thành tích, úp xuống. Cho phần còn lại của chiến dịch, xem mỗi lá bài này như thể nó có Vengeance 1."
+  },
+  "storyCards": {
+    "title": "Lá bài Cốt truyện"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "resolution5": {
+      "title": "Giải pháp thứ 5"
+    }
+  }
+}

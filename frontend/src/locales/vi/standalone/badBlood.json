@@ -1,0 +1,16 @@
+{
+  "setup": {
+    "placeLocations": "Đặt Northside, Downtown, Easttown, Miskatonic University, Rivertown, Town Hall, Velma's Diner, và Curiositie Shoppe vào chơi.",
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Velma's Diner.",
+    "removeStoryAssets": "Loại bỏ story asset Ichtaca *(The Forgotten Guardian)* và story asset Expedition Journal khỏi trò chơi.",
+    "placeMemories": "Đặt 1 resource lên mỗi địa điểm đang trong cuộc chơi, như một “ký ức”."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "xp": {
+    "rescuedCivilians": "Thường dân được cứu"
+  },
+  "heading": "Hồ sơ #11-B",
+  "rules": {
+    "civilians": {
+      "body": "<p class='basic'>Trong scenario này, các resource trên các vị trí đại diện cho những thường dân vô tội của Marrakesh, những người đang gặp nguy hiểm nghiêm trọng.</p><ul><li>Đối với việc di chuyển và tấn công của kẻ địch, kẻ địch coi các civilian như thể họ là các điều tra viên. (Kẻ địch không engage với civilian, nhưng có thể tấn công civilian tại vị trí của họ như thể họ đã engage.) Nếu một civilian bị tấn công, họ tự động bị slain.</li><li>Các civilian vẫn hiện diện tại một vị trí khi nó được reveal.</li><li>Khi một civilian bị slain, đặt nó lên lá bài scenario reference, để theo dõi xem có bao nhiêu civilian đã bị slain.</li></ul>"
+    },
+    "choosingARandomLocation": {
+      "title": "Lựa Chọn một Vị Trí Ngẫu Nhiên",
+      "body": "<p class='basic'>Trong scenario này, bạn sẽ thường xuyên được hướng dẫn để chọn một vị trí ngẫu nhiên. Điều này nên được thực hiện bằng cách xào 5 vị trí hiện không ở trên bàn chơi (các phiên bản của mỗi vị trí đang trên bàn chơi hiện không được sử dụng) lại với nhau và rút ngẫu nhiên 1 vị trí.</p>"
+    },
+    "replacingLocations": {
+      "title": "Thay thế Vị trí",
+      "body": "<p class='basic'>Trong suốt màn chơi này, bạn có thể được hướng dẫn hoán đổi các vị trí đặt một bên hồi đầu với các vị trí hiện có. Khi một vị trí được hoán đổi với một vị trí đang được chơi, vị trí đó sẽ chiếm chỗ đó. Tất cả các token, bài đính kèm, điều tra viên, kẻ địch và các lá bài khác tại vị trí cũ lúc này được xem là ở vị trí mới (ví dụ: các lá bài đính kèm vẫn sẽ được đính kèm tại đó). Không có thành phần trò chơi nào được coi là đã di chuyển trong quá trình hoán đổi này.</p>"
+    }
+  },
+  "setup": {
+    "beginPlay": "Mỗi điều tra viên bắt đầu chơi tại Marrakesh Railway Station.",
+    "setOutOfPlay": "Đặt các lá bài sau sang một bên, out of play: kẻ địch Amaranth hai mặt, kẻ địch Razin Farhi, kẻ địch Khalid, cả hai bản sao của kẻ địch Ancient Raider, chìa khóa The Last Blossom, và lá bài story “Save the Civilians / Aftermath” hai mặt."
+  },
+  "resolutions": {
+    "noResolution": {
+      "slay": "Mỗi civilian còn lại trong trò chơi bị tiêu diệt. Nếu vẫn đang là Act 1, rút lá bài story Save the Civilians đã để riêng và giải quyết mặt Aftermath.",
+      "checkEnemies": "Kiểm tra xem những kẻ địch nào đang trong trò chơi"
+    },
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "resolution5": {
+      "title": "Giải pháp thứ 5"
+    }
+  }
+}

@@ -6,6 +6,7 @@ const localeLoaders = {
   fr: () => import('@/locales/fr'),
   it: () => import('@/locales/it'),
   ko: () => import('@/locales/ko'),
+  vi: () => import('@/locales/vi'),
   es: () => import('@/locales/es'),
   zh: () => import('@/locales/zh'),
   'zh-cn': () => import('@/locales/zh-cn'),

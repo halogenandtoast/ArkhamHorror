@@ -1,0 +1,24 @@
+{
+  "keywordsAndConcepts": {
+    "title": "Từ khóa và Khái niệm"
+  },
+  "setup": {
+    "placeLocations": "Đưa lá bài địa điểm Your Friend's Room vào khu vực chơi. Để riêng các địa điểm khác sang một bên, out of play.",
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Your Friend's Room."
+  },
+  "intro": {
+    "title": "Kịch bản I: Spreading Flames",
+    "body": "<p>Những chuyện kỳ lạ đang xảy ra trong thành phố Arkham. Một loạt các vụ hỏa hoạn và những \"tai nạn\" rùng rợn gần đây đã khiến cả thành phố phải đứng ngồi không yên. Dù tờ Arkham Advertiser đã đưa ra vài lời giải thích hời hợt, bạn và các cộng sự của mình không mấy tin tưởng. Những bóng người mặc áo choàng đã được nhìn thấy gần những sự kiện kỳ lạ này, và người bạn chung của các bạn tin chắc rằng họ là thủ phạm. Bạn đồng ý gặp nhau tại ký túc xá của người bạn đó ở Miskatonic University để cố gắng tìm hiểu ngọn ngành sự việc. Tuy nhiên, khi bạn đến nơi, phòng của bạn mình trống không và khu ký túc xá lại im ắng đến lạ thường…</p>"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "setup": {
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Tindalos."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "interludes": {
+    "3": "Sự thức tỉnh",
+    "4": "Trở về Arkham"
+  },
+  "epilogue": {
+    "title": "Phần kết"
+  },
+  "theAwakening": {
+    "title": "Chuyển cảnh III: Sự thức tỉnh"
+  },
+  "returnToArkham": {
+    "tasks": {
+      "walkInFaith": {
+        "fiveOrMoreProgress": "Nếu có từ 5 progress trở lên được đánh dấu dưới Task của bạn:",
+        "completed": "<p>Khi trở về, bạn được tôn vinh như một nhà tiên tri giữa những tín đồ đồng đạo của mình. Những giấc mơ đã dẫn bạn đến R'lyeh cũng chính là những khải tượng được chia sẻ bởi những anh chị em trong đức tin. Giờ đây, ngày càng có nhiều người trong số họ ca hát bằng những ngôn ngữ kỳ lạ và khâu những chiếc áo choàng chắp vá. Mục đích của bạn khi du hành đến R'lyeh, khi chứng kiến những người hành hương lạc lối đó, không phải là để làm lung lay đức tin của bạn, mà là để khôi phục nó. Bạn đã thoáng thấy khuôn mặt của những thực thể cổ đại. Chỉ có bạn mới xứng đáng dẫn dắt người dân của mình thoát khỏi bóng tối và bước ra ánh sáng. Bạn chỉ cần tiếp tục đi theo con đường của mình với cùng một sự tận tâm không thể lay chuyển đã giải cứu bạn khỏi R'lyeh.</p>",
+        "failedEffect": "Loại bỏ vĩnh viễn Task \"Walk in Faith\" khỏi deck của bạn và chịu 1 mental trauma. Trong phần còn lại của campaign, bạn phải coi token {'{'}elderThing{'}'} như thể nó là token {'{'}autoFail{'}'}."
+      },
+      "goodMoney": {
+        "fiveOrMoreProgress": "Nếu có từ 5 progress trở lên được đánh dấu dưới Task của bạn:",
+        "failed": "<p>Cười khẩy, bạn rời khỏi cuộc hẹn với Sanford cùng một chiếc cặp táp đầy ắp. Bạn rẽ qua một góc đường và nhận ra mình đang bị bao vây bởi những tên côn đồ.\\r \"Tillinghast bảo chúng tao rằng mày đã quá hạn trả nợ rồi. May thay, tao nghĩ mày đã sẵn sàng để thanh toán,\" một tên trong số chúng nói. Rõ ràng, việc chơi trò hai mang khó hơn bạn tưởng. Giơ nắm đấm lên, bạn chuẩn bị tinh thần cho những gì sắp xảy ra tiếp theo. Chết tiệt, nếu phải gục ngã, bạn cũng sẽ chiến đấu đến cùng.</p>"
+      },
+      "dreamsOfDestruction": {
+        "title": "Nhiệm vụ: Dreams of Destruction",
+        "fiveOrMoreProgress": "Nếu có từ 5 progress trở lên được đánh dấu dưới Task của bạn:",
+        "completed": "<p>Bạn lật xem phần thưởng của Randall cho tất cả những nỗ lực của bạn: một chồng sách rách nát của Blavatsky và Crowley. Chúng có thể làm hài lòng một nhà tiên tri tập sự nào đó, nhưng với bạn thì không. Việc anh ta đưa chúng ra làm phần thưởng gần như là một sự xúc phạm. Gấp cuốn sách lại, bạn nghe thấy một tiếng thì thầm yếu ớt của chính những giọng nói mà bạn đã nghe thấy ở R'lyeh. Những cơn ác mộng của bạn không phải là điềm báo của sự hủy diệt: chúng là những lời cảnh báo từ những linh hồn lang thang. Thảm họa sắp tới có thể là không thể tránh khỏi, chúng nói với bạn, nhưng điều đó không có nghĩa là bạn không thể chiến đấu với nó.</p>",
+        "failed": "<p>Những tiếng thì thầm từng hành hạ bạn ở R'lyeh cuối cùng cũng đã dừng lại. Kể từ khi trở về từ R'lyeh, bạn thức dậy mỗi sáng trong sự im lặng hoàn toàn. Tuy nhiên, thay vì an ủi bạn, sự vắng bóng của những tiếng thì thầm lại càng khiến bạn tràn ngập nỗi kinh hoàng. Cứ như thể mối liên kết của bạn với thế giới bên kia đã bị cắt đứt. Hoặc có lẽ những linh hồn muốn cảnh báo bạn về thảm họa sắp tới đã bỏ rơi bạn.</p>"
+      },
+      "noPlaceLikeHome": {
+        "title": "Nhiệm vụ: No Place Like Home",
+        "fiveOrMoreProgress": "Nếu có từ 5 progress trở lên được đánh dấu dưới Task của bạn:"
+      },
+      "doNoHarm": {
+        "title": "Nhiệm vụ: Do No Harm",
+        "fiveOrMoreProgress": "Nếu có từ 5 progress trở lên được đánh dấu dưới Task của bạn:",
+        "completed": "<p>Đi bộ qua Independence Square, bạn rẽ qua một góc phố và thấy một bóng người gục ngã trên mặt đất. Bạn lao đến chỗ người đó trong khi tâm trí tràn ngập những ký ức về người hành hương ở R'lyeh. Dạ dày bạn quặn thắt khi đến gần, hy vọng sẽ không phải chứng kiến một cảnh tượng quá đỗi kinh hoàng. Cô ấy vẫn đang thở. Bạn có thể giúp cô ấy. Bất kể mọi người gặp rắc rối gì, bạn biết mình sẽ luôn ở đó để giúp đỡ.</p>",
+        "failed": "<p>Bạn đột ngột tỉnh giấc giữa đêm đầu tiên trở lại Arkham. Con mèo đang nằm ở cuối giường bạn hoảng hốt bỏ chạy khi bạn lau mồ hôi lạnh trên trán. Ký ức về những khuôn mặt bạn bỏ lại phía sau dần phai mờ, nhưng bạn không thể ngừng nghĩ về những lời cuối cùng của người đàn ông hấp hối: \"Mẹ.\" Nhịp tim của bạn chậm lại khi bạn nhìn chằm chằm ra ngoài cửa sổ. Những suy nghĩ về những gì bạn có thể làm khác đi bao trùm lấy bạn. Bạn sẽ không bao giờ có thể cứu được tất cả mọi người. Liệu có đáng để cố gắng không?</p>"
+      },
+      "toeTheLine": {
+        "fiveOrMoreProgress": "Nếu có từ 5 progress trở lên được đánh dấu dưới Task của bạn:",
+        "completed": "<p>\"Bạn sẽ phụ trách giám sát việc xây dựng và quản lý nhà máy mới sau này.\" Người chủ mới của bạn rạng rỡ, đẩy một bản hợp đồng mới tinh qua mặt bàn. Khi nhìn ra ngoài cửa sổ văn phòng mới của mình, bạn cảm thấy trái tim mình rộn ràng. Sau thành công của bạn với cuộc thám hiểm, Tillinghast đã đề cập đến mối quan hệ của ông ta với New Horizons Industries đang chớm nở. Mặc dù ông trùm ngành đóng gói thịt vẫn chưa khởi công ở Arkham, Randall đã đảm bảo với bạn rằng bạn sẽ được chăm sóc chu đáo. Tất cả những gì bạn cần làm là ký vào đường kẻ chấm.</p>",
+        "failed": "<p>Căn phòng trở nên im lặng khi bạn bước vào. Khi bạn xin lại công việc cũ, Tillinghast đã rất vui lòng giúp đỡ. Khi người giám sát cũ của bạn trò chuyện như thể bạn chưa từng rời đi, bạn bắt gặp những ánh nhìn lo lắng của các đồng nghiệp cũ. Dù gã doanh nhân mờ ám kia đã dùng đến những mối quan hệ nào, thì chúng chắc chắn đã phát huy tác dụng. Khi ngồi xuống, bạn nhìn ra những đồng nghiệp đang lo lắng mà bạn từng gọi là bạn bè. Bạn đã có được mọi thứ mình muốn, thậm chí cả chiếc bàn làm việc cũ. Tại sao bạn vẫn cảm thấy trống rỗng đến vậy?</p>"
+      },
+      "proveYourWorth": {
+        "title": "Nhiệm vụ: Prove Your Worth",
+        "fiveOrMoreProgress": "Nếu có từ 5 progress trở lên được đánh dấu dưới Task của bạn:",
+        "completed": "<p>Đã vài đêm kể từ khi bạn trở về Arkham, và bạn đang nhìn xuống một đám đông ngưỡng mộ. Không có gì ngạc nhiên khi chuyến thám hiểm thành công. Tất cả là nhờ bạn. Và sau khi hứa hẹn với Tillinghast một vài ân huệ nhỏ nhặt, bạn đang nhận được sự công nhận mà bạn vô cùng xứng đáng. Chẳng bao lâu nữa, bạn sẽ đảm bảo rằng bất cứ ai từng nghi ngờ bạn cũng sẽ nhận được những gì họ đáng phải nhận. Ai đã nói khiêm tốn là một điều tốt cơ chứ?</p>",
+        "failed": "<p>Vào đêm bạn trở về, bạn thấy mình bị loại ra khỏi nhóm bạn cũ một cách nhục nhã. Chính Tillinghast đã lan truyền những tin đồn tồi tệ nhất về bạn. Điều tồi tệ hơn là tất cả chúng đều là sự thật. Bạn chẳng qua chỉ là một gánh nặng cho chuyến thám hiểm. Bạn là trò cười của cả nhóm. Không có thành tựu nào bạn đạt được là do thực lực của chính bạn. Bạn vô dụng đúng như những gì họ nói.</p>"
+      },
+      "plumbTheDepths": {
+        "title": "Nhiệm vụ: Plumb the Depths",
+        "fiveOrMoreProgress": "Nếu có từ 5 progress trở lên được đánh dấu dưới Task của bạn:"
+      }
+    }
+  },
+  "anOfferYouCantRefuse": {
+    "title": "Chuyển tiếp I: Lời Đề Nghị Không Thể Chối Từ",
+    "task": {
+      "noPlaceLikeHome": {
+        "title": "Nhiệm vụ: No Place Like Home"
+      },
+      "doNoHarm": {
+        "title": "Nhiệm vụ: Do No Harm"
+      },
+      "proveYourWorth": {
+        "title": "Nhiệm vụ: Prove Your Worth"
+      },
+      "dreamsOfDestruction": {
+        "title": "Nhiệm vụ: Dreams of Destruction"
+      },
+      "plumbTheDepths": {
+        "title": "Nhiệm vụ: Plumb the Depths"
+      }
+    }
+  },
+  "expeditionToRlyeh": {
+    "title": "Chuyển cảnh II: Expedition to R'lyeh",
+    "westernChaosTokens": "Loại bỏ 1 token {'{'}tablet{'}'} khỏi chaos bag. Thêm 1 token {'{'}cultist{'}'} vào chaos bag trong phần còn lại của chiến dịch."
+  }
+}

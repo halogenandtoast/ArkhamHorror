@@ -1,0 +1,10 @@
+{
+  "discards": "Discard",
+  "endTurn": "Kết thúc lượt",
+  "endTurnShort": "Xong",
+  "skipTriggers": "Bỏ qua việc kích hoạt",
+  "skipAllTriggers": "Bỏ qua việc kích hoạt cho mọi điều tra viên",
+  "devouredCards": "Bị nuốt ({count})",
+  "underneathCards": "Bên dưới ({count})",
+  "freeAbilitiesUnavailable": "<strong>Không thể dùng khả năng free</strong><br>Không thể dùng khả năng fast và free trong một immediate action."
+}

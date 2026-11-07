@@ -1,0 +1,27 @@
+{
+  "intro": {
+    "mustDecide": "Điều tra viên phải đưa ra quyết định (chọn một):",
+    "label": {
+      "knowBetter": "*\"Chúng ta không nên dại dột mà quấy rầy bất cứ thứ gì bên trong.\"*",
+      "layItToRest": "*\"Chúng ta nên cho nó yên nghỉ... vĩnh viễn\"*"
+    }
+  },
+  "setup": {
+    "placeLocations": "Đặt Dreamer's Rest và mỗi bản sao của Sigil-Carved Alcove vào chơi.",
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Dreamer's Rest.",
+    "buildAgendaDeck": "Xây dựng một agenda deck đặc biệt sử dụng Beneath the City làm agenda đầu tiên và Cthulhu Awakened làm agenda thứ hai. Chúng thay thế cho act deck và agenda deck."
+  },
+  "rules": {
+    "disturbance": {
+      "body": "<p class='basic'>Trong suốt scenario này, số lượng resource dưới \"Disturbance\" trên lá bài scenario reference thể hiện mức độ nhận thức của Cthulhu về các điều tra viên. Disturbance càng cao, the Sleeper càng gần với việc thức tỉnh. Bản thân Disturbance không có hiệu ứng game nội tại nào; tuy nhiên, một số hiệu ứng của lá bài encounter có thể thay đổi hoặc trở nên mạnh hơn tùy thuộc vào mức độ Disturbance hiện tại.</p>"
+    }
+  },
+  "resolutions": {
+    "investigatorDefeat": {
+      "title": "Điều tra viên bị hạ gục"
+    },
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    }
+  }
+}

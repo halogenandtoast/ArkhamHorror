@@ -1,0 +1,34 @@
+{
+  "heading": "Màn I-B",
+  "intro": {
+    "title": "Màn I-B: Ác Mộng Thực"
+  },
+  "setup": {
+    "setRemainingLocationsAside": "Đặt những vị trí còn lại sang một bên, ngoài khu vực chơi.",
+    "setInfestationBeginsAside": "Đặt lá bài câu chuyện 2 mặt The Infestation Begins sang một bên, ngoài khu vực chơi. Lá bài câu chuyện có một mặt tham chiếu cho màn chơi khác ở mặt còn lại của nó, và sẽ tiến vào chơi trong quá trình diễn ra tự nhiên của màn chơi.",
+    "buildEncounterDeck": "Xào mỗi lá bài encounter còn lại để tạo thành chồng bài encounter."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "resolution5": {
+      "title": "Giải pháp thứ 5"
+    }
+  },
+  "label": {
+    "intro": {
+      "bringDoctor": "*Thuyết phục bác sĩ Maheswaran đi cùng bạn trong khi bạn điều tra, vì sự an toàn của cô ấy và của bạn.*",
+      "leaveDoctor": "*Thuyết phục Bác sĩ Maheswaran ở lại với bệnh nhân và giữ an toàn cho họ trong khi bạn điều tra.*"
+    }
+  }
+}

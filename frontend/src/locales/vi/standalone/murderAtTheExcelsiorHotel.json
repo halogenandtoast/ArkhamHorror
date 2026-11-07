@@ -1,0 +1,41 @@
+{
+  "specialRules": [
+    {
+      "title": "Tuần tra",
+      "body": "<p class='basic'>Một số kẻ địch có keyword patrol. Trong enemy phase (ở bước 3.2 của framework), mỗi kẻ địch đang ready, unengaged và có keyword patrol sẽ di chuyển đến một vị trí nối liền dọc theo con đường ngắn nhất hướng tới vị trí được chỉ định (như được mô tả trong ngoặc đơn bên cạnh từ patrol).</p><ul><li>Nếu có nhiều địa điểm đủ điều kiện làm địa điểm được chỉ định, điều tra viên chính có thể chọn địa điểm mà kẻ địch sẽ di chuyển tới.</li><li>Nếu một kẻ địch có patrol bị buộc phải di chuyển đến một vị trí bị chặn bởi một khả năng của bài, kẻ địch đó sẽ không di chuyển.</li></ul>"
+    },
+    {
+      "title": "Thủ Phạm Đích Thực",
+      "body": "<p class='basic'>Mỗi bản sao của lá bài The True Culprit là một lá bài agenda với một template khác với hầu hết các agenda khác. Mỗi agenda này có ngưỡng doom có thể tìm thấy ở bên phải tiêu đề của chúng, thay vì là vị trí bình thường.</p>"
+    }
+  ],
+  "setup": {
+    "constructActsAndAgendas": "Xây dựng chồng bài act và agenda chỉ bằng act 1 và 2 và agenda 1 và 2 từ chồng bài encounter *the Murder at the Excelsior Hotel*.",
+    "trueCulprit": "Đặt tất cả 10 bản sao của The True Culprit một bên, ngoài khu vực chơi.",
+    "bloodstainedDagger": "Trưởng nhóm bắt đầu chơi với lá bài tài sản Bloodstained Dagger bên dưới khu vực chơi của mình.",
+    "leadsDeck": "Tìm mỗi lá bài tài sản chứa câu chuyện từ 5 chồng bài encounter đặt một bên hồi đầu (Alien Device, Tome of Rituals, Sinister Solution, Manager’s Key, và Time-Worn Locket) và xào chúng lại tạo thành một chồng bài riêng biệt. Chồng bài này gọi là chồng bài Leads. Đặt chồng bài này cần lá bài scenario reference.",
+    "placeLocations": "Đặt các vị trị sau vào chơi: Room 225, Suite Balcony, Second Floor Hall, Restaurant, và Foyer.",
+    "leadBeginPlay": "Trưởng nhóm bắt đầu chơi tại Room 225.",
+    "othersBeginPlay": "Mỗi điều tra viên khác bắt đầu chơi tại Foyer.",
+    "setLocationsAside": "Đặt tất cả các địa điểm khác sang một bên, ngoài màn chơi.",
+    "setOutOfPlay": "Đặt các lá bài sau một bên, ngoài khu vực chơi: Tất cả 3 bản sao của Arkham Officer, lá bài tài sản câu chuyện Sergeant Monroe, và điểm yếu What Have You Done?."
+  },
+  "interlude": {
+    "label": {
+      "truth": "*Nói cho Trung sĩ Sergeant sự thật.*",
+      "lie": "*Nói dối về sự tham gia của bạn.*"
+    },
+    "continue": "Giờ thì bạn đã sẵn sàng để tiếp tục chơi."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "setup": {
+    "addCultist": "Thêm 1 token {'{'}cultist{'}'} vào túi hỗn mang cho phần còn lại của chiến dịch."
+  },
+  "resolutions": {
+    "investigatorDefeat": {
+      "title": "Điều tra viên bị hạ gục"
+    },
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "setup": {
+    "scenarioReference": "Loại bỏ lá bài scenario reference gốc từ chồng bài encounter *The House Always Wins* khỏi trò chơi. Sử dụng lá bài scenario reference mới được cung cấp trong chồng bài encounter *All or Nothing* có thể tải xuống.",
+    "removeFromGame": "Loại bỏ lá bài asset Peter Clover và lá bài story asset Dr. Francis Morgan khỏi trò chơi. Những lá bài này không được sử dụng trong challenge scenario này.",
+    "setAside": "Đặt các lá bài sau sang một bên, out of play: mỗi bản sao của vị trí Back Hall Doorway, mỗi bản sao của kẻ địch Clover Club Bouncer, và kẻ địch Siobhan Riley.",
+    "placePitBoss": "Đặt kẻ địch Clover Club Pit Boss vào chơi tại Clover Club Lounge.",
+    "returnToSetupCard": "Loại bỏ lá bài setup “Return to” khỏi trò chơi.",
+    "returnToVersions": "Loại bỏ phiên bản gốc của Clover Club Lounge khỏi trò chơi và sử dụng phiên bản mới của Clover Club Lounge để thay thế.",
+    "cloverClubStage": "Đặt Clover Club Stage sang một bên, ngoài khu vực chơi.",
+    "returnToTreacheries": "Đưa các lá bài treachery mới vào cùng với phần còn lại của các lá bài encounter.",
+    "cheated": "Ghi nhớ rằng “Skids” O’Toole đã “gian lận”.",
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại La Bella Luna."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất",
+      "victory": "Mỗi điều tra viên nhận kinh nghiệm bằng tổng giá trị Victory X của mỗi lá bài trong victory display.",
+      "resourcesChoice": "Nếu số lượng resource trên Act 2a là (chọn một)…",
+      "skidsMaySwap": "“Skids” O’Toole có thể nâng cấp On the Lam lên phiên bản nâng cao, hoặc hạ cấp phiên bản nâng cao của Hospital Debts về phiên bản gốc."
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "label": {
+      "skidsMaySwap": "“Skids” O’Toole có thể nâng cấp On the Lam lên phiên bản nâng cao, hoặc hạ cấp phiên bản nâng cao của Hospital Debts về phiên bản gốc.",
+      "skidsMustSwap": "“Skids” O’Toole phải nâng cấp Hospital Debts lên phiên bản advanced của nó, hoặc hạ cấp phiên bản advanced của On the Lam xuống phiên bản gốc của nó."
+    }
+  }
+}

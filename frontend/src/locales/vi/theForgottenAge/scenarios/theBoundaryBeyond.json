@@ -1,0 +1,27 @@
+{
+  "heading": "Màn IV",
+  "specialRules": [
+    {
+      "title": "Thay thế Vị trí",
+      "body": "<p class='basic'>Trong suốt màn chơi này, bạn có thể được hướng dẫn đặt vị trí mới lên trên vị trí đang có. Khi một vị trí được đặt lên trên vị trí đang được chơi, nó sẽ chiếm chỗ đó. Tất cả token, đính kèm, điều tra viên, kẻ địch, và những lá bài khác ở vị trí cũ sẽ được xem là ở vị trí mới (chúng không \"di chuyển\"- chỉ đơn giản là vị trí đã thay đổi). Nếu một vị trí rời khỏi màn chơi và có một vị trí khác bên dưới nó, vị trí đó sẽ chiếm chỗ đó. Tất cả token, đính kèm, điều tra viên, kẻ địch, và những lá bài khác bây giờ sẽ được xem là ở vị trí cũ.</p>"
+    }
+  ],
+  "intro": {
+    "title": "Màn IV: The Boundary Beyond",
+    "part1": "<p>Những tia nắng nóng màu vàng chiếu xuống bạn từ trên cao khi xe của bạn lao xuống những con đường cao tốc đầy bụi bặm ở miền nam Texas, ngay bên ngoài thành phố San Antonio. Đã vài ngày kể từ khi bạn lên đường từ thị trấn Arkham đến Thành phố Mexico, nơi bạn có thể nhận được câu trả lời từ một số cộng sự của Alejandro — hoặc thậm chí tốt hơn, từ những đối thủ của anh ấy trong giới học thuật. Các cuộc điều tra gần đây của bạn ở Arkham đã khám phá ra nhiều điều, nhưng mặc dù với tất cả những gì bạn đã biết, dấu vết đã trở nên nguội lạnh ngay sau đó. Hội “Brotherhood” mà bạn tiếp xúc ở Arkham đã biến mất khỏi thành phố. Các thành viên của nó đã để lại rất ít thông tin về mục tiêu tiếp theo của họ, ngoại trừ cái tên “Nexus of N’kai”, một nơi quyền lực mà Ichtaca tin rằng là điểm đến cuối cùng của Brotherhood. Bí ẩn hơn bao giờ hết, chiến binh Eztli ngồi ở ghế hành khách bên cạnh bạn. Cô ấy căng thẳng và cuộn lại như một cái lò xo, chiếc ghế da của Ford mang lại cho cô ấy một chút thoải mái.</p>"
+  },
+  "setup": {
+    "placeLocations": "Đặt vị trí Metropolitan Cathedral, Zócalo, Temple Ruins, Xochimilco, Chapultepec Park, và Coyoacán vào chơi. Mỗi điều tra viên bắt đầu chơi tại Zócalo hoặc Coyoacán (tự lựa chọn).",
+    "setAside": "Đặt kẻ địch Padma Amrita sang một bên, ngoài khu vực chơi.",
+    "setActAndAgenda3OutOfPlay": "Đặt act 3a và agenda 3a sang một bên, ngoài khu vực chơi. Chúng không phải là một phần của chồng bài act hoặc agenda, vào lúc này...",
+    "poisoned": "Đặt mỗi điểm yếu Poisonsed đang không ở trong chồng bài của một điều tra sang một bên."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

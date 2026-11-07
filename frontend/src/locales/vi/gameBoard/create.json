@@ -1,0 +1,14 @@
+{
+  "difficultyFlavor": {
+    "Easy": "*Tôi muốn trải nghiệm câu chuyện.*",
+    "Standard": "*Tôi muốn thử thách.*",
+    "Hard": "*Tôi muốn ác mộng thật sự.*",
+    "Expert": "*Tôi muốn sự kinh hoàng tại Arkham*"
+  },
+  "Easy": "Dễ",
+  "Standard": "Cơ bản",
+  "Hard": "Khó",
+  "Expert": "Chuyên gia",
+  "singleGroupMode": "Chế độ Single Group",
+  "epicMultiplayerMode": "Chế độ Epic Multiplayer"
+}

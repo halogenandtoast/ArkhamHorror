@@ -1,0 +1,30 @@
+{
+  "intro": {
+    "label": {
+      "goAlone": "*Đi một mình, như đã hẹn.*",
+      "goWithBackup": "*Đi với lực lượng yểm trợ.*",
+      "takeHisOffer": "*Nhận lời đề nghị.*",
+      "goToLondonOnYourOwnTerms": "*Tự sắp xếp chuyến đi tới London.*"
+    }
+  },
+  "setup": {
+    "placeLocations": "Đưa địa điểm Rainy London Streets vào chơi.",
+    "beginPlay": "Mỗi điều tra viên bắt đầu chơi tại Rainy London Streets.",
+    "remainingLocations": "Đặt tất cả các địa điểm khác sang một bên, ngoài màn chơi.",
+    "setOutOfPlay": "Để riêng kẻ địch The Red-Gloved Man và key The Eye of Ravens ra ngoài khu vực chơi."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "heading": "Màn VI",
+  "intro": {
+    "label": {
+      "cooperate": "*Hợp tác và nói cho các sinh vật mọi thứ bạn biết.*",
+      "resist": "*Từ chối và chống lại sự giam cầm.*"
+    },
+    "title": "Kịch bản VI: The City of Archives"
+  },
+  "setup": {
+    "beforeDrawingOpeningHandsAlejandro": "Trước khi rút bài trên tay đầu màn chơi, nếu một người chơi có Alejandro Vela trong chồng bài của mình, tìm lá bài Alenjandro Vela và đặt ông ấy một bên, ngoài khu vực chơi.",
+    "setAside": "Đặt The Custodian sang một bên, ngoài khu vực chơi."
+  },
+  "bodyOfAYithian": {
+    "title": "Cơ thể của sinh vật Yithian"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    }
+  }
+}

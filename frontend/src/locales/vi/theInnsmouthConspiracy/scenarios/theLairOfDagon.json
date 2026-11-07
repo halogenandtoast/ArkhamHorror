@@ -1,0 +1,48 @@
+{
+  "heading": "Màn VII",
+  "setup": {
+    "placeKeys": "Đặt mỗi chìa khoá như sau:",
+    "faceupKeys": "Đặt các chìa khóa màu đen, xanh lá, xanh biển, tím và đỏ sang một bên, ngửa mặt lên.",
+    "placeLocations": "Đặt các vị trí sau vào chơi: Grand Entryway, Foul Corridors, 2 lá bài First Floor Hall, 2 lá bài Second Floor Hall, và 1 lá bài Third Floor Hall.",
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Grand Entryway.",
+    "setAsideOtherLocations": "Đặt tất cả các địa điểm khác sang một bên, ngoài màn chơi.",
+    "setAsideCards": "Đặt các lá bài sau một bên, ngoài khu vực chơi: 2 lá bài treachery Syzygy, 2 lá bài treachery Tidal Alignment, lá bài Y'ha-nthlei Statue, kẻ địch Apostle of Dagon, và kẻ địch Dagon.",
+    "checkSecretCult": "Kiểm tra phần \"Ký ức đã được khôi phục\" trong Nhật ký chiến dịch",
+    "checkStickTogether": "Kiểm tra phần \"Ký ức đã được khôi phục\" trong Nhật ký chiến dịch",
+    "floodTokens": "Thêm token lũ lụt vào kho chứa token."
+  },
+  "label": {
+    "tellOceirosNothing": "Không nói với Oceiros bất cứ điều gì.",
+    "lieToOceiros": "Nói dối Oceiros.",
+    "tellOceirosEverything": "Nói cho Oceiros mọi thứ."
+  },
+  "intro1": {
+    "title": "Màn VII: Hang ổ của Dagon"
+  },
+  "intro2": {
+    "title": "Màn VII: Hang ổ của Dagon"
+  },
+  "intro3": {
+    "title": "Màn VII: Hang ổ của Dagon"
+  },
+  "intro4": {
+    "title": "Màn VII: Hang ổ của Dagon"
+  },
+  "intro5": {
+    "title": "Màn VII: Hang ổ của Dagon"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    }
+  }
+}

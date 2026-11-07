@@ -1,0 +1,23 @@
+{
+  "heading": "Màn IV",
+  "intro": {
+    "title": "Màn IV: Lời Tuyên Thệ Không Thể Nói"
+  },
+  "setup": {
+    "setAside": "Đặt các lá bài sau sang một bên, ngoài màn chơi: Daniel Chesterfield, và mỗi bản sao của Patient Confinement."
+  },
+  "resolutions": {
+    "defeated": {
+      "title": "Điều tra viên bị hạ gục"
+    },
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

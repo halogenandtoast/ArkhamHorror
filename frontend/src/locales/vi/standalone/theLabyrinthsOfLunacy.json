@@ -1,0 +1,48 @@
+{
+  "label": {
+    "groupA": "Nhóm A",
+    "groupB": "Nhóm B",
+    "groupC": "Nhóm C"
+  },
+  "setup": {
+    "actDeckGroupA": "Xây dựng bộ bài Act chỉ bằng các phiên bản Nhóm A của Act 1 và 2. Loại bỏ các phiên bản Act khác khỏi màn chơi.",
+    "actDeckGroupB": "Xây dựng bộ bài Act chỉ bằng các phiên bản Nhóm B của Act 1 và 2. Loại bỏ các phiên bản Act khác khỏi màn chơi.",
+    "actDeckGroupC": "Xây dựng bộ bài Act chỉ bằng các phiên bản Nhóm C của Act 1 và 2. Loại bỏ các phiên bản Act khác khỏi màn chơi.",
+    "chamberOfSecrets": "Ngẫu nhiên chọn 1 trong 3 bản sao của vị trí Chamber of Secrets và đặt vào màn chơi. Loại bỏ 2 bản sao còn lại khỏi màn chơi. Mỗi người chơi bắt đầu màn chơi tại vị trí Chamber of Secrets.",
+    "chamberOfRainAndSorrows": "Đặt vị trí Chamber of Rain và Chamber of Sorrows vào màn chơi. Ngẫu nhiên chọn một điều tra viên bắt đầu màn chơi tại Chamber of Rain. Các điều tra viên khác bắt đầu màn chơi tại Chamber of Sorrows.",
+    "chamberOfNightAndRegret": "Đặt vị trí Chamber of Night và Chamber of Regret vào màn chơi. Mỗi điều tra viên bắt đầu màn chơi tại vị trí Chamber of Night",
+    "setAside": "Đặt các lá bài sau sang một bên, ngoài khu vực chơi: Key of Mysteries, Mysterious Syringe, Eixodolon, Eixodolon’s Pet, Rot Diagram, Hunger Diagram, Decay Diagram, 2 bản sao của Faceless Abductor, và mỗi vị trí khác.",
+    "eixodolonsNote": "Trưởng nhóm có quyền kiểm soát Eixodolon’s Note."
+  },
+  "skull": {
+    "takeHorror": "Nhận 1 horror."
+  },
+  "act2Setup": {
+    "title": "Chuẩn bị Act 2",
+    "shuffleEncounterDeck": "Xào mỗi lá bài Faceless Abductor để một bên hồi đầu và chồng bài encounter bỏ vào chồng bài encounter.",
+    "labyrinthineHalls": "Đặt 3 vị trí Labyrinthine Halls để một bên hồi đầu vào màn chơi.",
+    "chamberOfDecay": "Đặt vị trí Chamber of Decay để một bên hồi đầu vào màn chơi.",
+    "chamberOfHunger": "Đặt vị trí Chamber of Hunger để một bên hồi đầu vào màn chơi",
+    "eixodolonsPet": "Đặt lá bài Eixodolon’s Pet để một bên hồi đầu vào màn chơi, gần vị trí Chamber of Hunger, nhưng không ở một vị trí cụ thể. Trong khi không ở một vị trí cụ thể, lá bài này được xem là \"bị khóa\"."
+  },
+  "act3Setup": {
+    "title": "Chuẩn bị Act 3",
+    "abandonedWarehouse": "Đặt vị trí Abandoned Warehouse để một bên hồi đầu vào màn chơi.",
+    "moveInvestigators": "Tách rời tất cả kẻ địch đang đeo bám và di chuyển mỗi điều tra viên còn sống đến vị trí Abandoned Warehouse.",
+    "eixodolon": "Đặt kẻ địch Eixodolon để một bên hồi đầu vào chơi tại vị trí Abandoned Warehouse."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    }
+  }
+}

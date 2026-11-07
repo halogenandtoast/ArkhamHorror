@@ -1,0 +1,35 @@
+{
+  "heading": "Màn III-B",
+  "setup": {
+    "putLocations": "Đặt các vị trí sau vào chơi: Vaults of Zin, City of Gugs, Tower of Koth, và Plain of the Ghouls.",
+    "beginAtVaultsOfZin": "Mỗi điều tra viên bắt đầu chơi tại Vaults of Zin.",
+    "setOtherLocationsAside": "Đặt tất cả các địa điểm khác sang một bên, ngoài màn chơi.",
+    "setEnchantedWoodsAside": "Tìm trong bộ sưu tập lá bài Enchanted Woods *(Stone Trapdoor)* *(The Dream-Eaters #53)* và đặt nó một bên, ngoài khu vực chơi.",
+    "setCardsAside": "Đặt kẻ địch Gug Sentinel, lá bài tài sản Richard Upton Pickman, và điểm yếu False Awakening sang một bên, ngoài khu vực chơi.",
+    "checkAct": "Kiểm tra Nhật ký Chiến dịch. Tùy thuộc vào các trường hợp sau,một phiên bản khác của act 1 sẽ được dùng trong màn chơi này. Loại bỏ phiên bản còn lại của act 1 khỏi màn chơi",
+    "checkSteps": "Một làn sóng đau đớn và buồn nôn tràn qua bạn. Kiểm tra số kiểm đếm được ghi bên cạnh “Các bước của cây cầu” trong Nhật ký Chiến dịch.",
+    "buildEncounterDeck": "Xáo trộn các lá bài encounter còn lại để tạo thành chồng bài encounter."
+  },
+  "rules": {
+    "locations": {
+      "title": "Vị trí trong màn chơi Point of No Return"
+    }
+  },
+  "intro": {
+    "title": "Màn III–B: Point of No Return"
+  },
+  "intro1": {
+    "title": "Màn III–B: Point of No Return"
+  },
+  "intro2": {
+    "title": "Màn III–B: Point of No Return"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

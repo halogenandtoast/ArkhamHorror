@@ -1,0 +1,23 @@
+{
+  "heading": "Màn V",
+  "setup": {
+    "roadDeck": "Tạo chồng bài Road (Con Đường). Điều này được thực hiện bằng cách thực hiện các bước sau:",
+    "bottomThree": "Xào lá bài Falcon Point Approach và 2 lá bài Old Innsmouth Road vào để tạo thành 3 lá bài cuối cùng của chồng bài Road.",
+    "remainingOnTop": "Đặt tất cả các lá bài Old Innsmouth Road còn lại lên trên theo thứ tự ngẫu nhiên.",
+    "vehiclesBeginAtFront": "Mỗi phương tiện di chuyển có ít nhất một điều tra viên sẽ bắt đầu chơi ở vị trí phía trước vị trí Old Innsmouth Road. Loại bỏ các phương tiện di chuyển khác khỏi màn chơi.",
+    "beginInVehicle": "Mỗi điều tra viên bắt đầu chơi trên phương tiện di chuyển mà họ đã chọn để lên.",
+    "chooseDrivers": "Chọn người lái. Một điều tra viên trên mỗi phương tiện di chuyển phải được chỉ định là người điều khiển phương tiện đó.",
+    "driverNote": "Mỗi phương tiện luôn phải có người điều khiển và có ít nhất một điều tra viên trên nó. Nếu người lái rời khỏi phương tiện di chuyển hoặc bị loại bỏ thì chọn một điều tra viên khác trên phương tiện đó làm người điều khiển mới.",
+    "playerCount": "Dựa vào số lượng người chơi trong màn chơi:",
+    "checkCampaignLog": "Kiểm tra nhật ký chiến dịch. Tùy thuộc vào các trường hợp sau đây mà sử dụng một phiên bản khác của agenda 1 trong màn chơi này. Loại bỏ các phiên bản khác của agenda 1 khỏi màn chơi."
+  },
+  "intro": {
+    "title": "Màn V: Nỗi kinh hoàng ở Vòng Tua Cao",
+    "body": "<p>Cây cối lướt qua khi bạn đi ầm ầm dọc theo con đường đất cũ ngay bên ngoài thị trấn Innsmouth. Mặt trời đã lặn ở chân trời phía Tây, chỉ còn lại vầng trăng tròn soi sáng những con đường bụi bặm trong ánh sáng rực rỡ, kỳ quái. “Chỗ này,” Đặc vụ Harper hét lên từ ghế hành khách át tiếng động cơ ô tô ầm ầm. Cô ấy chỉ vào một điểm trên bản đồ mà cô ấy đã trải dài trên đùi, gõ nhẹ vào đó nhiều lần. \"Ngọn hải đăng Falcon Point. Đó là nơi Oceiros nên ở.\" Một cơn rùng mình chạy dọc sống lưng bạn. Nếu ký ức của bạn đáng tin cậy thì Oceiros chính là người đã bỏ mặc bạn chết trong những đường hầm thủy triều đó. Bạn hỏi Harper là Falcon Point cách thị trấn Innsmouth bao xa, hy vọng sẽ đến nơi trước khi Dòng nhận ra bạn đã trốn thoát. Cô ấy thở dài. \"Nó không xa lắm, nhưng những con đường này quanh co. Chúng có thể khó di chuyển. Rẽ nhầm một cái và—\" cả bạn và Harper đều nhìn thấy đèn trong gương chiếu hậu của bạn cùng một lúc. Đèn pha. Và chúng ngày càng lớn hơn và sáng hơn theo từng giây. Harper thầm nguyền rủa. \"Tôi không nghĩ rằng đó là bạn của cậu, phải không?\" Bạn lắc đầu và siết chặt tay lái. Có vẻ như Dòng đã biết chuyến bay của bạn từ Innsmouth. Bạn bảo Đặc vụ Harper giữ chặt và nhấn chân ga.</p>"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "setup": {
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Miskatonic University.",
+    "placeDoom": "Đặt 1 doom lên agenda cho mỗi điều tra viên trong trò chơi.",
+    "bearerOfDrHenryArmitage": "Nếu một điều tra viên là người sở hữu story asset Dr. Henry Armitage, hãy tìm ông ấy trong bộ bài của họ và đưa vào chơi dưới quyền kiểm soát của người sở hữu. Ông ấy không chiếm một khe ally trong màn chơi này.",
+    "setAsideMarkOfElokoss": "Đặt tất cả các bản sao của weakness Mark of Elokoss sang một bên, ngoài cuộc chơi.",
+    "shuffleRemainder": "Xáo trộn các lá bài encounter còn lại để tạo thành chồng bài encounter.",
+    "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu."
+  },
+  "intro": {
+    "title": "Kịch bản II: Smoke and Mirrors"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  },
+  "codex": {
+    "label": {
+      "addToVictory": "Thêm Servant of Flame vào victory display. Mỗi điều tra viên rút 3 lá bài."
+    }
+  }
+}

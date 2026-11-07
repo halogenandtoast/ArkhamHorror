@@ -1,0 +1,40 @@
+{
+  "heading": "Màn IV-A",
+  "setup": {
+    "beginAtPlateauOfLeng": "Mỗi điều tra viên bắt đầu chơi tại Plateau of Leng.",
+    "setForsakenTowersAside": "Đặt 6 vị trí Forsaken Tower sang một bên, ngoài khu vực chơi.",
+    "setCardsAside": "Đặt các lá bài sau một bên, ngoài khu vực chơi: High Priest Not to Be Described, 5 bản sao của Nyarlathotep, 4 bản sao của Whispering Chaos, 2 bản sao của Myriad Forms, và The Crawling Mist.",
+    "buildEncounterDeck": "Xáo trộn các lá bài encounter còn lại để tạo thành chồng bài encounter."
+  },
+  "intro": {
+    "title": "Màn IV-A: Where the Gods Dwell"
+  },
+  "intro1": {
+    "title": "Màn IV-A: Where the Gods Dwell"
+  },
+  "intro2": {
+    "title": "Màn IV-A: Where the Gods Dwell"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "resolution5": {
+      "title": "Giải pháp thứ 5"
+    }
+  },
+  "label": {
+    "wakeUp": "*Tỉnh dậy.*",
+    "remainOnSurface": "*Ở lại trên bề mặt của Vùng đất Giấc mơ.*",
+    "ventureIntoUnderworld": "*Mạo hiểm tiến vào Underworld để tìm những người bạn đồng hành của bạn.*"
+  }
+}

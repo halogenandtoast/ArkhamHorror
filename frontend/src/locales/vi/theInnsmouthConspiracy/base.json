@@ -1,0 +1,100 @@
+{
+  "interludes": {
+    "1": "Những mảnh ghép",
+    "3": "Bên dưới những Con Sóng",
+    "4": "Sự Thật Ẩn Giấu"
+  },
+  "interlude1": {
+    "part1": {
+      "title": "Chuyển tiếp I: Những mảnh ghép"
+    },
+    "aMeetingWithThomasDawson": {
+      "title": "Nếu *một cuộc gặp gỡ với Thomas Dawson* được liệt kê trong phần \"Ký ức đã được khôi phục\":"
+    },
+    "noMemoriesRecovered": {
+      "title": "Nếu không có gì được liệt kê trong phần \"Ký ức đã được khôi phục\":"
+    },
+    "aBattleWithAHorrifyingDevil": {
+      "title": "Nếu *một trận chiến với một con quỷ đáng sợ* được liệt kê trong phần \"Ký ức đã được phục hồi\":"
+    },
+    "aDecisionToStickTogether": {
+      "title": "Nếu *quyết định đi cùng với nhau* được liệt kê trong phần \"Ký ức đã được phục hồi\":"
+    },
+    "anEncounterWithASecretCult": {
+      "title": "Nếu *cuộc chạm trán với một giáo phái bí mật* được liệt kê trong phần \"Ký ức được phục hồi\":",
+      "body": "<p>Bạn mô tả ký ức của mình về bên trong một trụ sở giáo phái nào đó. “Âm thanh như thế hẳn phải xảy ra bên trong tòa nhà Hội Bí truyền của Dagon ở phía bắc thị trấn,” Đặc vụ Harper giải thích. \"Tổ chức đó thật hèn hạ: Tôi chỉ biết thôi. Tuy nhiên, tôi không có bằng chứng nào để mang về, và có vẻ như cậu đã quên hết những gì đã biết.\" Cô ấy chửi thầm trong miệng.</p>"
+    },
+    "part2": {
+      "title": "Chuyển tiếp I: Những mảnh ghép"
+    }
+  },
+  "interlude3": {
+    "purpleKey": "<p>Bạn mô tả lại tượng thần được tìm thấy trong hang động dưới đáy biển. Đặc vụ Harper gật đầu cùng bạn. “Tôi nhớ đã thấy điều gì đó tương tự như thế trong một số ghi chú tôi tìm thấy trong khi cậu đi điều tra rạn san hô. Nó mô tả một vị thần cổ xưa nào đó—người mà những sinh vật hèn hạ đó tôn thờ.” Giọng cô ấy thấp xuống chỉ còn hơn một lời thì thầm. \"Điều tôi nghi ngờ là đây không chỉ là chuyện thần thoại.\" Bạn hỏi tượng thần hiện đang ở đâu và cô ấy lắc đầu. \"Tôi nghi ngờ nó đã bị lấy đi khi cậu bị ném xuống cái hố đó,\" cô trả lời.</p>",
+    "whiteKey": "<p>Bạn nhớ lại chiếc áo choàng kỳ lạ mà bạn tìm thấy chìm sâu trong Rạn San Hô Quỷ. “Đúng, tôi nhớ đã thấy điều đó,” Harper nói và búng ngón tay. “Một trong những 'linh mục' trong Dòng Dagon bí truyền đáng nguyền rủa đó đã mặc nó khi tôi mới đến thị trấn Innsmouth. Nó hẳn đã được đưa đến ngọn hải đăng cùng với những đồ đạc còn lại của cậu khi cậu bị bắt tại trụ sở của Dòng. Nếu chúng ta may mắn, nó sẽ vẫn còn ở đó…”</p>",
+    "blackKey": "<p>Bạn kể cho Đặc vụ Harper về ngôi đền có hai bức tượng bạn phát hiện được ở Rạn San Hô Quỷ và về chiếc vương miện mà bạn đã đánh cắp. \"Nghe giống như 'Cái mũ của Y'ha-nthlei' mà tôi đã đọc khi nghiên cứu về Dòng. Tôi rất ấn tượng là cậu có thể lấy được nó. Dù nó là gì đi nữa, nó có vẻ khá quan trọng đối với Dòng. Dù vậy, tôi vẫn chưa biết 'Y'ha-nthlei' là gì.\" Bạn nhận xét rằng bạn không còn chiếc vương miện nữa và cô ấy gật đầu. Cô giải thích: “Chắc hẳn nó đã bị lấy đi khỏi cậu và mang đến ngọn hải đăng cùng với những đồ đạc còn lại của cậu trước khi bạn mất đi ký ức.</p>",
+    "xp": {
+      "whiteKey": "Áo choàng đã được đem tới ngọn hải đăng.",
+      "blackKey": "Vương miện đã được đem tới ngọn hải đăng."
+    }
+  },
+  "interlude4": {
+    "hiddenTruths": {
+      "title": "Chuyển tiếp IV: Sự Thật Ẩn Giấu"
+    }
+  },
+  "epilogue": {
+    "epilogue1": {
+      "title": "Phần kết"
+    },
+    "checkMemories": "Kiểm tra phần \"Ký ức đã được khôi phục\" trong Nhật ký chiến dịch",
+    "epilogue2": {
+      "title": "Phần kết",
+      "body": "<p>_Phần kết 2_ …bạn rũ bỏ cảm xúc đó. Nó không còn quan trọng nữa. Toàn bộ thử thách này bây giờ đã ở phía sau bạn. Thị trấn Innsmouth, Dagon, Hydra, Y'ha-nthlei - chỉ là một ký ức khủng khiếp mà bạn ước mình có thể quên đi, giống như tất cả những ký ức khác mà bạn đã đánh mất. Bàn chân của bạn nằm nặng trên chân ga. Bạn càng rời xa nơi địa ngục này càng nhanh thì càng tốt.</p>"
+    },
+    "flashback15": {
+      "title": "Hồi tưởng XV"
+    }
+  },
+  "memoriesRecovered": {
+    "theHorribleTruth": "Sự thật kinh hoàng."
+  },
+  "possibleHideouts": {
+    "innsmouthJail": "Innsmouth Jail (nhà tù Innsmouth)",
+    "shorewardSlums": "Shoreward Slums (khu ổ chuột ven biển)",
+    "sawboneAlley": "Sawbone Alley (hẻm Sawbone)",
+    "theHouseOnWaterStreet": "The House on Water Street (ngôi nhà trên đường Water)",
+    "esotericOrderOfDagon": "Dòng Dagon bí truyền"
+  },
+  "key": {
+    "memoriesRecovered": "Ký Ức Đã Được Khôi Phục",
+    "theMissionFailed": "Nhiệm vụ thất bại.",
+    "theMissionWasSuccessful": "Nhiệm vụ thành công.",
+    "possibleSuspects": "Nghi phạm",
+    "possibleHideouts": "Nơi ẩn náu tiềm năng",
+    "innsmouthWasConsumedByTheRisingTide": "Thị trấn Innsmouth bị nhấn chìm bởi thủy triều dâng cao.",
+    "theInvestigatorsMadeItSafelyToTheirVehicles": "Các điều tra viên đã đến được phương tiện di chuyển của họ một cách an toàn.",
+    "theTideHasGrownStronger": "Thủy triều đã mạnh lên.",
+    "theTerrorOfDevilReefIsStillAlive": "Terror of Devil Reef vẫn còn sống.",
+    "theTerrorOfDevilReefIsDead": "Terror of Devil Reef đã chết.",
+    "theIdolWasBroughtToTheLighthouse": "Tượng thần đã được đem đến ngọn hải đăng.",
+    "theMantleWasBroughtToTheLighthouse": "Áo choàng đã được đem tới ngọn hải đăng.",
+    "theHeaddressWasBroughtToTheLighthouse": "Vương miện đã được đem tới ngọn hải đăng.",
+    "theInvestigatorsReachedFalconPointBeforeSunrise": "Các điều tra viên đã đến được Falcon Point trước khi mặt trời mọc.",
+    "theInvestigatorsReachedFalconPointAfterSunrise": "Các điều tra viên đã đến được Falcon Point sau khi mặt trời mọc.",
+    "theInvestigatorsPossessAMapOfYhaNthlei": "Các điều tra viên sở hữu một bản đồ của Y'ha-nthlei.",
+    "theInvestigatorsPossessTheKeyToYhaNthlei": "Các điều tra viên sở hữu một chìa khóa của Y'ha-nthlei.",
+    "dagonHasAwakened": "Dagon đã thức tỉnh.",
+    "dagonStillSlumbers": "Dagon vẫn còn ngủ.",
+    "theOrdersRitualWasDisrupted": "Nghi lễ của Dòng đã bị gián đoạn.",
+    "theGatekeeperHasBeenDefeated": "Người gác cổng đã bị đánh bại.",
+    "theGuardianOfYhanthleiIsDispatched": "Người bảo vệ của thành phố Y'ha-nthlei được phái đi.",
+    "theInvestigatorsEscapedYhanthlei": "Các điều tra viên đã trốn thoát khỏi Y'ha-nthlei.",
+    "thePlotOfTheDeepOnesWasThwarted": "Âm mưu của Deep Ones đã bị cản trở.",
+    "theFloodHasBegun": "Lũ lụt đã bắt đầu.",
+    "agentHarpersMissionIsComplete": "Nhiệm vụ của đặc vụ Harper đã hoàn thành.",
+    "theRichesOfTheDeepAreLostForever": "Sự giàu có của vực sâu bị đánh mất vĩnh viễn.",
+    "agentHarpersMissionIsCompleteButAtWhatCost": "Nhiệm vụ của đặc vụ Harper đã hoàn thành… nhưng bằng cái giá nào?",
+    "theDeepOnesHaveFloodedTheEarth": "Deep Ones đã ngập lụt cả Trái đất.",
+    "theHorribleTruth": "Sự thật kinh hoàng."
+  }
+}

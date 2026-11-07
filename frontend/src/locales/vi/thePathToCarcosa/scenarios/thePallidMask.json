@@ -1,0 +1,25 @@
+{
+  "heading": "Màn VI",
+  "xp": {
+    "readActII": "Đọc Act II"
+  },
+  "intro": {
+    "title": "Màn VI: Chiếc Mặt Nạ Nhợt Nhạt"
+  },
+  "setup": {
+    "setAside": "Tìm lá bài Tomb of Shadows và Blocked Passage (mỗi lá là mặt để lộ của một vị trí Catacombs). Đặt chúng một bên, ngoài khu vực chơi.",
+    "catacombs": {
+      "instructions": "Đặt tất cả các vị trí khác một bên tạo thành \"Chồng bài Catacombs.\" (Chồng bài Hầm mộ). Để làm điều này, thực hiện điều sau:",
+      "top": "Sau đó, đặt tất cả vị trí Catacombs còn lại lên trên, theo thứ tự ngẫu nhiên. Tất cả các lá bài trong Chồng bài Catacombs chỉ nên để lộ mặt Catacombs, khiến cho người chơi không phân biệt được chúng."
+    },
+    "theManInThePallidMask": "Người mang điểm yếu The Man in the Pallid Mask tìm lá bài này trong bộ bài của mình và đặt nó một bên, ngoài khu vực chơi."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

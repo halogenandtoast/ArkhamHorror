@@ -1,0 +1,86 @@
+{
+  "heading": "Màn I",
+  "part1": {
+    "investigatorSetup": {
+      "title": "Thiết lập Điều tra viên",
+      "body": "<div class='iceAndDeath'><ul><li>Mỗi điều tra viên có thể chọn một thành viên còn sống trong đội thám hiểm chưa bị gạch tên để đồng hành cùng họ. Đặt lá bài tài sản câu chuyện của nhân vật được chọn vào khu vực chơi của điều tra viên đó. (Những lá bài tài sản câu chuyện này có thể tìm thấy trong bộ encounter *Expedition Team* (Đội Thám hiểm).)</li></ul></div>"
+    },
+    "setup": {
+      "setAsideCreaturesInTheIce": "Đặt sang một bên bộ encounter *Creatures in the Ice* (Sinh vật trong Băng).",
+      "beginAtCrashSite": "Mỗi điều tra viên bắt đầu màn chơi tại Crash Site (Nơi Máy bay Rơi).",
+      "setSkitteringNonsenseOutOfPlay": "Đặt tất cả kẻ địch Skittering Nonsense (Tiếng Ồn Lạch cạch) sang một bên, ngoài màn chơi.",
+      "setTerrorOfTheStarsBringerOfIceAndDeathOutOfPlay": "Đặt kẻ địch Terror of the Stars (Nỗi Kinh hoàng từ Các Vì sao) sang một bên, ngoài màn chơi.",
+      "checkDifficulty": "Kiểm tra cấp độ khó.",
+      "tekelili": "Xáo trộn tất cả các lá bài điểm yếu Tekeli-li! để tạo thành chồng bài Tekeli-li. Đặt chồng bài này gần chồng bài agenda."
+    },
+    "intro": {
+      "title": "Màn I: Ice and Death (Băng giá và Cái chết)"
+    },
+    "intro1": {
+      "title": "Ice and Death (Băng giá và Cái chết), Phần I"
+    },
+    "intro2": {
+      "title": "Ice and Death (Băng giá và Cái chết), Phần I"
+    },
+    "intro3": {
+      "title": "Ice and Death (Băng giá và Cái chết), Phần I"
+    },
+    "intro4": {
+      "title": "Ice and Death (Băng giá và Cái chết), Phần I"
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Kết thúc thứ nhất"
+      }
+    }
+  },
+  "part2": {
+    "investigatorSetup": {
+      "title": "Thiết lập Điều tra viên"
+    },
+    "setup": {
+      "unrevealed": "Đặt tất cả các địa điểm khác vào màn chơi, chưa để lộ.",
+      "missing": "Một số thành viên của đội thám hiểm mất tích trong đêm!",
+      "findStory": "Tìm các lá bài câu chuyện từ bộ encounter *Lost in the Night* (Lạc trong Đêm) và xáo trộn chúng. Từng lá một, thêm một trong những lá bài này úp mặt vào các kẻ địch đã được đặt sang một bên trước đó, cho đến khi có tổng cộng chính xác 9 lá bài kẻ địch và câu chuyện được đặt sang một bên theo cách này. Loại bỏ các lá bài câu chuyện không sử dụng khỏi màn chơi.",
+      "beginAtCamp": "Mỗi điều tra viên bắt đầu màn chơi tại trại.",
+      "tekelili": "Xáo trộn tất cả các lá bài điểm yếu Tekeli-li! chưa nằm trong bộ bài của điều tra viên để tạo thành chồng bài Tekeli-li. Đặt chồng bài này gần chồng bài agenda."
+    },
+    "intro": {
+      "title": "Ice and Death (Băng giá và Cái chết), Phần II"
+    },
+    "kenslerAliveAndNotMissing": "<p class='basic'>_Nếu Tiến sĩ Amy Kensler còn sống và không mất tích:_</p><p>\"Thật là một mớ hỗn độn,\" Tiến sĩ Kensler nói với giọng điệu bực bội gay gắt. \"Họ có thể đã đi đâu chứ? Và làm sao mà không ai trong chúng ta nhận ra?\" Bạn vươn tay để trấn an cô ấy, nhưng cô ấy đã bắt đầu thu dọn đồ đạc, chuẩn bị dẫn đầu cuộc tìm kiếm.</p><p class='basic'>Nếu Tiến sĩ Amy Kensler được chọn để đồng hành cùng một điều tra viên trong màn chơi này, cô ấy vào màn chơi với thêm 1 secret.</p>",
+    "dyerAliveAndNotMissing": "<p class='basic'>_Nếu Giáo sư William Dyer còn sống và không mất tích:_</p><p>\"Đây lại giống hệt đội của Giáo sư Lake,\" Dyer càu nhàu. \"Khi chúng ta mất liên lạc với họ lần đầu, chúng ta cho rằng đó là do thời tiết. Nhưng…\" ánh mắt lạnh lẽo và chết chóc của ông gặp mắt bạn. \"Giờ chúng ta biết rõ hơn, phải không? Ít nhất là tôi nghĩ chúng ta đã biết nhiều hơn.\"</p><p class='basic'>Nếu Giáo sư William Dyer được chọn để đồng hành cùng một điều tra viên trong màn chơi này, ông ấy vào màn chơi với thêm 1 secret.</p>",
+    "claypoolAliveAndNotMissing": "<p class='basic'>_Nếu Avery Claypool còn sống và không mất tích:_</p><p>Claypool kiểm kê số vật tư còn lại của bạn, lắc đầu khi đếm. \"Không thiếu thứ gì,\" anh ta thú nhận với vẻ khó tin. \"Họ không mang theo gì cả. Không ai thấy họ rời đi, và không có bằng chứng nào cho thấy họ bị bắt cóc. Thật vô lý.\" Bạn hỏi Claypool rằng một người có thể sống sót ngoài đó bao lâu mà không có vật tư. \"Trong thời tiết này? Và với những… thứ đó vẫn còn ngoài kia?\" Đôi mắt hiểu biết của anh ta tránh khỏi mắt bạn. \"Họ sẽ không sống sót qua đêm.\"</p><p class='basic'>Nếu Avery Claypool được chọn để đồng hành cùng một điều tra viên trong màn chơi này, anh ấy vào màn chơi với thêm 1 supply.</p>",
+    "ellsworthMissing": "<p class='basic'>Ngoài ra, nếu Roald Ellsworth mất tích</p><p>Claypool—thường là một người lắm lời—lại u ám và im lặng suốt phần còn lại của quá trình chuẩn bị. Bạn chưa bao giờ thấy anh ta quyết tâm đến vậy.</p><p class='basic'>Avery Claypool phải được chọn để đồng hành cùng một điều tra viên trong màn chơi này, nếu có thể.</p>",
+    "fredericksAliveAndNotMissing": "<p class='basic'>_Nếu James \"Cookie\" Fredericks còn sống và không mất tích:_</p><p>Cookie nạp đạn vào khẩu súng lục với ánh mắt xa xăm. Bạn có cảm giác đây không phải lần đầu tiên anh ta tỉnh dậy với nỗi đau như vậy. \"Chúng ta sẽ tìm ra họ,\" anh ta lẩm bẩm lặp đi lặp lại. \"Chúng ta sẽ tìm ra họ.\" Bạn không chắc anh ta đang cố thuyết phục ai.</p><p class='basic'>Nếu James \"Cookie\" Fredericks được chọn để đồng hành cùng một điều tra viên trong màn chơi này, anh ấy vào màn chơi với thêm 1 ammo.</p>",
+    "resolutions": {
+      "resolution1": {
+        "title": "Kết thúc thứ nhất"
+      }
+    }
+  },
+  "part3": {
+    "setup": {
+      "unrevealed": "Đặt tất cả các địa điểm khác vào màn chơi, chưa để lộ.",
+      "beginAtCamp": "Mỗi điều tra viên bắt đầu màn chơi tại trại.",
+      "removeClues": "Loại bỏ tất cả manh mối khỏi trại. Trại bắt đầu trò chơi mà không có manh mối nào trên đó.",
+      "tekelili": "Xáo trộn tất cả các lá bài điểm yếu Tekeli-li! chưa nằm trong bộ bài của điều tra viên để tạo thành chồng bài Tekeli-li. Đặt chồng bài này gần chồng bài agenda."
+    },
+    "intro": {
+      "title": "Ice and Death (Băng và Cái Chết), Phần III"
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Kết thúc thứ nhất"
+      },
+      "resolution2": {
+        "title": "Kết thúc thứ hai"
+      }
+    }
+  },
+  "manifestationsOfEvil": {
+    "label": {
+      "addFrost": "Thêm 1 token {'{'}frost{'}'} (băng giá) vào túi hỗn mang."
+    }
+  }
+}

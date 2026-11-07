@@ -1,0 +1,58 @@
+{
+  "intro": {
+    "doNoHarm": {
+      "title": "Nhiệm vụ: Do No Harm",
+      "body": "Khi bạn chuẩn bị vượt qua bức tường, bạn phát hiện một người nằm sấp trên bãi cát đen. Đó là một người đàn ông mặc một chiếc áo choàng chắp vá rách rưới. Gạt đi những câu hỏi về việc làm thế nào anh ta đến được đây, bạn tiến lại gần và bắt mạch cho anh ta. Anh ta vẫn còn sống, mặc dù bị thương nặng. Mủ vàng rỉ ra từ những vết giác mút tròn trên cổ, cánh tay và ngực anh ta. Bạn băng bó vết thương cho anh ta tốt nhất có thể, sau đó đánh thức anh ta bằng một ít muối ngửi. Đôi mắt anh ta hé mở và anh ta thều thào một từ: \"Mẹ.\" Bạn nhìn những người khác. Người đàn ông này rõ ràng cần được giúp đỡ."
+    },
+    "label": {
+      "doNoHarm": {
+        "bringAlong": "*\"Hãy mang anh ta theo. Chúng ta vẫn có thể cứu anh ta.\"*",
+        "leaveBehind": "*\"Bỏ anh ta lại.\"*"
+      }
+    }
+  },
+  "setup": {
+    "west": {
+      "title": "Thiết lập (v.I) - Western Expedition",
+      "floodLevels": "Tăng flood level của mỗi địa điểm ở level 2-5.",
+      "fullyFloodLevels": "Tăng flood level của level 4 và 5 sao cho chúng fully flooded."
+    },
+    "east": {
+      "title": "Thiết lập (v.II) - Eastern Expedition",
+      "buildActDeck": "Tạo chồng bài act bằng act 1a-\"Ascend the Wall.\" Loại bỏ act còn lại khỏi trò chơi.",
+      "floodLevels": "Tăng flood level của mỗi địa điểm ở các tầng 1-4.",
+      "fullyFloodLevels": "Tăng flood level của các tầng 1 và 2 sao cho chúng trở thành fully flooded."
+    },
+    "gatherLocations": "Tập hợp từng vị trí trong bộ encounter *The Western Wall*.",
+    "placeWesternWall": "Đặt Western Wall vào chơi ở Level 1 như hình.",
+    "placeObsidianFoundations": "Đặt Obsidian Foundations vào chơi ở Level 1 như hình.",
+    "beginAtWesternWall": "Mỗi điều tra viên bắt đầu chơi tại Western Wall.",
+    "setAsideCoralStarSpawn": "Tìm kẻ địch Coral Star Spawn trong tập encounter *Star Spawn* và để riêng ngoài cuộc chơi. Loại bỏ mọi lá bài khác trong tập encounter *Star Spawn* khỏi trò chơi.",
+    "addFloodTokens": "Thêm token lũ lụt vào kho chứa token.",
+    "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu."
+  },
+  "rules": {
+    "locationAdjacency": {
+      "title": "Sự liền kề của các vị trí trong The Western Wall",
+      "body": "<p class='basic'>Trong scenario này, các location được sắp xếp theo một khuôn mẫu cố định gồm 5 level.</p><ul><li>Vị trí của mỗi location có level riêng từ 1-5, bắt đầu tại Western Wall ở level 1 và đi xuống các location dưới cùng ở level 5.</li><li>Bất kỳ effect nào của lá bài đề cập đến level của một location đều đề cập đến hàng được đánh số của nó, như được hiển thị trong sơ đồ sắp xếp location.</li><li>_Trong scenario này, mỗi location được kết nối với mỗi location ở hàng trên và hàng dưới nó. Các location trong cùng một hàng không kết nối với nhau._</li></ul>"
+    }
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "doNoHarmResolution": {
+      "title": "Nhiệm vụ: Do No Harm",
+      "task1HuntingParasite": "Tìm weakness Hunting Parasite đã để riêng và thêm vĩnh viễn nó vào deck của bạn. Lá bài này không tính vào deck size của điều tra viên của bạn",
+      "task1Progress": "Bạn đã cố gắng hết sức để giúp đỡ nạn nhân. Đánh dấu 2 tiến trình dưới mục \"Do No Harm\" trong Nhật ký Chiến dịch của bạn",
+      "task2Trauma": "Bạn đã bỏ rơi một người đang cần giúp đỡ. Chịu 1 mental trauma.",
+      "task2Progress": "Xóa 1 tiến trình dưới mục \"Do No Harm\" trong Nhật ký Chiến dịch của bạn."
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

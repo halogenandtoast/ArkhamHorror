@@ -1,0 +1,35 @@
+{
+  "heading": "Màn VI",
+  "setup": {
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Falcon Point Gatehouse.",
+    "removeUndergroundRivers": "Trong số các vị trí Tidal Tunnel, hãy loại bỏ 2 vị trí Underground River khỏi màn chơi.",
+    "setAsideOtherLocations": "Đặt tất cả các địa điểm khác sang một bên, ngoài màn chơi.",
+    "placeKeys": "Đặt từng chìa khóa sang một bên, như sau:",
+    "facedownKeys": "Đặt các chìa khóa tím và xanh lá sang một bên, úp xuống. Xáo trộn chúng để bạn không biết cái nào là cái nào.",
+    "setAsideCards": "Đặt những lá bài sau đây sang một bên: kẻ địch Oceiros Marsh, cả 2 lá bài treachery Worth His Salt, và cả 2 lá bài treachery Taken Captive.",
+    "floodTokens": "Thêm token lũ lụt vào kho chứa token."
+  },
+  "intro": {
+    "title": "Màn chơi VI: Ánh đèn trong sương mù"
+  },
+  "flashback12": {
+    "title": "Hồi tưởng XII"
+  },
+  "flashback13": {
+    "title": "Hồi tưởng XIII"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    }
+  }
+}

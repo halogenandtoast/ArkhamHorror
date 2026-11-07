@@ -1,0 +1,63 @@
+{
+  "setup": {
+    "subject": "Đặt kẻ địch Subject 8L-08 vào chơi bên cạnh agenda deck. Nó không ở bất kỳ vị trí nào.",
+    "shuffleQuarantine": "Xào các vị trí Quarantine Zone với nhau và loại bỏ 1 trong số chúng khỏi trò chơi.",
+    "placeCrater": "Đặt The Crater vào chơi.",
+    "remaining": "Đặt các vị trí Quarantine Zone còn lại vào chơi.",
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Temporary HQ."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  },
+  "label": {
+    "ltWilsonStewart": {
+      "drawCard": "Rút 1 lá bài."
+    },
+    "temporaryHQ": {
+      "drawCards": "Rút 3 lá bài."
+    }
+  },
+  "realityAcid": {
+    "outcomes": {
+      "treachery": "…một treachery tại vị trí của bạn.",
+      "heal": "…1 điểm kinh hoàng (horror) và 1 điểm sát thương (damage) khỏi lá bài điều tra viên của bạn.",
+      "greatestFlaw": "…khuyết điểm lớn nhất của bạn. Tìm trong deck của bạn 1 lá bài weakness bất kỳ. Nó bị devoured.",
+      "elderSignToken": "…token {'{'}elderSign{'}'} vừa được tiết lộ.",
+      "caution": "…sự cẩn trọng của bạn. Giải quyết Reality Acid thêm ba lần nữa, bỏ qua kết quả này.",
+      "ignorance": "…sự thiếu hiểu biết của bạn. Khám phá 1 manh mối tại vị trí của bạn.",
+      "friendships": "…tình bạn. Cho đến khi kết thúc vòng chơi, các điều tra viên không thể commit bài vào các bài kiểm tra kỹ năng của nhau.",
+      "playerReferenceCard": "…thẻ tham chiếu người chơi của bạn.",
+      "voice": "…giọng nói của bạn. Cho đến khi kết thúc vòng, bạn không thể nói chuyện hay tạo ra tiếng ồn.",
+      "foodAndDrinks": "…đồ ăn và thức uống của nhóm bạn. Chúng không thể được tiêu thụ cho đến khi nhóm của bạn gây ít nhất 3 damage cho Subject 8L-08.",
+      "language": "…khái niệm về ngôn ngữ. Cho đến khi kết thúc investigation phase, bạn chỉ có thể nói lảm nhảm.",
+      "light": "…ánh sáng. Cho đến khi kết thúc vòng chơi, các điều tra viên phải chơi với tất cả các nguồn sáng xung quanh bị tắt hoặc che lại (ngoại trừ đèn pin).",
+      "regurgitate": "…chính nó, và sau đó tự nôn ra chính nó. Gây 1 damage cho Subject 8L-08.",
+      "uses": "…tất cả supplies, ammo, charges, và secrets trên các asset bạn điều khiển.",
+      "versatility": "…sự linh hoạt của bạn. Cho đến khi kết thúc vòng chơi, bạn không thể chơi hoặc sử dụng các lá bài không cùng class với điều tra viên của bạn.",
+      "cellPhone": "…điện thoại di động của bạn.",
+      "chaosBag": "…chaos bag. Lấy tất cả token ra khỏi đó và đặt chúng vào một vật chứa khác.",
+      "top3Discard": "…3 lá bài trên cùng discard pile của bạn.",
+      "deckbox": "…hộp đựng bài mà bạn cất deck của mình.",
+      "cardSleeve": "…bọc bài điều tra viên của bạn.",
+      "teamwork": "…sự hợp tác của nhóm bạn. Mỗi điều tra viên mất 1 action.",
+      "yourHouse": "…ngôi nhà của bạn. Tìm trong bộ sưu tập lá bài Your House (Core #124); nó đã bị devoured.",
+      "noSoul": "…linh hồn của bạn. Ghi lại vào Nhật ký Chiến dịch rằng *bạn không có linh hồn.*",
+      "events": "…tất cả các lá bài event trên tay bạn.",
+      "resources": "…tất cả resource của bạn.",
+      "skills": "…tất cả các lá bài skill trên tay bạn.",
+      "exiledCards": "…tất cả các lá bài đã bị exiled.",
+      "speed": "…khái niệm về tốc độ. Cho đến khi kết thúc vòng chơi, các điều tra viên không thể nhận thêm hoặc thực hiện thêm action.",
+      "cannotMove": "…cảm giác cấp bách của bạn. Cho đến khi kết thúc vòng chơi, bạn không thể di chuyển.",
+      "potential": "…tiềm năng của bạn. Cho đến khi kết thúc vòng chơi, các kỹ năng của bạn không thể được tăng lên.",
+      "doom": "…sự kiên nhẫn của bạn. Đặt 1 doom lên agenda hiện tại.",
+      "handSlot": "…một bàn tay của bạn. Trong phần còn lại của trò chơi, bạn có ít hơn 1 hand slot.",
+      "success": "…khái niệm về sự thành công. Lần tiếp theo một điều tra viên đáng lẽ thành công một bài kiểm tra với cách biệt từ 2 trở lên, điều tra viên đó thay vào đó sẽ tự động thất bại.",
+      "easiness": "…khái niệm về sự dễ dàng. Cho đến khi kết thúc trò chơi, lật scenario reference card sang mặt Hard/Expert."
+    }
+  }
+}

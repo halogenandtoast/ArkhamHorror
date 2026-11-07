@@ -1,0 +1,22 @@
+{
+  "heading": "Màn I",
+  "intro": {
+    "title": "Màn I: Hạ Màn",
+    "body": "<p>Bạn giật mình thức dậy, như thể bị lay chuyển bởi một lực lượng vô hình. Chắc hẳn bạn đã ngủ khá lâu rồi, vì chỉ còn một vài khán giả quen thuộc và không có người biểu diễn trên sân khấu. Ánh đèn mờ, và màn sân khấu bị rách nát, mặc dù bạn không nhớ nó có bị vậy trong phần đầu không. Bạn đợi một lát trước khi chắc chắn đây không phải là một phần của màn trình diễn. Trong khi chờ, một mùi hôi thối nhưng khó nhận biết là mùi gì lan tỏa trong không khí. Bạn đã ngủ bao lâu rồi? Rũ bỏ cơn buồn ngủ, bạn đi về phía một trong những khách quen đang ngồi và hỏi thời gian, nhưng anh ta không trả lời. Lúc này bạn mới nhận ra mình đang nói chuyện với một xác chết.</p>"
+  },
+  "setup": {
+    "setAside": "Đặt những lá bài sau sang một bên, ngoài khu vực chơi: The Man in the Pallid Mask, Royal Emissary, các bản sao của Lobby Doorway, và các bản sao của Backstage Doorway.",
+    "placeLocations": {
+      "instructions": "Đặt các vị trí Theatre, Lobby, Balcony, và Backstage vào khu vực chơi. Mỗi điều tra viên bắt đầu chơi tại vị trí Theatre.",
+      "lola": "Nếu Lola Hayes được chọn làm điều tra viên cho chiến dịch này thì cô bắt đầu chơi tại vị trí Backstage."
+    }
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

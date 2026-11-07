@@ -1,0 +1,26 @@
+{
+  "heading": "Màn IV",
+  "intro": {
+    "title": "Màn IV: Tiền Công Tội Lỗi"
+  },
+  "setup": {
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại vị trí Hangman’s Brook.",
+    "setAside": "Đặt 4 tài sản Spectral Web sang một bên, ngoài khu vực chơi.",
+    "heretics": "Xào 6 kẻ địch Heretic, và đặt ngẫu nhiên 4 trong số đó sang một bên. Loại bỏ 2 phiên bản còn lại khỏi màn chơi. Những lá bài này có 2 mặt và có mặt câu chuyện ở mặt còn lại. Để có trải nghiệm tốt nhất, đừng nhìn vào mặt câu chuyện ở mặt còn lại.",
+    "encounterDecks": "Màn chơi này sử dụng 2 chồng bài encounter khác nhau."
+  },
+  "theSpectralEncounterDeck": {
+    "title": "Chồng bài encounter Spectral"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "heading": "Màn VI",
+  "intro": {
+    "title": "Màn VI: Nơi Diệt Vong Chờ Đón"
+  },
+  "setup": {
+    "placeLocations": "Đặt các vị trí Base of the Hill, Ascending Path, và Sentinel Peak vào màn chơi. Mỗi điều tra viên bắt đầu màn chơi tại Base of the Hill.",
+    "divergingPaths": "Loại bỏ ngẫu nhiên 1 bản sao của vị trí Diverging Path khỏi màn chơi. Đặt 3 bản sao còn lại của vị trí Diverging Path sang một bên, ngoài khu vực chơi.",
+    "alteredPaths": "Loại bỏ ngẫu nhiên 1 bản sao của vị trí Altered Path khỏi màn chơi. Đặt 3 bản sao còn lại của vị trí Altered Path sang một bên, ngoài khu vực chơi.",
+    "setAside": "Đặt Seth Bishop sang một bên, ngoài khu vực chơi.",
+    "act2": {
+      "instructions": "Tùy thuộc vào các trường hợp xảy ra, một phiên bản khác của lá Act 2 sẽ được sử dụng trong màn chơi này. Các phiên bản khác của Act 2 được bỏ ra khỏi màn chơi hoàn toàn."
+    }
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

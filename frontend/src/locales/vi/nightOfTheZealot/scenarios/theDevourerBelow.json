@@ -1,0 +1,17 @@
+{
+  "setup": {
+    "placeLocations": "Đặt vị trí Main Path vào bàn chơi. Xáo 6 copy của lá Arkham Woods, chọn ngẫu nhiên 4 lá trong đó, và đặt vào bàn chơi mà không nhìn vào mặt reveal của nó. Loại bỏ 2 lá còn lại khỏi trò chơi. Mỗi điều tra viên bắt đầu tại Main Path.",
+    "setOutOfPlay": "Đặt lá Ritual Site và Umôrdhoth qua một bên, ngoài khu vực chơi hiện tại."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

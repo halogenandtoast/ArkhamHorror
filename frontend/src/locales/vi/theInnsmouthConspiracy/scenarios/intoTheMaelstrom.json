@@ -1,0 +1,49 @@
+{
+  "heading": "Màn VIII",
+  "setup": {
+    "placeLocations": "Đặt Gateway vào Y’ha-nthlei vào chơi. *(Nó bắt đầu với việc bị ngập một phần.)* Đưa từng vị trí trong 8 vị trí Tidal Tunnel vào chơi xung quanh nó.",
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Gateway to Y'ha-nthlei.",
+    "setAsideOtherLocations": "Đặt tất cả các địa điểm khác sang một bên, ngoài màn chơi.",
+    "divingSuits": "Mỗi điều tra viên *sở hữu bộ đồ lặn* bắt đầu chơi với lá bài Diving Suit tong khu vực chơi của họ.",
+    "removeUnusedDivingSuits": "Loại bỏ từng Diving Suit không được sử dụng khỏi màn chơi.",
+    "setAsideCards": "Đặt kẻ địch Lloigor, Aquatic Abomination, Hydra và Dagon sang một bên, ngoài khu vực chơi.",
+    "floodTokens": "Thêm token lũ lụt vào kho chứa token."
+  },
+  "intro": {
+    "title": "Màn VIII: Tiến Vào Vòng Xoáy"
+  },
+  "flashback14": {
+    "title": "Hồi tưởng XIV"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "resolution5": {
+      "title": "Giải pháp thứ 5"
+    },
+    "resolution6": {
+      "title": "Kết quả 6"
+    },
+    "resolution7": {
+      "title": "Kết cục 7"
+    },
+    "resolution8": {
+      "title": "Giải pháp thứ 8"
+    }
+  },
+  "cityOfTheDeep": {
+    "label": {
+      "continuePlaying": "Tiếp tục chơi."
+    }
+  }
+}

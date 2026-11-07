@@ -1,0 +1,26 @@
+{
+  "heading": "Màn III",
+  "intro": {
+    "title": "Màn III: Âm Vang từ Quá Khứ"
+  },
+  "setup": {
+    "setAside": "Đặt những lá bài sau một bên, ngoài khu vực chơi: Hidden Library, Possessed Oathspeaker, Mr. Peabody, The Tattered Cloak, và Clasp of Black Onyx.",
+    "changes": {
+      "instructions": "Dựa vào số lượng người chơi trong màn chơi:"
+    }
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    }
+  }
+}

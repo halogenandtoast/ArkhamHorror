@@ -1,0 +1,51 @@
+{
+  "heading": "Màn VII",
+  "standalone": {
+    "label": {
+      "anetteMasonIsPossessedByEvil": "Anette Mason bị chiếm hữu bởi con quỷ.",
+      "carlSanfordPossessesTheSecretsOfTheUniverse": "Carl Sanford sở hữu những bí mật của vũ trụ."
+    }
+  },
+  "intro": {
+    "title": "Kịch bản VII: In the Clutches of Chaos"
+  },
+  "setup": {
+    "placeLocations": "Chọn ngẫu nhiên một trong hai vị trí Rivertown, một trong hai vị trí Merchant District, một trong hai vị trí French Hill, một trong hai vị trí Uptown, một trong hai vị trí Southside và một trong hai vị trí South Church và đặt chúng vào chơi. Loại bỏ các phiên bản khác của Rivertown, Merchant District, French Hill, Uptown, Southside và South Church khỏi màn chơi. Mỗi điều tra viên bắt đầu chơi ở Southside.",
+    "anetteMasonIsPossessedByEvil": {
+      "actDeck": "Khi xây dựng chồng bài act, sử dụng Act 1a—“Dark Knowledge (v. I)” và Act 2a—“Beyond the Grave.”",
+      "placeLocations": "Đặt Hangman’s Hill *(Where It All Ends)* và Silver Twilight Lodge *(Shrouded in Mystery)* vào chơi."
+    },
+    "carlSanfordPossessesTheSecretsOfTheUniverse": {
+      "actDeck": "Khi xây dựng chồng bài act, sử dụng Act 1a—“Dark Knowledge (v. II)” and Act 2a—“New World Order.”",
+      "placeLocations": "Đặt Silver Twilight Lodge *(Where It All Ends)* và Hangman’s Hill *(Shrouded in Mystery)* vào chơi."
+    },
+    "setAside": "Đặt kẻ địch Piper of Azathoth sang một bên, ngoài khu vực chơi."
+  },
+  "choosingARandomLocation": {
+    "title": "Lựa Chọn một Vị Trí Ngẫu Nhiên"
+  },
+  "breachesAndIncursions": {
+    "title": "Lỗ thủng và Sự xâm nhập"
+  },
+  "resolutions": {
+    "label": {
+      "continuedAlone": "*“Cô/ông đã gây đủ thiệt hại rồi. Chúng tôi sẽ xử lý việc này từ đây.”*",
+      "askedForAssistance": "* “Chúng tôi sẽ cần sự giúp đỡ của cô/ông để khắc phục sự cố này.” *",
+      "underArrest": "* “Cô/ông đã bị bắt.” *",
+      "spellsOfOld": "* “Vậy hãy dạy tôi cách mạnh mẽ hơn.” *",
+      "assumedControl": "*“Ông không xứng đáng để dẫn dắt chúng tôi.”*"
+    },
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    }
+  }
+}

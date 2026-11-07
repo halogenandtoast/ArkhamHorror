@@ -1,0 +1,41 @@
+{
+  "part1": {
+    "intro": {
+      "title": "Kịch bản V–A: Heart of the Elders, Part 1",
+      "label": {
+        "ichtaca": "*Hãy tham khảo ý kiến của Ichtaca.*",
+        "alejandro": "*Hãy tham khảo ý kiến của Alejandro.*",
+        "expeditionJournal": "*Hãy tham khảo cuốn nhật ký thám hiểm.*",
+        "else": "*Tôi ước chúng ta biết nhiều hơn về điều này…*"
+      }
+    },
+    "setup": {
+      "insightIntoHowToEnterKnYan": "Kiểm tra nhật ký chiến dịch. Hành trình vượt qua ranh giới thời gian của bạn đã cho bạn cái nhìn sâu sắc về cách tiến vào K'n-yan. Đối với mỗi con đường mà bạn biết, hãy đặt 1 tài nguyên trên Mouth of K'n-yan, đại diện cho token của cột trụ.",
+      "poisoned": "Đặt mỗi điểm yếu Poisonsed đang không ở trong chồng bài của một điều tra sang một bên."
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Kết thúc thứ nhất"
+      },
+      "resolution2": {
+        "title": "Kết thúc thứ hai"
+      }
+    }
+  },
+  "part2": {
+    "setup": {
+      "theJungleWatches": "Tìm trong bộ sưu tập mỗi lá bài được liệt kê trong ngoặc đơn cạnh phần \"khu rừng đang theo dõi\" trong Nhật ký Chiến dịch. Thêm những lá bài đó vào khu vực trưng bày thành tích.",
+      "setAside": "Đặt vị trí Descent to Yoth sang một bên, ngoài khu vực chơi.",
+      "explorationDeck": "Tạo chồng bài khám phá. Điều này được thực hiện bằng cách lấy 5 vị trí một mặt còn lại từ chồng bài encounter *K'n-yan* và xào chúng lại với nhau, cùng với 1 bản sao cho mỗi lá bài encounter sau: Pitfall, No Turning Back, Deep Dark, và Final Mistake.",
+      "poisoned": "Đặt mỗi điểm yếu Poisonsed đang không ở trong chồng bài của một điều tra sang một bên."
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Kết thúc thứ nhất"
+      },
+      "resolution2": {
+        "title": "Kết thúc thứ hai"
+      }
+    }
+  }
+}

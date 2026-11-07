@@ -1,0 +1,87 @@
+{
+  "names": {
+    "checkpoint1": "Kế hoạch",
+    "part2": "Fortune and Folly, Phần II"
+  },
+  "label": {
+    "rank": {
+      "Four": "Bốn"
+    }
+  },
+  "remembered": {
+    "cleanedOutTheHouse": "Đã vét sạch nhà cái",
+    "impersonatedAHighRoller": "Đã đóng giả một tay chơi lớn",
+    "foundAVent": "Đã tìm thấy một lỗ thông hơi",
+    "convincedIsamaraToParticipateInTheHeist": "Đã thuyết phục Isamara tham gia vụ cướp",
+    "obtainedAnEmployeeUniform": "Đã lấy được đồng phục nhân viên",
+    "stoleAbarransKeys": "Đã đánh cắp chìa khóa của Abarran"
+  },
+  "intro": {
+    "patrol": {
+      "title": "Tuần tra"
+    },
+    "gameIcons": {
+      "title": "Biểu tượng Game"
+    },
+    "mulligans": {
+      "title": "Mulligan"
+    },
+    "theWellspringOfFortune": {
+      "body": "<div class='columns' style='padding-right: 30px;'><p class='basic' style='padding-left: 0; margin-left: 0;'>Scenario này bao gồm The Wellspring of Fortune, là một \"key,\" một loại bài mới được giới thiệu trong campaign *The Scarlet Keys*. Luật đầy đủ cho loại bài key có thể được tìm thấy trong campaign guide *The Scarlet Keys*. Cho mục đích của scenario này, The Wellspring of Fortune chỉ được sử dụng như một vật đánh dấu cho các token và một mục tiêu để các điều tra viên đạt được. _Hãy coi text box của The Wellspring of Fortune là trống rỗng trong suốt thời gian của scenario này._ Do đó, luật đầy đủ cho các key card không cần thiết để chơi scenario này; tuy nhiên, nếu các điều tra viên đang chơi scenario này như một phần của campaign *The Scarlet Keys*, họ có thể giành được The Wellspring of Fortune và sử dụng nó trong các scenario tương lai.</p><div style='flex:1; margin-top: 30px;' class='fan-thin'><img src='{setImgPath}/../cards/88045.avif' /><img src='{setImgPath}/../cards/88045b.avif' /></div></div>"
+    }
+  },
+  "part1": {
+    "setup": {
+      "agendaAndActDecks": "Tạo agenda deck chỉ sử dụng agenda 1 và act deck chỉ sử dụng act 1. Để riêng các lá bài agenda và act còn lại sang một bên, out of play.",
+      "theStakeout": "Đặt story card The Stakeout cạnh Casino Floor.",
+      "ifTheUniformFits": "Spawn 1 bản sao của Casino Guard tại Roulette Wheel. Đính kèm story card If the Uniform Fits... vào nó *(If the Uniform Fits... nằm ở mặt sau của story card Package Delivery).*",
+      "setAside": "Để riêng các lá bài sau, out of play: 3 lá story card Fortune's Disfavor, story asset Cash Cart, story asset Deck of Possibilities, và story asset Isamara Ordoñez *(The Torch Singer)*."
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Kết thúc thứ nhất"
+      },
+      "resolution2": {
+        "title": "Kết thúc thứ hai"
+      }
+    }
+  },
+  "part2": {
+    "setup": {
+      "stash": "Trước khi rút bài trên tay ban đầu cho scenario này, mỗi điều tra viên có thể tìm trong deck của mình tất cả các lá bài được ghi lại là \"Stashed\" và để riêng chúng (1 bản sao cho mỗi bản sao được ghi lại). Mỗi điều tra viên thêm từng lá bài stashed đã để riêng vào bài trên tay ban đầu của mình sau khi thực hiện mulligan.",
+      "agendaAndActDecks": "Tạo agenda deck sử dụng các agenda 2-4 và act deck sử dụng các act 2-3. Để riêng các lá bài agenda và act còn lại, out of play.",
+      "theHeist": "Đặt story card The Heist bên cạnh Vault Door. *(The Heist nằm ở mặt sau của story card The Stakeout.)*",
+      "startAt": "Mỗi điều tra viên bắt đầu chơi tại Casino Floor.",
+      "setAside": "Để các lá bài sau sang một bên, ngoài cuộc chơi: 3 lá bài story Fortune's Disfavor, lá bài story Package Delivery, lá bài story asset Deck of Possibilities, lá bài story asset Isamara Ordoñez *(The Torch Singer)*, và lá Abarran Arrigorriagakoa với mặt *(Abarran Unleashed)* ngửa lên. *(Package Delivery nằm ở mặt sau của lá bài story If the Uniform Fits...)*",
+      "spawnEnemies": "Tìm trong chồng bài encounter 1 bản sao của Casino Guard. Spawn nó tại High Roller's Table. Sau đó, tìm trong chồng bài encounter 1 bản sao của Security Patrol. Spawn nó tại Casino Lounge."
+    },
+    "additionalRewards": {
+      "title": "Phần Thưởng Thêm"
+    },
+    "resolutions": {
+      "scarletKeys": "Nếu bạn đang chơi campaign *The Scarlet Keys*:",
+      "bearer": "Chọn một điều tra viên làm người sở hữu The Wellspring of Fortune và cập nhật Nhật ký Chiến dịch tương ứng.",
+      "fortunesChosen": "Trong Nhật ký Chiến dịch, ghi lại rằng *Fortune's Chosen đã trói buộc bạn bằng vận rủi.* Chọn bất kỳ token số nào trong chaos bag. Thay thế nó bằng một token số có giá trị thấp hơn 2 *(ví dụ: Bạn có thể thay thế token 0 bằng token -2, hoặc token -3 bằng token -5).*",
+      "resolution1": {
+        "title": "Kết thúc thứ nhất"
+      },
+      "resolution2": {
+        "title": "Kết thúc thứ hai"
+      },
+      "resolution3": {
+        "title": "Kết thúc thứ ba"
+      }
+    }
+  },
+  "checkpoint1": {
+    "thePlan1": {
+      "title": "Checkpoint: Kế hoạch"
+    },
+    "thePlan3": {
+      "title": "Checkpoint: Kế hoạch"
+    },
+    "label": {
+      "alarm": "Giảm mức báo động của mỗi điều tra viên đi 1."
+    }
+  }
+}

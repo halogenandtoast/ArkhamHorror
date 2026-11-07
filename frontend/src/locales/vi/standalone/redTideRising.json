@@ -1,0 +1,16 @@
+{
+  "setup": {
+    "actAgendaDeck": "Loại bỏ tất cả các lá bài act và agenda của bộ encounter *The Vanishing of Elina Harper* khỏi trò chơi. Xây dựng chồng bài act và agenda chỉ sử dụng các lá bài act và agenda mới được cung cấp trong bộ encounter *Red Tide Rising*.",
+    "placeLocations": "Đưa các địa điểm sau vào chơi: Innsmouth Square, Marsh Refinery, Innsmouth Harbour, Fish Street Bridge, First National Grocery, Gilman House, và The Little Bookshop.",
+    "removeStoryAssets": "Loại bỏ các story asset Thomas Dawson và Elina Harper khỏi trò chơi.",
+    "shuffleRemainder": "Xáo trộn các lá bài encounter còn lại để tạo thành chồng bài encounter."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "heading": "Màn I-B",
+  "intro": {
+    "title": "Màn I-B: Nhà Cái Luôn Thắng"
+  },
+  "setup": {
+    "placeLocations": "Đặt các lá bài vị trí Clover Club Lounge, Clover Club Bar, Clover Club Cardroom, và La Bella Luna vào bàn chơi. Mỗi điều tra viên bắt đầu màn chơi tại nhà hàng La Bella Luna.",
+    "placeCloverClubPitBoss": "Đặt lá bài Clover Club Pit Boss vào màn chơi tại vị trí Clover Club Lounge.",
+    "setAside": "Đặt những lá bài sau đây sang một bên, ngoài bàn chơi: Darkened Hall, Peter Clover, Dr. Francis Morgan, và các bản sao của Back Hall Doorway."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    }
+  }
+}

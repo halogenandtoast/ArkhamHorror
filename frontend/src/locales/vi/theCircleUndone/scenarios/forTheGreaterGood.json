@@ -1,0 +1,39 @@
+{
+  "heading": "Màn V",
+  "standalone": {
+    "label": {
+      "members": "Các điều tra viên trở thành thành viên của Lodge."
+    }
+  },
+  "intro": {
+    "title": "Màn V: Vì Điều Tốt Đẹp Hơn",
+    "deceivingTheLodge": "<p class='green'>… Mặc dù bạn nghi ngờ Lodge có những mưu cầu lợi ích khác. Lodge rõ ràng biết nhiều hơn những gì đang xảy ra hơn là những gì họ thừa nhận. Có một mục đích nham hiểm ẩn bên dưới bề mặt của Lodge, và bạn dự định sẽ khám phá mục đích đó là gì.</p>"
+  },
+  "setup": {
+    "membersOfTheLodge": {
+      "actDeck": "Khi xây dựng chồng bài act, sử dụng Act 1a—“Warm Welcome” và loại bỏ Act 1a—“Infiltrating the Lodge” khỏi màn chơi.",
+      "weveBeenExpectingYou": "Đặt các phiên bản Lodge Gates, Lobby, và Lodge Cellar với phần tiêu đề nhỏ là *(We’ve Been Expecting You)* vào chơi. Loại bỏ các phiên bản khác của các vị trí này khỏi màn chơi.",
+      "removeFromGame": "Tìm trong chồng bài encounter đã tập hợp những lá bài sau, và loại bỏ chúng khỏi màn chơi: 3 bản sao của Acolyte, 1 bản sao của Wizard of the Order, 2 bản sao của Knight of the Inner Circle, và 1 bản sao của Cell Keeper."
+    },
+    "otherwise": {
+      "actDeck": "Khi xây dựng chồng bài act, sử dụng Act 1a—“Infiltrating the Lodge” và loại bỏ Act 1a—“Warm Welcome” khỏi màn chơi.",
+      "removeFromGame": "Tìm trong chồng bài encounter đã tập hợp những lá bài sau, và loại bỏ chúng khỏi màn chơi: 3 bản sao của Lodge Neophyte, 1 bản sao của Keeper of Secrets, 2 bản sao của Knight of the Outer Void, và 1 bản sao của Lodge Jailor."
+    },
+    "placeLocations": "Đặt vị trí Lodge Catacombs và Lounge vào chơi. Mỗi điều tra viên bắt đầu chơi tại Lodge Gates. Đặt các vị trí còn lại sang một bên, ngoài khu vực chơi (Library, Vault, Inner Sanctum, và 2 vị trí Sanctum Doorway).",
+    "setAside": "Đặt các lá bài sau sang một bên, ngoài khu vực chơi: tài sản Puzzle Box, kẻ địch Summoned Beast, tài sản August Lindquist và kẻ địch Nathan Wick có 2 mặt."
+  },
+  "keys": {
+    "title": "Chìa khóa"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

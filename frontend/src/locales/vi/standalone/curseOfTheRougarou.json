@@ -1,0 +1,22 @@
+{
+  "setup": {
+    "setAsideEncounterSets": "Đặt bộ bài encounter Curse of the Rougarou sang một bên, ngoài màn chơi.",
+    "setAside": "Đặt các lá bài sau sang một bên, ngoài màn chơi: Lady Esprit, Bear Trap, và Fishing Net."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  },
+  "huntingTheRougarou": {
+    "label": {
+      "resolution3": "Kết thúc thứ ba"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "heading": "Màn II",
+  "specialRules": [
+    {
+      "title": "Thay thế Vị trí",
+      "body": "<p class='basic'>Trong suốt màn chơi này, bạn có thể được hướng dẫn hoán đổi các vị trí đặt một bên hồi đầu với các vị trí hiện có. Khi một vị trí được hoán đổi với một vị trí đang được chơi, vị trí đó sẽ chiếm chỗ đó. Tất cả các token, bài đính kèm, điều tra viên, kẻ địch và các lá bài khác tại vị trí cũ lúc này được xem là ở vị trí mới (ví dụ: các lá bài đính kèm vẫn sẽ được đính kèm tại đó). Không có thành phần trò chơi nào được coi là đã di chuyển trong quá trình hoán đổi này.</p>"
+    }
+  ],
+  "intro": {
+    "title": "Màn II: Tại Cửa Tử"
+  },
+  "setup": {
+    "setJosefAside": "Đặt kẻ địch Josef Meiger sang một bên, ngoài khu vực chơi.",
+    "josefNote": "*Lưu ý: Lá bài này có hai mặt và có thẻ câu chuyện ở mặt còn lại. Để có trải nghiệm tốt nhất, đừng nhìn sang mặt còn lại trừ khi có một hiệu ứng hướng dẫn bạn làm như vậy.*",
+    "checkCampaignLog": "Kiểm tra phần \"Người Mất Tích\" trong Nhật ký Chiến dịch:",
+    "piecesOfEvidence": "Đồng đều nhất có thể, hãy loại bỏ tổng số manh mối từ các vị trí trên bằng với số *mẩu bằng chứng đã bị bỏ lại* trong Nhật ký Chiến dịch của bạn."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

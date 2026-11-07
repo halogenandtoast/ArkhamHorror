@@ -1,0 +1,46 @@
+{
+  "interludes": {
+    "2": "Những Người Sống Sót"
+  },
+  "key": {
+    "professorWarrenRiceWasKidnapped": "Giáo sư Warren Rice bị bắt cóc.",
+    "theInvestigatorsRescuedProfessorWarrenRice": "Các điều tra viên cứu được giáo sư Warren Rice.",
+    "theInvestigatorsFailedToSaveTheStudents": "Các điều tra viên thất bại trong việc cứu các sinh viên.",
+    "theStudentsWereRescued": "Các học sinh được giải cứu.",
+    "theExperimentWasDefeated": "Vật Thí Nghiệm bị đánh bại.",
+    "drFrancisMorganWasKidnapped": "Tiến sĩ Francis Morgan bị bắt cóc.",
+    "theInvestigatorsRescuedDrFrancisMorgan": "Các điều tra viên cứu được tiến sĩ Francis Morgan.",
+    "drHenryArmitageWasKidnapped": "Tiến sĩ Henry Armitage bị bắt cóc.",
+    "theInvestigatorsRescuedDrHenryArmitage": "Điều tra viên giải cứu được tiến sĩ Henry Armitage.",
+    "theInvestigatorsFailedToRecoverTheNecronomicon": "Các điều tra viên thất bại trong việc lấy lại cuốn sách Necronomicon.",
+    "theInvestigatorsDestroyedTheNecronomicon": "Các điều tra viên phá hủy cuốn sách Necronomicon.",
+    "theInvestigatorsTookCustodyOfTheNecronomicon": "Các điều tra viên tạm giữ cuốn sách Necronomicon.",
+    "theNecronomiconWasStolen": "Cuốn Necronomicon đã bị lấy cắp.",
+    "theInvestigatorsWereDelayedOnTheirWayToDunwich": "Các điều tra viên bị chậm trễ trên đường tới làng Dunwich.",
+    "theRitualWasCompleted": "Nghi lễ được hoàn thành.",
+    "theInvestigatorsPutSilasBishopOutOfHisMisery": "Các điều tra viên giúp Silas Bishop thoát khỏi nỗi thống khổ.",
+    "theInvestigatorsRestoredSilasBishop": "Các điều tra viên giúp Silas Bishop hồi phục.",
+    "theInvestigatorsBanishedSilasBishop": "Các điều tra viên đã xua đuổi Silas Bishop đi.",
+    "sacrificedToYogSothoth": "Hiến tế cho Yog-Sothoth",
+    "drHenryArmitageSurvivedTheDunwichLegacy": "Tiến sĩ Henry Armitage đã sống sót qua The Dunwich Legacy campaign.",
+    "professorWarrenRiceSurvivedTheDunwichLegacy": "Giáo sư Warren Rice đã sống sót qua The Dunwich Legacy campaign.",
+    "drFrancisMorganSurvivedTheDunwichLegacy": "Tiến sĩ Francis Morgan đã sống sót qua The Dunwich Legacy campaign.",
+    "zebulonWhateleySurvivedTheDunwichLegacy": "Zebulon Whateley đã sống sót qua The Dunwich Legacy campaign.",
+    "earlSawyerSurvivedTheDunwichLegacy": "Earl Sawyer đã sống sót qua The Dunwich Legacy campaign.",
+    "youCalmedTheTownsfolk": "Bạn đã trấn an được dân làng.",
+    "youWarnedTheTownsfolk": "Bạn đã cảnh báo được cho dân làng.",
+    "noBroodEscapedIntoTheWild": "Không có con brood nào trốn thoát vào tự nhiên.",
+    "theInvestigatorsEnteredTheGate": "Các điều tra viên tiến vào cánh cửa.",
+    "theInvestigatorsClosedTheTearInReality": "Các điều tra viên đã đóng được vết rách thực tại.",
+    "yogSothothHasFledToAnotherDimension": "Yog-Sothoth đã chạy trốn đến một chiều không gian khác."
+  },
+  "interlude1": {
+    "title": "Chuyển tiếp I: Vận mệnh của Armitage"
+  },
+  "interlude2": {
+    "title": "Chuyển tiếp II: Những Người Sống Sót"
+  },
+  "epilogue": {
+    "title": "Phần kết"
+  }
+}

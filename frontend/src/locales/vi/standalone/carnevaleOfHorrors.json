@@ -1,0 +1,22 @@
+{
+  "label": {
+    "medicoDellaPeste": {
+      "heal1Damage": "Hồi 1 damage.",
+      "heal1Horror": "Hồi 1 horror."
+    }
+  },
+  "setup": {
+    "removeLocation": "Chọn ngẫu nhiên 1 vị trí và loại bỏ nó khỏi màn chơi. Nếu vị trí San Marco Basilica hoặc Canal-side được chọn, hãy chọn ngẫu nhiên một vị trí khác để thay thế."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "additionalRewards": {
+      "title": "Phần Thưởng Thêm"
+    }
+  }
+}

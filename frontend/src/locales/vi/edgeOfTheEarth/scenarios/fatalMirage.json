@@ -1,0 +1,39 @@
+{
+  "heading": "Màn ???",
+  "tooltips": {
+    "mirage": "Mirage (Ảo Ảnh)"
+  },
+  "intro1": {
+    "title": "Màn ???: Fatal Mirage (Ảo Ảnh Chết Người)"
+  },
+  "intro2": {
+    "title": "Màn ???: Fatal Mirage (Ảo Ảnh Chết Người)"
+  },
+  "resolutions": {
+    "xp": {
+      "memoriesBanished": "Ký Ức Bị Xóa"
+    },
+    "isThereADifference": "Có khác biệt gì không?",
+    "noSay": "Nhưng cậu không có quyền quyết định chuyện này.",
+    "crossOutMemoriesDiscovered": "Gạch bỏ mỗi địa điểm được ghi trong \"Memories Discovered\" (Ký Ức Đã Được Khám Phá) mà lá bài câu chuyện tương ứng cũng được ghi trong \"Memories Banished\" (Ký Ức Bị Xóa).",
+    "partnerDamage": "Trong phần \"Expedition Team\" (Đội Thám hiểm) của Nhật ký Chiến dịch, ghi lại số lượng chấn thương thể chất và tinh thần trên mỗi lá bài tài sản đồng đội trong màn chơi.",
+    "title": "Kết thúc thứ nhất"
+  },
+  "setup": {
+    "firstTime": {
+      "buildAgendaDeck": "Xây dựng chồng bài agenda chỉ dùng agenda 1. Loại bỏ các agenda còn lại ra khỏi trò chơi.",
+      "buildActDeck": "Xây dựng bộ bài act chỉ dùng act 1. Loại bỏ các act còn lại ra khỏi trò chơi.",
+      "placeLocations": "Đặt địa điểm Prison of Memories (Nhà Tù Ký Ức) vào màn chơi, mặt hiển lộ.",
+      "startAt": "Mỗi điều tra viên bắt đầu trò chơi tại Prison of Memories (Nhà Tù Ký Ức).",
+      "setOtherLocationsAside": "Đặt tất cả các địa điểm khác sang một bên, ngoài màn chơi."
+    },
+    "repeat": {
+      "memoriesBanished": "Tìm mỗi lá bài câu chuyện được liệt kê trong mục \"Memories Banished\" (Ký Ức Bị Xóa) trong Nhật ký Chiến dịch của bạn. Đặt mỗi lá bài này vào khu vực trưng bày thành tích.",
+      "setRemainingMemoriesAside": "Đặt mỗi kẻ địch \"Memory of…\" (Ký Ức về…) còn lại sang một bên, ngoài màn chơi.",
+      "startAt": "Mỗi điều tra viên bắt đầu trò chơi tại Prison of Memories (Nhà Tù Ký Ức).",
+      "setOtherLocationsAside": "Đặt tất cả các địa điểm khác sang một bên, ngoài màn chơi."
+    },
+    "checkDifficulty": "Kiểm tra cấp độ khó.",
+    "tekelili": "Xáo trộn tất cả các lá bài điểm yếu Tekeli-li! chưa nằm trong bộ bài của điều tra viên để tạo thành chồng bài Tekeli-li. Đặt chồng bài này gần chồng bài agenda."
+  }
+}

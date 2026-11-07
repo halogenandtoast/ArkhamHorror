@@ -1,0 +1,17 @@
+{
+  "setup": {
+    "setAsideOtherLocations": "Đặt từng vị trí khác (Melati’s Shop, Tin Mine, và Wayang Kulit Theater) sang một bên, out of play.",
+    "checkCampaignLog": "Kiểm tra Nhật ký Chiến dịch."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

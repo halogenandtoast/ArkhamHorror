@@ -1,0 +1,90 @@
+{
+  "interludes": {
+    "1": "Ghi chép về Những Người Mất Tích",
+    "2": "Cái Giá của Sự Tiến Bộ"
+  },
+  "key": {
+    "missingPersons": "Người Mất Tích",
+    "youAreBeingHunted": "Bạn bị săn đuổi.",
+    "youHaveAcceptedYourFate": "Bạn đã chấp nhận số mạng của mình.",
+    "youHaveRejectedYourFate": "Bạn đã từ chối số mạng của mình.",
+    "theWitchesSpellWasBroken": "Bùa phép của các phù thủy đã bị phá vỡ.",
+    "theWitchesSpellWasCast": "Bùa phép của các phù thủy đã được thực hiện.",
+    "mementosDiscovered": "Di Vật Đã Phát Hiện",
+    "theInvestigatorsAreOnGavriellasTrail": "Các điều tra viên theo dấu vết của Gavriella.",
+    "theInvestigatorsAreOnJeromesTrail": "Các điều tra viên theo dấu vết của Jerome.",
+    "theInvestigatorsAreOnPennysTrail": "Các điều tra viên theo dấu vết của Penny.",
+    "theInvestigatorsAreOnValentinosTrail": "Các điều tra viên theo dấu vết của Valentino.",
+    "theInvestigatorsEscapedTheSpectralRealm": "Các điều tra viên đã trốn thoát khỏi cõi ma.",
+    "theInvestigatorsLearnedNothingOfTheLodgesSchemes": "Các điều tra viên không biết được gì về âm mưu của Lodge.",
+    "theInvestigatorsAreNeverSeenOrHeardFromAgain": "Các điều tra viên không được trông thấy hoặc nghe đến một lần nào nữa.",
+    "josefDisappearedIntoTheMist": "Josef bị biến mất trong màn sương.",
+    "theInvestigatorsAreEnemiesOfTheLodge": "Các điều tra viên trở thành kẻ địch của Lodge.",
+    "theInvestigatorsRescuedJosef": "Các điều tra viên cứu được Josef.",
+    "josefIsAliveAndWell": "Josef vẫn còn sống và khỏe mạnh.",
+    "theInvestigatorsAreMembersOfTheLodge": "Các điều tra viên trở thành thành viên của Lodge.",
+    "theInvestigatorsAreDeceivingTheLodge": "Các điều tra viên đang lừa gạt Lodge.",
+    "theInvestigatorsToldTheLodgeAboutTheCoven": "Các điều tra viên đã kể cho hội Lodge về nhóm phù thủy.",
+    "theInvestigatorsHidTheirKnowledgeOfTheCoven": "Các điều tra viên đã che giấu điều họ biết về nhóm phù thủy.",
+    "theInvestigatorsSurvivedTheWatchersEmbrace": "Các điều tra viên đã sống sót khỏi vòng tay của watcher.",
+    "theGuardianOfTheTrapEmerged": "Quái vật canh giữ cái bẫy đã xuất hiện.",
+    "theInvestigatorsDiscoveredHowToOpenThePuzzleBox": "Các điều tra viên đã khám phá ra cách mở puzzle box (hộp câu đố).",
+    "theGuardianOfTheTrapEmergedAndWasDefeated": "Quái vật canh giữ cái bẫy đã xuất hiện và bị hạ gục.",
+    "theInvestigatorsKeptsTheirMementosHidden": "Các điều tra viên đã giấu các di vật.",
+    "theInvestigatorsWereInductedIntoTheInnerCircle": "Các điều tra viên đã được bổ nhiệm vào Inner Circle.",
+    "theInvestigatorsSidedWithTheLodge": "Các điều tra viên đã đứng về phía Lodge.",
+    "theInvestigatorsSidedWithTheCoven": "Các điều tra viên đã đứng về phía nhóm phù thủy.",
+    "gavriellaIsAlive": "Gavriella còn sống.",
+    "jeromeIsAlive": "Jerome còn sống.",
+    "pennyIsAlive": "Penny còn sống.",
+    "valentinoIsAlive": "Valentino còn sống.",
+    "theTrueWorkOfTheSilverTwilightLodgeHasBegun": "Công việc thực sự của Silver Twilight Lodge đã bắt đầu.",
+    "carlSanfordPossessesTheSecretsOfTheUniverse": "Carl Sanford sở hữu những bí mật của vũ trụ.",
+    "anetteMasonIsPossessedByEvil": "Anette Mason bị chiếm hữu bởi con quỷ.",
+    "theInvestigatorsContinuedAlone": "Các điều tra viên tiếp tục một mình.",
+    "theInvestigatorsAskedAnetteForAssistance": "Các điều tra viên yêu cầu Anette hỗ trợ mình.",
+    "theInvestigatorsArrestedAnette": "Các điều tra viên đã bắt giữ Anette.",
+    "anetteTaughtYouTheSpellsOfOld": "Anette đã dạy cho bạn những phép thuật cổ.",
+    "theInvestigatorsAskedSanfordForAssistance": "Các điều tra viên đã yêu cầu Sanford hỗ trợ.",
+    "theInvestigatorsArrestedSanford": "Các điều tra viên đã bắt giữ Sanford.",
+    "theInvestigatorsAssumedControlOfTheSilverTwilightLodge": "Các điều tra viên đã nắm quyền kiểm soát Silver Twilight Lodge.",
+    "doomDrawsEverCloser": "Diệt vong ngày càng đến gần.",
+    "azathothDevouredTheUniverse": "Azathoth đã nuốt chửng cả vũ trụ.",
+    "theInvestigatorsSignedTheBlackBookOfAzathoth": "Các điều tra viên ký vào Cuốn sách Hắc ám của Azathoth."
+  },
+  "prologue": {
+    "title": "Cái Chết Chỉ là Sự Khởi Đầu"
+  },
+  "interlude2": {
+    "label": {
+      "agree": "*“Tôi đồng ý.”*"
+    },
+    "title": "Chuyển tiếp II: Cái Giá của Sự Tiến Bộ"
+  },
+  "interlude3": {
+    "label": {
+      "truth": "Đưa ông Sanford mọi thứ bạn đã tìm thấy.",
+      "lie": "Nói với ông ấy rằng bạn không có gì để đưa cả. (Bạn đang nói dối.)"
+    },
+    "title": "Chuyển tiếp III: The Inner Circle",
+    "whatIsTheCreature": "<p>*\"Sinh vật ông nói tới là gì?\"*</p><p>ông Sanford giải thích, “Nó là một con vật còn sót lại mạnh mẽ, để lại sau một người đã chết từ lâu. Các phù thủy chỉ có thể triệu hồi nó nếu họ có mối liên hệ chặt chẽ với linh hồn mà nó từng thuộc về. Đó chỉ có thể là một người: chính là Keziah Mason.\"</p>",
+    "whatDoYouWantWithTheCreature": "<p>*\"Ông muốn gì với sinh vật đó?\"*</p><p>“Đầu tiên và quan trọng nhất, chúng ta cần phải trói buộc nó để ngăn nó gây hại thêm. Đó là điều tối quan trọng. Một khi nó bị trói buộc, chúng ta có thể tìm hiểu những bí mật mà nó sở hữu mà không gây nguy hiểm cho bản thân hoặc người khác”.</p>",
+    "whatDoTheWitchesWantWithTheCreature": "<p>*\"Các phù thủy muốn gì với sinh vật?\"*</p><p>Ông ta đưa ra giả thuyết, vuốt hàm râu của mình. “Tôi chắc chắn rằng họ muốn tìm hiểu bí mật của nó, và lấy được sức mạnh từ nó. Có lẽ cho phép một trong số họ bị chiếm hữu bởi linh hồn của nó, và từ đó có được sức mạnh vượt lên trên sự sống và cái chết.\"</p>",
+    "didYouKnowAboutTheCreature": "<p>*\"Ông có biết về sinh vật trước buổi dạ tiệc từ thiện không?\"*</p><p>Ông Sanford thừa nhận, “Sự thật là có. Nhưng chúng tôi không biết nó sẽ đến với chúng tôi. Sau khi can thiệp vào nghi thức triệu hồi của phù thủy, chúng tôi đã điều tra màn sương ma quái bị bỏ lại trong vài ngày. Chúng tôi có thể đã thu hút quá nhiều sự chú ý vào bản thân, và nó đã bị thu hút bởi sự hiện diện của chúng tôi. Dù sao thì đây không nhất thiết là một điều xấu. ”</p>",
+    "didYouKnowAboutTheCreatureBeforeTheCharityGala": "<p>*\"Ông có biết về sinh vật trước buổi dạ tiệc từ thiện không?\"*</p><p>Ông Sanford thừa nhận, “Sự thật là có. Nhưng chúng tôi không biết nó sẽ đến với chúng tôi. Sau khi can thiệp vào nghi thức triệu hồi của phù thủy, chúng tôi đã điều tra màn sương ma quái bị bỏ lại trong vài ngày. Chúng tôi có thể đã thu hút quá nhiều sự chú ý vào bản thân, và nó đã bị thu hút bởi sự hiện diện của chúng tôi. Dù sao thì đây không nhất thiết là một điều xấu. ”</p>",
+    "whereAreTheFourMissingPeopleFromTheCharityGala": "<p>*“Bốn người bị mất tích trong buổi dạ tiệc từ thiện đang ở đâu?”*</p><p>Ông Sanford trả lời với một tiếng thở dài, “Chỉ có Chúa mới biết. Có lẽ bị chiếm hữu bởi hồn ma. Hoặc bị sương mù nuốt chửng”. Ông ta cán nhắc điều này một lúc, rồi nói thêm, “Tôi nghi ngờ rằng nếu họ vẫn còn sống, họ không thể rời xa khỏi hồn ma. Dù tốt hay xấu thì sự bất thường dường như được giới hạn ở một khu vực quanh nó.</p>"
+  },
+  "interlude4": {
+    "title": "Chuyển tiếp IV: Vòng Xoáy của Vận Mệnh",
+    "youKnowWhatYouHaveToDo": "Bạn biết bạn phải làm những gì. Ghi lại 1 kiểm đếm.",
+    "anettesAssistance": "“Keziah đã được sứ giả của một sinh vật cổ đại cầu xin ký một cuốn sách. Cuốn sách hắc ám về Azathoth. ” Chỉ cái tên của nó thôi cũng khiến bạn rung rẩy đến tận xương tủy. Anette nắm chặt tay. Cô ấy nói một cách phẫn uất, “Tôi đã là một kẻ ngốc khi không hiểu điều này trước đây. Đó là nguồn gốc sức mạnh của bà ấy. Không phải là ma thuật, mà là một hiệp ước với một vị thần hắc ám và khủng khiếp. Tất cả những điều này, những sự xâm nhập vào thế giới của chúng ta, những mối ràng buộc cái chết bị phá vỡ: đó là điều mà Keziah theo đuổi từ trước đến nay. Đó là ý muốn thầm lặng của Azathoth.\".",
+    "woefullyUnprepared": "Bạn thật đáng thương khi không chuẩn bị cho cuộc hành trình này. (Không chuyện gì xảy ra.)",
+    "thereIsStillMuchYouDoNotKnow": "Từ những bằng chứng bạn đã khám phá ra, bạn hiểu hơn về con đường bạn phải đi một chút. Nhưng vẫn còn nhiều điều bạn chưa biết. Ghi lại 1 kiểm đếm.",
+    "yourJourneyIsLaidBareBeforeYou": "Cuộc hành trình của bạn được đặt trước mặt bạn. Ghi lại 2 kiểm đếm.",
+    "theBlackBook": "Nó chứa đựng tri thức về vùng đất vượt lên trên trật tự thời gian và không gian. Ghi lại 1 kiểm đếm.",
+    "azathothsMawBeginsToOpen": "Miệng của Azathoth bắt đầu mở. Ghi lại 2 kiểm đếm."
+  },
+  "epilogue": {
+    "title": "Phần kết"
+  }
+}

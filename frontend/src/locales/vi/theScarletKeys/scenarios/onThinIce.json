@@ -1,0 +1,30 @@
+{
+  "setup": {
+    "placeLocations": "Đặt các địa điểm Anchorage và Fairbanks vào khu vực chơi. Mỗi điều tra viên bắt đầu tại Anchorage.",
+    "wilderness": "Xào ba địa điểm Alaskan Wilderness (Mountain Stream, Isolated Road, và Frozen Lake) úp xuống cùng nhau để bạn không biết địa điểm nào là địa điểm nào. Đặt mỗi địa điểm đó vào khu vực chơi liền kề với Fairbanks. Để riêng ba địa điểm Outer Wilderness còn lại ra ngoài khu vực chơi.",
+    "setOutOfPlay": "Để riêng mỗi lá bài sau ra ngoài khu vực chơi: chìa khóa The Sable Glass, lá bài kẻ địch/story asset Thorne hai mặt, và mỗi bản sao của kẻ địch Void Chimera.",
+    "time": "Kiểm tra xem đã có bao nhiêu _time_ trôi qua trong Nhật ký Chiến dịch. Cứ mỗi 5 _time_ đã trôi qua, thêm 1 doom vào agenda 1."
+  },
+  "rawDeal": {
+    "label": {
+      "option3": "*“Tạm thời chúng tôi sẽ hợp tác với bạn.”*",
+      "option4": "*“Không. Chúng tôi đã thắng, một cách công bằng.”*",
+      "option5": "*“Chúng ta không thể để Key rơi vào tay Coterie!”*"
+    },
+    "checkAgenda": "Kiểm tra agenda hiện tại."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    }
+  }
+}

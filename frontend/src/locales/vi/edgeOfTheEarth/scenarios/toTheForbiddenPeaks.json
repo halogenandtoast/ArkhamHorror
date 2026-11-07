@@ -1,0 +1,45 @@
+{
+  "heading": "Màn II",
+  "setup": {
+    "revealLevel0": "Lật địa điểm cấp 0. Mỗi điều tra viên bắt đầu màn chơi tại địa điểm đó.",
+    "addElderThingToken": "Thêm 1 token {'{'}elderThing{'}'} (elder thing) vào túi hỗn mang.",
+    "setTerrorOfTheStarsAside": "Đặt kẻ địch Terror of the Stars (Nỗi Kinh hoàng từ Các Vì sao) sang một bên, ngoài màn chơi.",
+    "checkDifficulty": "Kiểm tra cấp độ khó.",
+    "tekelili": "Xáo trộn tất cả các lá bài điểm yếu Tekeli-li! chưa nằm trong bộ bài của điều tra viên để tạo thành chồng bài Tekeli-li. Đặt chồng bài này gần chồng bài agenda."
+  },
+  "intro1": {
+    "title": "Màn II: To the Forbidden Peaks (Đi Tới Các Đỉnh Núi Cấm)"
+  },
+  "intro2": {
+    "title": "Màn II: To the Forbidden Peaks (Đi Tới Các Đỉnh Núi Cấm)"
+  },
+  "interlude": {
+    "title": "Chuyển tiếp Màn: Thảm Kịch Ủa Đến",
+    "paragraph1": "<p>Mọi thứ xảy ra trong chớp mắt. Bạn chỉ kịp hét lên tên đồng đội trước khi họ bị tóm lấy. Nhiều hình dạng biến đổi của nó quấn quanh cơ thể họ. Họ vùng vẫy để thoát ra, nhưng vô vọng.</p>",
+    "cookie": "<p>Nếu nạn nhân là James \"Cookie\" Fredericks:</p><p>Người cựu binh chai sạn nhổ ra một câu chửi và xoay sở rút tay phải khỏi cái nắm của thứ đó. Đủ để anh ấy bắn một phát bằng khẩu colt. Tiếng súng vang dội khắp núi và xé qua khối thịt vô định hình ghê tởm của nó.</p><p class='basic'>Gây 2 chấn thương vật lý cho The Terror of the Stars (Khủng Bố Dưới Các Vì Sao).</p>",
+    "paragraph2": "<p>Rồi, không chút do dự, nó đâm các xúc tu vào cơ thể nạn nhân và xé họ ra như một miếng thịt sống. Máu phun ra nhuộm đỏ tuyết. Nó thả xác đồng đội bạn xuống đất một cách không thương tiếc và quay sự chú ý sang bạn.</p>",
+    "instructions2": "<p class='basic'>Trong phần \"Expedition Team\" (Đội Thám hiểm) của Nhật ký Chiến dịch, gạch tên nhân vật được chọn. Nếu họ đang trong màn chơi, họ bị đánh bại và loại bỏ khỏi màn chơi.</p></div>"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  },
+  "claypool": {
+    "alive": "<p>Nếu Avery Claypool còn sống</p><p>“Thời tiết giờ có thể trông quang đãng,” Claypool giải thích, “nhưng nó có thể xấu đi trong chớp mắt. Chúng ta sẽ đi trên băng phần lớn hành trình, nên hãy để ý các vết nứt. Băng cần dày khoảng 60 phân để đi qua an toàn, vì vậy luôn đi sau tôi và tôi sẽ dùng cái khoan này để kiểm tra.” Anh ấy giơ lên một thiết bị khoan mũi xoắn và dẫn đường.</p><p class='basic'>Các điều tra viên không chịu ảnh hưởng xấu nào.</p>"
+  },
+  "theMountainPass": {
+    "scouted": "<p>*Nếu các điều tra viên đã trinh sát lối qua núi:*</p><p>Bạn tìm lối qua an toàn mà bạn và Ellsworth đã trinh sát đêm qua, dẫn cả đội tiến lên. Những vách đá dựng đứng bao quanh bạn khi đến chân đồi, chặn gió lạnh. Lối tắt giúp bạn nhanh chóng bắt đầu chuyến leo lên các đỉnh núi…</p><p class='basic'>Trong lúc chuẩn bị, khi bạn lật địa điểm bắt đầu, giảm giá trị manh mối của nó xuống một nửa (làm tròn lên).</p>"
+  },
+  "hypothermia": {
+    "label": {
+      "addFrost": "Thêm 1 token {'{'}frost{'}'} (băng giá) vào túi hỗn mang."
+    }
+  },
+  "label": {
+    "addFrostToken": "Thêm 1 token {'{'}frost{'}'} (băng giá) vào túi hỗn mang."
+  }
+}

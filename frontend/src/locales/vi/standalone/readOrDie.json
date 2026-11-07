@@ -1,0 +1,22 @@
+{
+  "investigatorSetup": {
+    "title": "Thiết lập Điều tra viên"
+  },
+  "setup": {
+    "removeCards": "Loại bỏ vị trí Faculty Offices *(The Hour is Late)*, vị trí Alchemy Labs, story asset Alchemical Concoction, kẻ địch The Experiment, và story asset Professor Warren Rice khỏi trò chơi. Những lá bài này không được sử dụng trong challenge scenario này.",
+    "daisyWalker": "Daisy Walker bắt đầu chơi tại Orne Library.",
+    "otherInvestigators": "Mỗi điều tra viên khác bắt đầu chơi tại Miskatonic Quad.",
+    "ignoreForced": "_Vì Dormitories và Faculty Offices bắt đầu trò chơi ở trạng thái in play và Alchemy Labs bị loại bỏ khỏi trò chơi, hãy bỏ qua mọi khả năng Forced đưa các vị trí này vào chơi._",
+    "jazzMulligan": "Đặt story asset “Jazz” Mulligan vào chơi tại Science Building.",
+    "namerOfTheDead": "Đặt kẻ địch Namer of the Dead (được cung cấp trong chồng bài encounter *Read or Die* có thể tải xuống) vào chơi tại Orne Library, unengaged và exhausted.",
+    "drHenryArmitage": "Daisy Walker giành quyền kiểm soát story asset Dr. Henry Armitage. (Nếu Dr. Henry Armitage đã nằm trong bộ bài của một điều tra viên, tìm kiếm Dr. Henry Armitage trong bộ bài của điều tra viên đó và đặt ông ấy vào chơi dưới quyền kiểm soát của Daisy Walker.)"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

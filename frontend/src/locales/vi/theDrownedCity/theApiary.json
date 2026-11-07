@@ -1,0 +1,76 @@
+{
+  "intro": {
+    "label": {
+      "walkInFaith": {
+        "doubts": "*\"Tôi có quá nhiều hoài nghi.\"*",
+        "resolve": "*\"Tôi kiên định với quyết tâm của mình.\"*"
+      }
+    }
+  },
+  "setup": {
+    "west": {
+      "title": "Thiết lập (v.I) - Western Expedition",
+      "buildActDeck": "Tạo act deck sử dụng act 1a-\"Unsettling Signs\" và act 2a-\"Lost Pilgrims.\" Loại bỏ act còn lại khỏi trò chơi.",
+      "removeFromGame": "Loại bỏ kẻ địch Mother khỏi trò chơi.",
+      "shuffleIntoBottomTen": "Sau khi làm vậy, xào vị trí Luminous Tunnels được để riêng vào 10 lá bài dưới cùng của encounter deck."
+    },
+    "east": {
+      "title": "Thiết lập (v.II) - Eastern Expedition",
+      "buildActDeck": "Tạo act deck sử dụng act 1a—\"Unsettling Signs\" và act 2a—\"The Hive Mind.\" Loại bỏ act còn lại khỏi trò chơi.",
+      "removeFromGame": "Loại bỏ story asset Maria Rivera khỏi trò chơi.",
+      "shuffleIntoBottomTen": "Sau khi làm vậy, xào vị trí Grasping Corridor được để riêng vào 10 lá bài dưới cùng của encounter deck."
+    },
+    "placeApiaryEntrance": "Đặt Apiary Entrance vào chơi, ngửa mặt *(Beckoning Light)*.",
+    "beginAtApiaryEntrance": "Mỗi điều tra viên bắt đầu chơi tại Apiary Entrance.",
+    "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu."
+  },
+  "lostPilgrims": {
+    "title": "Màn Chuyển cảnh: Lost Pilgrims",
+    "flipApiaryEntrance": "Lật Apiary Entrance sang mặt *(Dangerous Exit)*.",
+    "theInescapable": "Sinh ra kẻ địch The Inescapable đã để riêng, ở trạng thái kiệt sức, tại địa điểm xa nhất so với tất cả các điều tra viên. Xào phần còn lại của bộ encounter *The Inescapable* vào encounter deck, cùng với encounter discard pile.",
+    "placeClues": "Đặt manh mối lên mỗi địa điểm đã lật không có _victory X_ cho đến khi bằng với giá trị manh mối của nó.",
+    "continuePlaying": "Tiếp tục chơi."
+  },
+  "theHiveMind": {
+    "removeRemainingLocations": "Tìm mỗi địa điểm còn lại trong encounter deck, encounter discard pile, và khu vực chơi, sau đó loại bỏ chúng khỏi trò chơi.",
+    "spawnMother": "Spawn kẻ địch Mother đã để riêng tại Central Chamber.",
+    "placeClues": "Đặt manh mối lên mỗi địa điểm đã lật không có _victory X_ cho đến khi bằng với giá trị manh mối của nó.",
+    "continuePlaying": "Tiếp tục chơi."
+  },
+  "resolutions": {
+    "investigatorDefeat": {
+      "title": "Điều tra viên bị hạ gục"
+    },
+    "resolution1": {
+      "title": "Kết thúc thứ nhất",
+      "updateCampaignLog": "Cập nhật Nhật ký Chiến dịch của bạn.",
+      "crossOutTheApiary": "Gạch bỏ \"The Apiary\" trên bản đồ R'lyeh.",
+      "bonus": "Mỗi điều tra viên nhận 2 điểm kinh nghiệm thưởng vì đã cứu những người hành hương khỏi cái chết gần như chắc chắn!"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai",
+      "updateCampaignLog": "Cập nhật Nhật ký Chiến dịch của bạn.",
+      "crossOutTheApiary": "Gạch bỏ \"The Apiary\" trên bản đồ R'lyeh.",
+      "parasiticTransformation": "Mỗi điều tra viên phải tìm trong tập bài encounter *The Apiary* một bản sao của Parasitic Transformation và thêm nó vào bộ bài của họ. Lá bài này không tính vào kích thước bộ bài của họ."
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba",
+      "updateCampaignLog": "Cập nhật Nhật ký Chiến dịch của bạn.",
+      "crossOutTheApiary": "Gạch bỏ \"The Apiary\" trên bản đồ R'lyeh."
+    },
+    "noResolution": {
+      "updateCampaignLog": "Cập nhật Nhật ký Chiến dịch của bạn.",
+      "crossOutTheApiary": "Gạch bỏ \"The Apiary\" trên bản đồ R'lyeh.",
+      "parasiticTransformation": "Mỗi điều tra viên phải tìm trong tập bài encounter *The Apiary* một bản sao của Parasitic Transformation và thêm nó vào bộ bài của họ. Lá bài này không tính vào kích thước bộ bài của họ."
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "label": {
+      "resolution4": {
+        "drownedQuarter": "*\"Chúng ta đã đến tận đây rồi. Chúng ta sẽ không bỏ sót bất kỳ ngóc ngách nào.\"*",
+        "westernWall": "*\"Bạn điên rồi sao? Chúng ta cần phải ra khỏi đây!\"*"
+      }
+    }
+  }
+}

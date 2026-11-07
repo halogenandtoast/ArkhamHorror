@@ -1,0 +1,21 @@
+{
+  "heading": "Màn V",
+  "intro": {
+    "title": "Màn V: Vô Hình Vô Dạng"
+  },
+  "setup": {
+    "setAside": "Đặt mỗi bản sao của Esoteric Formula sang một bên, ngoài màn chơi."
+  },
+  "choosingARandomLocation": {
+    "title": "Lựa Chọn một Vị Trí Ngẫu Nhiên",
+    "body": "Trong màn chơi này, bạn thường sẽ được hướng dẫn để lựa chọn một vị trí ngẫu nhiên. Điều này nên được thực hiện bằng cách xào trộn 6 vị trí đã loại bỏ khỏi màn chơi lúc setup (các phiên bản của mỗi vị trí đang trong màn chơi hiện không được sử dụng) và rút ngẫu nhiên 1 vị trí."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

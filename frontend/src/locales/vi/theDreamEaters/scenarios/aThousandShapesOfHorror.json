@@ -1,0 +1,34 @@
+{
+  "heading": "Màn II-B",
+  "setup": {
+    "beginAtBurialGround": "Mỗi điều tra viên bắt đầu chơi tại Burial Ground.",
+    "setCardsAside": "Đặt các lá bài sau một bên, ngoài khu vực chơi: vị trí Attic, vị trí Unmarked Tomb, tất cả 6 vị trí 6 Mysterious Stairs, tất cả 4 lá bài treachery Endless Descent và lá bài tài sản câu chuyện The Silver Key.",
+    "buildEncounterDeck": "Xáo trộn các lá bài encounter còn lại để tạo thành chồng bài encounter."
+  },
+  "intro1": {
+    "title": "Màn II-B: A Thousand Shapes of Horror"
+  },
+  "intro2": {
+    "title": "Màn II-B: A Thousand Shapes of Horror"
+  },
+  "intro3": {
+    "title": "Màn II-B: A Thousand Shapes of Horror"
+  },
+  "intro4": {
+    "title": "Màn II-B: A Thousand Shapes of Horror"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    }
+  }
+}

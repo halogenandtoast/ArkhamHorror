@@ -1,5 +1,5 @@
 import './styles/index.css'
-import { createApp } from 'vue'
+import { createApp, watchEffect } from 'vue'
 import { createPinia } from 'pinia'
 import FloatingVue from 'floating-vue'
 import { createVfm } from 'vue-final-modal'
@@ -48,6 +48,14 @@ async function bootstrap() {
   })
 
   setI18n(i18n)
+
+  /* Keep <html lang> on the chosen locale. It is what tells the browser which
+   * font and shaping rules to use -- Vietnamese stacks its diacritics (ế, ề,
+   * ộ) and a face chosen for English draws them detached -- and what a screen
+   * reader uses to pick a voice. */
+  watchEffect(() => {
+    document.documentElement.lang = String(i18n.global.locale.value)
+  })
 
   const pinia = createPinia()
   const vfm = createVfm()

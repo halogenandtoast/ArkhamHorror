@@ -1,0 +1,18 @@
+{
+  "heading": "Phần I",
+  "setup": {
+    "placeLocations": "Đặt vị trí Study (phòng làm việc) vào vị trí chơi. Đặt những vị trí khác ra một bên, ngoài khu vực chơi. Mỗi điều tra viên bắt đầu chơi ở vị trí Study.",
+    "setOutOfPlay": "Đặt lá bài Ghoul Priest và Lita Chantler ra một bên, ngoài khu vực chơi."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    }
+  }
+}

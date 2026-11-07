@@ -1,0 +1,31 @@
+{
+  "heading": "Hồ sơ #28-I",
+  "setup": {
+    "version1": {
+      "actDeck": "Xây dựng chồng bài act chỉ sử dụng (v. I) của act 1 và 2, cùng với act 3. Loại bỏ (v. II) của act 1 và 2 khỏi trò chơi.",
+      "placeLocations": "Đặt vị trí Café Luna vào chơi, mặt *(Bastion of Remembrance)* ngửa lên.",
+      "desiderio": "Tìm cả hai bản sao của kẻ địch Desiderio Delgado Álvarez. Một bản có phiên bản story asset ở mặt kia, và một bản có mặt sau là bài encounter tiêu chuẩn.",
+      "encounterVersion": "Đặt phiên bản có mặt sau là bài encounter sang một bên, ngoài khu vực chơi.",
+      "assetVersion": "Lật phiên bản còn lại sang mặt story asset của nó.",
+      "takeControlOfDesiderio": "Chọn một điều tra viên để nắm quyền kiểm soát story asset Desiderio Delgado Álvarez.",
+      "miniCards": "Tập hợp từng decoy mini-card và từng mini-card sau đây: Desiderio Delgado Álvarez, Coterie Agents (A, B và C), Coterie Assassins (A và B), và Coterie Enforcers (A và B). Đặt chúng sang một bên, ngoài khu vực chơi."
+    },
+    "version2": {
+      "actDeck": "Xây dựng chồng bài act chỉ sử dụng (v. II) của act 1 và 2, cùng với act 3. Loại bỏ (v. I) của act 1 và 2 khỏi trò chơi.",
+      "placeLocations": "Đặt vị trí Café Luna vào chơi, mặt *(Coterie Haunt)* ngửa lên.",
+      "remainingLocations": "Đặt tất cả các địa điểm khác sang một bên, ngoài màn chơi.",
+      "desiderio": "Tìm cả hai bản sao của kẻ địch Desiderio Delgado Álvarez. Một bản có phiên bản story asset ở mặt kia, và một bản có mặt sau là lá bài encounter tiêu chuẩn. Đặt cả hai sang một bên, out of play.",
+      "miniCards": "Tập hợp từng decoy mini-card và từng mini-card sau đây: Desiderio Delgado Álvarez, Coterie Agents (A, B và C), Coterie Assassins (A và B), và Coterie Enforcers (A và B). Đặt chúng sang một bên, ngoài khu vực chơi.",
+      "theShadows": "Spawn các kẻ địch in the shadows, như sau:",
+      "spawnDesiderio": "Tìm kẻ địch Desiderio Delgado Álvarez được đặt sang một bên có mặt sau là lá bài encounter. Điều tra viên trưởng rút kẻ địch đó, giải quyết keyword concealed của hắn."
+    }
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

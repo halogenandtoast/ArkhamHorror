@@ -1,0 +1,76 @@
+{
+  "intro": {
+    "dreamsOfDestruction": {
+      "title": "Nhiệm vụ: Dreams of Destruction"
+    },
+    "proveYourWorth": {
+      "title": "Nhiệm vụ: Prove Your Worth",
+      "body": "Không ai khác trong chuyến thám hiểm này đánh giá cao tài năng của bạn. Làm sao họ có thể chứ? Nhiệm vụ của bạn là giúp đỡ, để cho họ thấy tại sao bạn lại là sự lựa chọn hoàn hảo cho chuyến thám hiểm chết tiệt này. Không ai yêu cầu bạn, nhưng đây có thể là thời điểm hoàn hảo để chứng tỏ giá trị của bạn."
+    },
+    "label": {
+      "dreamsOfDestruction": {
+        "drownOut": "*Át đi những lời thì thầm.*",
+        "letItIn": "*Để nó bước vào.*"
+      },
+      "proveYourWorth": {
+        "ropesAreWrong": "*\"Những sợi dây thừng này buộc sai hết rồi. Tôi có thể làm tốt hơn nhiều.\"*",
+        "trustTheirHandiwork": "*\"Tôi tin tưởng vào tay nghề của họ.\"*"
+      }
+    }
+  },
+  "setup": {
+    "west": {
+      "title": "Thiết lập (v.I) - Western Expedition",
+      "gatherLocations": "Tập hợp từng địa điểm trong encounter set *Obsidian Canyons*.",
+      "removeLocations": "Loại bỏ Ancient Dome khỏi trò chơi.",
+      "fillGrid": "Lấp đầy mỗi khoảng trống trong sơ đồ bằng lá bài dưới cùng của Summit deck ở phía trên và bên phải của R'lyeh Streets cho đến khi có 3 hàng và 4 cột.",
+      "shuffleInCentralSpire": "Xào lá Central Spire đã để riêng vào 3 lá trên cùng của Summit deck.",
+      "windsStoryCard": "Tìm lá bài story hai mặt Eastern Winds/Western Winds và đặt nó vào chơi, ngửa mặt Eastern Winds.",
+      "buildActAgendaDeck": "Xây dựng các chồng bài act và agenda sử dụng agenda 1a—\"Encroaching Storms,\" act 1a-\"Scouring the Spires,\" act 2a-\"Deadly Skies,\" và act 3a—\"Return to the Shoreline.\" Loại bỏ các act và agenda còn lại khỏi trò chơi.",
+      "stormIntensity": "Đặt 1 resource lên lá bài scenario reference dưới Storm Intensity.",
+      "starSpawn": "Xào các kẻ địch từ bộ encounter *Star Spawn* và loại bỏ ngẫu nhiên 2 kẻ địch khỏi trò chơi.",
+      "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu."
+    },
+    "east": {
+      "title": "Thiết lập (v.II) - Eastern Expedition",
+      "gatherLocations": "Tập hợp từng địa điểm trong encounter set *Obsidian Canyons*.",
+      "removeLocations": "Loại bỏ Western Wall và Floating Spire khỏi trò chơi.",
+      "fillGrid": "Lấp đầy mỗi khoảng trống trong sơ đồ bằng lá bài dưới cùng của Summit deck ở phía trên và bên phải của R'lyeh Streets cho đến khi có 3 hàng và 4 cột.",
+      "shuffleInCentralSpire": "Xào lá Central Spire đã để riêng vào 3 lá trên cùng của Summit deck.",
+      "windsStoryCard": "Tìm lá bài story hai mặt Eastern Winds/Western Winds và đặt nó vào chơi, ngửa mặt Western Winds.",
+      "buildActAgendaDeck": "Xây dựng các chồng bài act và agenda sử dụng agenda 1a-\"Otherworldly Storms,\" act 1a—\"Searching the Spires,\" và act 2a—\"To The Ancient Dome!\" Loại bỏ các act và agenda còn lại khỏi trò chơi.",
+      "stormIntensity": "Đặt 1 resource lên lá bài scenario reference dưới Storm Intensity.",
+      "starSpawn": "Xào các kẻ địch từ bộ encounter *Star Spawn* và loại bỏ ngẫu nhiên 3 kẻ địch khỏi trò chơi.",
+      "removeStarVampire": "Tìm trong bộ encounter *Obsidian Canyons* một bản sao của kẻ địch Star Vampire và loại bỏ nó khỏi trò chơi.",
+      "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu."
+    }
+  },
+  "rules": {
+    "openSky": {
+      "body": "<p class='basic'>Trong suốt scenario này, bạn sẽ được hướng dẫn đặt các lá bài \"open sky\" bằng cách lấy các lá bài encounter đã tập hợp trong quá trình chuẩn bị và đặt chúng vào các vị trí được chỉ định, úp xuống.</p><ul><li>Open sky được tính là một vị trí đối với các hiệu ứng bài, tính liền kề của vị trí, và để xác định khoảng cách giữa các vị trí.</li><li>Các điều tra viên không thể di chuyển vào open sky trừ khi có chỉ định khác từ hiệu ứng scenario.</li><li>Open sky không thể bị điều tra và không thể đánh rơi manh mối trên đó. Nếu một manh mối bị đánh rơi hoặc đặt lên open sky vì bất kỳ lý do gì, các điều tra viên phải chọn vị trí đã lật gần nhất và đặt manh mối đó lên vị trí này thay thế.</li><li>Các vị trí có thể đi vào khu vực chơi tại một chỗ đang bị chiếm bởi một lá bài open sky. Nếu điều này xảy ra, lá bài open sky đang chiếm chỗ đó sẽ rời khỏi khu vực chơi.</li><li>Nếu open sky rời khỏi khu vực chơi vì bất kỳ lý do gì, hãy đặt nó lên _trên cùng_ của chồng bài Summit. _Không_ đặt nó vào encounter discard pile. Tất cả kẻ địch, token, và attachment tại open sky đó bị discard.</li></ul>"
+    },
+    "summitDeck": {
+      "title": "Chồng bài Summit và các vị trí Sliding",
+      "body": "<p class='basic'>Trong scenario này, các vị trí và open sky sẽ đi vào và rời khỏi khu vực chơi thông qua chồng bài Summit. Chồng bài này bao gồm các lá bài vị trí Summit cũng như các lá bài open sky một mặt.</p><ul><li>Các lá bài luôn được rút từ _dưới cùng_ của chồng bài Summit.</li><li>Các lá bài encounter từ chồng bài Summit luôn được đặt úp xuống (mặt chưa lật ngửa lên nếu chúng là các vị trí).</li><li>Nếu một khoảng trống giữa các vị trí và/hoặc open sky được tạo ra vì bất kỳ lý do gì và không được lấp đầy ngay lập tức thông qua các hướng dẫn trên lá bài scenario, hãy lấp đầy khoảng trống đó bằng lá bài _dưới cùng_ của chồng bài Summit, đặt úp xuống nếu đó là một lá bài encounter hoặc mặt chưa lật ngửa lên nếu đó là một vị trí.</li><li>Các điều tra viên có thể được hướng dẫn trượt các hàng sang trái hoặc phải. Để làm vậy, trượt từng lá bài trong hàng đó (các vị trí và open sky) một lần theo hướng được chỉ định. Mỗi lá bài và token tại các vị trí/open sky đó cũng di chuyển theo. Bất kỳ lá bài nào di chuyển ra ngoài các cột đã thiết lập sẽ được đặt lên trên cùng của chồng bài Summit.</li><li>Một số vị trí không thể bị di chuyển. Nếu được hướng dẫn trượt các lá bài trong một hàng và có một vị trí trong hàng đó không thể bị di chuyển, hãy để vị trí đó ở nguyên chỗ của nó và \"bỏ qua\" nó, di chuyển lá bài đáng lẽ sẽ đi vào chỗ của nó vào khoảng trống gần nhất được tạo ra.</li></ul>"
+    },
+    "stormIntensity": {
+      "body": "<p class='basic'>Trong suốt scenario này, số lượng resource dưới \"Storm Intensity\" trên lá bài scenario reference biểu thị sức mạnh của những cơn bão dị giới của R'lyeh. Storm Intensity càng cao, thời tiết càng nguy hiểm. Bản thân Storm Intensity không có hiệu ứng trò chơi tự thân nào; tuy nhiên, một số hiệu ứng scenario có thể thay đổi hoặc trở nên mạnh hơn tùy thuộc vào mức độ Storm Intensity hiện tại.</p>"
+    },
+    "locationAdjacency": {
+      "body": "<p class='basic'>Trong scenario này, các địa điểm được sắp xếp theo một mô hình lưới cố định. _Mỗi địa điểm được kết nối với mỗi địa điểm liền kề với nó._</p><ul><li>Các địa điểm liền kề chung một cạnh (trái, phải, trên, hoặc dưới).</li><li>Các địa điểm chỉ chung một góc không được coi là liền kề.</li></ul>"
+    }
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "proveYourWorth": {
+      "title": "Nhiệm vụ: Prove Your Worth",
+      "task1Chosen": "Điều tra viên mà bạn đã chọn để giúp đỡ trước đó chịu 1 physical trauma và nhận 2 điểm kinh nghiệm thưởng.",
+      "task1Progress": "Bạn khá hài lòng với bản thân, phải không? Đánh dấu 2 tiến trình dưới mục \"Prove Your Worth\" trong Nhật ký Chiến dịch của bạn."
+    }
+  }
+}

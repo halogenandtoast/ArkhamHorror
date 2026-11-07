@@ -1,0 +1,78 @@
+{
+  "heading": "Màn II-A",
+  "intro": {
+    "title": "Màn II-A: Tìm kiếm Kadath"
+  },
+  "setup": {
+    "putLocations": "Đặt vị trí Ulthar, Skai River, và Dylath-Leen vào chơi.",
+    "beginInUlthar": "Mỗi điều tra viên bắt đầu chơi tại Ulthar.",
+    "setOtherLocationsAside": "Đặt tất cả các địa điểm khác sang một bên, ngoài màn chơi.",
+    "setEnemiesAside": "Đặt những kẻ địch sau một bên, ngoài khu vực chơi: Cats of Ulthar, Stalking Manticore, The Crawling Mist, Horde of Night, Beings of Ib, cả 2 lá Tenebrous Nightgaunt, cả 2 lá Corsair of Leng, và cả 3 lá Priest of a Thousand Masks.",
+    "spawnVooniths": "Tìm trong chồng bài encounter đã tập hợp 1 lá bài Pack of Vooniths và spawn nó tại vị trí Skai River. Nếu có 3 hoặc 4 điều tra viên trong màn chơi, tìm thêm 1 lá Pack of Vooniths khác và spawn nó tại Dylath-Leen.",
+    "takeControlOfVirgil": "Trưởng nhóm lấy lá bài tài sản Virgil Gray *(Writer of Strange Tales)* và đặt anh ấy vào chơi.",
+    "buildEncounterDeck": "Xáo trộn các lá bài encounter còn lại để tạo thành chồng bài encounter."
+  },
+  "regionSetup": {
+    "oriab": {
+      "title": "Thiết lập Oriab",
+      "loseClues": "Mỗi điều tra viên mất tất cả manh mối của họ.",
+      "removeLocations": "Loại bỏ mỗi vị trí đang được chơi khỏi màn chơi (hoặc đặt nó vào khu vực trưng bày thành tích nếu nó có Victory X và không có manh mối trên nó). Mỗi kẻ địch và attachment ở vị trí đó bị discard. Các điều tra viên chưa bị hạ gục trong quá trình này.",
+      "placeInvestigators": "Đặt các điều tra viên tại Baharna.",
+      "spawnNightriders": "Tìm trong chồng bài encounter 1 bản sao của Nightriders và spawn nó tại Mt. Ngranek. Nếu có 3 hoặc 4 điều tra viên trong màn chơi, tìm trong chồng bài encounter 1 bản sao Nightriders khác và spawn nó tại Nameless Ruins. Xào lại chồng bài encounter.",
+      "advanceAct": "Tiến tới Act 2a—“The Isle of Oriab.”"
+    },
+    "mnar": {
+      "title": "Thiết lập Mnar",
+      "loseClues": "Mỗi điều tra viên mất tất cả manh mối của họ.",
+      "removeLocations": "Loại bỏ mỗi vị trí đang được chơi khỏi màn chơi (hoặc đặt nó vào khu vực trưng bày thành tích nếu nó có Victory X và không có manh mối trên nó). Mỗi kẻ địch và attachment ở vị trí đó bị discard. Các điều tra viên chưa bị hạ gục trong quá trình này.",
+      "placeInvestigators": "Đặt các điều tra viên tại Kadatheron.",
+      "spawnBeingsOfIb": "Spawn kẻ địch Beings of Ib đặt một bên hồi đầu tại Ruins of Ib.",
+      "advanceAct": "Tiến tới Act 2a—“The Doom That Came Before.”"
+    },
+    "forbiddenLands": {
+      "title": "Thiết lập Forbidden Lands",
+      "loseClues": "Mỗi điều tra viên mất tất cả manh mối của họ.",
+      "removeLocations": "Loại bỏ mỗi vị trí đang được chơi khỏi màn chơi (hoặc đặt nó vào khu vực trưng bày thành tích nếu nó có Victory X và không có manh mối trên nó). Mỗi kẻ địch và attachment ở vị trí đó bị discard. Các điều tra viên chưa bị hạ gục trong quá trình này.",
+      "placeInvestigators": "Đặt các điều tra viên tại Ilek-Vad.",
+      "spawnManticore": "Spawn kẻ địch Stalking Manticore đặt một bên hồi đầu tại Forbidden Lands.",
+      "spawnHorde": "Spawn kẻ địch Horde of Night đặt một bên hồi đầu tại Zulan-Thek.",
+      "advanceAct": "Tiến tới Act 2a—“Seek Out the Night.”"
+    },
+    "timelessRealm": {
+      "title": "Thiết lập Timeless Realm",
+      "loseClues": "Mỗi điều tra viên mất tất cả manh mối của họ.",
+      "removeLocations": "Loại bỏ mỗi vị trí đang được chơi khỏi màn chơi (hoặc đặt nó vào khu vực trưng bày thành tích nếu nó có Victory X và không có manh mối trên nó). Mỗi kẻ địch và attachment ở vị trí đó bị discard. Các điều tra viên chưa bị hạ gục trong quá trình này.",
+      "putLocations": "Đặt Celephaïs, Serannian, và Hazuth-Kleg vào chơi.",
+      "placeInvestigators": "Đặt các điều tra viên tại Celephaïs.",
+      "shuffleCrawlingMist": "Xào kẻ địch The Crawling Mist đặt một bên hồi đầu vào chồng bài encounter.",
+      "spawnPriests": "Tìm trong chồng bài encounter 1 bản sao của Priest of a Thousand Masks và spawn nó tại Hazuth-Kleg. Nếu có 3 hoặc 4 điều tra viên trong màn chơi, tìm trong chồng bài encounter 1 bản sao Priest of a Thousand Masks khác và spawn nó tại Celephaïs. Xào lại chồng bài encounter.",
+      "advanceAct": "Tiến tới Act 2a—“The King’s Decree.”"
+    }
+  },
+  "rules": {
+    "locations": {
+      "title": "Vị trí trong màn chơi Tìm kiếm Kadath"
+    },
+    "swarmingAndVictory": {
+      "title": "Kẻ địch với Swarming và Victory",
+      "body": "<p class='basic'>Khi _Victory X_ xuất hiện trên kẻ địch swarming, dòng này chỉ hoạt động cho lá bài vật chủ. Các lá bài swarm không thể tiến vào khu vực trưng bày thành tích và không bao giờ có điểm victory.</p>"
+    }
+  },
+  "flavorText": {
+    "investigatorDefeat": {
+      "title": "Điều tra viên bị hạ gục"
+    }
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  },
+  "label": {
+    "leaveEmptyHanded": "*Rời đi với hai bàn tay trắng.*",
+    "forceIntoTemple": "*Cưỡng ép tiến vào ngôi đền.*"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "heading": "Màn I",
+  "setup": {
+    "setAside": "Đặt các lá bài sau sang một bên, ngoài vùng chơi: các vị trí Arkham Woods và lá bài Anette Mason."
+  },
+  "intro": {
+    "label": {
+      "avoidFate": "*\"Tôi có thể làm gì để tránh số mạng này?\"*",
+      "bullshit": "*\"Thật là nhảm nhí.\"*"
+    },
+    "title": "Màn I: Giờ Ma Thuật"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "resolution5": {
+      "title": "Giải pháp thứ 5"
+    }
+  }
+}

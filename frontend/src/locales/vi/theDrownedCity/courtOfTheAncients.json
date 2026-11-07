@@ -1,0 +1,42 @@
+{
+  "intro": {
+    "proceedToSetup": "Tiếp tục đến _Setup_",
+    "plumbTheDepths": {
+      "title": "Nhiệm vụ: Plumb the Depths"
+    },
+    "label": {
+      "plumbTheDepths": {
+        "lookAway": "*Quay đi.*",
+        "seekTheTruth": "*Tìm kiếm sự thật.*"
+      }
+    }
+  },
+  "setup": {
+    "title": "Chuẩn bị màn chơi",
+    "placeFixedLocations": "Đặt các địa điểm Twisting Catwalks, West Antechamber, East Antechamber, và Ancient Altar vào chơi theo sơ đồ sắp xếp địa điểm.",
+    "placeCrumblingArchives": "Xào các bản sao của Crumbling Archives và loại bỏ ngẫu nhiên một trong số chúng khỏi trò chơi. Đặt mỗi bản sao còn lại của Crumbling Archives vào chơi như được hiển thị trong sơ đồ sắp xếp địa điểm.",
+    "westStarSpawn": "Tìm kẻ địch Star Spawn Observer trong tập bài encounter *Star Spawn* và đặt nó sang một bên, ngoài cuộc chơi. Loại bỏ ngẫu nhiên hai lá bài khác trong tập bài encounter *Star Spawn* khỏi trò chơi.",
+    "westBeginAtEastAntechamber": "Mỗi điều tra viên bắt đầu cuộc chơi tại East Antechamber.",
+    "eastBuildActAgendaDeck": "Tạo chồng bài act và agenda sử dụng agenda 1a-\"Flooded Archives,\" agenda 2a-\"Unstable Foundations,\" act 1a—\"Steps of Giants,\" và act 2a—\"Escape the Tower (v. II).\" Loại bỏ mỗi act và agenda khác khỏi trò chơi.",
+    "eastAddFloodTokens": "Thêm token lũ lụt vào kho chứa token.",
+    "eastFloodLevelsOneAndTwo": "Tăng flood level của mỗi địa điểm ở tầng 1 và 2.",
+    "eastFullyFloodLevelOne": "Tăng flood level của mỗi địa điểm ở tầng 1 sao cho chúng bị fully flooded.",
+    "eastStarSpawn": "Tìm kẻ địch Star Spawn Observer trong tập bài encounter *Star Spawn* và đặt nó sang một bên, ngoài cuộc chơi. Loại bỏ mỗi lá bài khác trong tập bài encounter *Star Spawn* khỏi trò chơi.",
+    "setCardsAside": "Đặt story asset Shard of Y'ch'lecht và kẻ địch Colossal Tyrant sang một bên, ngoài cuộc chơi.",
+    "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu."
+  },
+  "rules": {
+    "greatLift": {
+      "title": "The Great Lift và Sliding Locations",
+      "body": "<p class='basic'>Trong scenario này, các điều tra viên sẽ cần sử dụng Great Lift để khám phá các tầng khác của tòa tháp.</p><ul><li>Các địa điểm không kết nối với nhau ngoại trừ thông qua Great Lift, các biểu tượng kết nối của chúng, hoặc một số hiệu ứng bài nhất định.</li><li>Great Lift chỉ kết nối với các địa điểm ở bên trái và bên phải của nó, và ngược lại.</li><li>Khi được hướng dẫn trượt Great Lift lên hoặc xuống, hãy di chuyển Great Lift đến tầng phía trên hoặc phía dưới tầng hiện tại của nó.<ul><li>Great Lift không thể di chuyển lên trên tầng 4 hoặc xuống dưới tầng 1.</li></ul></li><li>Khi Great Lift di chuyển, mỗi lá bài và token tại địa điểm đó sẽ di chuyển cùng với nó.</li></ul>"
+    }
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

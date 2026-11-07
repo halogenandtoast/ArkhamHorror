@@ -1,0 +1,58 @@
+{
+  "setup": {
+    "placeLocations": "Đặt Central Lot vào khu vực chơi, mặt *(Quiet On Set)* ngửa lên. Đặt Space Set, Jungle Set, và Gothic Set vào khu vực chơi.",
+    "beginPlay": "Mỗi điều tra viên bắt đầu chơi tại Central Lot.",
+    "setOutOfPlay": "Để story asset André Patel sang một bên, ngoài khu vực chơi.",
+    "begin": "Bây giờ bạn đã sẵn sàng để bắt đầu."
+  },
+  "interlude": {
+    "aCosmicJourney": {
+      "locations": "Đặt mỗi vị trí từ chồng bài encounter *Cosmic Journey* vào chơi.",
+      "rocketShip": "Đặt story asset Rocket Ship vào chơi tại Space Set. Mỗi điều tra viên tiến vào Rocket Ship.",
+      "placeClues": "Đặt các manh mối lên Space Set bằng với giá trị manh mối của nó.",
+      "saturniteMonarch": "Đặt kẻ địch Saturnite Monarch vào chơi tại High Ruler’s Bastion, ngửa mặt *(Gracious Host)*.",
+      "acts": "Thêm act 2a—A Cosmic Journey và act 3a—From Whence They Came vào act deck hiện tại.",
+      "storyAsset": "Đặt story asset Helios Telescope đã để riêng vào chơi bên cạnh act deck.",
+      "shuffleRemaining": "Xào từng lá bài còn lại trong encounter set *Cosmic Journey* vào encounter deck, cùng với encounter discard pile.",
+      "reelDeck": "Tập hợp từng lá bài encounter một mặt từ các encounter set *Forgotten Island* và *Abominable Contessa* đã để riêng. Xào chúng lại với nhau để tạo thành “Reel deck.” Đặt Reel deck bên cạnh scenario reference card.",
+      "tokens": "Thêm 2 token {'{'}tablet{'}'} vào túi hỗn mang.",
+      "continue": "Tiếp tục chơi."
+    },
+    "theForgottenIsland": {
+      "locations": "Đặt mỗi vị trí từ chồng bài encounter *Forgotten Island* vào chơi.",
+      "seals": "Đặt 4 resource lên Ruins of the Serpent King làm các seal. Đặt story asset Staff of the Serpent đã để riêng vào chơi tại Ruins of the Serpent King.",
+      "allosaurus": "Spawn kẻ địch Allosaurus hai mặt tại Jungle River, với mặt *(Indomitable Predator)* ngửa lên.",
+      "acts": "Thêm act 2a—The Forgotten Island và act 3a—Destroy the Source vào chồng bài act hiện tại.",
+      "shuffleRemaining": "Xào mỗi lá bài còn lại trong chồng bài encounter *Forgotten Island* vào chồng bài encounter, cùng với encounter discard pile.",
+      "reelDeck": "Tập hợp mỗi lá bài encounter một mặt từ các chồng bài encounter *Cosmic Journey* và *Abominable Contessa* đã để riêng. Xào chúng lại với nhau để tạo thành “Reel deck.” Đặt Reel deck cạnh lá bài scenario reference.",
+      "tokens": "Thêm 2 token {'{'}elderThing{'}'} vào túi hỗn mang.",
+      "continue": "Tiếp tục chơi."
+    },
+    "theAbominableContessa": {
+      "locations": "Đặt mỗi vị trí từ chồng bài encounter *Abominable Contessa* vào chơi.",
+      "contessa": "Spawn The Contessa tại Throne of Blood, mặt *(Needlessly Smug)* ngửa lên.",
+      "placeClues": "Đặt manh mối lên Gothic Set cho đến khi bằng giá trị manh mối của nó.",
+      "shuffleRemaining": "Xào mỗi lá bài còn lại trong chồng bài encounter *Abominable Contessa* vào chồng bài encounter, cùng với encounter discard pile.",
+      "reelDeck": "Tập hợp mỗi lá bài encounter một mặt từ các chồng bài encounter *Cosmic Journey* và *Forgotten Island* đã để riêng. Xào chúng lại với nhau để tạo thành “Reel deck”. Đặt Reel deck cạnh lá bài scenario reference.",
+      "tokens": "Thêm 2 token {'{'}cultist{'}'} vào túi hỗn mang.",
+      "continue": "Tiếp tục chơi."
+    }
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "resolution5": {
+      "title": "Giải pháp thứ 5"
+    }
+  }
+}

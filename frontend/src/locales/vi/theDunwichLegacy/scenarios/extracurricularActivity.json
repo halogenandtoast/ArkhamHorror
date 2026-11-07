@@ -1,0 +1,25 @@
+{
+  "heading": "Màn I-A",
+  "intro": {
+    "title": "Màn I-A: Hoạt Động Ngoại Khóa",
+    "body": "<p>Tiến sĩ Armitage lo lắng đồng nghiệp của mình, giáo sư Warren Rice, có thể đang gặp phải rắc rối, vì vậy ông ấy đã nhờ bạn giúp đỡ trong việc tìm kiếm bạn của mình. Ông ta có vẻ lo lắng một cách thái quá về sự biến mất của đồng nghiệp khi coi giáo sư Rice mới chỉ “mất tích” trong vài giờ…</p>"
+  },
+  "setup": {
+    "setAside": "Đặt các lá bài sau đây sang một bên, ngoài vùng chơi: “Jazz” Mulligan, Alchemical Concoction, The Experiment, Professor Warren Rice, Dormitories, và Alchemy Labs.",
+    "placeLocations": "Đặt các vị trí Miskatonic Quad, Orne Library, Humanities Building, Student Union, Science Building, and Administration Building vào vùng chơi. Mỗi điều tra viên bắt đầu màn chơi tại Miskatonic Quad."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    }
+  }
+}

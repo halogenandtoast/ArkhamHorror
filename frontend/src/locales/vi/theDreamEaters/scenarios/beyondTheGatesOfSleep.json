@@ -1,0 +1,36 @@
+{
+  "heading": "Màn I-A",
+  "setup": {
+    "doubleSidedNote": "<div class='columns' style='overflow: none;padding-bottom: 40px;'><div style='flex-basis: 20%;'>*Chú ý: Lá bài Nasht và Kaman-Thah có 2 mặt và có câu chuyện ở mặt còn lại. Để trải nghiệm được tốt nhất, đừng nhìn vào mặt còn lại trừ khi có hiệu ứng hướng dẫn bạn làm vậy.*</div><div style='flex:1; margin-top: 30px;' class='fan'><img src='{setImgPath}/../cards/06057.avif' /><img src='{setImgPath}/../cards/06058.avif' /></div></div>"
+  },
+  "rules": {
+    "stepsOfSlumber": {
+      "title": "Các bậc thang của Giấc ngủ"
+    }
+  },
+  "dreamSelection": {
+    "title": "Màn I-A: Beyond the Gates of Sleep"
+  },
+  "dreams": {
+    "drifter": {
+      "effect": "Bạn có thể thay thế điểm yếu cơ bản trong chồng bài của bạn với một điểm yếu cơ bản ngẫu nhiên. Nếu bạn làm vậy, nhận 1 sang chấn do bạn lựa chọn."
+    },
+    "medicOrAssistant": {
+      "effect": "Chọn một điều tra viên khác. Người đó bắt đầu màn chơi với nhiều hơn 2 tài nguyên và 1 lá bài trên tay ban đầu."
+    },
+    "neutral1": {
+      "effect": "Bạn bắt đầu màn chơi này với thêm 2 tài nguyên."
+    },
+    "neutral2": {
+      "effect": "Bạn bắt đầu màn chơi này với thêm 1 lá bài trên tay."
+    }
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    }
+  }
+}

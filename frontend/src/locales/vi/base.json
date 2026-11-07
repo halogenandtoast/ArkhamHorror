@@ -1,0 +1,260 @@
+{
+  "drewCard": "{iname} đã rút",
+  "drewCards": "{iname} đã rút {count} lá bài",
+  "serviceUnavailable": "Dịch vụ không khả dụng",
+  "pleaseTryAgainLater": "Vui lòng thử lại sau.",
+  "nav": {
+    "home": "Trang chủ",
+    "about": "Giới thiệu",
+    "achievements": "Thành tựu",
+    "admin": "Quản trị",
+    "cards": "Thẻ bài",
+    "myDecks": "Bộ bài",
+    "support": "Patreon",
+    "cardBuilder": "Thẻ tùy chỉnh"
+  },
+  "activeGames": "Ván đang chơi",
+  "checkCampaignLog": "Kiểm tra Nhật ký Chiến dịch.",
+  "continue": "Tiếp tục",
+  "debugGame": "Gỡ lỗi ván chơi",
+  "elusive": {
+    "flee": "Elusive: chọn địa điểm kết nối để kẻ địch này chạy tới."
+  },
+  "hunter": {
+    "move": "Hunter: chọn địa điểm để kẻ địch này tiến tới."
+  },
+  "patrol": {
+    "move": "Patrol: chọn địa điểm để kẻ địch này tuần tra tới."
+  },
+  "doDeleteGame": "Bạn có chắc muốn xóa ván chơi này?",
+  "email": "Email",
+  "finishedGames": "Ván đã kết thúc",
+  "forgotPassword": "Quên mật khẩu",
+  "invalidEmailOrPassword": "Email hoặc mật khẩu không hợp lệ",
+  "language": "Ngôn ngữ",
+  "logIn": "Đăng nhập",
+  "newGame": "Ván mới",
+  "newPassword": "Mật khẩu mới",
+  "password": "Mật khẩu",
+  "passwordResetRequested": "Đã yêu cầu đặt lại mật khẩu",
+  "passwordUpdatedSuccessfully": "Cập nhật mật khẩu thành công",
+  "register": "Đăng ký",
+  "sessionExpired": "Bạn đã bị đăng xuất. Hãy đăng nhập để quay lại ván chơi.",
+  "resetPassword": "Đặt lại mật khẩu",
+  "settings": "Cài đặt",
+  "updatePassword": "Cập nhật mật khẩu",
+  "username": "Tên đăng nhập",
+  "usernameOrEmailAlreadyTaken": "Tên đăng nhập hoặc email đã được dùng",
+  "tooltips": {
+    "attacksYou": "{name} tấn công bạn",
+    "takeControlOfKey": "Nắm giữ chìa khóa {key}",
+    "name": "{name}",
+    "giveSeal": "Trao Phong ấn",
+    "takeSeal": "Lấy Phong ấn",
+    "takeHorror": "Nhận {count} tổn thương tinh thần",
+    "discardTopOfEncounterDeck": "Bỏ lá trên cùng bộ bài encounter | Bỏ {count} lá trên cùng bộ bài encounter",
+    "takeDamageAndHorror": "Nhận {damage} tổn thương thể chất và {horror} tổn thương tinh thần",
+    "loseActions": "Mất 1 hành động | Mất {count} hành động",
+    "loseResources": "Mất 1 tài nguyên | Mất {count} tài nguyên"
+  },
+  "waitingForPlayer": "Đang chờ {name}…",
+  "shuffleRemainder": "Xào phần còn lại của các lá encounter để tạo bộ bài encounter.",
+  "readyToBegin": "Bây giờ bạn đã sẵn sàng bắt đầu.",
+  "Yes": "Có",
+  "No": "Không",
+  "On": "Bật",
+  "Off": "Tắt",
+  "Back": "Quay lại",
+  "exchange": "Trao đổi",
+  "Parley": "Đàm phán",
+  "Resign": "Đầu hàng (Resign)",
+  "Investigate": "Điều tra",
+  "Evade": "Trốn thoát",
+  "Explore": "Thám hiểm (Explore)",
+  "Fight": "Chiến đấu",
+  "Engage": "Giao chiến",
+  "Forced": "Bắt buộc (Forced)",
+  "Use": "Sử dụng",
+  "Reaction": "Phản ứng (Reaction)",
+  "Delayed": "Trì hoãn (Delayed)",
+  "Objective": "Mục tiêu (Objective)",
+  "Haunted": "Ám ảnh (Haunted)",
+  "basicAbility": "Khả năng cơ bản",
+  "Results": "Kết quả",
+  "Story": "Cốt truyện",
+  "ChooseOne": "Chọn một",
+  "Choose": "Chọn",
+  "setup": "Thiết lập",
+  "token": {
+    "Lead": "Đầu mối",
+    "LostSoul": "Đánh Mất Linh Hồn",
+    "Seal": "Niêm phong"
+  },
+  "choice": {
+    "clues": "Manh mối"
+  },
+  "proceedToSetup": "Tiến hành Thiết lập",
+  "headings": {
+    "epilogue": "Phần kết"
+  },
+  "upgradeDecks": "Nâng cấp bộ bài",
+  "addSideScenario": "Thêm kịch bản phụ",
+  "lead": "Trưởng nhóm",
+  "or2": "{0} hoặc {1}",
+  "or3": "{0} hoặc {1} hoặc {2}",
+  "slashOr": "{0}/{1}",
+  "and": "{0} hoặc {1}",
+  "cardsUnderneath": "1 Lá bài bên dưới | {count} Lá bài bên dưới",
+  "objectiveBlockedByFast": "Bạn không thể kích hoạt khả năng fast, vì vậy không thể xài manh mối để tiến triển",
+  "drew": "{iname} đã rút {name}",
+  "Done With Mulligan": "Hoàn tất đổi bài (Mulligan)",
+  "skip": "Bỏ qua",
+  "handSize": "Kích thước tay bài",
+  "needsSlots": "Cần thêm ô cắm",
+  "yes": "Có",
+  "no": "Không",
+  "succeededBy": "Thành công (dư {amount})",
+  "failedBy": "Thất bại (thiếu {amount})",
+  "chooseLeadInvestigator": "Chọn điều tra viên trưởng nhóm",
+  "cluesPerPlayerAsGroup": "Cả nhóm xài {total} manh mối",
+  "placeCluesOnLocationsAsGroup": "Cả nhóm đặt {total} manh mối lên địa điểm của họ",
+  "fromDeck": "Từ Bộ bài",
+  "fromHand": "Từ Tay bài",
+  "fromDiscard": "Từ Chồng bài bỏ",
+  "fromEncounterDeck": "Từ Bộ bài Encounter",
+  "fromEncounterDiscard": "Từ Chồng bài bỏ Encounter",
+  "fromInvestigatorDeck": "Từ Bộ bài của {name}",
+  "fromInvestigatorHand": "Từ Tay bài của {name}",
+  "fromInvestigatorDiscard": "Từ Chồng bài bỏ của {name}",
+  "searchThisDeck": "Tìm kiếm bộ bài này (sẽ được xào lại)",
+  "ok": "Đồng ý",
+  "back": "Quay lại",
+  "join": "Tham gia",
+  "joinGame": "Tham gia Ván chơi",
+  "decks": "Bộ bài",
+  "deckSyncedSuccessfully": "Đồng bộ bộ bài thành công",
+  "areYouSureDeleteDeck": "Bạn có chắc muốn xóa bộ bài này?",
+  "noDecksMatchFilters": "Không có bộ bài nào khớp với bộ lọc.",
+  "deck": {
+    "viewOnArkhamDb": "Xem trên ArkhamDB",
+    "syncDeck": "Đồng bộ bộ bài",
+    "syncFailed": "Không thể đồng bộ bộ bài này",
+    "changeUrl": "Đổi URL bộ bài",
+    "changeUrlHelp": "Trỏ bộ bài này tới URL ArkhamDB hoặc arkham.build khác.",
+    "changeUrlSave": "Đổi và nạp lại",
+    "deckUrl": "URL bộ bài",
+    "urlChanged": "Đã đổi URL bộ bài",
+    "urlChangeFailed": "Không thể đổi URL bộ bài",
+    "deleteDeck": "Xóa bộ bài",
+    "lastPlayed": "Chơi lần cuối {date}",
+    "neverPlayed": "Chưa từng chơi"
+  },
+  "deckList": {
+    "newDeck": "Bộ bài mới",
+    "saveToDeckList": "Lưu vào Danh sách Bộ bài",
+    "saveToDeckListDescription": "Giữ bộ bài này sẵn sàng cho các chiến dịch tương lai"
+  },
+  "lobby": {
+    "scenario": "Kịch bản",
+    "campaign": "Chiến dịch",
+    "multiplayer": "Nhiều người chơi",
+    "waitingForPlayers": "Đang chờ người chơi",
+    "inviteOthers": "Mời người khác tham gia:",
+    "copy": "Sao chép",
+    "copied": "✓ Đã sao chép",
+    "claim": "Chọn chỗ",
+    "takeASeat": "Ngồi vào chỗ",
+    "claimed": "Đã nhận chỗ",
+    "waiting": "Đang chờ",
+    "joined": "Đã tham gia",
+    "couldNotClaimSeat": "Không thể nhận chỗ này. Có thể chỗ đã được chọn.",
+    "waitingForMorePlayers": "Đang chờ thêm {remaining} người chơi | Đang chờ thêm {remaining} người chơi"
+  },
+  "partners": {
+    "expeditionTeam": "Đội Thám Hiểm"
+  },
+  "partnerStatus": {
+    "safe": "An toàn",
+    "eliminated": "Đã Bị Loại Bỏ"
+  },
+  "campaignLog": {
+    "tabs": {
+      "investigators": "Điều Tra Viên"
+    },
+    "about": {
+      "credits": "Đội ngũ thực hiện"
+    },
+    "campaignNotes": "Ghi chép Chiến dịch"
+  },
+  "modifier": {
+    "cannotCommitCards": "Không thể commit bài",
+    "difficulty": "Độ khó",
+    "cancelEffects": "Hủy hiệu ứng",
+    "cannotPerformSkillTest": "Không thể thực hiện bài thử",
+    "result": "Kết quả",
+    "skillValue": "Chỉ số kĩ năng",
+    "doubleSuccess": "Gấp đôi thành công",
+    "doubleDifficulty": "Gấp đôi độ khó",
+    "automaticallyFailIfSucceedByAtLeast": "Tự động thất bại nếu vượt quá độ khó từ {amount} trở lên",
+    "mayIgnoreLocationEffects": "Có thể bỏ qua hiệu ứng địa điểm",
+    "returnBlessedToChaosBag": "Trả {bless} về túi hỗn mang",
+    "skillIconsSubtract": "Các biểu tượng skill bị trừ điểm",
+    "skillTestAutomaticallySucceeds": "Skill test tự động thành công",
+    "revealAnotherChaosToken": "Lật thêm một token hỗn mang",
+    "cancelMatchingChaosTokens": "Hủy các token hỗn mang trùng khớp và lật token khác",
+    "cancelMatchingChaosTokensShort": "Hủy các token hỗn mang trùng khớp"
+  },
+  "modifiersTitle": "Các bổ trợ (Modifiers)",
+  "skillTestActions": {
+    "passSkillTest": "Vượt qua Skill Test",
+    "failSkillTest": "Thất bại Skill Test"
+  },
+  "campaign": {
+    "roster": {
+      "add": "Thêm Điều Tra Viên"
+    }
+  },
+  "campaignLogTooltip": {
+    "campaignNotesTitle": "Ghi chép Chiến dịch"
+  },
+  "calendar": {
+    "timePassed": "Thời gian trôi qua"
+  },
+  "keysStatus": {
+    "keys": "Chìa khóa"
+  },
+  "replay": {
+    "stop": "Dừng lại!"
+  },
+  "debug": {
+    "sandbox": {
+      "noAction": "Không",
+      "noTarget": "Không",
+      "noSource": "Không",
+      "sourceGroups": {
+        "locations": "Địa điểm"
+      }
+    }
+  },
+  "customCardSets": {
+    "builder": {
+      "capabilities": {
+        "can": {
+          "heal": {
+            "damage": "Chữa sát thương",
+            "horror": "Chữa chấn thương tinh thần",
+            "trauma": "Hồi phục chấn thương"
+          }
+        }
+      }
+    }
+  },
+  "adminStats": {
+    "difficulty": {
+      "Easy": "Dễ",
+      "Standard": "Cơ bản",
+      "Hard": "Khó",
+      "Expert": "Chuyên gia"
+    }
+  }
+}

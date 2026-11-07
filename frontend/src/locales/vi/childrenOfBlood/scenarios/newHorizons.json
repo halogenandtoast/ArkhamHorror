@@ -1,0 +1,32 @@
+{
+  "intro": {
+    "addCultist": "Thêm 1 token {'{'}cultist{'}'} vào túi hỗn mang cho phần còn lại của chiến dịch."
+  },
+  "version1": {
+    "setup": {
+      "title": "Chuẩn bị (v. I)"
+    }
+  },
+  "version2": {
+    "setup": {
+      "title": "Chuẩn bị (v. II)"
+    }
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "resolution5": {
+      "title": "Giải pháp thứ 5"
+    }
+  }
+}

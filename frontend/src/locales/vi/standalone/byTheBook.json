@@ -1,0 +1,16 @@
+{
+  "setup": {
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Arkham Police Station."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "label": {
+      "removeChaosToken": "Chọn và loại bỏ bất kỳ token không có biểu tượng nào khỏi chaos bag, trong phần còn lại của campaign."
+    }
+  }
+}

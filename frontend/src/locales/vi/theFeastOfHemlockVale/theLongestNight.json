@@ -1,0 +1,183 @@
+{
+  "specialRules": [
+    {
+      "title": "Barriers",
+      "body": "<p class='basic'>Một số khả năng bài cho phép các điều tra viên dựng barrier xung quanh nông trại. Các barrier chặn sự di chuyển của kẻ địch.</p><ul><li>Để dựng một barrier, đặt 1 tài nguyên token *(từ token pool)* giữa vị trí của bạn và một vị trí được kết nối, làm một barrier. Nếu một hiệu ứng bài hướng dẫn bạn đặt một barrier “tại” vị trí của bạn, hãy chọn một vị trí liền kề và đặt barrier giữa vị trí của bạn và vị trí đã chọn. Barrier này được coi là “tại” cả hai vị trí đối với các hiệu ứng bài.</li><li>Không có giới hạn về số lượng barrier giữa các vị trí.</li><li>Khi một kẻ địch đáng lẽ di chuyển thông qua một keyword *(ví dụ: hunter hoặc patrol)* và có một hoặc nhiều barrier giữa vị trí của nó và vị trí nó đang di chuyển tới, loại bỏ _một_ trong số các barrier đó, sau đó thay vào đó hủy bỏ các hiệu ứng của việc di chuyển.</li><li>Những kẻ địch bỏ qua barrier không thực hiện bất kỳ hiệu ứng nào ở trên *(bao gồm cả việc loại bỏ barrier)*.</li></ul>"
+    },
+    {
+      "title": "Mồi nhử",
+      "body": "<p class='basic'>Một số khả năng bài đặt mồi nhử quanh nông trại để cầm chân kẻ địch.</p><ul><li>Để đặt một mồi nhử, đặt 1 tổn thương tinh thần token *(từ token pool)* tại vị trí của bạn, làm mồi nhử. _Giới hạn 1 mồi nhử mỗi vị trí._</li><li>Khi một kẻ địch tiến vào một vị trí có mồi nhử, loại bỏ mồi nhử đó, gây 1 tổn thương thể chất cho kẻ địch đó, disengage nó khỏi tất cả các điều tra viên, và exhaust nó. Kẻ địch đó không thể ready trong phần còn lại của round.</li><li>Những kẻ địch bỏ qua mồi nhử không thực hiện bất kỳ hiệu ứng nào ở trên *(bao gồm cả việc loại bỏ mồi nhử)*.</li></ul>"
+    },
+    {
+      "title": "Cạm bẫy",
+      "body": "<p class='basic'>Một số khả năng bài đặt bẫy quanh nông trại để kẻ địch rơi vào.</p><ul><li>Để đặt một bẫy, đặt 1 tổn thương thể chất token *(từ token pool)* tại vị trí của bạn, làm bẫy. _Giới hạn 1 bẫy mỗi vị trí._</li><li>Khi một kẻ địch tiến vào một vị trí có bẫy, loại bỏ bẫy đó và gây 2 tổn thương thể chất cho kẻ địch đó.</li><li>Những kẻ địch bỏ qua bẫy không thực hiện bất kỳ hiệu ứng nào ở trên *(bao gồm cả việc loại bỏ bẫy)*.</li></ul>"
+    },
+    {
+      "title": "Chồng bài Kẻ thù",
+      "body": "<p class='basic'>Trong quá trình setup của scenario này, một bộ bài thứ hai với mặt sau encounter khác được tạo ra: Enemy deck. Bộ bài này là một bộ bài riêng biệt chỉ gồm toàn kẻ địch, và đại diện cho bầy thú điên cuồng không ngừng nghỉ đang nhắm đến những người bị bắt giữ. Trong mythos phase, hiệu ứng forced của agenda yêu cầu mỗi điều tra viên rút lá bài trên cùng của Enemy deck. Enemy deck có discard pile riêng và miễn nhiễm với các hiệu ứng bài người chơi. Các kẻ địch không phải weakness trong scenario này được discard vào Enemy discard pile. Nếu Enemy deck cạn kiệt, xào Enemy discard pile vào lại Enemy deck.</p>"
+    }
+  ],
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X bằng một nửa số doom đang in play (làm tròn lên).",
+      "cultist": "-2. Đặt 1 barrier tại địa điểm của bạn.",
+      "tablet": "-1. Lật thêm một token khác. Nếu bạn thất bại, kẻ địch gần nhất sẽ ready, di chuyển và tấn công như thể đang ở enemy phase.",
+      "elderThing": "-4. Nếu bạn thất bại, loại bỏ 1 barrier, decoy hoặc trap tại địa điểm của bạn."
+    },
+    "hardExpert": {
+      "skull": "-X. X bằng số doom đang in play.",
+      "cultist": "-3. Nếu bạn thành công, đặt 1 barrier tại địa điểm của bạn.",
+      "tablet": "-4. Kẻ địch gần nhất sẽ ready, di chuyển và tấn công như thể đang ở enemy phase.",
+      "elderThing": "-5. Loại bỏ một barrier, decoy hoặc trap tại địa điểm của bạn."
+    }
+  },
+  "intro": {
+    "title": "Kịch bản: The Longest Night",
+    "intro1": "<p>_Intro 1:_ Khi bạn đến gần Atwood Farm, những đám mây lùi dần để lộ ra một buổi hoàng hôn đỏ như máu phủ bóng mờ ảo lên cảnh vật. Bạn theo sau Dr. Marquez đi qua một chuồng gà và nhà kho bỏ hoang để đến hiên sau của ngôi nhà nông trại tồi tàn. Khi vị giáo sư chèn thanh xà beng dưới một cửa sổ bị đóng ván, bạn chú ý thấy khẩu súng lục ở túi quần sau của cô. “Chỉ để phòng hờ thôi,” cô nói.</p><p>Phải mất một lúc để cạy những tấm ván khỏi cửa sổ. Khi bạn trèo vào sau vị giáo sư, các giác quan của bạn bị nhói lên bởi mùi thối rữa và bệnh tật. Khi mắt bạn đã quen với bóng tối, bạn nhìn thấy một cảnh tượng kinh hoàng. Những chiếc giường xếp bẩn thỉu đặt dọc theo các bức tường, và sàn nhà vương vãi rác rưởi. Hàng tá người ốm yếu nằm trên những chiếc giường xếp và ngồi gục xuống tường. Da của họ sần sùi và cứng ngắc, đầy những gai nhọn và những khối u gân guốc. Vài người trong số họ có những vạt thịt thừa lủng lẳng mà bạn sớm nhận ra đó là những chi thoái hóa. Những người khác ngước nhìn bạn với đôi mắt đờ đẫn, trong khi những người khác với làn da xám xịt, như phủ phấn nằm bất động, chằm chằm nhìn lên trần nhà.</p><p>\"Các bạn không nên ở đây,\" một giọng nói cất lên. Một người đàn ông hói đầu trong chiếc áo choàng Vale rách nát bước về phía bạn với dáng đi khập khiễng. Dr. Marquez nheo mắt trong bóng tối. \"Tad? Ở cửa hàng tạp hóa phải không?\" Trước khi ông kịp trả lời, bạn nghe thấy tiếng người từ hiên trước. Bạn và Dr. Marquez lao vào nấp sau một đống đồ đạc vỡ ngay khi cánh cửa trước kêu lách cách rồi bật mở. Mother Rachel bước vào cùng nửa tá bóng người mặc áo choàng và thêm vài dân địa phương ốm yếu. Bà chủ trì cất lời với cả căn phòng, mặt rạng rỡ. \"Những Đứa Con của Các Vì Sao của ta. Thời khắc của các con rốt cuộc đã đến. Các con sẽ dọn đường.\" Bà cúi xuống nắm tay một người phụ nữ ngồi xe lăn. \"Tất cả các con đã được làm cho trọn vẹn. Và giờ đây các con sẽ hợp nhất với những bản thể khác của mình trong cõi vĩnh hằng.\"</p><p class='basic'>Các điều tra viên phải quyết định *(chọn một)*:</p><ul><li>*Đối đầu với Mother Rachel.* Tiếp tục đến _Intro 2_.</li><li>*Giữ im lặng, nấp kỹ.* Chuyển đến _Intro 3_.</li></ul>",
+    "label": {
+      "confront": "*Đối đầu với Mother Rachel.*",
+      "keepHidden": "*Tiếp tục ẩn nấp.*"
+    },
+    "intro2": "<p>_Intro 2_: Bạn bước ra khỏi nơi ẩn nấp cùng với Dr. Marquez. “Thật dã man. Những người này cần được ở trong bệnh viện!” Vị giáo sư gầm gừ với Mẹ bề trên.</p><ul><li>Thêm 1 token {'{'}tablet{'}'} vào chaos bag trong suốt phần còn lại của chiến dịch.</li></ul><p class='basic right'>Chuyển đến _Intro 4_.</p>",
+    "intro3": "<p>_Intro 3_: Bạn chờ đợi trong im lặng khi một cơn gió hôi thối thổi qua làm khuấy động bầu không khí nặng nề. Tad thong thả bước tới để nói chuyện với Mother Rachel. “Những nhân chứng đang ở đây,” anh ta chỉ tay về phía nơi ẩn nấp của bạn. Trong chốc lát, bạn và vị giáo sư bị lôi xềnh xệch ra ngoài.</p><ul><li>Thêm 1 token {'{'}skull{'}'} vào chaos bag trong suốt phần còn lại của chiến dịch.</li></ul><p class='basic right'>Tiếp tục đến _Intro 4_.</p>",
+    "intro4": "<p>_Intro 4_: Mother Rachel mỉm cười nhân từ. “Các con của ta. Có những điều chúng ta không nên nhìn thấy cho đến khi đến thời điểm phải thấy chúng. Nhưng rồi, ta cho rằng, việc chứng kiến sự thăng hoa của chúng ta là bổn phận của các người.” Bà dang rộng vòng tay trong một tư thế hân hoan. “Mỗi người chúng ta đều chấp nhận vị trí của mình trong sự sáng tạo. Chúng ta đã được tái tạo vượt xa những mối bận tâm của y học thông thường. Ta hiểu rằng điều đó có vẻ ngu ngốc, thậm chí tàn nhẫn, đối với một người ngoài cuộc, nhưng mỗi người chúng ta ở đây đều là do tự nguyện. Kể cả các người.” Căn phòng gật đầu đồng tình.</p><p>“Các người đang bị lừa dối! Các người không thấy sao?” Dr. Marquez nói, giận dữ. “Những người này đang chết dần!” Bạn tìm kiếm xung quanh căn phòng, hy vọng nhận được sự ủng hộ.</p>",
+    "checkDance": "<p class='basic unindented'>Kiểm tra Nhật ký Chiến dịch của bạn để xem những cư dân nào đã cùng nhảy một điệu.</p>",
+    "danceTwo": "Nếu có từ 2 cư dân trở lên đã cùng nhảy một điệu, tiếp tục đến _Intro 5_.",
+    "danceOne": "Nếu chỉ có đúng 1 cư dân đã cùng nhảy một điệu, chuyển đến _Intro 6_.",
+    "danceNone": "Nếu không, chuyển đến _Intro 7_.",
+    "intro5": "<p>_Intro 5:_ Vài bóng người trùm đầu bỏ mũ ra và đứng sau lưng bạn: họ chính là những người bạn mà bạn đã khiêu vũ cùng chỉ vài giờ trước. Mother Rachel nhìn từng người các bạn. “Vậy thì cứ như thế đi. Chúng ta là lúa mì; còn các người là vỏ trấu.”</p><ul><li>Thêm 1 token {'{'}cultist{'}'} vào chaos bag trong suốt phần còn lại của chiến dịch.</li></ul><p class='basic right'>Chuyển đến _Intro 8_.</p>",
+    "intro6": "<p>_Intro 6:_ Một bóng người duy nhất bước ra từ phía sau Mother Rachel và đến đứng cạnh bạn. Đó chính là người bạn mà bạn đã khiêu vũ cùng chỉ vài giờ trước. Mother Rachel nhìn họ một cách cay đắng. “Vậy thì cứ như thế đi. Chúng ta là lúa mì, còn các người là vỏ trấu.”</p><ul><li>Thêm 1 token {'{'}cultist{'}'} và 1 token {'{'}elderThing{'}'} vào chaos bag trong phần còn lại của chiến dịch.</li></ul><p class='basic right'>Chuyển đến _Intro 8_.</p>",
+    "intro7": "<p>_Intro 7:_ Lời cầu xin của Dr. Marquez lơ lửng trong không trung, không được đáp lại. Những người bị bắt và những bóng người trùm đầu vẫn im lặng khi Mother Rachel nhìn bạn với một nụ cười mệt mỏi. “Ôi, các con của ta. Người dân của Vale là một gia đình. Mỗi người chúng ta đều biết vị trí của mình. Các con rồi cũng sẽ biết vị trí của mình.”</p><ul><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *Các điều tra viên đã đối mặt với đêm dài nhất một mình*.</li><li>Thêm 1 token {'{'}elderThing{'}'} vào chaos bag trong phần còn lại của chiến dịch.</li></ul><p class='basic right'>Tiếp tục đến _Intro 8_.</p>",
+    "intro8": "<p>_Intro 8_: Đôi mắt của Mother Rachel đờ đẫn ngấn lệ khi bà nói với cả căn phòng. “Sự hy sinh của các người sẽ không vô ích. Đêm nay, mỗi người các người sẽ hoàn thành vị trí của mình trong tạo hóa và tham gia cùng chúng ta vào ngày mai cho cuộc thăng thiên vĩ đại.” Vị nữ chủ nở một nụ cười tiều tụy khi bà nói với bạn. “Đây không phải là sự hy sinh dành cho các người. Xin hãy trở về Vale.” Dr. Marquez trừng mắt đáp lại. Đôi mắt của Mother Rachel rơm rớm nước mắt khi bà rời đi cùng đoàn rước của mình.</p><p>“Bà ta có ý gì khi nói ‘hoàn thành vị trí của mình trong tạo hóa’?” Dr. Marquez hỏi Tad khi ông ta chà xát những khối u có vảy trên cẳng tay. Người đàn ông hói đầu mỉm cười. “Ngày mai, mặt trăng máu sẽ báo hiệu sự thăng thiên của chúng ta. Nhưng đêm nay, vào đêm ngắn nhất trong năm, tất cả các sinh vật của khu rừng và cánh đồng sẽ giúp chúng ta hoàn thành hành trình của mình.”</p><p>“Tôi xin lỗi, nhưng điều đó không trả lời câu hỏi của tôi,” vị giáo sư đáp.</p><p>Tad cười toe toét. “Tất cả chúng ta sẽ bị nuốt chửng. Vị trí của chúng ta là thực hiện sự hy sinh này.” Khi ông ta nhìn về phía chân trời, một điệp khúc những tiếng hú thê lương vang vọng khắp các cánh đồng.</p><p>Vị giáo sư nhìn Tad, kinh hoàng. “Còn lâu mới có chuyện đó,” cô nói. Bạn theo cô ấy ra ngoài. Những bóng đen in hình trên những ngọn đồi xa xa. Vị giáo sư chìm vào suy nghĩ trong giây lát, rồi hít một hơi thật sâu. “Tôi nghi ngờ việc có ai trong số họ còn tỉnh táo. Nhưng có lẽ nếu chúng ta cầm cự đủ lâu, chúng ta có thể đưa họ đi chăm sóc và chữa trị tử tế.” Bạn nhìn qua ngôi nhà nông trại về phía những cánh đồng nhấp nhô. Bạn không có thời gian để sơ tán những người bị bắt trước khi mặt trời lặn. Hơn nữa, bạn không có bất kỳ sự đảm bảo nào rằng họ sẽ đi theo bạn. Nhưng bạn phải thử.</p><p>Cùng với giáo sư, bạn lục lọi trang trại đang sụp đổ để tìm phụ tùng. Bạn tìm thấy những mảnh gỗ vụn, dây thép gai và đồ bẫy thú cũ để gia cố vị trí của mình. Nếu có thể trụ qua đêm nay, vài người bị giam giữ có lẽ sẽ được cứu. Một tiếng tru ghê rợn xé toạc bầu không khí tĩnh lặng khi mặt trời lặn. Đêm ngắn nhất trong năm có thể sẽ trở thành đêm dài nhất.</p><p class='basic right'>Tiếp tục đến _Setup_.</p>"
+  },
+  "setup": {
+    "gatherSets": "Tập hợp tất cả lá bài từ các chồng bài encounter sau: *The Second Day*, *The Longest Night*, *Blight*, *Transfiguration*, *Fire!*, *Chilling Cold*, *The Midnight Masks* và *Striking Fear*. Các chồng bài này được đánh dấu bằng các biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/the-second-day.png' /><img src='{setImgPath}/the-longest-night.png' /><img src='{setImgPath}/blight.png' /><img src='{setImgPath}/transfiguration.png' /><img src='{setImgPath}/fire.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/midnight-masks.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "midnightMasks": "Khi tập hợp chồng bài encounter *The Midnight Masks*, chỉ tập hợp các lá bài treachery. Không tập hợp các lá bài location, act, agenda, hoặc enemy từ chồng bài này.",
+    "nightTwo": "Đặt lá bài Time Marker _Night Two_ vào chơi. Đừng nản lòng.",
+    "removeOuterFields": "Loại bỏ ngẫu nhiên 1 lá bài location Outer Fields khỏi trò chơi.",
+    "locations": "Đặt mỗi địa điểm còn lại vào chơi như trong sơ đồ Location Placement ở trang 48 (xem Location Adjacency ở trang 3).",
+    "placeLocations": "Đặt mỗi lá bài location còn lại vào chơi như được hiển thị trong sơ đồ Location Placement bên dưới.",
+    "theCaptives": "Đặt story asset The Captives vào chơi tại The Farmhouse.",
+    "startingLocation": "Mỗi điều tra viên bắt đầu chơi tại một location do họ chọn.",
+    "enemyDeck": "Để tạo Enemy deck, tập hợp 15 lá bài enemy mặt sau màu đỏ trong chồng bài encounter *The Longest Night* *(xem* _The Enemy Deck_*)*.",
+    "gatherEnemies": "Tập hợp 15 lá bài kẻ địch lưng đỏ trong chồng bài encounter *The Longest Night*.",
+    "ursineHybrid": "Đưa kẻ địch Ursine Hybrid vào chơi tại vị trí Outer Fields phía tây.",
+    "shuffleEnemyDeck": "Trộn các lá bài kẻ địch còn lại để tạo Enemy deck. Đặt nó cạnh agenda deck.",
+    "bearWounded": "Kiểm tra Nhật ký Chiến dịch. Nếu *con gấu đã bị thương* được ghi lại, gây 2 {'{'}perPlayer{'}'} damage cho kẻ địch Ursine Hybrid và exhaust nó.",
+    "defenses": "Chuẩn bị phòng thủ! Bất kể vị trí khởi đầu của họ, các điều tra viên cùng nhau chọn đặt tổng cộng 1 decoy, 1 trap và 1 barrier, chia tùy ý cho bất kỳ số địa điểm nào. (Xem Barriers, Decoys và Traps ở bên phải.)",
+    "placeDefenses": "Đặt tổng cộng 1 decoy, 1 trap và 1 barrier, chia tùy ý cho bất kỳ số địa điểm nào.",
+    "tokenReferenceCard": "Đặt thẻ Token Reference “Barriers, Decoys, and Traps” cạnh thẻ scenario reference.",
+    "clues": "Kiểm tra Nhật ký Chiến dịch của bạn.",
+    "facedAlone": "Nếu *các điều tra viên đã đối mặt với đêm dài nhất một mình*, mỗi điều tra viên nhận 3 clue (từ token pool).",
+    "facedWithHelp": "Nếu không, mỗi điều tra viên nhận 2 clue (từ token pool).",
+    "residents": "Kiểm tra Nhật ký Chiến dịch của bạn và tập hợp mỗi story asset từ chồng bài encounter *Residents*. Chồng bài này được đánh dấu bằng biểu tượng sau:<section class='encounter-sets'><img src='{setImgPath}/residents.png' /></section>",
+    "drMarquez": "Đưa Dr. Rosa Marquez vào chơi dưới quyền kiểm soát của một điều tra viên. Cô ấy không chiếm ally slot trong scenario này.",
+    "dancedResidents": "Đưa mỗi cư dân đã *cùng khiêu vũ* vào chơi dưới quyền kiểm soát của một điều tra viên, chia đều nhất có thể.",
+    "helenPeters": "Nếu *Helen đã cùng nhảy một điệu*, tìm trong deck của mỗi điều tra viên story asset Helen Peters và đưa nó vào chơi dưới quyền kiểm soát của một điều tra viên. Cô ấy không chiếm ally slot nào trong scenario này.",
+    "removeResidents": "Loại bỏ phần còn lại của tập bài encounter *Residents* khỏi trò chơi.",
+    "setAside": "Để riêng tất cả 5 treachery Fire! và story asset Ajax ra ngoài khu vực chơi."
+  },
+  "barriers": {
+    "title": "Barriers",
+    "body": "<h3>Barriers</h3><p class='basic'>Một số khả năng bài cho phép các điều tra viên dựng barrier xung quanh nông trại. Các barrier chặn sự di chuyển của kẻ địch.</p><ul><li>Để dựng một barrier, đặt 1 tài nguyên token *(từ token pool)* giữa vị trí của bạn và một vị trí được kết nối, làm một barrier. Nếu một hiệu ứng bài hướng dẫn bạn đặt một barrier “tại” vị trí của bạn, hãy chọn một vị trí liền kề và đặt barrier giữa vị trí của bạn và vị trí đã chọn. Barrier này được coi là “tại” cả hai vị trí đối với các hiệu ứng bài.</li><li>Không có giới hạn về số lượng barrier giữa các vị trí.</li><li>Khi một kẻ địch đáng lẽ di chuyển thông qua một keyword *(ví dụ: hunter hoặc patrol)* và có một hoặc nhiều barrier giữa vị trí của nó và vị trí nó đang di chuyển tới, loại bỏ _một_ trong số các barrier đó, sau đó thay vào đó hủy bỏ các hiệu ứng của việc di chuyển.</li><li>Những kẻ địch bỏ qua barrier không thực hiện bất kỳ hiệu ứng nào ở trên *(bao gồm cả việc loại bỏ barrier)*.</li></ul>"
+  },
+  "decoys": {
+    "title": "Mồi nhử",
+    "body": "<h3>Mồi nhử</h3><p class='basic'>Một số khả năng bài đặt mồi nhử quanh nông trại để cầm chân kẻ địch.</p><ul><li>Để đặt một mồi nhử, đặt 1 tổn thương tinh thần token *(từ token pool)* tại vị trí của bạn, làm mồi nhử. _Giới hạn 1 mồi nhử mỗi vị trí._</li><li>Khi một kẻ địch tiến vào một vị trí có mồi nhử, loại bỏ mồi nhử đó, gây 1 tổn thương thể chất cho kẻ địch đó, disengage nó khỏi tất cả các điều tra viên, và exhaust nó. Kẻ địch đó không thể ready trong phần còn lại của round.</li><li>Những kẻ địch bỏ qua mồi nhử không thực hiện bất kỳ hiệu ứng nào ở trên *(bao gồm cả việc loại bỏ mồi nhử)*.</li></ul>"
+  },
+  "traps": {
+    "title": "Cạm bẫy",
+    "body": "<h3>Cạm bẫy</h3><p class='basic'>Một số khả năng bài đặt bẫy quanh nông trại để kẻ địch rơi vào.</p><ul><li>Để đặt một bẫy, đặt 1 tổn thương thể chất token *(từ token pool)* tại vị trí của bạn, làm bẫy. _Giới hạn 1 bẫy mỗi vị trí._</li><li>Khi một kẻ địch tiến vào một vị trí có bẫy, loại bỏ bẫy đó và gây 2 tổn thương thể chất cho kẻ địch đó.</li><li>Những kẻ địch bỏ qua bẫy không thực hiện bất kỳ hiệu ứng nào ở trên *(bao gồm cả việc loại bỏ bẫy)*.</li></ul>"
+  },
+  "label": {
+    "placeBarrier": "Đặt một barrier",
+    "placeDecoy": "Đặt một decoy",
+    "placeTrap": "Đặt một trap",
+    "moveBarrier": "Di chuyển một barrier",
+    "moveDecoy": "Di chuyển một decoy",
+    "moveTrap": "Di chuyển một trap",
+    "removeBarrier": "Loại bỏ một barrier",
+    "removeDecoy": "Loại bỏ một decoy",
+    "removeTrap": "Loại bỏ một trap",
+    "endlessNight": {
+      "damageCaptives": "Gây 2 tổn thương thể chất cho story asset The Captives"
+    }
+  },
+  "codex": {
+    "leahAtwood": {
+      "title": "{'{'}codex{'}'} Codex 2: Leah Atwood",
+      "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.leahAtwood.title </h3><p>Một bóng dáng giống sói với hàm răng sắc nhọn, sáng bóng lao về phía bạn, cười như một con linh cẩu. Leah bước ra chắn trước mặt bạn và giáng chiếc xẻng xuống đầu sinh vật đó. “Mày đừng có hòng!” cô ấy hét vào mặt nó.</p><p class='basic right'>Trong Ghi chú của Leah Atwood, ghi lại *Leah đã sát cánh bên bạn*. Gây 3 tổn thương thể chất cho kẻ địch gần nhất.</p>"
+    },
+    "simeonAtwood": {
+      "title": "{'{'}codex{'}'} Codex 3: Simeon Atwood",
+      "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.simeonAtwood.title </h3><p>“Phải dụ chúng ra và làm chúng vấp ngã!” Simeon cười the thé, vòng một sợi dây thép quanh một hàng rào đã sập. Ngay phía sau đó, ông ta lấp đầy một cái hố nông bằng những khúc xương ăn dở và máu me. “Giờ thì chúng ta chờ đợi,” ông ta thì thầm. Sự thích thú rõ ràng của ông ta khi đặt những cái bẫy chết người thật sự đáng lo ngại, đó là còn nói nhẹ.</p><p class='basic right'>Trong Ghi chú của Simeon Atwood, ghi lại *Simeon đã sát cánh bên bạn*. Đặt 1 decoy tại bất kỳ địa điểm nào.</p>"
+    },
+    "williamHemlock": {
+      "title": "{'{'}codex{'}'} Codex 4: William Hemlock",
+      "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.williamHemlock.title </h3><p>“Tôi tìm thấy thứ này cất dưới hầm.” William đặt một chiếc ba lô chứa đầy dụng cụ và kim loại vụn xuống đất. “Tôi hy vọng nó sẽ giúp ích. Thú thực thì, bản thân tôi không đặc biệt khéo tay cho lắm.” Bạn cảm ơn anh ta trước khi lục lọi chiếc túi để tìm đồ tiếp tế.</p><p class='basic right'>Trong Ghi chú của William Hemlock, ghi lại *William đã sát cánh bên bạn*. Mỗi điều tra viên nhận 1 clue (từ token pool).</p>"
+    },
+    "riverHawthorne": {
+      "title": "{'{'}codex{'}'} Codex 5: River Hawthorne",
+      "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.riverHawthorne.title </h3><p>Bạn giải thích kế hoạch của mình cho River sau khi phát hiện một đôi mắt xanh phát sáng ở phía bên kia sân. “Đừng lo, cưng à. Tôi quen với việc mọi ánh mắt đổ dồn vào mình rồi. Thật may cho bạn, tôi từng là một tay chạy nước rút cừ khôi đấy.” River lao qua bãi đất trống, hét lên những lời chửi thề để dụ sinh vật đó đi chỗ khác.</p><p class='basic right'>Trong Ghi chú của River Hawthorne, ghi lại *River đã sát cánh bên bạn*. Chọn một kẻ địch không phải Elite. Di chuyển kẻ địch đó đến bất kỳ địa điểm nào.</p>"
+    },
+    "gideonMizrah": {
+      "title": "{'{'}codex{'}'} Codex 6: Gideon Mizrah",
+      "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.gideonMizrah.title </h3><p>“Nhớ để mắt tìm một cánh cửa hoặc ổ khóa chắc chắn,” Gideon hướng dẫn. “Nếu bạn đủ cẩn thận, tôi có thể bẫy được một con. Làm tôi nhớ đến lần suýt chết trong rừng rậm New Guinea. Có thứ gì đó đã bám theo tôi từ...” Bạn nhanh chóng mất tập trung vào câu chuyện của ông lão.</p><p class='basic right'>Trong Ghi chú của Gideon Mizrah, ghi lại *Gideon đã sát cánh bên bạn*. Lần tới khi một điều tra viên rút một lá từ Enemy deck, hãy bỏ lá đó thay vào đó.</p>"
+    },
+    "judithPark": {
+      "title": "{'{'}codex{'}'} Codex 7: Judith Park",
+      "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.judithPark.title </h3><p>“Đã đến lúc chúng tự mang cuộc đi săn đến cho chúng ta rồi. Tôi bắt đầu thấy chán việc phải đi bộ khắp hòn đảo chỉ để được động tay động chân,” Cô ta chĩa khẩu súng trường vào một cái hố lót đầy những mảnh kim loại sắc nhọn. “Tôi đề nghị chúng ta đợi chúng đến đây và cho chúng nếm mùi địa ngục.”</p><p class='basic right'>Trong Ghi chú của Judith Park, ghi lại *Judith đã sát cánh bên bạn*. Đặt 1 trap tại bất kỳ địa điểm nào.</p>"
+    },
+    "theoPeters": {
+      "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
+      "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.theoPeters.title </h3><p>Chiếc xe tải màu xanh của Theo lao ầm ầm trên đường về phía bạn với một đàn sinh vật gầm gừ, đói khát đang đuổi theo sát nút. “Lên xe!” Theo hét lên khi anh ta đạp phanh. Bạn nhảy vào thùng xe tải khi anh ta nhấn ga tăng tốc.</p><p class='basic right'>Trong Ghi chú của Theo Peters, ghi lại *Theo đã sát cánh bên bạn*. Bạn có thể di chuyển 1 barrier, decoy hoặc trap từ địa điểm của bạn đến bất kỳ địa điểm nào. Disengage khỏi mỗi kẻ địch đang engage với bạn và di chuyển đến địa điểm đó.</p>"
+    },
+    "drRosaMarquez": {
+      "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
+      "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.drRosaMarquez.title </h3><p>“Lại giống như Cantigny rồi,” Tiến sĩ Marquez nói khi cô kéo vài thùng hàng nặng để tạo thành một rào chắn. Cô kể cho bạn nghe thêm về trận chiến đầu tiên và cũng là cuối cùng của cô trong Đại Chiến, và cái chết của người đồng đội. “Chúng ta không thể chết. Không thể như thế này,” cô nói. “Chúng ta chỉ cần cầm cự cho đến bình minh.”</p><p class='basic right'>Đặt 2 barrier tại vị trí của bạn.</p>"
+    },
+    "ajax": {
+      "title": "{'{'}codex{'}'} Codex Ω: Ajax",
+      "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.ajax.title </h3><p>Một tiếng kêu từ nhà kho khiến bạn căng thẳng. Bạn ngập ngừng bước về phía nhà kho, tưởng rằng sẽ thấy thêm một con quái vật nữa, nhưng thay vào đó lại thấy một con ngựa palomino đang đứng trong một chuồng bẩn thỉu. Cái tên Ajax được khắc trên một tấm biển cạnh nó. Con vật cao quý cất tiếng hí mất kiên nhẫn khi nó hất đầu.</p><p class='basic right'>Nhận quyền điều khiển story asset Ajax. Nó không chiếm khe ally trong phần còn lại của scenario này.</p>"
+    }
+  },
+  "enemyDeckRules": {
+    "title": "Chồng bài Kẻ thù",
+    "body": "<h3>Chồng bài Kẻ thù</h3><p class='basic'>Trong quá trình setup của scenario này, một bộ bài thứ hai với mặt sau encounter khác được tạo ra: Enemy deck. Bộ bài này là một bộ bài riêng biệt chỉ gồm toàn kẻ địch, và đại diện cho bầy thú điên cuồng không ngừng nghỉ đang nhắm đến những người bị bắt giữ. Trong mythos phase, hiệu ứng forced của agenda yêu cầu mỗi điều tra viên rút lá bài trên cùng của Enemy deck. Enemy deck có discard pile riêng và miễn nhiễm với các hiệu ứng bài người chơi. Các kẻ địch không phải weakness trong scenario này được discard vào Enemy discard pile. Nếu Enemy deck cạn kiệt, xào Enemy discard pile vào lại Enemy deck.</p>"
+  },
+  "resolutions": {
+    "investigatorDefeat": {
+      "title": "Điều tra viên bị đánh bại",
+      "body": "<p>_Investigator Defeat_: Điều cuối cùng bạn nhớ trước khi những hình thù ác mộng bủa vây bạn là một cảm giác bình yên tột độ. Ánh trăng bạc nhuộm đẫm trang trại trong một sắc độ đơn điệu rõ rệt khi những sinh vật đó xé toạc da thịt bạn. Trong một khoảnh khắc, bạn nhìn thấy vị trí của mình trong thế giới này, đúng như ý định của Mother Rachel. Bạn chỉ đơn thuần là năng lượng đang được chuyển đổi sang một dạng năng lượng khác.</p><p>Không điều gì khác có vẻ hoàn hảo đến vậy.</p><ul><li>Mỗi điều tra viên bị đánh bại sẽ bị _nuốt chửng_ *(họ bị* _giết_*)*.</li><li>Nếu không còn điều tra viên nào sống sót để tiếp tục chiến dịch, các điều tra viên thua chiến dịch.</li><li>Nếu một resolution khác đã đạt được, các điều tra viên còn lại tiếp tục đến resolution đó.</li><li>Nếu không đạt được resolution nào (mỗi điều tra viên còn sống đều đã resign): Chuyển đến _Resolution 3_.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: \"Làm ơn, hãy nghe tôi,\" Tiến sĩ Marquez cầu xin những người bị bắt giữ. \"Mỗi người trong các bạn đều xứng đáng được sống một cuộc đời trọn vẹn. Chúng tôi có thể giúp! Các bạn có thể nhận được sự chăm sóc ở đất liền.\" Tad nhổ toẹt nước bọt đáp lại. \"Các người đã cướp đi của chúng tôi một đặc ân lớn lao. Chúng tôi đã được chọn.\" Tiến sĩ Marquez chưa kịp trả lời thì một tấm ván gỗ nứt nẻ vung ra từ phía sau, đánh trúng vai cô. Một trong những người bị bắt giơ nó lên quá đầu, trong khi vài người khác xúm lại xung quanh. Tad nhìn vị giáo sư đầy ác ý và gầm gừ, \"Đi ngay.\" Tiến sĩ Marquez dè dặt đứng dậy và bước ra khỏi ngôi nhà. Bạn đi theo cô ấy. \"Lũ ngốc. Chúng ta đã cứu mạng họ,\" cô mỉa mai. Khi bạn rời đi, một cô bé đeo mặt nạ thỏ ló ra từ dưới đống đổ nát. Bạn nhận ra cô bé là Rebecca, con gái của Mother Rachel.</p>",
+      "xp5": "Nếu số damage trên story asset The Captives là 0, mỗi điều tra viên nhận 5 điểm kinh nghiệm thưởng.",
+      "xp4": "Nếu số damage trên story asset The Captives là 1 hoặc 2, mỗi điều tra viên nhận 4 điểm kinh nghiệm thưởng.",
+      "xp3": "Nếu số damage trên story asset The Captives là 3 hoặc 4, mỗi điều tra viên nhận 3 điểm kinh nghiệm thưởng.",
+      "captivesSaved": "Trong Nhật ký Chiến dịch của bạn, ghi lại *những người bị giam giữ đã được cứu*.",
+      "skipToResolution4": "Chuyển đến _Resolution 4_."
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: Tad đứng giữa ngôi nhà, chiếc áo choàng hội Vale màu trắng-vàng của anh ta nhuốm màu đỏ thẫm. Xung quanh anh ta, những cái xác bị ăn dở của những người bị bắt giữ đã tử nạn được xếp thành một vòng tròn. Khi bạn đến gần, người đàn ông trung niên cười chua chát. \"Tại sao tôi lại được tha, trong khi rất nhiều người khác bị bắt đi?\" Anh ta đưa cả hai tay lên mặt và cười điên dại. \"Tại sao mọi thứ lại sáng thế?!\" anh ta cười khúc khích, cào cấu vào chính đôi mắt của mình. Bạn quay đi và ra ngoài cùng Tiến sĩ Marquez, người đang khom lưng trên một đống đổ nát. Một cô bé đeo mặt nạ thỏ bò ra từ dưới đống mảnh vỡ. Bạn nhận ra cô bé là Rebecca, con gái của Mother Rachel.</p>",
+      "xp3": "Nếu số damage trên story asset The Captives là 5 hoặc 6, mỗi điều tra viên nhận 3 điểm kinh nghiệm thưởng.",
+      "xp2": "Nếu số damage trên story asset The Captives là 7 hoặc 8, mỗi điều tra viên nhận 2 điểm kinh nghiệm thưởng.",
+      "xp1": "Nếu số damage trên story asset The Captives là 9, mỗi điều tra viên nhận 1 điểm kinh nghiệm thưởng.",
+      "captivesLost": "Trong Nhật ký Chiến dịch của bạn, ghi lại *nhiều người bị giam giữ đã bị mất*.",
+      "skipToResolution4": "Chuyển đến _Resolution 4_."
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: \"Chúng ta không thể ở lại!\" Tiến sĩ Marquez hét lên. Hoàn toàn choáng ngợp, bạn lao ra khỏi cuộc hỗn chiến và chạy vào những cánh đồng ngô. Những cái bóng ác mộng lao qua bạn, kêu la và hú hét. Bạn nghĩ đến những người bị bắt giữ trong ngôi nhà, đang trực tiếp đối mặt với cái chết. Ở rìa xa của cánh đồng, bạn thấy Tiến sĩ Marquez đang ôm một cô bé đeo mặt nạ thỏ. Bạn nhận ra cô bé là Rebecca, con gái của Mother Rachel.</p><ul><li>Cảm giác tội lỗi vì không thể giúp đỡ những người gặp nạn sẽ ám ảnh bạn mãi mãi. Mỗi điều tra viên phải tìm trong bộ sưu tập một basic weakness _Madness_ ngẫu nhiên và thêm nó vào deck của họ.</li><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *tất cả những người bị giam giữ đã bị mất*.</li><li>Tiếp tục đến _Resolution 4_.</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_Resolution 4_: Ánh nắng ban mai gay gắt rọi xuống, sáng chói mắt, khi bạn băng qua những cánh đồng để trở về Vale. Những vệt chất lỏng sẫm màu, trơn trượt nhỏ giọt từ những thân cây khô héo khi bạn vạch lối đi qua. Tiến sĩ Marquez dừng lại và luồn tay dưới những chiếc lá giòn rụm. “Cánh đồng này được nhuộm bằng máu. Nhưng tại sao chứ?” Cô lau vết máu vào một chiếc khăn tay và quan sát cánh đồng đang nhỏ giọt. “Thứ quái vật nào lại làm điều này? Kết án tử hình những tín đồ của mình—kể cả con gái ruột. Thật giống như trong Kinh thánh vậy.”</p><p>Rebecca kéo mặt nạ ra và lắc đầu. “Mẹ nói đó là cách của chúng ta. Và mẹ không muốn cháu chết. Mẹ bảo cháu trốn đi. Mẹ nói chúng cháu đang chơi một trò chơi. ‘Hãy thu mình lại thật nhỏ và trốn gần những thùng dầu hỏa. Bọn thú sẽ không ngửi thấy mùi của con ở đó đâu’.”</p><p>“Nhưng tại sao lại đưa cháu đến đây làm gì?” vị giáo sư hỏi.</p><p>“Một số người không muốn đến nhà kho. Nhưng khi mẹ nói với họ rằng cháu cũng sẽ ở đó, họ bảo thế thì được.”</p><p>Cả nhóm chìm vào im lặng khi bạn đi qua một cánh đồng và nhìn thấy Vale một lần nữa, được bao phủ trong sắc vàng dưới ánh bình minh rực rỡ. Đột nhiên, Tiến sĩ Marquez dừng lại và kéo bạn ra một góc. “Chúng ta có thể dùng chuyện này làm đòn bẩy. Rebecca là bằng chứng sống cho sự đạo đức giả của Mother Rachel, dù nghe có vẻ tồi tệ. Mọi người trên Hemlock Isle sẽ có mặt tại Feast tối nay. Nếu chúng ta yêu cầu Rebecca kể cho họ nghe những gì Mother Rachel đã nói với cô bé, chúng ta có thể thuyết phục ít nhất một vài người trong số họ rời đi. Và nếu điều đó không hiệu quả, chúng ta có thể chuồn nhanh về đất liền và nhờ pháp luật can thiệp.”</p><p>Vị giáo sư quay sang Rebecca. “Chúng ta có thể chơi một trò chơi không? Giống như tối qua ấy? Mẹ cháu bảo cô rằng bà ấy muốn cháu trốn cho đến khi Feast bắt đầu.” Cô bé gật đầu. Tiến sĩ Marquez bật ra một tiếng cười khúc khích điên dại: một biểu hiện kỳ lạ, hoàn toàn khác với vẻ điềm tĩnh thường ngày của cô. Bạn cũng phải cố nhịn cười, bất chấp những nỗi kinh hoàng mà bạn vừa chứng kiến.</p><ul><li>Nếu story asset Ajax nằm dưới quyền kiểm soát của một điều tra viên khi scenario này kết thúc, chọn một điều tra viên để thêm nó vào deck của họ trong phần còn lại của chiến dịch. Nó không được tính vào kích thước deck của họ.</li><li>Chọn một điều tra viên để thêm story asset Dr. Rosa Marquez vào deck của họ trong phần còn lại của chiến dịch. Nó không tính vào kích cỡ deck của họ.</li><li>Mỗi điều tra viên nhận số điểm kinh nghiệm bằng giá trị Victory X của mỗi lá bài trong victory display ({xp}). Giờ đây mỗi điều tra viên có thể tiêu số điểm kinh nghiệm được ghi dưới mục \"Unspent Experience\" trong Nhật ký Chiến dịch của bạn.</li><li>Cập nhật Nhật ký Chiến dịch của bạn: Ghi lại *Dr. Marquez có kế hoạch*. Trong mục \"Areas Surveyed\", đánh dấu *Southern Fields*.</li><li>Tiếp tục đến _Prelude: Dawn of the Final Day_.</li></ul>"
+    },
+    "xp": {
+      "bonus": "Kinh nghiệm thưởng"
+    }
+  }
+}

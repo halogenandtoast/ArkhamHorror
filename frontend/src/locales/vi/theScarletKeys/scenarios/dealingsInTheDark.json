@@ -1,0 +1,47 @@
+{
+  "heading": "Hồ sơ #21-F",
+  "intro": {
+    "label": {
+      "giveToEce": "*“Được rồi. Chúng tôi sẽ tìm nó và giao nó cho cô bảo quản.”*",
+      "giveToEceLying": "*“Được rồi. Chúng tôi sẽ tìm nó và giao nó cho cô bảo quản.” (Bạn đang nói dối.)*",
+      "takeForOurselves": "*“Chúng tôi sẽ truy tìm lá bùa này, nhưng chúng tôi sẽ tự mình cất giữ nó.”*"
+    }
+  },
+  "setup": {
+    "theUnveiling": "Đặt lá bài story hai mặt \"The Unveiling / The Unsealing\" vào chơi bên cạnh lá bài scenario reference, mặt The Unveiling ngửa lên.",
+    "placeLocations": "Đặt các địa điểm sau vào chơi: Hagia Sophia, Istanbul University, Obelisk of Theodosius, và Galata. Hagia Sophia phải nằm ở phía bên phải của khu vực chơi.",
+    "beginPlay": "Mỗi điều tra viên bắt đầu chơi tại Hagia Sophia.",
+    "checkCampaignLog": "Kiểm tra Nhật ký Chiến dịch.",
+    "setAside": "Để riêng từng lá bài sau ra ngoài trò chơi: Từng vị trí trong số 7 vị trí Grand Bazaar, kẻ địch Umbral Harbinger, kẻ địch Emissary from Yuggoth, vị trí Galata Docks, key Twisted Antiprism, và lá bài act/agenda The Chase."
+  },
+  "act2Setup": {
+    "title": "Chuẩn bị Act 2",
+    "setAsideLocations": "Để riêng từng vị trí hiện tại ra ngoài, không discard bất kỳ lá bài hay token nào tại các vị trí đó. Những vị trí đó (cùng với các lá bài và token tại các vị trí đó) không được coi là đang in play trong act 2, nhưng sẽ quay trở lại in play sau đó với cùng trạng thái. *(Các điều tra viên không bị defeated trong quá trình này.)*",
+    "shuffleGrandBazaar": "Xào 7 vị trí Grand Bazaar và loại bỏ ngẫu nhiên một trong số chúng khỏi trò chơi, không được nhìn vào nó.",
+    "putIntoPlay": "Đưa 6 vị trí Grand Bazaar còn lại vào in play, được sắp xếp theo mô hình hàng và cột dựa trên sơ đồ được chọn ngẫu nhiên. Lưu ý rằng một trong những vị trí này được chỉ định là “entrance” và một vị trí được chỉ định là “east gate”.",
+    "moveToEntrance": "Di chuyển mỗi điều tra viên đến vị trí Grand Bazaar được đánh dấu trong sơ đồ được chọn ngẫu nhiên là “entrance.”",
+    "divideMiniCards": "Xào lẫn tất cả các mini-card bị concealed trên bốn vị trí từ act 1, và chia chúng đều nhất có thể cho các vị trí Grand Bazaar đang in play.",
+    "proceed": "Bây giờ bạn đã sẵn sàng tiến tới Hành 2."
+  },
+  "resolutions": {
+    "checkCampaignLog": "Kiểm tra Nhật ký Chiến dịch.",
+    "resolution1": {
+      "title": "Kết thúc thứ nhất"
+    },
+    "resolution2": {
+      "title": "Kết thúc thứ hai"
+    },
+    "resolution3": {
+      "title": "Kết thúc thứ ba"
+    },
+    "resolution4": {
+      "title": "Kết thúc thứ 4"
+    },
+    "resolution5": {
+      "title": "Giải pháp thứ 5"
+    },
+    "resolution6": {
+      "title": "Kết quả 6"
+    }
+  }
+}

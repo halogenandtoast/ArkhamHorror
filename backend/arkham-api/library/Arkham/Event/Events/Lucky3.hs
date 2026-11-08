@@ -15,12 +15,12 @@ lucky3 = event Lucky3 Cards.lucky3
 
 instance RunMessage Lucky3 where
   runMessage msg e@(Lucky3 attrs) = runQueueT $ case msg of
-    PlayThisEvent iid eid | eid == attrs.id -> do
+    PlayThisEvent _iid eid | eid == attrs.id -> do
       getSkillTest >>= \case
         Nothing -> error "invalid call"
         Just skillTest -> do
           let iid' = skillTestInvestigator skillTest
-          drawCardsIfCan iid attrs 1
+          drawCardsIfCan iid' attrs 1
           skillTestModifier skillTest.id attrs iid' (AnySkillValue 3)
           push RerunSkillTest
       pure e

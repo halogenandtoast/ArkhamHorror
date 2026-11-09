@@ -90,6 +90,10 @@ data LocationMatcher
   | -- | distance, valid step, start, destination
     LocationWithAccessiblePath Source Int InvestigatorMatcher LocationMatcher
   | CanMoveCloserToLocation Source InvestigatorMatcher LocationMatcher
+  | {- | 'CanMoveCloserToLocation' for a mandatory instruction: additional costs are not
+    paid, so they cannot stop the step (Rules Reference, "Additional Costs").
+    -}
+    CanBeMovedCloserToLocation Source InvestigatorMatcher LocationMatcher
   | LocationBetween LocationMatcher LocationMatcher LocationMatcher
   | LocationWithResources ValueMatcher
   | LocationWithClues ValueMatcher

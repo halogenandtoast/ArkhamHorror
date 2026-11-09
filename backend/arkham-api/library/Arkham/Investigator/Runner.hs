@@ -2089,6 +2089,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   InvestigatorKilled source iid | iid == investigatorId -> handleInvestigatorKilled a source iid
   MoveAllTo source lid | not (a ^. defeatedL || a ^. resignedL) -> handleMoveAllTo a source lid
   MoveToward target locationMatcher | isTarget a target -> handleMoveToward a target locationMatcher
+  ForcedMoveToward target locationMatcher
+    | isTarget a target -> handleForcedMoveToward a target locationMatcher
   MoveUntil lid target | isTarget a target -> handleMoveUntil a lid target
   MoveTo movement | isTarget a (moveTarget movement) -> handleMoveTo a movement
   SetMovement iid movement | iid == investigatorId -> handleSetMovement a iid movement

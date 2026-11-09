@@ -800,6 +800,11 @@ instance RunMessage EnemyAttrs where
         [source] -> push (ReadyAlternative source (toTarget a))
         _ -> error "Can not handle multiple targets yet"
       pure a
+    -- An enemy never pays an additional cost to move, so a forced move toward is the
+    -- same walk for it as a voluntary one.
+    ForcedMoveToward target locationMatcher | isTarget a target -> do
+      push $ MoveToward target locationMatcher
+      pure a
     MoveToward target locationMatcher | isTarget a target -> do
       case enemyPlacement of
         AsSwarm eid' _ -> push $ MoveToward (EnemyTarget eid') locationMatcher

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Treacheries qualified as Cards
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (deepOneInvestigator)
 import Arkham.Matcher
-import Arkham.Message.Lifted.Move (moveToward)
+import Arkham.Message.Lifted.Move (forcedMoveToward)
 import Arkham.Treachery.Import.Lifted
 
 newtype CallOfTheSea = CallOfTheSea TreacheryAttrs
@@ -16,10 +16,14 @@ callOfTheSea = treachery CallOfTheSea Cards.callOfTheSea
 
 instance HasAbilities CallOfTheSea where
   getAbilities (CallOfTheSea a) =
-    [ mkAbility a 1 (forced $ TurnEnds #after You)
+    [ -- 'CanBeMovedCloserToLocation', not 'CanMoveCloserToLocation': the move is a
+      -- mandatory instruction, so The Devil of the Depths' 2 additional actions to enter an
+      -- Ocean location are not paid and cannot keep the ability from firing at end of turn,
+      -- when there are no actions left to spend.
+      mkAbility a 1 (forced $ TurnEnds #after You)
         & restrict
           ( InThreatAreaOf (You <> not_ (at_ FullyFloodedLocation))
-              <> exists (CanMoveCloserToLocation (a.ability 1) You FullyFloodedLocation)
+              <> exists (CanBeMovedCloserToLocation (a.ability 1) You FullyFloodedLocation)
           )
     , -- "If you have the Deep One trait, increase this ability's cost by 1 action."
       -- 'CostWhen', not 'CostOnlyWhen': the extra action is added for a Deep One and
@@ -34,7 +38,7 @@ instance RunMessage CallOfTheSea where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      moveToward iid FullyFloodedLocation
+      forcedMoveToward iid FullyFloodedLocation
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       toDiscardBy iid (attrs.ability 2) attrs

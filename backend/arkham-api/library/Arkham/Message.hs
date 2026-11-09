@@ -2157,6 +2157,9 @@ pattern PatrolMove eid m = HuntMessage (PatrolMove_ eid m)
 pattern MoveToward :: Target -> LocationMatcher -> Message
 pattern MoveToward t m = HuntMessage (MoveToward_ t m)
 
+pattern ForcedMoveToward :: Target -> LocationMatcher -> Message
+pattern ForcedMoveToward t m = HuntMessage (ForcedMoveToward_ t m)
+
 pattern MoveUntil :: LocationId -> Target -> Message
 pattern MoveUntil lid t = HuntMessage (MoveUntil_ lid t)
 

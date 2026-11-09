@@ -84,6 +84,7 @@ import Arkham.Helpers.Discover
 import Arkham.Helpers.Enemy (canEnterLocation, getModifiedKeywords)
 import Arkham.Helpers.Game (withAlteredGame)
 import Arkham.Helpers.Location (
+  getCanForcedStepTo,
   getCanMoveTo,
   getCanMoveToMatchingLocations,
   getCanStepTo,
@@ -154,7 +155,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted (obtainCard, takeControlOfAsset)
 import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Message.Lifted.Choose qualified as Choose
-import Arkham.Message.Lifted.Move (moveTo, moveToEdit)
+import Arkham.Message.Lifted.Move (mandatoryMoveTo, moveTo, moveToEdit)
 import Arkham.Modifier
 import Arkham.Modifier qualified as Modifier
 import Arkham.Movement
@@ -449,7 +450,16 @@ handleMoveAllTo a@InvestigatorAttrs {..} source lid = do
       }
   pure a
 
-handleMoveToward a@InvestigatorAttrs {..} target locationMatcher = do
+handleMoveToward a target locationMatcher = handleMoveTowardWith True a target locationMatcher
+
+{- | 'handleMoveToward' for a mandatory instruction. The additional costs to move, leave and
+enter are neither checked nor charged (Rules Reference, "Additional Costs"), so e.g. The
+Devil of the Depths' 2-action surcharge on entering an Ocean location cannot stop Call of
+the Sea's @Forced@ end-of-turn move. See #5968.
+-}
+handleForcedMoveToward a target locationMatcher = handleMoveTowardWith False a target locationMatcher
+
+handleMoveTowardWith payAdditionalCosts a@InvestigatorAttrs {..} target locationMatcher = do
   mods <- getModifiers investigatorId
   unless (CannotMove `elem` mods) do
     withLocationOf investigatorId \loc -> do
@@ -457,13 +467,15 @@ handleMoveToward a@InvestigatorAttrs {..} target locationMatcher = do
       -- a barrier rather than stall on it (#5955).
       let closest =
             if CanIgnoreBarriers `elem` mods then ClosestPathLocation else ClosestUnbarricadedPathLocation
+      let canStepTo = if payAdditionalCosts then getCanStepTo else getCanForcedStepTo
+      let takeStep = if payAdditionalCosts then moveTo else mandatoryMoveTo
       destinations <- filter (/= loc) <$> select locationMatcher
       steps <-
-        filterM (getCanStepTo investigatorId GameSource)
+        filterM (canStepTo investigatorId GameSource)
           . nub
           =<< concatMapM (select . closest loc) destinations
       when (notNull steps) do
-        Choose.chooseTargetM investigatorId steps $ moveTo GameSource investigatorId
+        Choose.chooseTargetM investigatorId steps $ takeStep GameSource investigatorId
   pure a
 
 handleMoveUntil a@InvestigatorAttrs {..} lid target = do

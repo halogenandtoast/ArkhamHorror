@@ -10037,6 +10037,7 @@ test-suite spec
       Arkham.Homebrew.NightOfVespers.Agendas.OpenSeasonSpec
       Arkham.Homebrew.NightOfVespers.CampaignSpec
       Arkham.Homebrew.NightOfVespers.JinxSpec
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.CallOfTheSeaSpec
       Arkham.HomebrewRegistrySpec
       Arkham.Investigator.Cards.AgnesBakerSpec
       Arkham.Investigator.Cards.AshcanPeteSpec

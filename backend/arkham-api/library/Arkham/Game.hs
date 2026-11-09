@@ -2369,6 +2369,86 @@ getLocationsMatching lmatcher = do
     | isEncounterDistanceMatcher matcher = withEncounterDistanceConnections $ goUnscoped ls matcher
     | otherwise = goUnscoped ls matcher
 
+  -- \| 'CanMoveCloserToLocation', and its mandatory-instruction variant
+  --  'CanBeMovedCloserToLocation' when @payAdditionalCosts@ is False. Logic is similar to
+  --  'LocationWithAccessiblePath' with a few exceptions: we don't care if the entire path is
+  --  traversable, only that a path exists and the investigator can take a single step, so we
+  --  exclude checking if the investigator can enter until we verify the paths and we only need
+  --  to look at the first step of the path. We also have no specific distance to check.
+  --
+  --  A mandatory instruction does not pay the additional costs to move, leave or enter (Rules
+  --  Reference, "Additional Costs"), so on that path they neither gate the step here nor get
+  --  charged by the move itself. See #5968.
+  --
+  canMoveCloserToLocation
+    :: forall n
+     . HasGame n
+    => Bool
+    -> [Location]
+    -> Source
+    -> InvestigatorMatcher
+    -> LocationMatcher
+    -> n [Location]
+  canMoveCloserToLocation payAdditionalCosts ls source investigatorMatcher destinationMatcher = do
+    investigator <- selectJust investigatorMatcher
+    onlyScenarioEffects <- hasModifier investigator CannotMoveExceptByScenarioCardEffects
+    isScenarioEffect <- sourceMatches source SourceIsScenarioCardEffect
+    if onlyScenarioEffects && not isScenarioEffect
+      then pure []
+      else
+        field InvestigatorLocation investigator >>= \case
+          Just start -> do
+            let
+              go1 :: LocationId -> Seq LocationId -> StateT PathState n ()
+              go1 loc path = do
+                doesMatch <- lift $ loc <=~> destinationMatcher
+                ps@PathState {..} <- get
+                put
+                  $ ps
+                    { _psVisitedLocations = insertSet loc _psVisitedLocations
+                    , _psPaths = if doesMatch then Map.insertWith (<>) loc [path] _psPaths else _psPaths
+                    }
+                connections <-
+                  lift $ select $ ConnectedFrom ForMovement (LocationWithId loc)
+                for_ connections \conn -> do
+                  unless (conn `elem` _psVisitedLocations) do
+                    go1 conn (path |> loc)
+            PathState {_psPaths} <-
+              execStateT (go1 start mempty) (PathState (singleton start) mempty)
+
+            imods <- getModifiers investigator
+            let
+              moveCost = mconcat [c | AdditionalCostToMove c <- imods]
+              getEnterCost loc = do
+                mods <- getModifiers loc
+                pcosts <- filterM ((loc <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
+                pure $ moveCost <> concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods]
+              getLeaveCost loc = do
+                mods <- getModifiers loc
+                pure $ mconcat [c | AdditionalCostToLeave c <- mods]
+              canStepTo step = do
+                canEnter <-
+                  if payAdditionalCosts
+                    then getCanMoveTo investigator source step
+                    else getCanForcedMoveTo investigator source step
+                if canEnter && payAdditionalCosts
+                  then do
+                    leaveCost <- getLeaveCost start
+                    enterCost <- getEnterCost step
+                    getCanAffordCost investigator source [] [] (leaveCost <> enterCost)
+                  else pure canEnter
+
+            valids <- forMaybeM (mapToList _psPaths) \(loc, paths) -> do
+              valid <- flip anyM paths \case
+                Empty -> pure False
+                -- single step
+                (_ :<| Empty) -> canStepTo loc
+                (_ :<| (step :<| _)) -> canStepTo step
+              pure $ guard valid $> loc
+
+            pure $ filter ((`elem` valids) . toId) ls
+          Nothing -> pure []
+
   goUnscoped :: forall n. HasGame n => [Location] -> LocationMatcher -> n [Location]
   goUnscoped ls = \case
     OutOfGameLocation -> pure [] -- Handled above
@@ -2789,75 +2869,10 @@ getLocationsMatching lmatcher = do
 
           pure $ filter ((`elem` valids) . toId) ls
         Nothing -> pure []
-    CanMoveCloserToLocation source investigatorMatcher destinationMatcher -> do
-      -- Logic is similar to LocationWithAccessiblePath with a few
-      -- exceptions, we don't care if the entire path is traversable, only if
-      -- a path exists and the investigator can take a single step. So we
-      -- exclude checking if the investigator can enter until we verify the
-      -- paths and we only need to look at the first step of the path. We
-      -- also have no specific distance to check
-
-      investigator <- selectJust investigatorMatcher
-      onlyScenarioEffects <- hasModifier investigator CannotMoveExceptByScenarioCardEffects
-      isScenarioEffect <- sourceMatches source SourceIsScenarioCardEffect
-      if onlyScenarioEffects && not isScenarioEffect
-        then pure []
-        else
-          field InvestigatorLocation investigator >>= \case
-            Just start -> do
-              let
-                go1 :: LocationId -> Seq LocationId -> StateT PathState n ()
-                go1 loc path = do
-                  doesMatch <- lift $ loc <=~> destinationMatcher
-                  ps@PathState {..} <- get
-                  put
-                    $ ps
-                      { _psVisitedLocations = insertSet loc _psVisitedLocations
-                      , _psPaths = if doesMatch then Map.insertWith (<>) loc [path] _psPaths else _psPaths
-                      }
-                  connections <-
-                    lift $ select $ ConnectedFrom ForMovement (LocationWithId loc)
-                  for_ connections \conn -> do
-                    unless (conn `elem` _psVisitedLocations) do
-                      go1 conn (path |> loc)
-              PathState {_psPaths} <-
-                execStateT (go1 start mempty) (PathState (singleton start) mempty)
-
-              imods <- getModifiers investigator
-              let
-                moveCost = mconcat [c | AdditionalCostToMove c <- imods]
-                getEnterCost loc = do
-                  mods <- getModifiers loc
-                  pcosts <- filterM ((loc <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
-                  pure $ moveCost <> concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods]
-                getLeaveCost loc = do
-                  mods <- getModifiers loc
-                  pure $ mconcat [c | AdditionalCostToLeave c <- mods]
-
-              valids <- forMaybeM (mapToList _psPaths) \(loc, paths) -> do
-                valid <- flip anyM paths \case
-                  Empty -> pure False
-                  (_ :<| Empty) -> do
-                    -- single step
-                    canEnter <- getCanMoveTo investigator source loc
-                    if canEnter
-                      then do
-                        leaveCost <- getLeaveCost start
-                        enterCost <- getEnterCost loc
-                        getCanAffordCost investigator source [] [] (leaveCost <> enterCost)
-                      else pure False
-                  (_ :<| (step :<| _)) -> do
-                    canEnter <- getCanMoveTo investigator source step
-                    if canEnter
-                      then do
-                        leaveCost <- getLeaveCost start
-                        enterCost <- getEnterCost step
-                        getCanAffordCost investigator source [] [] (leaveCost <> enterCost)
-                      else pure False
-                pure $ guard valid $> loc
-
-              pure $ filter ((`elem` valids) . toId) ls
-            Nothing -> pure []
+    CanMoveCloserToLocation source investigatorMatcher destinationMatcher ->
+      canMoveCloserToLocation True ls source investigatorMatcher destinationMatcher
+    CanBeMovedCloserToLocation source investigatorMatcher destinationMatcher ->
+      canMoveCloserToLocation False ls source investigatorMatcher destinationMatcher
     LocationBetween startMatcher endMatcher destinationMatcher -> do
       starts <- select startMatcher
       destinations <- select destinationMatcher

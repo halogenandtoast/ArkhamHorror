@@ -79,6 +79,15 @@ uncancellableMove m = m {moveCancelable = False, movePayAdditionalCosts = False}
 forcedMove :: Movement -> Movement
 forcedMove m = m {moveCancelable = False, movePayAdditionalCosts = False, moveForced = True}
 
+{- | A move a mandatory instruction compels. "Additional costs are not paid when a mandatory
+instruction requires an investigator to resolve an effect" (Rules Reference, "Additional
+Costs"), and the log reads "is moved to" rather than "moves to". Unlike 'forcedMove' the move
+stays cancelable, so 'CannotMove', 'CancelMovement' and
+'CannotMoveExceptByScenarioCardEffects' still stop it -- only the costs are waived. See #5968.
+-}
+mandatoryMove :: Movement -> Movement
+mandatoryMove m = m {movePayAdditionalCosts = False, moveForced = True}
+
 afterMove :: [Message] -> Movement -> Movement
 afterMove msgs m = m {moveAfter = msgs}
 

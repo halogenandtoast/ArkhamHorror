@@ -16,6 +16,8 @@ data HuntMessage
   | HunterMove_ EnemyId
   | PatrolMove_ EnemyId LocationMatcher
   | MoveToward_ Target LocationMatcher
+  | -- | 'MoveToward_' for a mandatory instruction: additional costs are not paid.
+    ForcedMoveToward_ Target LocationMatcher
   | MoveUntil_ LocationId Target
   | WillMoveEnemy_ EnemyId Message
   | HandleElusive_ EnemyId

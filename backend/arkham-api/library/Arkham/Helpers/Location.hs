@@ -278,9 +278,22 @@ getCanMoveTo iid source lid =
   cached (CanMoveToLocationKey iid (toSource source) lid) do
     elem lid <$> getCanMoveToLocations iid source
 
+{- | 'getCanMoveTo' for a mandatory instruction: the additional costs to move, leave and
+enter are not paid, so they cannot stop the move. Uncached, because a forced move is rare
+and the 'CacheKey' GADT would need a variant of every move key to tell the two apart.
+-}
+getCanForcedMoveTo
+  :: (Sourceable source, HasGame m) => InvestigatorId -> source -> LocationId -> m Bool
+getCanForcedMoveTo iid source lid = elem lid <$> getCanMoveToLocationsWith False iid source
+
 getCanMoveToLocations
   :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
-getCanMoveToLocations iid source = cached (CanMoveToLocationsKey iid (toSource source)) do
+getCanMoveToLocations iid source =
+  cached (CanMoveToLocationsKey iid (toSource source)) $ getCanMoveToLocationsWith True iid source
+
+getCanMoveToLocationsWith
+  :: (Sourceable source, HasGame m) => Bool -> InvestigatorId -> source -> m [LocationId]
+getCanMoveToLocationsWith payAdditionalCosts iid source = do
   modifiers <- getModifiers iid
   let includeEmpty = if CanEnterEmptySpace `elem` modifiers then IncludeEmptySpace else id
   ls <-
@@ -288,12 +301,19 @@ getCanMoveToLocations iid source = cached (CanMoveToLocationsKey iid (toSource s
       $ includeEmpty
       $ Matcher.canEnterLocation iid
       <> Matcher.NotLocation (Matcher.LocationWithInvestigator $ InvestigatorWithId iid)
-  getCanMoveToLocations_ iid source ls
+  getCanMoveToLocationsWith_ payAdditionalCosts iid source ls
 
 getCanMoveToLocations_
   :: (Sourceable source, HasGame m)
   => InvestigatorId -> source -> [LocationId] -> m [LocationId]
-getCanMoveToLocations_ iid source ls = cached (CanMoveToLocationsKey_ iid (toSource source) ls) do
+getCanMoveToLocations_ iid source ls =
+  cached (CanMoveToLocationsKey_ iid (toSource source) ls)
+    $ getCanMoveToLocationsWith_ True iid source ls
+
+getCanMoveToLocationsWith_
+  :: (Sourceable source, HasGame m)
+  => Bool -> InvestigatorId -> source -> [LocationId] -> m [LocationId]
+getCanMoveToLocationsWith_ payAdditionalCosts iid source ls = do
   canMove <-
     iid <=~> (Matcher.InvestigatorCanMove <> not_ (Matcher.InVehicleMatching Matcher.AnyAsset))
   onlyScenarioEffects <- hasModifier iid CannotMoveExceptByScenarioCardEffects
@@ -302,7 +322,7 @@ getCanMoveToLocations_ iid source ls = cached (CanMoveToLocationsKey_ iid (toSou
     then do
       getLocationOf iid >>= \case
         Nothing -> pure []
-        Just lid -> filterM (getCanStepTo iid source) (filter (/= lid) ls)
+        Just lid -> filterM (getCanStepToWith payAdditionalCosts iid source) (filter (/= lid) ls)
     else pure []
 
 {- | Whether @iid@ can step from the location it is on into @l@: barricades, a
@@ -313,28 +333,45 @@ move, so it has to clear this too. See #5894.
 -}
 getCanStepTo
   :: (Sourceable source, HasGame m) => InvestigatorId -> source -> LocationId -> m Bool
-getCanStepTo iid source l = do
+getCanStepTo = getCanStepToWith True
+
+{- | 'getCanStepTo' for a step taken by a mandatory instruction -- a @Forced@ ability, an
+act/agenda back, a campaign-guide step. "Additional costs are not paid when a mandatory
+instruction requires an investigator to resolve an effect" (Rules Reference, "Additional
+Costs"), so an unaffordable additional cost does not stop the step; a barricade and a
+'CannotEnterExcept' restriction still do.
+-}
+getCanForcedStepTo
+  :: (Sourceable source, HasGame m) => InvestigatorId -> source -> LocationId -> m Bool
+getCanForcedStepTo = getCanStepToWith False
+
+getCanStepToWith
+  :: (Sourceable source, HasGame m) => Bool -> InvestigatorId -> source -> LocationId -> m Bool
+getCanStepToWith payAdditionalCosts iid source l = do
   getLocationOf iid >>= \case
     Nothing -> pure False
     Just lid -> do
       imods <- getModifiers iid
       mods <- getModifiers lid
-      let extraCostsToLeave = mconcat [c | AdditionalCostToLeave c <- mods]
-      let extraCostsToMove = mconcat [c | AdditionalCostToMove c <- imods]
       let barricaded = if CanIgnoreBarriers `elem` imods then [] else concat [xs | Barricades xs <- mods]
       -- "You cannot enter X except by <source>". This is the only move query that
       -- knows the moving effect's source, so it is where CannotEnterExcept is honored.
       let entryExceptions = [(l', sm) | CannotEnterExcept l' sm <- imods]
-      mods' <- getModifiers l
-      pcosts <- filterM ((l <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
-      revealed' <- field LocationRevealed l
-      baseEnter <- mwhen (not revealed') <$> field LocationCostToEnterUnrevealed l -- Added for cards like Nimble
-      let extraCostsToEnter = baseEnter <> concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods']
+      let
+        canAffordCosts = do
+          let extraCostsToLeave = mconcat [c | AdditionalCostToLeave c <- mods]
+          let extraCostsToMove = mconcat [c | AdditionalCostToMove c <- imods]
+          mods' <- getModifiers l
+          pcosts <- filterM ((l <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
+          revealed' <- field LocationRevealed l
+          baseEnter <- mwhen (not revealed') <$> field LocationCostToEnterUnrevealed l -- Added for cards like Nimble
+          let extraCostsToEnter = baseEnter <> concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods']
+          getCanAffordCost iid source [#move] [] (extraCostsToMove <> extraCostsToLeave <> extraCostsToEnter)
       andM
-        [ pure $ l `notElem` barricaded
-        , allM (sourceMatches (toSource source)) [sm | (l', sm) <- entryExceptions, l' == l]
-        , getCanAffordCost iid source [#move] [] (extraCostsToMove <> extraCostsToLeave <> extraCostsToEnter)
-        ]
+        $ [ pure $ l `notElem` barricaded
+          , allM (sourceMatches (toSource source)) [sm | (l', sm) <- entryExceptions, l' == l]
+          ]
+        <> [canAffordCosts | payAdditionalCosts]
 
 getCanMoveToMatchingLocations
   :: (HasGame m, Sourceable source)

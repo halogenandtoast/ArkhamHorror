@@ -2,7 +2,7 @@ module Arkham.Message.Lifted.Move where
 
 import Arkham.Card.CardDef
 import Arkham.Classes.HasQueue (push)
-import Arkham.Classes.Query (whenMatch, select)
+import Arkham.Classes.Query (select, whenMatch)
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers.Query (allInvestigators, getInvestigators)
 import Arkham.Helpers.Scenario (getInResolution)
@@ -39,6 +39,12 @@ forcedMoveTo
   :: (ReverseQueue m, Sourceable source, ToId location LocationId)
   => source -> InvestigatorId -> location -> m ()
 forcedMoveTo source iid location = moveToEdit source iid location forcedMove
+
+-- | 'moveTo' for a move a mandatory instruction compels. See 'mandatoryMove'.
+mandatoryMoveTo
+  :: (ReverseQueue m, Sourceable source, ToId location LocationId)
+  => source -> InvestigatorId -> location -> m ()
+mandatoryMoveTo source iid location = moveToEdit source iid location mandatoryMove
 
 moveToEdit
   :: (ReverseQueue m, Sourceable source, ToId location LocationId)
@@ -115,6 +121,19 @@ moveToward
   -> matcher
   -> m ()
 moveToward target matcher = push $ MoveToward (toTarget target) (toLocationMatcher matcher)
+
+{- | 'moveToward' for a mandatory instruction (a @Forced@ ability, an act/agenda back, a
+campaign-guide step). Additional costs are not paid when a mandatory instruction requires an
+investigator to resolve an effect, so they neither gate the step nor get charged for it. See
+the Rules Reference, "Additional Costs".
+-}
+forcedMoveToward
+  :: (ReverseQueue m, Targetable target, IsLocationMatcher matcher)
+  => target
+  -> matcher
+  -> m ()
+forcedMoveToward target matcher =
+  push $ ForcedMoveToward (toTarget target) (toLocationMatcher matcher)
 
 class AsMoveTo a where
   asMoveTo

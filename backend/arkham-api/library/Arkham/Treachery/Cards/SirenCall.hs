@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.SirenCall (sirenCall) where
 
 import Arkham.Ability
-import Arkham.Card
+import Arkham.Helpers.Card (iconsForCard)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
@@ -21,7 +21,7 @@ instance HasModifiersFor SirenCall where
     InThreatArea iid -> do
       matchingIcons <- (#wild :) . toList <$> getSkillTestMatchingSkillIcons
       modifySelectMapM attrs (OwnedBy (InvestigatorWithId iid)) \card -> do
-        let n = count (`elem` matchingIcons) (cdSkills $ toCardDef card)
+        n <- count (`elem` matchingIcons) <$> iconsForCard card
         pure [AdditionalCostToCommit iid $ ResourceCost n | n > 0]
     _ -> pure mempty
 

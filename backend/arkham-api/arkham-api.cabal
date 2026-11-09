@@ -10100,6 +10100,7 @@ test-suite spec
       Arkham.Skill.Cards.DoubleOrNothingSpec
       Arkham.Skill.Cards.FearlessSpec
       Arkham.Skill.Cards.GutsSpec
+      Arkham.Skill.Cards.LongShotSpec
       Arkham.Skill.Cards.ManualDexteritySpec
       Arkham.Skill.Cards.OpportunistSpec
       Arkham.Skill.Cards.OverpowerSpec

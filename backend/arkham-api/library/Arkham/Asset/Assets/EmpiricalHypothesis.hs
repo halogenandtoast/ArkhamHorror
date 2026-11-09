@@ -14,6 +14,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Taboo
+import Data.Map.Strict qualified as Map
 
 newtype EmpiricalHypothesis = EmpiricalHypothesis AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -134,12 +135,49 @@ instance RunMessage EmpiricalHypothesis where
     _ -> EmpiricalHypothesis <$> liftRunMessage msg attrs
 
 data EmpiricalHypothesisEffectMetadata = EmpiricalHypothesisEffectMetadata
-  { oldHandCount :: Int
+  { oldHandCounts :: Map InvestigatorId Int
   , pessimisticOutlook :: Bool
   , peerReview :: Bool
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass ToJSON
+
+defaultEffectMetadata :: EmpiricalHypothesisEffectMetadata
+defaultEffectMetadata = EmpiricalHypothesisEffectMetadata mempty False False
+
+{- | Total on purpose. 'oldHandCounts' replaced a single @oldHandCount@, so an
+effect persisted by the older code is missing the key, and 'toResult' errors
+rather than defaulting -- a partial decode here would brick any in-play game
+saved mid-round. Every field falls back, and a blob that is not an object at
+all still yields the defaults rather than failing.
+-}
+instance FromJSON EmpiricalHypothesisEffectMetadata where
+  parseJSON = \case
+    Object o -> do
+      oldHandCounts <- o .:? "oldHandCounts" .!= mempty
+      pessimisticOutlook <- o .:? "pessimisticOutlook" .!= False
+      peerReview <- o .:? "peerReview" .!= False
+      pure $ EmpiricalHypothesisEffectMetadata {..}
+    _ -> pure defaultEffectMetadata
+
+{- | Read the metadata off an effect, falling back rather than erroring. Worst
+case the card behaves as though unupgraded for the round, which beats taking
+the game down.
+-}
+effectMetadata :: EffectAttrs -> EmpiricalHypothesisEffectMetadata
+effectMetadata attrs = toResultDefault defaultEffectMetadata attrs.extra
+
+{- | The investigators whose actions can meet the chosen criteria: with Peer
+Review, any investigator at the controller's location, otherwise only the
+controller. Shared by the criteria windows and the hand-count tracking.
+-}
+criteriaMatcher :: EffectAttrs -> InvestigatorMatcher
+criteriaMatcher attrs = case attrs.target of
+  InvestigatorTarget iid ->
+    if peerReview (effectMetadata attrs)
+      then colocatedWith iid
+      else InvestigatorWithId iid
+  _ -> error $ "invalid effect target: " <> show attrs.target
 
 newtype EmpiricalHypothesisEffect = EmpiricalHypothesisEffect EffectAttrs
   deriving anyclass IsEffect
@@ -150,7 +188,7 @@ empiricalHypothesisEffect =
   cardEffectWith
     EmpiricalHypothesisEffect
     Cards.empiricalHypothesis
-    (extraL .~ toJSON (EmpiricalHypothesisEffectMetadata 0 False False))
+    (extraL .~ toJSON defaultEffectMetadata)
 
 instance HasModifiersFor EmpiricalHypothesisEffect where
   getModifiersFor (EmpiricalHypothesisEffect a) =
@@ -173,12 +211,7 @@ instance HasAbilities EmpiricalHypothesisEffect where
       Just (EffectInt 5) -> "you discard a treachery or enemy from play."
       Just (EffectInt 6) -> "you enter a location with 3 or more shroud."
       _ -> error $ "invalid effect meta: " <> show attrs.meta
-    matcher = case attrs.target of
-      InvestigatorTarget iid ->
-        if peerReview (toResult attrs.extra)
-          then colocatedWith iid
-          else InvestigatorWithId iid
-      _ -> error $ "invalid effect target: " <> show attrs.target
+    matcher = criteriaMatcher attrs
     criteria = case attrs.target of
       InvestigatorTarget iid -> exists (You <> InvestigatorWithId iid)
       _ -> error $ "invalid effect target: " <> show attrs.target
@@ -186,14 +219,14 @@ instance HasAbilities EmpiricalHypothesisEffect where
       Just (EffectInt 1) -> SkillTestResult #when matcher AnySkillTest $ FailureResult $ atLeast 2
       Just (EffectInt 2) -> SkillTestResult #when matcher AnySkillTest $ SuccessResult $ atLeast 3
       Just (EffectInt 3) ->
-        if pessimisticOutlook (toResult attrs.extra)
+        if pessimisticOutlook (effectMetadata attrs)
           then AnyWindow
           else NotAnyWindow
       Just (EffectInt 4) -> DealtDamageOrHorror #after AnySource matcher
       Just (EffectInt 5) ->
         oneOf
-          [ EnemyDiscarded #when AnySource (EnemyDiscardedBy You)
-          , TreacheryDiscarded #when AnySource (InPlayTreachery <> TreacheryDiscardedBy You)
+          [ EnemyDiscarded #when AnySource (EnemyDiscardedBy matcher)
+          , TreacheryDiscarded #when AnySource (InPlayTreachery <> TreacheryDiscardedBy matcher)
           ]
       Just (EffectInt 6) -> Enters #after matcher $ LocationWithShroud $ atLeast 3 -- NB. We use after so the location is revealed
       _ -> error $ "invalid effect: " <> show attrs.meta
@@ -210,7 +243,7 @@ instance RunMessage EmpiricalHypothesisEffect where
       EmpiricalHypothesisEffect
         <$> liftRunMessage
           msg
-          (attrs & extraL .~ toJSON (EmpiricalHypothesisEffectMetadata 0 False peerReview))
+          (attrs & extraL .~ toJSON (defaultEffectMetadata {peerReview}))
     UseThisAbility _ (ProxySource _ (isSource attrs -> True)) 1 -> do
       case attrs.source.asset of
         Just aid -> push $ AddUses attrs.source aid Evidence 1
@@ -221,16 +254,16 @@ instance RunMessage EmpiricalHypothesisEffect where
     CardEnteredPlay iid _ | isNothing attrs.meta -> do
       when (toTarget iid == attrs.target) (disable attrs)
       pure e
-    Do (CheckWindows {}) | isJust attrs.meta -> do
+    Do (CheckWindows {}) | attrs.meta == Just (EffectInt 3) -> do
       attrs' <- liftRunMessage msg attrs
-      case attrs.target of
-        InvestigatorTarget iid -> do
-          let extra = toResult attrs.extra
-          newCount <- fieldMap InvestigatorHand length iid
-          let pessimistic = oldHandCount extra > 0 && newCount == 0
-          let newExtra = toJSON $ extra {oldHandCount = newCount, pessimisticOutlook = pessimistic}
-          pure $ EmpiricalHypothesisEffect $ attrs' & extraL .~ newExtra
-        _ -> pure $ EmpiricalHypothesisEffect attrs'
+      let extra = effectMetadata attrs
+      iids <- select $ criteriaMatcher attrs
+      newCounts <- Map.fromList <$> forToSnd iids (fieldMap InvestigatorHand length)
+      let
+        ranOut iid n = n == 0 && Map.findWithDefault 0 iid (oldHandCounts extra) > 0
+        pessimistic = any (uncurry ranOut) (Map.toList newCounts)
+      let newExtra = toJSON $ extra {oldHandCounts = newCounts, pessimisticOutlook = pessimistic}
+      pure $ EmpiricalHypothesisEffect $ attrs' & extraL .~ newExtra
     HandleAbilityOption _ source _ | source == attrs.source -> do
       disableReturn e
     _ -> EmpiricalHypothesisEffect <$> liftRunMessage msg attrs

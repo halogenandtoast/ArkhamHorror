@@ -47,40 +47,45 @@ road n attrs = do
   let x = getLabelPosition attrs.label
   let prefix = "road" <> tshow (x + 1)
   whenNone (LocationWithLabel $ Label $ prefix <> "a") do
-    layout <- getLayout
-    roadCard <- take 1 <$> getRoadDeck
-    longWays <- take (n - 1) <$> getSetAsideCardsMatching (cardIs Location.longWayAround)
-    cards <- shuffleM $ roadCard <> longWays
+    {- The Road deck holds exactly one card per column, so it is empty once the last column
+    is in play. With no road card left there is nothing ahead to place -- not even the Long
+    Way Arounds, which only ever accompany a road card. -}
+    getRoadDeck >>= \case
+      [] -> pure ()
+      (roadCard : _) -> do
+        layout <- getLayout
+        longWays <- take (n - 1) <$> getSetAsideCardsMatching (cardIs Location.longWayAround)
+        cards <- shuffleM $ roadCard : longWays
 
-    let col = "road" <> tshow x
-    column <- select $ mapOneOf (LocationWithLabel . Label . (col <>) . T.singleton) ['a' .. 'c']
-    for_ (zip cards "abc") $ \(lid, c) -> do
-      location <- placeLocation lid
-      push $ SetLocationLabel location (prefix <> singleton c)
-      for_ column $ push . PlacedLocationDirection location RightOf
-    let
-      go =
-        case length cards of
-          1 -> \y -> if y `elem` [3, 4] then " " <> prefix <> "a" else " ."
-          2 -> \case
-            1 -> " ."
-            2 -> " " <> prefix <> "a"
-            3 -> " " <> prefix <> "a"
-            4 -> " " <> prefix <> "b"
-            5 -> " " <> prefix <> "b"
-            6 -> " ."
-            _ -> error "road(2): impossible"
-          3 -> \case
-            1 -> " " <> prefix <> "a"
-            2 -> " " <> prefix <> "a"
-            3 -> " " <> prefix <> "b"
-            4 -> " " <> prefix <> "b"
-            5 -> " " <> prefix <> "c"
-            6 -> " " <> prefix <> "c"
-            _ -> error "road(3): impossible"
-          _ -> error "road(?): impossible"
-      layout' = map (\(idx, GridTemplateRow row) -> GridTemplateRow $ row <> go idx) (withIndex1 layout)
-    push $ SetLayout layout'
+        let col = "road" <> tshow x
+        column <- select $ mapOneOf (LocationWithLabel . Label . (col <>) . T.singleton) ['a' .. 'c']
+        for_ (zip cards "abc") $ \(lid, c) -> do
+          location <- placeLocation lid
+          push $ SetLocationLabel location (prefix <> singleton c)
+          for_ column $ push . PlacedLocationDirection location RightOf
+        let
+          go =
+            case length cards of
+              1 -> \y -> if y `elem` [3, 4] then " " <> prefix <> "a" else " ."
+              2 -> \case
+                1 -> " ."
+                2 -> " " <> prefix <> "a"
+                3 -> " " <> prefix <> "a"
+                4 -> " " <> prefix <> "b"
+                5 -> " " <> prefix <> "b"
+                6 -> " ."
+                _ -> error "road(2): impossible"
+              3 -> \case
+                1 -> " " <> prefix <> "a"
+                2 -> " " <> prefix <> "a"
+                3 -> " " <> prefix <> "b"
+                4 -> " " <> prefix <> "b"
+                5 -> " " <> prefix <> "c"
+                6 -> " " <> prefix <> "c"
+                _ -> error "road(3): impossible"
+              _ -> error "road(?): impossible"
+          layout' = map (\(idx, GridTemplateRow row) -> GridTemplateRow $ row <> go idx) (withIndex1 layout)
+        push $ SetLayout layout'
 
 getRear :: HasGame m => m [LocationId]
 getRear = do

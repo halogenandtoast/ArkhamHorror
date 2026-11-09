@@ -11,7 +11,9 @@
       "nay": "Với mỗi thành viên của Coterie đã bỏ phiếu “nay,” tìm phiên bản story asset Conspirator của họ và đưa chúng vào chơi dưới quyền kiểm soát của bất kỳ điều tra viên nào. *(Lưu ý: Các story asset này nằm rải rác trong nhiều encounter set khác nhau. Một số nằm ở mặt sau của các lá bài kẻ địch.)*",
       "otherworldDeck": "Tìm 9 vị trí City of Remnants từ chồng bài encounter Beyond the Beyond. Xào các vị trí này lại với nhau, với mặt chưa lật ngửa lên, để tạo thành một chồng bài. Chồng bài này được gọi là Otherworld deck. Đặt chồng bài này gần lá bài scenario reference.",
       "shuffleRemainder": "Xáo trộn các lá bài encounter còn lại từ các tập hợp này lại với nhau để tạo thành một encounter deck thứ hai. Tạm thời để riêng deck này, ngoài cuộc chơi.",
-      "decoys": "Tập hợp mỗi mini-card decoy và mỗi mini-card sau: City of Remnants (L, M, và R), Mimetic Nemesis, và The Red-Gloved Man. Để riêng chúng, ngoài cuộc chơi."
+      "decoys": "Tập hợp mỗi mini-card decoy và mỗi mini-card sau: City of Remnants (L, M, và R), Mimetic Nemesis, và The Red-Gloved Man. Để riêng chúng, ngoài cuộc chơi.",
+      "theRedGlovedMan": "Trưởng nhóm spawn The Red-Gloved Man vào in the shadows và giải quyết keyword concealed của nó *(được cấp bởi act 1a)*.",
+      "drawCoterie": "Xáo trộn phần còn lại của các kẻ địch [[Coterie]] đã tập hợp. Lần lượt từng người, theo thứ tự người chơi, mỗi điều tra viên ngoại trừ trưởng nhóm rút 1 trong số chúng, spawn chúng như bình thường."
     }
   },
   "version2": {
@@ -31,7 +33,10 @@
       "otherworldDeck": "Tìm 9 vị trí City of Remnants từ chồng bài encounter Beyond the Beyond. Xào các vị trí này lại với nhau, với mặt chưa lật ngửa lên, để tạo thành một chồng bài. Chồng bài này được gọi là Otherworld deck. Đặt chồng bài này gần lá bài scenario reference.",
       "startAt": "Mỗi điều tra viên bắt đầu chơi tại Scarlet Halls.",
       "actDeck": "Xây dựng chồng bài act chỉ sử dụng Act 1a—”Secrets and Lies (v. III).” Loại bỏ mọi phiên bản khác của Act 1a khỏi trò chơi.",
-      "ignoreUnique": "Trong phần còn lại của scenario này, bỏ qua biểu tượng unique trên cả hai phiên bản của The Red-Gloved Man. *(Nếu The Red-Gloved Man là người mang bất kỳ key nào, chỉ gắn chúng vào phiên bản kẻ địch của hắn.)*"
+      "ignoreUnique": "Trong phần còn lại của scenario này, bỏ qua biểu tượng unique trên cả hai phiên bản của The Red-Gloved Man. *(Nếu The Red-Gloved Man là người mang bất kỳ key nào, chỉ gắn chúng vào phiên bản kẻ địch của hắn.)*",
+      "theRedGlovedMan": "Trưởng nhóm spawn The Red-Gloved Man vào in the shadows và giải quyết keyword concealed của nó *(được cấp bởi act 1a)*.",
+      "drawCoterie": "Xáo trộn phần còn lại của các kẻ địch [[Coterie]] đã tập hợp. Lần lượt từng người, theo thứ tự người chơi, mỗi điều tra viên ngoại trừ trưởng nhóm rút 1 trong số chúng, spawn chúng như bình thường.",
+      "decoys": "Tập hợp mỗi mini-card decoy và mỗi mini-card sau: City of Remnants (L, M, và R), Mimetic Nemesis, và The Red-Gloved Man. Để riêng chúng, ngoài cuộc chơi."
     }
   },
   "resolutions": {

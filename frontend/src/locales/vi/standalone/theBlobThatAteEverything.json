@@ -4,7 +4,9 @@
     "shuffleQuarantine": "Xào các vị trí Quarantine Zone với nhau và loại bỏ 1 trong số chúng khỏi trò chơi.",
     "placeCrater": "Đặt The Crater vào chơi.",
     "remaining": "Đặt các vị trí Quarantine Zone còn lại vào chơi.",
-    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Temporary HQ."
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Temporary HQ.",
+    "innerRing": "Lấy Research Site, Temporary HQ, và 2 vị trí Quarantine Zone ngẫu nhiên. Xào chúng và đặt mỗi vị trí kết nối với The Crater, theo một thứ tự ngẫu nhiên.",
+    "outerRing": "Lấy Fungus Mound và 3 vị trí Quarantine Zone ngẫu nhiên. Xào chúng và đặt mỗi vị trí vào 1 trong 4 vị trí ở vòng ngoài, xa nhất từ The Crater."
   },
   "resolutions": {
     "resolution1": {
@@ -57,7 +59,21 @@
       "doom": "…sự kiên nhẫn của bạn. Đặt 1 doom lên agenda hiện tại.",
       "handSlot": "…một bàn tay của bạn. Trong phần còn lại của trò chơi, bạn có ít hơn 1 hand slot.",
       "success": "…khái niệm về sự thành công. Lần tiếp theo một điều tra viên đáng lẽ thành công một bài kiểm tra với cách biệt từ 2 trở lên, điều tra viên đó thay vào đó sẽ tự động thất bại.",
-      "easiness": "…khái niệm về sự dễ dàng. Cho đến khi kết thúc trò chơi, lật scenario reference card sang mặt Hard/Expert."
+      "easiness": "…khái niệm về sự dễ dàng. Cho đến khi kết thúc trò chơi, lật scenario reference card sang mặt Hard/Expert.",
+      "senseOfTime": "…cảm nhận về thời gian của bạn. Cho đến khi bạn advance agenda, các điều tra viên không được sử dụng các thiết bị đo thời gian, hỏi về thời gian, hoặc kích hoạt các khả năng trên bất kỳ lá bài nào có chữ \"time\", \"watch\", hoặc \"chrono\" trong tên.",
+      "miniCard": "…mini card điều tra viên của bạn. (Sử dụng thứ khác để đánh dấu vị trí của bạn.)",
+      "discardPile": "…khái niệm về \"discard pile.\" Cho đến khi kết thúc mythos phase tiếp theo, mỗi lá bài đáng lẽ được đặt vào discard pile của bất kỳ điều tra viên nào thay vào đó sẽ bị nuốt chửng."
     }
-  }
+  },
+  "specialRules": [
+    {},
+    {},
+    {
+      "body": "<p class='basic'>Countermeasures đại diện cho vật tư, nghiên cứu, hoặc thiết bị quân sự có thể hỗ trợ các điều tra viên trong việc sinh tồn. Countermeasures có thể được tiêu hao thông qua một số khả năng của lá bài để kích hoạt các hiệu ứng mạnh mẽ. Tuy nhiên, việc nhận thêm countermeasures mới là rất hiếm, vì vậy hãy cẩn thận với cách bạn sử dụng chúng!</p>"
+    },
+    {
+      "title": "Lá bài Cốt truyện"
+    },
+    {}
+  ]
 }

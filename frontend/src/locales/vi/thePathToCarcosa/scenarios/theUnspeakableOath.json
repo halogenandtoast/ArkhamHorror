@@ -4,7 +4,8 @@
     "title": "Màn IV: Lời Tuyên Thệ Không Thể Nói"
   },
   "setup": {
-    "setAside": "Đặt các lá bài sau sang một bên, ngoài màn chơi: Daniel Chesterfield, và mỗi bản sao của Patient Confinement."
+    "setAside": "Đặt các lá bài sau sang một bên, ngoài màn chơi: Daniel Chesterfield, và mỗi bản sao của Patient Confinement.",
+    "chooseLocations": "Ngẫu nhiên chọn 1 bản sao của vị trí Asylum Halls *(Eastern Patient Wing)* và 1 bản sao của vị trí Asylum Halls *(Western Patient Wing)*. Loại bỏ các bản sao này khỏi màn chơi. Đặt các vị trí Asylum Halls còn lại vào màn chơi. Mỗi điều tra viên bắt đầu màn chơi tại vị trí Asylum Halls theo lựa chọn của bản thân."
   },
   "resolutions": {
     "defeated": {

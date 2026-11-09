@@ -1,11 +1,13 @@
 {
   "intro": {
     "dreamsOfDestruction": {
-      "title": "Nhiệm vụ: Dreams of Destruction"
+      "title": "Nhiệm vụ: Dreams of Destruction",
+      "choose": "Bạn phải quyết định (chọn một):"
     },
     "proveYourWorth": {
       "title": "Nhiệm vụ: Prove Your Worth",
-      "body": "Không ai khác trong chuyến thám hiểm này đánh giá cao tài năng của bạn. Làm sao họ có thể chứ? Nhiệm vụ của bạn là giúp đỡ, để cho họ thấy tại sao bạn lại là sự lựa chọn hoàn hảo cho chuyến thám hiểm chết tiệt này. Không ai yêu cầu bạn, nhưng đây có thể là thời điểm hoàn hảo để chứng tỏ giá trị của bạn."
+      "body": "Không ai khác trong chuyến thám hiểm này đánh giá cao tài năng của bạn. Làm sao họ có thể chứ? Nhiệm vụ của bạn là giúp đỡ, để cho họ thấy tại sao bạn lại là sự lựa chọn hoàn hảo cho chuyến thám hiểm chết tiệt này. Không ai yêu cầu bạn, nhưng đây có thể là thời điểm hoàn hảo để chứng tỏ giá trị của bạn.",
+      "choose": "Bạn phải quyết định (chọn một):"
     },
     "label": {
       "dreamsOfDestruction": {
@@ -29,7 +31,10 @@
       "buildActAgendaDeck": "Xây dựng các chồng bài act và agenda sử dụng agenda 1a—\"Encroaching Storms,\" act 1a-\"Scouring the Spires,\" act 2a-\"Deadly Skies,\" và act 3a—\"Return to the Shoreline.\" Loại bỏ các act và agenda còn lại khỏi trò chơi.",
       "stormIntensity": "Đặt 1 resource lên lá bài scenario reference dưới Storm Intensity.",
       "starSpawn": "Xào các kẻ địch từ bộ encounter *Star Spawn* và loại bỏ ngẫu nhiên 2 kẻ địch khỏi trò chơi.",
-      "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu."
+      "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu.",
+      "placeStart": "Đặt R'lyeh Streets vào chơi cùng với 4 trong số các lá bài open sky đã để riêng theo sơ đồ sắp xếp địa điểm cho act 1 bên dưới.",
+      "beginAtRlyehStreets": "Mỗi điều tra viên bắt đầu chơi tại R'lyeh Streets.",
+      "buildEncounterDeck": "Xào các lá bài encounter còn lại để xây dựng chồng bài encounter."
     },
     "east": {
       "title": "Thiết lập (v.II) - Eastern Expedition",
@@ -42,7 +47,10 @@
       "stormIntensity": "Đặt 1 resource lên lá bài scenario reference dưới Storm Intensity.",
       "starSpawn": "Xào các kẻ địch từ bộ encounter *Star Spawn* và loại bỏ ngẫu nhiên 3 kẻ địch khỏi trò chơi.",
       "removeStarVampire": "Tìm trong bộ encounter *Obsidian Canyons* một bản sao của kẻ địch Star Vampire và loại bỏ nó khỏi trò chơi.",
-      "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu."
+      "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu.",
+      "placeStart": "Đặt R'lyeh Streets vào chơi cùng với 4 trong số các lá bài open sky đã để riêng theo sơ đồ sắp xếp địa điểm cho act 1 bên dưới.",
+      "beginAtRlyehStreets": "Mỗi điều tra viên bắt đầu chơi tại R'lyeh Streets.",
+      "buildEncounterDeck": "Xào các lá bài encounter còn lại để xây dựng chồng bài encounter."
     }
   },
   "rules": {

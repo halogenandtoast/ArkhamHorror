@@ -1,7 +1,10 @@
 {
   "heading": "Màn I",
   "setup": {
-    "setAside": "Đặt các lá bài sau sang một bên, ngoài vùng chơi: các vị trí Arkham Woods và lá bài Anette Mason."
+    "setAside": "Đặt các lá bài sau sang một bên, ngoài vùng chơi: các vị trí Arkham Woods và lá bài Anette Mason.",
+    "placeLocations": "Đặt 5 vị trí Witch‐Haunted Woods (Khu rừng bị ám) vào chơi như sau:",
+    "placeWitchHauntedWoods": "Theo thứ tự người chơi, mỗi điều tra viên đặt 1 vị trí ngẫu nhiên của Witch‐Haunted Woods *trước mặt mình* , cho đến khi có chính xác 5 vị trí Witch‐Haunted Woods được chơi (xem phần “Lost and Separated” ở bên dưới). *Ví dụ: Nếu chỉ có 1 người chơi, cần có 5 vị trí Witch‐Haunted Woods trước mặt điều tra viên đó. Nếu là 2 người chơi, nên có 3 vị trí Witch‐Haunted Woods trước mặt trưởng nhóm và 2 vị trí Witch‐Haunted Woods trước mặt điều tra viên còn lại. Nếu là 3 người chơi, nên có 2 vị trí Witch‐Haunted Woods trước mặt trưởng nhóm, 2 vị trí Witch‐Haunted Woods trước người điều tra viên tiếp theo và 1 vị trí Witch‐Haunted Woods trước điều tra viên cuối cùng. Trong trò chơi 4 người, nên có 2 vị trí Witch‐Haunted Woods trước mặt điều tra viên chính và 1 vị trí Witch‐Haunted Woods trước mặt mỗi điều tra viên khác.*",
+    "removeRemainingWitchHauntedWoods": "Loại bỏ các vị trí Witch‐Haunted Woods còn lại khỏi màn chơi."
   },
   "intro": {
     "label": {
@@ -26,5 +29,10 @@
     "resolution5": {
       "title": "Giải pháp thứ 5"
     }
-  }
+  },
+  "specialRules": [
+    {
+      "body": "<p class='basic'>Trong màn chơi này, các điều tra viên bắt đầu chơi với việc bị tách ra và cắt đứt liên hệ với nhau. Điều này được thể hiện bằng các vị trí bắt đầu chơi ở “trước mặt” mỗi điều tra viên (được đặt ngay phía trên khu vực chơi của họ). Act 1a—“Lost in the Woods” có nội dung: \"Vị trí trước mặt bạn kết nối với nhau.\" Nội dung này bỏ qua các biểu tượng kết nối vị trí, vị trí trước mặt bạn được xem là kết nối với nhau, kẻ địch và điều tra viên có thể di chuyển giữa chúng. Các vị trí cũng duy trì kết nối với vị trí khác qua biểu tượng vị trí của chúng. Tuy nhiên, Lost in the Woods cũng có nội dung: \"Bạn không thể tiến vào vị trí ở phía trước điều tra viên khác.\" Điều này có nghĩa là bạn không thể di chuyển đến vị trí ở trước điều tra viên khác, cho dù hai vị trí được kết nối với nhau hay bạn được di chuyển qua hiệu ứng của lá bài. Chú ý là hạn chế này không áp dụng cho các kẻ địch, chúng di chuyển tự do giữa các vị trí cho dù các vị trí đó ở phía trước bất kỳ điều tra viên nào.</p>"
+    }
+  ]
 }

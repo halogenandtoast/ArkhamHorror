@@ -12,7 +12,10 @@
     "placeLocations": "Đặt các địa điểm sau vào chơi: Hagia Sophia, Istanbul University, Obelisk of Theodosius, và Galata. Hagia Sophia phải nằm ở phía bên phải của khu vực chơi.",
     "beginPlay": "Mỗi điều tra viên bắt đầu chơi tại Hagia Sophia.",
     "checkCampaignLog": "Kiểm tra Nhật ký Chiến dịch.",
-    "setAside": "Để riêng từng lá bài sau ra ngoài trò chơi: Từng vị trí trong số 7 vị trí Grand Bazaar, kẻ địch Umbral Harbinger, kẻ địch Emissary from Yuggoth, vị trí Galata Docks, key Twisted Antiprism, và lá bài act/agenda The Chase."
+    "setAside": "Để riêng từng lá bài sau ra ngoài trò chơi: Từng vị trí trong số 7 vị trí Grand Bazaar, kẻ địch Umbral Harbinger, kẻ địch Emissary from Yuggoth, vị trí Galata Docks, key Twisted Antiprism, và lá bài act/agenda The Chase.",
+    "timePassed": "Kiểm tra xem đã có bao nhiêu _time_ trôi qua trong Nhật ký Chiến dịch.",
+    "miniCards": "Tập hợp từng lá mini-card decoy và từng lá mini-card sau: 3x Acolyte (bất kỳ), Wizard of the Order, Sinister Aspirants (A, B và C), và Emissary from Yuggoth. Để riêng chúng ra ngoài trò chơi.",
+    "cultists": "Lần lượt từng người, theo thứ tự người chơi, mỗi điều tra viên discard các lá bài từ trên cùng của encounter deck cho đến khi họ discard một kẻ địch [[Cultist]]. Mỗi điều tra viên rút kẻ địch mà họ đã discard, giải quyết keyword concealed của nó (như được cấp bởi agenda 1a). Sau khi tất cả điều tra viên đã thực hiện bước này, xào những lá bài bị discard khác trở lại encounter deck."
   },
   "act2Setup": {
     "title": "Chuẩn bị Act 2",
@@ -43,5 +46,14 @@
     "resolution6": {
       "title": "Kết quả 6"
     }
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Sự liền kề của các địa điểm trong Grand Bazaar"
+    },
+    {
+      "title": "Các thẻ bài mini Acolyte Concealed",
+      "body": "<p class='basic'>Agenda đầu tiên của scenario này khiến mỗi kẻ địch [[Cultist]], bao gồm cả những kẻ địch từ Core Set, nhận được keyword concealed. Vì ba Acolyte từ Core Set không được dán nhãn A, B và C, khi giải quyết keyword concealed của chúng, hãy sử dụng bất kỳ mini-card Acolyte (any) nào cùng với decoy của chúng. Tương tự, khi một mini-card “Acolyte (any)” bị expose, điều tra viên thực hiện expose có thể chọn bất kỳ Acolyte nào trong the shadows để engage.</p>"
+    }
+  ]
 }

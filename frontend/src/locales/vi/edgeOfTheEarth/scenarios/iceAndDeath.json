@@ -14,7 +14,8 @@
       "tekelili": "Xáo trộn tất cả các lá bài điểm yếu Tekeli-li! để tạo thành chồng bài Tekeli-li. Đặt chồng bài này gần chồng bài agenda."
     },
     "intro": {
-      "title": "Màn I: Ice and Death (Băng giá và Cái chết)"
+      "title": "Màn I: Ice and Death (Băng giá và Cái chết)",
+      "body": "<p>Đã tám tuần dài trôi qua kể từ khi bạn rời Boston, và không phải không có những khó khăn. Con tàu Theodosia đi theo tuyến đường gần giống với những con tàu trước, Arkham và Miskatonic—đầu tiên xuôi nam dọc theo bờ đông và qua kênh Panama, trước khi tiến vào Vòng Nam Cực. Khi thời tiết ngày càng lạnh hơn, các tảng băng trôi trở thành vấn đề lớn cho con tàu khi di chuyển, nhưng nhờ chuyên môn của thủy thủ đoàn và nhật ký của các thuyền trưởng trước đã đi qua hành trình này, cậu đã đến nơi đúng thời gian. Chẳng bao lâu, cậu nhìn thấy những đỉnh núi phủ sương mù của Mts. Erebus và Terror phía trước, đánh dấu vị trí của Ross Island (Đảo Ross), gần thềm băng sẽ là điểm đổ bộ của cuộc thám hiểm.</p><p>Khi cậu đến gần bờ biển, Tiến sĩ Kensler và các thành viên còn lại của đội gặp nhau trên boong tàu Theodosia để bàn kế hoạch. \"Chúng ta sẽ sử dụng hệ thống phao cứu sinh như trước đây để dỡ hàng xuống thềm băng,\" cô giải thích. \"Ông Fredericks, ông Ellsworth và ông Claypool, các ông sẽ dùng một trong những chiếc thuyền nhỏ của chúng ta đến thềm băng để tìm một khu vực đổ bộ cho chúng ta. Cô Takada, khi trại đã được dựng lên và hoạt động, máy bay sẽ là ưu tiên hàng đầu của cô. Ông Ashevak, tôi mong những chiếc xe trượt tuyết sẽ giúp vận chuyển hàng từ điểm đổ bộ đến trại. Ngay khi chúng ta đến thềm băng, sẽ có rất nhiều việc phải làm trong thời gian ngắn. Tôi không muốn ông phải vật lộn với ba chục con chó nữa. Vậy nên hãy sắp xếp chúng cho ổn thỏa.\"</p><p>Eliyah đảo mắt và vuốt ve Anyu một cách lơ đãng, con chó ngồi ngoan ngoãn bên cạnh anh ta. \"Vâng, thưa cô.\"</p><p>Giáo sư Dyer lên tiếng. \"Tôi cho rằng việc thiếu thiết bị làm tan và khoan băng có nghĩa là chúng ta không lấy mẫu khoáng sản sao?\" ông hỏi đầy ẩn ý.</p><p>Tiến sĩ Kensler lắc đầu. \"Không cần, mặc dù nếu chúng ta tình cờ tìm thấy một mẫu phù hợp, chúng ta cũng nên lấy nó. Dù vậy, nhiệm vụ của chúng ta chỉ là xác minh những gì ông và Danforth đã phát hiện, và mang về thêm bằng chứng về loài cổ xưa này, những 'Elder Things' (Thực thể Cổ xưa), như cách ông gọi chúng. Một mẫu vật sống sẽ là lý tưởng nhất, dĩ nhiên… một sinh vật kỳ lạ và xa lạ như vậy, bị mắc kẹt trong băng qua bao thời đại—nó sẽ giống như phát hiện một con voi ma mút còn sống, tôi tưởng tượng thế.\"</p><p>Ông giật mình trước ý đó. \"Một mẫu vật sống? Cô có biết những thứ này đã giết chết vài người của Lake không? Và cô định bắt một con, chính xác thì bằng cách nào?\"</p><p>Cô chớp mắt. \"Ông là chuyên gia, William. Ông nói cho tôi biết đi.\"</p><p>Dyer bước đi, lắc đầu và lẩm bẩm tức giận. \"Tôi biết ngay đây là một ý tưởng tồi mà…\"</p><p>\"Được rồi, tất cả các anh chị đã có nhiệm vụ của mình. Chúng ta sẽ đến đất liền trong vòng một giờ. Hãy sẵn sàng,\" Tiến sĩ Kensler nói, kết thúc cuộc họp. Trước khi cô có thể xuống dưới boong, bạn tiến tới và nói rằng bạn chưa chắc mình nên làm gì lúc này.</p><p>\"Ồ, sẽ có đủ việc chân tay cho mọi người,\" cô đáp với một nụ cười nhẹ thoáng qua.</p>"
     },
     "intro1": {
       "title": "Ice and Death (Băng giá và Cái chết), Phần I"
@@ -43,7 +44,9 @@
       "missing": "Một số thành viên của đội thám hiểm mất tích trong đêm!",
       "findStory": "Tìm các lá bài câu chuyện từ bộ encounter *Lost in the Night* (Lạc trong Đêm) và xáo trộn chúng. Từng lá một, thêm một trong những lá bài này úp mặt vào các kẻ địch đã được đặt sang một bên trước đó, cho đến khi có tổng cộng chính xác 9 lá bài kẻ địch và câu chuyện được đặt sang một bên theo cách này. Loại bỏ các lá bài câu chuyện không sử dụng khỏi màn chơi.",
       "beginAtCamp": "Mỗi điều tra viên bắt đầu màn chơi tại trại.",
-      "tekelili": "Xáo trộn tất cả các lá bài điểm yếu Tekeli-li! chưa nằm trong bộ bài của điều tra viên để tạo thành chồng bài Tekeli-li. Đặt chồng bài này gần chồng bài agenda."
+      "tekelili": "Xáo trộn tất cả các lá bài điểm yếu Tekeli-li! chưa nằm trong bộ bài của điều tra viên để tạo thành chồng bài Tekeli-li. Đặt chồng bài này gần chồng bài agenda.",
+      "buildAgendaDecks": "Xây dựng chồng bài agenda bằng cách sử dụng agenda 4-6 và chồng bài act bằng cách sử dụng act 2. (Những lá bài này có thể tìm thấy trong bộ encounter *Lost in the Night* (Lạc trong Đêm).)",
+      "placeLocations": "Trong phần \"Ice and Death\" (Băng giá và Cái chết) của Nhật ký Chiến dịch, tìm tất cả các địa điểm trong mục Địa điểm Đã Để Lộ. Đặt từng địa điểm đó vào màn chơi, đã để lộ *(với manh mối bằng với giá trị manh mối của nó)*."
     },
     "intro": {
       "title": "Ice and Death (Băng giá và Cái chết), Phần II"
@@ -56,6 +59,9 @@
     "resolutions": {
       "resolution1": {
         "title": "Kết thúc thứ nhất"
+      },
+      "label": {
+        "proceedToResolution1": "Tiến tới _Resolution 1_."
       }
     }
   },
@@ -64,7 +70,9 @@
       "unrevealed": "Đặt tất cả các địa điểm khác vào màn chơi, chưa để lộ.",
       "beginAtCamp": "Mỗi điều tra viên bắt đầu màn chơi tại trại.",
       "removeClues": "Loại bỏ tất cả manh mối khỏi trại. Trại bắt đầu trò chơi mà không có manh mối nào trên đó.",
-      "tekelili": "Xáo trộn tất cả các lá bài điểm yếu Tekeli-li! chưa nằm trong bộ bài của điều tra viên để tạo thành chồng bài Tekeli-li. Đặt chồng bài này gần chồng bài agenda."
+      "tekelili": "Xáo trộn tất cả các lá bài điểm yếu Tekeli-li! chưa nằm trong bộ bài của điều tra viên để tạo thành chồng bài Tekeli-li. Đặt chồng bài này gần chồng bài agenda.",
+      "buildAgendaDecks": "Xây dựng chồng bài agenda bằng cách sử dụng các agenda 7-8 và chồng bài act bằng act 3. (Những lá bài này có thể được tìm thấy trong bộ encounter *Seeping Nightmares* (Ác Mộng Rỉ Ra)).",
+      "placeLocations": "Trong phần \"Ice and Death\" (Băng giá và Cái chết) của Nhật ký Chiến dịch, tìm tất cả các địa điểm trong mục Địa điểm Đã Để Lộ. Đặt từng địa điểm đó vào màn chơi, đã để lộ *(với manh mối bằng với giá trị manh mối của nó)*."
     },
     "intro": {
       "title": "Ice and Death (Băng và Cái Chết), Phần III"

@@ -6,7 +6,8 @@
     }
   },
   "setup": {
-    "removeLocation": "Chọn ngẫu nhiên 1 vị trí và loại bỏ nó khỏi màn chơi. Nếu vị trí San Marco Basilica hoặc Canal-side được chọn, hãy chọn ngẫu nhiên một vị trí khác để thay thế."
+    "removeLocation": "Chọn ngẫu nhiên 1 vị trí và loại bỏ nó khỏi màn chơi. Nếu vị trí San Marco Basilica hoặc Canal-side được chọn, hãy chọn ngẫu nhiên một vị trí khác để thay thế.",
+    "carnevaleGoers": "Xào 7 lá bài Masked Carnevale-Goers và đặt mỗi lá bài vào vị trí với mặt Masked Carnevale-Goers ngửa lên, ngoại trừ vị trí San Marco Basilica. Không được nhìn vào mặt bên kia của lá bài."
   },
   "resolutions": {
     "resolution1": {
@@ -18,5 +19,18 @@
     "additionalRewards": {
       "title": "Phần Thưởng Thêm"
     }
+  },
+  "specialRules": [
+    {
+      "title": "Ngược chiều kim đồng hồ",
+      "body": "<p class='basic'>Một số lá bài hướng dẫn người chơi tìm vị trí gần nhất theo hướng ngược chiều kim đồng hồ. Đây là một ngoại lệ đối với luật ở trên và cần được tuân theo như thể các vị trí được kết nối ngược chiều kim đồng hồ.</p>"
+    },
+    {
+      "title": "\"Across from\" - \"Đối diện\"",
+      "body": "<p class='basic'>Vị trí \"đối diện\" với một vị trí khác là vị trí xa nhất, cách đều cả thuận chiều kim đồng hồ và ngược chiều kim đồng hồ. Đối với màn chơi này, \"across from your location\" (đối diện vị trí của bạn) và \"across from you\" (đối diện bạn) có cùng ý nghĩa.</p>"
+    }
+  ],
+  "intro": {
+    "body": "<p>Cảnh sát trưởng Engel khẳng định, \"Xem đi. Tôi biết điều đó nghe có vẻ điên rồ, nhưng đó thực sự là tất cả những gì cần làm”. Ông ấy thở dài và ngồi xuống, rót một tách cà phê cho bạn và một tách cà phê cho ông ấy. Ông ấy nói tiếp, chỉ vào chiếc mặt nạ lông màu đen ở trên bàn làm việc của mình, \"Một người phụ nữ ở Uptown đã phát hiện ra một người chuyển giới mang chiếc mặt nạ này và cầm con dao đẫm máu của người bán thịt.\" Nó có một chiếc mũi dài kỳ cục và một biểu tượng kỳ lạ được vẽ nguệch ngoạc màu vàng trên trán. \"Vì vậy, cô ấy gọi nó đến. Người của tôi và tôi đã đón nó ở góc của Saltonstall & Garrison.\" Cảnh sát trưởng siết chặt hàm và lông mày của ông ta nhíu lại khi kể lại câu chuyện. \"Hắn ta không làm gì khác ngoài việc cười khi chúng tôi đập những chiếc vòng vào người hắn ta. Hắn ta tự gọi mình là Zanni. Không nói gì ngoại trừ 'lễ hội đang đến'; điều này không biết nghĩa là cái quái gì. Mãi đến ngày hôm sau, chúng tôi tìm thấy thi thể nạn nhân. Bộ quốc phòng muốn chúng tôi trói tay chân và đưa hắn tới. Chúng tôi vui lòng làm việc đó. \"</p><p>Không còn nhiều thời gian nữa. Nếu nghiên cứu của cậu là đúng, còn nhiều thứ ẩn giấu trong chuyện này hơn là điều ta thấy. \"Zanni\" này không nói về Lễ hội Carnival ở Darke, mà là Lễ hội Carnevale ở Venice, bắt đầu ngay trước kỳ trăng tròn tiếp theo."
   }
 }

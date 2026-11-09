@@ -51,5 +51,12 @@
       "healPhysicalTrauma": "Chữa 1 chấn thương thể chất",
       "healMentalTrauma": "Chữa 1 sang chấn tinh thần"
     }
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Chìa khóa"
+    }
+  ],
+  "entrance": "<p>Lối vào rộng mở của công trình đá obsidian chào đón bạn như cái hàm của một con thú săn mồi hung dữ. Khi mắt bạn quen dần với bóng tối, sự tò mò nhường chỗ cho nỗi sợ hãi sâu thẳm. Đại sảnh sắc nhọn, góc cạnh của công trình là hiện trường của một vụ thảm sát kinh hoàng. Xác của Elder Things bị xé nát nằm rải rác trên sàn—những đống thịt xám xịt dai như da và nội tạng biến dạng dính nhơm nhớp, phủ đầy chất lỏng xanh đậm đặc. Bạn choáng váng trước mùi tử thi kinh khủng. Những kẻ chết này không phải cổ xưa. Vụ tàn sát này chắc chắn vừa xảy ra gần đây.</p><p>\"Thứ gì có thể làm nên chuyện này?\" Một người trong nhóm phá vỡ sự im lặng nặng nề. Những bức bích họa trên tường thu hút sự chú ý của bạn, mô tả loài Elder Things mà bạn đã biết, đang giao chiến với một kẻ thù cổ xưa, đáng sợ—không, không chỉ một. Rất nhiều. Nhóm của bạn không dám nán lại lâu trong lò mổ này. Che mũi để chặn mùi hôi thối kinh khủng, bạn rời đi.</p>",
+  "votes": "Đội thám hiểm bỏ phiếu chọn hướng đi. So sánh ba nhóm sau để xem nhóm nào còn nhiều thành viên sống sót nhất."
 }

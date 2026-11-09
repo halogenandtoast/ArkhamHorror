@@ -50,10 +50,12 @@
     "theInvestigatorsAssumedControlOfTheSilverTwilightLodge": "Các điều tra viên đã nắm quyền kiểm soát Silver Twilight Lodge.",
     "doomDrawsEverCloser": "Diệt vong ngày càng đến gần.",
     "azathothDevouredTheUniverse": "Azathoth đã nuốt chửng cả vũ trụ.",
-    "theInvestigatorsSignedTheBlackBookOfAzathoth": "Các điều tra viên ký vào Cuốn sách Hắc ám của Azathoth."
+    "theInvestigatorsSignedTheBlackBookOfAzathoth": "Các điều tra viên ký vào Cuốn sách Hắc ám của Azathoth.",
+    "disappearedIntoTheMist": "Bị biến mất trong màn sương"
   },
   "prologue": {
-    "title": "Cái Chết Chỉ là Sự Khởi Đầu"
+    "title": "Cái Chết Chỉ là Sự Khởi Đầu",
+    "body": "<p>“Những giáo phái ẩn giấu mà những phù thủy này thuộc về thường được canh giữ và lưu truyền những bí mật đáng ngạc nhiên từ những vị trưởng lão bị lãng quên nhiều thời đại; và không phải là không thể có chuyện Keziah đã thực sự thành thạo nghệ thuật đi qua các cánh cổng không gian. \"</p><p>- H. P. Lovecraft, Giấc Mơ trong Ngôi Nhà Phù Thủy</p>"
   },
   "interlude2": {
     "label": {
@@ -82,9 +84,23 @@
     "thereIsStillMuchYouDoNotKnow": "Từ những bằng chứng bạn đã khám phá ra, bạn hiểu hơn về con đường bạn phải đi một chút. Nhưng vẫn còn nhiều điều bạn chưa biết. Ghi lại 1 kiểm đếm.",
     "yourJourneyIsLaidBareBeforeYou": "Cuộc hành trình của bạn được đặt trước mặt bạn. Ghi lại 2 kiểm đếm.",
     "theBlackBook": "Nó chứa đựng tri thức về vùng đất vượt lên trên trật tự thời gian và không gian. Ghi lại 1 kiểm đếm.",
-    "azathothsMawBeginsToOpen": "Miệng của Azathoth bắt đầu mở. Ghi lại 2 kiểm đếm."
+    "azathothsMawBeginsToOpen": "Miệng của Azathoth bắt đầu mở. Ghi lại 2 kiểm đếm.",
+    "sanfordsAssistance": "Sanford giải thích, “Đó là một cánh cổng kết nối thế giới của chúng ta và một Vũ Trụ vĩ đại hơn. Theo một số cuốn sách kinh khủng nhất mà tôi đã đọc, ở trung tâm, có một sinh vật được gọi là Azathoth đang ngủ yên.\" Chỉ cái tên của nó thôi cũng khiến bạn rung rẩy đến tận xương tủy. “Tôi sợ rằng chúng ta đã quấy nhiễu nó trong giấc ngủ của nó. Tất cả những điều này, những lỗ thủng trong không gian, những hàng rào ngăn cách các thế giới bị phá vỡ: tất cả là vì chỉ trong một khoảnh khắc ngắn ngủi, một khoảnh khắc ngắn ngủi vô cùng, chúng ta đã làm gián đoạn giấc mơ của Azathoth. Cậu hiểu không?\""
   },
   "epilogue": {
     "title": "Phần kết"
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Haunted (ám)",
+      "body": "<p class='basic'>Haunted là một khả năng mới xuất hiện trên một số địa điểm. Mỗi khi một điều tra viên thất bại trong một kiểm tra kỹ năng khi đang điều tra một địa điểm, sau khi áp dụng tất cả các kết quả cho kiểm tra kỹ năng đó, điều tra viên đó phải thực hiện tất cả các khả năng \"Haunted –\" trên địa điểm đó.\\r Một địa điểm được coi là \"haunted\" đối với các hiệu ứng bài khác nếu nó có ít nhất một khả năng \"Haunted –\" (được in hoặc bằng cách khác).</p>"
+    },
+    {
+      "title": "Cảnh Giác",
+      "body": "<p class='basic'>Mỗi khi một điều tra viên thất bại skill test khi đang cố gắng evade một kẻ địch có keyword \"alert\", sau khi áp dụng tất cả các kết quả cho skill test đó, kẻ địch đó sẽ thực hiện một đòn tấn công nhắm vào điều tra viên đang thực hiện evade. Một kẻ địch không bị exhaust sau khi thực hiện một đòn tấn công alert. Đòn tấn công này xảy ra bất kể kẻ địch có đang engaged với điều tra viên đang thực hiện evade hay không.</p>"
+    },
+    {
+      "title": "Lá bài Cốt truyện"
+    }
+  ]
 }

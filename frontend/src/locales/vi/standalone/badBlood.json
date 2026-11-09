@@ -3,7 +3,9 @@
     "placeLocations": "Đặt Northside, Downtown, Easttown, Miskatonic University, Rivertown, Town Hall, Velma's Diner, và Curiositie Shoppe vào chơi.",
     "startAt": "Mỗi điều tra viên bắt đầu chơi tại Velma's Diner.",
     "removeStoryAssets": "Loại bỏ story asset Ichtaca *(The Forgotten Guardian)* và story asset Expedition Journal khỏi trò chơi.",
-    "placeMemories": "Đặt 1 resource lên mỗi địa điểm đang trong cuộc chơi, như một “ký ức”."
+    "placeMemories": "Đặt 1 resource lên mỗi địa điểm đang trong cuộc chơi, như một “ký ức”.",
+    "scenarioReference": "Loại bỏ lá bài scenario reference gốc từ chồng bài encounter *Threads of Fate* khỏi trò chơi. Sử dụng lá bài scenario reference mới được cung cấp trong chồng bài encounter *Bad Blood* có thể tải xuống.",
+    "randomLocation": "Tìm trong các mặt sau của chồng bài act gốc thuộc bộ encounter *Threads of Fate* các địa điểm sau: Eztli Exhibit, Black Cave, Train Tracks, và Arkham Police Station. Chọn ngẫu nhiên một địa điểm và đưa nó vào chơi, bỏ qua khả năng <b>revelation</b> của nó. Loại bỏ các lá bài act và agenda gốc còn lại thuộc bộ encounter *Threads of Fate* khỏi trò chơi."
   },
   "resolutions": {
     "resolution1": {
@@ -11,6 +13,22 @@
     },
     "resolution2": {
       "title": "Kết thúc thứ hai"
+    },
+    "label": {
+      "chooseSwap": "Agnes Baker có thể nâng cấp Heirloom of Hyberborea lên phiên bản advanced của nó, hoặc hạ cấp phiên bản advanced của Dark Memory xuống phiên bản gốc của nó.",
+      "mustSwap": "Agnes Baker phải nâng cấp Dark Memory lên phiên bản advanced của nó, hoặc hạ cấp phiên bản advanced của Heirloom of Hyberborea xuống phiên bản gốc của nó"
     }
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Tuần tra"
+    },
+    {
+      "title": "Thu thập Ký ức"
+    },
+    {
+      "title": "Cảnh Giác",
+      "body": "<p class='basic'>Mỗi khi một điều tra viên thất bại trong bài kiểm tra kỹ năng khi cố gắng né tránh một kẻ địch có từ khóa Alert (cảnh giác), sau khi áp dụng tất cả kết quả của bài kiểm tra kỹ năng, kẻ địch đó sẽ tấn công điều tra viên đang né tránh. Kẻ địch không bị kiệt sức sau khi thực hiện một cuộc tấn công Alert. Cuộc tấn công này xảy ra bất kể kẻ địch có đang engage với điều tra viên né tránh hay không.</p>"
+    }
+  ]
 }

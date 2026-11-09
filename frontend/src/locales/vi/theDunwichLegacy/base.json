@@ -42,5 +42,8 @@
   },
   "epilogue": {
     "title": "Phần kết"
+  },
+  "prologue": {
+    "title": "Lời mở đầu"
   }
 }

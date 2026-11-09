@@ -3,7 +3,9 @@
     "actAgendaDeck": "Loại bỏ tất cả các lá bài act và agenda của bộ encounter *The Vanishing of Elina Harper* khỏi trò chơi. Xây dựng chồng bài act và agenda chỉ sử dụng các lá bài act và agenda mới được cung cấp trong bộ encounter *Red Tide Rising*.",
     "placeLocations": "Đưa các địa điểm sau vào chơi: Innsmouth Square, Marsh Refinery, Innsmouth Harbour, Fish Street Bridge, First National Grocery, Gilman House, và The Little Bookshop.",
     "removeStoryAssets": "Loại bỏ các story asset Thomas Dawson và Elina Harper khỏi trò chơi.",
-    "shuffleRemainder": "Xáo trộn các lá bài encounter còn lại để tạo thành chồng bài encounter."
+    "shuffleRemainder": "Xáo trộn các lá bài encounter còn lại để tạo thành chồng bài encounter.",
+    "midnightMasks": "Khi tập hợp bộ bài encounter *The Midnight Masks*, chỉ tập hợp 5 lá bài treachery (2 lá False Lead và 3 lá Hunting Shadow). Không tập hợp các lá bài khác từ bộ encounter đó",
+    "scenarioReference": "Loại bỏ lá bài scenario reference của bộ encounter *The Vanishing of Elina Harper* khỏi trò chơi. Sử dụng lá bài scenario reference mới được cung cấp trong bộ encounter *Red Tide Rising*."
   },
   "resolutions": {
     "resolution1": {
@@ -12,5 +14,8 @@
     "resolution2": {
       "title": "Kết thúc thứ hai"
     }
+  },
+  "intro": {
+    "body": "<p>Người ta không quan tâm đến những kẻ bị bỏ lại phía sau. Đó là điều đầu tiên bạn học được trên đường phố, sau khi rời khỏi trại trẻ mồ côi. Bạn đã phải tự lo cho bản thân, làm bất cứ điều gì có thể để sống qua ngày. Cho đến nay, chỉ với trí thông minh của mình và chiếc bùa hộ mệnh mà Mẹ để lại trước khi họ đưa bà đi, bạn đã xoay xở để sống sót. Thỉnh thoảng, ai đó sẽ tỏ lòng thương cảm và ném một hai đồng xu vào cốc của bạn. Một buổi sáng tuyệt vời nọ, một quý cô tốt bụng rời khỏi Velma's đã cho bạn phần xúc xích và trứng thừa của cô ấy. Nhưng phần lớn thời gian, bạn chỉ có thể dựa vào chính mình. Những đứa trẻ bụi đời khác có thể cùng chung cảnh ngộ với bạn, nhưng bạn sẽ ngần ngại khi gọi bất kỳ ai trong số chúng là bạn bè, ngoại trừ có lẽ là James, và điều đó cũng hơi khiên cưỡng. Không—cơn đói, sự cô đơn, nỗi buồn chán và sự hoài nghi mới là những người bạn tốt nhất và duy nhất của bạn. Và bất chấp tất cả những điều đó, bằng cách nào đó nó vẫn tốt hơn là ở trại trẻ mồ côi.\\r</p><p>Rồi ngày định mệnh cũng đến. Nó bắt đầu như bao ngày khác, với việc bạn và James rảo bước qua Rivertown, “thu thập” bất cứ thứ gì bạn có thể bán cho Oliver Thomas. Phần còn lại chắc chắn sẽ thuộc về băng đảng của Marvin—một đám trẻ bụi đời tụ tập lại để bắt nạt những đứa khác—nhưng có một món đồ lặt vặt trong số những thứ bạn kiếm được khiến bạn chú ý: một bức ảnh. Không phải một bức ảnh bình thường, mà là ảnh của cha bạn.\\r</p><p>Không thể nhầm lẫn được. Không có chút nghi ngờ nào trong tâm trí bạn. Trong bức ảnh, cha bạn đứng trước một tòa nhà mà bạn không nhận ra. Tấm biển phía sau ông ấy dường như được viết bằng một ngôn ngữ khác, nên có lẽ là ở một nơi nào đó rất, rất xa. Không có cách nào để biết bức ảnh được chụp gần đây hay không. Nó đã sờn, bẩn và bị xước ở vài chỗ. Bạn lật nó lại và ở đó, được viết nguệch ngoạc bằng nét chữ quen thuộc, bạn đọc được: “Chẳng bao lâu nữa Red Tide sẽ dâng lên. Hãy giữ an toàn nhé, cô con gái bé bỏng của cha.”\\r</p><p>Bạn nài nỉ James nói cho bạn biết bức ảnh từ đâu ra, và cậu ta khẳng định một người đàn ông mặc áo khoác len dài và đội chiếc mũ quả dưa màu nâu sẫm đã thả nó vào cốc của bạn vào lúc nào đó trước khi bạn đụng độ băng đảng của Marvin. Bạn lập tức lên đường, hỏi thăm xung quanh để tìm người đàn ông đội mũ quả dưa. Manh mối duy nhất của bạn là ông ta đã nhảy lên một chiếc xe buýt gần Easttown. Chiếc xe buýt tồi tàn, không có biển hiệu chạy đến thị trấn cảng Innsmouth. Bạn gom góp nhiều đồng xu nhất có thể và lên chuyến xe buýt duy nhất đến bến cảng cũ kỹ, bị bỏ rơi đó. Nếu cha vẫn còn ở ngoài kia, bạn phải tìm ông ấy. Bạn phải làm vậy!</p>"
   }
 }

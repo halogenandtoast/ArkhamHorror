@@ -9,7 +9,11 @@
     "chooseDrivers": "Chọn người lái. Một điều tra viên trên mỗi phương tiện di chuyển phải được chỉ định là người điều khiển phương tiện đó.",
     "driverNote": "Mỗi phương tiện luôn phải có người điều khiển và có ít nhất một điều tra viên trên nó. Nếu người lái rời khỏi phương tiện di chuyển hoặc bị loại bỏ thì chọn một điều tra viên khác trên phương tiện đó làm người điều khiển mới.",
     "playerCount": "Dựa vào số lượng người chơi trong màn chơi:",
-    "checkCampaignLog": "Kiểm tra nhật ký chiến dịch. Tùy thuộc vào các trường hợp sau đây mà sử dụng một phiên bản khác của agenda 1 trong màn chơi này. Loại bỏ các phiên bản khác của agenda 1 khỏi màn chơi."
+    "checkCampaignLog": "Kiểm tra nhật ký chiến dịch. Tùy thuộc vào các trường hợp sau đây mà sử dụng một phiên bản khác của agenda 1 trong màn chơi này. Loại bỏ các phiên bản khác của agenda 1 khỏi màn chơi.",
+    "findRoadLocations": "Tìm Falcon Point Approach và cả 6 lá bài Long Way Around. Mỗi lá này có mặt để lộ là 1 vị trí Old Innsmouth Road. Đặt chúng một bên, ngoài khu vực chơi.",
+    "unrevealedSide": "Tất cả các lá bài trong bộ bài Road chỉ nên hiển thị mặt Old Innsmouth Road để người chơi không biết lá nào là lá nào.",
+    "putRoadIntoPlay": "Đặt 3 lá bài trên cùng của bộ bài Road vào chơi theo một đường thẳng từ trái sang phải, trong đó bên trái là “phía sau” và bên phải là “phía trước”.",
+    "chooseVehicles": "Chọn phương tiện di chuyển. Có hai phương tiện di chuyển mà các điều tra viên có thể sử dụng trong tình huống này—Xe hơi của Thomas Dawson và Xe hơi của Elina Harper. Mỗi điều tra viên phải chọn một phương tiện di chuyển để lên xe. Không quá hai điều tra viên có thể lên cùng một phương tiện. (Xem phần Phương tiện di chuyển bên dưới.)"
   },
   "intro": {
     "title": "Màn V: Nỗi kinh hoàng ở Vòng Tua Cao",
@@ -19,5 +23,16 @@
     "resolution1": {
       "title": "Kết thúc thứ nhất"
     }
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Phương tiện di chuyển"
+    },
+    {
+      "title": "Đang chạy / Ngừng chạy"
+    },
+    {
+      "title": "Con đường X"
+    }
+  ]
 }

@@ -5,6 +5,10 @@
         "doubts": "*\"Tôi có quá nhiều hoài nghi.\"*",
         "resolve": "*\"Tôi kiên định với quyết tâm của mình.\"*"
       }
+    },
+    "walkInFaith": {
+      "body": "Một cảm giác kinh hãi và kính sợ tột độ tràn ngập lồng ngực bạn khi bạn nhìn chằm chằm vào mạng lưới tổ ong của những đường hầm xốp, bằng thịt và những mảnh vỡ vương vãi trên mặt đất. Có vài chiếc áo choàng rách nát và một chiếc đèn lồng bị vỡ. Một vòng tròn phấn khổng lồ bao gồm các từ gốc Latinh và các biểu tượng kỳ bí đã được vẽ ở giữa căn phòng. Một nghi lễ bảo vệ chăng? Đáng lo ngại hơn, một biểu tượng thiêng liêng của chính đức tin của bạn được khắc ở trung tâm của nó. Những người đã vẽ nó có phải là những tín đồ cùng đức tin với bạn không? Họ có thể là những kẻ dị giáo, nhưng khi nghĩ về điều đó, bạn tự hỏi liệu họ có bị số phận thu hút đến thành phố cổ đại này giống như bạn không. Khi bạn đi xuống bụng của con quái thú, bụng bạn quặn đau. Có phải đức tin của bạn đã dẫn bạn đi lạc lối?",
+      "choose": "Bạn phải quyết định (chọn một):"
     }
   },
   "setup": {
@@ -22,46 +26,56 @@
     },
     "placeApiaryEntrance": "Đặt Apiary Entrance vào chơi, ngửa mặt *(Beckoning Light)*.",
     "beginAtApiaryEntrance": "Mỗi điều tra viên bắt đầu chơi tại Apiary Entrance.",
-    "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu."
+    "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu.",
+    "buildEncounterDeck": "Xào các lá bài encounter còn lại để tạo thành encounter deck cùng với các vị trí [[Apiary]] được để riêng sau đây: Growing Fields và cả hai bản sao của Fleshy Paths."
   },
   "lostPilgrims": {
     "title": "Màn Chuyển cảnh: Lost Pilgrims",
     "flipApiaryEntrance": "Lật Apiary Entrance sang mặt *(Dangerous Exit)*.",
     "theInescapable": "Sinh ra kẻ địch The Inescapable đã để riêng, ở trạng thái kiệt sức, tại địa điểm xa nhất so với tất cả các điều tra viên. Xào phần còn lại của bộ encounter *The Inescapable* vào encounter deck, cùng với encounter discard pile.",
     "placeClues": "Đặt manh mối lên mỗi địa điểm đã lật không có _victory X_ cho đến khi bằng với giá trị manh mối của nó.",
-    "continuePlaying": "Tiếp tục chơi."
+    "continuePlaying": "Tiếp tục chơi.",
+    "body": "<p>Vừa ho yếu ớt, người phụ nữ tự giới thiệu mình là Maria Rivera. Cô và những người khác là một nhóm người hành hương từ mọi tầng lớp xã hội, được dẫn đến nơi này bởi những giấc mơ của họ. “Đây là lãnh địa của vị thần chết đuối, vị quân vương đã khuất Cthulhu. Thủ lĩnh của chúng tôi, Lady Dao, đã chỉ thị chúng tôi chờ đợi sự trở lại của ngài trong thành phố cổ đại này.” Cái tên “Cthulhu” vang vọng trong tai bạn. Bạn đã nghe thấy nó hết lần này đến lần khác trong những giấc mơ của mình.\\r</p><p>Maria tiếp tục. “Tuy nhiên, có một thứ gì đó độc ác sống trong những đường hầm này. Một thứ mà tôi e rằng sự hiện diện của chúng tôi đã đánh thức. Chúng tôi đã cử một người của mình đi tìm sự giúp đỡ, nhưng họ vẫn chưa trở lại.”\\r</p><p>Cuộc trò chuyện của bạn bị cắt ngang bởi một tiếng gầm khủng khiếp. Maria hạ ánh mắt xuống. “Kể từ khi chúng tôi đến, chúng tôi đã bị truy đuổi bởi một thứ gì đó… một thứ gì đó tồi tệ. Nó săn lùng chúng tôi qua các con phố, kho lưu trữ cổ đại, và thậm chí qua cả trung tâm thành phố. Tôi đã hy vọng nó sẽ không theo chúng tôi đến nơi thối nát và kinh khủng này.” Cô ấy ho yếu ớt. “Tôi không có sức mạnh để dẫn họ ra khỏi những đường hầm này. Xin bạn, tôi cầu xin bạn, hãy dẫn chúng tôi đến nơi an toàn.”\\r</p><p>Một tiếng gầm khác vang vọng qua các đường hầm, lần này gần hơn, kèm theo tiếng kêu lanh lảnh của lũ ký sinh trùng. Andy nhìn bạn, rồi nhìn Maria và nói, “Hãy tập hợp người của cô lại. Không ai đáng phải chết ở dưới này.”</p>",
+    "gatherCultists": "Tìm mỗi kẻ địch [[Cultist]] không phải weakness trong encounter deck, discard pile, và tất cả các khu vực in-play cũng như out-of-play. Xào chúng lại với nhau và đặt thành một chồng úp xuống bên dưới Lost Campsite.",
+    "mariaRivera": "Chọn một điều tra viên để nắm quyền kiểm soát story asset Maria Rivera đã để riêng. *(Hãy nhớ rằng Maria cũng là một [[Cultist]] có thể được cứu!)*"
   },
   "theHiveMind": {
     "removeRemainingLocations": "Tìm mỗi địa điểm còn lại trong encounter deck, encounter discard pile, và khu vực chơi, sau đó loại bỏ chúng khỏi trò chơi.",
     "spawnMother": "Spawn kẻ địch Mother đã để riêng tại Central Chamber.",
     "placeClues": "Đặt manh mối lên mỗi địa điểm đã lật không có _victory X_ cho đến khi bằng với giá trị manh mối của nó.",
-    "continuePlaying": "Tiếp tục chơi."
+    "continuePlaying": "Tiếp tục chơi.",
+    "body": "<p>Bạn cảm thấy sự ập đến của một ý thức ngoại lai khi hàng ngàn suy nghĩ và ký ức xâm chiếm tâm trí bạn. Bà ta là Mẹ của bạn. Bạn cảm nhận điều đó từ sâu thẳm bên trong. Bạn nhìn thấy một quân đoàn những quái vật có cánh, đầy xúc tu đang tiến vào một con tàu từ thế giới khác. Bạn nhìn thấy Mẹ, nhỏ bé như một con giun, bò ra khỏi vật chủ của mình. Bạn thấy bà ta chui vào một vật chủ khác, rồi lại một vật chủ khác nữa, đẻ trứng vào trong thực quản của chúng. Bạn cảm nhận được khao khát của bà ta muốn lớn lên, lây lan, sinh sôi nảy nở. Rồi đến hương vị của thịt ngoại lai, của thịt người, của chính thịt bạn khi Mẹ đang nếm thử bạn ngay lúc này.\\r</p><p>Bạn tỉnh dậy và thấy Ruby đang đứng phía trên bạn, tay cầm dao. Bạn đang ở trong một căn phòng hôi thối, đang co bóp, sợi dây liên kết bạn với Mẹ quẫy đạp như đuôi thằn lằn trên mặt đất trước mặt bạn. Gắn chặt vào các bức tường của căn phòng là một xác chết khổng lồ của một sinh vật ngoại lai được dựng lên như một con rối rùng rợn. Đó chính là Mẹ. Bạn cảm nhận được khao khát của bà ta muốn hấp thụ bạn, trở thành bạn, nuốt chửng bạn.\\r</p><p>“Chúng ta phải giết nó,” Ruby gầm gừ.</p>"
   },
   "resolutions": {
     "investigatorDefeat": {
-      "title": "Điều tra viên bị hạ gục"
+      "title": "Điều tra viên bị hạ gục",
+      "killed": "Mỗi điều tra viên bị đánh bại đều bị killed. Nếu không có điều tra viên nào sống sót để tiếp tục chiến dịch, các điều tra viên thua chiến dịch."
     },
     "resolution1": {
       "title": "Kết thúc thứ nhất",
       "updateCampaignLog": "Cập nhật Nhật ký Chiến dịch của bạn.",
       "crossOutTheApiary": "Gạch bỏ \"The Apiary\" trên bản đồ R'lyeh.",
-      "bonus": "Mỗi điều tra viên nhận 2 điểm kinh nghiệm thưởng vì đã cứu những người hành hương khỏi cái chết gần như chắc chắn!"
+      "bonus": "Mỗi điều tra viên nhận 2 điểm kinh nghiệm thưởng vì đã cứu những người hành hương khỏi cái chết gần như chắc chắn!",
+      "victory": "Mỗi điều tra viên nhận điểm kinh nghiệm bằng tổng giá trị Victory của các lá bài trong vùng trưng bày thành tích."
     },
     "resolution2": {
       "title": "Kết thúc thứ hai",
       "updateCampaignLog": "Cập nhật Nhật ký Chiến dịch của bạn.",
       "crossOutTheApiary": "Gạch bỏ \"The Apiary\" trên bản đồ R'lyeh.",
-      "parasiticTransformation": "Mỗi điều tra viên phải tìm trong tập bài encounter *The Apiary* một bản sao của Parasitic Transformation và thêm nó vào bộ bài của họ. Lá bài này không tính vào kích thước bộ bài của họ."
+      "parasiticTransformation": "Mỗi điều tra viên phải tìm trong tập bài encounter *The Apiary* một bản sao của Parasitic Transformation và thêm nó vào bộ bài của họ. Lá bài này không tính vào kích thước bộ bài của họ.",
+      "victory": "Mỗi điều tra viên nhận điểm kinh nghiệm bằng tổng giá trị Victory của các lá bài trong vùng trưng bày thành tích."
     },
     "resolution3": {
       "title": "Kết thúc thứ ba",
       "updateCampaignLog": "Cập nhật Nhật ký Chiến dịch của bạn.",
-      "crossOutTheApiary": "Gạch bỏ \"The Apiary\" trên bản đồ R'lyeh."
+      "crossOutTheApiary": "Gạch bỏ \"The Apiary\" trên bản đồ R'lyeh.",
+      "victory": "Mỗi điều tra viên nhận điểm kinh nghiệm bằng tổng giá trị Victory của các lá bài trong vùng trưng bày thành tích."
     },
     "noResolution": {
       "updateCampaignLog": "Cập nhật Nhật ký Chiến dịch của bạn.",
       "crossOutTheApiary": "Gạch bỏ \"The Apiary\" trên bản đồ R'lyeh.",
-      "parasiticTransformation": "Mỗi điều tra viên phải tìm trong tập bài encounter *The Apiary* một bản sao của Parasitic Transformation và thêm nó vào bộ bài của họ. Lá bài này không tính vào kích thước bộ bài của họ."
+      "parasiticTransformation": "Mỗi điều tra viên phải tìm trong tập bài encounter *The Apiary* một bản sao của Parasitic Transformation và thêm nó vào bộ bài của họ. Lá bài này không tính vào kích thước bộ bài của họ.",
+      "victory": "Mỗi điều tra viên nhận điểm kinh nghiệm bằng tổng giá trị Victory của các lá bài trong vùng trưng bày thành tích."
     },
     "resolution4": {
       "title": "Kết thúc thứ 4"

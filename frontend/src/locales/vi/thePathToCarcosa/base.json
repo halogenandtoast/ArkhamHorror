@@ -43,12 +43,17 @@
     "youOpenedThePathAbove": "Bạn đã mở con đường phía trên.",
     "theRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth": "Địa hạt của thành phố Carcosa hợp nhất với thế giới chúng ta, và Hastur cai trị cả hai.",
     "theInvestigatorsPreventedHasturFromEscapingHisPrison": "Các điều tra viên đã ngăn chặn Hastur thoát khỏi nhà tù của hắn.",
-    "hasturHasYouInHisGrasp": "Hastur bắt giữ được bạn trong tầm tay của hắn."
+    "hasturHasYouInHisGrasp": "Hastur bắt giữ được bạn trong tầm tay của hắn.",
+    "chasingTheStranger": "Đuổi theo Kẻ lạ",
+    "youFoundNigelsHome": "bạn đã tìm thấy nhà của Nigel."
   },
   "prologue": {
     "yellowSign": {
-      "title": "Bạn Đã Từng Thấy Dấu Hiệu Màu Vàng Chưa?"
-    }
+      "title": "Bạn Đã Từng Thấy Dấu Hiệu Màu Vàng Chưa?",
+      "body": "<p>“Ông ấy đề cập đến việc thành lập Vương triều ở Carcosa, các hồ kết nối vùng Hastur, Aldebaran, và bí ẩn của vùng Hyades. Ông ấy nói về nữ hoàng Cassilda và con gái bà, Camilla, và lắng nghe những tầng mây sâu thẳm của hồ Demhe và hồ Hali. \" - Robert W. Chambers, \"Người sửa chữa danh tiếng\"</p>"
+    },
+    "title": "Lời mở đầu",
+    "body": "<p>Bạn lật mở tờ chương trình gấp trên tay, đọc nó như thể đã đọc cả trăm lần. Nó viết là, \"Miskatonic Playhouse trình bày: The King in Yellow\". “Buổi diễn đặc biệt một đêm tại Nhà hát Ward của thị trấn Arkham. Một vở kịch 2 phần hấp dẫn không tưởng. Được dàn dựng và đạo diễn bởi Nigel Engram. ” Dàn diễn viên là một đoàn kịch nhỏ, cùng với một cái tên hậu đề ở cuối là: \"Kẻ Lạ.\"</p><p>Việc có một vở kịch được mong đợi như vậy đến với thị trấn Arkham từ Paris là một sự kiện đáng chú ý, ngay cả khi nó chỉ diễn ra trong một đêm. Trong nhiều tuần trước buổi biểu diễn, nó được bàn tán khắp nơi trong thị trấn. Nó có vẻ khiêm tốn quá mức… nhưng mà, bạn có bằng chứng cho thấy có điều gì đó xấu xa đang diễn ra. Nó bắt đầu với sự biến mất của một trong những diễn viên sân khấu tại nhà hát - một cậu bé mới mười bảy tuổi đã bỏ lỡ buổi diễn tập vào một đêm và không bao giờ được nhìn thấy nữa. Sau đó, chưa đầy hai tuần trước khi biểu diễn, có xác một nhạc sĩ được tìm thấy với một khẩu súng trong miệng. Có lẽ ớn lạnh nhất là người đàn ông điên loạn mà các viên cảnh sát đã gặ phải ở Quảng trường Độc lập (Independence Square), hắn ta say sưa nói về “sự trở lại của Nhà Vua”. Ông ta đã được đưa đến Nhà thương điên Arkham (Arkham Asylum), và bạn ngạc nhiên khi phát hiện ra rằng ông ta không cô độc trong ảo tưởng của mình.</p><p>Nhận thấy những sự kiện này đáng ngờ, bạn và những người đồng hành của mình đã dấn thân tìm hiểu sâu hơn vào sự việc. Mặc dù không thể chứng minh được mối liên kết nào, nhưng đây không phải là những sự kiện kỳ ​​lạ duy nhất xung quanh vở kịch sắp diễn ra. Các trường hợp tự tử và trở nên điên loạn xảy ra ngay sau đó, và bạn quyết tâm tìm ra nguyên nhân.</p><p>Ánh đèn trong khán phòng mờ đi, và một spotlight chiếu sáng sâu khấu. Vở kịch diễn ra không hoàn toàn như những gì bạn mong đợi. Phần một của The King in Yellow chán òm với nhịp độ chậm và đơn điệu. Bối cảnh và nhân vật hấp dẫn, nhưng câu chuyện lòng vòng và vô lý không đem lại tính giải trí. Bạn bắt đầu tự hỏi liệu những sự kiện kinh hoàng xung quanh The King in Yellow không có mối liên hệ nào với nhau thật sao. Có lẽ đó chỉ là trí tưởng tượng quá mức của bạn; làm thế nào mà một buổi biểu diễn tầm thường và khiêm nhượng như vậy lại có thể gây ra sự hỗn loạn như thế? Bạn ngạc nhiên khi phần đầu tiên kết thúc mà không có bất kỳ xung đột hay tiết lộ nào. Đèn sáng lên trong khoảng thời gian tạm dừng, và bạn cân nhắc việc về sớm, nén lại cơn ngáp của mình. Tuy nhiên, trước khi bạn kịp quyết định, bạn thấy mình đang trôi… trôi… vào giấc ngủ.</p>"
   },
   "interlude1": {
     "title": "Chuyển tiếp I: Phần thưởng của Sự điên loạn"
@@ -58,5 +63,18 @@
   },
   "epilogue": {
     "title": "Phần kết"
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Từ khóa mới: Hidden (ẩn giấu)",
+      "body": "<p class='basic'>Một số encounter card trong The Path to Carcosa campaign có từ khóa \"hidden\" (ẩn giấu). Những lá bài ẩn giấu có khả năng Revelation để thêm chúng một cách bí mật vào tay của bạn. Điều này cần được làm mà không để lộ lá bài hoặc nội dung lá bài cho các điều tra viên khác. Trong khi một lá bài ẩn giấu ở trên tay của bạn, xem nó như thể nó ở trong threat area của bạn. Khả năng Constant của nó được hoạt động, và khả năng trên lá bài có thể được kích hoạt, nhưng chỉ bạn có thể kích hoạt. Lá bài ẩn giấu tính vào tổng số lá bài trên tay, nhưng nó không thể bị bỏ đi bằng bất kỳ cách nào ngoại trừ những cái mô tả trên lá bài. Khi bị bỏ đi, lá bài hidden được đặt vào chồng bài encounter bỏ. Chúng không là một phần trong chồng bài của bạn như các lá bài điểm yếu. Để trải nghiệm được tốt nhất, người chơi được khuyến khích nên giữ cho mình \"ở trong vai nhân vật\" và không chia sẻ thông tin về các lá bài ẩn giấu trên tay mình.</p>"
+    },
+    {
+      "title": "Sự nghi ngờ và Sự tin chắc"
+    },
+    {
+      "title": "Lá bài Cốt truyện",
+      "body": "<p class='basic'>Các là bài câu chuyện là một loại bài mới ở trong The Path to Carcosa campaign. Những lá bài này đóng vai trò thêm các câu chuyện bổ sung và thường xuất hiện ở mặt trái của lá bài scenario. Khi được hướng dẫn xử lý lá bài câu chuyện, bạn đơn giản chi cần đọc nội dung câu chuyện và xử lý nội dung của nó, nếu có.</p>"
+    }
+  ]
 }

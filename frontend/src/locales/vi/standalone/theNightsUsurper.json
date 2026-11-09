@@ -1,7 +1,8 @@
 {
   "setup": {
     "placeLocations": "Đặt Expedition Camp vào khu vực chơi. Mỗi điều tra viên bắt đầu màn chơi tại Expedition Camp.",
-    "explorationDeck": "Tạo exploration deck. Việc này được thực hiện bằng cách xào chung 7 địa điểm một mặt còn lại, cùng với 1 bản sao của mỗi lá bài treachery sau: Abyssal Reach, The Black Wind, Terror Under the Pyramids, và Swarm of Locusts."
+    "explorationDeck": "Tạo exploration deck. Việc này được thực hiện bằng cách xào chung 7 địa điểm một mặt còn lại, cùng với 1 bản sao của mỗi lá bài treachery sau: Abyssal Reach, The Black Wind, Terror Under the Pyramids, và Swarm of Locusts.",
+    "setAside": "Để riêng các lá bài sau sang một bên, ngoài khu vực chơi: Khopesh of the Abyss, Summoned Nightgaunt, địa điểm Eldritch Gate một mặt, kẻ thù Xzharah hai mặt, mỗi địa điểm trong số 5 địa điểm [[Otherworld]] hai mặt, và cả hai bản sao của Dreaded Shantak. Xzharah và các địa điểm [[Otherworld]] có các story card ở mặt sau. Để có trải nghiệm tốt nhất, đừng nhìn vào các story card ở mặt sau của chúng (xem “Story Cards”)."
   },
   "resolutions": {
     "resolution1": {
@@ -13,5 +14,8 @@
     "resolution3": {
       "title": "Kết thúc thứ ba"
     }
+  },
+  "intro": {
+    "body": "<p>Winlock mân mê hàng ria mép một lúc trong khi cân nhắc những lời bạn nói. Là trưởng đoàn thám hiểm hiện đang lùng sục khắp Dashur, quyết định có cho phép bạn tham gia đoàn thám hiểm hay không là tùy thuộc vào ông ta. “Nghe này, tôi đã đọc qua những bằng chứng mà bạn thu thập được. Tôi biết về những gì đã xảy ra ở Cairo. Tôi tin câu chuyện của bạn. Nhưng, dù vậy…” Ông ta thở dài thườn thượt. “Tôi chỉ không biết làm thế nào để thuyết phục những người còn lại trong đoàn thám hiểm. Những ngôi đền cổ là một chuyện, nhưng một cánh cổng dẫn đến chiều không gian khác? Cái gã ‘Xzharah’ này? Không có chuyện nào trong số này có thể là thật, đúng không?”\\r</p><p>Nghiên cứu và kinh nghiệm của bạn lại cho thấy điều ngược lại. Mối đe dọa là có thật. Có một tổ chức bí mật đang hoạt động tại Ai Cập—The Brotherhood of the Beast—và nếu chúng không bị ngăn chặn, “Chosen One” mới được tìm thấy của chúng sẽ bắt đầu một chiến dịch hủy diệt kết thúc bằng sự diệt vong của Trái Đất.\\r</p><p>Bạn khăng khăng yêu cầu một lần cuối để được phép tiếp cận các nguồn tài nguyên của đoàn thám hiểm. “Được rồi, được rồi,” Winlock nhượng bộ. “Tôi không biết bạn đang tìm kiếm thứ gì ngoài kia trên sa mạc, nhưng tôi hy vọng bạn sẽ tìm thấy nó.” Bạn lắc đầu đáp lại. Bạn thà trở về tay trắng còn hơn.</p>"
   }
 }

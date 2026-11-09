@@ -9,7 +9,9 @@
     "ignoreForced": "_Vì Dormitories và Faculty Offices bắt đầu trò chơi ở trạng thái in play và Alchemy Labs bị loại bỏ khỏi trò chơi, hãy bỏ qua mọi khả năng Forced đưa các vị trí này vào chơi._",
     "jazzMulligan": "Đặt story asset “Jazz” Mulligan vào chơi tại Science Building.",
     "namerOfTheDead": "Đặt kẻ địch Namer of the Dead (được cung cấp trong chồng bài encounter *Read or Die* có thể tải xuống) vào chơi tại Orne Library, unengaged và exhausted.",
-    "drHenryArmitage": "Daisy Walker giành quyền kiểm soát story asset Dr. Henry Armitage. (Nếu Dr. Henry Armitage đã nằm trong bộ bài của một điều tra viên, tìm kiếm Dr. Henry Armitage trong bộ bài của điều tra viên đó và đặt ông ấy vào chơi dưới quyền kiểm soát của Daisy Walker.)"
+    "drHenryArmitage": "Daisy Walker giành quyền kiểm soát story asset Dr. Henry Armitage. (Nếu Dr. Henry Armitage đã nằm trong bộ bài của một điều tra viên, tìm kiếm Dr. Henry Armitage trong bộ bài của điều tra viên đó và đặt ông ấy vào chơi dưới quyền kiểm soát của Daisy Walker.)",
+    "placeLocations": "Đặt từng vị trí còn lại vào chơi: Miskatonic Quad, Orne Library, Humanities Building, Student Union, Science Building, Administration Building, Dormitories, và Faculty Offices *(The Night is Still Young)*.",
+    "placeTomes": "Xào từng asset [[Tome]] được để riêng trước đó đã bị loại bỏ khỏi bộ bài của Daisy Walker và đặt 1 lá úp xuống dưới mỗi vị trí ngoại trừ Miskatonic Quad, bắt đầu từ các vị trí xa Orne Library nhất. Đặt mỗi asset [[Tome]] được để riêng còn lại úp xuống dưới Orne Library."
   },
   "resolutions": {
     "resolution1": {
@@ -18,5 +20,8 @@
     "resolution2": {
       "title": "Kết thúc thứ hai"
     }
+  },
+  "intro": {
+    "body": "<p>Bạn đã dành trọn cuộc đời mình để đọc sách. Khi còn nhỏ, đó chỉ là sự thích thú đơn thuần với những câu chuyện vô hại. Những câu chuyện rùng rợn, chắc chắn rồi, nhưng dẫu sao vẫn vô hại. Sự say mê của bạn với sự kinh dị và rùng rợn đã mang lại cho bạn biệt danh “Spooks” giữa bạn bè và bạn cùng lớp. Nhưng khi bạn lớn lên, sự say mê này cũng lớn theo, cho đến khi nó gần như trở thành nỗi ám ảnh. Khẩu vị kinh dị của bạn đã tiến hóa từ bí ẩn và hư cấu sang một thứ gì đó hơn thế nữa. Một thứ gì đó thật.\\r</p><p>Khi bạn khám phá ra bản dịch The Necronomicon của John Dee, bạn biết mình cuối cùng đã tìm thấy nỗi kinh hoàng thực sự mà bạn vẫn luôn thầm khao khát. Giá như bạn biết được điều gì đang chờ đợi mình một khi bạn đọc cuốn sách đáng sợ đó. Bạn hẳn đã khóa nó lại trong bộ sưu tập hạn chế của Henry Armitage tại Orne Library và không bao giờ mở nó ra nữa.\\r</p><p>Hoặc ít nhất bạn thích nghĩ như vậy. Nhưng ngay cả bạn cũng không thể nghi ngờ sức hấp dẫn của Kitab al-Azif. Cuốn sách của Người chết. Đó là lý do tại sao, khi Dr. Armitage triệu tập bạn đến Orne Library, nỗi sợ hãi trong xương tủy bạn đã dự đoán chính xác những gì đã xảy ra.\\r</p><p>“Tôi không hiểu làm thế nào điều này có thể xảy ra,” Dr. Armitage nói khi ông khảo sát sự tàn phá. Toàn bộ bộ sưu tập hạn chế đang trong tình trạng lộn xộn tơi tả. The Necronomicon nằm mở trên một chiếc bàn gần đó, những chiếc móc kim loại của nó bị phá vỡ. Bạn lướt những ngón tay của mình dọc theo những trang sách giống như da thuộc của nó. Đôi mắt bạn lướt qua những dòng chữ trong một điệu nhảy quen thuộc:\\r</p><p><center>“Chúng bước đi vô hình và hôi hám ở những nơi hoang vắng, nơi những Lời nói đã được thốt lên và những Nghi thức đã được gào thét qua các Mùa của chúng. Gió lầm bầm với giọng nói của Chúng, và trái đất lẩm bẩm với ý thức của Chúng.”</center>\\r</p><p>Cổ họng bạn nghẹn lại khi bạn nhận ra điều gì hẳn đã xảy ra. Một thứ gì đó đã được giải phóng, và bạn là người duy nhất có thể tìm ra cách để ngăn chặn nó…</p>"
   }
 }

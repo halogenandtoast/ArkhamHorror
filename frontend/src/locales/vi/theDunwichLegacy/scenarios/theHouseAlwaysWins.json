@@ -1,12 +1,14 @@
 {
   "heading": "Màn I-B",
   "intro": {
-    "title": "Màn I-B: Nhà Cái Luôn Thắng"
+    "title": "Màn I-B: Nhà Cái Luôn Thắng",
+    "body": "<p>Tiến sĩ Armitage gợi ý bạn tìm cộng sự của ông, tiến sĩ Francis Morgan. Ông ấy không chắc liệu tiến sĩ Morgan có đang gặp rắc rối hay không, nhưng ông ấy không hài lòng cho lắm với cách sống hiện tại của đồng nghiệp mình. Ông ấy đang ở trong Clover Club, một tổ chức đánh bạc khét tiếng nằm đâu đó ở trung tâm thành phố. Việc tìm kiếm vị trí chính xác của câu lạc bộ này không hề dễ dàng — bạn phải tốn kha khá tiền đút lót chỉ để biết nhà hàng nào trong số các nhà hàng ở trung tâm thành phố (Downtown) hoạt động như bình phong của câu lạc bộ. Nhà hàng đó là La Bella Luna, một quán ăn Ý khá cao cấp nằm cạnh nhà hát. Bạn thay một bộ đồ sang trọng và tiến đến đó.</p><p>Phía trước nhà hàng La Bella Luna là một người đàn ông mặc bộ đồ có họa tiết kẻ sọc, anh ta đang đánh giá bạn khi bạn đến gần. “Tận hưởng đi,” anh ta nói với nụ cười nhếch mép như một con rắn trong khi mở cửa trước của nhà hàng.</p>"
   },
   "setup": {
     "placeLocations": "Đặt các lá bài vị trí Clover Club Lounge, Clover Club Bar, Clover Club Cardroom, và La Bella Luna vào bàn chơi. Mỗi điều tra viên bắt đầu màn chơi tại nhà hàng La Bella Luna.",
     "placeCloverClubPitBoss": "Đặt lá bài Clover Club Pit Boss vào màn chơi tại vị trí Clover Club Lounge.",
-    "setAside": "Đặt những lá bài sau đây sang một bên, ngoài bàn chơi: Darkened Hall, Peter Clover, Dr. Francis Morgan, và các bản sao của Back Hall Doorway."
+    "setAside": "Đặt những lá bài sau đây sang một bên, ngoài bàn chơi: Darkened Hall, Peter Clover, Dr. Francis Morgan, và các bản sao của Back Hall Doorway.",
+    "note": "<p class='basic'>_Chú ý:_ Khi bắt đầu màn chơi này, agenda 1a cấp cho mỗi kẻ địch [[Criminal]] từ khóa Aloof (xa lánh) giúp ngăn chặn những kẻ địch đó tự động đeo bám bạn. Tại một số thời điểm, những kẻ địch đó có thể mất từ khóa Aloof. Hãy nhớ rằng những kẻ địch không còn từ khóa Aloof sẽ tự động đeo bám các điều tra viên có mặt tại vị trí của nó, như bình thường.</p>"
   },
   "resolutions": {
     "resolution1": {

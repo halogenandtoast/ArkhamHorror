@@ -1,6 +1,7 @@
 {
   "setup": {
-    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Arkham Police Station."
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Arkham Police Station.",
+    "rolandClue": "Roland Banks bắt đầu trò chơi với 1 manh mối (từ token pool)."
   },
   "resolutions": {
     "resolution1": {
@@ -12,5 +13,8 @@
     "label": {
       "removeChaosToken": "Chọn và loại bỏ bất kỳ token không có biểu tượng nào khỏi chaos bag, trong phần còn lại của campaign."
     }
+  },
+  "intro": {
+    "body": "<p>Thủ tục hành chính thật ngột ngạt. Kể từ khi bạn đến Arkham, các vụ án của bạn ngày càng trở nên khó giải quyết hơn. Bạn từng nghĩ rằng mình sẽ truy lùng những kẻ buôn lậu và bọn xã hội đen, chứ không phải những con quái vật tưởng tượng. Nhưng những vụ án vô lý của bạn càng kéo dài, bạn càng bắt đầu nghĩ rằng có lẽ chúng không hề vô lý chút nào. Và có lẽ điều đó có nghĩa là những con quái vật cũng không phải là tưởng tượng.\\r</p><p>Cục Điều tra có vô số hướng dẫn để xử lý mọi loại vụ án, nhưng lại im lặng một cách đáng sợ về vấn đề hiến tế con người. Vì vậy, khi được báo về những thi thể được tìm thấy bên trong Black Cave, bạn không chắc phải bắt đầu từ đâu. Việc thẩm vấn người dân địa phương và người thân của những người đã khuất không mang lại thông tin gì có giá trị. Những bằng chứng để lại trong hang động nói giảm nói tránh thì chẳng giúp ích gì—những vật hiến tế và các bài viết tuyên bố những sự hiến tế đó là những món quà, cùng với những hình vẽ về một cái cây quái dị. Vì vậy, bạn đã làm điều mà mình giỏi nhất: bạn bám sát dấu vết và tìm ra sợi dây liên kết tất cả những cái chết này.\\r</p><p>Một người đàn ông nằm ở trung tâm của tất cả các nạn nhân: Mr. Damien Grey. Vị nghị sĩ này không đến từ Arkham, không có người thân hay người yêu thương nào trong khu vực, và không tham gia bất kỳ ủy ban nào đòi hỏi sự hiện diện của ông ta trong thị trấn. Vậy mà, ông ta đã ở lại Arkham trong vài tháng qua, với mục đích không rõ ràng. Và ông ta có liên hệ với từng nạn nhân qua không quá hai mức độ quan hệ, điều này khiến bạn cảm thấy có mùi mờ ám. Mờ ám hơn nữa là đội cảnh sát hộ tống theo sát Mr. Grey quanh thị trấn 24/7, bất chấp thực tế là không có mối đe dọa nào đối với sự an toàn của vị nghị sĩ.\\r</p><p>Bạn phải đi đến tận cùng của bí ẩn này, và phải nhanh lên. Bây giờ bạn nhìn thấy cái cây chết tiệt đó ở khắp mọi nơi. Ngày càng có nhiều người mất tích, và một số người thậm chí còn khẳng định đã nhìn thấy những con quái vật giống dê lảng vảng trong các con hẻm. Nhưng nếu Mr. Grey thực sự đứng sau chuyện này, bạn sẽ phải cẩn thận. Việc buộc tội sai một chính trị gia chắc chắn sẽ đặt dấu chấm hết cho sự nghiệp của bạn. Đã đến lúc làm những gì bạn đến đây để làm: đào bới bằng chứng, khám phá sự thật và đưa những kẻ có tội về thẩm vấn. Mọi chi tiết đều phải được xem xét tỉ mỉ.</p>"
   }
 }

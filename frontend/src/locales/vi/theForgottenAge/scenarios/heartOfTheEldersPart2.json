@@ -12,7 +12,10 @@
     },
     "setup": {
       "insightIntoHowToEnterKnYan": "Kiểm tra nhật ký chiến dịch. Hành trình vượt qua ranh giới thời gian của bạn đã cho bạn cái nhìn sâu sắc về cách tiến vào K'n-yan. Đối với mỗi con đường mà bạn biết, hãy đặt 1 tài nguyên trên Mouth of K'n-yan, đại diện cho token của cột trụ.",
-      "poisoned": "Đặt mỗi điểm yếu Poisonsed đang không ở trong chồng bài của một điều tra sang một bên."
+      "poisoned": "Đặt mỗi điểm yếu Poisonsed đang không ở trong chồng bài của một điều tra sang một bên.",
+      "placeLocations": "Đặt Mouth of K’n-yan vào chơi, mặt *(The Cavern’s Maw)* lật lên. Mỗi điều tra viên bắt đầu chơi tại vị trí Mouth of K’n-yan *(The Cavern’s Maw)*.",
+      "explorationDeck": "Tạo chồng bài khám phá. Điều này được thực hiện bằng cách lấy 6 lá vị trí [[Jungle]] một mặt và xào chúng vào với nhau, cùng với 1 bản sao của mỗi lá bài encounter sau: Pitfall, Ants!, Lost in the Wilds, và Low on Supplies.",
+      "chooseLocations": "Chọn ngẫu nhiên 1 trong 3 địa điểm [[Ruins]] sau: Overgrown Ruins, Temple of the Fang, và Stone Altar. Xào vị trí ngẫu nhiên được chọn vào chồng bài khám phá. Loại bỏ 2 vị trí còn lại khỏi màn chơi."
     },
     "resolutions": {
       "resolution1": {
@@ -20,6 +23,11 @@
       },
       "resolution2": {
         "title": "Kết thúc thứ hai"
+      },
+      "noResolution": {
+        "label": {
+          "resolution2": "Chuyển tới _Resolution 2_."
+        }
       }
     }
   },
@@ -28,7 +36,8 @@
       "theJungleWatches": "Tìm trong bộ sưu tập mỗi lá bài được liệt kê trong ngoặc đơn cạnh phần \"khu rừng đang theo dõi\" trong Nhật ký Chiến dịch. Thêm những lá bài đó vào khu vực trưng bày thành tích.",
       "setAside": "Đặt vị trí Descent to Yoth sang một bên, ngoài khu vực chơi.",
       "explorationDeck": "Tạo chồng bài khám phá. Điều này được thực hiện bằng cách lấy 5 vị trí một mặt còn lại từ chồng bài encounter *K'n-yan* và xào chúng lại với nhau, cùng với 1 bản sao cho mỗi lá bài encounter sau: Pitfall, No Turning Back, Deep Dark, và Final Mistake.",
-      "poisoned": "Đặt mỗi điểm yếu Poisonsed đang không ở trong chồng bài của một điều tra sang một bên."
+      "poisoned": "Đặt mỗi điểm yếu Poisonsed đang không ở trong chồng bài của một điều tra sang một bên.",
+      "placeLocations": "Đặt vị trí Mouth of K’n-yan vào chơi, mặt *(The Depths Beneath)* được lật lên. Mỗi điều tra viên bắt đầu chơi tại Mouth of K’n-yan *(The Depths Beneath)*."
     },
     "resolutions": {
       "resolution1": {

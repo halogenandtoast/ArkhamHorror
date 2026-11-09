@@ -1,16 +1,19 @@
 {
   "heading": "Màn IV",
   "intro": {
-    "title": "Màn IV: Tiền Công Tội Lỗi"
+    "title": "Màn IV: Tiền Công Tội Lỗi",
+    "body": "<p>Kể từ khi chạm trán với hồn ma trong Ngôi nhà Phù thủy, bạn đã buộc phải xem xét lại mọi điều bạn biết về sự sống và cái chết. Keziah Mason đã chết cách đây hơn hai trăm năm, nhưng linh hồn của cô ấy vẫn còn trong màn sương ma quái - giống như màn sương mà bạn đã gặp trong trang viên của Josef Meiger. Một câu hỏi đọng lại trong tâm trí bạn khi bạn xem xét các sự kiện đã xảy ra: Linh hồn của Keziah tồn tại nhờ màn sương, hay là màn sương tồn tại do sự hiện diện của cô ấy? Cái nào là nguyên nhân, và cái nào là hệ quả?</p><p>Bạn càng tìm hiểu sâu hơn về lịch sử của phù thủy và ngược đãi ở thị trấn Arkham, bạn càng trở nên bồn chồn. Đêm này qua đêm khác, bạn bị tấn công bởi những giấc mơ khủng khiếp - những giấc mơ về cái chết và mục nát, về cảm giác tội lỗi và xấu hổ. Có một con ác quỷ trú ngụ trong thị trấn này, một ác quỷ từ lâu đã ẩn mình trong bóng tối quá khứ của Arkham. Tệ hơn nữa, các câu hỏi của bạn đã đi vào bế tắc. Bạn tin rằng nếu bạn có thể tìm thấy nhóm phù thủy mà bạn đã thấy trong khu rừng vào đêm định mệnh đó, bạn có thể tìm hiểu thêm về Keziah Mason hoặc về ác quỷ chưa được nói tới này.</p><p>Khi đang làm các hoạt động buổi sáng hàng ngày, đôi mắt của bạn lướt qua một trong những tiêu đề nhỏ hơn của tờ báo hôm nay: “Hồn ma được nhìn thấy trên Đồi Hangman? Người dân của Uptown cho rằng đã nhìn thấy hình dạng con người trong màn sương mù dày đặc tỏa ra từ Hangman’s Brook… ” Đó không phải là sự trùng hợp ngẫu nhiên, phải không?</p><p>Sau đó, một nhận thức xuất hiện trong bạn — nếu đó là phù thủy mà bạn tìm kiếm, nơi duy nhất bạn có thể chắc chắn để tìm thấy họ là sáu feet (182cm) dưới lòng đất, nơi mà những phù thủy tự xưng đã bị hành quyết suốt những năm về trước. Tìm kiếm hồn ma trong nghĩa địa có thể không phải là lựa chọn an toàn nhất cho bạn, nhưng bạn không chắc liệu có thể an toàn trong thành phố này nữa không.</p>"
   },
   "setup": {
     "startAt": "Mỗi điều tra viên bắt đầu chơi tại vị trí Hangman’s Brook.",
     "setAside": "Đặt 4 tài sản Spectral Web sang một bên, ngoài khu vực chơi.",
     "heretics": "Xào 6 kẻ địch Heretic, và đặt ngẫu nhiên 4 trong số đó sang một bên. Loại bỏ 2 phiên bản còn lại khỏi màn chơi. Những lá bài này có 2 mặt và có mặt câu chuyện ở mặt còn lại. Để có trải nghiệm tốt nhất, đừng nhìn vào mặt câu chuyện ở mặt còn lại.",
-    "encounterDecks": "Màn chơi này sử dụng 2 chồng bài encounter khác nhau."
+    "encounterDecks": "Màn chơi này sử dụng 2 chồng bài encounter khác nhau.",
+    "spectralDeck": "Tách từng lá bài còn lại với trait [[Spectral]] và xào chúng vào với nhau để tạo thành chồng bài spectral encounter *(xem phần “The Spectral Encounter Deck,” bên dưới)*."
   },
   "theSpectralEncounterDeck": {
-    "title": "Chồng bài encounter Spectral"
+    "title": "Chồng bài encounter Spectral",
+    "body": "<p class='basic'>Trong quá trình chuẩn bị màn chơi này, hai chồng bài encounter được xây dựng: một chồng encounter “tiêu chuẩn” và một chồng encounter “spectral”. Nói chung, bất cứ khi nào điều tra viên tương tác với chồng bài encounter, thì điều tra viên đó nên sử dụng chồng bài encounter tiêu chuẩn. Tuy nhiên, tại một thời điểm nhất định trong màn chơi này, các vị trí có thể lật sang mặt [[Spectral]] của chúng. Trong khi một điều tra viên đang ở một địa điểm có trait [[Spectral]], điều tra viên đó nên sử dụng chồng bài encounter spectral thay vì chồng bài encounter tiêu chuẩn cho tất cả các mục đích, trừ khi có ghi chú khác. Điều này bao gồm việc rút các lá bài từ chồng bài encounter, cũng như tìm kiếm, xem xét, để lộ hoặc tương tác với chồng bài encounter (hoặc chồng bài encounter bỏ) theo bất kỳ cách nào. Điều này cũng bao gồm các khả năng được kích hoạt khi chồng bài encounter hết bài. Nếu một hiệu ứng đặc biệt đề cập đến chồng bài encounter tiêu chuẩn hoặc chồng bài encounter spectral, nó sẽ tương tác với bộ bài được chỉ định bất kể vị trí của người điều tra. Mỗi một trong hai chồng bài encounter đều có chồng bài encounter bỏ riêng. Bất cứ khi nào một lá bài có trait [[Spectral]] bị loại bỏ, nó sẽ được đặt trong chồng bài bỏ cho chồng bài spectral. Tất cả các lá bài encounter khác sẽ bị loại bỏ vào chồng bài bỏ của chồng bài encounter tiêu chuẩn. * Lưu ý: Việc lật một vị trí từ mặt này sang mặt còn lại trong trường hợp này không được xem là \"để lộ\" (reveal) vị trí mới. *</p>"
   },
   "resolutions": {
     "resolution1": {

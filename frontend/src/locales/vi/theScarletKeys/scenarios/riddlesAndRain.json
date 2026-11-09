@@ -11,7 +11,8 @@
     "placeLocations": "Đưa địa điểm Rainy London Streets vào chơi.",
     "beginPlay": "Mỗi điều tra viên bắt đầu chơi tại Rainy London Streets.",
     "remainingLocations": "Đặt tất cả các địa điểm khác sang một bên, ngoài màn chơi.",
-    "setOutOfPlay": "Để riêng kẻ địch The Red-Gloved Man và key The Eye of Ravens ra ngoài khu vực chơi."
+    "setOutOfPlay": "Để riêng kẻ địch The Red-Gloved Man và key The Eye of Ravens ra ngoài khu vực chơi.",
+    "miniCards": "Tập hợp từng decoy mini-card và các mini-card sau: The Red-Gloved Man và Coterie Agents (A, B và C). Để riêng chúng ra ngoài khu vực chơi."
   },
   "resolutions": {
     "resolution1": {
@@ -26,5 +27,6 @@
     "resolution4": {
       "title": "Kết thúc thứ 4"
     }
-  }
+  },
+  "heading": "Lời mở đầu"
 }

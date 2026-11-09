@@ -1,7 +1,10 @@
 {
   "setup": {
     "setAsideOtherLocations": "Đặt từng vị trí khác (Melati’s Shop, Tin Mine, và Wayang Kulit Theater) sang một bên, out of play.",
-    "checkCampaignLog": "Kiểm tra Nhật ký Chiến dịch."
+    "checkCampaignLog": "Kiểm tra Nhật ký Chiến dịch.",
+    "placeLocations": "Đặt các địa điểm Kuala Lumpur Station *(East Wing)*, Kuala Lumpur Station *(West Wing)*, Selangor Club, và Selangor Club Padang vào chơi.",
+    "tzuSanNiang": "Spawn kẻ địch Tzu San Niang với mặt *(The Lady with the Red Parasol)* ngửa lên in the shadows và đính kèm The Shade Reaper vào cô ta, với mặt [[Unstable]] ngửa lên. Giải quyết keyword concealed của cô ta, đặt các concealed mini-card của cô ta tại từng vị trí khác ngoài vị trí bắt đầu.",
+    "time": "Kiểm tra xem đã có bao nhiêu _time_ trôi qua trong Nhật ký Chiến dịch."
   },
   "resolutions": {
     "resolution1": {

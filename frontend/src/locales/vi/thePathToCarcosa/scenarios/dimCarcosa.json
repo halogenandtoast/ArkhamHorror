@@ -4,7 +4,9 @@
     "title": "Màn VIII: Carcosa Huyền Ảo"
   },
   "setup": {
-    "theManInThePallidMask": "Người mang điểm yếu The Man in the Pallid Mask tìm lá bài này trong bộ bài của mình và đặt nó một bên, ngoài khu vực chơi."
+    "theManInThePallidMask": "Người mang điểm yếu The Man in the Pallid Mask tìm lá bài này trong bộ bài của mình và đặt nó một bên, ngoài khu vực chơi.",
+    "setAside": "Đặt các là bài sau một bên, ngoài khu vực chơi: Hastur *(The King in Yellow)*, Hastur *(Lord of Carcosa)*, Hastur *(The Tattered King)*, và Beast of Aldebaran.",
+    "takeHorror": "Mỗi điều tra viên nhận chấn thương tinh thần trực tiếp tương ứng nửa số tinh thần của mình, làm tròn xuống (*không thể bị ngăn chặn*). Chấn thương tinh thần này không thể làm bạn bị hạ gục (xem phần \"Tinh thần ở trong Địa hạt Carcosa\" bên dưới)."
   },
   "resolutions": {
     "resolution1": {
@@ -22,5 +24,11 @@
     "resolution5": {
       "title": "Giải pháp thứ 5"
     }
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Tinh thần ở trong Địa hạt Carcosa",
+      "body": "<p class='basic'>Trong địa hạt bóp méo và điên cuồng của thành phố Carcosa, trở nên điên loạn là điều không thể tránh khỏi. Nhưng ngay cả khi tâm trí của bạn bị rạn nứt và tan vỡ, cuộc điều tra của bạn vẫn chưa kết thúc ở đây. Trong màn chơi này, các điều tra viên không bị hạ gục khi họ có nhiều chấn thương tinh thần hơn tinh thần của họ. Các điều tra viên có thể tiếp tục nhận thêm chấn thương tinh thần ngay cả khi nó vượt quá tinh thần của họ. Trong khi điều tra viên có nhiều chấn thương tinh thần hơn tinh thần của mình, thì giá trị “tinh thần còn lại” (remaining sanity) của họ được coi là 0.</p>"
+    }
+  ]
 }

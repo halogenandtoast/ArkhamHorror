@@ -45,17 +45,21 @@
     "theInvestigatorsSavedTheCivilizationOfTheSerpents": "Các điều tra viên đã cứu nền văn minh của Serpents.",
     "theInvestigatorsSavedTheCivilizationOfTheYithians": "Các nhà điều tra đã cứu nền văn minh của người Yithian.",
     "theFabricOfTimeIsUnwoven": "Sợi chỉ của thời gian bị thay đổi.",
-    "theInvestigatorsSealedTheRelicOfAgesForever": "Các điều tra viên đã phong ấn Relic of Ages mãi mãi."
+    "theInvestigatorsSealedTheRelicOfAgesForever": "Các điều tra viên đã phong ấn Relic of Ages mãi mãi.",
+    "theRelicIsMissing": "Cổ vật bị mất tích."
   },
   "prologue": {
     "earthIsNotOurs": {
-      "title": "Trái Đất không phải của Chúng Ta"
+      "title": "Trái Đất không phải của Chúng Ta",
+      "body": "<p>“Thần thoại nguyên thủy và ảo tưởng hiện đại đã cùng nhau cho rằng nhân loại chỉ là một - có lẽ là ít nhất - trong số các chủng tộc tiến hóa cao và cai trị quá trình phát triển của hành tinh lâu đời và phần lớn chưa được biết này.” - H. P. Lovecraft, “Bóng tối vượt thời gian”</p>"
     },
-    "expeditionLeader": "Nếu Ursula Downs, Leo Anderson, hoặc Monterey Jack được chọn làm điều tra viên cho chiến dịch này: Hãy chọn một trong những điều tra viên đó làm trưởng đoàn thám hiểm. Điều tra viên đó bắt đầu Màn chơi I và II với tư cách là trưởng nhóm."
+    "expeditionLeader": "Nếu Ursula Downs, Leo Anderson, hoặc Monterey Jack được chọn làm điều tra viên cho chiến dịch này: Hãy chọn một trong những điều tra viên đó làm trưởng đoàn thám hiểm. Điều tra viên đó bắt đầu Màn chơi I và II với tư cách là trưởng nhóm.",
+    "title": "Lời mở đầu"
   },
   "interlude1": {
     "title": "Chuyển tiếp I: Những Đêm Trằn Trọc",
-    "provisions": "Kiểm tra vật tư của bạn. Với tư cách một nhóm, mỗi điều tra viên phải gạch bỏ 1 khẩu phần ăn cho mỗi điều tra viên từ kho vật tư của mình. Với mỗi vật tự không thể gạch bỏ, chọn một điều tra viên đọc phần Thiếu Khẩu Phần Ăn."
+    "provisions": "Kiểm tra vật tư của bạn. Với tư cách một nhóm, mỗi điều tra viên phải gạch bỏ 1 khẩu phần ăn cho mỗi điều tra viên từ kho vật tư của mình. Với mỗi vật tự không thể gạch bỏ, chọn một điều tra viên đọc phần Thiếu Khẩu Phần Ăn.",
+    "medicine": "Kiểm tra vật tư của bạn. Mỗi điều tra viên có thuốc phải gạch bỏ nó khỏi kho vật tư của họ để chọn và loại bỏ 1 điểm yếu Poisoned từ chồng bài của bất kỳ điều tra viên nào. Mỗi điều tra viên vẫn còn điểm yếu Poisoned đọc phần _Chất Độc Lan Rộng_."
   },
   "interlude2": {
     "title": "Chuyển tiếp II: Cuộc thám hiểm kết thúc"
@@ -66,19 +70,25 @@
     "provisions": "Kiểm tra vật tư của bạn. Với tư cách một nhóm, mỗi điều tra viên phải gạch bỏ 1 khẩu phần ăn cho mỗi điều tra viên từ kho vật tư của mình. Với mỗi vật tự không thể gạch bỏ, chọn một điều tra viên đọc phần Thiếu Khẩu Phần Ăn.",
     "cultistCount": "Có 2 hoặc nhiều hơn số token {'{'}cultist{'}'} trong túi hỗn mang.",
     "forgedBond": "các điều tra viên đã tạo được mối quan hệ với Ichtaca.",
-    "hasConfidence": "Ichtaca có niềm tin vào bạn."
+    "hasConfidence": "Ichtaca có niềm tin vào bạn.",
+    "gas": "<p>Kiểm tra vật tư của bạn. Một điều tra viên bất kỳ phải gạch bỏ 1 bình xăng từ vật tư của họ. Nếu không có bình xăng nào bị gạch bỏ, đọc phần _Hết Xăng_.</p>",
+    "medicine": "Kiểm tra vật tư của bạn. Mỗi điều tra viên có thuốc phải gạch bỏ nó khỏi kho vật tư của họ để chọn và loại bỏ 1 điểm yếu Poisoned từ chồng bài của bất kỳ điều tra viên nào. Mỗi điều tra viên vẫn còn điểm yếu Poisoned đọc phần _Chất Độc Lan Rộng_.",
+    "ichtaca": "Kiểm tra túi hỗn mang và Nhật ký Chiến dịch. Nếu tất cả điều sau là đúng, trưởng nhóm đọc phần Niềm Tin Khôi Phục."
   },
   "interlude4": {
     "title": "Chuyển tiếp IV: Those Held Captive",
     "checkAMindRecovered": {
       "tabletCount": "Có từ 2 trở lên token {'{'}tablet{'}'} trong túi hỗn mang.",
-      "rescuedAlejandro": "các điều tra viên đã cứu được Alejandro."
+      "rescuedAlejandro": "các điều tra viên đã cứu được Alejandro.",
+      "body": "Kiểm tra túi hỗn mang và Nhật ký Chiến dịch. Nếu tất cả điều dưới đây là đúng, trưởng nhóm đọc phần _Khôi Phục Tâm Trí_. Nếu có bất kỳ điều nào là không đúng, trưởng nhóm đọc phần _Mất Mãi Mãi_."
     },
-    "provisions": "Kiểm tra vật tư của bạn. Với tư cách một nhóm, mỗi điều tra viên phải gạch bỏ 1 khẩu phần ăn cho mỗi điều tra viên từ kho vật tư của mình. Với mỗi vật tự không thể gạch bỏ, chọn một điều tra viên đọc phần Thiếu Khẩu Phần Ăn."
+    "provisions": "Kiểm tra vật tư của bạn. Với tư cách một nhóm, mỗi điều tra viên phải gạch bỏ 1 khẩu phần ăn cho mỗi điều tra viên từ kho vật tư của mình. Với mỗi vật tự không thể gạch bỏ, chọn một điều tra viên đọc phần Thiếu Khẩu Phần Ăn.",
+    "medicine": "Kiểm tra vật tư của bạn. Mỗi điều tra viên có thuốc phải gạch bỏ nó khỏi kho vật tư của họ để chọn và loại bỏ 1 điểm yếu Poisoned từ chồng bài của bất kỳ điều tra viên nào. Mỗi điều tra viên vẫn còn điểm yếu Poisoned đọc phần _Chất Độc Lan Rộng_."
   },
   "interlude5": {
     "title": "Chuyển tiếp V: The Darkness",
-    "senseOfTime": "<p>Bạn không biết bao nhiêu thời gian đã trôi qua trong vực thẳm lạnh lẽo, khủng khiếp của N'kai.</p><p class='basic right'>Gạch bỏ tất cả các khẩu phần ăn và thuốc mà các điều tra viên còn lại trong vật tư dự trữ của họ.</p>"
+    "senseOfTime": "<p>Bạn không biết bao nhiêu thời gian đã trôi qua trong vực thẳm lạnh lẽo, khủng khiếp của N'kai.</p><p class='basic right'>Gạch bỏ tất cả các khẩu phần ăn và thuốc mà các điều tra viên còn lại trong vật tư dự trữ của họ.</p>",
+    "map": "Kiểm tra nhật ký chiến dịch. *Nếu các lò than được thắp sáng*, hãy kiểm tra vật tư dự trữ của bạn. Nếu bất kỳ điều tra viên nào có bản đồ, họ sẽ đọc phần_Đọc các dấu hiệu_."
   },
   "epilogue": {
     "title": "Phần kết"
@@ -140,5 +150,21 @@
       "name": "Cuốc chim",
       "description": "Để phá vỡ các bề mặt đá."
     }
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Niêm phong",
+      "body": "<p class='basic'>Như một chi phí bổ sung để một lá bài có keyword seal enter play, người điều khiển nó phải tìm chaos token được chỉ định trong chaos bag và đặt nó lên trên lá bài, qua đó seal token đó. Nếu có nhiều lựa chọn token để seal, người điều khiển lá bài sẽ chọn. Nếu token được chỉ định không có trong chaos bag, lá bài không thể enter play.\\r Một chaos token bị seal không được coi là nằm trong chaos bag, và do đó không thể bị reveal từ chaos bag như một phần của skill test hoặc ability.\\r Khi một chaos token được \"release\", nó được trả lại vào chaos bag và không còn được coi là bị seal nữa. Nếu một lá bài có một hoặc nhiều chaos token bị seal trên đó leave play vì bất kỳ lý do gì, mọi chaos token bị seal trên đó sẽ ngay lập tức được release.\\r Một số lá bài (có hoặc không có keyword seal) cũng có thể có các ability để seal một hoặc nhiều chaos token như một phần effect của chúng. Điều này được thực hiện theo cùng một quy trình như trên: tìm chaos token được chỉ định trong chaos bag, loại bỏ nó khỏi chaos bag và đặt nó lên lá bài. Nếu token được chỉ định không có trong chaos bag, effect sẽ thất bại.</p>"
+    },
+    {
+      "title": "Cảnh Giác",
+      "body": "<p class='basic'>Mỗi khi một điều tra viên thất bại trong bài kiểm tra kỹ năng khi cố gắng né tránh một kẻ địch có từ khóa Alert (cảnh giác), sau khi áp dụng tất cả kết quả của bài kiểm tra kỹ năng, kẻ địch đó sẽ tấn công điều tra viên đang né tránh. Kẻ địch không bị kiệt sức sau khi thực hiện một cuộc tấn công Alert. Cuộc tấn công này xảy ra bất kể kẻ địch có đang engage với điều tra viên né tránh hay không.</p>"
+    },
+    {
+      "title": "Vật Tư Dự Trữ",
+      "body": "<p class='basic'>Tại một số thời điểm nhất định trong suốt chiến dịch Kỷ Nguyên Bị Lãng Quên, các điều tra viên có cơ hội lựa chọn vật tư dự trữ để thực hiện các chuyến thám hiểm của họ vào chốn hoang dã. Những đồ dự trữ này được ghi lại trong Nhật ký Chiến dịch, dưới phần “Vật Tư Dự Trữ” của mỗi điều tra viên. Vật tư dự trữ được mua bằng các điểm vật tư, được cấp cho các điều tra viên bất cứ khi nào họ có cơ hội mua vật tư. Các điểm vật tư dư ra sẽ không được trữ lại và bị mất. Vật tư dự trữ của mỗi điều tra viên sẽ xác định các lựa chọn có thể có trong quá trình chơi và trong suốt cốt chuyện của chiến dịch này. Mỗi vật tư dự trữ bản thân nó không có tác dụng. Một số hiệu ứng lá bài, lựa chọn của cốt chuyện và giải pháp có thể thay đổi hoặc khả dụng tùy thuộc vào đồ dự trữ mà các điều tra viên mang theo.</p>"
+    },
+    {},
+    {}
+  ]
 }

@@ -103,11 +103,11 @@
       "body": "<p>_No Resolution_: Một tiếng ầm ĩ khủng khiếp vang dội khắp ngôi nhà khi những bức tường khép lại, đe dọa sụp đổ—để nuốt chửng bạn như một con mồi. Kinh hãi, bạn lao qua cửa trước và bỏ chạy.</p><p class='basic right'>Chuyển đến _Resolution 2_.</p>"
     },
     "resolution1": {
-      "title": "Resolution 1",
+      "title": "Kết thúc thứ nhất",
       "body": "<p>_Resolution 1_: Cuối cùng thì những nỗi kinh hoàng của Hemlock House đã lùi lại phía sau bạn. Bạn chỉ có thể hy vọng rằng tình trạng \"bị xâm chiếm\" của ngôi nhà đã biến mất.</p><p class='basic right'>Tiếp tục đến _Resolution 2_.</p>"
     },
     "resolution2": {
-      "title": "Resolution 2",
+      "title": "Kết thúc thứ hai",
       "body": "<p>_Resolution 2_: “Khảo sát Miskatonic, tháng 6 năm 1926. Các thành viên Marquez, Musgrave, và cộng sự. Khảo sát Hemlock House đã hoàn tất. Sinh vật vượt ngoài tầm hiểu biết. Quần thể các loài tám xúc tu và chân bụng đã xâm chiếm toàn bộ ngôi nhà. (Các) sinh vật dường như đã tiến hóa ngay trong chính ngôi nhà. Cần quan sát thêm.”</p><ul><li>Loại bỏ 1 token {'{'}elderThing{'}'} khỏi predation bag. Trả bất kỳ token {'{'}elderThing{'}'} nào còn lại trong predation bag về chaos bag cho phần còn lại của campaign.</li><li>Nếu các điều tra viên đã \"tìm thấy _Little Sylvie_\", một điều tra viên có thể thêm story asset _Little Sylvie_ vào deck của mình. Nó không được tính vào kích thước deck của điều tra viên đó.</li><li>Mỗi điều tra viên nhận số điểm kinh nghiệm bằng giá trị Victory X của mỗi lá bài trong victory display. Điểm kinh nghiệm thưởng được trao dựa trên số seal đang in play và số enemy-location trong victory display khi scenario kết thúc.</li><li>Trong phần “Areas Surveyed” của Nhật ký Chiến dịch, đánh dấu *Hemlock Harbor*.</li></ul>"
     },
     "xp": {

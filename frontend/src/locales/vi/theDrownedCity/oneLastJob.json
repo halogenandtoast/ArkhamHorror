@@ -6,6 +6,10 @@
   "resolutions": {
     "resolution1": {
       "title": "Kết thúc thứ nhất"
-    }
+    },
+    "victory": "Mỗi điều tra viên nhận điểm kinh nghiệm bằng tổng giá trị Victory của các lá bài trong vùng trưng bày thành tích."
+  },
+  "intro": {
+    "body1": "<p>Bạn kìm lại một cơn rùng mình trong không khí mát mẻ của mùa xuân khi đứng đợi dưới ngọn đèn đường leo lét. Đêm nay là đêm cuối cùng bạn làm thuê cho Randall Tillinghast, một tay buôn đồ cổ địa phương. Lô hàng mới nhất của nhà sưu tầm đồ cổ này từ New Orleans đã mất tích, và ông ta đã giao cho bạn nhiệm vụ thu hồi nó. Đây chỉ là nhiệm vụ mới nhất trong chuỗi những \"việc vặt\" đầy rủi ro và thường là phi pháp cho lão già xảo quyệt này. Công việc đêm nay sẽ trả gần đủ để thanh toán nốt phần nợ còn lại của bạn với Tillinghast.\\r</p><p>Cả hai người cung cấp thông tin của bạn đều đến đúng giờ. Ruby Standish, siêu trộm nữ trang khét tiếng, tiến đến với một nụ cười nửa miệng đầy ẩn ý. Chàng phóng viên gan dạ Andy Van Nortwick đến ngay sau đó. Tillinghast dường như thu hút được một nhóm chuyên gia đa dạng nhất cho những \"đặc ân\" của ông ta.\\r</p><p>Từ lời kể của Ruby và Andy, bạn chắp vá được một ý tưởng sơ bộ về vị trí của lô hàng. \"Tôi đã theo dõi nó từ nhà kho ở Southside đến một vài tay buôn chợ đen ở Rivertown. E là không may mắn lắm,\" Ruby nói. Andy cởi mũ và lau trán \"Tôi suýt nữa thì bỏ mạng trong một cuộc đọ súng ở khu trung tâm. Có vẻ như băng Sheldon và băng O'Bannion lại choảng nhau rồi.\"\\r</p><p>Hai băng đảng đang ở giữa một cuộc chiến tranh giành lãnh địa khác—có vẻ liên quan đến một lô rượu lậu bị mất tích. Rất có thể lô hàng bị mất tích chỉ vô tình bị nẫng đi cùng với mục tiêu thực sự của các băng đảng.</p>"
   }
 }

@@ -1,11 +1,15 @@
 {
   "heading": "Màn I-A",
   "setup": {
-    "doubleSidedNote": "<div class='columns' style='overflow: none;padding-bottom: 40px;'><div style='flex-basis: 20%;'>*Chú ý: Lá bài Nasht và Kaman-Thah có 2 mặt và có câu chuyện ở mặt còn lại. Để trải nghiệm được tốt nhất, đừng nhìn vào mặt còn lại trừ khi có hiệu ứng hướng dẫn bạn làm vậy.*</div><div style='flex:1; margin-top: 30px;' class='fan'><img src='{setImgPath}/../cards/06057.avif' /><img src='{setImgPath}/../cards/06058.avif' /></div></div>"
+    "doubleSidedNote": "<div class='columns' style='overflow: none;padding-bottom: 40px;'><div style='flex-basis: 20%;'>*Chú ý: Lá bài Nasht và Kaman-Thah có 2 mặt và có câu chuyện ở mặt còn lại. Để trải nghiệm được tốt nhất, đừng nhìn vào mặt còn lại trừ khi có hiệu ứng hướng dẫn bạn làm vậy.*</div><div style='flex:1; margin-top: 30px;' class='fan'><img src='{setImgPath}/../cards/06057.avif' /><img src='{setImgPath}/../cards/06058.avif' /></div></div>",
+    "putLocations": "Đặt vị trí Seventy Steps *(Of Lighter Slumber)* và The Cavern of Flame vào màn chơi. Mỗi điều tra viên bắt đầu chơi tại vị trí Seventy Steps *(Of Lighter Slumber)*.",
+    "setCardsAside": "Đặt những lá bài sau một bên, ngoài khu vực chơi, Randolph Carter *(Expert Dreamer)*, kẻ địch Laboring Gug, các lá bài kẻ địch 2 mặt (Nasht and Kaman-Thah), và mỗi lá vị trí còn lại.",
+    "setEncounterCardsAside": "Màn chơi này không bắt đầu chơi với chồng bài encounter. Đặt tất cả lá bài encounter còn lại sang một bên, thành một chồng. Chúng sẽ được xào vào một thời điểm sau này để tạo thành chồng bài encounter. (Xem phần “Các bậc thang của Giấc ngủ”)"
   },
   "rules": {
     "stepsOfSlumber": {
-      "title": "Các bậc thang của Giấc ngủ"
+      "title": "Các bậc thang của Giấc ngủ",
+      "body": "<p class='basic'>Khi bắt đầu màn chơi này sẽ không có chồng bài encounter. Điều này có nghĩa là điều tra viên không thể sử dụng các khả năng tương tác với chồng bài encounter. *Ví dụ, các hiệu ứng kêu tìm trong chồng bài encounter, rút bài từ chồng bài encounter, hay nhìn vào các lá bài trong chồng bài encounter đều không thể thực hiện.)* Thêm nữa, act 1a có ghi: \"Không rút bài trong chồng bài encounter trong giai đoạn mythos.\" Ở một thời điểm của màn chơi, các điều tra viên sẽ được hướng dẫn tạo chồng bài encounter, và dòng chữ của act 1a sẽ không còn hoạt động. Từ thời điểm đó, các điều tra viên có thể tương tác với chồng bài encounter như bình thường.</p>"
     }
   },
   "dreamSelection": {
@@ -23,6 +27,9 @@
     },
     "neutral2": {
       "effect": "Bạn bắt đầu màn chơi này với thêm 1 lá bài trên tay."
+    },
+    "veteran": {
+      "effect": "Tìm trong chồng bài của bạn cho đến 2 lá bài [[Tactic]] và/hoặc [[Supply]] và bắt đầu màn chơi cùng với những lá bài bổ sung này trong tay."
     }
   },
   "resolutions": {

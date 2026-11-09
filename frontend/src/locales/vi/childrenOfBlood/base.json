@@ -16,5 +16,11 @@
   },
   "epilogue": {
     "title": "Phần kết"
+  },
+  "prologue": {
+    "title": "Lời mở đầu",
+    "xp": {
+      "bonusExperience": "Lời mở đầu"
+    }
   }
 }

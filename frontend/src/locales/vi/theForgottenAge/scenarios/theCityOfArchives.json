@@ -9,14 +9,17 @@
   },
   "setup": {
     "beforeDrawingOpeningHandsAlejandro": "Trước khi rút bài trên tay đầu màn chơi, nếu một người chơi có Alejandro Vela trong chồng bài của mình, tìm lá bài Alenjandro Vela và đặt ông ấy một bên, ngoài khu vực chơi.",
-    "setAside": "Đặt The Custodian sang một bên, ngoài khu vực chơi."
+    "setAside": "Đặt The Custodian sang một bên, ngoài khu vực chơi.",
+    "beforeDrawingOpeningHandsItems": "Trước khi rút bài trên tay đầu màn chơi, mỗi điều tra viên tìm trong chồng bài của mình và khu vực chơi tất cả tài sản [[Item]] unique. Đặt mỗi một tài sản đó sang một bên, ngoài khu vực chơi. Chúng không tồn tại trong khoảng thời gian này.",
+    "checkCampaignLog": "Kiểm tra Nhật ký Chiến dịch."
   },
   "bodyOfAYithian": {
     "title": "Cơ thể của sinh vật Yithian"
   },
   "resolutions": {
     "resolution1": {
-      "title": "Kết thúc thứ nhất"
+      "title": "Kết thúc thứ nhất",
+      "xp": "Mỗi điều tra viên nhận điểm kinh nghiệm bằng tổng giá trị Victory của các lá bài trong vùng trưng bày thành tích."
     }
   }
 }

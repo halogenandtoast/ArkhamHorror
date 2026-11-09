@@ -4,7 +4,8 @@
     "title": "Màn I: Vùng Hoang Dã Chưa Được Khai Phá"
   },
   "setup": {
-    "placeLocations": "Đặt vị trí Expedition Camp vào chơi. Mỗi điều tra viên bắt đầu chơi tại Expedition Camp."
+    "placeLocations": "Đặt vị trí Expedition Camp vào chơi. Mỗi điều tra viên bắt đầu chơi tại Expedition Camp.",
+    "explorationDeck": "Tạo chồng bài khám phá. Điều này được thực hiện bằng cách lấy năm vị trí [[Jungle]] một mặt và xào chúng với nhau, cùng với một bản sao của mỗi lá bài treachery sau: Lost in the Wilds, Overgrowth, Snake Bite, Low on Supplies và Arrows from the Trees."
   },
   "resolutions": {
     "resolution1": {

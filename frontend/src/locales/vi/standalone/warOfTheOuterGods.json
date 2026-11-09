@@ -3,7 +3,9 @@
     "agendaDecks": "Khi thiết lập agenda deck, đặt cả ba agenda deck vào khu vực chơi, theo thứ tự này (từ trên xuống dưới): xanh lá, xanh dương, và sau đó là đỏ.",
     "placeLocations": "Đặt địa điểm Hub Dimension sang một bên và đặt 10 địa điểm còn lại vào khu vực chơi.",
     "beginAtArkham": "Mỗi điều tra viên bắt đầu chơi tại Arkham.",
-    "shuffleRemainder": "Xào 19 lá bài encounter còn lại để tạo thành encounter deck."
+    "shuffleRemainder": "Xào 19 lá bài encounter còn lại để tạo thành encounter deck.",
+    "spawnCultists": "Tìm trong encounter set *War of the Outer Gods* 1 bản sao của Disciple of the Swarm, 1 bản sao của Nihilistic Stargazer, và 1 bản sao của Zealot of Paradise. Spawn mỗi kẻ địch đó (theo chỉ dẫn \"Spawn - \" của chúng).",
+    "setAsideAssets": "Đặt 5 story asset sau sang một bên, ngoài khu vực chơi: Cloak of the Outer Realms, Pocker Portal, Dreaded End, Blade of Ark'at, và Enchanted Skull."
   },
   "resolutions": {
     "resolution1": {
@@ -42,7 +44,8 @@
       "title": "Giao tranh"
     },
     "wards": {
-      "title": "Bùa bảo vệ"
+      "title": "Bùa bảo vệ",
+      "body": "Ward cho phép các điều tra viên giảm lượng doom đặt lên các agenda. Khi doom chuẩn bị được đặt lên một agenda, với mỗi ward trên agenda đó, hãy ngăn chặn lượng doom được đặt lên. Sau đó loại bỏ số ward khỏi agenda đó bằng với lượng doom đã bị ngăn chặn."
     },
     "placeAroundThisLocation": {
       "title": "\"Đặt xung quanh vị trí này\"",

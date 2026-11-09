@@ -5,7 +5,8 @@
     "addElderThingToken": "Thêm 1 token {'{'}elderThing{'}'} (elder thing) vào túi hỗn mang.",
     "setTerrorOfTheStarsAside": "Đặt kẻ địch Terror of the Stars (Nỗi Kinh hoàng từ Các Vì sao) sang một bên, ngoài màn chơi.",
     "checkDifficulty": "Kiểm tra cấp độ khó.",
-    "tekelili": "Xáo trộn tất cả các lá bài điểm yếu Tekeli-li! chưa nằm trong bộ bài của điều tra viên để tạo thành chồng bài Tekeli-li. Đặt chồng bài này gần chồng bài agenda."
+    "tekelili": "Xáo trộn tất cả các lá bài điểm yếu Tekeli-li! chưa nằm trong bộ bài của điều tra viên để tạo thành chồng bài Tekeli-li. Đặt chồng bài này gần chồng bài agenda.",
+    "placeLocations": "Xáo trộn bảy địa điểm Mountainside (Sườn Núi) và đặt năm địa điểm vào màn chơi theo một đường chéo. Đặt hai địa điểm còn lại sang một bên, ngoài màn chơi. Đặt địa điểm The Summit (Đỉnh Núi) vào màn chơi ở đầu đường chéo. Vị trí của mỗi địa điểm có cấp độ riêng từ 0-5, bắt đầu từ địa điểm thấp nhất ở cấp 0 và tăng dần đến The Summit ở cấp 5."
   },
   "intro1": {
     "title": "Màn II: To the Forbidden Peaks (Đi Tới Các Đỉnh Núi Cấm)"

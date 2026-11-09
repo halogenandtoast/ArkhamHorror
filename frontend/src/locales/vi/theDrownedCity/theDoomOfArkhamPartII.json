@@ -19,14 +19,22 @@
     "artifacts": "Tập hợp tất cả các artifact đã thu thập được mà không bị gạch bỏ dưới mục \"Artifacts Earned.\" Đưa mỗi lá bài đó vào chơi dưới quyền kiểm soát của một điều tra viên, chia đều nhất có thể.",
     "floodedNeighborhoods": "Thêm các flood token vào token pool và tăng flood level của mỗi địa điểm được liệt kê dưới mục \"Flooded Neighborhoods.\"",
     "starSpawnAside": "Đặt encounter set *Star Spawn* sang một bên, out of play.",
-    "readyToBegin": "Số phận của Arkham nằm trong tay bạn. Giờ bạn đã sẵn sàng để bắt đầu."
+    "readyToBegin": "Số phận của Arkham nằm trong tay bạn. Giờ bạn đã sẵn sàng để bắt đầu.",
+    "arkhamLocations": "Tập hợp mỗi địa điểm từ chồng bài *The Midnight Masks* cùng với Eastern Rooftops và Western Rooftops. Đặt ngẫu nhiên một trong hai địa điểm Downtown và một trong hai địa điểm Southside vào chơi và loại bỏ các phiên bản khác của những địa điểm đó khỏi trò chơi. Đặt Northside, Easttown, St. Mary's Hospital, và Miskatonic University vào chơi.",
+    "rivertownRuined": "Đặt Rivertown *(Ruined)* từ chồng bài encounter *The Doom of Arkham Part II* vào chơi. Loại bỏ phiên bản khác của Rivertown khỏi trò chơi.",
+    "placeFacets": "Đặt mỗi bản của ba kẻ địch Cthulhu (Hoary Wings, Fierce Visage, và Wicked Claw) lên Cthulhu Board, để ngửa mặt không [[Enraged]], sao cho chúng tạo thành một bức tranh hoàn chỉnh về Cthulhu.",
+    "buildCthulhuDeck": "Xào 18 lá bài Cthulhu để tạo thành chồng bài Cthulhu (Xem <b>The Cthulhu Deck</b> bên dưới). Đặt chồng bài này cạnh Cthulhu Board.",
+    "cthulhusRage": "Đặt 1 resource lên scenario reference card, dưới \"Cthulhu's Rage\" (Xem <b>Cthulhu's Rage</b> bên dưới). Nếu chỉ có 1 hoặc 2 người chơi, đặt thêm 1 resource lên scenario reference card.",
+    "buildEncounterDeck": "Xào các lá bài encounter còn lại để xây dựng chồng bài encounter."
   },
   "rules": {
     "cthulhuBoard": {
-      "title": "Bảng Cthulhu"
+      "title": "Bảng Cthulhu",
+      "body": "<p class='basic'>Cthulhu được thể hiện trên bản đồ như một kẻ địch duy nhất, nhưng được tạo thành từ nhiều lá bài kẻ địch trên Cthulhu Board. Các điều tra viên đang engaged với Cthulhu (Ancient Evil) cũng đang engaged với từng lá bài trên Cthulhu Board, như thể là một kẻ địch duy nhất. Khi tương tác với Cthulhu (thông qua chiến đấu, lẩn tránh, v.v.), hãy chọn một trong các lá bài kẻ địch hai mặt trên Cthulhu Board để tương tác.\\r Cthulhu tấn công mỗi điều tra viên tại địa điểm của hắn trong enemy phase bằng cách sử dụng tổng giá trị damage và horror của mỗi kẻ địch [[Cthulhu]] trên Cthulhu Board. Đòn tấn công này được thực hiện ngoài bất kỳ đòn tấn công và/hoặc hiệu ứng nào khác được kích hoạt bởi Cthulhu Deck (xem bên dưới). Nếu một lá bài trên Cthulhu Board tấn công thông qua một keyword hoặc hiệu ứng khác trong khi chiến đấu hoặc lẩn tránh, chỉ lá bài đó tấn công.\\r Các hiệu ứng bài gây damage cho nhiều kẻ địch tại một địa điểm có thể gây damage cho từng lá bài kẻ địch riêng lẻ trên Cthulhu Board.</p>"
     },
     "cthulhuDeck": {
-      "title": "Chồng bài Cthulhu"
+      "title": "Chồng bài Cthulhu",
+      "body": "<p class='basic'>Trong quá trình setup của scenario này, một chồng bài thứ hai với mặt lưng khác được tạo ra: Cthulhu deck. Chồng bài này là một chồng bài riêng biệt chỉ bao gồm các lá bài \"action\". Cthulhu deck không phải là một encounter deck và các lá bài action không phải là treacheries.\\r Sau khi di chuyển và tấn công như bình thường trong enemy phase, Cthulhu thực hiện các hành động bổ sung thông qua các lá bài action từ Cthulhu deck. Vào cuối enemy phase, hiệu ứng forced của agenda yêu cầu các điều tra viên rút lá bài trên cùng của Cthulhu deck. Khi rút bài từ Cthulhu deck, hãy giải quyết từng hiệu ứng, lần lượt, từ trên xuống dưới. Sau khi giải quyết một lá bài action, nó được discard vào Cthulhu discard pile. Nếu Cthulhu deck trống, ngay lập tức xào lại Cthulhu discard pile vào Cthulhu deck.</p>"
     },
     "cthulhusRage": {
       "title": "Cơn thịnh nộ của Cthulhu",

@@ -17,7 +17,9 @@
     "noSay": "Nhưng cậu không có quyền quyết định chuyện này.",
     "crossOutMemoriesDiscovered": "Gạch bỏ mỗi địa điểm được ghi trong \"Memories Discovered\" (Ký Ức Đã Được Khám Phá) mà lá bài câu chuyện tương ứng cũng được ghi trong \"Memories Banished\" (Ký Ức Bị Xóa).",
     "partnerDamage": "Trong phần \"Expedition Team\" (Đội Thám hiểm) của Nhật ký Chiến dịch, ghi lại số lượng chấn thương thể chất và tinh thần trên mỗi lá bài tài sản đồng đội trong màn chơi.",
-    "title": "Kết thúc thứ nhất"
+    "title": "Kết thúc thứ nhất",
+    "victory": "Trong phần \"Fatal Mirage\" (Ảo Ảnh Chết Người) của Nhật ký Chiến dịch, dưới mục \"Memories Banished\" (Ký Ức Bị Xóa), ghi lại mỗi lá bài câu chuyện trong khu vực trưng bày thành tích. Mỗi điều tra viên nhận kinh nghiệm bằng giá trị Victory X (Chiến Thắng X) của mỗi lá bài được ghi lại theo cách này. *(Không nhận điểm kinh nghiệm cho các lá bài đã được ghi trong mục này)*.",
+    "memoriesDiscovered": "Trong phần \"Fatal Mirage\" (Ảo Ảnh Chết Người) của Nhật ký Chiến dịch, dưới mục \"Memories Discovered\" (Ký Ức Đã Được Khám Phá), ghi lại mỗi địa điểm không phải [[Otherworld]] đang trong màn chơi."
   },
   "setup": {
     "firstTime": {
@@ -31,9 +33,16 @@
       "memoriesBanished": "Tìm mỗi lá bài câu chuyện được liệt kê trong mục \"Memories Banished\" (Ký Ức Bị Xóa) trong Nhật ký Chiến dịch của bạn. Đặt mỗi lá bài này vào khu vực trưng bày thành tích.",
       "setRemainingMemoriesAside": "Đặt mỗi kẻ địch \"Memory of…\" (Ký Ức về…) còn lại sang một bên, ngoài màn chơi.",
       "startAt": "Mỗi điều tra viên bắt đầu trò chơi tại Prison of Memories (Nhà Tù Ký Ức).",
-      "setOtherLocationsAside": "Đặt tất cả các địa điểm khác sang một bên, ngoài màn chơi."
+      "setOtherLocationsAside": "Đặt tất cả các địa điểm khác sang một bên, ngoài màn chơi.",
+      "memoriesDiscovered": "Tìm mỗi địa điểm được liệt kê trong mục \"Memories Discovered\" (Ký Ức Đã Được Khám Phá) trong Nhật ký Chiến dịch của bạn. Đặt mỗi địa điểm này vào trò chơi, mặt hiển lộ ngửa, cùng với Prison of Memories (Nhà Tù Ký Ức) *(nhớ điều chỉnh giá trị manh mối của mỗi địa điểm theo từ khóa Mirage (Ảo Ảnh), như mô tả dưới đây)*",
+      "setResoluteAside": "Đặt sang một bên mỗi lá bài tài sản câu chuyện [[Resolute]] (Kiên Định) trong số chín lá chưa được nhận từ lần chơi trước của Fatal Mirage (Ảo Ảnh Chết Người)."
     },
     "checkDifficulty": "Kiểm tra cấp độ khó.",
     "tekelili": "Xáo trộn tất cả các lá bài điểm yếu Tekeli-li! chưa nằm trong bộ bài của điều tra viên để tạo thành chồng bài Tekeli-li. Đặt chồng bài này gần chồng bài agenda."
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Mirage (Ảo Ảnh)"
+    }
+  ]
 }

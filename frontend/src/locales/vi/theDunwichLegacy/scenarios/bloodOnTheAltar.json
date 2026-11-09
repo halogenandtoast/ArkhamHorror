@@ -4,10 +4,12 @@
     "placeLocations": "Đặt lá bài Village Commons vào màn chơi. Mỗi điều tra viên bắt đầu trò chơi tại Village Commons.",
     "potentialSacrifices": "Kiểm tra Nhật ký Chiến dịch. Tập hợp các thẻ cho từng nhân vật “bị bắt cóc” dựa trên Nhật ký chiến dịch của bạn. Hình thành một chồng bài \"đối tượng tiềm năng để hiến tế\" chứa các lá bài trên, cùng với lá bài Zebulon Whateley và Earl Sawyer.",
     "setAside": "Đặt các lá bài sau đây sang một bên, ngoài vùng chơi: Silas Bishop, The Hidden Chamber, Key to the Chamber, và Powder of Ibn-Ghazi.",
-    "placeUnderneath": "Lấy các lá bài The Hidden Chamber và Key to the Chamber được để một bên hồi đầu, cùng với 3 lá bài đầu tiên của chồng bài encounter. Xào chúng và chia 1 lá bài ngẫu nhiên úp xuống bên dưới mỗi vị trí đang có trong màn chơi, ngoại trừ vị trí Village Commons."
+    "placeUnderneath": "Lấy các lá bài The Hidden Chamber và Key to the Chamber được để một bên hồi đầu, cùng với 3 lá bài đầu tiên của chồng bài encounter. Xào chúng và chia 1 lá bài ngẫu nhiên úp xuống bên dưới mỗi vị trí đang có trong màn chơi, ngoại trừ vị trí Village Commons.",
+    "placeRandomLocations": "Loại bỏ một trong hai bản sao của các vị trí khác khỏi màn chơi một cách ngẫu nhiên. Sau đó, chọn một trong sáu vị trí còn lại một cách ngẫu nhiên, và loại bỏ nó khỏi màn chơi. Đặt năm vị trí còn lại vào khu vực chơi."
   },
   "hiddenChamber": {
-    "title": "Căn Phòng Ẩn Giấu"
+    "title": "Căn Phòng Ẩn Giấu",
+    "body": "<p class='basic'>Màn chơi này bao gồm các vị trí chỉ có một mặt (The Hidden Chamber) đã được chia úp xuống dưới một vị trí ngẫu nhiên. The Hidden Chamber chỉ có mặt để lộ, và có hiệu ứng _Revelation_ giúp đặt nó vào màn chơi khi được rút ra. Khi đặt vào màn chơi, vị trí chỉ có một mặt khi0 được đặt vào chơi sẽ để ở mặt để lộ, bởi vì nó không có mặt chưa để lộ. Còn lại thì nó hoạt động tương tự như các vị trí khác.</p>"
   },
   "resolutions": {
     "resolution1": {
@@ -19,5 +21,8 @@
     "resolution3": {
       "title": "Kết thúc thứ ba"
     }
+  },
+  "intro": {
+    "body": "<p>Khi bạn cuối cùng cũng đến được làng Dunwich, bạn được chào đón bởi Zebulon Whateley và Earl Sawyer, một người đàn ông khác trong làng đã gặp Tiến sĩ Armitage trong vụ việc vài tháng trước. Earl nói với bạn: “Mọi thứ có vẻ không quá ổn ở đây. Một vài dân làng bị mất tích trong vài đêm trước. Đám chim đớp muỗi thì không im tiếng. Không biết cậu đến đây làm gì, nhưng lần trước mấy người ở Arkham đến thì có chuyện tồi tệ xảy ra. Chuyện rất tồi tệ”. Đôi mắt của ông ta chớp liên hồi, ho vài tiếng và quay đi chỗ khác.</p><p>Zebulon xen vào, đặt bàn tay nhăn nheo lên vai bạn, “Nghe này, sao cậu không nghỉ lại qua đêm và bắt đầu tìm kiếm điều cậu cần vào ngày mai,” Bạn bắt đầu phản kháng, nhưng cơ bắp đau nhức và tâm trí mệt mỏi không cho phép bạn từ chối. Người đàn ông lớn tuổi đề nghị đưa bạn vào nhà trong đêm và chở bạn về nhà của ông ta ở ngoại ô làng Dunwich. Ngôi làng tồi tàn và có vẻ kỳ lạ, bạn ước rằng phải chi mình đã không đến đây. Bạn ngủ quên trên chuyến xe và hầu như không nhớ gì về chuyện đêm hôm đó.</p><p>Khi tỉnh dậy, bạn thấy ngôi nhà của Zebulon bị bỏ hoang và không có dấu hiệu của người đàn ông lớn tuổi hay của ông Sawyer. Lo sợ điều tồi tệ nhất xảy đến, bạn tiến về làng Dunwich để điều tra, hy vọng tìm ra câu trả lời.</p>"
   }
 }

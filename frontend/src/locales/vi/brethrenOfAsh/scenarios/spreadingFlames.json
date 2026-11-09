@@ -1,6 +1,16 @@
 {
   "keywordsAndConcepts": {
-    "title": "Từ khóa và Khái niệm"
+    "title": "Từ khóa và Khái niệm",
+    "entries": [
+      {},
+      {},
+      {
+        "body": "<p>Peril là một khả năng keyword.\\r</p><p>Trong khi một điều tra viên đang resolve một lá bài encounter có keyword Peril, họ không thể bàn bạc với những người chơi khác. Những người chơi khác không thể chơi bài, kích hoạt khả năng, hoặc commit bài vào các kiểm tra kỹ năng của điều tra viên đó trong khi lá bài encounter Peril đang được resolve.</p>"
+      },
+      {},
+      {},
+      {}
+    ]
   },
   "setup": {
     "placeLocations": "Đưa lá bài địa điểm Your Friend's Room vào khu vực chơi. Để riêng các địa điểm khác sang một bên, out of play.",

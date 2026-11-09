@@ -51,7 +51,8 @@
   },
   "rules": {
     "locations": {
-      "title": "Vị trí trong màn chơi Tìm kiếm Kadath"
+      "title": "Vị trí trong màn chơi Tìm kiếm Kadath",
+      "body": "<p class='basic'>Mỗi vị trí của màn chơi này không có mặt unreveal, và do đó chúng tiến vào chơi với mặt reveal lật lên. Thay vì mặt unreveal, những vị trí này có câu chuyện ở mặt còn lại. Bất cứ khi nào 1 vị trí trong màn chơi này tiến vào chơi (bao gồm cả lúc setup), đặt manh mối lên vị trí đó tương ứng giá trị manh mối như bình thường. Vị trí có thể được lật theo 1 trong 2 cách sau. Hầu hết được lật bởi từ khóa veild, như mô tả ở dưới. Một số vị trí khác thì được lật bởi khả năng được in trên vị trí đó. <b>Một khi 1 vị trí được lật và câu chuyện của nó được đọc, nó không thể được lật lại cho phần còn lại của màn chơi, trừ khi được ghi rõ.</b></strong></p>"
     },
     "swarmingAndVictory": {
       "title": "Kẻ địch với Swarming và Victory",
@@ -74,5 +75,16 @@
   "label": {
     "leaveEmptyHanded": "*Rời đi với hai bàn tay trắng.*",
     "forceIntoTemple": "*Cưỡng ép tiến vào ngôi đền.*"
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Vị trí trong màn chơi Tìm kiếm Kadath",
+      "body": "<p class='basic'>Mỗi vị trí của màn chơi này không có mặt unreveal, và do đó chúng tiến vào chơi với mặt reveal lật lên. Thay vì mặt unreveal, những vị trí này có câu chuyện ở mặt còn lại. Bất cứ khi nào 1 vị trí trong màn chơi này tiến vào chơi (bao gồm cả lúc setup), đặt manh mối lên vị trí đó tương ứng giá trị manh mối như bình thường. Vị trí có thể được lật theo 1 trong 2 cách sau. Hầu hết được lật bởi từ khóa veild, như mô tả ở dưới. Một số vị trí khác thì được lật bởi khả năng được in trên vị trí đó. <b>Một khi 1 vị trí được lật và câu chuyện của nó được đọc, nó không thể được lật lại cho phần còn lại của màn chơi, trừ khi được ghi rõ.</b></strong></p>"
+    },
+    {},
+    {
+      "title": "Kẻ địch với Swarming và Victory",
+      "body": "<p class='basic'>Khi Victory X xuất hiện trên kẻ địch swarming, dòng này chỉ hoạt động cho lá bài vật chủ. Các lá bài swarm không thể tiến vào khu vực trưng bày thành tích và không bao giờ có điểm victory.</p>"
+    }
+  ]
 }

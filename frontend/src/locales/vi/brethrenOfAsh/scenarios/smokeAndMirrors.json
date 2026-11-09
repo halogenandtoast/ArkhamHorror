@@ -5,7 +5,8 @@
     "bearerOfDrHenryArmitage": "Nếu một điều tra viên là người sở hữu story asset Dr. Henry Armitage, hãy tìm ông ấy trong bộ bài của họ và đưa vào chơi dưới quyền kiểm soát của người sở hữu. Ông ấy không chiếm một khe ally trong màn chơi này.",
     "setAsideMarkOfElokoss": "Đặt tất cả các bản sao của weakness Mark of Elokoss sang một bên, ngoài cuộc chơi.",
     "shuffleRemainder": "Xáo trộn các lá bài encounter còn lại để tạo thành chồng bài encounter.",
-    "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu."
+    "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu.",
+    "setOutOfPlay": "Tập hợp tất cả các lá bài trong bộ encounter <b>People of Arkham</b>. Chọn ngẫu nhiên một lá và đặt sang một bên, ngoài cuộc chơi, mà không được nhìn. Xào các lá bài còn lại trong bộ đó cùng với kẻ địch Servant of Flame, sau đó đặt 1 lá úp mặt xuống dưới mỗi vị trí Northside, Downtown, Southside, French Hill, Uptown, và Waterfront District."
   },
   "intro": {
     "title": "Kịch bản II: Smoke and Mirrors"

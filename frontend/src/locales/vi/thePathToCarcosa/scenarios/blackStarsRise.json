@@ -1,15 +1,19 @@
 {
   "heading": "Màn VII",
   "intro": {
-    "title": "Màn VII: Các Ngôi Sao Đen Trỗi Dậy"
+    "title": "Màn VII: Các Ngôi Sao Đen Trỗi Dậy",
+    "body": "<p>Hòn đảo Mont Saint-Michel nằm ở ngoài khơi bờ biển phía Tây Bắc của nước Pháp. Nó mang một vẻ đẹp thanh lịch và bí ẩn - một nơi bước ra từ câu chuyện cổ tích. Chỉ là câu chuyện cổ tích này là câu chuyện mang những nỗi kinh hoàng và điên rồ. Khi thủy triều xuống, bạn có thể đi bộ đến đảo bằng cách băng qua con đường bồi đắp bởi thủy triều nổi lên từ biển. Tuy nhiên, vào thời điểm bạn đến bờ biển, thủy triều cao hơn nhiều so với dự tính của bạn. Những đám mây đen bao phủ bầu trời, và một tiếng sấm sét từ xa báo hiệu sự bắt đầu của một cơn bão sắp diễn ra. Bạn tìm thấy một chiếc thuyền có thuyền trưởng sẵn sàng đưa bạn đến đảo, và chuẩn bị cho nghi lễ sắp đến.</p>"
   },
   "setup": {
     "version": {
       "instructions": "Sắp xếp từng bản sao của các lá bài sau thành 2 chồng riêng biệt, dựa trên biểu tượng encounter ở mặt bên kia của chúng: Agenda 2a—Let The Storm Rage, Agenda 2c—The Entity Above, Chapel of St. Aubert, và Abbey Tower.",
       "createPiles": "Bạn nên có 2 chồng bài với chính xác 4 lá mỗi chồng. Mỗi chồng nên có 1 phiên bản của mỗi lá bài được liệt kê ở trên. Các lá bài ở trong chồng đầu tiên nên có biểu tượng encounter The Flood Below ở mặt bên kia của chúng, và các lá bài ở trong chồng thứ hai nên có biểu tượng encounter The Vortex Above ở mặt bên kia của chúng.",
-      "randomizePiles": "Lật mỗi chồng bài lại sao cho chỉ có mặt chứa biểu tượng encounter Black Stars Rise để lộ. Làm ngẫu nhiên 2 chồng bài để bạn không phân biệt chồng nào là chồng nào."
+      "randomizePiles": "Lật mỗi chồng bài lại sao cho chỉ có mặt chứa biểu tượng encounter Black Stars Rise để lộ. Làm ngẫu nhiên 2 chồng bài để bạn không phân biệt chồng nào là chồng nào.",
+      "choosePile": "Chọn ngẫu nhiên một chồng để loại bỏ nó khỏi màn chơi và chồng còn lại được sử dụng để chuẩn bị cho màn chơi. _Không được nhìn vào mặt bên kia của bất kỳ lá bài trong cả hai chồng_."
     },
-    "chooseSetAsideLocations": "Chọn ngẫu nhiên 1 trong 2 vị trí Choeur Gothique và đặt một bên. Loại bỏ các phiên bản Choeur Gothique khỏi màn chơi."
+    "chooseSetAsideLocations": "Chọn ngẫu nhiên 1 trong 2 vị trí Choeur Gothique và đặt một bên. Loại bỏ các phiên bản Choeur Gothique khỏi màn chơi.",
+    "agendaDecks": "Màn chơi này không có chồng bài act. Thay vì vậy, nó có 2 chồng bài agenda. Một chồng bài agenda chứa các lá bài agenda 1a, 2a và 3a. Chồng agenda còn lại chứa các lá bài 1c, 2c, và 3c *(nhớ là sử dụng phiên bản 2a và 2c được ngẫu nhiên chọn lúc nãy)*.",
+    "setAside": "Đặt các là bài sau một bên, ngoài màn chơi: Cả 2 lá bài act (Act 3a và Act 3c), Beast of Aldebaran, mỗi bản sao của Tidal Terror, mỗi bản sao của Rift Seeker, Cloister, Knight’s Hall, Abbey Tower, và Chapel of St. Aubert *(nhớ là sử dụng phiên bản Abbey Tower và Chapel of St. Aubert được chọn ngẫu nhiên lúc nãy)*."
   },
   "resolutions": {
     "resolution1": {
@@ -21,5 +25,10 @@
     "resolution3": {
       "title": "Kết thúc thứ ba"
     }
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Agenda Kép"
+    }
+  ]
 }

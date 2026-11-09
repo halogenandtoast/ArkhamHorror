@@ -8,7 +8,8 @@
       "spokesAndRings": "Các địa điểm Ancient Facility trong màn chơi này được sắp xếp thành năm nhánh tỏa ra từ Cổng Y'quaa, và ba vòng tròn bao quanh Cổng Y'quaa.",
       "setSealsAside": "Đặt năm token phong ấn sang một bên, ngoài màn chơi.",
       "checkDifficulty": "Kiểm tra cấp độ khó.",
-      "tekelili": "Xáo trộn tất cả các lá bài điểm yếu Tekeli-li! chưa nằm trong bộ bài của điều tra viên để tạo thành chồng bài Tekeli-li. Đặt chồng bài này gần chồng bài agenda."
+      "tekelili": "Xáo trộn tất cả các lá bài điểm yếu Tekeli-li! chưa nằm trong bộ bài của điều tra viên để tạo thành chồng bài Tekeli-li. Đặt chồng bài này gần chồng bài agenda.",
+      "ancientFacility": "Xáo trộn tất cả 15 địa điểm Ancient Facility (5 từ bộ encounter *The Great Seal* và 10 từ bộ *The Heart of Madness*). Đặt các địa điểm vào màn chơi theo mẫu Thiết lập Địa điểm bên dưới. Mỗi địa điểm được đặt ngẫu nhiên vào một trong các ô do bản đồ chỉ định."
     },
     "part1Intro": {
       "title": "Trái Tim của Sự Điên Loạn, Phần I",
@@ -42,7 +43,8 @@
       "resolution3": {
         "title": "Kết thúc thứ ba"
       }
-    }
+    },
+    "hoursPass": "<p>Nhiều giờ trôi qua. Cuối cùng, lối đi dường như mở ra một hành lang lớn hơn làm từ đá được gia công, với một vòm cuối cùng đánh dấu điểm kết của con dốc khổng lồ bạn đã đi xuống. Năm ký tự lạ lẫm tô điểm trên vòm, ý nghĩa của chúng không thể hiểu nổi. Con đường phía bên kia giống một đường hầm tàu điện ngầm khổng lồ hơn là một hang động tự nhiên—tất cả là đá góc cạnh, mượt mà, điểm xuyết bởi các dấu khắc xa lạ và phủ một lớp dịch nhiều màu hôi thối nhàn nhạt.</p>"
   },
   "part2": {
     "setup": {
@@ -52,7 +54,9 @@
       "setAside": "Đặt các lá bài sau sang một bên, ngoài màn chơi: Tất cả 15 bản sao của kẻ thù The Nameless Madness, act The Final Mirage, bốn địa điểm Titanic Ramp, và địa điểm Hidden Tunnel.",
       "seals": "Đặt các thẻ phong ấn như sau:",
       "dormant": "Mỗi điều tra viên có phong ấn ngủ bắt đầu màn chơi với nó dưới sự kiểm soát của họ.",
-      "removeOthers": "Loại bỏ mọi phong ấn khác khỏi màn chơi."
+      "removeOthers": "Loại bỏ mọi phong ấn khác khỏi màn chơi.",
+      "buildDecks": "Xây dựng bộ bài agenda bằng agenda 4-5 và bộ bài act bằng act 3. (Những lá bài này có thể tìm thấy trong bộ encounter *Stirrings in the Deep*.",
+      "innermostRing": "Lưu ý: Nếu cả năm địa điểm trong vòng trong cùng là Mist-Pylon, bắt đầu lại quá trình này."
     },
     "intro1": {
       "check": "Kiểm tra Nhật ký Chiến dịch.",
@@ -77,5 +81,17 @@
         "title": "Kết thúc thứ ba"
       }
     }
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Địa điểm Ancient Facility (Cơ sở Cổ xưa)",
+      "body": "<p class='basic'>Các địa điểm Ancient Facility tồn tại trong nhiều bộ gặp gỡ. (Ví dụ, trong màn chơi này, cả bộ encounter The Heart of Madness và bộ The Great Seal đều chứa các địa điểm Ancient Facility.) Vì các địa điểm này có thể đến từ các bộ encounter khác nhau, chúng không có biểu tượng encounter ở mặt chưa lật. Để biết địa điểm Ancient Facility thuộc bộ gặp gỡ nào, hãy kiểm tra mặt đã lật của nó.</p>"
+    },
+    {
+      "title": "Phong ấn"
+    },
+    {
+      "title": "Địa điểm Liền kề trong Trái Tim của Sự Điên loạn"
+    }
+  ]
 }

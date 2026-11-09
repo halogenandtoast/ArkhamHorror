@@ -22,7 +22,8 @@
     "setAside": "Đặt kẻ địch Piper of Azathoth sang một bên, ngoài khu vực chơi."
   },
   "choosingARandomLocation": {
-    "title": "Lựa Chọn một Vị Trí Ngẫu Nhiên"
+    "title": "Lựa Chọn một Vị Trí Ngẫu Nhiên",
+    "body": "<p class='basic'>Trong màn chơi này, bạn thường sẽ được hướng dẫn chọn một vị trí ngẫu nhiên. Điều này nên được thực hiện bằng cách xào 8 vị trí đã bị loại bỏ khỏi màn chơi trong quá trình chuẩn bị màn chơi (phiên bản của mỗi vị trí đang chơi hiện không được sử dụng) và rút ngẫu nhiên 1 vị trí. Nếu bạn được hướng dẫn chọn nhiều vị trí ngẫu nhiên khác nhau, hãy xào 8 vị trí hiện không được sử dụng cùng nhau và rút ngẫu nhiên số vị trí khác nhau bằng số lượng đã chỉ định.</p>"
   },
   "breachesAndIncursions": {
     "title": "Lỗ thủng và Sự xâm nhập"

@@ -140,7 +140,9 @@
     "theTeamFoundTheHiddenTunnel": "Đội đã tìm thấy đường hầm ẩn.",
     "theTeamPhotographedTheAstronomicalCharts": "Đội đã chụp ảnh các biểu đồ thiên văn.",
     "theTeamWasGuidedToTheHiddenTunnel": "Đội đã được dẫn đến đường hầm ẩn.",
-    "theTruthOfTheMirageEludesYou": "Sự thật về ảo ảnh vượt ngoài tầm hiểu biết của bạn."
+    "theTruthOfTheMirageEludesYou": "Sự thật về ảo ảnh vượt ngoài tầm hiểu biết của bạn.",
+    "theTeamReadTheMap": "Đội đã đọc bản đồ.",
+    "theTeamStudiedTheMuralCarvings": "Đội đã nghiên cứu các bức khắc trên tường."
   },
   "label": {
     "openTheDoorAndVenture": "*Mở cửa và bước vào ảo ảnh.*",
@@ -158,5 +160,49 @@
     "08720": "Tiến sĩ Amy Kensler",
     "08714": "Giáo sư William Dyer",
     "08717": "Tiến sĩ Mala Sinha"
+  },
+  "specialRules": [
+    {
+      "title": "Điểm Kiểm Tra",
+      "body": "<p class='basic'>Một số màn chơi trong chiến dịch Edge of the Earth được chia thành nhiều phần. Người chơi có thể chọn chơi từng phần một (với thời gian nghỉ giữa các phần), hoặc chơi nhiều phần liên tiếp trong một buổi chơi dài hơn. Mỗi phần là một màn chơi riêng với phần thiết lập và kết thúc riêng. Sau khi hoàn thành một phần của màn chơi, hướng dẫn chiến dịch sẽ dẫn các điều tra viên đến một Checkpoint (Điểm kiểm tra) để hướng dẫn cách tiếp tục. Nếu các điều tra viên muốn chuyển thẳng sang phần tiếp theo của màn chơi, Checkpoint sẽ chỉ dẫn cách dọn dẹp trò chơi để chuẩn bị cho phần kế tiếp. Nếu các điều tra viên muốn nghỉ ngơi và tiếp tục chơi trong buổi sau, Checkpoint sẽ yêu cầu ghi lại thông tin vào Nhật ký Chiến dịch để việc thiết lập cho buổi chơi sau nhanh chóng và dễ dàng.</p>"
+    },
+    {
+      "title": "Token Băng Giá"
+    },
+    {
+      "body": "<p class='basic'>Chiến dịch này bao gồm một bộ bài encounter gồm 16 điểm yếu, mỗi lá có tiêu đề \"Tekeli-li!\". Những lá bài này được xáo trộn với nhau để tạo thành một chồng bài Tekeli-li đặc biệt trong quá trình thiết lập mỗi màn chơi của chiến dịch. Giống như các điểm yếu thông thường, nếu một trong những lá bài này được thêm vào bộ bài của điều tra viên, nó sẽ trở thành một phần của bộ bài đó và đi cùng điều tra viên qua các màn chơi. Tuy nhiên, phần xử lý của mỗi điểm yếu Tekeli-li! yêu cầu điều tra viên trả nó về chồng bài Tekeli-li (loại bỏ khỏi bộ bài của họ). Do đó, số lượng lá bài trong bộ bài Tekeli-li thay đổi tùy thuộc vào số lượng điểm yếu này trong bộ bài của mỗi điều tra viên. *Lưu ý: Dù tất cả các lá Tekeli-li! có cùng tiêu đề, hiệu ứng của chúng có thể khác nhau.*</p>"
+    },
+    {
+      "title": "Đồng Hành"
+    },
+    {
+      "title": "Cảnh Giác",
+      "body": "<p class='basic'>Mỗi khi một điều tra viên thất bại trong bài kiểm tra kỹ năng khi cố gắng né tránh một kẻ địch có từ khóa Alert (cảnh giác), sau khi áp dụng tất cả kết quả của bài kiểm tra kỹ năng, kẻ địch đó sẽ tấn công điều tra viên đang né tránh. Kẻ địch không bị kiệt sức sau khi thực hiện một cuộc tấn công Alert. Cuộc tấn công này xảy ra bất kể kẻ địch có đang engage với điều tra viên né tránh hay không.</p>"
+    }
+  ],
+  "prologue": {
+    "title": "Lời mở đầu",
+    "body": "<div class='iceAndDeath'><p>\"Tôi buộc phải lên tiếng vì những nhà khoa học đã từ chối làm theo lời khuyên của tôi mà không hề biết lý do. Tôi hoàn toàn không muốn tiết lộ lý do phản đối việc dự tính xâm nhập vào Nam Cực—với cuộc săn hóa thạch quy mô lớn cùng việc khoan đục và làm tan chảy lớp băng cổ xưa—và tôi càng miễn cưỡng hơn vì lời cảnh báo của tôi có thể vô ích. Nghi ngờ về những sự thật mà tôi phải tiết lộ là điều không tránh khỏi; nhưng nếu tôi giấu đi những điều có vẻ kỳ lạ và khó tin, thì sẽ chẳng còn gì sót lại.\"</p><p>-H. P. Lovecraft, At the Mountains of Madness (Trên những ngọn núi của sự điên loạn)</p></div>"
+  },
+  "prologue1": {
+    "title": "Lời mở đầu"
+  },
+  "prologue2": {
+    "title": "Lời mở đầu"
+  },
+  "prologue3": {
+    "title": "Lời mở đầu"
+  },
+  "prologue4": {
+    "title": "Lời mở đầu"
+  },
+  "suppliesRecovered": {
+    "greenSoapstone": "Đá Xanh",
+    "woodenSledge": "Xe Trượt Gỗ",
+    "dynamite": "Thuốc Nổ",
+    "miasmicCrystal": "Tinh Thể Độc",
+    "mineralSpecimen": "Mẫu Khoáng Vật",
+    "smallRadio": "Radio Nhỏ",
+    "spareParts": "Phụ Tùng Dự Phòng"
   }
 }

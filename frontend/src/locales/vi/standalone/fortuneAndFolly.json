@@ -28,6 +28,9 @@
     },
     "theWellspringOfFortune": {
       "body": "<div class='columns' style='padding-right: 30px;'><p class='basic' style='padding-left: 0; margin-left: 0;'>Scenario này bao gồm The Wellspring of Fortune, là một \"key,\" một loại bài mới được giới thiệu trong campaign *The Scarlet Keys*. Luật đầy đủ cho loại bài key có thể được tìm thấy trong campaign guide *The Scarlet Keys*. Cho mục đích của scenario này, The Wellspring of Fortune chỉ được sử dụng như một vật đánh dấu cho các token và một mục tiêu để các điều tra viên đạt được. _Hãy coi text box của The Wellspring of Fortune là trống rỗng trong suốt thời gian của scenario này._ Do đó, luật đầy đủ cho các key card không cần thiết để chơi scenario này; tuy nhiên, nếu các điều tra viên đang chơi scenario này như một phần của campaign *The Scarlet Keys*, họ có thể giành được The Wellspring of Fortune và sử dụng nó trong các scenario tương lai.</p><div style='flex:1; margin-top: 30px;' class='fan-thin'><img src='{setImgPath}/../cards/88045.avif' /><img src='{setImgPath}/../cards/88045b.avif' /></div></div>"
+    },
+    "alarmLevel": {
+      "title": "Mức độ Báo động"
     }
   },
   "part1": {
@@ -35,7 +38,9 @@
       "agendaAndActDecks": "Tạo agenda deck chỉ sử dụng agenda 1 và act deck chỉ sử dụng act 1. Để riêng các lá bài agenda và act còn lại sang một bên, out of play.",
       "theStakeout": "Đặt story card The Stakeout cạnh Casino Floor.",
       "ifTheUniformFits": "Spawn 1 bản sao của Casino Guard tại Roulette Wheel. Đính kèm story card If the Uniform Fits... vào nó *(If the Uniform Fits... nằm ở mặt sau của story card Package Delivery).*",
-      "setAside": "Để riêng các lá bài sau, out of play: 3 lá story card Fortune's Disfavor, story asset Cash Cart, story asset Deck of Possibilities, và story asset Isamara Ordoñez *(The Torch Singer)*."
+      "setAside": "Để riêng các lá bài sau, out of play: 3 lá story card Fortune's Disfavor, story asset Cash Cart, story asset Deck of Possibilities, và story asset Isamara Ordoñez *(The Torch Singer)*.",
+      "placeLocations": "Đưa Casino Floor, Casino Lounge, và High Roller's Table vào chơi với mặt Calm Night ngửa lên. Đưa mỗi địa điểm [[Public]] khác vào chơi.",
+      "startAt": "Mỗi điều tra viên bắt đầu chơi tại Casino Floor *(Calm Night)*."
     },
     "resolutions": {
       "resolution1": {
@@ -70,7 +75,8 @@
       },
       "resolution3": {
         "title": "Kết thúc thứ ba"
-      }
+      },
+      "xp": "Mỗi điều tra viên nhận điểm kinh nghiệm bằng tổng giá trị Victory của các lá bài trong vùng trưng bày thành tích."
     }
   },
   "checkpoint1": {
@@ -83,5 +89,28 @@
     "label": {
       "alarm": "Giảm mức báo động của mỗi điều tra viên đi 1."
     }
-  }
+  },
+  "specialRules": [
+    {
+      "body": "<p class='basic'>Scenario này được chia thành hai phần. Người chơi có thể chọn chơi từng phần một (với một khoảng nghỉ giữa mỗi phần), hoặc họ có thể chơi cả hai phần liên tiếp nhau như một phần của một phiên chơi dài hơn. Mỗi phần là một trò chơi riêng biệt với setup và resolution riêng. Sau khi hoàn thành phần đầu tiên của scenario này, campaign guide sẽ hướng dẫn các điều tra viên đến một Checkpoint để chỉ dẫn họ cách tiếp tục. Nếu các điều tra viên muốn tiến thẳng đến phần tiếp theo của scenario, Checkpoint sẽ hướng dẫn họ cách dọn dẹp trò chơi để chuẩn bị cho phần tiếp theo. Nếu các điều tra viên muốn nghỉ ngơi và tiếp tục chơi trong phiên chơi tiếp theo, Checkpoint sẽ hướng dẫn họ ghi lại thông tin vào Campaign Log để giúp việc setup cho phiên chơi tiếp theo diễn ra nhanh chóng và dễ dàng.</p>"
+    },
+    {
+      "title": "Mức độ Báo động"
+    },
+    {
+      "body": "<p class='basic'>Isamara Ordoñez là một lá bài story asset hai mặt. Nếu Isamara Ordoñez rời khỏi khu vực chơi vì bất kỳ lý do gì, hoặc nếu một điều tra viên đang điều khiển Isamara Ordoñez bị hạ gục, cô ấy sẽ được set aside.</p>"
+    },
+    {
+      "title": "Tuần tra"
+    },
+    {
+      "title": "Biểu tượng Game"
+    },
+    {
+      "title": "Mulligan"
+    },
+    {
+      "body": "<p class='basic'>Scenario này bao gồm The Wellspring of Fortune, là một \"key,\" một loại bài mới được giới thiệu trong campaign The Scarlet Keys. Luật đầy đủ cho loại bài key có thể được tìm thấy trong campaign guide The Scarlet Keys. Cho mục đích của scenario này, The Wellspring of Fortune chỉ được sử dụng như một vật đánh dấu cho các token và một mục tiêu để các điều tra viên đạt được. Hãy coi text box của The Wellspring of Fortune là trống rỗng trong suốt thời gian của scenario này. Do đó, luật đầy đủ cho các key card không cần thiết để chơi scenario này; tuy nhiên, nếu các điều tra viên đang chơi scenario này như một phần của campaign The Scarlet Keys, họ có thể giành được The Wellspring of Fortune và sử dụng nó trong các scenario tương lai.</p>"
+    }
+  ]
 }

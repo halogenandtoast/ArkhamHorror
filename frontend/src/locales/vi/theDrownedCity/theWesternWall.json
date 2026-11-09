@@ -2,7 +2,8 @@
   "intro": {
     "doNoHarm": {
       "title": "Nhiệm vụ: Do No Harm",
-      "body": "Khi bạn chuẩn bị vượt qua bức tường, bạn phát hiện một người nằm sấp trên bãi cát đen. Đó là một người đàn ông mặc một chiếc áo choàng chắp vá rách rưới. Gạt đi những câu hỏi về việc làm thế nào anh ta đến được đây, bạn tiến lại gần và bắt mạch cho anh ta. Anh ta vẫn còn sống, mặc dù bị thương nặng. Mủ vàng rỉ ra từ những vết giác mút tròn trên cổ, cánh tay và ngực anh ta. Bạn băng bó vết thương cho anh ta tốt nhất có thể, sau đó đánh thức anh ta bằng một ít muối ngửi. Đôi mắt anh ta hé mở và anh ta thều thào một từ: \"Mẹ.\" Bạn nhìn những người khác. Người đàn ông này rõ ràng cần được giúp đỡ."
+      "body": "Khi bạn chuẩn bị vượt qua bức tường, bạn phát hiện một người nằm sấp trên bãi cát đen. Đó là một người đàn ông mặc một chiếc áo choàng chắp vá rách rưới. Gạt đi những câu hỏi về việc làm thế nào anh ta đến được đây, bạn tiến lại gần và bắt mạch cho anh ta. Anh ta vẫn còn sống, mặc dù bị thương nặng. Mủ vàng rỉ ra từ những vết giác mút tròn trên cổ, cánh tay và ngực anh ta. Bạn băng bó vết thương cho anh ta tốt nhất có thể, sau đó đánh thức anh ta bằng một ít muối ngửi. Đôi mắt anh ta hé mở và anh ta thều thào một từ: \"Mẹ.\" Bạn nhìn những người khác. Người đàn ông này rõ ràng cần được giúp đỡ.",
+      "choose": "Bạn phải quyết định (chọn một):"
     },
     "label": {
       "doNoHarm": {
@@ -15,7 +16,8 @@
     "west": {
       "title": "Thiết lập (v.I) - Western Expedition",
       "floodLevels": "Tăng flood level của mỗi địa điểm ở level 2-5.",
-      "fullyFloodLevels": "Tăng flood level của level 4 và 5 sao cho chúng fully flooded."
+      "fullyFloodLevels": "Tăng flood level của level 4 và 5 sao cho chúng fully flooded.",
+      "placeBottomWalkways": "Xào 2 địa điểm [[Walkway]] còn lại với Obsidian Foundations đã để riêng sao cho bạn không biết lá nào là lá nào và đặt chúng vào chơi ở level 5, để ngửa mặt chưa lật."
     },
     "east": {
       "title": "Thiết lập (v.II) - Eastern Expedition",
@@ -29,7 +31,8 @@
     "beginAtWesternWall": "Mỗi điều tra viên bắt đầu chơi tại Western Wall.",
     "setAsideCoralStarSpawn": "Tìm kẻ địch Coral Star Spawn trong tập encounter *Star Spawn* và để riêng ngoài cuộc chơi. Loại bỏ mọi lá bài khác trong tập encounter *Star Spawn* khỏi trò chơi.",
     "addFloodTokens": "Thêm token lũ lụt vào kho chứa token.",
-    "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu."
+    "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu.",
+    "buildEncounterDeck": "Xào các lá bài encounter còn lại để xây dựng chồng bài encounter."
   },
   "rules": {
     "locationAdjacency": {

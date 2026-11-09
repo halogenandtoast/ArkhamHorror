@@ -2,7 +2,8 @@
   "heading": "Hồ sơ #38-N",
   "intro": {
     "label": {
-      "weAccept": "*“Được thôi, chúng tôi chấp nhận.”*"
+      "weAccept": "*“Được thôi, chúng tôi chấp nhận.”*",
+      "refuse": "Từ chối."
     }
   },
   "version1": {

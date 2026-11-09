@@ -1,13 +1,16 @@
 {
   "heading": "Màn VII",
   "intro": {
-    "title": "Màn VII: Lạc trong Không gian và Thời gian"
+    "title": "Màn VII: Lạc trong Không gian và Thời gian",
+    "body": "<p>Trải nghiệm đi qua cánh cổng không giống như bất cứ điều gì bạn từng trải qua. Bạn cảm thấy cơ thể mình vặn vẹo và biến dạng, đảo lộn qua các thực tại khác nhau trong khi cánh cổng kéo bạn đến đích cuối cùng của nó — một nơi nằm ngoài phạm vi tưởng tượng của nhân loại.</p><p>Đột nhiên, tất cả trở nên yên tĩnh và sự hỗn loạn của cuộc hành trình được thay thế bằng một cảm giác cô độc và kinh sợ. Bạn đang ở một nơi vô cùng sâu và rộng lớn đến nỗi vượt quá khả năng suy nghĩ của bản thân và hoàn toàn xa lạ. Cảnh quan trông siêu thực và kỳ lạ, các kiến trúc không tưởng. Bạn đã đi xa nhà đến nỗi nhà đã trở thành một giấc mơ vụn vặt mà bạn chỉ nhớ được một chút. Ngay cả khi bạn tìm ra cách thoát khỏi nơi tồi tệ này, bạn có thể sẽ không bao giờ giống như trước được nữa.</p>"
   },
   "setup": {
-    "placeLocations": "Đặt vị trí Another Dimension vào màn chơi. Mỗi điều tra viên bắt đầu chơi tại vị trí Another Dimension."
+    "placeLocations": "Đặt vị trí Another Dimension vào màn chơi. Mỗi điều tra viên bắt đầu chơi tại vị trí Another Dimension.",
+    "setAside": "Đặt các lá bài sau sang một bên, ngoài màn chơi: The Edge of the Universe, Tear Through Time, và Yog‐Sothoth."
   },
   "locationsInTheEncounterDeck": {
-    "title": "Vị trí trong Chồng Bài Encounter"
+    "title": "Vị trí trong Chồng Bài Encounter",
+    "body": "<p class='basic'>Màn chơi này bao gồm một vài vị trí một mặt được xào vào chồng bài encounter cùng với các bộ bài encounter tập hợp được còn lại. Những vị trí này chỉ có mặt để lộ, và có hiệu ứng _Revelation_ giúp đặt chúng vào màn chơi khi được rút. Khi đặt vào màn chơi, lá bài vị trí một mặt sẽ để mặt để lộ lên, bởi vì nó không có mặt ẩn giấu. Còn lại thì nó hoạt động như một vị trí thông thường.</p>"
   },
   "resolutions": {
     "resolution1": {

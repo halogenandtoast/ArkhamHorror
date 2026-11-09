@@ -6,26 +6,38 @@
   },
   "interlude1": {
     "part1": {
-      "title": "Chuyển tiếp I: Những mảnh ghép"
+      "title": "Chuyển tiếp I: Những mảnh ghép",
+      "body": "<p>Bạn không biết người phụ nữ này là ai và làm sao cô ấy biết bạn, nhưng cô ấy có vẻ thoải mái và quen thuộc với bạn. Bạn căng trí nhớ cố nghĩ xem có thể từng gặp nhau như thế nào, nhưng chẳng ích gì. Bạn chắc chắn rằng cô ấy là một người hoàn toàn xa lạ. Thức dậy trong một nhà tù lạnh lẽo, ẩm ướt và không có ký ức, bạn sẽ không cảm thấy muốn xã giao cho lắm. Sự sợ hãi và nghi ngờ của bạn chắc đã lộ ra, bởi vì người phụ nữ lùi lại và nheo mắt lại. \"Gì vậy? Có chuyện gì sao?\"</p><p>Bạn trả lời bằng cách hỏi người phụ nữ xem bạn có biết cô ấy không. \"Cậu thực sự không nhớ à? Chà, điều đó sẽ làm mọi chuyện trở nên phức tạp hơn. Cậu nhớ lại được gì không? Hay có nhớ bất cứ điều gì không?\"</p><p>Bạn liên hệ người phụ nữ đến những thoáng hồi ức mà bạn đã trải qua trước đó…</p>"
     },
     "aMeetingWithThomasDawson": {
-      "title": "Nếu *một cuộc gặp gỡ với Thomas Dawson* được liệt kê trong phần \"Ký ức đã được khôi phục\":"
+      "title": "Nếu *một cuộc gặp gỡ với Thomas Dawson* được liệt kê trong phần \"Ký ức đã được khôi phục\":",
+      "body": "<p>Bạn ghép các thông tin lại với nhau và hỏi người phụ nữ đó có phải là cô Harper không. \"À, vậy là cậu nhớ tôi à?\" cô ấy hỏi với một nụ cười nhếch mép tinh nghịch, nhưng bạn lắc đầu đáp lại và giải thích rằng bạn chỉ nhớ mình được một người đàn ông tên Thomas Dawson thuê để tìm cô ấy. \"Nhưng đó là... ồ. Cậu đã quên nhiều lắm phải không? Nhắc đến Dawson, ông ấy ở đâu? Cậu có thấy ông ấy ở dưới đó không?\"</p><p>Suy nghĩ của bạn chuyển sang khuôn mặt méo mó khơi dậy hồi tưởng của bạn. Biểu hiện của đặc vụ Harper trở nên nghiêm khắc khi cô ấy nhìn vào mắt bạn. “…Tôi hiểu rồi. Tôi ước gì ông ấy không đến thị trấn bị bỏ hoang này. Những kẻ bạo lực đó sẽ phải trả giá cho việc này.” Bạn hỏi cô ấy nghĩ ai là người gây ra cái chết của Dawson, và cô ấy nhướn mày đáp lại. \"Phải rồi, cậu không nhớ. Theo như tôi biết, lần cuối cùng có ai nhìn thấy một trong hai người là ngay trước khi cậu đến thăm Hội bí truyền Dagon. Cậu tự rút ra kết luận đi.\"</p>"
     },
     "noMemoriesRecovered": {
-      "title": "Nếu không có gì được liệt kê trong phần \"Ký ức đã được khôi phục\":"
+      "title": "Nếu không có gì được liệt kê trong phần \"Ký ức đã được khôi phục\":",
+      "body": "<p>Bạn lắc đầu. Bạn không nhớ gì cả. “Điều đó sẽ khiến việc này trở nên khó khăn,” người phụ nữ nói với một cái thở dài. \"Được rồi. Chà, tôi sẽ nói cho bạn những gì tôi biết. Tôi là Đặc vụ Elina Harper. Theo hiểu biết của tôi thì cậu đã được thuê bởi sếp của tôi, Đặc vụ Thomas Dawson, nhờ vào sự hiểu biết sâu sắc hơn của cậu về... à, về những điều chúng tôi không thể nào hiểu được.\" Bạn hỏi bạn được thuê để thực hiện nhiệm vụ gì, và người phụ nữ nhếch mép cười. \"Thực ra thì cậu được thuê để tìm tôi. Hội không vui lắm về điều đó. Đó là một câu chuyện dài. Chúng ta hãy ra khỏi đây trước, và sau đó tôi sẽ kể cho cậu nghe tất cả những chuyện đó.\"</p>"
     },
     "aBattleWithAHorrifyingDevil": {
-      "title": "Nếu *một trận chiến với một con quỷ đáng sợ* được liệt kê trong phần \"Ký ức đã được phục hồi\":"
+      "title": "Nếu *một trận chiến với một con quỷ đáng sợ* được liệt kê trong phần \"Ký ức đã được phục hồi\":",
+      "body": "<p>Bạn kể cho Đặc vụ Harper về trận chiến của bạn với một loại sinh vật dưới nước nào đó. “Devil Reef,” cô rùng mình nói. \"Dù chuyện gì đang xảy ra ở thị trấn này, Devil Reef vẫn là trung tâm của nó. Hãy hy vọng chúng ta không phải quay lại con đường đó sớm... và hãy hy vọng thứ đó vẫn chết.\"</p>"
     },
     "aDecisionToStickTogether": {
-      "title": "Nếu *quyết định đi cùng với nhau* được liệt kê trong phần \"Ký ức đã được phục hồi\":"
+      "title": "Nếu *quyết định đi cùng với nhau* được liệt kê trong phần \"Ký ức đã được phục hồi\":",
+      "body": "<p>\"Vậy là cậu và Dawson cùng nhau tìm kiếm tôi phải không? Thú vị đấy.\" Cô cân nhắc điều này một lúc. \"Tôi đoán ngay cả Thuyền trưởng Dawson phi thường đôi khi cũng có thể cảm thấy bối rối. Thật hài lòng khi biết ông ấy quan tâm nhiều đến việc tìm thấy tôi. Tuy nhiên...\" ánh mắt cô ấy lang thang về phía chân trời. \"Được rồi, Dawson. Tôi đảm bảo rằng ông không chết một cách vô ích. Tôi sẽ thiêu rụi cả thị trấn này nếu buộc phải làm vậy.\"</p>"
     },
     "anEncounterWithASecretCult": {
       "title": "Nếu *cuộc chạm trán với một giáo phái bí mật* được liệt kê trong phần \"Ký ức được phục hồi\":",
       "body": "<p>Bạn mô tả ký ức của mình về bên trong một trụ sở giáo phái nào đó. “Âm thanh như thế hẳn phải xảy ra bên trong tòa nhà Hội Bí truyền của Dagon ở phía bắc thị trấn,” Đặc vụ Harper giải thích. \"Tổ chức đó thật hèn hạ: Tôi chỉ biết thôi. Tuy nhiên, tôi không có bằng chứng nào để mang về, và có vẻ như cậu đã quên hết những gì đã biết.\" Cô ấy chửi thầm trong miệng.</p>"
     },
     "part2": {
-      "title": "Chuyển tiếp I: Những mảnh ghép"
+      "title": "Chuyển tiếp I: Những mảnh ghép",
+      "body": "<p>Bạn chỉ vào đường chân trời đỏ thẫm, kỳ lạ phía sau Đặc vụ Harper và nhấn mạnh sự thẳng hàng của mặt trời và mặt trăng. “Chuyện đó bắt đầu ngay sau khi cậu và Đặc vụ Dawson bước vào trụ sở của Hội,” cô giải thích. \"Chuyện đó đã gần ba ngày trước rồi. Tôi không biết nó có ý nghĩa gì, nhưng tôi không thể tưởng tượng nó có gì hay ho. Gần đây toàn bộ thị trấn Innsmouth đã bị khóa chặt. Không một bóng người nào xuất hiện. May cho cậu là tôi đã tìm ra nơi để tìm được cậu.\"</p><p>Đầu óc bạn quay cuồng. Điều cuối cùng bạn nhớ được trước khi thức dậy trong cái hố ẩm ướt đó là tận hưởng một đêm cuối hè thú vị ở Arkham. Bây giờ bạn đang ở một thị trấn khác và ký ức của bạn chứa đầy những lỗ hổng. Bạn thắc mắc lớn tiếng về ngày đó và đặc vụ Harper trả lời: \"Hôm nay là ngày 24 tháng 9. Tôi không biết chính xác cậu đến Innsmouth khi nào hoặc cậu đã mất bao nhiêu ký ức. Cậu không nhớ được điều gì khác nữa sao? Bất kỳ thứ gì?”</p><p>Nước đập vào chân bạn khi bạn cố gắng nhớ lại. Trong vài phút, thủy triều đã dâng lên vài inch và không có dấu hiệu chậm lại. Bạn nhìn chằm chằm vào người phụ nữ đang đứng trước mặt bạn - đôi mắt mệt mỏi, bộ quần áo xộc xệch, những vết đỏ trên cổ tay - và điều gì đó gợi lên trong hồi ức của bạn.</p><p>\"Dậy đi. Chúng ta sắp đến nơi rồi.\" Ký ức ẩn nấp ở vực sâu ý thức của bạn, đe dọa lôi kéo bạn vào bóng tối. \"Này. Tôi nói là dậy đi mà.\" Bạn ôm trán khi cơn đau nhức nhối lan khắp hộp sọ. \"Dậy đi, chết tiệt!\"</p><p>Bóng tối kéo đến rìa tầm nhìn của bạn. Thêm nhiều ký ức ùa về…</p>"
+    },
+    "xp": {
+      "aMeetingWithThomasDawson": "Một cuộc gặp gỡ với Thomas Dawson.",
+      "aBattleWithAHorrifyingDevil": "Một trận chiến với một con ác quỷ kinh hoàng.",
+      "aDecisionToStickTogether": "Một quyết định gắn bó cùng nhau.",
+      "anEncounterWithASecretCult": "Một cuộc chạm trán với một giáo phái bí mật."
     }
   },
   "interlude3": {
@@ -35,12 +47,18 @@
     "xp": {
       "whiteKey": "Áo choàng đã được đem tới ngọn hải đăng.",
       "blackKey": "Vương miện đã được đem tới ngọn hải đăng."
-    }
+    },
+    "beneathTheWaves1": {
+      "body": "<p>Bạn lướt qua ký ức của mình, đấu tranh để trở về hiện tại. Bạn nhớ một phòng giam tối tăm. Một con dao kề cổ. Một người đàn ông có đôi mắt mở to, không chớp, mặc áo choàng dài có mũ trùm đầu. \"Oceiros,\" một giọng nói khác vang lên, \"những tên này cũng được tìm thấy chỗ hang ổ của Dagon. Chúng tôi tin rằng chúng chính là những kẻ đang rình mò quanh Rặng San Hô Quỷ.\"</p><p>Oceiros gật đầu. Con dao kề cổ họng bạn cứa sâu hơn. “Hãy mang những gì bọn chúng đã đánh cắp đến ngọn hải đăng ngay lập tức,” hắn ta ra lệnh. \"Đã đến lúc bắt đầu công việc vĩ đại của chúng ta. Không ai có thể làm gián đoạn công việc của Dòng nữa.\"</p><p>Tâm trí của bạn quay trở lại hiện tại. Tiếng ầm ầm của động cơ ô tô lớn dần khi các giác quan của bạn quay trở lại. Đặc vụ Harper nắm lấy vai bạn và nhìn thẳng vào mắt bạn. “Một ký ức khác à,” cô thốt lên với một chút ngạc nhiên. \"Cậu có nhớ điều gì không? Nhớ được gì rồi?\"</p><p>Bạn rũ bỏ cơn đau nhức do hộp sọ đập thình thịch và hỏi Harper xem cái tên Oceiros có ý nghĩa gì không. \"Oceiros Marsh? Ông ta là người canh giữ ngọn hải đăng cũ ở Falcon Point,\" cô trả lời. \"Tại sao? Cậu đã nhìn thấy gì?\"</p>"
+    },
+    "noKeys": "<p>Bạn gặp khó khăn để ghi nhớ bất cứ điều gì có giá trị hơn chuyến khám phá rạn san hô ban đầu. Bạn nhớ lại những sinh vật kỳ lạ mà bạn đã chiến đấu, những hòn đảo khác nhau mà bạn đã khám phá và thủy triều dâng cao, nhưng không còn nữa. Những bí mật hẳn phải được ẩn giấu trong những rạn san hô đó, nhưng hoặc là bạn không thể tìm thấy chúng, hoặc đơn giản là bạn không nhớ ra. Đầu bạn nhức nhối khi bạn cố gắng gợi lại những ký ức từ khoảng trống trong tâm trí. \"Không sao đâu,\" Đặc vụ Harper nói, đặt tay lên vai bạn. \"Chúng ta sẽ cùng nhau tìm ra điều này.\"</p>",
+    "beneathTheWaves2": "<p>“Có vẻ như ký ức của cậu đang bắt đầu quay trở lại,” Đặc vụ Harper nói với nụ cười ngập ngừng. \"Cậu cảm thấy thế nào?\"</p><p>Bạn chật vật để tìm một câu trả lời phù hợp. Một phần trong bạn cảm thấy nhẹ nhõm khi ký ức quay trở lại, nhưng phần còn lại lại ước gì chúng đừng sống động đến thế. Bạn tự hỏi một lần nữa liệu mình có nên tận dụng cơ hội này để lái xe trở lại thị trấn Arkham và không bao giờ đặt chân đến Innsmouth nữa hay không. Sau đó, ánh mắt của bạn gặp ánh mắt của Harper và bạn thấy được sự quyết tâm mãnh liệt trong mắt cô ấy. Một quyết tâm tương tự cũng khuấy động trong bạn.</p><p>Bạn không nói gì nhưng cô ấy dường như hiểu được. \"Có lẽ có rất nhiều thứ cần phải làm. Hiện tại, hãy tập trung vào việc đến Falcon Point. Nếu những gì cậu nói là đúng và Oceiros là một phần của Dòng Dagon bí truyền, thì sẽ có câu trả lời ở đó.\" Cô ấy nhìn qua vai của cô, nhìn chăm chú vào đường chân trời phía tây. Mặt trời lặn ngay dưới hàng cây, nhuộm bầu trời trong màu đỏ thẫm. “Có điều gì đó mách bảo tôi rằng chuyện này vẫn chưa kết thúc.”</p>"
   },
   "interlude4": {
     "hiddenTruths": {
       "title": "Chuyển tiếp IV: Sự Thật Ẩn Giấu"
-    }
+    },
+    "rightfulKeeper": "<p>Bây giờ bạn đã hiểu mục đích của cổ vật bạn tìm thấy ở Rạn San Hô Quỷ. Nó không chỉ là một đối tượng quyền lực. Đó là một huy hiệu—một kiểu vật gia truyền, được đeo bởi người đứng gác cổng vào thành phố của Deep Ones. Bạn đã đánh bại kẻ được chuẩn bị để trở thành người bảo vệ tiếp theo của nó. Bây giờ di tích công nhận bạn là người thừa kế hợp pháp của nó. Có lẽ với điều này, bạn sẽ có thể vào được Y'ha-nthlei…</p>"
   },
   "epilogue": {
     "epilogue1": {
@@ -53,10 +71,40 @@
     },
     "flashback15": {
       "title": "Hồi tưởng XV"
+    },
+    "memories": {
+      "aMeetingWithThomasDawson": "Một cuộc gặp gỡ với Thomas Dawson.",
+      "aBattleWithAHorrifyingDevil": "Một trận chiến với một con ác quỷ kinh hoàng.",
+      "aDecisionToStickTogether": "Một quyết định gắn bó cùng nhau.",
+      "anEncounterWithASecretCult": "Một cuộc chạm trán với một giáo phái bí mật.",
+      "aDealWithJoeSargent": "Một thỏa thuận với Joe Sargent.",
+      "aFollowedLead": "Một manh mối được lần theo.",
+      "anIntervention": "Một sự can thiệp.",
+      "aJailbreak": "Một cuộc vượt ngục.",
+      "discoveryOfAStrangeIdol": "Phát hiện ra một bức tượng thần kỳ lạ.",
+      "discoveryOfAnUnholyMantle": "Phát hiện ra một chiếc áo choàng tà ác.",
+      "discoveryOfAMysticalRelic": "Phát hiện ra một di vật huyền bí.",
+      "aConversationWithMrMoore": "cuộc trò chuyện với ông Moore",
+      "theLifecycleOfADeepOne": "Vòng đời của một “Deep One.”",
+      "aStingingBetrayal": "Một sự phản bội cay đắng."
     }
   },
   "memoriesRecovered": {
-    "theHorribleTruth": "Sự thật kinh hoàng."
+    "theHorribleTruth": "Sự thật kinh hoàng.",
+    "aMeetingWithThomasDawson": "Một cuộc gặp gỡ với Thomas Dawson.",
+    "aBattleWithAHorrifyingDevil": "Một trận chiến với một con ác quỷ kinh hoàng.",
+    "aDecisionToStickTogether": "Một quyết định gắn bó cùng nhau.",
+    "anEncounterWithASecretCult": "Một cuộc chạm trán với một giáo phái bí mật.",
+    "anIntervention": "Một sự can thiệp.",
+    "aJailbreak": "Một cuộc vượt ngục.",
+    "aDealWithJoeSargent": "Một thỏa thuận với Joe Sargent.",
+    "aFollowedLead": "Một manh mối được lần theo.",
+    "discoveryOfAStrangeIdol": "Phát hiện ra một bức tượng thần kỳ lạ.",
+    "discoveryOfAnUnholyMantle": "Phát hiện ra một chiếc áo choàng tà ác.",
+    "discoveryOfAMysticalRelic": "Phát hiện ra một di vật huyền bí.",
+    "aConversationWithMrMoore": "cuộc trò chuyện với ông Moore",
+    "theLifecycleOfADeepOne": "vòng đời của một \"Deep One\"",
+    "aStingingBetrayal": "Một sự phản bội cay đắng."
   },
   "possibleHideouts": {
     "innsmouthJail": "Innsmouth Jail (nhà tù Innsmouth)",
@@ -96,5 +144,17 @@
     "agentHarpersMissionIsCompleteButAtWhatCost": "Nhiệm vụ của đặc vụ Harper đã hoàn thành… nhưng bằng cái giá nào?",
     "theDeepOnesHaveFloodedTheEarth": "Deep Ones đã ngập lụt cả Trái đất.",
     "theHorribleTruth": "Sự thật kinh hoàng."
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Chìa khóa"
+    },
+    {
+      "title": "Token Ngập Lụt"
+    },
+    {},
+    {
+      "title": "Niêm phong"
+    }
+  ]
 }

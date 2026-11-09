@@ -88,14 +88,16 @@
   "token": {
     "Lead": "Đầu mối",
     "LostSoul": "Đánh Mất Linh Hồn",
-    "Seal": "Niêm phong"
+    "Seal": "Niêm phong",
+    "AlarmLevel": "Mức độ Báo động"
   },
   "choice": {
     "clues": "Manh mối"
   },
   "proceedToSetup": "Tiến hành Thiết lập",
   "headings": {
-    "epilogue": "Phần kết"
+    "epilogue": "Phần kết",
+    "prologue": "Lời mở đầu"
   },
   "upgradeDecks": "Nâng cấp bộ bài",
   "addSideScenario": "Thêm kịch bản phụ",

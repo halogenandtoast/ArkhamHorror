@@ -7,10 +7,14 @@
     "placeKeys": "Đặt từng chìa khóa sang một bên, như sau:",
     "facedownKeys": "Đặt các chìa khóa tím và xanh lá sang một bên, úp xuống. Xáo trộn chúng để bạn không biết cái nào là cái nào.",
     "setAsideCards": "Đặt những lá bài sau đây sang một bên: kẻ địch Oceiros Marsh, cả 2 lá bài treachery Worth His Salt, và cả 2 lá bài treachery Taken Captive.",
-    "floodTokens": "Thêm token lũ lụt vào kho chứa token."
+    "floodTokens": "Thêm token lũ lụt vào kho chứa token.",
+    "captured": "Đặt lá bài “Captured!” vào chơi bên cạnh lá bài tham chiếu của màn chơi, với mặt câu chuyện của nó được ngửa lên. (Lá bài này là mặt còn lại của vị trí Holding Cell.) Các dòng chữ trên nó đang được hoạt động.",
+    "checkCampaignLog": "Kiểm tra Nhật ký Chiến dịch.",
+    "checkCampaignLogDoom": "Kiểm tra Nhật ký Chiến dịch."
   },
   "intro": {
-    "title": "Màn chơi VI: Ánh đèn trong sương mù"
+    "title": "Màn chơi VI: Ánh đèn trong sương mù",
+    "body": "<p>Sương mù màu đỏ thẫm bao phủ bầu trời khi bạn đến cổng của Falcon Point. Trên đỉnh những vách đá phía trên bạn, ngọn hải đăng chiếu sáng xuyên qua màn sương mù. Xem xét tình trạng của thị trấn Innsmouth, bạn tự hỏi mục đích của tín hiệu này là gì. Bạn nghi ngờ không có con tàu nào ngoài biển do thời tiết xấu.</p><p>Đâu đó bên trong chỗ này là bằng chứng bạn tìm thấy vài tuần trước. Bạn nghi ngờ rằng Oceiros—kẻ đã bắt bạn và bỏ mặc bạn trong cái hố đó cho đến chết—cũng cư trú bên trong. \"Cậu đã sẵn sàng chưa?\" Đặc vụ Harper hỏi. \"Chúng ta không có lối thoát thực sự ở đây, nếu mọi chuyện đi theo chiều hướng xấu. Hãy chuẩn bị cho bất cứ gì có thể xảy ra.\"</p><p>Bạn gật đầu. Bây giờ đã quá muộn để quay lại. Một cách kiên định, bạn tiến về phía vách đá. Bằng cách nào đi chăng nữa, chuyện này sẽ kết thúc vào ngày hôm nay.</p>"
   },
   "flashback12": {
     "title": "Hồi tưởng XII"
@@ -31,5 +35,10 @@
     "resolution4": {
       "title": "Kết thúc thứ 4"
     }
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Chìa khóa"
+    }
+  ]
 }

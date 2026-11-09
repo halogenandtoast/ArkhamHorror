@@ -13,13 +13,16 @@
     },
     "explorationDeck": "Tạo chồng bài khám phá. Điều này được thực hiện bằng cách lấy lá bài Steps of Yoth và ngẫu nhiên 4 trong 8 lá bài một mặt còn lại được đặt một bên hồi đầu và xào chúng lại với nhau.",
     "currentDepth": "Đặt 1 token tài nguyên lên lá bài tham chiếu của màn chơi, dưới phần \"Độ Sâu Hiện Tại.\" Cho phần còn lại của màn chơi, số lượng tài nguyên dưới phần \"Độ Sâu Hiện Tại\" đại diện cho mức độ sâu hiện tại. (Xem thêm phần \"Độ Sâu\" ở dưới.)",
-    "poisoned": "Đặt mỗi điểm yếu Poisonsed đang không ở trong chồng bài của một điều tra sang một bên."
+    "poisoned": "Đặt mỗi điểm yếu Poisonsed đang không ở trong chồng bài của một điều tra sang một bên.",
+    "setOutOfPlay": "Đặt lá bài Relic of Ages (*Repossess the Past*) sang một bên, ngoài khu vực chơi."
   },
   "depthLevel": {
-    "title": "Độ Sâu"
+    "title": "Độ Sâu",
+    "body": "<p class='basic'>Trong suốt màn chơi này, số lượng tài nguyên có trên “Độ sâu hiện tại” trên lá bài tham chiếu của màn chơi cho biết mức độ sâu hiện tại. Khi các điều tra viên tiến sâu hơn vào Yoth bằng cách hoàn thành Act 1, các tài nguyên sẽ được thêm vào cấp độ sâu hiện tại và trò chơi tiếp tục cho đến khi các điều tra viên đạt đến một cấp độ sâu nhất định hoặc bị hạ gục. Các cấp độ sâu hơn của Yoth càng nguy hiểm hơn, nhưng các điều tra viên có thể tiếp cận cấp độ càng sâu thì kết quả của màn chơi này sẽ càng tốt hơn. Bản thân mức độ sâu hiện tại không có tác dụng trò chơi; tuy nhiên, một số hiệu ứng của các lá bài encounter có thể thay đổi hoặc trở nên mạnh hơn tùy thuộc vào độ sâu hiện tại.</p>"
   },
   "pursuit": {
-    "title": "Truy Đuổi"
+    "title": "Truy Đuổi",
+    "body": "<p class='basic'>Một số lá bài trong màn chơi này đề cập đến một khu vực được gọi là “khu vực truy đuổi”. Khu vực truy đuổi là khu vực nằm bên ngoài khu vực chơi, kế bên chồng bài act và agenda, nơi mà kẻ địch có thể tiến vào và rời đi thông qua hiệu ứng lá bài. Nói chung, kẻ địch đang được chơi sẽ di chuyển đến khu vực truy đuổi bất cứ khi nào điều tra viên đạt đến cấp độ sâu tiếp theo. _Mặc dù khu vực truy đuổi nằm ngoài khu vực chơi nhưng bất cứ khi nào kẻ địch di chuyển đến khu vực truy đuổi, kẻ địch sẽ giữ tất cả token và bài đính kèm._ Kẻ địch trong khu vực truy đuổi được coi là “đang truy đuổi”. Kẻ địch đang truy đuổi được coi là không được chơi và không thể bị ảnh hưởng bởi bài của người chơi hoặc hành động của điều tra viên. Tuy nhiên, những kẻ địch đang truy đuổi có thể tham gia lại màn chơi bằng nhiều khả năng của các lá bài.</p>"
   },
   "label": {
     "chooseYigsFury": "Các điều tra viên có thể chọn số lượng kiểm đếm dưới phần \"Cơn giận dữ của Yig.\" Con số càng nhỏ được chọn, màn chơi càng an toàn và dễ dàng."

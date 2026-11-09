@@ -18,7 +18,8 @@
   },
   "setup": {
     "beginPlay": "Mỗi điều tra viên bắt đầu chơi tại Marrakesh Railway Station.",
-    "setOutOfPlay": "Đặt các lá bài sau sang một bên, out of play: kẻ địch Amaranth hai mặt, kẻ địch Razin Farhi, kẻ địch Khalid, cả hai bản sao của kẻ địch Ancient Raider, chìa khóa The Last Blossom, và lá bài story “Save the Civilians / Aftermath” hai mặt."
+    "setOutOfPlay": "Đặt các lá bài sau sang một bên, out of play: kẻ địch Amaranth hai mặt, kẻ địch Razin Farhi, kẻ địch Khalid, cả hai bản sao của kẻ địch Ancient Raider, chìa khóa The Last Blossom, và lá bài story “Save the Civilians / Aftermath” hai mặt.",
+    "civilians": "Đối với mỗi địa điểm đang trong trò chơi, đặt số resource lên đó bằng số lượng điều tra viên cộng thêm một, dưới dạng civilians *(xem “Civilians,” bên dưới)*. Sau đó, kiểm tra Nhật ký Chiến dịch:"
   },
   "resolutions": {
     "noResolution": {

@@ -59,7 +59,7 @@ export interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits<{ refresh: [] }>()
 const store = useDbCardStore()
-const { t, tm } = useI18n()
+const { t, te, tm } = useI18n()
 
 type LogTab = 'log' | 'investigators' | 'rules' | 'achievements' | 'about' | `additional:${number}`
 const activeTab = ref<LogTab>('log')
@@ -300,6 +300,11 @@ const remembered = computed(() => {
 // duplicating it. The section is shown only while that scenario is in play.
 type SpecialRule = { title?: string; bodyKey: string }
 
+/* A partial translation carries the whole array -- its length is read from the active
+locale -- but not necessarily every title, so ask English before dropping a heading.
+`t` on the key already falls back there; only this presence check needed telling. */
+const hasRuleTitle = (rule: any, key: string) => !!rule?.title || te(`${key}.title`, 'en')
+
 /* Without that array, the rules are read off the blocks the backend already
 reads out during setup -- `<scenario>.rules.<name>` behind the `additionalRules`
 helper, and a campaign's own `additionalRulesAndClarifications` -- so a rule the
@@ -326,7 +331,7 @@ const rulesAtScope = (scope: string | null): SpecialRule[] => {
   const raw = tm(key) as unknown
   if (Array.isArray(raw)) {
     return raw.map((rule: any, i: number) => ({
-      title: rule.title ? formatContent(t(`${key}[${i}].title`)) : undefined,
+      title: hasRuleTitle(rule, `${key}[${i}]`) ? formatContent(t(`${key}[${i}].title`)) : undefined,
       bodyKey: `${key}[${i}].body`,
     }))
   }
@@ -372,7 +377,7 @@ const keywordsAtScope = (scope: string | null): KeywordsSection | null => {
   return {
     title: t(`${key}.title`),
     rules: entries.map((rule: any, i: number) => ({
-      title: rule.title ? formatContent(t(`${key}.entries[${i}].title`)) : undefined,
+      title: hasRuleTitle(rule, `${key}.entries[${i}]`) ? formatContent(t(`${key}.entries[${i}].title`)) : undefined,
       bodyKey: `${key}.entries[${i}].body`,
     })),
   }

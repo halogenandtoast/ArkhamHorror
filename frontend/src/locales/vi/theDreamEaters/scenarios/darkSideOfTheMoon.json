@@ -4,7 +4,11 @@
     "putLocations": "Đặt vị trí City of the Moon-Beasts, Temple of the Moon Lizard, Moon-Forest, và The Dark Crater vào chơi.",
     "setOtherLocationsAside": "Đặt tất cả các địa điểm khác sang một bên, ngoài màn chơi.",
     "setCardsAside": "Đặt những lá bài sau một bên, ngoài khu vực chơi: kẻ địch Moon Lizard, lá bài tài sản Virgil Gray *(Truly Inspired)*, lá bài tài sản The Captain, and điểm yếu False Awakening.",
-    "buildEncounterDeck": "Xáo trộn các lá bài encounter còn lại để tạo thành chồng bài encounter."
+    "buildEncounterDeck": "Xáo trộn các lá bài encounter còn lại để tạo thành chồng bài encounter.",
+    "checkCaptured": "Kiểm tra Nhật ký Chiến dịch.",
+    "capturedInvestigatorsBegin": "Mỗi điều tra viên bị bắt giữ bắt đầu chơi tại Moon-Beast Galley. Cho mỗi điều tra viên bắt đầu màn chơi tại Moon-Beast Galley, đặt thêm 2 manh mối vào nó (từ kho manh mối).",
+    "checkRandolph": "Kiểm tra Nhật ký Chiến dịch.",
+    "placeAlarmLevel": "Đặt một doom lên mỗi lá bài điều tra viên. Doom này đại diện cho mức độ báo động hiện tại (xem phần Mức độ Báo động bên dưới). Nó không được tính là doom và không tính vào ngưỡng doom của agenda hiện tại."
   },
   "intro": {
     "title": "Màn III–A: Dark Side of the Moon"
@@ -18,6 +22,18 @@
   "resolutions": {
     "resolution1": {
       "title": "Kết thúc thứ nhất"
+    }
+  },
+  "specialRules": [
+    {
+      "title": "Mức độ Báo động",
+      "body": "<p class='basic'>Việc chuẩn bị màn chơi này hướng dẫn người chơi đặt 1 doom lên mỗi lá bài điều tr viên, đánh dấu \"mức độ báo động\" hiện tại của họ. Khi các điều tra viên cố gắng thoát khỏi sự bắt giữ của các con thú mặt trăng, mức báo động tương ứng của họ có thể tăng hoặc giảm dựa trên hành động và quyết định của họ. Mức báo động cao hơn có nghĩa là bạn gần hơn với việc bị phát hiện, điều này sẽ cản trở đáng kể những nỗ lực trốn thoát của bạn. Nếu một hiệu ứng làm tăng mức báo động của điều tra viên theo bất kỳ số lượng nào, hãy đặt số doom tương ứng vào lá bài điều tra viên đó để thể hiện điều này. Tương tự như vậy, nếu một hiệu ứng làm giảm mức báo động của điều tra viên bằng bất kỳ số lượng nào, hãy loại bỏ số doom tương ứng khỏi lá bài điều tra viên đó. Mặc dù nó được đánh dấu bằng cách sử dụng token doom, mức độ báo động của điều tra viên không phải là doom và không được tính vào ngưỡng doom của agenda. Mức độ báo động của điều tra viên bản thân nó không có tác dụng, nhưng nó có thể thay đổi hoặc tăng cường các hiệu ứng của các lá bài encounter khác.</p>"
+    }
+  ],
+  "rules": {
+    "alarmLevel": {
+      "title": "Mức độ Báo động",
+      "body": "<p class='basic'>Việc chuẩn bị màn chơi này hướng dẫn người chơi đặt 1 doom lên mỗi lá bài điều tr viên, đánh dấu \"mức độ báo động\" hiện tại của họ. Khi các điều tra viên cố gắng thoát khỏi sự bắt giữ của các con thú mặt trăng, mức báo động tương ứng của họ có thể tăng hoặc giảm dựa trên hành động và quyết định của họ. Mức báo động cao hơn có nghĩa là bạn gần hơn với việc bị phát hiện, điều này sẽ cản trở đáng kể những nỗ lực trốn thoát của bạn. Nếu một hiệu ứng làm tăng mức báo động của điều tra viên theo bất kỳ số lượng nào, hãy đặt số doom tương ứng vào lá bài điều tra viên đó để thể hiện điều này. Tương tự như vậy, nếu một hiệu ứng làm giảm mức báo động của điều tra viên bằng bất kỳ số lượng nào, hãy loại bỏ số doom tương ứng khỏi lá bài điều tra viên đó. Mặc dù nó được đánh dấu bằng cách sử dụng token doom, mức độ báo động của điều tra viên không phải là doom và không được tính vào ngưỡng doom của agenda. Mức độ báo động của điều tra viên bản thân nó không có tác dụng, nhưng nó có thể thay đổi hoặc tăng cường các hiệu ứng của các lá bài encounter khác.</p>"
     }
   }
 }

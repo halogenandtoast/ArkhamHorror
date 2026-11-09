@@ -6,6 +6,9 @@
         "oldJob": "*Lấy lại công việc cũ của bạn, bằng bất cứ giá nào.*",
         "highRoad": "*Chọn con đường cao thượng. Nó không đáng đâu.*"
       }
+    },
+    "toeTheLine": {
+      "choose": "Bạn phải quyết định (chọn một):"
     }
   },
   "setup": {
@@ -17,14 +20,16 @@
     "starSpawn": "Xào các kẻ địch từ bộ encounter *Star Spawn* và loại bỏ ngẫu nhiên 2 lá khỏi trò chơi. Đặt phần còn lại sang một bên, out of play.",
     "addFloodTokens": "Thêm token lũ lụt vào kho chứa token.",
     "floodBottomRow": "Tăng flood level của ba địa điểm Vault Chamber ở hàng dưới cùng.",
-    "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu."
+    "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu.",
+    "buildEncounterDeck": "Xào các lá bài encounter còn lại để xây dựng chồng bài encounter."
   },
   "theVaultCore": {
     "title": "Màn Chuyển tiếp: The Vault Core",
     "label": {
       "pushTheButton": "*Nhấn nút.*",
       "leaveItAlone": "*Để nó yên.*"
-    }
+    },
+    "choose": "Bạn phải quyết định (chọn một):"
   },
   "resolutions": {
     "resolution1": {
@@ -38,6 +43,9 @@
         "playItSafe": "*Chơi an toàn.*",
         "playBothSides": "*Chơi cả hai phe để kiếm chác tối đa.*"
       }
+    },
+    "goodMoney": {
+      "choose": "Bạn phải quyết định (chọn một):"
     }
   }
 }

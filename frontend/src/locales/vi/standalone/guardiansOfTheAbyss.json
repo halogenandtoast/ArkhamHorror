@@ -1,10 +1,23 @@
 {
   "rules": {
     "storyCards": {
-      "title": "Lá bài Cốt truyện"
+      "title": "Lá bài Cốt truyện",
+      "body": "<p class='basic'>Các lá bài cốt truyện (story cards) là một kiểu bài mới trong màn chơi này. Những lá bài này đóng vai trò như một cách để bổ sung các câu chuyện và thường xuất hiện ở mặt còn lại của một lá bài màn chơi khác. Khi bạn được hướng dẫn xử lý một lá bài cốt truyện, hãy đọc nội dung cốt truyện của nó và giải quyết hiệu ứng của nó, nếu có. (Lưu ý: Khi một vị trí hoặc một kẻ địch bị lật sang mặt cốt truyện của nó ở mặt còn lại, vị trí hoặc kẻ địch đó vẫn được xem là đang được chơi trong khi lá bài cốt truyện được xử lý.)</p>"
     },
     "strengthOfTheAbyss": {
       "body": "<p class='basic'>Trong scenario này, các resource trên lá bài scenario reference đại diện cho sức mạnh hiện tại của vực thẳm. Khi bạn được hướng dẫn thêm sức mạnh vào vực thẳm hoặc loại bỏ sức mạnh khỏi vực thẳm, hãy điều chỉnh số lượng resource token trên lá bài scenario reference cho phù hợp. Bản thân sức mạnh của vực thẳm không có hiệu ứng trò chơi nội tại, mặc dù một số hiệu ứng của lá bài encounter có thể mạnh lên hoặc thay đổi tùy thuộc vào sức mạnh hiện tại của vực thẳm. Hãy cẩn thận—khi vực thẳm mạnh lên, các thế lực chống lại bạn cũng vậy. Nếu nó trở nên quá mạnh, bạn chắc chắn sẽ thất bại với tư cách là Guardians of the Abyss.</p>"
+    },
+    "takenByTheAbyss": {
+      "body": "<p class='basic'>Nếu một hiệu ứng nói rằng một điều tra viên hoặc asset [[Ally]] bị đánh bại đã “taken by the abyss,” nhân vật đó đã dính một lời nguyền khiến họ rơi vào trạng thái hôn mê. Khi một điều tra viên hoặc asset [[Ally]] taken by the abyss, trước tiên hãy thêm 1 sức mạnh vào vực thẳm. Sau đó, nếu lá bài đó là unique, hãy ghi vào Nhật ký Chiến dịch rằng “(tên lá bài) was taken by the abyss.” Một điều tra viên đã taken by the abyss được xem như đã bị giết hoặc bị _insane_. Ngoài ra, trong phần còn lại của campaign, người chơi không thể chơi các bản sao của bất kỳ asset [[Ally]] unique nào đã taken by the abyss.</p>"
+    }
+  },
+  "label": {
+    "usurpTheNight": {
+      "proceed": "Chuyển tới Resolution 3.",
+      "refuse": "Từ chối."
+    },
+    "defeatingXzharah": {
+      "proceed": "Chuyển tới Resolution 2."
     }
   }
 }

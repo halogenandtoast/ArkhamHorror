@@ -17,7 +17,8 @@
     "tellOceirosEverything": "Nói cho Oceiros mọi thứ."
   },
   "intro1": {
-    "title": "Màn VII: Hang ổ của Dagon"
+    "title": "Màn VII: Hang ổ của Dagon",
+    "body": "<center>THỨ NĂM, NGÀY 15 THÁNG 9 NĂM 1927</center> <center> MỘT TUẦN TRƯỚC</center> Bạn đứng bên ngoài những bậc thang bằng đá cẩm thạch nứt nẻ dẫn đến hội trường của Dòng Dagon bí truyền. Tất cả bằng chứng đã dẫn bạn đến đây. Dù chuyện gì đang xảy ra ở thị trấn này thì Dòng này đứng đằng sau nó. Bạn chắc chắn về điều đó… mặc dù mục tiêu cuối cùng của họ vẫn là một bí ẩn. Thị trấn yên tĩnh đến lạ thường khi bạn đứng trước lối vào của tòa nhà. Ngày xưa, nơi này có thể rất nổi bật và sang trọng. Nhiều năm không tu sửa và thiệt hại do lũ lụt đã khiến nó gần như bị hủy hoại. Lớp sơn màu trắng một thời của nó giờ xám xịt và bong tróc, nhiều cây cột bên ngoài lối vào đang bắt đầu vỡ vụn. Tuy nhiên, nó vẫn là một trong những nơi đáng sợ hơn cả ở thị trấn Innsmouth, thể hiện uy quyền bất chấp tình trạng suy tàn của nó. Không, không phải uy quyền – thứ gì đó đen tối hơn. Một mối đe dọa lờ mờ, không nói nên lời. \"Cậu đã sẵn sàng chưa?\" Đặc vụ Dawson hỏi. Phong thái điềm tĩnh thường ngày của ông ấy đã biến mất, thay vào đó là vẻ nghiêm nghị thiếu hài hước khiến bạn mất cảnh giác. \"Chính là nó. Đây là nơi chúng ta sẽ tìm thấy câu trả lời.\" Bạn không chắc chắn lắm. Mọi đầu mối khác mà bạn đã đi theo đều chỉ dẫn đến nhiều câu hỏi hơn."
   },
   "intro2": {
     "title": "Màn VII: Hang ổ của Dagon"
@@ -44,5 +45,14 @@
     "resolution4": {
       "title": "Kết thúc thứ 4"
     }
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Sử dụng Chìa khóa",
+      "body": "<p class='basic'>Trong màn chơi này, các điều tra viên có thể được hướng dẫn sử dụng 1 hoặc nhiều chìa khóa. Chỉ có điều tra viên kiểm soát được chìa khóa mới có thể sử dụng nó. Các chìa khóa đã sử dụng được đặt trên lá bài tham chiếu màn chơi.</p>"
+    },
+    {
+      "title": "Chìa khóa"
+    }
+  ]
 }

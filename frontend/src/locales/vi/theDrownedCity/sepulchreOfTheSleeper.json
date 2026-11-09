@@ -9,7 +9,8 @@
   "setup": {
     "placeLocations": "Đặt Dreamer's Rest và mỗi bản sao của Sigil-Carved Alcove vào chơi.",
     "startAt": "Mỗi điều tra viên bắt đầu chơi tại Dreamer's Rest.",
-    "buildAgendaDeck": "Xây dựng một agenda deck đặc biệt sử dụng Beneath the City làm agenda đầu tiên và Cthulhu Awakened làm agenda thứ hai. Chúng thay thế cho act deck và agenda deck."
+    "buildAgendaDeck": "Xây dựng một agenda deck đặc biệt sử dụng Beneath the City làm agenda đầu tiên và Cthulhu Awakened làm agenda thứ hai. Chúng thay thế cho act deck và agenda deck.",
+    "buildEncounterDeck": "Xào các lá bài encounter còn lại để xây dựng chồng bài encounter."
   },
   "rules": {
     "disturbance": {
@@ -18,7 +19,8 @@
   },
   "resolutions": {
     "investigatorDefeat": {
-      "title": "Điều tra viên bị hạ gục"
+      "title": "Điều tra viên bị hạ gục",
+      "drivenInsane": "Mỗi điều tra viên bị đánh bại đều bị <b>insane</b>. Nếu không có điều tra viên nào sống sót, các điều tra viên thua campaign."
     },
     "resolution1": {
       "title": "Kết thúc thứ nhất"

@@ -24,5 +24,13 @@
     "resolution4": {
       "title": "Kết thúc thứ 4"
     }
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Sự liền kề của các địa điểm trong Realm of the Outsiders"
+    },
+    {
+      "title": "Các địa điểm trong Shadows"
+    }
+  ]
 }

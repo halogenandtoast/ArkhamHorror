@@ -12,7 +12,9 @@
     "chamberOfRainAndSorrows": "Đặt vị trí Chamber of Rain và Chamber of Sorrows vào màn chơi. Ngẫu nhiên chọn một điều tra viên bắt đầu màn chơi tại Chamber of Rain. Các điều tra viên khác bắt đầu màn chơi tại Chamber of Sorrows.",
     "chamberOfNightAndRegret": "Đặt vị trí Chamber of Night và Chamber of Regret vào màn chơi. Mỗi điều tra viên bắt đầu màn chơi tại vị trí Chamber of Night",
     "setAside": "Đặt các lá bài sau sang một bên, ngoài khu vực chơi: Key of Mysteries, Mysterious Syringe, Eixodolon, Eixodolon’s Pet, Rot Diagram, Hunger Diagram, Decay Diagram, 2 bản sao của Faceless Abductor, và mỗi vị trí khác.",
-    "eixodolonsNote": "Trưởng nhóm có quyền kiểm soát Eixodolon’s Note."
+    "eixodolonsNote": "Trưởng nhóm có quyền kiểm soát Eixodolon’s Note.",
+    "keyOfMysteries": "Bởi vì bạn đang chơi chế độ <i>Single Group</i>, đặt lá bài Key of Mysteries được để một bên hồi đầu vào chơi tại vị trí Chamber of Secrets.",
+    "hiddenChamberOfSecrets": "Bởi vì bạn đang chơi chế độ <i>Single Group</i>, ngẫu nhiên chọn 1 trong 3 lá bài Chamber of Secrets và đặt nó bên dưới lá bài scenario reference, mà không nhìn vào mặt để lộ của nó."
   },
   "skull": {
     "takeHorror": "Nhận 1 horror."

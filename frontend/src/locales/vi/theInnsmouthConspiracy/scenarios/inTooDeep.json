@@ -9,7 +9,8 @@
     "setAsideCards": "Đặt các lá bài sau một bên, nằm ngoài khu vực chơi: 2 bản sao của Ravager from the Deep, 2 bản sao của Young Deep One, Joe Sargent, Teachings of the Order và kẻ địch Innsmouth Shoggoth.",
     "angryMob": "Tìm trong bộ sưu tập lá bài Angry Mob *(The Innsmouth Conspiracy card #62b)* và đặt nó một bên, ngoài khu vực chơi. (Lá bài này là mặt bên kia của lá bài \"Finding Agent Harper\".)",
     "floodTokens": "Thêm token lũ lụt vào kho chứa token.",
-    "increaseFloodLevel": "Tăng mực nước lũ ở từng địa điểm sau: The House on Water Street, Innsmouth Harbour và Desolate Coastline."
+    "increaseFloodLevel": "Tăng mực nước lũ ở từng địa điểm sau: The House on Water Street, Innsmouth Harbour và Desolate Coastline.",
+    "outForBlood": "Kiểm tra Nhật ký Chiến dịch cho từng kẻ địch [[Suspect]] hết máu và kích hoạt từng khả năng revelation của chúng mà không đặt manh mối lên chúng."
   },
   "label": {
     "removeCultist": "Loại bỏ {'{'}cultist{'}'}",
@@ -17,7 +18,8 @@
     "removeElderThing": "Loại bỏ {'{'}elderThing{'}'}"
   },
   "intro": {
-    "title": "Màn III: Tiến Vào Sâu"
+    "title": "Màn III: Tiến Vào Sâu",
+    "body": "<p>Biển dâng liên tục khi bạn đi dọc theo bờ biển về phía thị trấn Innsmouth. Mặt trời và mặt trăng thẳng hàng trên đường chân trời xa xôi, đe dọa một tương lai ảm đạm, không chắc chắn.</p><p>Bạn nhớ cách bố trí của thị trấn và một số khuôn mặt lạ mà bạn đã gặp trong vài ngày đầu tiên ở đó, nhưng không có gì xảy ra từ đó đến khi thức dậy trong cái hố ngập nước đó. Đặc vụ Harper đã cố gắng lấp đầy trí nhớ của bạn, nhưng với rất nhiều khoảng trống trong trí nhớ của bạn, mỗi lời giải thích chỉ khiến bạn bối rối hơn nữa.</p><p>\"Kể từ khi cậu đến Innsmouth, mọi thứ chỉ trở nên tồi tệ hơn. Nó bắt đầu với người dân địa phương. Mỗi ngày, họ trở nên ồn ào và thù địch hơn, đặc biệt là với những người ngoài như cậu và tôi. Cậu có nhớ một số người trong số họ trông buồn nôn như thế nào không? Da nhầy nhụa, xám xịt? Môi rộng, mắt lồi, đại loại như vậy?\"</p><p>Bạn gật đầu. Bây giờ bạn đã nhớ, bạn gần như ước mình không nhớ còn hơn. Đó cũng không chỉ là vẻ ngoài của họ. Giọng nói khàn khàn của họ kêu lên những âm tiết gần như không giống với lời nói của con người, và họ có mùi cá thối rữa.</p><p>\"Họ là những người đã khuấy động rắc rối gần đây. Và đó không phải là tất cả. Có những sinh vật khác lượn lờ xung quanh thị trấn Innsmouth gần đây. Tôi chắc rằng cậu cũng đã nhìn thấy chúng.\" Cô rùng mình. \"Có một mối liên hệ nào đó giữa Dòng Dagon bí truyền và những... thứ đó. Chưa chắc chắn là điều gì, nhưng chúng ta sẽ đi đến tận cùng của nó nếu...\"</p><p>Giọng nói của đặc vụ Harper vang lên khi cô leo lên đỉnh mũi đất. Bất cứ điều gì khiến cô ấy nhìn chằm chằm không thể là điều tốt. Bạn lên đến đỉnh, kéo mình qua sườn núi và trông thấy sự tàn phá mà cô ấy cũng đang thấy.</p><p>Thị trấn Innsmouth đã bị xâm chiếm. Những sinh vật tương tự mà bạn gặp phải trong cái hố hiến tế đó lảng vảng trên đường phố - những thứ hôi thối từ đáy biển, hoặc có lẽ xa hơn thế. Chúng tuần tra các con hẻm và ngã tư, tìm kiếm một cái gì đó. Săn lùng. Các rào chắn tạm thời chặn các con đường khác nhau qua thị trấn khi nước từ sông Manuxet tràn ra đường phố.</p><p>\"Không, chuyện này không thể nào...\" Đặc vụ Harper nói nhỏ. Một khoảnh khắc u ám im lặng treo lơ lửng giữa các bạn. Một khoảnh khắc im lặng u ám treo lơ lửng giữa hai người. Rõ ràng là thị trấn Innsmouth không còn an toàn. Bạn thông báo cho Đặc vụ Harper rằng Đặc vụ Dawson đã để xe của anh ta gần xe của cô, tại nhà ga xe lửa bỏ hoang ở rìa phía tây của thị trấn Innsmouth. Cô gật đầu, hiểu rõ. \"Đúng vậy. Chúng ta phải nhanh chóng đến phía bên kia của thị trấn.\"</p><p>Bầu trời phía trên bạn được tắm trong màu đỏ thẫm dữ dội. Nếu may mắn, sẽ không còn màu đó bị đổ ngày hôm nay.</p>"
   },
   "flashback5": {
     "title": "Hồi tưởng V"
@@ -35,5 +37,13 @@
     "resolution1": {
       "title": "Kết thúc thứ nhất"
     }
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Rào chắn"
+    },
+    {
+      "title": "Chìa khóa"
+    }
+  ]
 }

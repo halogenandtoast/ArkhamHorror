@@ -7,10 +7,13 @@
     "divingSuits": "Mỗi điều tra viên *sở hữu bộ đồ lặn* bắt đầu chơi với lá bài Diving Suit tong khu vực chơi của họ.",
     "removeUnusedDivingSuits": "Loại bỏ từng Diving Suit không được sử dụng khỏi màn chơi.",
     "setAsideCards": "Đặt kẻ địch Lloigor, Aquatic Abomination, Hydra và Dagon sang một bên, ngoài khu vực chơi.",
-    "floodTokens": "Thêm token lũ lụt vào kho chứa token."
+    "floodTokens": "Thêm token lũ lụt vào kho chứa token.",
+    "checkCampaignLog": "Kiểm tra Nhật ký Chiến dịch.",
+    "actDeck": "Khi xây dựng chồng bài act, chỉ sử dụng phiên bản City of the Deep (v.I) của act 2a. Đặt City of the Deep (v.II) và City of the Deep (v.III) sang một bên, ngoài khu vực chơi."
   },
   "intro": {
-    "title": "Màn VIII: Tiến Vào Vòng Xoáy"
+    "title": "Màn VIII: Tiến Vào Vòng Xoáy",
+    "body": "<p>Kế hoạch của bạn rất đơn giản. Ngu ngốc, nhưng đơn giản. Hiểu biết bạn đã thu thập được dẫn bạn đến kết luận rằng Dòng Dagon bí truyền là nguyên nhân gây ra thủy triều dâng cao và sự xuất hiện của những con \"Deep Ones\" kinh khủng. Không chỉ vậy, trong suốt vài thập kỷ qua, Dòng đã biến người dân thị trấn thành những sinh vật khủng khiếp hơn, sử dụng chúng để xâm nhập vào thị trấn Innsmouth từ bên trong. Nhưng tệ hơn hết, thực thể mà giáo phái tôn thờ-Dagon-chỉ là một trong hai. Bạn đời của nó, Hydra, vẫn đang ngủ say ở vực sâu bên dưới thị trấn Innsmouth, chờ đợi được đánh thức và khẳng định quyền sở hữu của mình đối với đại dương vô tận.</p><p>Đây là những kết luận dẫn đến kế hoạch của bạn: Du hành một lần nữa đến Rạn San Hô Quỷ, đi xuống thành phố của Deep Ones ẩn dưới đáy đại dương và chấm dứt kế hoạch của Deep Ones một lần và mãi mãi. Đặc vụ Harper giúp bạn chuẩn bị, chất đồ đạc của bạn lên chiếc thuyền mà bạn đã đánh cắp được từ những gì còn sót lại của bến cảng Innsmouth. “Chúng ta chỉ có một cơ hội duy nhất để làm điều này,” Harper nói. “Tôi không nghĩ mình cần phải nhắc cậu điều gì có thể xảy ra nếu chúng ta thất bại.” Cô ấy nhìn thẳng vào đống tàn tích bị ngập lụt của Innsmouth. \"Cậu đã sẵn sàng chưa?\"</p>"
   },
   "flashback14": {
     "title": "Hồi tưởng XIV"
@@ -45,5 +48,10 @@
     "label": {
       "continuePlaying": "Tiếp tục chơi."
     }
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Chìa khóa"
+    }
+  ]
 }

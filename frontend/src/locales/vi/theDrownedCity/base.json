@@ -31,6 +31,28 @@
     "floodedNeighborhoods": "Các khu phố bị ngập lụt",
     "cthulhuWasDrivenAway": "Cthulhu đã bị xua đuổi.",
     "cthulhuAnnihilatedTheCityOfArkham": "Cthulhu đã hủy diệt thành phố Arkham.",
-    "cthulhuWasBanished": "Cthulhu đã bị trục xuất."
+    "cthulhuWasBanished": "Cthulhu đã bị trục xuất.",
+    "theInvestigatorsDiscoveredAnAlienLanguage": "Các điều tra viên đã khám phá ra một ngôn ngữ ngoài hành tinh.",
+    "theCreatureWasDefeated": "Sinh vật đã bị đánh bại."
+  },
+  "specialRules": [
+    {
+      "title": "Token Ngập Lụt",
+      "body": "@:theDrownedCity.additionalRulesAndClarifications.floodTokens"
+    },
+    {
+      "title": "Cổ vật",
+      "body": "@:theDrownedCity.additionalRulesAndClarifications.artifacts"
+    },
+    {
+      "title": "Ký tự Ngoại lai",
+      "body": "@:theDrownedCity.additionalRulesAndClarifications.alienGlyphs"
+    },
+    {
+      "body": "@:theDrownedCity.newKeywords.body"
+    }
+  ],
+  "prologue": {
+    "title": "Lời mở đầu"
   }
 }

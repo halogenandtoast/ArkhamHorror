@@ -1,7 +1,7 @@
 {
   "specialRules": [
     {
-      "title": "Barriers",
+      "title": "Rào chắn",
       "body": "<p class='basic'>Một số khả năng bài cho phép các điều tra viên dựng barrier xung quanh nông trại. Các barrier chặn sự di chuyển của kẻ địch.</p><ul><li>Để dựng một barrier, đặt 1 tài nguyên token *(từ token pool)* giữa vị trí của bạn và một vị trí được kết nối, làm một barrier. Nếu một hiệu ứng bài hướng dẫn bạn đặt một barrier “tại” vị trí của bạn, hãy chọn một vị trí liền kề và đặt barrier giữa vị trí của bạn và vị trí đã chọn. Barrier này được coi là “tại” cả hai vị trí đối với các hiệu ứng bài.</li><li>Không có giới hạn về số lượng barrier giữa các vị trí.</li><li>Khi một kẻ địch đáng lẽ di chuyển thông qua một keyword *(ví dụ: hunter hoặc patrol)* và có một hoặc nhiều barrier giữa vị trí của nó và vị trí nó đang di chuyển tới, loại bỏ _một_ trong số các barrier đó, sau đó thay vào đó hủy bỏ các hiệu ứng của việc di chuyển.</li><li>Những kẻ địch bỏ qua barrier không thực hiện bất kỳ hiệu ứng nào ở trên *(bao gồm cả việc loại bỏ barrier)*.</li></ul>"
     },
     {
@@ -78,7 +78,7 @@
     "setAside": "Để riêng tất cả 5 treachery Fire! và story asset Ajax ra ngoài khu vực chơi."
   },
   "barriers": {
-    "title": "Barriers",
+    "title": "Rào chắn",
     "body": "<h3>Barriers</h3><p class='basic'>Một số khả năng bài cho phép các điều tra viên dựng barrier xung quanh nông trại. Các barrier chặn sự di chuyển của kẻ địch.</p><ul><li>Để dựng một barrier, đặt 1 tài nguyên token *(từ token pool)* giữa vị trí của bạn và một vị trí được kết nối, làm một barrier. Nếu một hiệu ứng bài hướng dẫn bạn đặt một barrier “tại” vị trí của bạn, hãy chọn một vị trí liền kề và đặt barrier giữa vị trí của bạn và vị trí đã chọn. Barrier này được coi là “tại” cả hai vị trí đối với các hiệu ứng bài.</li><li>Không có giới hạn về số lượng barrier giữa các vị trí.</li><li>Khi một kẻ địch đáng lẽ di chuyển thông qua một keyword *(ví dụ: hunter hoặc patrol)* và có một hoặc nhiều barrier giữa vị trí của nó và vị trí nó đang di chuyển tới, loại bỏ _một_ trong số các barrier đó, sau đó thay vào đó hủy bỏ các hiệu ứng của việc di chuyển.</li><li>Những kẻ địch bỏ qua barrier không thực hiện bất kỳ hiệu ứng nào ở trên *(bao gồm cả việc loại bỏ barrier)*.</li></ul>"
   },
   "decoys": {
@@ -151,7 +151,7 @@
       "body": "<p>_Investigator Defeat_: Điều cuối cùng bạn nhớ trước khi những hình thù ác mộng bủa vây bạn là một cảm giác bình yên tột độ. Ánh trăng bạc nhuộm đẫm trang trại trong một sắc độ đơn điệu rõ rệt khi những sinh vật đó xé toạc da thịt bạn. Trong một khoảnh khắc, bạn nhìn thấy vị trí của mình trong thế giới này, đúng như ý định của Mother Rachel. Bạn chỉ đơn thuần là năng lượng đang được chuyển đổi sang một dạng năng lượng khác.</p><p>Không điều gì khác có vẻ hoàn hảo đến vậy.</p><ul><li>Mỗi điều tra viên bị đánh bại sẽ bị _nuốt chửng_ *(họ bị* _giết_*)*.</li><li>Nếu không còn điều tra viên nào sống sót để tiếp tục chiến dịch, các điều tra viên thua chiến dịch.</li><li>Nếu một resolution khác đã đạt được, các điều tra viên còn lại tiếp tục đến resolution đó.</li><li>Nếu không đạt được resolution nào (mỗi điều tra viên còn sống đều đã resign): Chuyển đến _Resolution 3_.</li></ul>"
     },
     "resolution1": {
-      "title": "Resolution 1",
+      "title": "Kết thúc thứ nhất",
       "body": "<p>_Resolution 1_: \"Làm ơn, hãy nghe tôi,\" Tiến sĩ Marquez cầu xin những người bị bắt giữ. \"Mỗi người trong các bạn đều xứng đáng được sống một cuộc đời trọn vẹn. Chúng tôi có thể giúp! Các bạn có thể nhận được sự chăm sóc ở đất liền.\" Tad nhổ toẹt nước bọt đáp lại. \"Các người đã cướp đi của chúng tôi một đặc ân lớn lao. Chúng tôi đã được chọn.\" Tiến sĩ Marquez chưa kịp trả lời thì một tấm ván gỗ nứt nẻ vung ra từ phía sau, đánh trúng vai cô. Một trong những người bị bắt giơ nó lên quá đầu, trong khi vài người khác xúm lại xung quanh. Tad nhìn vị giáo sư đầy ác ý và gầm gừ, \"Đi ngay.\" Tiến sĩ Marquez dè dặt đứng dậy và bước ra khỏi ngôi nhà. Bạn đi theo cô ấy. \"Lũ ngốc. Chúng ta đã cứu mạng họ,\" cô mỉa mai. Khi bạn rời đi, một cô bé đeo mặt nạ thỏ ló ra từ dưới đống đổ nát. Bạn nhận ra cô bé là Rebecca, con gái của Mother Rachel.</p>",
       "xp5": "Nếu số damage trên story asset The Captives là 0, mỗi điều tra viên nhận 5 điểm kinh nghiệm thưởng.",
       "xp4": "Nếu số damage trên story asset The Captives là 1 hoặc 2, mỗi điều tra viên nhận 4 điểm kinh nghiệm thưởng.",
@@ -160,7 +160,7 @@
       "skipToResolution4": "Chuyển đến _Resolution 4_."
     },
     "resolution2": {
-      "title": "Resolution 2",
+      "title": "Kết thúc thứ hai",
       "body": "<p>_Resolution 2_: Tad đứng giữa ngôi nhà, chiếc áo choàng hội Vale màu trắng-vàng của anh ta nhuốm màu đỏ thẫm. Xung quanh anh ta, những cái xác bị ăn dở của những người bị bắt giữ đã tử nạn được xếp thành một vòng tròn. Khi bạn đến gần, người đàn ông trung niên cười chua chát. \"Tại sao tôi lại được tha, trong khi rất nhiều người khác bị bắt đi?\" Anh ta đưa cả hai tay lên mặt và cười điên dại. \"Tại sao mọi thứ lại sáng thế?!\" anh ta cười khúc khích, cào cấu vào chính đôi mắt của mình. Bạn quay đi và ra ngoài cùng Tiến sĩ Marquez, người đang khom lưng trên một đống đổ nát. Một cô bé đeo mặt nạ thỏ bò ra từ dưới đống mảnh vỡ. Bạn nhận ra cô bé là Rebecca, con gái của Mother Rachel.</p>",
       "xp3": "Nếu số damage trên story asset The Captives là 5 hoặc 6, mỗi điều tra viên nhận 3 điểm kinh nghiệm thưởng.",
       "xp2": "Nếu số damage trên story asset The Captives là 7 hoặc 8, mỗi điều tra viên nhận 2 điểm kinh nghiệm thưởng.",
@@ -169,11 +169,11 @@
       "skipToResolution4": "Chuyển đến _Resolution 4_."
     },
     "resolution3": {
-      "title": "Resolution 3",
+      "title": "Kết thúc thứ ba",
       "body": "<p>_Resolution 3_: \"Chúng ta không thể ở lại!\" Tiến sĩ Marquez hét lên. Hoàn toàn choáng ngợp, bạn lao ra khỏi cuộc hỗn chiến và chạy vào những cánh đồng ngô. Những cái bóng ác mộng lao qua bạn, kêu la và hú hét. Bạn nghĩ đến những người bị bắt giữ trong ngôi nhà, đang trực tiếp đối mặt với cái chết. Ở rìa xa của cánh đồng, bạn thấy Tiến sĩ Marquez đang ôm một cô bé đeo mặt nạ thỏ. Bạn nhận ra cô bé là Rebecca, con gái của Mother Rachel.</p><ul><li>Cảm giác tội lỗi vì không thể giúp đỡ những người gặp nạn sẽ ám ảnh bạn mãi mãi. Mỗi điều tra viên phải tìm trong bộ sưu tập một basic weakness _Madness_ ngẫu nhiên và thêm nó vào deck của họ.</li><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *tất cả những người bị giam giữ đã bị mất*.</li><li>Tiếp tục đến _Resolution 4_.</li></ul>"
     },
     "resolution4": {
-      "title": "Resolution 4",
+      "title": "Kết thúc thứ 4",
       "body": "<p>_Resolution 4_: Ánh nắng ban mai gay gắt rọi xuống, sáng chói mắt, khi bạn băng qua những cánh đồng để trở về Vale. Những vệt chất lỏng sẫm màu, trơn trượt nhỏ giọt từ những thân cây khô héo khi bạn vạch lối đi qua. Tiến sĩ Marquez dừng lại và luồn tay dưới những chiếc lá giòn rụm. “Cánh đồng này được nhuộm bằng máu. Nhưng tại sao chứ?” Cô lau vết máu vào một chiếc khăn tay và quan sát cánh đồng đang nhỏ giọt. “Thứ quái vật nào lại làm điều này? Kết án tử hình những tín đồ của mình—kể cả con gái ruột. Thật giống như trong Kinh thánh vậy.”</p><p>Rebecca kéo mặt nạ ra và lắc đầu. “Mẹ nói đó là cách của chúng ta. Và mẹ không muốn cháu chết. Mẹ bảo cháu trốn đi. Mẹ nói chúng cháu đang chơi một trò chơi. ‘Hãy thu mình lại thật nhỏ và trốn gần những thùng dầu hỏa. Bọn thú sẽ không ngửi thấy mùi của con ở đó đâu’.”</p><p>“Nhưng tại sao lại đưa cháu đến đây làm gì?” vị giáo sư hỏi.</p><p>“Một số người không muốn đến nhà kho. Nhưng khi mẹ nói với họ rằng cháu cũng sẽ ở đó, họ bảo thế thì được.”</p><p>Cả nhóm chìm vào im lặng khi bạn đi qua một cánh đồng và nhìn thấy Vale một lần nữa, được bao phủ trong sắc vàng dưới ánh bình minh rực rỡ. Đột nhiên, Tiến sĩ Marquez dừng lại và kéo bạn ra một góc. “Chúng ta có thể dùng chuyện này làm đòn bẩy. Rebecca là bằng chứng sống cho sự đạo đức giả của Mother Rachel, dù nghe có vẻ tồi tệ. Mọi người trên Hemlock Isle sẽ có mặt tại Feast tối nay. Nếu chúng ta yêu cầu Rebecca kể cho họ nghe những gì Mother Rachel đã nói với cô bé, chúng ta có thể thuyết phục ít nhất một vài người trong số họ rời đi. Và nếu điều đó không hiệu quả, chúng ta có thể chuồn nhanh về đất liền và nhờ pháp luật can thiệp.”</p><p>Vị giáo sư quay sang Rebecca. “Chúng ta có thể chơi một trò chơi không? Giống như tối qua ấy? Mẹ cháu bảo cô rằng bà ấy muốn cháu trốn cho đến khi Feast bắt đầu.” Cô bé gật đầu. Tiến sĩ Marquez bật ra một tiếng cười khúc khích điên dại: một biểu hiện kỳ lạ, hoàn toàn khác với vẻ điềm tĩnh thường ngày của cô. Bạn cũng phải cố nhịn cười, bất chấp những nỗi kinh hoàng mà bạn vừa chứng kiến.</p><ul><li>Nếu story asset Ajax nằm dưới quyền kiểm soát của một điều tra viên khi scenario này kết thúc, chọn một điều tra viên để thêm nó vào deck của họ trong phần còn lại của chiến dịch. Nó không được tính vào kích thước deck của họ.</li><li>Chọn một điều tra viên để thêm story asset Dr. Rosa Marquez vào deck của họ trong phần còn lại của chiến dịch. Nó không tính vào kích cỡ deck của họ.</li><li>Mỗi điều tra viên nhận số điểm kinh nghiệm bằng giá trị Victory X của mỗi lá bài trong victory display ({xp}). Giờ đây mỗi điều tra viên có thể tiêu số điểm kinh nghiệm được ghi dưới mục \"Unspent Experience\" trong Nhật ký Chiến dịch của bạn.</li><li>Cập nhật Nhật ký Chiến dịch của bạn: Ghi lại *Dr. Marquez có kế hoạch*. Trong mục \"Areas Surveyed\", đánh dấu *Southern Fields*.</li><li>Tiếp tục đến _Prelude: Dawn of the Final Day_.</li></ul>"
     },
     "xp": {

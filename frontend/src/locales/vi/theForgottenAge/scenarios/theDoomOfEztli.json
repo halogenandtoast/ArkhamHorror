@@ -6,7 +6,8 @@
   "setup": {
     "placeLocations": "Đặt vị trí Entryway vào chơi. Mỗi điều viên bắt đầu chơi tại vị trí Entryway.",
     "setAside": "Đặt những lá bài sau một bên, ngoài khu vực chơi: kẻ địch The Harbinger of Valusia, vị trí the Chamber of Time, và tài sản the Relic of Ages.",
-    "poisoned": "Đặt mỗi điểm yếu Poisonsed đang không ở trong chồng bài của một điều tra sang một bên."
+    "poisoned": "Đặt mỗi điểm yếu Poisonsed đang không ở trong chồng bài của một điều tra sang một bên.",
+    "explorationDeck": "Tạo chồng bài khám phá. Việc này được làm bằng cách lấy 5 vị trí [[Ancient]] một mặt và xào chúng vào với nhau, cùng với 1 bản sao của mỗi lá bài treachery sau: Ill Omen, Deep Dark, Final Mistake, Entombed, và Crypt Chill."
   },
   "resolutions": {
     "defeated": {

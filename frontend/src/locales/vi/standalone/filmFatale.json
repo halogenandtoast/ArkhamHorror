@@ -16,7 +16,8 @@
       "shuffleRemaining": "Xào từng lá bài còn lại trong encounter set *Cosmic Journey* vào encounter deck, cùng với encounter discard pile.",
       "reelDeck": "Tập hợp từng lá bài encounter một mặt từ các encounter set *Forgotten Island* và *Abominable Contessa* đã để riêng. Xào chúng lại với nhau để tạo thành “Reel deck.” Đặt Reel deck bên cạnh scenario reference card.",
       "tokens": "Thêm 2 token {'{'}tablet{'}'} vào túi hỗn mang.",
-      "continue": "Tiếp tục chơi."
+      "continue": "Tiếp tục chơi.",
+      "set": "Loại bỏ mỗi kẻ địch khỏi khu vực chơi. Di chuyển mỗi điều tra viên đến Space Set và để mỗi địa điểm [[Set]] khác sang một bên, ngoài khu vực chơi, loại bỏ tất cả token và lá bài tại các địa điểm đó."
     },
     "theForgottenIsland": {
       "locations": "Đặt mỗi vị trí từ chồng bài encounter *Forgotten Island* vào chơi.",
@@ -26,7 +27,8 @@
       "shuffleRemaining": "Xào mỗi lá bài còn lại trong chồng bài encounter *Forgotten Island* vào chồng bài encounter, cùng với encounter discard pile.",
       "reelDeck": "Tập hợp mỗi lá bài encounter một mặt từ các chồng bài encounter *Cosmic Journey* và *Abominable Contessa* đã để riêng. Xào chúng lại với nhau để tạo thành “Reel deck.” Đặt Reel deck cạnh lá bài scenario reference.",
       "tokens": "Thêm 2 token {'{'}elderThing{'}'} vào túi hỗn mang.",
-      "continue": "Tiếp tục chơi."
+      "continue": "Tiếp tục chơi.",
+      "set": "Discard mỗi kẻ địch khỏi cuộc chơi. Di chuyển mỗi điều tra viên đến Jungle Set và đặt mỗi vị trí [[Set]] khác sang một bên, out of play, discard tất cả token và lá bài tại các vị trí đó."
     },
     "theAbominableContessa": {
       "locations": "Đặt mỗi vị trí từ chồng bài encounter *Abominable Contessa* vào chơi.",
@@ -35,7 +37,8 @@
       "shuffleRemaining": "Xào mỗi lá bài còn lại trong chồng bài encounter *Abominable Contessa* vào chồng bài encounter, cùng với encounter discard pile.",
       "reelDeck": "Tập hợp mỗi lá bài encounter một mặt từ các chồng bài encounter *Cosmic Journey* và *Forgotten Island* đã để riêng. Xào chúng lại với nhau để tạo thành “Reel deck”. Đặt Reel deck cạnh lá bài scenario reference.",
       "tokens": "Thêm 2 token {'{'}cultist{'}'} vào túi hỗn mang.",
-      "continue": "Tiếp tục chơi."
+      "continue": "Tiếp tục chơi.",
+      "set": "Discard mỗi kẻ địch khỏi cuộc chơi. Di chuyển mỗi điều tra viên đến Gothis Set và để riêng mỗi vị trí [[Set]] khác, loại khỏi cuộc chơi, discard tất cả token và lá bài tại những vị trí đó."
     }
   },
   "resolutions": {
@@ -54,5 +57,8 @@
     "resolution5": {
       "title": "Giải pháp thứ 5"
     }
+  },
+  "intro": {
+    "body": "<p>Bạn đã đến Hollywood theo yêu cầu từ người liên lạc của mình, nam diễn viên phim câm André Patel. Theo André, có điều gì đó kỳ lạ đang xảy ra ở Lot C. Máy quay và đạo cụ đã biến mất, và một loạt các tai nạn gần như làm đình trệ quá trình sản xuất. Tin đồn lan truyền giữa các diễn viên rằng những bộ phim này bị “nguyền rủa”. Không ai coi trọng chuyện đó cho đến khi một trong những diễn viên được phát hiện đã chết.\\r</p><p>Ánh nắng chiều tà gay gắt chiếu xuống mặt đường nóng bức khi bạn đưa mắt tìm kiếm André trong đám đông. Nửa tá diễn viên quần chúng đeo mặt nạ người ngoài hành tinh vội vã lướt qua bạn, theo sau là một nhân viên hậu đài đang kéo một bàn chân khủng long lớn trên chiếc xe kéo. Ở phía bên kia phim trường, cuối cùng bạn cũng thấy anh ta đang đứng cùng một nhóm ba người sói. Mắt anh ta sáng lên, và anh ta sải bước nhanh nhẹn qua phim trường nhộn nhịp ngay khi nhìn thấy bạn.\\r</p><p>“Cuối cùng thì bạn cũng đến!” anh ta cúi chào. “Tôi đã nghĩ bạn sẽ không bao giờ đến. Và cũng thật đúng lúc! Xin mời, đi theo tôi.” Khi ngôi sao phim câm dẫn bạn đi qua phim trường, bạn bắt gặp những hình ảnh thoáng qua của các bối cảnh khác nhau. A Cosmic Journey có một chiếc tên lửa trông rẻ tiền, một phù thủy mặc áo choàng, và những “người sao Thổ” ngoài hành tinh. Trong khi đó, The Forgotten Island chứa đầy những kim tự tháp được sơn thô kệch và những con khủng long khổng lồ bằng giấy bồi. Một tiếng hét lạnh sống lưng vang lên từ bối cảnh kinh dị gothic của The Abominable Contessa khi bạn đi ngang qua.\\r</p><p>“Tôi không nghĩ những rủi ro gần đây chỉ là do xui xẻo,” André nói với vẻ nghiêm trọng. “Thật không may, danh tiếng của tôi khiến việc nhận được câu trả lời thẳng thắn từ dàn diễn viên và đoàn làm phim trở nên khó khăn. Không ai muốn nói với diễn viên ngôi sao của họ rằng có điều gì đó không ổn trên phim trường. Đó là lý do tại sao tôi cần bạn đi hỏi thăm xung quanh các bối cảnh phim. Xem họ nghĩ điều gì thực sự đang xảy ra.”\\r</p><p>Thái độ của André tươi tỉnh hẳn lên. “Thực ra, chuyện này có thể khá thú vị đấy. Tôi hy vọng bạn sẵn sàng cho nhiệm vụ này.”</p>"
   }
 }

@@ -10,9 +10,14 @@
     "setAside": "Tìm lá bài Tomb of Shadows và Blocked Passage (mỗi lá là mặt để lộ của một vị trí Catacombs). Đặt chúng một bên, ngoài khu vực chơi.",
     "catacombs": {
       "instructions": "Đặt tất cả các vị trí khác một bên tạo thành \"Chồng bài Catacombs.\" (Chồng bài Hầm mộ). Để làm điều này, thực hiện điều sau:",
-      "top": "Sau đó, đặt tất cả vị trí Catacombs còn lại lên trên, theo thứ tự ngẫu nhiên. Tất cả các lá bài trong Chồng bài Catacombs chỉ nên để lộ mặt Catacombs, khiến cho người chơi không phân biệt được chúng."
+      "top": "Sau đó, đặt tất cả vị trí Catacombs còn lại lên trên, theo thứ tự ngẫu nhiên. Tất cả các lá bài trong Chồng bài Catacombs chỉ nên để lộ mặt Catacombs, khiến cho người chơi không phân biệt được chúng.",
+      "bottom": "Xào các lá bài Tomb of Shadows và Blocked Passage đặt một bên hồi đầu và 3 lá vị trí Catacombs cùng với nhau để tạo thành 5 lá bài cuối cùng của Chồng bài Catacombs, mặt Catacombs được lật lên."
     },
-    "theManInThePallidMask": "Người mang điểm yếu The Man in the Pallid Mask tìm lá bài này trong bộ bài của mình và đặt nó một bên, ngoài khu vực chơi."
+    "theManInThePallidMask": "Người mang điểm yếu The Man in the Pallid Mask tìm lá bài này trong bộ bài của mình và đặt nó một bên, ngoài khu vực chơi.",
+    "start": {
+      "instructions": "Kiểm tra Nhật ký Chiến dịch."
+    },
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại vị trí bắt đầu. *(Nhớ kích hoạt hiệu ứng _Forced_ ở vị trí đó khi để lộ nó.)* Nếu \"bạn đã mở một lối đi bí mật,\" chọn 1 vị trí Catacombs liền kề vị trí bắt đầu và để lộ nó."
   },
   "resolutions": {
     "resolution1": {
@@ -21,5 +26,11 @@
     "resolution2": {
       "title": "Kết thúc thứ hai"
     }
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Vị Trí Liền Kề trong Hầm Mộ",
+      "body": "<p class='basic'>Trong màn chơi này, các vị trí sẽ được sắp xếp theo một mô hình định sẵn, với các vị trí mới từ Chồng bài Hầm mộ sẽ xuất hiện ở bên trái, bên phải, bên trên hoặc bên dưới các vị trí hiện có, khi chúng được tiết lộ. Một vị trí được đưa vào chơi ở bên trái, bên phải, bên trên hoặc bên dưới một vị trí khác phải được đặt bên cạnh vị trí đó theo cách chúng được mô tả, và không có vị trí nào khác ở giữa chúng. Vị trí cạnh vị trí khác theo cách này được coi là _liền kề_. Các vị trí chỉ liền kề theo trục dọc và ngang (trái, phải, trên và dưới), và không liền kề theo đường chéo. Trong màn chơi này, các vị trí liền kề được coi là kết nối với nhau. Bạn không thể đưa một vị trí vào chơi khi đã có một vị trí sẵn ở đó. Nếu bạn được lựa chọn đặt một vị trí từ Chồng bài Hầm mộ ở một trong nhiều điểm và một trong những điểm đó bị chiếm bởi một vị trí sẵn có, bạn không thể chọn vị trí đó. Bạn phải chọn một vị trí chưa bị chiếm chỗ, nếu có thể. Nếu tất cả các vị trí được chỉ định đều bị chiếm bởi các vị trí hiện có, hiệu ứng _Forced_ sẽ thất bại và không có vị trí Hầm Mộ mới nào được đưa vào chơi.</p>"
+    }
+  ]
 }

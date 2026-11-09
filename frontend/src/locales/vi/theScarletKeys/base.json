@@ -19,7 +19,11 @@
       "50": "Hồ sơ #50-S",
       "51": "Hồ sơ #51-T",
       "52": "Hồ sơ #52-U",
-      "53": "Hồ sơ #53-V"
+      "53": "Hồ sơ #53-V",
+      "44": "Hồ sơ #44-O",
+      "49": "Hồ sơ #49-R",
+      "54": "Hồ sơ #54-W",
+      "55": "Hồ sơ #55–X"
     }
   },
   "locations": {
@@ -85,6 +89,18 @@
     },
     "YborCity": {
       "subtitle": "Hồ sơ #52-U"
+    },
+    "Nairobi": {
+      "subtitle": "Hồ sơ #54-W"
+    },
+    "Perth": {
+      "subtitle": "Hồ sơ #55–X"
+    },
+    "RioDeJaneiro": {
+      "subtitle": "Hồ sơ #44-O"
+    },
+    "Sydney": {
+      "subtitle": "Hồ sơ #49-R"
     }
   },
   "interludes": {
@@ -153,7 +169,25 @@
     "youHaventSeenTheLastOfTheRedGlovedMan": "Đây chưa phải là lần cuối bạn đụng độ The Red-Gloved Man.",
     "youHaventSeenTheLastOfTheSanguineWatcher": "Bạn sẽ còn gặp lại The Sanguine Watcher.",
     "youHaventSeenTheLastOfTzuSanNiang": "Đây chưa phải là lần cuối bạn chạm trán Tzu San Niang.",
-    "youKnowThePassphrase": "Bạn biết mật khẩu."
+    "youKnowThePassphrase": "Bạn biết mật khẩu.",
+    "agentQuinnHasYourBack": "Agent Quinn yểm trợ bạn.",
+    "alikiIsOnYourSide": "Aliki đang đứng về phía bạn.",
+    "desiIsInYourDebt": "Desi đang nợ bạn.",
+    "eceDoesNotTrustTheCell": "Ece không tin tưởng nhóm.",
+    "eceTrustsTheCell": "Ece tin tưởng nhóm.",
+    "laChicaRojaIsOnYourSide": "La Chica Roja đứng về phía bạn.",
+    "theCellAidedTheKnight": "Nhóm đã hỗ trợ hiệp sĩ.",
+    "theCellFailedToFendOffTheBeast": "Nhóm đã không thể đẩy lùi the Beast.",
+    "theCellHidTheTruthFromTaylor": "nhóm đã giấu sự thật với Taylor.",
+    "theCellIsAssistingAgentSirry": "nhóm đang hỗ trợ Agent Sirry.",
+    "theCellKnowsTheTrueNatureOfTheCoterie": "Nhóm biết bản chất thực sự của Coterie.",
+    "theCellMadeADealWithThorne": "nhóm đã thỏa thuận với Thorne.",
+    "theCellToldTheTruthToTaylor": "tổ đã nói sự thật với Taylor.",
+    "tuwileMasaiIsOnYourSide": "Tuwile Masai đang đứng về phía bạn.",
+    "youHaventSeenTheLastOfAlikiZoniUperetria": "Bạn sẽ còn gặp lại Aliki Zoni Uperetria.",
+    "youHaventSeenTheLastOfLaChicaRoja": "bạn sẽ còn gặp lại La Chica Roja.",
+    "youHaventSeenTheLastOfTheBeastInACowlOfCrimson": "bạn sẽ còn gặp lại the Beast in a Cowl of Crimson.",
+    "youHaventSeenTheLastOfTheClaretKnight": "Bạn sẽ còn gặp lại the Claret Knight."
   },
   "interlude1": {
     "label": {
@@ -213,5 +247,26 @@
   },
   "epilogue": {
     "title": "Phần kết"
+  },
+  "specialRules": [
+    {
+      "title": "Loại bài mới: Keys"
+    },
+    {
+      "body": "<p class='basic'>Trong campaign The Scarlet Keys, các điều tra viên sẽ đối đầu với một số thành viên nguy hiểm và bí ẩn của hội kín có tên là Red Coterie. Một trong những thành viên đó là The Red-Gloved Man mang tính biểu tượng. Do đó, khi chơi campaign The Scarlet Keys, các điều tra viên không thể mua hoặc đưa asset The Red-Gloved Man (card số 310 của The Dunwich Legacy) vào deck của họ.</p>"
+    },
+    {},
+    {
+      "title": "Các lá bài mini Concealed"
+    },
+    {
+      "title": "Cảnh Giác"
+    },
+    {
+      "title": "Tuần tra"
+    }
+  ],
+  "ringingHollow": {
+    "body": "Kiểm tra xem đã có bao nhiêu _time_ trôi qua trong Nhật ký Chiến dịch."
   }
 }

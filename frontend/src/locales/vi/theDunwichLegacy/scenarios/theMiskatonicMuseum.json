@@ -7,14 +7,17 @@
     },
     "part2": {
       "title": "Màn II: Viện bảo tàng Miskatonic"
-    }
+    },
+    "body": "<p>Vài tháng trước, Armitage và các đồng nghiệp đã ngăn chặn cơn kinh hoàng đang hoành hành xé toạc Dunwich, một ngôi làng tách biệt cách thị trấn Arkham vài giờ về phía tây bắc. Lúc đầu, bạn tưởng tượng con thú này là một con gấu bị dại, hoặc có thể tệ hơn thế, nhưng mô tả của giáo sư về sinh vật này thì lại hoàn toàn khác.</p><p>Mọi chuyện bắt đầu khi một người tên là Wilbur Whateley bước vào Thư viện Orne để tìm bản dịch tiếng Latin của Olaus Wormius cho cuốn sách có tên Necronomicon. Wilbur đã sở hữu một bản dịch sang tiếng Anh của tiến sĩ John Dee, nhưng nó không đủ cho mục đích của anh ta. Armitage từ chối anh ta, lo sợ rằng không biết người đàn ông lạ mặt này muốn dùng cuốn sách để làm gì. Whateley trở lại trong bí mật, hy vọng lấy cắp được cuốn sách, nhưng bị tấn công bởi con chó săn bảo vệ trường đại học. Armitage, Rice và Morgan sau đó đã phát hiện ra xác của Whateley. Mô tả về cái xác chết kinh tởm này là nó phần nào giống hình người và phủ đầy lông, với lớp da dày cùng những xúc tu màu xanh lục - khiến bạn tự hỏi liệu Whateley có thực sự là con người hay không.</p>"
   },
   "setup": {
     "placeLocations": "Đặt ngẫu nhiên một trong hai vị trí Administration Office và một trong hai vị trí Security Office vào màn chơi. Loại bỏ các bản sao của 2 vị trí trên khỏi màn chơi. Sau đó, đặt vị trí Museum Entrance and Museum Halls vào màn chơi. Các điều tra viên bắt đầu màn chơi tại vị trí Museum Entrance.",
     "exhibitDeck": {
       "instructions": "Đặt 6 lá vị trí “Exhibit Hall” sang một bên để tạo thành chồng bài “Exhibit”. Để tạo chồng bài, làm theo các bước sau:",
-      "bottom": "Xào lá bài Exhibit Hall (Restricted Hall) và 2 lá Exhibit Hall ngẫu nhiên vào nhau để tạo thành 3 lá bài cuối cùng của chồng bài Exhibit, mặt chưa để lộ ngửa lên."
-    }
+      "bottom": "Xào lá bài Exhibit Hall (Restricted Hall) và 2 lá Exhibit Hall ngẫu nhiên vào nhau để tạo thành 3 lá bài cuối cùng của chồng bài Exhibit, mặt chưa để lộ ngửa lên.",
+      "top": "Sau đó, đặt 3 lá vị trí Exhibit Hall còn lại lên đầu theo thứ tự ngẫu nhiên. Tất cả 6 lá bài Exhibit Hall cần để mặt chưa để lộ lên trên, để người chơi không biết đâu là lá Exhibit Hall *(Restricted Hall)*."
+    },
+    "setAside": "Đặt những lá bài sau sang một bên, ngoài màn chơi: Harold Walsted, Adam Lynch, The Necronomicon *(Olaus Wormius Translation)*, và Shadow-spawned."
   },
   "theVoid": {
     "body": "Một số lá bài trong màn này ám chỉ đến một khu vực chơi được gọi là “the void” (hư không). Hư không là một khu vực ngoài vùng chơi và nằm bên cạnh chồng bài act và agenda để kẻ địch Hunting Horror có thể tiến vào hay rời đi thông qua hiệu ứng của các lá bài. Trong khi Hunting Horror đang ở trong vùng hư không, nó được xem là rời khỏi màn chơi và không thể bị ảnh hưởng bởi các lá bài của người chơi hoặc hành động của điều tra viên."

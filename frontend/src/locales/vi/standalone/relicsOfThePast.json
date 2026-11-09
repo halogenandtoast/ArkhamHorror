@@ -2,7 +2,8 @@
   "intro": {
     "body": "<p>*Để hiểu rõ hơn về tương lai của chúng ta, trước tiên chúng ta phải hiểu về quá khứ. Không mất nhiều thời gian để những báo cáo về chuyến thám hiểm thất bại của Miskatonic University tới những khu rừng rậm ở Mexico lọt vào tai bạn. Những câu chuyện về các kim tự tháp bậc thang, tộc người rắn thần thoại và các cổ vật dị thường ở những nơi trước đây được cho là không có người ở đã khơi dậy sự hứng thú của bạn. Bạn không mất nhiều thời gian để thu dọn hành lý và lên kế hoạch tự mình đến đó để điều tra. Chuyến thám hiểm của Miskatonic University đã tiến vào khu di tích nhưng gặp khó khăn trong việc tạo ra bất kỳ bước tiến nào. Tim bạn đập thình thịch khi bắt đầu nghĩ đến những kho báu bị lãng quên nào khác vẫn chưa được khám phá ở trung tâm của lăng mộ.*</p>",
     "supplies": {
-      "title": "Vật Tư Dự Trữ"
+      "title": "Vật Tư Dự Trữ",
+      "body": "<i>Relics of the Past</i> sử dụng một danh sách supplies dành riêng cho scenario này. Supplies không có hiệu ứng vốn có, nhưng có thể được tham chiếu bởi các ability của lá bài. Mỗi điều tra viên có thể chọn một trong các supplies được liệt kê bên dưới để mang theo cho chuyến thám hiểm (nếu chỉ có một điều tra viên, thay vào đó họ có thể chọn hai supplies)."
     }
   },
   "label": {
@@ -36,5 +37,12 @@
     "resolution2": {
       "title": "Kết thúc thứ hai"
     }
-  }
+  },
+  "specialRules": [
+    {},
+    {},
+    {
+      "title": "Vật Tư Dự Trữ"
+    }
+  ]
 }

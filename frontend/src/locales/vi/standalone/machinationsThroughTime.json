@@ -1,6 +1,7 @@
 {
   "setup": {
-    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Tindalos."
+    "startAt": "Mỗi điều tra viên bắt đầu chơi tại Tindalos.",
+    "nobleLegacy": "Đưa các lá bài Cốt truyện A Noble Legacy (Past), A Noble Legacy (Present), và A Noble Legacy (Future) vào khu vực chơi, lần lượt từng lá, và thực hiện phần chữ <b>Setup</b> trên mỗi lá. <i>(Gợi ý-Khi chơi, trước tiên hãy tập trung hoàn thành A Noble Legacy (Past), sau đó tập trung vào A Noble Legacy (Present), và cuối cùng là A Noble Legacy (Future).)</i>"
   },
   "resolutions": {
     "resolution1": {

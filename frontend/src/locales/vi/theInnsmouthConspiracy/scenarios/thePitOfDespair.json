@@ -7,10 +7,12 @@
     "tidalTunnels": "Xào những vị trí Tidal Tunnel còn lại và đặt ngẫu 3 trong số chúng vào chơi ở bên dưới, bên trái, và bên phải của Unfamiliar Chamber, với mặt không để lộ.",
     "setAsideTidalTunnels": "Đặt các vị trí Tidal Tunnel còn lại sang một bên, ngoài khu vực chơi.",
     "setAsideCards": "Đặt từng lá bài sau đây sang một bên, ngoài khu vực chơi: kẻ địch Amalgam, cả hai bản sao của lá bài treachery Blindsense và cả 3 bản sao của lá bài treachery From the Depths.",
-    "floodTokens": "Thêm token lũ lụt vào kho chứa token."
+    "floodTokens": "Thêm token lũ lụt vào kho chứa token.",
+    "setAsideLocations": "Tìm từng địa điểm sau đây và đặt chúng sang một bên, ngoài khu vực chơi: Idol Chamber, Altar to Dagon, và Sealed Exit (mỗi vị trí này nằm là mặt bên kia của một vị trí Tidal Tunnel) ."
   },
   "intro": {
-    "title": "Màn I: Hố của Sự Tuyệt Vọng"
+    "title": "Màn I: Hố của Sự Tuyệt Vọng",
+    "body": "<p>Mắt bạn chớp nhẹ với vẻ uể oải của một người đã ngủ nhiều ngày liên tục. Các giác quan của bạn không trở lại ngay. Bạn chớp mắt và cố gắng nhìn xuyên qua bóng tối đen ngòm xung quanh bạn. Mọi ngóc ngách trên cơ thể của bạn đều đau nhức âm ỉ, nhức nhối. Da bạn lạnh và tê, quần áo bạn ướt sũng. Tâm trí bạn lơ lửng với những suy nghĩ nửa vời và những ký ức rối rắm. Bạn không biết mình đang ở đâu hoặc bạn đến đây bằng cách nào.</p><p>Bạn trở nên cảnh giác, tim bạn đập thình thịch trong lồng ngực. Bạn nằm trên một nền đá lởm chởm trong một vũng nước nông tối đen và lạnh giá. Biết rằng hoảng loạn chỉ khiến tình hình trở nên tồi tệ hơn, bạn hít những hơi thở sâu và bình tĩnh lại. Bạn cố gắng nhớ lại điều gì đó - bất cứ điều gì - có thể cho phép bạn nhớ lại những gì mình đã làm, nhưng tâm trí bạn trống rỗng. Bạn nhớ bạn là ai, nhưng không nhớ gì về quá khứ gần đây. Bạn bình tĩnh lại và quan sát xung quanh.</p><p>Căn phòng trông có vẻ như là một hang động tự nhiên. Rong biển lơ lửng từ trần nhà. Các bức tường và sàn đá ẩm ướt và nhầy nhụa. Tiếng nước nhỏ giọt đều đặn vang vọng khắp hang động tĩnh lặng. Hang động này đã từng bị ngập nước không lâu trước đây. Có thể là do thủy triều? Bạn nuốt nỗi sợ hãi như một cục sắt lạnh của mình. Nếu bây giờ là lúc thủy triều xuống… Một cơn rùng mình lạnh lẽo chạy dọc sống lưng bạn. Bạn nhìn lên trần nhà và ngạc nhiên khi thấy một tấm kim loại được đặt vào trong đá thô phía trên. Bề mặt được đánh bóng của nó khác lạ so với phần còn lại của hang động tự nhiên. Bạn gọi xin giúp đỡ, hy vọng có ai đó có thể nghe thấy.</p><p>Nỗi sợ hãi của bạn càng sâu sắc hơn khi nhận được câu trả lời: một tiếng rên rỉ khủng khiếp lan khắp các đường hầm—một âm thanh mà không con người nào có thể tạo ra.</p>"
   },
   "flashback1": {
     "title": "Hồi tưởng I"
@@ -28,5 +30,23 @@
     "resolution1": {
       "title": "Kết thúc thứ nhất"
     }
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Tidal Tunnels (Đường hầm Thủy triều)",
+      "body": "<p class='basic'>Các vị trí có mặt chưa để lộ Tidal Tunnel có trong nhiều bộ bài encounter khác nhau. (Ví dụ: trong màn chơi này, cả bộ encounter Flooded Caverns và The Pit of Despair đều chứa các vị trí Tidal Tunnel). Bởi vì những địa điểm này có thể đến từ nhiều bộ bài encounter khác nhau nên chúng không có biểu tượng encounter ở mặt chưa để lộ. Để xem vị trí Tidal Tunnel thuộc về bộ encounter nào, hãy kiểm tra mặt để lộ của nó.</p>"
+    },
+    {
+      "title": "The Depths (Vực Sâu)"
+    },
+    {
+      "title": "Vị Trí Liền Kề trong Hố"
+    },
+    {
+      "title": "Flashbacks (Hồi tưởng)"
+    },
+    {
+      "title": "Chìa khóa"
+    }
+  ]
 }

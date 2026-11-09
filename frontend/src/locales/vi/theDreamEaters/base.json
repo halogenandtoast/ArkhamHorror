@@ -1,7 +1,8 @@
 {
   "flavorText": {
     "prologueOpening": {
-      "title": "Thế Giới Thực Chỉ Là Một Thực Tại"
+      "title": "Thế Giới Thực Chỉ Là Một Thực Tại",
+      "body": "<blockquote>“Trong giấc ngủ chập chờn, anh ta đi xuống bảy mươi bậc thang đến hang lửa và nói về thiết kế này với các linh mục có râu Nasht và Kaman-Thah. Và các linh mục lắc đầu và thề rằng đó sẽ là cái chết của linh hồn anh ta.” – H. P. Lovecraft, Nhiệm vụ trong mơ của Kadath Vô Danh</p>"
     },
     "theBlackCat": {
       "title": "Chuyển tiếp I: Con Mèo Đen"
@@ -153,6 +154,13 @@
     },
     "brokeTheLawOfUlthar": {
       "title": "Phần kết"
+    },
+    "prologue": {
+      "title": "Lời mở đầu",
+      "body": "<p class='cursive'>Thứ Sáu, ngày 13 tháng 2 năm 1925</p><p>Có điều gì đó kỳ lạ đang xảy ra ở thị trấn Arkham, Massachusetts.</p><p>Thông thường, điều này sẽ không gây ngạc nhiên cho cư dân của thị trấn buồn tẻ ở New England này. Thật vậy, Arkham luôn nổi tiếng với những sự kiện kỳ ​​lạ mà một số người sẽ nói là hiện tượng siêu nhiên. Tuy nhiên, bản chất của sự kiện cụ thể lần này không phải là thông thường.</p><p>Tất cả bắt đầu trong số mới nhất của *Tales from Nevermore*. Một nhà văn tên là Virgil Gray đã mô tả một cuộc hành trình mà anh ta đã thực hiện trong những giấc mơ của mình - một cuộc hành trình mà anh ta tuyên bố không phải là tác phẩm do anh ta hư cấu ra. Anh ấy đã viết về một cầu thang xoắn ốc dài, một cột lửa có tri giác nóng không tưởng, một cái cây đến từ mặt trăng và một con mèo biết nói đầy tính tò mò… cùng những thứ khác khó tin không kém. Nhưng đó không phải là truyện ngắn phi thường này lần đầu tiên thu hút sự chú ý của bạn. Ngay sau khi truyện ngắn của Virgil được xuất bản, *Tales from Nevermore* bắt đầu nhận và xuất bản hết lá thư này đến lá thư khác từ những người đã đọc truyện ngắn của Virgil và tuyên bố rằng họ đã trải qua giấc mơ giống như vậy. Chẳng bao lâu sau, Arkham Advertiser đã lan truyền câu chuyện và tin tức về hiện tượng kỳ lạ này đã đến tai các chuyên gia.</p><p>Virgil Gray đã bị thuyết phục để trải qua trị liệu tại bệnh viện tâm thần của địa phương, và nhiều người khác cũng có chứng rối loạn tâm thần của nhà văn cũng đã cam kết chữa trị. Giả thuyết phổ biến trong giới học thuật là giấc mơ của Virgil chân thực đến mức ông không thể tách rời thực tế khỏi hư cấu, và các bài viết của ông đã lan truyền ảo tưởng của mình cho người khác giống như một dạng cuồng loạn được chia sẻ. Bạn vẫn không bị thuyết phục. Rốt cuộc, có nhiều điều chưa biết về việc nằm mơ. Các chuyên gia y tế có những lý thuyết cực kỳ khác nhau về trạng thái não bộ của một người trong khi ngủ. Gần đây, các chuyên gia như Sigmund Freud đã đề xuất rằng giấc mơ là biểu hiện của những ham muốn, nỗi sợ hãi hoặc ám ảnh trong tiềm thức của một người. Về phần mình, các thầy bói từ lâu đã tin rằng những giấc mơ có thể được xem xét và giải nghĩa để nói lên quá khứ hoặc tương lai của người mơ. Nhưng nếu những lý thuyết này là đúng, thì làm thế nào mà nhiều bên—tất cả những người thuộc các tầng lớp xã hội rất khác nhau—có thể chia sẻ những trải nghiệm giống nhau trong giấc mơ của họ? Sẽ thế nào nếu hiểu biết thời hiện đại của chúng ta về giấc ngủ hoàn toàn sai? Điều gì sẽ xảy ra nếu thực sự có một nơi mà ý thức của chúng ta du hành đến khi chúng ta ngủ—một vùng đất của những giấc mơ tồn tại bên ngoài thế giới thực của chúng ta?</p><p>Bạn và những người bạn đồng hành của mình đã tập hợp lại với nhau để tìm hiểu tận cùng của hiện tượng kỳ lạ này. Nếu những người khác trong thị trấn có thể du hành đến một thế giới khác trong giấc mơ của họ, thì có lẽ bạn cũng có thể. Bạn đã tái tạo lại hoàn cảnh cuộc hành trình của Virgil một cách hoàn hảo. Nếu mọi việc suôn sẻ, một nửa nhóm bạn sẽ thực hiện chuyến đi đến “vùng đất giấc mơ” này và quay trở lại. Nhóm còn lại sẽ ở trong thế giới thực, nghiên cứu các mô thức giấc ngủ của những người bạn đồng hành của bạn để đảm bảo không có gì xấu xảy ra…</p>"
+    },
+    "campaignStructure": {
+      "title": "Lời mở đầu"
     }
   },
   "key": {
@@ -189,7 +197,26 @@
     "theDreamersEscapedFromNyarlathotepsGrasp": "Những người ngủ mơ đã thoát khỏi bàn tay của Nyarlathotep.",
     "theDreamersBanishedNyarlathotep": "Những người ngủ mơ đã trục xuất Nyarlathotep.",
     "theInvestigatorsAreTrappedInAtlachNachasRealm": "Các điều tra viên bị mắc kẹt trong địa hạt của Atlach-Nacha.",
-    "theBridgeWasDestroyed": "Cây cầu đã bị phá hủy."
+    "theBridgeWasDestroyed": "Cây cầu đã bị phá hủy.",
+    "theDreamersStrayedFromThePath": "Những người nằm mơ đi lạc khỏi con đường.",
+    "theInvestigatorsWereSavedByRandolphCarder": "các điều tra viên được cứu bởi Randolph Carter.",
+    "theBlackCatDeliveredNewsOfYourPlight": "Con mèo đen đã đưa tin về hoàn cảnh của bạn.",
+    "theBlackCatSharedKnowledgeOfTheDreamlands": "Con mèo đen đã chia sẻ tri thức về Vùng đất giấc mơ.",
+    "theBlackCatWarnedTheOthers": "con mèo đen đã cảnh báo cho những người khác.",
+    "okayFineHaveItYourWayThen": "Được rồi, tốt thôi, thế thì cứ làm theo cách của bạn.",
+    "theDreamersGrowWeaker": "Những người nằm mơ ngày càng yếu đi.",
+    "theBlackCatRequestedAidFromTheOthers": "con mèo đen đã yêu cầu sự trợ giúp từ những người khác.",
+    "theBlackCatSharedKnowledgeOfTheUnderworld": "con mèo đen đã chia sẻ tri thức về Underworld.",
+    "theBlackCatIsSearchingForTheTruth": "Con mèo đen đang tìm kiếm sự thật.",
+    "theInvestigatorsFoundAWayOutOfTheUnderworld": "Các điều tra viên đã tìm ra lối thoát khỏi Underworld.",
+    "theBlackCatSpokeOfNyarlathotep": "Con mèo đen đã nói về Nyarlathotep.",
+    "theDreamersAwoke": "Những người ngủ mơ đã tỉnh dậy.",
+    "theDreamersStayedInTheDreamlandsForever": "Những người ngủ mơ ở lại trong Vùng đất Giấc mơ mãi mãi.",
+    "theDreamersTraveledBeneathTheMonastery": "Những người ngủ mơ đã đi du hành bên dưới tu viện.",
+    "theBridgeWasCompleted": "cây cầu đã hoàn thành.",
+    "theInvestigatorsReturnedToReality": "các điều tra viên đã trở lại thực tại.",
+    "theInvestigatorsNeverEscaped": "các điều tra viên không bao giờ trốn thoát.",
+    "theInvestigatorsAreStillInTheDreamlands": "các điều tra viên vẫn đang ở trong Vùng đất Giấc mơ."
   },
   "label": {
     "theBlackCat2NewsOfYourPlight": "*Nói với những người bạn của bạn về nhiệm vụ, hoàn cảnh và nguy nan của bạn.*",

@@ -18,7 +18,9 @@
       "remove": "Tìm trong chồng bài encounter tập hợp được cả 2 bản sao của Black Stars Rise và cả 2 bản sao của False Lead, và loại bỏ chúng khỏi màn chơi.",
       "act": "Trong màn chơi này, sử dụng Act 1—The Parisian Conspiracy (v. II). Các phiên bản Act 1 khác bị loại bỏ khỏi màn chơi."
     },
-    "lostSoul": "Nếu có bất kỳ bản sao của điểm yếu Lost Soul nào còn lại, đặt chúng một bên, ngoài khu vực chơi."
+    "lostSoul": "Nếu có bất kỳ bản sao của điểm yếu Lost Soul nào còn lại, đặt chúng một bên, ngoài khu vực chơi.",
+    "chooseLocations": "Chọn ngẫu nhiên 1 trong 2 vị trí Montmartre, 1 trong 2 vị trí Opéra Garnier, và 1 trong 2 vị trí Le Marais. Đặt các vị trí được chọn vào chơi. Loại bỏ các phiên bản khác của những vị trí này khỏi màn chơi.",
+    "setAside": "Đặt lá bài kẻ địch The Organist có 2 mặt một bên, ngoài khu vực chơi."
   },
   "resolutions": {
     "resolution1": {

@@ -14,10 +14,12 @@
     "setAsideThree": "Đặt 3 vị trí Unfathomable Depths còn lại sang một bên, ngoài khu vực chơi.",
     "placeNearEncounterDeck": "Đặt chồng bài này gần chồng bài encounter.",
     "checkCampaignLog": "Kiểm tra phần \"Ký ức đã được khôi phục\" trong Nhật ký Chiến dịch. Tùy thuộc vào các trường hợp sau đây, một phiên bản khác của agenda 1 sẽ được sử dụng trong màn chơi này. Loại bỏ các phiên bản khác của agenda 1 khỏi màn chơi.",
-    "floodTokens": "Thêm token lũ lụt vào kho chứa token."
+    "floodTokens": "Thêm token lũ lụt vào kho chứa token.",
+    "unrevealedSide": "Mỗi lá bài trong chồng bài Tidal Tunnel phải có mặt không để lộ ngửa lên để chỉ hiển thị mặt \"Tidal Tunnel\"."
   },
   "intro1": {
-    "title": "Màn IV: Rạn San Hô Quỷ"
+    "title": "Màn IV: Rạn San Hô Quỷ",
+    "body": "<center>THỨ SÁU, NGÀY 2 THÁNG 9 NĂM 1927</center> <center> BA TUẦN TRƯỚC ĐÓ</center> Tiếng động cơ tàu ầm ầm làm bạn giật mình thoát khỏi dòng suy nghĩ. \"Mọi người ngoài đó ổn chứ?\" thuyền trưởng gầm gừ. \"Trông cứ như cậu vừa nhìn thấy ma vậy. Mặt mày tái nhợt như tờ giấy.\" Bạn quay lại và đối mặt với ông già tóc hoa râm. Ông Moore là thuyền trưởng duy nhất bạn có thể tìm thấy ở thị trấn Innsmouth, người không bị ảnh hưởng bởi bất kỳ lời nguyền hay sự méo mò nào đã bao trùm hầu hết thị trấn. Tuy nhiên, dáng vẻ đầy nhân tính của ông ấy không làm giảm đi những chiếc răng gãy, cái hàm vênh hoặc vết sẹo lớn rách trên má phải. Tuy nhiên, ông ấy là một nhân vật đáng hoan nghênh nếu xét đến chặng đường còn lại của cuộc điều tra của bạn đã diễn ra như thế nào. \"Không thể tin được là cậu lại muốn đến Rạn San Hô Quỷ đáng nguyền rủa đó,\" ông ấy kêu lên, lắc đầu. \"Chỉ kẻ ngốc mới làm thế.\" Bạn chỉ ra rằng người thủy thủ đã rất vui lòng cung cấp chuyến đi khi bạn cho anh ta xem khoản tiền được trả, khiến anh ta cười khúc khích. \"Cậu thắng rồi,\" ông ấy thừa nhận. \"Bây giờ hãy sẵn sàng. Chúng ta sẽ khởi hành trong 10 phút.\" Ông ấy loạng choạng từ boong chính xuống cầu để lập biểu đồ trong khi bạn chuẩn bị cho cuộc hành trình phía trước."
   },
   "intro2": {
     "title": "Màn IV: Rạn San Hô Quỷ"
@@ -38,5 +40,13 @@
     "resolution1": {
       "title": "Kết thúc thứ nhất"
     }
-  }
+  },
+  "specialRules": [
+    {
+      "title": "Phương tiện di chuyển"
+    },
+    {
+      "title": "Chìa khóa"
+    }
+  ]
 }

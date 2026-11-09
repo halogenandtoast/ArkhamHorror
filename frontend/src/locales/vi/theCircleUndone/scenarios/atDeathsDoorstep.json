@@ -7,13 +7,15 @@
     }
   ],
   "intro": {
-    "title": "Màn II: Tại Cửa Tử"
+    "title": "Màn II: Tại Cửa Tử",
+    "introPart1": "<center><b>Bốn Người Mất Tích, Chưa Biết Đang Ở Đâu</b></center> Người dân của French Hill vẫn còn xôn xao sau sự biến mất đột ngột của một số khách và người làm ở nhà của ông Josef Meiger trong đêm dạ tiệc từ thiện Silver Twilight vào chủ nhật tuần trước. Ông Meiger chia sẻ một ngày sau vụ mất tích: “Chúng tôi hoàn toàn bối rối không biết làm thế nào điều này có thể xảy ra. Chúng tôi tin tưởng rằng Cảnh sát trưởng Engle và Cảnh sát thị trấn Arkham sẽ điều tra và tìm kiếm những người mất tích.” Hiện vẫn chưa có dấu vết nào về tung tích của cô Gavriella Mizrah, ông Jerome Davids, ông Valentino Rivas và bà Penny White, tất cả đều biến mất giữa sự kiện và không thấy bóng dáng kể từ đó. Cảnh sát đang đưa ra một phần thưởng đáng kể cho bất kỳ ai cung cấp thông tin liên quan đến những vụ mất tích này. Khi được hỏi liệu cảnh sát có xem đây là một vụ giết người hay không, cảnh sát trưởng Engle trả lời: “Không có lý do để cân nhắc đây là hành động trả thù. Tuy nhiên, dựa trên hoàn cảnh, chúng tôi phải xem xét mọi khả năng.\" Không có người tham dự nào khác đưa ra tuyên bố liên quan đến buổi dạ tiệc, buổi tiệc dường như kết thúc mà không gặp trở ngại nào mặc dù có người mất tích. Cho đến nay, không có thành viên ưu tú nào của Silver Twilight Lodge bày tỏ bất kỳ mối quan tâm nào về bữa tối gây quỹ từ thiện của Lodge, nó gần đây đã được chuyển đến cùng địa điểm đó: trang viên của Josef Meiger ở French Hill. Ông Meiger nói với Arkham Advertiser trong một cuộc phỏng vấn ngày hôm qua, “Tôi chắc chắn rằng sự kiện này sẽ thành công rực rỡ. Không có lý do gì để những người dân ngay thẳng của Arkham phải lo lắng.\" –Minnie Klein"
   },
   "setup": {
     "setJosefAside": "Đặt kẻ địch Josef Meiger sang một bên, ngoài khu vực chơi.",
     "josefNote": "*Lưu ý: Lá bài này có hai mặt và có thẻ câu chuyện ở mặt còn lại. Để có trải nghiệm tốt nhất, đừng nhìn sang mặt còn lại trừ khi có một hiệu ứng hướng dẫn bạn làm như vậy.*",
     "checkCampaignLog": "Kiểm tra phần \"Người Mất Tích\" trong Nhật ký Chiến dịch:",
-    "piecesOfEvidence": "Đồng đều nhất có thể, hãy loại bỏ tổng số manh mối từ các vị trí trên bằng với số *mẩu bằng chứng đã bị bỏ lại* trong Nhật ký Chiến dịch của bạn."
+    "piecesOfEvidence": "Đồng đều nhất có thể, hãy loại bỏ tổng số manh mối từ các vị trí trên bằng với số *mẩu bằng chứng đã bị bỏ lại* trong Nhật ký Chiến dịch của bạn.",
+    "placeLocations": "Đặt mỗi vị trí không phải [[Spectral]] vào chơi (Entry Hall, Victorian Halls, Trophy Room, Billiards Room, Master Bedroom, Balcony, và Office). Mỗi điều tra viên bắt đầu chơi tại vị trí Entry Hall."
   },
   "resolutions": {
     "resolution1": {

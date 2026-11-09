@@ -2,7 +2,8 @@
   "intro": {
     "proceedToSetup": "Tiếp tục đến _Setup_",
     "noPlaceLikeHome": {
-      "title": "Nhiệm vụ: No Place Like Home"
+      "title": "Nhiệm vụ: No Place Like Home",
+      "choose": "Bạn phải quyết định (chọn một):"
     },
     "label": {
       "noPlaceLikeHome": {
@@ -20,7 +21,8 @@
     "placeSeaFloorLocations": "Xào 8 địa điểm Sea Floor còn lại với nhau và đặt chúng vào khu vực chơi theo một lưới 3x3 xung quanh Barrier Core như được hiển thị trong sơ đồ sắp xếp địa điểm.",
     "beginAtBarrierCore": "Mỗi điều tra viên bắt đầu chơi tại Barrier Core.",
     "addFloodTokens": "Thêm các flood token vào token pool và kiểm tra Nhật ký Chiến dịch của bạn",
-    "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu."
+    "readyToBegin": "Bây giờ bạn đã sẵn sàng để bắt đầu.",
+    "buildEncounterDeck": "Xào các lá bài encounter còn lại để xây dựng chồng bài encounter."
   },
   "resolutions": {
     "resolution1": {

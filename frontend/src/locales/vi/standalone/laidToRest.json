@@ -3,7 +3,8 @@
     "title": "Chồng bài encounter Spectral"
   },
   "theBeyondAndTheSpiritDeck": {
-    "title": "The Beyond và chồng bài Spirit"
+    "title": "The Beyond và chồng bài Spirit",
+    "body": "<p class='basic'>Lá bài signature asset The Beyond hai mặt có trong bộ này cho phép Jim Culver đính kèm các asset [[Ally]] từ chồng bài spirit vào nó, dưới dạng các spirit. Chồng bài spirit là một chồng bài riêng biệt được xào úp mặt bên cạnh The Beyond khi trò chơi bắt đầu. Nó miễn nhiễm với mọi hiệu ứng bài của người chơi ngoại trừ hiệu ứng forced trên The Beyond.\\r <b>Các spirit in play nhưng chỉ giữ lại tên và text box của chúng.</b> Các spirit không chiếm bất kỳ slot nào và không có giá trị health hay sanity. Khi một spirit unique vào chơi, discard bất kỳ asset nào có cùng tên với nó. Nếu một spirit được đính kèm sắp bị discard, thay vào đó nó được đặt dưới <b>đáy</b> của chồng bài spirit.</p>"
   },
   "setup": {
     "removeCards": "Loại bỏ scenario reference card, các lá bài act, agenda, và story asset Spectral Web gốc từ bộ encounter *The Wages of Sin* khỏi trò chơi. Sử dụng scenario reference card, các lá bài act, và agenda mới được cung cấp trong bộ encounter *Laid to Rest* bản tải về khi thiết lập trò chơi.",
@@ -11,7 +12,9 @@
     "heretics": "Loại bỏ ngẫu nhiên hai kẻ địch Heretic khỏi trò chơi. Xào mỗi kẻ địch Heretic còn lại vào chồng bài spirit, ngửa mặt kẻ địch lên.",
     "jeanDevereux": "Tạo ra kẻ địch Jean Devereux hai mặt tại Hangman’s Brook, ngửa mặt *(Seeking Closure)* lên.",
     "ravenousSpirits": "Đặt một kẻ địch Ravenous Spirit úp mặt bên dưới các địa điểm sau: The Gallows, Heretics’ Graves, Chapel Attic, và Chapel Crypt.",
-    "encounterDecks": "Màn chơi này sử dụng 2 chồng bài encounter khác nhau."
+    "encounterDecks": "Màn chơi này sử dụng 2 chồng bài encounter khác nhau.",
+    "placeLocations": "Chọn ngẫu nhiên một trong hai địa điểm The Gallows, một trong hai địa điểm Heretics’ Graves, và một trong hai địa điểm Chapel Crypt rồi đặt chúng vào chơi, cùng với Chapel Attic (176a). Loại bỏ các phiên bản khác của The Gallows, Heretics’ Graves, Chapel Crypt, và Chapel Attic (175a) khỏi trò chơi. Sau đó, đặt Haunted Fields, Abandoned Chapel, và Hangman’s Brook vào chơi.",
+    "nonSpectral": "Đặt mỗi địa điểm vào chơi ở mặt không phải [[Spectral]] của nó. *Lưu ý: Việc lật một địa điểm từ mặt này sang mặt khác trong scenario này không \"reveal\" địa điểm mới.*"
   },
   "resolutions": {
     "resolution1": {
@@ -20,5 +23,25 @@
     "resolution2": {
       "title": "Kết thúc thứ hai"
     }
+  },
+  "specialRules": [
+    {
+      "title": "@:standalone.laidToRest.theSpectralEncounterDeck.title",
+      "body": "@:standalone.laidToRest.theSpectralEncounterDeck.body"
+    },
+    {
+      "title": "Haunted (ám)",
+      "body": "<p class='basic'>Haunted (ám) là một khả năng mới xuất hiện trên một số vị trí. Mỗi lần điều tra viên không thành công trong bài kiểm tra kỹ năng khi đang điều tra tại vị trí, sau khi áp dụng tất cả các kết quả cho bài kiểm tra kỹ năng đó, điều tra viên đó phải giải quyết tất cả các khả năng Haunted –\" trên vị trí đó. Một vị trí bị \"ám\" cho các mục đích của các hiệu ứng của lá bài khác nếu nó có ít nhất một khả năng Haunted –\" (được in trên đó hoặc dưới một cách nào đó khác).</p>"
+    },
+    {
+      "title": "@:standalone.laidToRest.theBeyondAndTheSpiritDeck.title",
+      "body": "@:standalone.laidToRest.theBeyondAndTheSpiritDeck.body"
+    },
+    {
+      "title": "Tuần tra"
+    }
+  ],
+  "intro": {
+    "body": "<p><i>Người chết không hề an nghỉ. Dù bạn đi đâu, bạn cũng nghe thấy họ nói chuyện, thì thầm, than khóc, gào thét. Đôi khi với nhau, đôi khi một mình. Họ lải nhải về những người họ từng yêu thương, hoặc công việc của họ, hoặc số tiền họ giấu dưới sàn nhà trước khi chết. Thường thì là về đồ ăn hoặc thức uống. Người chết luôn luôn đói. Đôi khi, khi họ nhận ra bạn có thể nghe thấy họ, họ xúm lại thật gần và thì thầm vào tai bạn. Những tâm nguyện cuối cùng và đại loại thế. Bạn cố gắng giúp đỡ khi có thể, nhưng thường thì những người mà họ muốn bạn chăm sóc cũng đã chết rồi. Bạn đưa ra rất nhiều lời hứa suông, nhưng ít nhất điều đó giữ cho họ im lặng.\\r</p><p>Không phải lúc nào mọi chuyện cũng như vậy. Người chết bắt đầu lên tiếng vào ngày cha bạn qua đời trong ngôi nhà kiểu shotgun của ông ở French Quarter. Bạn đã thấy ông đứng nhìn chính thi thể của mình trong phòng khách khi bạn về nhà; ông biến mất trước khi bạn kịp nói một lời. Từ đó trở đi, mỗi khi bạn thổi chiếc kèn trumpet của cha mình, bạn lại nghe thấy một mớ âm thanh hỗn tạp của những giọng nói. Một số trong đó là của con người. Nhưng cũng có những giọng nói khác. Những tiếng than khóc chói tai từ những đôi môi không phải của con người. Những tiếng kêu gào khàn đục. Và một đám đông những khuôn mặt ma quái, mờ ảo đang nhìn chằm chằm ra từ trong bóng tối.\\r</p><p>Jean đã giúp bạn hiểu được tất cả những điều này. Ông ấy đã dừng lại để nghe bạn biểu diễn đường phố ở một góc đường Bourbon Street và để ý đến ánh nhìn đăm đăm của bạn dành cho bóng ma đang nằm dưới chân bạn. Ông ấy cũng nhìn thấy nó. Jean tự giới thiệu mình là một nhà ngoại cảm và bảo bạn đến gặp ông tại cửa hàng của ông ở Broadmoor. Ông kể cho bạn nghe tất cả về người chết, và những thứ bên kia nấm mồ, cùng với cái giá bạn phải trả nếu bạn bầu bạn với họ quá lâu.\\r</p><p>Chính người chết đã dẫn bạn đến Arkham. Bạn kiếm sống qua ngày bằng cách thổi chiếc kèn trumpet của cha mình. Người chết trở nên ồn ào hơn khi bạn chơi nhạc. Đôi khi họ thậm chí còn khen ngợi âm nhạc của bạn. Đêm qua, Jean tìm thấy bạn đang biểu diễn đường phố bên ngoài Clover Club, gần giống như lần đầu hai người gặp nhau. Bạn có thể nhận ra có điều gì đó không ổn: khuôn mặt ông hốc hác, và trông ông như thể đã không ngủ trong nhiều ngày. Jean nói với bạn rằng cha bạn muốn gặp bạn, và rằng bạn cần phải đi đến nơi mà ranh giới giữa thế giới này và thế giới bên kia trở nên mỏng manh. Bạn nói với ông ấy rằng bạn biết chính xác nơi đó. Hangman’s Hill đầy rẫy những linh hồn. Có lẽ nếu bạn giúp họ vài việc, họ sẽ giúp lại bạn một việc để đền đáp.</p>"
   }
 }

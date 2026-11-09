@@ -6,7 +6,9 @@
   "setup": {
     "setRemainingLocationsAside": "Đặt những vị trí còn lại sang một bên, ngoài khu vực chơi.",
     "setInfestationBeginsAside": "Đặt lá bài câu chuyện 2 mặt The Infestation Begins sang một bên, ngoài khu vực chơi. Lá bài câu chuyện có một mặt tham chiếu cho màn chơi khác ở mặt còn lại của nó, và sẽ tiến vào chơi trong quá trình diễn ra tự nhiên của màn chơi.",
-    "buildEncounterDeck": "Xào mỗi lá bài encounter còn lại để tạo thành chồng bài encounter."
+    "buildEncounterDeck": "Xào mỗi lá bài encounter còn lại để tạo thành chồng bài encounter.",
+    "checkCampaignLog": "Kiểm tra Nhật ký Chiến dịch.",
+    "setCardsAside": "Đặt những lá bài sau một bên, ngoài khu vực chơi: Randolph Carter *(Chained to the Waking World)*, cả 3 lá bài treachery Outbreak, và cả 2 kẻ địch Corrupted Orderly."
   },
   "resolutions": {
     "resolution1": {

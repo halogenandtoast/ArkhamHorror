@@ -1,10 +1,14 @@
 {
   "heading": "Màn V",
   "intro": {
-    "title": "Màn V: Vô Hình Vô Dạng"
+    "title": "Màn V: Vô Hình Vô Dạng",
+    "body": "<p>Việc tìm kiếm trong ngôi làng Dunwich giúp bạn phát hiện ra một số tài liệu, ghi chép nhật ký và các học thuyết bí truyền. Đọc qua những tài liệu này làm bạn kiệt quệ cả tinh thần lẫn thể xác. Hầu hết nội dung được viết bởi một nguồn duy nhất, đó là một người có tên là Seth Bishop. Khi bạn hỏi thăm xung quanh thị trấn, bạn biết rằng Seth là một người dân của làng Dunwich. Cùng với một vài người khác, Seth đã tận mắt chứng kiến ​​sự tàn phá do sự kiện “Kinh hoàng ở Dunwich” gây ra, tên sự kiện này do Armitage đặt. Kỳ lạ là kể từ thời điểm đó, rất ít người nhìn thấy Seth quanh thị trấn, và những người nói rằng đã trông thấy ông ta cho biết là đôi mắt ông ta đỏ ngầu, cùng với khuôn mặt đẫm mồ hôi và nhợt nhạt.</p><p>Bạn tin chắc là bất cứ ai trông thấy những gì Seth đã từng thấy cũng sẽ trở nên lo lắng hoặc hoang tưởng. Nhưng càng đọc những bài viết điên cuồng và rối rắm của ông ấy, bạn càng tin rằng ông ta cũng đang tham gia vào các sự kiện gần đây. Các bài viết của ông ta nói về việc \"thu thập hài cốt\" và sử dụng các phương pháp huyền bí để \"thấm nhuần tinh hoa của các đấng cổ xưa\" vào những sinh vật khác, và cuối cùng là vào con người. Các chú giải và sơ đồ vô cùng phức tạp và thách thức khả năng hiểu biết.</p><p>Trước khi bạn có thể tìm thấy Seth và chạm trán với ông ta, một số người đàn ông và phụ nữ trong làng đến gần bạn trong hoảng loạn. Một trong số họ than khóc, \"Nó đã trở lại!\" Bạn nhận ra anh ta là Curtis Whateley, thuộc nhánh chưa suy đồ. “Cái thứ giết chết những người trong dòng họ Fryes đã trở lại! Chúng đập nát ngôi nhà của Bishop như thể chúng làm bằng giấy!” Curtis và những người dân làng kêu la ầm ĩ trong hoảng sợ.</p>"
   },
   "setup": {
-    "setAside": "Đặt mỗi bản sao của Esoteric Formula sang một bên, ngoài màn chơi."
+    "setAside": "Đặt mỗi bản sao của Esoteric Formula sang một bên, ngoài màn chơi.",
+    "placeLocations": "Đặt ngẫu nhiên 1 trong 2 phiên bản của các vị trí sau đây vào màn chơi: Dunwich Village, Cold Spring Glen, Blasted Heath, Ten‐Acre Meadow, Devil’s Hop Yard, và Whateley Ruins. Loại bỏ các phiên bản còn lại của chúng khỏi màn chơi. Mỗi điều tra viên bắt đầu màn chơi tại vị trí Dunwich Village.",
+    "powderOfIbnGhazi": "Một điều tra viên có lá bài Powder of Ibn‐Ghazi trong bộ bài có thể tìm kiếm nó trong bộ bài của mình và đặt nó vào chơi.",
+    "randomBasicWeakness": "Mỗi điều tra viên tìm ngẫu nhiên trong bộ sưu tập một điểm yếu [[Madness]], [[Injury]], hoặc [[Pact]] cơ bản và thêm nó vào bộ bài của mình cho phần còn lại của chiến dịch."
   },
   "choosingARandomLocation": {
     "title": "Lựa Chọn một Vị Trí Ngẫu Nhiên",

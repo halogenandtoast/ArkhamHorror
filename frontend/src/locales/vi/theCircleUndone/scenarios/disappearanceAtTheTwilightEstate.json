@@ -3,6 +3,7 @@
     "theSpectralWatcher": "Đặt kẻ địch The Spectral Watcher vào chơi tại vị trí Entry Hall."
   },
   "noWayOut": {
-    "title": "Không Lối Thoát"
+    "title": "Không Lối Thoát",
+    "body": "<p class='basic'>Không có giải pháp tích cực cho màn chơi này. Các điều tra viên nên cố gắng tồn tại lâu nhất có thể và thu thập càng nhiều manh mối càng tốt trước khi họ đi đến cái chết không thể tránh khỏi. Lưu ý rằng trong khi các lá bài vẫn có thể được thêm vào khu vực trưng bày thích trong màn chơi này, điểm kinh nghiệm và chiến thắng sẽ không được tính cho màn chơi này. Vì những người điều tra này không có bộ bài, hãy bỏ qua bất kỳ chỉ dẫn hoặc hiệu ứng nào khiến họ rút bài hoặc tương tác với bộ bài của người chơi. Ngoài ra, vì các điều tra viên này không có chồng bài bỏ, thay vào đó, _mỗi lá bài của người chơi được đặt vào trong chồng bài bỏ của họ sẽ bị loại bỏ khỏi màn chơi. _ Chúc may mắn. Bạn sẽ cần đến lời chúc này.</p>"
   }
 }

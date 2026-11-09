@@ -6,11 +6,13 @@
   },
   "setup": {
     "bystanders": {
-      "note": "*Lưu ý: Những lá bài này có hai mặt và có câu chuyện ở mặt bên kia. Để có trải nghiệm tốt nhất, đừng nhìn vào mặt bên kia trừ khi có hiệu ứng hướng dẫn bạn làm như vậy.*"
+      "note": "*Lưu ý: Những lá bài này có hai mặt và có câu chuyện ở mặt bên kia. Để có trải nghiệm tốt nhất, đừng nhìn vào mặt bên kia trừ khi có hiệu ứng hướng dẫn bạn làm như vậy.*",
+      "instructions": "Xào 5 lá tài sản Bystander (Constance Dumaine, Jordan Perry, Ishimaru Haruko, Sebastien Moreau, và Ashleigh Clarke) và đặt ngẫu nhiên mỗi lá vào trong mỗi vị trí, ngoại trừ vị trí Foyer (phòng giải lao). Đặt 1 manh mối vào trong mỗi lá tài sản, và thêm manh mối tương ứng số lượng điều tra viên."
     },
     "setAside": "Đặt kẻ địch Dianne Devine sang một bên, ngoài khu vực chơi.",
     "sickeningReality": {
-      "instructions": "Đặt 5 lá bài câu chuyện “Sickening Reality” bên dưới lá bài scenario."
+      "instructions": "Đặt 5 lá bài câu chuyện “Sickening Reality” bên dưới lá bài scenario.",
+      "note": "*Lưu ý: Những lá bài này có hai mặt và có mặt encounter ở mặt bên kia. Để có trải nghiệm tốt nhất, đừng nhìn vào mặt bên kia trừ khi có hiệu ứng hướng dẫn bạn làm như vậy.*"
     }
   },
   "resolutions": {

@@ -11,7 +11,8 @@
     "placeLocations": "Đặt vị trí Miskatonic River và Forbidding Shore vào chơi. Mỗi điều tra viên bắt đầu chơi tại vị trí Miskatonic River. Sau đó, xào 6 vị trí Unvisited Isle và chọn ngẫu nhiên 2 vị trí đặt vào chơi. Đặt phần còn lại sang một bên, ngoài khu vực chơi.",
     "setAside": "Đặt vị trí The Geist-Trap và treachery Watcher’s Gaze một bên, ngoài khu vực chơi.",
     "setEnemiesAside": "Tìm trong bộ sưu tập Anette Mason (The Circle Undone #57) và Josef Meiger (The Circle Undone #85) và đặt sang một bên, ngoài khu vực chơi.",
-    "acts": "Tùy thuộc vào các trường hợp sau, một phiên bản khác của Act 3 và 4 sẽ được sử dụng trong màn chơi này. Mỗi phiên bản khác của Act 3 hoặc 4 đều bị loại bỏ khỏi màn chơi."
+    "acts": "Tùy thuộc vào các trường hợp sau, một phiên bản khác của Act 3 và 4 sẽ được sử dụng trong màn chơi này. Mỗi phiên bản khác của Act 3 hoặc 4 đều bị loại bỏ khỏi màn chơi.",
+    "missingPersons": "Kiểm tra phần \"Người Mất Tích\" trong Nhật ký Chiến dịch. Dựa trên nhân vật nào bị gạch bỏ và nhân vật nào không bị, hãy thực hiện như sau:"
   },
   "resolutions": {
     "resolution1": {

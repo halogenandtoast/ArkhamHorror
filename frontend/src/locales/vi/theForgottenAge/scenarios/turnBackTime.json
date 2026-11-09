@@ -4,7 +4,10 @@
     "placeLocations": "Đưa Entryway vào cuộc chơi. Mỗi điều tra viên bắt đầu chơi tại Entryway.",
     "setAside": "Đặt kẻ địch Harbinger of Valusia và địa điểm Chamber of Time sang một bên, out of play.",
     "chaosBag": "Thêm 1 token {'{'}elderThing{'}'} vào chaos bag trong phần còn lại của campaign.",
-    "poisoned": "Đặt mỗi điểm yếu Poisonsed đang không ở trong chồng bài của một điều tra sang một bên."
+    "poisoned": "Đặt mỗi điểm yếu Poisonsed đang không ở trong chồng bài của một điều tra sang một bên.",
+    "relicOfAgesRepossessThePast": "Loại bỏ Relic of Ages (*Repossess the Past*) khỏi deck của người sở hữu và đặt nó sang một bên, out of play.",
+    "relicOfAgesADeviceOfSomeSort": "Loại bỏ Relic of Ages (*…A Device, of Some Sort*) khỏi trò chơi.",
+    "explorationDeck": "Tạo chồng bài khám phá. Việc này được làm bằng cách lấy 5 vị trí [[Ancient]] một mặt và xào chúng vào với nhau, cùng với 1 bản sao của mỗi lá bài treachery sau: Ill Omen, Deep Dark, Final Mistake, Entombed, và Crypt Chill."
   },
   "resolutions": {
     "resolution1": {

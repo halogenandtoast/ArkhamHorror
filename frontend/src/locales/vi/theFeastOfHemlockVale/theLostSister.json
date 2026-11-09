@@ -106,21 +106,21 @@
       "body": "<p>_Nếu không đạt được resolution nào (mỗi điều tra viên đều đã resign hoặc bị đánh bại)_: Nỗ lực của bạn đã đến giới hạn. Nấm mốc bất thường và đám thú hoang hung hãn là quá sức đối với bạn. Bạn không còn lựa chọn nào ngoài từ bỏ cuộc tìm kiếm.</p><ul><li>Mỗi điều tra viên nhận 1 kinh nghiệm thưởng vì đã đối mặt với những nỗi kinh hoàng của các hang động ven biển.</li><li>Chuyển đến _Resolution 4_.</li></ul>"
     },
     "resolution1": {
-      "title": "Resolution 1",
+      "title": "Kết thúc thứ nhất",
       "body": "<p>_Resolution 1_: Bạn trở lại Akwan cùng Helen và Lizzie. Cô em gái cảm ơn bạn trong khi vẫn ngoái nhìn về phía những hang động. Helen cầm lấy sợi dây dắt chó sờn rách từ tay cô bé. \"Bruce là một chú chó ngoan,\" cô nói. Gió biển thổi tung mái tóc nâu sẫm của cô con gái út nhà Peters qua khuôn mặt tròn trịa của cô bé khi Helen quàng tay qua vai em mình. Bạn hỏi kế hoạch bây giờ của họ là gì.</p><p>\"Chúng ta không thể ở lại đây,\" Helen nói, hướng về phía Elizabeth nhiều hơn là bạn. Trước khi em gái kịp phản đối, Helen tiếp tục. \"Em còn nhớ câu chuyện Nokemes kể cho chúng ta không? Câu chuyện về việc Gluskab biến một người đàn ông thành một cái cây. Mọi thứ trên hòn đảo này đều sai trái. Nó đã biến đổi thành một thứ gì đó chết chóc. Có lẽ đã đến lúc chúng ta đến thăm chú George ở Portland.\"</p><p class='basic'>Kiểm tra Nhật ký Chiến dịch của bạn.</p>",
       "proceedToResolution2": "Nếu _Theo reconciled with Helen_ được ghi lại trong _Ghi chú của Theo Peters_, tiếp tục đến _Resolution 2_.",
       "skipToResolution3": "Nếu không, chuyển đến _Resolution 3_."
     },
     "resolution2": {
-      "title": "Resolution 2",
+      "title": "Kết thúc thứ hai",
       "body": "<p>_Resolution 2_: Sau khi quay lại từ chiếc xe tải của mình, Theo hỏi em gái tại sao cô bé lại đi lang thang. Lizzie gạt nước mắt và giơ sợi dây dắt chó bị đứt lên. \"Bruce muốn đi dạo một lần cuối. Giống như chúng em từng làm.\" Theo trông buồn bã khi hai chị em gái của anh nhìn ra biển, vượt qua những con sóng cuộn trào và những đám mây bạc. Theo ngập ngừng, tìm lời để nói khi hai chị em đối mặt với những con sóng vỗ bờ.</p><p>\"Lại đây, Theo,\" Helen vẫy tay gọi anh lại. Ba anh chị em đứng cùng nhau, lặng lẽ nhìn ra biển.</p><ul><li>Mỗi điều tra viên nhận 2 kinh nghiệm thưởng vì đã giúp Helen cứu em gái cô ấy.</li><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *Gia đình Peters đã đoàn tụ*.</li><li>Chuyển đến _Resolution 4_.</li></ul>"
     },
     "resolution3": {
-      "title": "Resolution 3",
+      "title": "Kết thúc thứ ba",
       "body": "<p>_Resolution 3_: \"Tôi sẽ sớm bắt đầu chuẩn bị và hy vọng chúng tôi sẽ rời khỏi hòn đảo trong vài ngày nữa,\" Helen nói với bạn. \"Tôi khuyên bạn cũng nên rời đi sớm.\" Bạn nói với cô ấy rằng cuộc khảo sát còn lâu mới kết thúc, và vẫn còn nhiều việc bạn phải làm. Helen cười khẩy. \"Tự chuốc lấy cái chết thôi,\" cô nói, rồi sau một khoảng lặng ngắn, cô lại nhìn bạn. \"Xin lỗi. Tôi không hiểu sao mình lại nói vậy,\" cô nói. \"Cảm ơn vì sự giúp đỡ của bạn. Không một ai ở Vale chịu giúp đâu.\" Cô nhìn xuống bờ cát đen hướng về Akwan. \"Gideon từng thường xuyên câu cá ở đây, nhưng giờ thì không nữa. Vale đã cướp ông ấy khỏi chúng tôi. Bây giờ họ lại cướp mất Theo.\"</p><p>Cô nhìn lại bạn. \"Tôi có một việc nữa muốn nhờ. Xin hãy để mắt đến Theo. Cậu ấy có ý tốt, ngay cả khi cậu ấy hơi chậm tiêu. Hãy đảm bảo cậu ấy vẫn ổn. Bất kể cậu ấy nghĩ gì, cậu ấy vẫn là người nhà.\"</p><ul><li>Mỗi điều tra viên nhận 2 kinh nghiệm thưởng vì đã giúp Helen cứu em gái cô ấy.</li><li>Trong Nhật ký Chiến dịch của bạn, ghi lại *Elizabeth Peters đã được cứu*.</li><li>Tiếp tục đến _Resolution 4_.</li></ul>"
     },
     "resolution4": {
-      "title": "Resolution 4",
+      "title": "Kết thúc thứ 4",
       "body": "<p>_Resolution 4_: “Khảo sát Miskatonic, tháng 6 năm 1926. Các thành viên Marquez, Musgrave, et alii. Bờ biển phía bắc và các hang động ven biển cực kỳ nguy hiểm. Đã xác định được hàng chục loài nấm phát quang sinh học chưa từng được ghi nhận trước đây. Một hệ sinh thái vô cùng khắc nghiệt và cực kỳ nhạy cảm với ánh sáng. Khuyến nghị phân tích và quan sát thêm. Các chuyến thám hiểm trong tương lai nên chuẩn bị sẵn trang bị phù hợp và cực kỳ thận trọng. Tránh các hang động Akwan, nếu có thể.”</p><ul><li>Mỗi điều tra viên nhận kinh nghiệm bằng với giá trị Victory X của mỗi lá bài trong victory display. _Mỗi điều tra viên bây giờ có thể tiêu kinh nghiệm được ghi dưới mục “Unspent Experience” trong Nhật ký Chiến dịch của bạn._</li><li>Trong phần “Areas Surveyed” của Nhật ký Chiến dịch, đánh dấu *Akwan Shoreline*.</li></ul>"
     },
     "xp": {

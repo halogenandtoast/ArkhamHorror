@@ -9,7 +9,8 @@
     "setAside": "Đặt 4 bản sao của Across Space and Time một bên, ngoài vùng chơi."
   },
   "moving": {
-    "title": "Di chuyển trên con tàu: “Trái” và “Phải”"
+    "title": "Di chuyển trên con tàu: “Trái” và “Phải”",
+    "body": "<p class='basic'>Trong màn này, các vị trí được sắp xếp từ trái sang phải, với Engine Car (đầu máy) là vị trí ngoài cùng bên phải. Bất cứ khi nào hiệu ứng lá bài đề cập đến “vị trí ở bên trái” hoặc “vị trí ở bên phải”, nó đề cập đến vị trí ngay bên trái hoặc bên phải vị trí của bạn. Bất kỳ hiệu ứng lá bài nào đề cấp đến một hướng (trái hoặc phải) thì nên được hiểu là ở sơ đồ trên trang trước.</p>"
   },
   "resolutions": {
     "resolution1": {

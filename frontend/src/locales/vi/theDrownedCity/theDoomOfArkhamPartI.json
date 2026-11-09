@@ -9,7 +9,10 @@
     "legrasse": "Chọn một điều tra viên để thêm story asset John Raymond Legrasse vào bộ bài của họ. Lá bài này không tính vào kích cỡ bộ bài của họ.",
     "legrasseInPlay": "Đưa story asset John Raymond Legrasse vào chơi dưới quyền kiểm soát của điều tra viên đó. Ông ấy không chiếm ally slot trong Phần I hoặc Phần II của màn chơi này.",
     "doomOnAgenda": "Đặt doom lên agenda bằng với số lượng điều tra viên.",
-    "floodTokens": "Thêm token lũ lụt vào kho chứa token."
+    "floodTokens": "Thêm token lũ lụt vào kho chứa token.",
+    "randomVersions": "Đưa một trong hai địa điểm Downtown và một trong hai địa điểm Southside vào chơi một cách ngẫu nhiên và loại bỏ các phiên bản khác của những địa điểm đó khỏi trò chơi. Đưa Northside, Easttown, Rivertown, St. Mary's Hospital, và Miskatonic University vào chơi theo sơ đồ sắp xếp địa điểm ở bên phải.",
+    "cardsBeneathLocations": "Xào địa điểm Tillinghast Esoterica một mặt cùng với từng lá treachery từ bộ bài encounter *The Midnight Masks* và đặt một trong số chúng dưới mỗi địa điểm ngoại trừ Rivertown.",
+    "buildEncounterDeck": "Xào các lá bài encounter còn lại để xây dựng chồng bài encounter."
   },
   "resolutions": {
     "label": {

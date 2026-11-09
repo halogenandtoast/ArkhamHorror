@@ -1,20 +1,23 @@
 {
   "heading": "Màn VIII",
   "intro": {
-    "title": "Màn VIII: Đứng Trước Ngai Vàng Tối Tăm"
+    "title": "Màn VIII: Đứng Trước Ngai Vàng Tối Tăm",
+    "body": "<p>Không ngừng tiến lên, chiến mã của bạn đưa bạn vào cơn ác mộng đẫm máu của khoảng không bên kia. Bạn không dám quay lại và nhìn về phía sau, vì bạn biết rằng những gì bạn thấy có thể sẽ làm tan nát trái tim bạn, hoặc có thể là tâm trí của bạn. Những nỗi kinh hoàng trượt dài một cách tăm tối giữa khoảng đen và cô đơn của vũ trụ. Bạn đã hy vọng sẽ được kinh ngạc trước một dãy sao lấp lánh tuyệt đẹp, nhưng thay vào đó bạn bị bỏ lại với một cái hố trống rỗng trong dạ dày của mình, trong khi sự rộng lớn không hề giảm đi của vũ trụ lạnh lẽo và tối tăm hiện ra trước mắt bạn. Ở phía xa, một giai điệu xa xưa vang lên những hợp âm của nó, một giai điệu mà bạn không thể tái tạo lại trong vũ trụ của mình bằng bất kỳ nhạc cụ nào mà bạn đã biết, tai bạn cũng không thể hiểu được các nốt của nó nếu nó không văng vẳng trong đầu bạn ngay lúc này.</p><p>Có một luồng không khí ào ạt khi bạn phá vỡ một tháp pháo của một hàng rào làm bằng mã não và đi xuống một hang động vô tận bằng đá đen và các kiến ​​trúc không tưởng. Âm nhạc lớn lên khi bạn lao mình qua một thung lũng bất khả thi, qua những bãi cạn có những sinh vật không hình dạng, và giữa những thứ ẩn nấp và nhảy múa trong bóng tối bên kia. Bạn không thể không lắng nghe bản nhạc kỳ lạ, ghi nhớ từng nốt nhạc khủng khiếp, nghịch âm vào bộ nhớ. Không có suy nghĩ hay ước mơ nào của nhân loại có thể đến được với bạn ở đây, ở nơi đã có từ xa xưa từ khi Trái đất được sinh ra. Bạn chỉ có thể hy vọng dẫn dắt con chiến mã của mình đến nơi mà bạn phải đến… Chiếc ngai vàng mà chính Azathoth đang ngự trị trên đó.</p>"
   },
   "setup": {
     "setLocationsAside": "Tìm vị trí Hideous Palace, Court of the Great Old Ones, và The Black Throne. (Chúng ở mặt để lộ của 3 lá vị trí \"Cosmos\".) Đặt những vị trí này một bên, ngoài khu vực chơi.",
     "placeStart": "Đặt vị trí Cosmic Ingress vào chơi. Mỗi điều tra viên bắt đầu chơi tại Cosmic Ingress.",
     "setAside": "Đặt kẻ địch Piper of Azathoth sang một bên, ngoài khu vực chơi.",
     "placeAzathoth": "Đặt Azathoth vào chơi kế bên chồng bài agenda. Trong phần còn lại của màn chơi, Azathoth được chơi, nhưng không ở vị trí cụ thể nào.",
-    "thePathWindsBeforeYou": "Kiểm tra Nhật ký Chiến dịch. Đối với mỗi kiểm đếm được ghi bên cạnh con đường uốn lượn trước mặt bạn, hãy đặt 1 tài nguyên trên lá bài scenario reference."
+    "thePathWindsBeforeYou": "Kiểm tra Nhật ký Chiến dịch. Đối với mỗi kiểm đếm được ghi bên cạnh con đường uốn lượn trước mặt bạn, hãy đặt 1 tài nguyên trên lá bài scenario reference.",
+    "cosmos": "Xào những vị trí còn lại thành một chồng bài riêng biệt, với mặt Cosmoc ngửa lên. Chồng bài này gọi là Cosmos (xem “The Cosmos” phía dưới)."
   },
   "theCosmos": {
     "title": "Vũ Trụ"
   },
   "emptySpace": {
-    "title": "Ô trống"
+    "title": "Ô trống",
+    "body": "<p class='basic'>Trong màn chơi này, đôi khi bạn sẽ được hướng dẫn đặt \"không gian trống\" vào chơi. Điều này được thực hiện bằng cách lấy lá bài trên cùng của bộ bài của điều tra viên đang hoạt động và đặt nó vào chơi với mặt úp xuống, ở vị trí đã chỉ định. Thay vào đó, nếu không có điều tra viên đang hoạt động, (các) lá bài trên cùng trong bộ bài của điều tra viên chính sẽ được sử dụng. Không gian trống không phải là một vị trí, và không thể bị kẻ địch hoặc điều tra viên tiến vào trừ khi có ghi chú khác. Tuy nhiên, nó được tính là một vị trí cho mục đích xác định khoảng cách giữa hai vị trí. Một vị trí có thể tham gia chơi ở vị trí bị chiếm dụng bởi không gian trống. Nếu điều này xảy ra, lá bài không gian trống sẽ được xào trở lại bộ bài của chủ nhân lá bài đó.</p>"
   },
   "resolutions": {
     "investigatorDefeat": {

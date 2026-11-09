@@ -176,7 +176,7 @@ import Arkham.Window (Window (..), defaultWindows, mkAfter, mkWhen, mkWindow, pr
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Lens (each, non, over, sumOf, _Just)
-import Control.Monad.State.Strict (evalStateT, get, modify)
+import Control.Monad.State.Strict (MonadTrans, evalStateT, get, modify)
 import Data.Data.Lens (biplate)
 import Data.List qualified as List
 import Data.Map.Strict qualified as Map
@@ -951,16 +951,51 @@ handleInvestigatorDrewPlayerCardFrom a@InvestigatorAttrs {..} iid card mDeck msg
     else pushAll $ FocusCards [toCard card] : maybeToList mWhenDraw <> [UnfocusCards, Do msg]
   pure a
 
+-- | The messages that resolve a drawn player card's revelation, start to finish.
+revelationResolution :: IsCard c => InvestigatorId -> c -> [Message]
+revelationResolution iid card =
+  if toCardType card == PlayerTreacheryType
+    then [DrewTreachery iid Nothing (toCard card)]
+    else [Revelation iid (CardIdSource (toCardId card)), ResolvedCard iid (toCard card)]
+
+{- | FAQ 2.25: a /Dilemma/ drawn (or otherwise put into hand) while a skill test is
+resolving waits for that test to resolve in full. Everything inside a test is queued
+ahead of 'EndSkillTestWindow', so that sentinel is the anchor -- and the sentinel being
+gone by the time the re-queued resolution runs is what stops it deferring forever.
+
+Gated on the sentinel rather than 'inSkillTest' on purpose: between the message that
+installs the skill test and the 'BeginSkillTestAfterFast' that queues the sentinel there
+is a window where the test exists but the sentinel does not, and 'insertAfterMatching'
+errors when nothing matches.
+
+Both queue operations are 'lift'ed: these handlers run inside 'runQueueT', whose own
+inbox is empty and only flushes to the front of the real queue afterwards, so an
+unlifted read would never see the sentinel and an unlifted insert would miss it.
+-}
+deferDilemmaRevelation
+  :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m))
+  => Card -> [Message] -> t m Bool
+deferDilemmaRevelation card msgs = do
+  shouldDefer <-
+    if Dilemma `member` toTraits card
+      then lift $ fromQueue (elem EndSkillTestWindow)
+      else pure False
+  when shouldDefer $ lift $ insertAfterMatching msgs (== EndSkillTestWindow)
+  pure shouldDefer
+
 handleDoInvestigatorDrewPlayerCardFrom a@InvestigatorAttrs {..} iid card mdeck = do
   afterDraw <-
     checkWindows [mkAfter $ Window.DrawCard iid (toCard card) (fromMaybe Deck.NoDeck mdeck)]
   inLimit <- passesLimits iid (toCard card)
   if hasRevelation card && inLimit
-    then
-      pushAll
-        $ if toCardType card == PlayerTreacheryType
-          then [DrewTreachery iid Nothing (toCard card), afterDraw]
-          else [Revelation iid (CardIdSource card.id), afterDraw, ResolvedCard iid $ toCard card]
+    then do
+      -- The draw window still fires at its normal time; only the revelation waits.
+      deferred <- deferDilemmaRevelation (toCard card) (revelationResolution iid card)
+      if deferred
+        then push afterDraw
+        else case revelationResolution iid card of
+          (begin : rest) -> pushAll $ begin : afterDraw : rest
+          [] -> push afterDraw
     else
       if toCardType card == PlayerEnemyType
         then pushAll [DrewPlayerEnemy iid (toCard card), afterDraw]
@@ -1121,15 +1156,22 @@ handleAddToHand a@InvestigatorAttrs {..} iid cards msg = do
 
 handleDoAddToHand a@InvestigatorAttrs {..} iid cards = do
   assetIds <- catMaybes <$> for cards (selectOne . AssetWithCardId . toCardId)
-  for_ cards \card -> do
+  -- FAQ 2.25 also orders the batch: a weakness or encounter card in hand resolves
+  -- before a Dilemma. Collected and pushed once so the order is explicit rather than
+  -- falling out of push-prepends inside the loop.
+  resolutions <- forMaybeM (sortOn (\c -> Dilemma `member` toTraits (toCard c)) cards) \card -> do
     inLimit <- passesLimits iid (toCard card)
     if hasRevelation card && inLimit
-      then
-        if toCardType card == PlayerTreacheryType
-          then push $ DrewTreachery iid Nothing (toCard card)
-          else pushAll [Revelation iid (CardIdSource card.id), ResolvedCard iid $ toCard card]
-      else when (toCardType card == PlayerEnemyType) do
-        push $ DrewPlayerEnemy iid (toCard card)
+      then do
+        let resolution = revelationResolution iid card
+        deferred <- deferDilemmaRevelation (toCard card) resolution
+        pure $ if deferred then Nothing else Just resolution
+      else
+        pure
+          $ if toCardType card == PlayerEnemyType
+            then Just [DrewPlayerEnemy iid (toCard card)]
+            else Nothing
+  pushAll (concat resolutions)
   pure
     $ a
     & (cardsUnderneathL %~ filter (`notElem` cards))

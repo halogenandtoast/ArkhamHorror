@@ -2,8 +2,9 @@ module Arkham.Event.Events.AtACrossroads1Spec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Event.Cards qualified as Events
-import Arkham.Matcher (assetIs)
+import Arkham.Matcher (assetIs, eventIs)
 import Data.Text qualified as T
+import Helpers.Message qualified
 import TestImport.New
 
 spec :: Spec
@@ -50,3 +51,24 @@ spec = describe "At a Crossroads (1)" do
     chooseTarget (toCardId emergencyCache)
     asDefs self.discard `shouldSatisfyM` ((== 1) . length . filter (== Events.emergencyCache))
     asDefs self.hand `shouldSatisfyM` notElem Events.emergencyCache
+
+  -- #5974, FAQ 2.25: "If a Dilemma card is drawn while resolving a skill test,
+  -- resolve the skill test in full before resolving the Dilemma's Revelation
+  -- effect." Its revelation hands an investigator an action as if it were their
+  -- turn, which has no coherent meaning inside a live test.
+  faq "2.25" $ it "does not resolve its revelation during a skill test" . gameTest $ \self -> do
+    let setOwner' = setPlayerCardOwner (toId self)
+    atACrossroads <- genPlayerCardWith Events.atACrossroads1 setOwner'
+    filler <- genPlayerCardWith Assets.flashlight setOwner'
+    withProp @"deck" (Deck [atACrossroads, filler]) self
+    sid <- getRandom
+    -- Deliberately not runSkillTest: the test must still be live for the draw.
+    run $ Helpers.Message.beginSkillTest sid self #intellect 2
+    peekQueue `shouldSatisfyM` elem EndSkillTestWindow
+    drawCards self 1
+
+    -- Its revelation did resolve -- it is not lost -- but only after the test's own
+    -- end-of-test sentinel was consumed. Had it cut in line, the ask it parks would
+    -- have arrived with that sentinel still sitting in the queue.
+    assertAny $ eventIs Events.atACrossroads1
+    peekQueue `shouldSatisfyM` notElem EndSkillTestWindow

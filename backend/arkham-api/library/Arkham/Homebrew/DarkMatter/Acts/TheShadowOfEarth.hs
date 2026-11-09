@@ -21,10 +21,11 @@ theShadowOfEarth = act (3, A) TheShadowOfEarth Cards.theShadowOfEarth Nothing
 
 instance HasAbilities TheShadowOfEarth where
   getAbilities (TheShadowOfEarth a) =
-    [ mkAbility a 1
-        $ Objective
-        $ forced
-        $ EnemyDefeated #after Anyone ByAny (enemyIs Enemies.theEntity)
+    {- 'ifEnemyDefeated' is IfEnemyDefeated #after, which resolves after the defeat's
+    disposal. Plain 'EnemyDefeated #after' runs before it, so advancing from here
+    reached resolution 4 -- which scores the victory display -- while the Entity's own
+    'AddToVictory' was still queued behind us, losing its 2 victory points (#5975). -}
+    [ mkAbility a 1 $ Objective $ forced $ ifEnemyDefeated Enemies.theEntity
     , onlyOnce
         $ restricted a 2 (not_ $ exists $ UneliminatedInvestigator <> not_ ResignedInvestigator)
         $ Objective

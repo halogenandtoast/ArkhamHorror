@@ -42,12 +42,15 @@ instance HasAbilities BestLaidPlans where
             (SourceUsedBy You)
             (culpritEnemy <> EnemyAt LocationWithoutClues)
             (atLeast 1)
-      , -- "Objective - If the Culprit enemy is defeated, advance."
+      , {- "Objective - If the Culprit enemy is defeated, advance."
+
+        IfEnemyDefeated, so the culprit is in the victory display before resolution 2
+        scores it (#5975). -}
         withI18nTooltip "bestLaidPlans.objective"
           $ mkAbility a 2
           $ Objective
           $ forced
-          $ EnemyDefeated #after Anyone ByAny culpritEnemy
+          $ ifEnemyDefeatedMatch culpritEnemy
       ]
 
 instance RunMessage BestLaidPlans where

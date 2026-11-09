@@ -48,10 +48,12 @@ instance HasAbilities BanishingTheSpectre where
               <> exists (CanFightEnemy (a.ability 1) <> headlessHorseman)
           )
         $ fightActionWith_ #intellect
-    , onlyOnce
+    , -- IfEnemyDefeated, so the Horseman is in the victory display before
+      -- resolution 2 scores it (#5975).
+      onlyOnce
         $ mkAbility a 2
         $ Objective
-        $ forced (EnemyDefeated #after Anyone ByAny headlessHorseman)
+        $ forced (ifEnemyDefeatedMatch headlessHorseman)
     ]
 
 instance RunMessage BanishingTheSpectre where

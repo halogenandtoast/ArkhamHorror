@@ -64,9 +64,12 @@ instance RunMessage TidalPool where
       -- "Take control of a key on Tidal Pool."
       chooseOneM iid $ for_ (toList attrs.keys) \k -> keyLabeled k $ placeKey iid k
       pure l
-    Msg.DiscoverClues _ d | d.location == DiscoverAtLocation attrs.id -> do
+    -- Tally on `Do`, not the bare `DiscoverClues`: the bare message runs before
+    -- `MaxCluesDiscovered` is applied, so counting there bills a discovery against
+    -- its own allowance. `Do` also carries the clamped count rather than the request.
+    Do (Msg.DiscoverClues _ d) | d.location == DiscoverAtLocation attrs.id -> do
       l' <- liftRunMessage msg attrs
-      pure $ TidalPool $ setMeta (discoveredThisRound attrs + d.count) l'
+      pure $ TidalPool $ setMeta (discoveredThisRound attrs + min attrs.clues d.count) l'
     EndRound -> do
       l' <- liftRunMessage msg attrs
       pure $ TidalPool $ setMeta (0 :: Int) l'

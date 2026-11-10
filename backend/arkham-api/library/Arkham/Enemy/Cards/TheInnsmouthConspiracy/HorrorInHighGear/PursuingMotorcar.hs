@@ -45,7 +45,8 @@ instance RunMessage PursuingMotorcar where
         select
           $ not_ (InvestigatorWithId iid)
           <> InVehicleMatching (VehicleWithInvestigator $ InvestigatorWithId iid)
-      msgs <- capture $ for_ others $ initiateEnemyAttack attrs (attrs.ability 2)
+      msgs <- capture $ for_ others \other ->
+        initiateEnemyAttackEdit attrs (attrs.ability 2) other despiteExhausted
       push $ ChangeEnemyAttackDetails attrs.id $ details {attackAfter = msgs}
       pure e
     _ -> PursuingMotorcar <$> liftRunMessage msg attrs

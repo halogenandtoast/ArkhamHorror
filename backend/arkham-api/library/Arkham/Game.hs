@@ -3279,6 +3279,23 @@ guardYourLocation body = do
     Nothing -> pure []
     Just lid -> body lid
 
+{- | The out-of-play location @YourLocation@ also means for 'M.EnemyWasAt'. An
+enemy-location IS its room, so its disposal moves you off it (#5980) and the room
+cannot be selected at all, yet "an enemy was defeated at your location" still
+holds. Only a location that really left play counts, so a move never widens this.
+-}
+displacedYourLocation :: HasGame m => LocationMatcher -> m [LocationId]
+displacedYourLocation = \case
+  YourLocation -> do
+    iid <- view activeInvestigatorIdL <$> getGame
+    mlid <- join <$> fieldMay InvestigatorPreviousLocation iid
+    case mlid of
+      Nothing -> pure []
+      Just lid -> do
+        stillInPlay <- selectAny $ LocationWithId lid
+        pure [lid | not stillInPlay]
+  _ -> pure []
+
 {- | The assets named by leave-play windows currently on the stack.
 
 Only these are resurrected, not every tombstone: a leave-play window is open for
@@ -4554,7 +4571,7 @@ enemyMatcherFilter es matcher' = do
           then pure False
           else Helpers.placementLocations enemy.placement <&> any (`elem` locations)
     M.EnemyWasAt locationMatcher -> do
-      locations <- select locationMatcher
+      locations <- (<>) <$> select locationMatcher <*> displacedYourLocation locationMatcher
       es & filterM \enemy -> do
         if
           | enemy.placement.isAttachedWithoutLocation -> pure False

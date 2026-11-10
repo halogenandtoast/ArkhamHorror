@@ -347,18 +347,21 @@ instance RunMessage EnemyLocationAttrs where
     Do (Msg.Defeated (EnemyTarget eid) _ source _) | eid == asEnemyId a -> do
       defeatedBy <- Defeat.classifyDefeat source (enemyLocationDamage a) <$> getModifiedHealth a
       miid <- getSourceController source
-      -- No disposal: an enemy-location doesn't discard itself. Removing it also removes
-      -- the location and relocates everyone standing on it, which is a consequence of
-      -- the defeat rather than part of it, so that waits for `After` below — otherwise
-      -- IfEnemyDefeated would resolve against a location that no longer exists and
-      -- matchers like Bounty's `EnemyWasAt YourLocation` could never match.
-      pushAll =<< Defeat.closeDefeat (asEnemyId a) defeatedBy miid []
+      -- The scenario hand-off IS this entity's disposal, so it goes in the same slot an
+      -- enemy's discard/victory does. Deferred to `After` it left the investigator on the
+      -- room they had just brought down for every `#after` reaction, so Grete Wagner read
+      -- "your location" as the doomed room, not the one she is relocated to (#5980).
+      -- `EnemyWasAt YourLocation` still matches the room, via `displacedYourLocation`.
+      pushAll
+        =<< Defeat.closeDefeat
+          (asEnemyId a)
+          defeatedBy
+          miid
+          [Msg.EnemyLocationDefeated a.id (toCardId a) source (setToList $ toTraits (toCardDef a))]
       -- Defeated as of here, matching Arkham.Enemy.Runner: a `CheckDefeated` that arrives
       -- while the defeat is still resolving must not restart it (issue #5242).
       pure $ a & defeatedL .~ True
-    After (Msg.Defeated (EnemyTarget eid) _ source _) | eid == asEnemyId a -> do
-      push $ Msg.EnemyLocationDefeated a.id (toCardId a) source (setToList $ toTraits (toCardDef a))
-      pure $ a & defeatedL .~ True
+    After (Msg.Defeated (EnemyTarget eid) _ _ _) | eid == asEnemyId a -> pure $ a & defeatedL .~ True
     -- Hand off to the scenario, which relocates what was here and removes the location
     -- per the enemy-location defeat rules.
     Msg.EnemyLocationDefeated lid _ _ _ | lid == a.id -> do

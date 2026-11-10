@@ -55,13 +55,14 @@ openDefeat eid defeatedBy miid msg extra = do
   whenMsg <- checkWindows [mkWhen $ Window.EnemyDefeated miid defeatedBy eid]
   pure $ [whenMsg, When msg] <> extra <> [Do msg, After msg]
 
--- | The messages to push for @Do (Defeated ...)@: the after-windows bracketing
--- @disposal@, which is how the entity itself leaves play (discard or victory for
--- an enemy; nothing for an enemy-location, whose removal is the scenario's job
--- and rides on @After@ instead).
---
--- 'Window.IfEnemyDefeated' deliberately resolves after disposal, so reactions
--- that read the entity back do so through 'Arkham.Matcher.DefeatedEnemy'.
+{- | The messages to push for @Do (Defeated ...)@: the after-windows bracketing
+@disposal@, which is how the entity itself leaves play (discard or victory for
+an enemy; the scenario hand-off that removes the location and relocates what
+stood on it for an enemy-location).
+
+'Window.IfEnemyDefeated' deliberately resolves after disposal, so reactions
+that read the entity back do so through 'Arkham.Matcher.DefeatedEnemy'.
+-}
 closeDefeat
   :: HasGame m
   => EnemyId -> DefeatedBy -> Maybe InvestigatorId -> [Message] -> m [Message]

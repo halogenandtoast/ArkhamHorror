@@ -938,31 +938,19 @@ shuffleDiscardBackIn
   :: (ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> m ()
 shuffleDiscardBackIn investigator = push $ ShuffleDiscardBackIn (asId investigator)
 
-placeDoomOnAgenda :: ReverseQueue m => Int -> m ()
-placeDoomOnAgenda 0 = pure ()
-placeDoomOnAgenda n = push $ PlaceDoomOnAgenda n CanNotAdvance
-
-placeDoomOnAgendaAndCheckAdvance :: ReverseQueue m => Int -> m ()
-placeDoomOnAgendaAndCheckAdvance n = push $ PlaceDoomOnAgenda n CanAdvance
-
-{- | Place doom on the current agenda as a /card effect/, attributing it to
-@source@. Unlike 'placeDoomOnAgenda' (which routes through the scenario and so
-is sourced from the scenario itself), this preserves the placing card's source
-so @SourceIsCardEffect@ \"would place doom\" windows fire (e.g. The Onslaught
-redirecting doom onto The Captives).
+{- | Place doom on the current agenda, attributing it to @source@. The source
+must be named so @SourceIsCardEffect@ \"would place doom\" windows can tell a
+card effect apart from the mythos phase's step 1.2 placement (e.g. The Onslaught
+redirects a card effect's doom onto The Captives, but not the phase's).
 -}
-placeDoomOnAgendaBy :: (ReverseQueue m, Sourceable source) => source -> Int -> m ()
-placeDoomOnAgendaBy _ 0 = pure ()
-placeDoomOnAgendaBy source n = do
-  agendas <- select AnyAgenda
-  for_ agendas \agenda -> placeDoom source agenda n
+placeDoomOnAgenda :: (ReverseQueue m, Sourceable source) => source -> Int -> m ()
+placeDoomOnAgenda _ 0 = pure ()
+placeDoomOnAgenda source n = push $ PlaceDoomOnAgenda (toSource source) n CanNotAdvance
 
-placeDoomOnAgendaAndCheckAdvanceBy :: (ReverseQueue m, Sourceable source) => source -> Int -> m ()
-placeDoomOnAgendaAndCheckAdvanceBy _ 0 = pure ()
-placeDoomOnAgendaAndCheckAdvanceBy source n = do
-  agendas <- select AnyAgenda
-  for_ agendas \agenda -> placeDoom source agenda n
-  push AdvanceAgendaIfThresholdSatisfied
+placeDoomOnAgendaAndCheckAdvance
+  :: (ReverseQueue m, Sourceable source) => source -> Int -> m ()
+placeDoomOnAgendaAndCheckAdvance source n =
+  push $ PlaceDoomOnAgenda (toSource source) n CanAdvance
 
 revertAgenda :: (ReverseQueue m, AsId a, IdOf a ~ AgendaId) => a -> m ()
 revertAgenda a = push $ RevertAgenda (asId a)

@@ -32,6 +32,6 @@ instance RunMessage SkulkingHooligan where
           removeClues (attrs.ability 1) iid ((clues + 1) `div` 2)
           withLocationOf iid $ placeCluesUpToClueValue (attrs.ability 1)
         labeled "skulkingHooligan.placeDoom" do
-          placeDoomOnAgendaAndCheckAdvanceBy (attrs.ability 1) 1
+          placeDoomOnAgendaAndCheckAdvance (attrs.ability 1) 1
       pure e
     _ -> SkulkingHooligan <$> liftRunMessage msg attrs

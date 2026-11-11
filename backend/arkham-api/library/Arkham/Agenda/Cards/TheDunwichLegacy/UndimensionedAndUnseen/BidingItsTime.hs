@@ -37,7 +37,7 @@ instance RunMessage BidingItsTime where
       shuffleEncounterDiscardBackIn
       lead <- getLead
       withLocationOf lead \lid -> do
-        mEnemy <- spawnSetAsideBroodOfYogSothothAt lid
+        mEnemy <- spawnSetAsideBroodOfYogSothothAt attrs lid
         for_ mEnemy \enemy ->
           selectEach (colocatedWith lead) \iid -> do
             sid <- getRandom

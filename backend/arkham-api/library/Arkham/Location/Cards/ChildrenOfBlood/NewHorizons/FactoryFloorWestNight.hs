@@ -29,6 +29,6 @@ instance RunMessage FactoryFloorWestNight where
         labeledValidate canBlood "addBloodToken" $ addChaosToken #blood
         countVar 1
           $ labeledValidate canDoom "placeAgendaDoom"
-          $ placeDoomOnAgendaBy (attrs.ability 1) 1
+          $ placeDoomOnAgenda (attrs.ability 1) 1
       pure l
     _ -> FactoryFloorWestNight <$> liftRunMessage msg attrs

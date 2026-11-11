@@ -23,6 +23,6 @@ instance RunMessage TheyAreUponYou where
           assignHorror iid attrs horror
 
         revertAgenda attrs
-        placeDoomOnAgenda 2
+        placeDoomOnAgenda attrs 2
         pure a
       _ -> TheyAreUponYou <$> liftRunMessage msg attrs

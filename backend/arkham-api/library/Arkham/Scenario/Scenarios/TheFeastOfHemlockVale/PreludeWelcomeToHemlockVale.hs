@@ -115,7 +115,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
         , Locations.theCommonsDay
         ]
       n <- getPlayerCount
-      placeDoomOnAgenda n
+      placeDoomOnAgenda attrs n
     ScenarioSpecific "codex" v -> scope "codex" do
       let (iid, source :: Source, n :: Int) = toResult v
       let

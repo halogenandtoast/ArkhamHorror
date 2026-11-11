@@ -29,7 +29,7 @@ instance RunMessage AbyssalReach where
           when (clues > 0) $ placeCluesOnLocation iid attrs 1
         2 -> assignDamageAndHorror iid attrs 1 1
         3 -> roundModifier attrs iid (CannotPlay AnyCard)
-        _ | n >= 4 -> placeDoomOnAgendaAndCheckAdvance 1
+        _ | n >= 4 -> placeDoomOnAgendaAndCheckAdvance attrs 1
         _ -> pure ()
       pure t
     _ -> AbyssalReach <$> liftRunMessage msg attrs

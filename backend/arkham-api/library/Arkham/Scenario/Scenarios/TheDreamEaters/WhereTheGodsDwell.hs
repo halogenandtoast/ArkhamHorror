@@ -146,8 +146,8 @@ instance RunMessage WhereTheGodsDwell where
         Cultist ->
           byDifficulty
             attrs
-            (placeDoomOnAgenda 1)
-            (placeDoomOnAgendaAndCheckAdvance 1)
+            (placeDoomOnAgenda attrs 1)
+            (placeDoomOnAgendaAndCheckAdvance attrs 1)
         Tablet -> do
           nyarlathoteps <- select $ EnemyWithPlacement (HiddenInHand iid) <> EnemyWithTitle "Nyarlathotep"
           when (notNull nyarlathoteps)

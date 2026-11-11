@@ -174,9 +174,9 @@ instance RunMessage SmokeAndMirrors where
       when miskatonicUniversityBurned $ removeEvery [Locations.miskatonicUniversityQuietCampus]
       when miskatonicUniversitySaved do
         removeEvery [Locations.miskatonicUniversityInFlames]
-        placeDoomOnAgenda 1
+        placeDoomOnAgenda attrs 1
 
-      placeDoomOnAgenda =<< perPlayer 1
+      placeDoomOnAgenda attrs =<< perPlayer 1
 
       setAside
         [ Treacheries.markOfElokoss

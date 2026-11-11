@@ -23,6 +23,6 @@ instance RunMessage TheCreaturesTracks where
           labeled "spawnSetAsideBrood" $ push $ ChooseRandomLocation (toTarget attrs) mempty
       pure t
     ChosenRandomLocation target lid | isTarget attrs target -> do
-      void $ spawnSetAsideBroodOfYogSothothAt lid
+      void $ spawnSetAsideBroodOfYogSothothAt attrs lid
       pure t
     _ -> TheCreaturesTracks <$> liftRunMessage msg attrs

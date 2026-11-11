@@ -190,7 +190,7 @@ instance RunMessage TheLabyrinthsOfLunacy where
               $ Locations.chamberOfSecretsBloodyPrison
               :| [Locations.chamberOfSecretsMysteriousPrison, Locations.chamberOfSecretsEnshroudedPrison]
           placeUnderScenarioReference [secrets]
-    PlaceDoomOnAgenda n canAdvance -> do
+    PlaceDoomOnAgenda source n canAdvance -> do
       agendaId <- selectJust UnflippedAgenda
       doom <- field AgendaDoom agendaId
       threshold <- traverse getGameValue =<< field AgendaDoomThreshold agendaId
@@ -198,7 +198,7 @@ instance RunMessage TheLabyrinthsOfLunacy where
       lead <- getLead
       let placeAgendaDoom :: ReverseQueue m => Int -> m ()
           placeAgendaDoom amount = do
-            placeDoom attrs agendaId amount
+            placeDoom source agendaId amount
             when (canAdvance == CanAdvance) $ forTarget agendaId AdvanceAgendaIfThresholdSatisfied
       if mythosStep == Just PlaceDoomOnAgendaStep
         then chooseOneM lead do

@@ -22,7 +22,7 @@ game."
 instance RunMessage AThousandPathsToVictory where
   runMessage msg s@(AThousandPathsToVictory attrs) = runQueueT $ case msg of
     ResolveThisStory _ (is attrs -> True) -> do
-      placeDoomOnAgenda 1
+      placeDoomOnAgenda attrs 1
       for_ (storyOtherSide attrs) removeFromGame
       removeFromGame attrs
       pure s

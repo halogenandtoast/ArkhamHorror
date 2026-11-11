@@ -92,7 +92,7 @@ standaloneCampaignLog =
     }
 
 setupUnionAndDisillusion :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
-setupUnionAndDisillusion _attrs = do
+setupUnionAndDisillusion attrs = do
   isReturnTo <- Arkham.Scenario.Import.Lifted.getIsReturnTo
   setup $ ul do
     liGatherSets isReturnTo
@@ -191,7 +191,7 @@ setupUnionAndDisillusion _attrs = do
   setActDeck [Acts.theUnvisitedIsle, Acts.fatedSouls, act3, act4]
 
   hereticCount <- getRecordCount HereticsWereUnleashedUntoArkham
-  placeDoomOnAgenda hereticCount
+  placeDoomOnAgenda attrs hereticCount
 
   whenReturnTo $ addAdditionalReferences ["54016b"]
 

@@ -184,11 +184,11 @@ instance RunMessage WarOfTheOuterGods where
         , Assets.bladeOfArkat
         , Assets.enchantedSkull
         ]
-    PlaceDoomOnAgenda n canAdvance -> do
+    PlaceDoomOnAgenda source n canAdvance -> do
       -- During the "place doom on the current agenda" step, place 1 doom on
       -- each agenda, in faction order.
       for_ factionOrder \f ->
-        selectForMaybeM (factionAgenda f) \agenda -> placeDoom attrs agenda n
+        selectForMaybeM (factionAgenda f) \agenda -> placeDoom source agenda n
       pushWhen (canAdvance == CanAdvance) AdvanceAgendaIfThresholdSatisfied
       pure s
     AdvanceAgendaIfThresholdSatisfied -> do

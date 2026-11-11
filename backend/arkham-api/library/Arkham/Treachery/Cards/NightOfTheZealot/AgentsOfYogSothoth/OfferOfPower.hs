@@ -19,7 +19,7 @@ instance RunMessage OfferOfPower where
       chooseOneM iid do
         campaignI18n $ labeled "offerOfPower.drawAndPlaceDoom" do
           drawCards iid attrs 2
-          placeDoomOnAgendaAndCheckAdvance 2
+          placeDoomOnAgendaAndCheckAdvance attrs 2
         withI18n $ countVar 2 $ labeled "takeHorror" $ assignHorror iid attrs 2
       pure t
     _ -> OfferOfPower <$> liftRunMessage msg attrs

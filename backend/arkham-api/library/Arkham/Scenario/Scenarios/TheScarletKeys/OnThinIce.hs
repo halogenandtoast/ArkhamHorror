@@ -138,7 +138,7 @@ instance RunMessage OnThinIce where
 
       t <- getTime
       let n = t `div` 5
-      placeDoomOnAgenda n
+      placeDoomOnAgenda attrs n
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of
         Cultist | isEasyStandard attrs -> do

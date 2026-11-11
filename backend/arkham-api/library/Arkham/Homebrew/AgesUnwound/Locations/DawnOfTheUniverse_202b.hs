@@ -47,6 +47,6 @@ instance RunMessage DawnOfTheUniverse_202b where
             countVar spent $ labeled "takeHorror" $ assignHorror iid (attrs.ability 1) spent
       pure l
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      placeDoomOnAgenda 1
+      placeDoomOnAgenda attrs 1
       pure l
     _ -> DawnOfTheUniverse_202b <$> liftRunMessage msg attrs

@@ -47,6 +47,6 @@ instance RunMessage TheyreGettingOut where
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       ghoulCount <- selectCount $ enemy_ $ #ghoul <> at_ (oneOf ["Parlor", "Hallway"])
-      placeDoomOnAgenda ghoulCount
+      placeDoomOnAgenda attrs ghoulCount
       pure a
     _ -> TheyreGettingOut <$> liftRunMessage msg attrs

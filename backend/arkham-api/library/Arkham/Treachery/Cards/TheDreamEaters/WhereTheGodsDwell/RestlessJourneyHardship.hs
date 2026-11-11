@@ -70,6 +70,6 @@ instance RunMessage RestlessJourneyHardshipEffect where
       pure e
     SkillTestEnds _ _iid (isSource attrs -> True) -> disableReturn e
     FailedThisSkillTest _iid source | attrs.source == source -> do
-      placeDoomOnAgendaAndCheckAdvance 1
+      placeDoomOnAgendaAndCheckAdvance attrs 1
       disableReturn e
     _ -> RestlessJourneyHardshipEffect <$> liftRunMessage msg attrs

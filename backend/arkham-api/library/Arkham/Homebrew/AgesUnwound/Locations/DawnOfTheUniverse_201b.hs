@@ -53,7 +53,7 @@ instance RunMessage DawnOfTheUniverse_201b where
         (DrawFound iid 1)
       pure l
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      placeDoomOnAgenda 1
+      placeDoomOnAgenda attrs 1
       {- "must move to a connecting location" -- a mandatory move, so the choice
       is only over where. With nowhere legal to go the investigator stays: a move
       that cannot be made is not made. -}

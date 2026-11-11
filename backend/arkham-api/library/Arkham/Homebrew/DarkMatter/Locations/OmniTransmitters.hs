@@ -26,7 +26,7 @@ instance HasAbilities OmniTransmitters where
 instance RunMessage OmniTransmitters where
   runMessage msg l@(OmniTransmitters attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      placeDoomOnAgendaAndCheckAdvanceBy (attrs.ability 1) 1
+      placeDoomOnAgendaAndCheckAdvance (attrs.ability 1) 1
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 2)
       pure l

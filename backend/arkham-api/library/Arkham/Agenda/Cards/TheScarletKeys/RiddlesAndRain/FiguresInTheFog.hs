@@ -38,6 +38,6 @@ instance RunMessage FiguresInTheFog where
       eachInvestigator (`loseAllClues` attrs)
       advanceToActA attrs Acts.eyesInTheTower
       advanceAgendaDeck attrs
-      placeDoomOnAgenda attrs.doom
+      placeDoomOnAgenda attrs attrs.doom
       pure a
     _ -> FiguresInTheFog <$> liftRunMessage msg attrs

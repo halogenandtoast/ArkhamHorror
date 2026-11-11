@@ -76,6 +76,6 @@ instance RunMessage JusticeXI where
     UseCardAbility _ (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do
       quietCancelCardDraw card
       pushAll [UnfocusCards, SetCardAside card]
-      placeDoomOnAgendaAndCheckAdvance 1
+      placeDoomOnAgendaAndCheckAdvance attrs 1
       pure a
     _ -> JusticeXI <$> liftRunMessage msg attrs

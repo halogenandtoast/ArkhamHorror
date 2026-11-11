@@ -146,7 +146,7 @@ instance RunMessage ShadesOfSuffering where
         | t <= 26 -> placeTokens attrs theShadeReaper #charge 6
         | otherwise -> do
             placeTokens attrs theShadeReaper #charge 9
-            placeDoomOnAgenda 1
+            placeDoomOnAgenda attrs 1
       pure s
     ResolveChaosToken _ Cultist _iid -> do
       when (isHardExpert attrs) $ placeShadeReaperCharges Cultist 1

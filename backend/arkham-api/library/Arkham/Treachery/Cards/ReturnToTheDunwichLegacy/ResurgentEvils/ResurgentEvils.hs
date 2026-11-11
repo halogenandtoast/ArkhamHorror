@@ -17,6 +17,6 @@ instance RunMessage ResurgentEvils where
     Revelation iid (isSource attrs -> True) -> withI18n do
       chooseOneM iid do
         countVar 2 $ labeled "drawTopCardOfEncounterDeck" $ drawEncounterCards iid attrs 2
-        countVar 1 $ labeled "placeAgendaDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
+        countVar 1 $ labeled "placeAgendaDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance attrs 1
       pure t
     _ -> ResurgentEvils <$> liftRunMessage msg attrs

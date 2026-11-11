@@ -26,6 +26,6 @@ instance RunMessage CluesAndCapers where
       drawCard lead theRedGlovedMan
       advanceToAgendaA attrs Agendas.figuresInTheFog
       advanceActDeck attrs
-      placeDoomOnAgenda doom
+      placeDoomOnAgenda attrs doom
       pure a
     _ -> CluesAndCapers <$> liftRunMessage msg attrs

@@ -79,7 +79,7 @@ instance RunMessage FirstEncounter where
       carriedOver <- getDoomOnAgenda
       impendingDoom <- getImpendingDoom
       do_ $ AdvanceToAgenda 1 Agendas.signsFromAldebaran Agenda.A (toSource attrs)
-      placeDoomOnAgenda (carriedOver + 2 * impendingDoom)
+      placeDoomOnAgenda attrs (carriedOver + 2 * impendingDoom)
       advanceActDeck attrs
       pure a
     _ -> FirstEncounter <$> liftRunMessage msg attrs

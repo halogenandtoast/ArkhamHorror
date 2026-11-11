@@ -186,7 +186,7 @@ instance RunMessage TheWesternWall where
 
       setActDeck [if headedWest then Acts.descendIntoTheAbyss else Acts.ascendTheWall]
       setAgendaDeck [Agendas.floodedPaths]
-      whenHasRecord TheExpeditionHelpedThePilgrim $ placeDoomOnAgenda 1
+      whenHasRecord TheExpeditionHelpedThePilgrim $ placeDoomOnAgenda attrs 1
 
       setAside
         [ Enemies.huntingParasite

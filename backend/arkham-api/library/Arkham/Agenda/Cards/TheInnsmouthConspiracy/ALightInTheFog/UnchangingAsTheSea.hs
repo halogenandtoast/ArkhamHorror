@@ -74,7 +74,7 @@ instance RunMessage UnchangingAsTheSea where
 
       push $ AdvanceToAct 1 Acts.worshippersOfTheDeep Act.A (toSource attrs)
       advanceAgendaDeck attrs
-      placeDoomOnAgenda attrs.doom
+      placeDoomOnAgenda attrs attrs.doom
       pure a
     ForInvestigator iid (AdvanceAgenda (isSide B attrs -> True)) -> do
       holdingCells <- selectJust $ locationIs Locations.holdingCells

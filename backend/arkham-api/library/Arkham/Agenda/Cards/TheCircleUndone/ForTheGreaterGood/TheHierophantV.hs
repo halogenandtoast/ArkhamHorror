@@ -55,6 +55,6 @@ instance RunMessage TheHierophantV where
       enemiesWithDoom <- select $ EnemyAt (locationWithEnemy enemy) <> EnemyWithAnyDoom
       for_ enemiesWithDoom \enemy' -> do
         removeDoom attrs enemy' 1
-        placeDoomOnAgenda 1
+        placeDoomOnAgenda attrs 1
       pure a
     _ -> TheHierophantV <$> liftRunMessage msg attrs

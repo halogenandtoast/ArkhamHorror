@@ -20,7 +20,7 @@ instance RunMessage WhatTypeOfShipIsThis where
       for_ colocated (`addMemories` 1)
       chooseOneM iid $ campaignI18n do
         labeled "whatTypeOfShipIsThis.placeDoom" do
-          placeDoomOnAgendaAndCheckAdvance 1
+          placeDoomOnAgendaAndCheckAdvance attrs 1
           addToVictory iid attrs
         labeled "whatTypeOfShipIsThis.removeFromGame" $ push $ RemoveFromGame (toTarget attrs)
       pure s

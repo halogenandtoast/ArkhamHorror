@@ -33,6 +33,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message.Lifted
 import Arkham.Prelude
+import Arkham.Source (Source (ScenarioSource))
 
 runDarkMatterUltimatums :: ReverseQueue m => Message -> m ()
 runDarkMatterUltimatums = \case
@@ -50,7 +51,7 @@ runDarkMatterUltimatums = \case
   EndSetup -> do
     -- "Begin each scenario with doom on the agenda equal to Impending Doom."
     whenM (hasDarkMatterUltimatum UltimatumOfImpendingDoom) do
-      placeDoomOnAgenda =<< getImpendingDoom
+      placeDoomOnAgenda ScenarioSource =<< getImpendingDoom
 
     {- "During the setup of each scenario with a scanning deck, shuffle The
     Feaster from Afar into the scanning deck." Minted rather than taken from the

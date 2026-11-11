@@ -22,6 +22,6 @@ instance HasAbilities FathomlessLake where
 instance RunMessage FathomlessLake where
   runMessage msg l@(FathomlessLake attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      placeDoomOnAgenda 1
+      placeDoomOnAgenda attrs 1
       pure l
     _ -> FathomlessLake <$> liftRunMessage msg attrs

@@ -49,7 +49,7 @@ instance RunMessage MadnessCoils where
           advanceAgendaDeck attrs
         labeled "madnessCoils.faint" do
           advanceAgendaDeck attrs
-          placeDoomOnAgenda 1
+          placeDoomOnAgenda attrs 1
       pure a
     FailedSkillTest _ _ source SkillTestInitiatorTarget {} (SkillSkillTest st) _ | isSource attrs source -> do
       afterSkillTestQuiet $ advanceAgenda attrs

@@ -2,10 +2,10 @@ module Arkham.Homebrew.AgesUnwound.Agendas.BadTimes (badTimes) where
 
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
+import Arkham.Helpers.Query (getSetAsideCardMaybe)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.AgesUnwound.Scenarios.Unstuck.Helpers
 import Arkham.Homebrew.AgesUnwound.Traits (pattern Adrift)
-import Arkham.Helpers.Query (getSetAsideCardMaybe)
 import Arkham.Location.Types qualified as Field
 import Arkham.Matcher
 import Arkham.Message (ReplaceStrategy (Swap))
@@ -44,6 +44,6 @@ instance RunMessage BadTimes where
 
       tumbleOutOfTime attrs
       advanceAgendaDeck attrs
-      placeDoomOnAgendaAndCheckAdvance 1
+      placeDoomOnAgendaAndCheckAdvance attrs 1
       pure a
     _ -> BadTimes <$> liftRunMessage msg attrs

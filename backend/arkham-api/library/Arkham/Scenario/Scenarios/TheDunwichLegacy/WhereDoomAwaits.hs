@@ -154,7 +154,7 @@ instance RunMessage WhereDoomAwaits where
       silasBishopPutOutOfMisery <- getHasRecord TheInvestigatorsPutSilasBishopOutOfHisMisery
 
       setAgendaDeck [Agendas.callingForthTheOldOnes, Agendas.beckoningForPower]
-      when (broodEscapedCount > 0) $ placeDoomOnAgenda broodEscapedCount
+      when (broodEscapedCount > 0) $ placeDoomOnAgenda attrs broodEscapedCount
       let
         ascendingTheHill =
           if

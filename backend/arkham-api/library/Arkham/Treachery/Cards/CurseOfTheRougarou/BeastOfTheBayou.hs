@@ -21,7 +21,7 @@ instance RunMessage BeastOfTheBayou where
     Revelation _iid source | isSource attrs source -> do
       mrougarou <- getTheRougarou
       t <$ case mrougarou of
-        Nothing -> pushAll [placeDoomOnAgenda]
+        Nothing -> pushAll [placeDoomOnAgenda attrs]
         Just eid -> do
           locationId <- selectJust $ locationWithEnemy eid
           connectedLocationIds <- select $ accessibleFrom NotForMovement locationId
@@ -33,7 +33,7 @@ instance RunMessage BeastOfTheBayou where
                 LocationWithId
                 (locationId : connectedLocationIds)
           case investigatorIds of
-            [] -> pushAll [placeDoomOnAgenda]
+            [] -> pushAll [placeDoomOnAgenda attrs]
             xs -> pushAll $ map (EnemyAttack . enemyAttack eid attrs) xs
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n ->
       do

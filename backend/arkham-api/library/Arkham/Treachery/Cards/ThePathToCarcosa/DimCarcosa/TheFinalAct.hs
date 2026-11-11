@@ -16,6 +16,6 @@ instance RunMessage TheFinalAct where
   runMessage msg t@(TheFinalAct attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       noRemainingSanity <- fieldP InvestigatorRemainingSanity (== 0) iid
-      when noRemainingSanity $ placeDoomOnAgendaAndCheckAdvance 2
+      when noRemainingSanity $ placeDoomOnAgendaAndCheckAdvance attrs 2
       pure t
     _ -> TheFinalAct <$> liftRunMessage msg attrs

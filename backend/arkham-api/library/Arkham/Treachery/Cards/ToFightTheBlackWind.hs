@@ -28,6 +28,6 @@ instance RunMessage ToFightTheBlackWind where
 
       pure t
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      placeDoomOnAgenda 1
+      placeDoomOnAgenda attrs 1
       pure t
     _ -> ToFightTheBlackWind <$> liftRunMessage msg attrs

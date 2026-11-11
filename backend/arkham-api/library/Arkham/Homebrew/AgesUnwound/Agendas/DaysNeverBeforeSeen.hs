@@ -26,6 +26,6 @@ instance RunMessage DaysNeverBeforeSeen where
       advanceAgendaDeck attrs
       -- "as it is revealed": the doom lands on the new agenda and can take it
       -- straight past its threshold.
-      placeDoomOnAgendaAndCheckAdvance 1
+      placeDoomOnAgendaAndCheckAdvance attrs 1
       pure a
     _ -> DaysNeverBeforeSeen <$> liftRunMessage msg attrs

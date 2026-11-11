@@ -31,6 +31,6 @@ instance RunMessage GangInformant where
       n <- getSpendableResources iid
       chooseOneM iid $ withI18n do
         countVar 3 $ labeledValidate (n >= 3) "spendResources" $ spendResources iid 3
-        countVar 1 $ labeled "placeDoomOnAgenda" $ placeDoomOnAgenda 1
+        countVar 1 $ labeled "placeDoomOnAgenda" $ placeDoomOnAgenda attrs 1
       pure e
     _ -> GangInformant <$> liftRunMessage msg attrs

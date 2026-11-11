@@ -30,7 +30,7 @@ instance RunMessage LoadingDockNight where
       canDoom <- selectAny $ not_ (AgendaWithModifier CannotPlaceDoomOnThis)
       chooseOneM iid $ withI18n $ countVar 1 do
         labeledValidate canDoom "placeAgendaDoom" do
-          placeDoomOnAgendaBy (attrs.ability 1) 1
+          placeDoomOnAgenda (attrs.ability 1) 1
           skillTestModifier sid (attrs.ability 1) sid (Difficulty (-2))
         labeled "doNotPlaceDoom" nothing
       beginSkillTest sid iid (attrs.ability 1) attrs #combat (Fixed 3)

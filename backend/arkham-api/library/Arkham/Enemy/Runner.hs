@@ -2018,7 +2018,8 @@ instance RunMessage EnemyAttrs where
           guard (not a.placement.isInVictory) *> [Discard miid GameSource $ toTarget a | not placeInVictory]
         -- Doomed keyword: when defeated, place 1 doom on the agenda (can advance)
         doomedMsgs =
-          guard (Set.member Keyword.Doomed (cdKeywords (toCardDef a))) *> [PlaceDoomOnAgenda 1 CanAdvance]
+          guard (Set.member Keyword.Doomed (cdKeywords (toCardDef a)))
+            *> [PlaceDoomOnAgenda (toSource a) 1 CanAdvance]
         disposal =
           victoryMsgs
             <> (guard (not a.placement.isInVictory) *> windows [Window.EntityDiscarded source (toTarget a)])

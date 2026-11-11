@@ -65,7 +65,7 @@ instance RunMessage BanishHim where
           agenda <- getSetAsideCard Agendas.theFinalSeal
           push $ SetCurrentAgendaDeck 1 [agenda]
           toDiscard attrs attrs
-          placeDoomOnAgenda =<< getPlayerCount
+          placeDoomOnAgenda attrs =<< getPlayerCount
       pure a
     DoStep 2 (AdvanceAct (isSide B attrs -> True) _ _) -> do
       {- "ignoring its Forced effect": a facet's own Flip handler raises the

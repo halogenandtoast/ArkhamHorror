@@ -30,7 +30,7 @@ instance RunMessage SilenceSpeaks where
       n <- perPlayer 3
       cards <- select HollowedCard
       focusCards cards $ chooseNM iid n $ targets cards removeHollow
-      placeDoomOnAgendaAndCheckAdvance 1
+      placeDoomOnAgendaAndCheckAdvance attrs 1
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       lead <- getLead

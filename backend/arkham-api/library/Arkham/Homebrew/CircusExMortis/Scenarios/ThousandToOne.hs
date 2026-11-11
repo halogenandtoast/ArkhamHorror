@@ -276,7 +276,7 @@ instance RunMessage ThousandToOne where
           lift $ resolveStory iid card
 
       -- "Check the Campaign Log. If the cult rallies, place 2 doom on agenda 1a."
-      when rallies $ placeDoomOnAgenda 2
+      when rallies $ placeDoomOnAgenda attrs 2
 
       setAside [Agendas.theProphecyFulfilled, Agendas.theProphecyUnfulfilled]
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do

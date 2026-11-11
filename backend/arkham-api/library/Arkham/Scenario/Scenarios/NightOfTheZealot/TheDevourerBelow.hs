@@ -123,7 +123,7 @@ setupTheDevourerBelow attrs = do
               ]
        )
 
-  placeDoomOnAgenda $ (length cultistsWhoGotAway + 1) `div` 2
+  placeDoomOnAgenda attrs $ (length cultistsWhoGotAway + 1) `div` 2
   when pastMidnight $ twice $ allRandomDiscard attrs AnyCard
 
 instance RunMessage TheDevourerBelow where

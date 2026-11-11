@@ -226,8 +226,8 @@ instance RunMessage ToTheForbiddenPeaks where
       setAside [Enemies.terrorOfTheStarsGuardianOfForbiddenPeaks]
 
       case attrs.difficulty of
-        Expert -> placeDoomOnAgenda 2
-        Hard -> placeDoomOnAgenda 1
+        Expert -> placeDoomOnAgenda attrs 2
+        Hard -> placeDoomOnAgenda attrs 1
         _ -> pure ()
 
       addTekeliliDeck

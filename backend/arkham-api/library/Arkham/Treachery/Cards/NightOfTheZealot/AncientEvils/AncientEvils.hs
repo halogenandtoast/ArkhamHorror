@@ -13,6 +13,6 @@ ancientEvils = treachery AncientEvils Cards.ancientEvils
 instance RunMessage AncientEvils where
   runMessage msg t@(AncientEvils attrs) = runQueueT $ case msg of
     Revelation _ (isSource attrs -> True) -> do
-      placeDoomOnAgendaAndCheckAdvance 1
+      placeDoomOnAgendaAndCheckAdvance attrs 1
       pure t
     _ -> AncientEvils <$> liftRunMessage msg attrs

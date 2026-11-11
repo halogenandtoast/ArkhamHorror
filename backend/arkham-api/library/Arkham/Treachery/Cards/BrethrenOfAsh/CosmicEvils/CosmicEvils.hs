@@ -17,7 +17,7 @@ instance RunMessage CosmicEvils where
     Revelation iid (isSource attrs -> True) -> do
       chooseOneM iid $ withI18n do
         countVar 1 $ labeled "placeAgendaDoom" do
-          placeDoomOnAgendaAndCheckAdvance 1
+          placeDoomOnAgendaAndCheckAdvance attrs 1
         labeled "core2.cosmicEvils.option" do
           directDamageAndHorror iid attrs 1 1
           gainSurge attrs

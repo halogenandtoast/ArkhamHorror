@@ -20,7 +20,7 @@ instance RunMessage MaskedHorrors where
           . filter ((>= 2) . snd)
           <$> selectWithField InvestigatorClues UneliminatedInvestigator
       if null investigators
-        then placeDoomOnAgendaAndCheckAdvance 1
+        then placeDoomOnAgendaAndCheckAdvance attrs 1
         else for_ investigators \iid -> assignHorror iid attrs 2
       pure t
     _ -> MaskedHorrors <$> liftRunMessage msg attrs

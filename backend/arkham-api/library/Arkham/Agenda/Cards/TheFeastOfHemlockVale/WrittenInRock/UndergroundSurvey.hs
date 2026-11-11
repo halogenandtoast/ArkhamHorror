@@ -54,6 +54,6 @@ instance RunMessage UndergroundSurvey where
       moveAllTo attrs controlStation
       advanceTheAct attrs
       advanceAgendaDeck attrs
-      placeDoomOnAgenda attrs.doom
+      placeDoomOnAgenda attrs attrs.doom
       pure a
     _ -> UndergroundSurvey <$> liftRunMessage msg attrs

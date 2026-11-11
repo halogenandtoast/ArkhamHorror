@@ -32,7 +32,7 @@ instance RunMessage EasyPrey where
       n <- perPlayer 2
       cards <- select HollowedCard
       focusCards cards $ chooseNM iid n $ targets cards removeHollow
-      placeDoomOnAgendaAndCheckAdvance 1
+      placeDoomOnAgendaAndCheckAdvance attrs 1
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       lead <- getLead

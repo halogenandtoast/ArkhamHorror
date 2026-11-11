@@ -34,7 +34,7 @@ instance HasAbilities WhereIsShe where
 instance RunMessage WhereIsShe where
   runMessage msg a@(WhereIsShe attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      placeDoomOnAgenda =<< getPlayerCount
+      placeDoomOnAgenda attrs =<< getPlayerCount
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       laChicaRoja <- selectJust $ enemyIs Enemies.laChicaRojaTheGirlInTheCarmineCoat

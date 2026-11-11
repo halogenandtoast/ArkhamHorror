@@ -22,7 +22,7 @@ instance RunMessage Truth where
   runMessage msg e@(Truth attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       searchCollectionForRandomBasicWeakness iid (attrs.ability 1) [Madness]
-      placeDoomOnAgenda 1
+      placeDoomOnAgenda attrs 1
       pure e
     RequestedPlayerCard iid (isSource attrs -> True) (Just card) _ -> do
       drawCard iid card

@@ -63,7 +63,7 @@ instance RunMessage WheresBertie where
       backToTheVale <- getSetAsideCard Agendas.backToTheVale
       removeActDeck
       setCurrentAgendaDeck [backToTheVale]
-      placeDoomOnAgenda doom
+      placeDoomOnAgenda attrs doom
       selectEach AnyAct (toDiscard attrs)
       pure a
     DoStep 2 (AdvanceAct (isSide B attrs -> True) _ _) -> do

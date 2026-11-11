@@ -222,11 +222,11 @@ instance RunMessage BlackStarsRise where
       shuffleCardsIntoDeck lead [theManInThePallidMask]
       pure s
     Setup -> runScenarioSetup BlackStarsRise attrs $ setupBlackStarsRise attrs
-    PlaceDoomOnAgenda n canAdvance -> do
+    PlaceDoomOnAgenda source n canAdvance -> do
       agendas <- select AnyAgenda
       lead <- getLead
       chooseTargetM lead agendas \agenda -> do
-        placeDoom attrs agenda n
+        placeDoom source agenda n
         pushWhen (canAdvance == CanAdvance) AdvanceAgendaIfThresholdSatisfied
       pure s
     PassedSkillTest _ _ _ (ChaosTokenTarget token) _ n | isHardExpert attrs && n < 1 -> do

@@ -44,14 +44,18 @@ enchantedWoodsLostWoodsEffect = cardEffect EnchantedWoodsLostWoodsEffect Cards.e
 instance RunMessage EnchantedWoodsLostWoodsEffect where
   runMessage msg e@(EnchantedWoodsLostWoodsEffect attrs) = runQueueT $ case msg of
     EndRoundWindow -> do
-      pushAll [disable attrs, placeDoomOnAgenda]
+      pushAll [disable attrs, placeDoomOnAgenda attrs]
       pure e
-    MoveTo movement | attrs.target == movement.target, leavesLostWoods attrs movement -> do
-      push $ disable attrs
-      pure e
-    After (MoveTo movement) | attrs.target == movement.target, leavesLostWoods attrs movement -> do
-      push $ disable attrs
-      pure e
+    MoveTo movement
+      | attrs.target == movement.target
+      , leavesLostWoods attrs movement -> do
+          push $ disable attrs
+          pure e
+    After (MoveTo movement)
+      | attrs.target == movement.target
+      , leavesLostWoods attrs movement -> do
+          push $ disable attrs
+          pure e
     _ -> EnchantedWoodsLostWoodsEffect <$> liftRunMessage msg attrs
 
 -- The move that reveals this location pushes its own After (MoveTo) once the

@@ -104,7 +104,7 @@ instance RunMessage TheMyriadGentleman where
 
       setUpDummyDeck
 
-      unlessM (getHasRecord TheInvestigatorsAcceptedAnOfferOfHelp) $ placeDoomOnAgenda 1
+      unlessM (getHasRecord TheInvestigatorsAcceptedAnOfferOfHelp) $ placeDoomOnAgenda attrs 1
     Msg.PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ | token.face == Cultist -> do
       myriad <- select $ EnemyWithTrait Myriad <> enemyAtLocationWith iid
       chooseTargetM iid myriad $ nonAttackEnemyDamage (Just iid) Cultist 1

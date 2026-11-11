@@ -12,6 +12,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Name
 import Arkham.Prelude
+import Arkham.Source (Sourceable)
 import Arkham.UltimatumsAndBoons (hasUltimatum)
 import Arkham.UltimatumsAndBoons.Types (Ultimatum (UltimatumOfMultiplication))
 
@@ -45,11 +46,12 @@ The Ultimatum of Multiplication replaces every such spawn with 1 doom on the
 current agenda, which is why each of the three spawning cards goes through here
 rather than calling 'createEnemyAt' itself.
 -}
-spawnSetAsideBroodOfYogSothothAt :: ReverseQueue m => LocationId -> m (Maybe EnemyId)
-spawnSetAsideBroodOfYogSothothAt lid = do
+spawnSetAsideBroodOfYogSothothAt
+  :: (ReverseQueue m, Sourceable source) => source -> LocationId -> m (Maybe EnemyId)
+spawnSetAsideBroodOfYogSothothAt source lid = do
   multiplication <- hasUltimatum UltimatumOfMultiplication
   if multiplication
-    then Nothing <$ placeDoomOnAgendaAndCheckAdvance 1
+    then Nothing <$ placeDoomOnAgendaAndCheckAdvance source 1
     else do
       brood <- getSetAsideBroodOfYogSothoth
       for (nonEmpty brood) \xs -> do

@@ -34,7 +34,7 @@ instance RunMessage DevoteeOfTheKey where
         if loc == sentinelPeak
           then do
             toDiscard (attrs.ability 1) attrs
-            placeDoomOnAgenda 2
+            placeDoomOnAgenda attrs 2
           else do
             choices <- select $ ClosestPathLocation loc sentinelPeak
             lead <- getLead

@@ -23,6 +23,6 @@ instance RunMessage Syzygy where
             eachInvestigator \iid' -> push $ LoseResources iid' (toSource attrs) 3
         labeled "takeHorror" do
           eachInvestigator \iid' -> assignHorror iid' attrs 2
-        labeled "placeDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
+        labeled "placeDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance attrs 1
       pure t
     _ -> Syzygy <$> liftRunMessage msg attrs

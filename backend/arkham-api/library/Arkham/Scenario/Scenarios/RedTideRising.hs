@@ -183,7 +183,7 @@ instance RunMessage RedTideRising where
               <$> sample (Enemies.wingedOne :| [Enemies.huntingNightgaunt, Enemies.huntingNightgaunt])
           else pure Nothing
 
-      placeDoomOnAgenda $ case adjusted of
+      placeDoomOnAgenda attrs $ case adjusted of
         2 -> 1
         3 -> 2
         5 -> 1

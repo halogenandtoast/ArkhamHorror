@@ -25,7 +25,7 @@ instance RunMessage Encore where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       push $ RemoveAllDoomFromPlay defaultRemoveDoomMatchers
       push $ ResetAgendaDeckToStage 1
-      placeDoomOnAgenda 3
+      placeDoomOnAgenda attrs 3
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       eachInvestigator \iid -> assignHorror iid attrs 100

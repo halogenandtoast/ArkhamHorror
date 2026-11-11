@@ -22,7 +22,7 @@ instance RunMessage TheCultsSearch where
         else do
           for_ cultists \(enemy, doom) -> do
             removeDoom attrs enemy doom
-            placeDoomOnAgenda doom
+            placeDoomOnAgenda attrs doom
           push AdvanceAgendaIfThresholdSatisfied
       pure t
     _ -> TheCultsSearch <$> liftRunMessage msg attrs

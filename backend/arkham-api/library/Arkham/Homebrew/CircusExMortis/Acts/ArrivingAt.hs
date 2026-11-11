@@ -76,7 +76,7 @@ putCircusTrainIntoPlay = do
 arrivingAt :: (ReverseQueue m, Sourceable source) => source -> Arrival -> m LocationId -> m ()
 arrivingAt source arrival resolveDarkYoungDestination = do
   enemyCount <- selectCount AnyEnemy
-  placeDoomOnAgenda enemyCount
+  placeDoomOnAgenda source enemyCount
   nowArriving arrival
   traverse_ (removeAllDoom source) =<< targetsWithDoom
   selectEach AnyEnemy (toDiscard source)

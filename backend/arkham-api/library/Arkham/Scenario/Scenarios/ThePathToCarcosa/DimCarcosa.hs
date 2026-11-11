@@ -177,7 +177,7 @@ setupDimCarcosa attrs = do
   startAt $ if openedThePathBelow then shoresOfHali else darkSpires
 
   when (tallies < 9) do
-    placeDoomOnAgenda
+    placeDoomOnAgenda attrs
       $ if
         | tallies <= 2 -> 3
         | tallies <= 5 -> 2

@@ -23,11 +23,14 @@ instance RunMessage LedAstray where
       cultists <- selectMap EnemyTarget $ EnemyWithTrait Cultist
       hasNoClues <- fieldP InvestigatorClues (== 0) iid
       if null cultists || hasNoClues
-        then placeDoomOnAgendaAndCheckAdvance 1
+        then placeDoomOnAgendaAndCheckAdvance attrs 1
         else do
           chooseOneM iid do
             scenarioI18n $ labeled "ledAstray.placeClue" do
               chooseTargetM iid cultists \cultist -> moveTokens attrs iid cultist #clue 1
-            withI18n $ countVar 1 $ labeled "placeAgendaDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
+            withI18n
+              $ countVar 1
+              $ labeled "placeAgendaDoomCanAdvance"
+              $ placeDoomOnAgendaAndCheckAdvance attrs 1
       pure t
     _ -> LedAstray <$> liftRunMessage msg attrs

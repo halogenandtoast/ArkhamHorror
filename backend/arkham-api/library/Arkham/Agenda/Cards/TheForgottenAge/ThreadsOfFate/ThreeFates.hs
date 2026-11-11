@@ -24,6 +24,6 @@ instance RunMessage ThreeFates where
       shuffleEncounterDiscardBackIn
       advanceAgendaDeck attrs
       deckCount <- getActDecksInPlayCount
-      when (deckCount == 2) $ placeDoomOnAgenda 1
+      when (deckCount == 2) $ placeDoomOnAgenda attrs 1
       pure a
     _ -> ThreeFates <$> liftRunMessage msg attrs

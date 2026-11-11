@@ -42,7 +42,7 @@ instance HasAbilities DaysThatNeverWere_191b where
 instance RunMessage DaysThatNeverWere_191b where
   runMessage msg l@(DaysThatNeverWere_191b attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      placeDoomOnAgenda 1
+      placeDoomOnAgenda attrs 1
       selectEach (investigatorAt attrs.id) \iid -> do
         exileable <- select $ inHandOf NotForPlay iid <> basic (NonWeakness <> levelOneOrHigher)
         chooseOrRunOneM iid $ timeRunsOutI18n $ scope "daysThatNeverWere" do

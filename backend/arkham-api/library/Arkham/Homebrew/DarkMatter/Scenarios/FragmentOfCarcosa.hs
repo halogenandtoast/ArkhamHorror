@@ -165,7 +165,7 @@ instance RunMessage FragmentOfCarcosa where
     ResolveChaosToken _ ElderThing iid -> do
       whenM (iid <=~> InvestigatorAt (LocationWithTrait Carcosa)) do
         chooseOneM iid $ unscoped do
-          countVar 1 $ labeled "placeDoomOnAgenda" $ placeDoomOnAgenda 1
+          countVar 1 $ labeled "placeDoomOnAgenda" $ placeDoomOnAgenda attrs 1
           labeled "automaticallyFailTest" failSkillTest
       pure s
     {- [skull] \/ [cultist] on easy\/standard: "If you fail while you are at a

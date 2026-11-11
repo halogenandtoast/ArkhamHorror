@@ -60,7 +60,7 @@ instance RunMessage Omnipresence where
       pure t
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       toDiscard (attrs.ability 2) attrs
-      placeDoomOnAgenda 1
+      placeDoomOnAgenda attrs 1
       pure t
     _ -> Omnipresence <$> liftRunMessage msg attrs
    where

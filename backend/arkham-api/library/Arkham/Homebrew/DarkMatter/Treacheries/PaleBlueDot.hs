@@ -33,7 +33,7 @@ instance RunMessage PaleBlueDot where
       chooseOneM iid $ campaignI18n do
         labeled "paleBlueDot.takeHorror" $ assignHorror iid (attrs.ability 1) 1
         labeled "paleBlueDot.placeDoom" do
-          placeDoomOnAgendaAndCheckAdvanceBy (attrs.ability 1) 1
+          placeDoomOnAgendaAndCheckAdvance (attrs.ability 1) 1
           toDiscardBy iid (attrs.ability 1) attrs
       pure t
     _ -> PaleBlueDot <$> liftRunMessage msg attrs

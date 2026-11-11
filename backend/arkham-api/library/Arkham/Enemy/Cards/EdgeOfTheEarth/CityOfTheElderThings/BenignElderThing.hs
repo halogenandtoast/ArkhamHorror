@@ -28,7 +28,7 @@ instance HasAbilities BenignElderThing where
 instance RunMessage BenignElderThing where
   runMessage msg e@(BenignElderThing attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      placeDoomOnAgenda 1
+      placeDoomOnAgenda attrs 1
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

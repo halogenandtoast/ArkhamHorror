@@ -318,7 +318,7 @@ instance RunMessage TheHeartOfMadnessPart2 where
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
       case token.face of
         Tablet | isEasyStandard attrs -> drawTekelili iid Tablet 1
-        ElderThing | n >= 3 -> placeDoomOnAgendaAndCheckAdvance 1
+        ElderThing | n >= 3 -> placeDoomOnAgendaAndCheckAdvance attrs 1
         _ -> pure ()
       pure s
     _ -> TheHeartOfMadnessPart2 <$> liftRunMessage msg attrs

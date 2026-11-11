@@ -39,7 +39,7 @@ instance RunMessage CorpseTaker where
         if loc == location
           then do
             removeAllDoom (attrs.ability 2) attrs
-            placeDoomOnAgenda attrs.doom
+            placeDoomOnAgenda attrs attrs.doom
           else do
             lead <- getLead
             locations <- select $ ClosestPathLocation loc location

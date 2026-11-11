@@ -41,6 +41,6 @@ instance RunMessage TheGameIsAfoot where
       shuffleSetAsideEncounterSetIntoEncounterDeck Set.Outsiders
       advanceToAgendaA attrs Agendas.theConnection
       advanceActDeck attrs
-      placeDoomOnAgenda doom
+      placeDoomOnAgenda attrs doom
       pure a
     _ -> TheGameIsAfoot <$> liftRunMessage msg attrs

@@ -19,7 +19,7 @@ instance RunMessage Domination where
       chooseOneM iid $ withI18n do
         countVar 1
           $ labeled "placeAgendaDoomCanAdvance"
-          $ placeDoomOnAgendaAndCheckAdvance 1
+          $ placeDoomOnAgendaAndCheckAdvance attrs 1
         countVar 2 $ labeled "eachInvestigatorDiscardsCardsFromHand" do
           eachInvestigator \iid' -> chooseAndDiscardCards iid' attrs 2
         countVar 1 $ labeled "eachInvestigatorLosesActions" do

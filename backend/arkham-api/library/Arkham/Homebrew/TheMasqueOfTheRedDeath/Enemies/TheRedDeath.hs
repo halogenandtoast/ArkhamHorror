@@ -79,6 +79,6 @@ instance RunMessage TheRedDeath where
       n <- getDoomOnTarget target
       when (n > 0) do
         removeDoom (attrs.ability 2) target n
-        placeDoomOnAgendaBy (attrs.ability 2) n
+        placeDoomOnAgenda (attrs.ability 2) n
       pure e
     _ -> TheRedDeath <$> liftRunMessage msg attrs

@@ -77,12 +77,12 @@ instance RunMessage UneasyAlliance where
       pure s
     UseThisAbility _ (isSource attrs -> True) 3 -> do
       selectOne edwin >>= \case
-        Nothing -> placeDoomOnAgendaAndCheckAdvance 1
+        Nothing -> placeDoomOnAgendaAndCheckAdvance attrs 1
         Just edwin' -> do
           cluesOn <- field AssetClues edwin'
           if cluesOn > 0
             then removeTokens (attrs.ability 3) edwin' #clue 1
-            else placeDoomOnAgendaAndCheckAdvance 1
+            else placeDoomOnAgendaAndCheckAdvance attrs 1
       pure s
     UseCardAbility
       _

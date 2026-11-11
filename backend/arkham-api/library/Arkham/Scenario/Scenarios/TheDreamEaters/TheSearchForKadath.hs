@@ -248,7 +248,7 @@ instance RunMessage TheSearchForKadath where
               $ numberVar "horror" 1
               $ labeled "takeDamageAndHorror"
               $ assignDamageAndHorror iid Tablet 1 1
-            countVar 1 $ labeled "placeAgendaDoom" $ placeDoomOnAgenda 1
+            countVar 1 $ labeled "placeAgendaDoom" $ placeDoomOnAgenda attrs 1
         _ -> pure ()
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do

@@ -247,7 +247,7 @@ instance RunMessage MachinationsThroughTime where
           Standard -> 0
           Hard -> 1
           Expert -> 2
-      placeDoomOnAgenda (max 0 (doomCount + difficultyDoom))
+      placeDoomOnAgenda attrs (max 0 (doomCount + difficultyDoom))
     DoStep 1 Setup -> do
       selectForMaybeM (storyIs Stories.anomaliesInSpacetime) flippedOver
       anomalies <- perPlayer 1

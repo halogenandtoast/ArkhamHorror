@@ -50,7 +50,7 @@ instance RunMessage TheHeirToCarcosa where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       carriedOver <- getDoomOnAgenda
       do_ $ AdvanceToAgenda 1 Agendas.shallDryAndDie Agenda.A (toSource attrs)
-      placeDoomOnAgenda carriedOver
+      placeDoomOnAgenda attrs carriedOver
       createSetAsideEnemy_ Enemies.caveDweller Locations.abandonedLander
       advanceActDeck attrs
       pure a

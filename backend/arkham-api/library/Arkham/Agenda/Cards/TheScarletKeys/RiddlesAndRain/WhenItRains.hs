@@ -35,6 +35,6 @@ instance RunMessage WhenItRains where
       drawCard lead theRedGlovedMan
       advanceToActA attrs Acts.theGameIsAfoot
       advanceAgendaDeck attrs
-      placeDoomOnAgenda attrs.doom
+      placeDoomOnAgenda attrs attrs.doom
       pure a
     _ -> WhenItRains <$> liftRunMessage msg attrs

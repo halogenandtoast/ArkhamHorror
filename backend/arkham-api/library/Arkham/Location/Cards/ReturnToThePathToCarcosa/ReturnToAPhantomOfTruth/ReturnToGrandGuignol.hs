@@ -26,7 +26,7 @@ instance RunMessage ReturnToGrandGuignol where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       mAgenda <- selectOne AgendaWithAnyDoom
       chooseOrRunOneM iid $ withI18n do
-        countVar 1 $ labeled "placeAgendaDoom" $ placeDoomOnAgenda 1
+        countVar 1 $ labeled "placeAgendaDoom" $ placeDoomOnAgenda attrs 1
         for_ mAgenda \agenda -> do
           countVar 1 $ labeled "removeAgendaDoom" $ removeDoom (attrs.ability 1) agenda 1
       pure l

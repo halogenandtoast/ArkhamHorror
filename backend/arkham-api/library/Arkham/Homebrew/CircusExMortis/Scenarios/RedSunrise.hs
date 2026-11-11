@@ -246,7 +246,7 @@ instance RunMessage RedSunrise where
       -- "Place 4 doom on agenda 1a. Reduce this amount by X, where X groups of
       -- citizens were saved from the circus."
       let doom = max 0 (4 - citizens)
-      placeDoomOnAgenda doom
+      placeDoomOnAgenda attrs doom
 
       setAside
         [ Enemies.theCultEnMasseLeaderlessFanaticism

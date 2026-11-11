@@ -24,7 +24,7 @@ instance RunMessage BehindTheCurtain where
       shuffleEncounterDiscardBackIn
       advanceAgendaDeck attrs
       deckCount <- getActDecksInPlayCount
-      when (deckCount == 2) $ placeDoomOnAgenda 1
-      when (deckCount == 1) $ placeDoomOnAgenda 2
+      when (deckCount == 2) $ placeDoomOnAgenda attrs 1
+      when (deckCount == 1) $ placeDoomOnAgenda attrs 2
       pure a
     _ -> BehindTheCurtain <$> liftRunMessage msg attrs

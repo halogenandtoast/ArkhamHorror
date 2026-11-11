@@ -120,7 +120,7 @@ instance RunMessage TheStrangeCaseOfDrJekyllAndMrHyde where
           [] -> pure ()
 
       createAssetAt_ Assets.henryJekyll (AtLocation plaza)
-      placeDoomOnAgenda 1
+      placeDoomOnAgenda attrs 1
 
       setAgendaDeck [Agendas.theDualityOfMan]
       setActDeck

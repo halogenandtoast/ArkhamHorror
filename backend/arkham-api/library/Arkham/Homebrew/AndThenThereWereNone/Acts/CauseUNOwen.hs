@@ -116,7 +116,7 @@ instance RunMessage CauseUNOwen where
           -- current agenda, plus 1 doom for each card attached to this act."
           unless (namedKiller attrs.meta == Just (toCardCode card)) do
             attached <- selectCount $ methodAsset <> AssetAttachedTo (TargetIs $ toTarget attrs)
-            placeDoomOnAgenda (2 + attached)
+            placeDoomOnAgenda attrs (2 + attached)
       doStep 2 msg'
       pure a
     DoStep 2 msg'@(AdvanceAct (isSide B attrs -> True) _ _) -> do

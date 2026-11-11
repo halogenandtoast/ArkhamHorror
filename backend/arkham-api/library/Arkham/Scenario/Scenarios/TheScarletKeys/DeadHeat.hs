@@ -128,7 +128,7 @@ instance RunMessage DeadHeat where
         then do
           setActDeck [Acts.ritualOfLifeAndDeath, Acts.queenOfNothingAtAll]
           doom <- perPlayer 2
-          placeDoomOnAgenda doom
+          placeDoomOnAgenda attrs doom
         else setActDeck [Acts.findAmaranth, Acts.ritualOfLifeAndDeath, Acts.queenOfNothingAtAll]
 
       startAt =<< place Locations.marrakeshRailwayStation

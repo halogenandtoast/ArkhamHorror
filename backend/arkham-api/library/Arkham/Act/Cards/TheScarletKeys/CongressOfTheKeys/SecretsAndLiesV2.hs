@@ -43,7 +43,7 @@ instance RunMessage SecretsAndLiesV2 where
       agenda <- selectJust AnyAgenda
       doom <- field AgendaDoom agenda
       advanceToAgendaA attrs Agendas.theWorldUnbidden
-      placeDoomOnAgenda doom
+      placeDoomOnAgenda attrs doom
       eachInvestigator (`place` Unplaced)
       theRedGlovedMan <-
         selectOne (enemyIs Enemies.theRedGlovedManPurposeUnknown) >>= \case

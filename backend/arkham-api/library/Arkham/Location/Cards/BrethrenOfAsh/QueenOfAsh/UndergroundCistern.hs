@@ -40,6 +40,6 @@ instance RunMessage UndergroundCistern where
       enemies <- select $ EnemyAt (be attrs) <> ReadyEnemy <> NonEliteEnemy <> EnemyWithTrait Cultist
       unless (null enemies) do
         traverse_ (toDiscard (attrs.ability 2)) enemies
-        placeDoomOnAgenda $ length enemies
+        placeDoomOnAgenda attrs $ length enemies
       pure l
     _ -> UndergroundCistern <$> liftRunMessage msg attrs

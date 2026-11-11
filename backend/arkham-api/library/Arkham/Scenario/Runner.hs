@@ -347,10 +347,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       [] -> error "There were no locations with that name"
       (card : _) -> push (PlaceLocation locationId card)
     pure a
-  PlaceDoomOnAgenda n canAdvance -> do
+  PlaceDoomOnAgenda source n canAdvance -> do
     select Matcher.UnflippedAgenda >>= \case
       [] -> pure ()
-      [x] -> push (PlaceTokens (toSource a) (AgendaTarget x) Doom n)
+      [x] -> push (PlaceTokens source (AgendaTarget x) Doom n)
       _ -> error "multiple agendas should be handled by the scenario"
     pushWhen (canAdvance == CanAdvance) AdvanceAgendaIfThresholdSatisfied
     pure a

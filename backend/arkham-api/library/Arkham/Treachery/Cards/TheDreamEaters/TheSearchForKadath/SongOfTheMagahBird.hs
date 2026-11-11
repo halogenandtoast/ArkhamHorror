@@ -29,7 +29,7 @@ instance RunMessage SongOfTheMagahBird where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       assignHorror iid (attrs.ability 1) 1
       toDiscardBy iid (attrs.ability 1) attrs
-      placeDoomOnAgendaAndCheckAdvance 1
+      placeDoomOnAgendaAndCheckAdvance attrs 1
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

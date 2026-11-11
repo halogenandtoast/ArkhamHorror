@@ -20,6 +20,6 @@ instance RunMessage Anamnesis where
         withI18n
           $ countVar 1
           $ labeledI18n "placeAgendaDoomCanAdvance"
-          $ placeDoomOnAgendaAndCheckAdvance 1
+          $ placeDoomOnAgendaAndCheckAdvance attrs 1
       pure t
     _ -> Anamnesis <$> liftRunMessage msg attrs

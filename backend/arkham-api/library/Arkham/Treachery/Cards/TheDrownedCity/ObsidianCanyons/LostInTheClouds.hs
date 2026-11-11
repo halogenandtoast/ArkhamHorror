@@ -20,7 +20,7 @@ instance RunMessage LostInTheClouds where
         unscoped
           $ countVar 1
           $ labeled "placeAgendaDoomCanAdvance"
-          $ placeDoomOnAgendaAndCheckAdvance 1
+          $ placeDoomOnAgendaAndCheckAdvance attrs 1
         labeled "lostInTheClouds.eachInvestigatorTakesHorror" do
           eachInvestigator \iid' -> directHorror iid' attrs 2
         -- "Resolve the Forced effect on the Eastern Winds/Western Winds story

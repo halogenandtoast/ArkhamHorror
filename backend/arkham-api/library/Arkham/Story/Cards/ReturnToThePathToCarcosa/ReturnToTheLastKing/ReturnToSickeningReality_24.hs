@@ -33,7 +33,7 @@ instance RunMessage ReturnToSickeningReality_24 where
         else chooseTargetM iid partyGuests \guest ->
           withLocationOf guest \lid -> do
             selectEach (investigatorAt lid) \iid' -> assignHorror iid' attrs 1
-            placeDoomOnAgenda 1
+            placeDoomOnAgenda attrs 1
             removeFromGame guest
             createEnemyAt_ Enemies.crazedGuest lid
       pure s

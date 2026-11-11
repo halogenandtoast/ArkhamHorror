@@ -33,7 +33,7 @@ instance RunMessage LongWayAround where
       road 1 attrs
       pure l
     UseCardAbility _iid (isSource attrs -> True) 2 (getEnteringVehicle -> vehicle) _ -> do
-      placeDoomOnAgendaAndCheckAdvance 1
+      placeDoomOnAgendaAndCheckAdvance attrs 1
       createCardEffect Cards.longWayAround Nothing (attrs.ability 2) vehicle
       pure l
     _ -> LongWayAround <$> liftRunMessage msg attrs

@@ -30,6 +30,6 @@ instance RunMessage IntoTheCaves where
           Day3 -> 3
 
       advanceAgendaDeck attrs
-      placeDoomOnAgenda doomCount
+      placeDoomOnAgenda attrs doomCount
       pure a
     _ -> IntoTheCaves <$> liftRunMessage msg attrs

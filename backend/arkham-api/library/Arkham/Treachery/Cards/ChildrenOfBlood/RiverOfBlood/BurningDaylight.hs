@@ -18,7 +18,7 @@ instance RunMessage BurningDaylight where
     Revelation iid (isSource attrs -> True) -> do
       onFirstOrThirdAgenda <- selectAny $ AgendaWithSide A <> mapOneOf AgendaWithStep [1, 3]
       if onFirstOrThirdAgenda
-        then placeDoomOnAgendaAndCheckAdvance 1
+        then placeDoomOnAgendaAndCheckAdvance attrs 1
         else do
           sid <- getRandom
           revelationSkillTest sid iid attrs #willpower (Fixed 3)

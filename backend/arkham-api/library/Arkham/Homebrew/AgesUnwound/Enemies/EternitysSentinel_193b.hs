@@ -45,6 +45,6 @@ instance HasAbilities EternitysSentinel_193b where
 instance RunMessage EternitysSentinel_193b where
   runMessage msg e@(EternitysSentinel_193b attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      placeDoomOnAgenda 1
+      placeDoomOnAgenda attrs 1
       pure e
     _ -> EternitysSentinel_193b <$> liftRunMessage msg attrs

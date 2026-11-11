@@ -22,6 +22,6 @@ instance RunMessage DeafeningSilence where
       pure t
     HandleTargetChoice _iid (isSource attrs -> True) (AssetTarget aid) -> do
       removeDoom attrs aid 1
-      placeDoomOnAgendaAndCheckAdvance 1
+      placeDoomOnAgendaAndCheckAdvance attrs 1
       pure t
     _ -> DeafeningSilence <$> liftRunMessage msg attrs

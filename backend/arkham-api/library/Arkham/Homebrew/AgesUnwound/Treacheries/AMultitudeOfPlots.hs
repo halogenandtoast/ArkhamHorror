@@ -20,7 +20,7 @@ harder.)/"
 
 Each copy left in the victory display buys the Myriad a plan: Resolution 1 has
 the players record one of three statements per copy. The doom branch is sourced
-from the card ('placeDoomOnAgendaAndCheckAdvanceBy') so "would place doom"
+from the card ('placeDoomOnAgendaAndCheckAdvance') so "would place doom"
 windows see a card effect, and the surge is granted before the card leaves --
 'gainSurge' marks the draw, which resolves after this revelation either way.
 -}
@@ -29,7 +29,7 @@ instance RunMessage AMultitudeOfPlots where
     Revelation iid (isSource attrs -> True) -> do
       chooseOneM iid $ campaignI18n do
         labeled "aMultitudeOfPlots.placeDoom" do
-          placeDoomOnAgendaAndCheckAdvanceBy attrs 1
+          placeDoomOnAgendaAndCheckAdvance attrs 1
           gainSurge attrs
           removeFromGame attrs
         labeled "aMultitudeOfPlots.addToVictory" $ addToVictory iid attrs

@@ -17,7 +17,7 @@ instance RunMessage ThePriceOfFailure where
     Revelation iid (isSource attrs -> True) -> do
       for_ (preview _PlayerCard attrs.card) \pc -> do
         assignDamageAndHorror iid attrs 2 2
-        placeDoomOnAgendaAndCheckAdvance 1
+        placeDoomOnAgendaAndCheckAdvance attrs 1
         removeCardFromDeckForCampaign iid pc
         darkPact <- genPlayerCard Events.darkPact
         addCampaignCardToDeck iid DoNotShuffleIn darkPact

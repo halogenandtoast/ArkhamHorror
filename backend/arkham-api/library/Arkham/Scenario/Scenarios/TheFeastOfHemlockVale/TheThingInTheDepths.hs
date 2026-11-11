@@ -158,8 +158,8 @@ instance RunMessage TheThingInTheDepths where
       setActDeck [Acts.aBotanicalSurvey, Acts.discoveryOfALifetime]
 
       case day of
-        Day2 -> placeDoomOnAgenda 1
-        Day3 -> when (time == Day) $ placeDoomOnAgenda 2
+        Day2 -> placeDoomOnAgenda attrs 1
+        Day3 -> when (time == Day) $ placeDoomOnAgenda attrs 2
         _ -> pure ()
 
       bogLocations <-

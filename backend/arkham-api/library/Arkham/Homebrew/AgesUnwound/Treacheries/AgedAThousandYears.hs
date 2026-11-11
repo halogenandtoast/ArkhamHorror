@@ -68,7 +68,7 @@ instance RunMessage AgedAThousandYears where
       createEnemyEngagedWithPrey_ (toCard card)
       pure t
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      placeDoomOnAgenda 1
+      placeDoomOnAgenda attrs 1
       removeFromGame attrs
       pure t
     _ -> AgedAThousandYears <$> liftRunMessage msg attrs

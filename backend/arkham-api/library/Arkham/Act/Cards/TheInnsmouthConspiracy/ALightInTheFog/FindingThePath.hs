@@ -65,7 +65,7 @@ instance RunMessage FindingThePath where
       shuffleSetAsideIntoEncounterDeck [Treacheries.takenCaptive]
 
       push $ AdvanceToAgenda 1 Agendas.theTideRises Agenda.A (toSource attrs)
-      placeDoomOnAgenda . getSum =<< selectAgg Sum AgendaDoom AnyAgenda
+      placeDoomOnAgenda attrs . getSum =<< selectAgg Sum AgendaDoom AnyAgenda
       advanceActDeck attrs
       pure a
     _ -> FindingThePath <$> liftRunMessage msg attrs

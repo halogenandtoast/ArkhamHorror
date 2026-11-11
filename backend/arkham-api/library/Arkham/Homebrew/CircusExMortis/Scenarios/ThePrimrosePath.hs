@@ -130,7 +130,7 @@ instance RunMessage ThePrimrosePath where
 
       setAgendaDeck [Agendas.savageNature, Agendas.bloodMoon]
       setActDeck [Acts.forestOfIllusion]
-      placeDoomOnAgenda 1
+      placeDoomOnAgenda attrs 1
     ResolveChaosToken _ Cultist iid -> do
       moons <- getSealedMoonTokens iid
       when (null moons) $ loseActions iid ScenarioSource 1

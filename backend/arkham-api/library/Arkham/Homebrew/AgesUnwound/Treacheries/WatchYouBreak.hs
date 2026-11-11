@@ -18,7 +18,7 @@ instance RunMessage WatchYouBreak where
   runMessage msg t@(WatchYouBreak attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       chooseOneM iid $ timeRunsOutI18n $ scope "watchYouBreak" do
-        labeled "placeDoom" $ placeDoomOnAgendaAndCheckAdvance 1
+        labeled "placeDoom" $ placeDoomOnAgendaAndCheckAdvance attrs 1
         labeled "drawAWeakness" $ searchCollectionForRandomBasicWeakness iid attrs [Pact, Madness]
       pure t
     RequestedPlayerCard iid (isSource attrs -> True) (Just card) _ -> do

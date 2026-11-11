@@ -187,10 +187,10 @@ instance RunMessage QueenOfAsh where
             =<< fromGathered (#cultist <> mapOneOf CardFromEncounterSet [Set.AshenPilgrims, Set.Cultists] <> #enemy)
         for_ (zip (take n cultists) sewerTunnels) (uncurry createEnemyAt_)
 
-      when (n >= 3) $ placeDoomOnAgenda 1
+      when (n >= 3) $ placeDoomOnAgenda attrs 1
 
       discovered <- getHasRecord InvestigatorsDiscoveredTheCultsWhereabouts
-      unless discovered $ placeDoomOnAgenda 1
+      unless discovered $ placeDoomOnAgenda attrs 1
     ScenarioSpecific "codex" v -> scope "codex" do
       let (_iid :: InvestigatorId, source :: Source, n :: Int) = toResult v
       case n of

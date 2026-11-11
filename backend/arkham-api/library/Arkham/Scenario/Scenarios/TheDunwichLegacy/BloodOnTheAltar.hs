@@ -150,7 +150,7 @@ instance RunMessage BloodOnTheAltar where
       for_ (zip locations cardsToPutUnderneath) \(l, card) -> do
         placeUnderneath l [toCard card]
 
-      when delayedOnTheirWayToDunwich (placeDoomOnAgenda 1)
+      when delayedOnTheirWayToDunwich (placeDoomOnAgenda attrs 1)
 
       setAgendaDeck [Agendas.strangeDisappearances, Agendas.theOldOnesHunger, Agendas.feedTheBeast]
       setActDeck [Acts.searchingForAnswers, Acts.theChamberOfTheBeast]

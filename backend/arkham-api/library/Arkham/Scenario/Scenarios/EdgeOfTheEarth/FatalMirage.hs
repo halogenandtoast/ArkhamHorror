@@ -245,8 +245,8 @@ instance RunMessage FatalMirage where
       setAside =<< fromGathered (CardWithTrait Resolute)
 
       case attrs.difficulty of
-        Expert -> placeDoomOnAgenda 2
-        Hard -> placeDoomOnAgenda 1
+        Expert -> placeDoomOnAgenda attrs 2
+        Hard -> placeDoomOnAgenda attrs 1
         _ -> pure ()
 
       addTekeliliDeck

@@ -26,7 +26,7 @@ instance RunMessage DelusoryEvils where
     Revelation iid (isSource attrs -> True) -> do
       chooseOneM iid $ withI18n do
         nameVar attrs $ labeled "secretlyAddToHand" $ addHiddenToHand iid attrs
-        countVar 1 $ labeled "placeAgendaDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
+        countVar 1 $ labeled "placeAgendaDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance attrs 1
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       failSkillTest

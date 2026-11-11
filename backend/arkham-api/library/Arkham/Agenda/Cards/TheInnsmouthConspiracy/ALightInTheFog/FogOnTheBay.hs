@@ -37,6 +37,6 @@ instance RunMessage FogOnTheBay where
       void $ placeLocationCardInGrid (Pos 2 (-1)) Locations.sunkenGrottoUpperDepths -- lighthouse basement
       push $ AdvanceToAct 1 Acts.findingThePath Act.A (toSource attrs)
       advanceAgendaDeck attrs
-      placeDoomOnAgenda attrs.doom
+      placeDoomOnAgenda attrs attrs.doom
       pure a
     _ -> FogOnTheBay <$> liftRunMessage msg attrs

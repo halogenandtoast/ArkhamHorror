@@ -478,7 +478,7 @@ instance RunMessage RealityAcid where
                 -- {elderThing} + {elderThing}: your patience. Place 1 doom on the current agenda.
                 | handleTokenMatch (== ElderThing) (== ElderThing) = do
                     showOutcome "doom"
-                    placeDoomOnAgenda 1
+                    placeDoomOnAgenda attrs 1
                     done
                 -- {cultist} + {cultist}: all cards that have been exiled this scenario.
                 | handleTokenMatch (== Cultist) (== Cultist) = do

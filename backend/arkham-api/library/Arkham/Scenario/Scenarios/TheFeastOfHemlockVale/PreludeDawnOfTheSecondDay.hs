@@ -117,7 +117,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
         , Locations.theCommonsDay
         ]
       n <- getPlayerCount
-      placeDoomOnAgenda n
+      placeDoomOnAgenda attrs n
     DoStep 1 Setup -> do
       getCrossedOutResidents >>= traverse_ (obtainCard <=< fetchCard)
 

@@ -32,6 +32,6 @@ instance RunMessage PrimordialEvils where
     Revelation iid (isSource attrs -> True) -> do
       chooseOneM iid $ campaignI18n $ scope "primordialEvils" do
         labeled "reduceTokens" $ place attrs NextToScenarioReference
-        labeled "placeDoom" $ placeDoomOnAgendaAndCheckAdvanceBy attrs 1
+        labeled "placeDoom" $ placeDoomOnAgendaAndCheckAdvance attrs 1
       pure t
     _ -> PrimordialEvils <$> liftRunMessage msg attrs

@@ -26,7 +26,7 @@ instance RunMessage ACreatureOfTheBayou where
           pushAll
             [ ShuffleEncounterDiscardBackIn
             , AdvanceAgendaDeck agendaDeckId (toSource attrs)
-            , placeDoomOnAgenda
+            , placeDoomOnAgenda attrs
             ]
         Just eid -> do
           lead <- getLeadPlayer

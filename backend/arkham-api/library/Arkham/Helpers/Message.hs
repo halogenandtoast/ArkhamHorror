@@ -678,11 +678,8 @@ cancelDoom target n = do
 checkDefeated :: (Sourceable source, Targetable target) => source -> target -> Message
 checkDefeated source target = CheckDefeated (toSource source) (toTarget target)
 
-placeDoomOnAgenda :: Message
-placeDoomOnAgenda = PlaceDoomOnAgenda 1 CanNotAdvance
-
-placeDoomOnAgendaAndCheckAdvance :: Message
-placeDoomOnAgendaAndCheckAdvance = PlaceDoomOnAgenda 1 CanAdvance
+placeDoomOnAgenda :: Sourceable source => source -> Message
+placeDoomOnAgenda source = PlaceDoomOnAgenda (toSource source) 1 CanNotAdvance
 
 handleTargetChoice
   :: (Sourceable source, Targetable target) => InvestigatorId -> source -> target -> Message

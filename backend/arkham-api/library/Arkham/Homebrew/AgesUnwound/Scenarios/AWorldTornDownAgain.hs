@@ -374,7 +374,7 @@ instance RunMessage AWorldTornDownAgain where
       -- "If the Myriad solved the riddle of the sphinx, place 1 doom on the current
       -- agenda." The agenda deck is set above, so agenda 1a is in play by the time
       -- this resolves.
-      when myriadSphinx $ placeDoomOnAgenda 1
+      when myriadSphinx $ placeDoomOnAgenda attrs 1
 
       {- "If [an enemy] disappeared unexpectedly, set a copy of that enemy aside,
       out of play."
@@ -406,7 +406,7 @@ instance RunMessage AWorldTornDownAgain where
       pure s
     -- [tablet]: "If you fail, place 1 doom on the current agenda."
     Msg.FailedSkillTest _ _ _ (ChaosTokenTarget token) _ _ | token.face == Tablet -> do
-      placeDoomOnAgenda 1
+      placeDoomOnAgenda attrs 1
       pure s
     -- [elder thing]: "Take 1 horror." Unconditional on both difficulty bands --
     -- hard/expert adds the auto-fail, which is on the token value above.

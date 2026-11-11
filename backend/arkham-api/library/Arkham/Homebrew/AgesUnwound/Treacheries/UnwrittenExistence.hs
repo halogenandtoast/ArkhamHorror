@@ -35,7 +35,7 @@ instance RunMessage UnwrittenExistence where
           recordForInvestigator iid ExistenceIsWaning
         labeled "removeFromGame" do
           removeFromGame attrs
-          placeDoomOnAgendaAndCheckAdvance 2
+          placeDoomOnAgendaAndCheckAdvance attrs 2
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- perPlayer 1

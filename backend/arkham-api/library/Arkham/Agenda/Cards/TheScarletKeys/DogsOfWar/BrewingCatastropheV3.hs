@@ -36,6 +36,6 @@ instance RunMessage BrewingCatastropheV3 where
         labeled "brewingCatastrophe.resign" do
           eachInvestigator resign
       revertAgenda attrs
-      placeDoomOnAgenda 10
+      placeDoomOnAgenda attrs 10
       pure a
     _ -> BrewingCatastropheV3 <$> liftRunMessage msg attrs

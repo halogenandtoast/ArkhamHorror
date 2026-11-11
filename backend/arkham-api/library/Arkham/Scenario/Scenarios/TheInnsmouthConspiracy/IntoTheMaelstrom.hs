@@ -188,7 +188,7 @@ instance RunMessage IntoTheMaelstrom where
       setupIntoTheMaelstrom attrs
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _n -> do
       case token.face of
-        Cultist -> placeDoomOnAgendaAndCheckAdvance 1
+        Cultist -> placeDoomOnAgendaAndCheckAdvance attrs 1
         Tablet -> do
           mlid <- getLocationOf iid
           case mlid of

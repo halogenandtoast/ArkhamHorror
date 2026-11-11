@@ -31,6 +31,6 @@ instance RunMessage FrenziedReveler where
       removeFromGame attrs
       pure e
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      placeDoomOnAgendaAndCheckAdvance 1
+      placeDoomOnAgendaAndCheckAdvance attrs 1
       pure e
     _ -> FrenziedReveler <$> liftRunMessage msg attrs

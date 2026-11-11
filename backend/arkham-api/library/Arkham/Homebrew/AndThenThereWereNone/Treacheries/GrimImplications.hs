@@ -54,7 +54,7 @@ instance RunMessage GrimImplications where
       pure t
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       if attrs.doom >= 1
-        then placeDoomOnAgendaBy (attrs.ability 1) 1
+        then placeDoomOnAgenda (attrs.ability 1) 1
         else placeDoom (attrs.ability 1) attrs 1
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do

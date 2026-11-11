@@ -24,7 +24,7 @@ instance RunMessage EventHorizon where
       shuffleSetAsideEncounterSetIntoEncounterDeck Set.ArtificialIntelligence
       shuffleEncounterDiscardBackIn
       push $ AdvanceAgendaDeck 1 (toSource attrs)
-      placeDoomOnAgendaAndCheckAdvance doom
+      placeDoomOnAgendaAndCheckAdvance attrs doom
       advanceActDeck attrs
       pure a
     _ -> EventHorizon <$> liftRunMessage msg attrs

@@ -132,7 +132,7 @@ instance RunMessage ReturnToBloodOnTheAltar where
         l <- place location
         placeUnderneath l [toCard card]
 
-      when delayedOnTheirWayToDunwich (placeDoomOnAgenda 1)
+      when delayedOnTheirWayToDunwich (placeDoomOnAgenda attrs 1)
 
       setAgendaDeck [Agendas.strangeDisappearances, Agendas.theOldOnesHunger, Agendas.feedTheBeast]
       setActDeck [Acts.searchingForAnswers, Acts.theChamberOfTheBeast]

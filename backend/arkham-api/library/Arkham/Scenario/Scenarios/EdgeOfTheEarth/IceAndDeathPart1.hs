@@ -173,8 +173,8 @@ instance RunMessage IceAndDeathPart1 where
       addTekeliliDeck
 
       case attrs.difficulty of
-        Expert -> placeDoomOnAgenda 2
-        Hard -> placeDoomOnAgenda 1
+        Expert -> placeDoomOnAgenda attrs 2
+        Hard -> placeDoomOnAgenda attrs 1
         _ -> pure ()
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
       case token.face of

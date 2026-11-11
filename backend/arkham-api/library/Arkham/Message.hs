@@ -1086,7 +1086,7 @@ data Message
   | PayCardCost InvestigatorId Card [Window]
   | PaidForCardCost InvestigatorId Card Payment
   | PayForCardAbility InvestigatorId Source [Window] Int Payment
-  | PlaceDoomOnAgenda Int CanAdvance
+  | PlaceDoomOnAgenda Source Int CanAdvance
   | PlaceEnemyOutOfPlay OutOfPlayZone EnemyId
   | PlaceEnemy EnemyId Placement
   | PlaceLocation LocationId Card
@@ -2269,6 +2269,19 @@ mconcat
           t :: Text <- o .: "tag"
           case t of
             "KonamiCode" -> KonamiCode <$> (o .:? "contents" .!= PlayerId UUID.nil)
+            "PlaceDoomOnAgenda" -> do
+              -- Two shapes: the current one, and the one from before the placing
+              -- source was threaded through. A save that predates the source gets
+              -- GameSource, which reproduces the old sourceless placement -- not a
+              -- card effect, so a queue already in flight is not suddenly
+              -- redirected by The Onslaught.
+              econtents <-
+                (Right <$> o .: "contents")
+                  <|> (Left <$> o .: "contents")
+                  <|> fail ("Invalid PlaceDoomOnAgenda: " <> show o)
+              pure $ case econtents of
+                Right (src, n, canAdvance) -> PlaceDoomOnAgenda src n canAdvance
+                Left (n, canAdvance) -> PlaceDoomOnAgenda GameSource n canAdvance
             "SkillTestResultOption" -> do
               econtents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
               pure $ case econtents of

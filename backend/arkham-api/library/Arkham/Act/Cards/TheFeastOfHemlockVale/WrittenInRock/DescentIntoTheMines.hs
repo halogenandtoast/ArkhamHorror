@@ -42,7 +42,7 @@ instance RunMessage DescentIntoTheMines where
 
       whenM (currentAgendaSequenceIs (== AS.Sequence 1 AS.A)) do
         advanceToAgendaA attrs Agendas.dangerousRide
-        placeDoomOnAgenda =<< getDoomOnAgenda
+        placeDoomOnAgenda attrs =<< getDoomOnAgenda
 
       scenarioSpecific_ "theCaveIn"
       advanceActDeck attrs

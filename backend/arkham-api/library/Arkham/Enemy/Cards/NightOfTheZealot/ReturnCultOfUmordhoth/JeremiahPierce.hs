@@ -29,6 +29,6 @@ instance RunMessage JeremiahPierce where
       parley sid iid attrs iid #willpower (Fixed 4)
       pure e
     FailedThisSkillTestBy _ (isSource attrs -> True) n -> do
-      placeDoomOnAgendaAndCheckAdvance n
+      placeDoomOnAgendaAndCheckAdvance attrs n
       pure e
     _ -> JeremiahPierce <$> liftRunMessage msg attrs

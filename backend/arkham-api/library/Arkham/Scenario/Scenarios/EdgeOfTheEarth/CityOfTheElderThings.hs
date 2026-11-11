@@ -365,8 +365,8 @@ instance RunMessage CityOfTheElderThings where
       setAside [Enemies.terrorOfTheStarsBaneOfTheElderThings]
 
       case attrs.difficulty of
-        Expert -> placeDoomOnAgenda 2
-        Hard -> placeDoomOnAgenda 1
+        Expert -> placeDoomOnAgenda attrs 2
+        Hard -> placeDoomOnAgenda attrs 1
         _ -> pure ()
       addTekeliliDeck
     DoStep 2 Setup -> runScenarioSetup CityOfTheElderThings attrs do
@@ -400,8 +400,8 @@ instance RunMessage CityOfTheElderThings where
         ]
 
       case attrs.difficulty of
-        Expert -> placeDoomOnAgenda 2
-        Hard -> placeDoomOnAgenda 1
+        Expert -> placeDoomOnAgenda attrs 2
+        Hard -> placeDoomOnAgenda attrs 1
         _ -> pure ()
       addTekeliliDeck
     DoStep 3 Setup -> runScenarioSetup CityOfTheElderThings attrs do
@@ -434,8 +434,8 @@ instance RunMessage CityOfTheElderThings where
         ]
 
       case attrs.difficulty of
-        Expert -> placeDoomOnAgenda 2
-        Hard -> placeDoomOnAgenda 1
+        Expert -> placeDoomOnAgenda attrs 2
+        Hard -> placeDoomOnAgenda attrs 1
         _ -> pure ()
       addTekeliliDeck
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do

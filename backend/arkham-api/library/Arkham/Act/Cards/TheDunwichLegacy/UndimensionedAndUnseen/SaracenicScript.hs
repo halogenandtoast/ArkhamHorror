@@ -27,7 +27,7 @@ instance RunMessage SaracenicScript where
       esotericFormulas <- getSetAsideCardsMatching $ cardIs Assets.esotericFormula
       zipWithM_ takeControlOfSetAsideAsset investigators esotericFormulas
 
-      unlessHasRecord DrHenryArmitageSurvivedTheDunwichLegacy $ placeDoomOnAgenda 1
+      unlessHasRecord DrHenryArmitageSurvivedTheDunwichLegacy $ placeDoomOnAgenda attrs 1
       advanceActDeck attrs
       pure a
     _ -> SaracenicScript <$> liftRunMessage msg attrs

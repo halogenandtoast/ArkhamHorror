@@ -32,7 +32,7 @@ instance RunMessage TheLighthouse where
       shuffleSetAsideIntoEncounterDeck [Treacheries.worthHisSalt]
       void $ placeLocationCardInGrid (Pos 2 (-1)) Locations.sunkenGrottoUpperDepths -- lighthouse basement
       push $ AdvanceToAgenda 1 Agendas.unchangingAsTheSea Agenda.A (toSource attrs)
-      placeDoomOnAgenda . getSum =<< selectAgg Sum AgendaDoom AnyAgenda
+      placeDoomOnAgenda attrs . getSum =<< selectAgg Sum AgendaDoom AnyAgenda
       advanceActDeck attrs
       pure a
     _ -> TheLighthouse <$> liftRunMessage msg attrs

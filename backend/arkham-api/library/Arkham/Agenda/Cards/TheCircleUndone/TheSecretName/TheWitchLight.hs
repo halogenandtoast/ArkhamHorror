@@ -51,7 +51,7 @@ instance RunMessage TheWitchLight where
                 setCardAside card
             Just nahab -> place nahab (OutOfPlay SetAsideZone)
           advanceAgendaDeck attrs
-          placeDoomOnAgenda 4
+          placeDoomOnAgenda attrs 4
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       playerCount <- getPlayerCount

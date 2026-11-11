@@ -236,7 +236,7 @@ instance RunMessage ForTheGreaterGood where
           closestCultists <- select $ NearestEnemyToFallback iid #cultist <> EnemyWithAnyDoom
           chooseTargetM iid closestCultists \cultist -> do
             removeDoom ElderThing cultist 1
-            placeDoomOnAgenda 1
+            placeDoomOnAgenda attrs 1
         else do
           maxDoomCultists <- selectMax EnemyDoom (EnemyWithTrait Trait.Cultist)
           if notNull maxDoomCultists

@@ -150,8 +150,8 @@ instance RunMessage TheHeartOfMadnessPart1 where
       doStep 2 Setup
 
       case attrs.difficulty of
-        Expert -> placeDoomOnAgenda 2
-        Hard -> placeDoomOnAgenda 1
+        Expert -> placeDoomOnAgenda attrs 2
+        Hard -> placeDoomOnAgenda attrs 1
         _ -> pure ()
       addTekeliliDeck
     DoStep 2 Setup -> do
@@ -166,7 +166,7 @@ instance RunMessage TheHeartOfMadnessPart1 where
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
       case token.face of
         Tablet | isEasyStandard attrs -> drawTekelili iid Tablet 1
-        ElderThing | n >= 3 -> placeDoomOnAgendaAndCheckAdvance 1
+        ElderThing | n >= 3 -> placeDoomOnAgendaAndCheckAdvance attrs 1
         _ -> pure ()
       pure s
     ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do

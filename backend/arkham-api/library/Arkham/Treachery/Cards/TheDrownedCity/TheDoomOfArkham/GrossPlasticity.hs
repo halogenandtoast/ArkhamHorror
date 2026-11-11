@@ -23,7 +23,7 @@ instance RunMessage GrossPlasticity where
       chooseOneM iid $ withI18n do
         countVar 1
           $ labeled "placeAgendaDoomCanAdvance"
-          $ placeDoomOnAgendaAndCheckAdvance 1
+          $ placeDoomOnAgendaAndCheckAdvance attrs 1
         labeledValidate canFlood "increaseFloodLevelOfYourLocation" $ for_ mlid increaseFloodLevel
         labeled "eachInvestigatorTakesDamageOrHorror" do
           eachInvestigator \iid' -> assignDamageOrHorror iid' attrs 1 1

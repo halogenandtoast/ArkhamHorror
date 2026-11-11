@@ -51,7 +51,7 @@ instance RunMessage ConfluxOfConsequence where
             withPhase #enemy $ runEnemyPhase Noop
         | card.cardCode == Acts.secretsAndLiesV2.cardCode -> do
             advanceAgendaDeck attrs
-            placeDoomOnAgenda 4
+            placeDoomOnAgenda attrs 4
             advanceCurrentAct attrs
         | otherwise -> do
             n <- perPlayer 1

@@ -32,7 +32,7 @@ instance RunMessage RampagingCreatures where
       moveToward target lid
       pure a
     ChosenRandomLocation target lid | isTarget attrs target && onSide B attrs -> do
-      void $ spawnSetAsideBroodOfYogSothothAt lid
+      void $ spawnSetAsideBroodOfYogSothothAt attrs lid
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       shuffleEncounterDiscardBackIn

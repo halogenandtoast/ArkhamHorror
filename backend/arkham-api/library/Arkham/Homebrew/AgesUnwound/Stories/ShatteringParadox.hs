@@ -68,7 +68,7 @@ instance RunMessage ShatteringParadox where
         labeledValidate (3 `notElem` taken) "takeHorror" $ doStep 3 msg
       pure s
     DoStep 1 (FailedThisSkillTest _ (isParadoxTest attrs -> True)) -> do
-      placeDoomOnAgendaAndCheckAdvance 1
+      placeDoomOnAgendaAndCheckAdvance attrs 1
       pure $ ShatteringParadox $ attrs & metaL .~ toJSON (1 : chosenOptions attrs)
     DoStep 2 (FailedThisSkillTest _ (isParadoxTest attrs -> True)) -> do
       getRandomLocation warded >>= traverse_ placeBeneathAgendaDeck

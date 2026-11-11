@@ -25,9 +25,9 @@ instance RunMessage Occultation where
       -- resources to cancel this effect."
       payers <- select $ deepOneInvestigator <> InvestigatorWithResources (atLeast 2)
       if null payers
-        then placeDoomOnAgendaAndCheckAdvance 1
+        then placeDoomOnAgendaAndCheckAdvance attrs 1
         else chooseOneM iid $ campaignI18n $ scope "occultation" do
-          labeled "placeDoom" $ placeDoomOnAgendaAndCheckAdvance 1
+          labeled "placeDoom" $ placeDoomOnAgendaAndCheckAdvance attrs 1
           targets payers \iid' -> do
             assignHorror iid' attrs 2
             push $ LoseResources iid' (toSource attrs) 2

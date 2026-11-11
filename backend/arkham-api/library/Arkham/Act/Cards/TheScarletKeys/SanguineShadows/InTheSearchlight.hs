@@ -153,7 +153,7 @@ instance RunMessage InTheSearchlight where
         portraits investigators (`takeControlOfAsset` laChicaRojaAsset)
       agenda <- fetchCard Agendas.seeingRed
       push $ SetCurrentAgendaDeck 1 [agenda]
-      placeDoomOnAgenda 1
+      placeDoomOnAgenda attrs 1
       locations <- shuffle =<< select (LocationWithToken Token.Target)
       case nonEmpty locations of
         Nothing -> error "No locations"

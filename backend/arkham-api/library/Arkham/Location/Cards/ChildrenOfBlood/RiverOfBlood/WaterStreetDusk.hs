@@ -19,6 +19,6 @@ instance HasAbilities WaterStreetDusk where
 instance RunMessage WaterStreetDusk where
   runMessage msg l@(WaterStreetDusk attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      placeDoomOnAgenda 1
+      placeDoomOnAgenda attrs 1
       pure l
     _ -> WaterStreetDusk <$> liftRunMessage msg attrs

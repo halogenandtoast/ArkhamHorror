@@ -32,7 +32,7 @@ instance RunMessage ParadoxicalThreat where
           $ labeled "paradoxicalThreat.placeFacedown"
           $ placeFacedownInThreatArea iid 3
         labeled "paradoxicalThreat.doomAndDraw" do
-          placeDoomOnAgendaAndCheckAdvanceBy attrs 1
+          placeDoomOnAgendaAndCheckAdvance attrs 1
           drawFacedownCards iid 3
       pure t
     _ -> ParadoxicalThreat <$> liftRunMessage msg attrs

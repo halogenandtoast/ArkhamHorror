@@ -93,7 +93,7 @@ differences as builder overrides beforehand.
 -}
 setupALightInTheFog
   :: ReverseQueue m => ScenarioAttrs -> ScenarioBuilderT m ()
-setupALightInTheFog _attrs = scenarioI18n do
+setupALightInTheFog attrs = scenarioI18n do
   gather Set.ALightInTheFog
   gather Set.CreaturesOfTheDeep
   gather Set.FloodedCaverns
@@ -138,8 +138,8 @@ setupALightInTheFog _attrs = scenarioI18n do
   whenHasRecord TheIdolWasBroughtToTheLighthouse $ setAside [Assets.wavewornIdol]
   whenHasRecord TheMantleWasBroughtToTheLighthouse $ setAside [Assets.awakenedMantle]
   whenHasRecord TheHeaddressWasBroughtToTheLighthouse $ setAside [Assets.headdressOfYhaNthlei]
-  whenHasRecord TheInvestigatorsReachedFalconPointAfterSunrise $ placeDoomOnAgenda 1
-  whenHasRecord TheTideHasGrownStronger $ placeDoomOnAgenda 1
+  whenHasRecord TheInvestigatorsReachedFalconPointAfterSunrise $ placeDoomOnAgenda attrs 1
+  whenHasRecord TheTideHasGrownStronger $ placeDoomOnAgenda attrs 1
 
 instance RunMessage ALightInTheFog where
   runMessage msg s@(ALightInTheFog attrs) = runQueueT $ scenarioI18n $ case msg of

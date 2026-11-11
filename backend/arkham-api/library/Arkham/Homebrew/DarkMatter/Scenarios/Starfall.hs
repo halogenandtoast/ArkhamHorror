@@ -219,7 +219,7 @@ instance RunMessage Starfall where
         current agenda, or take 1 horror for each point you fail by." Mandatory,
         so both options are always offered. -}
         ElderThing -> chooseOneM iid $ unscoped do
-          countVar 1 $ labeled "placeDoomOnAgenda" $ placeDoomOnAgenda 1
+          countVar 1 $ labeled "placeDoomOnAgenda" $ placeDoomOnAgenda attrs 1
           countVar n $ labeled "takeHorror" $ assignHorror iid ElderThing n
         _ -> pure ()
       pure s

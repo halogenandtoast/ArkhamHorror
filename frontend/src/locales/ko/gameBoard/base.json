@@ -1,19 +1,27 @@
 {
-    "skillTestTitle": "능력 테스트",
-
-    "waitingForMorePlayers": "다른 플레이어를 기다리는 중",
-    "showInviteLink": "다음 주소로 다른 플레이어를 초대하세요:",
-
-    "gameOver": "게임 종료",
-    "watchReplay": "다시 보기",
-
-    "submit": "확인",
-    "cancel": "취소",
-    "close": "닫기",
-
-    "outOfSyncHint": "게임이 동기화되지 않았습니다: 재접속을 시도 중...",
-
-    "error": "에러",
-    "errorContent": "버그일 가능성이 높으니, 버그 리포트를 제출해 주십시오.",
-    "fileBug": "버그 파일"
+  "applyAll": "전부",
+  "skillTestTitle": "능력 테스트",
+  "toBeCommitted": "투입 예정",
+  "committedCards": "투입한 카드",
+  "waitingForMorePlayers": "다른 플레이어를 기다리는 중",
+  "showInviteLink": "다음 주소로 다른 플레이어를 초대하세요:",
+  "gameOver": "게임 종료",
+  "campaignWon": "캠페인 승리",
+  "campaignLost": "캠페인 패배",
+  "scenarioWon": "시나리오 승리",
+  "scenarioLost": "시나리오 패배",
+  "campaignWonUncertain": "캠페인 승리…?",
+  "outcomeUncertain": "캠페인 안내서에는 이 결말이 “조사자들은 캠페인에서 승리합니다…?”로만 적혀 있고 더 이상의 설명이 없습니다.",
+  "outcomeNote": {
+    "neverSeenInTheWakingWorld": "…그리고 깨어 있는 세계에서는 다시는 그들의 모습을 보거나 소식을 들을 수 없습니다.",
+    "neverSeenOrHeardFromAgain": "…하지만 다시는 그들의 모습을 보거나 소식을 들을 수 없습니다."
+  },
+  "watchReplay": "다시 보기",
+  "submit": "확인",
+  "cancel": "취소",
+  "close": "닫기",
+  "outOfSyncHint": "게임이 동기화되지 않았습니다: 재접속을 시도 중...",
+  "error": "에러",
+  "errorContent": "버그일 가능성이 높으니, 버그 리포트를 제출해 주십시오.",
+  "fileBug": "버그 파일"
 }

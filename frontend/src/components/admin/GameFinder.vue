@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { findGame } from '@/arkham/api'
 import GameRow from '@/arkham/components/GameRow.vue'
 import type { GameDetailsEntry } from '@/arkham/types/Game'
 
+const { t } = useI18n()
 const dragging = ref(false)
 const playerIds = ref<string[]>([])
 const errorMsg = ref<string | null>(null)
@@ -46,14 +48,14 @@ async function processFile(file: File) {
     const ids = collectPlayerIds(json)
     playerIds.value = Array.from(new Set(ids))
     if (playerIds.value.length === 0) {
-      errorMsg.value = 'No playerIds found.'
+      errorMsg.value = t('adminDashboard.noPlayerIds')
       return
     }
 
     gameDetails.value = await findGame(playerIds.value[0])
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : String(e)
-    errorMsg.value = `Failed to parse JSON: ${message}`
+    errorMsg.value = t('adminDashboard.parseFailed', { message })
   }
 }
 
@@ -88,8 +90,8 @@ function collectPlayerIds(node: unknown): string[] {
       role="button"
       tabindex="0"
     >
-      <strong>Drop JSON here</strong>
-      <span>or click to choose a file</span>
+      <strong>{{ t('adminDashboard.dropJson') }}</strong>
+      <span>{{ t('adminDashboard.orChooseFile') }}</span>
       <input
         ref="file"
         type="file"

@@ -1,5 +1,11 @@
 {
   "heading": "시나리오 VIII",
+  "specialRules": [
+    {
+      "title": "카르코사 왕국에서의 정신력",
+      "body": "<p class='basic'>뒤틀려서 정신을 유린하는 카르코사의 왕국에서 광기란 피할 수 없는 결과입니다. 그러나 당신의 정신이 망가지고 산산조각난다고 하더라도 이곳에서의 조사는 끝나지 않습니다. 이번 시나리오 동안, 조사자들은 자신의 정신력 이상의 공포를 받더라도 쓰러지지 않습니다. 조사자는 자신의 정신력을 초과하더라도 계속해서 공포를 받습니다. 정신력보다 많은 공포를 가진 조사자의 경우, “남은 정신력”을 0으로 간주합니다.</p>"
+    }
+  ],
   "tokens": {
     "easyStandard": {
       "skull": "-2 (당신의 남은 정신력이 없다면, -2 대신 -4).",
@@ -15,6 +21,10 @@
     }
   },
   "label": {
+    "madnessCoils": {
+      "takeHorror": "이건 현실일 리 없어. 이건 현실일 리 없어. 이건 현실일 리 없어. 각 조사자는 공포를 2 받습니다. 주요사건 2a로 진행합니다.",
+      "faint": "조사자들은 기절했다가 얼마 후 깨어납니다. 주요사건 2a로 진행하고 그 위에 파멸을 1개 놓습니다."
+    },
     "useV2": "주요목적 2 – ‘이방인을 찾아서(v.II)’를 사용합니다.",
     "useV3": "주요목적 2 – ‘이방인을 찾아서(v.III)’를 사용합니다.",
     "theFall": {
@@ -36,7 +46,7 @@
     "intro2": "<p>_도입부 2_: 당신은 솟아난 검은 첨탑을 이루는 검정 흑요석 석판 위에 떨어집니다. 갈빗대가부러진 듯 복부에서 타는 듯한 통증이 올라와 피를 토해냅니다. 당신 앞에는 뒤틀린 외계 도시가 펼쳐져 있습니다. 뒤엉킨 거리며 괴이한 건축물에서는 질서나 구성 따위를 찾아볼 수조차 없습니다. 저 멀리, 호수의 검은 수면에 두 개의 태양이 비칩니다. 고개를 들어보니 구름 사이로 몽 생 미셸 수도원 탑이 거꾸로 서 있습니다. 이곳이 카르코사입니다. 별들 속 광기의 왕국, 하스터가 지배하는 곳.</p><p class='basic right'>_게임 준비_로 이어집니다.</p>"
   },
   "setup": {
-    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *Dim Carcosa*, *망상*, *황색 표식 교단*, *카르코사의 거주자*, *하스터의 권속*, and *엄습하는 공포*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/dim-carcosa.png' /><img src='{setImgPath}/delusions.png' /><img src='{setImgPath}/cult-of-the-yellow-sign.png' /><img src='{setImgPath}/inhabitants-of-carcosa.png' /><img src='{setImgPath}/agents-of-hastur.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *어스레한 카르코사*, *망상*, *황색 표식 교단*, *카르코사의 거주자*, *하스터의 권속*, *엄습하는 공포*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/dim-carcosa.png' /><img src='{setImgPath}/delusions.png' /><img src='{setImgPath}/cult-of-the-yellow-sign.png' /><img src='{setImgPath}/inhabitants-of-carcosa.png' /><img src='{setImgPath}/agents-of-hastur.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
     "act2": {
       "instructions": "캠페인 기록지를 확인합니다. 이번 시나리오에서는 다음 상황에 따라 어떤 _주요목적 2_ 카드를 사용할지 정합니다. 사용하지 않는 _주요목적 2_ 카드는 모두 게임에서 제거합니다.",
       "v1": "_의심_과 _믿음_이 합쳐서 5 이하라면, 주요목적 2 – ‘이방인을 찾아서(v.I)’를 사용합니다.",
@@ -59,7 +69,13 @@
       "sixToEight": "빗금이 6~8개면, 주요사건 1a에 파멸을 1개 추가합니다.",
       "nineOrMore": "빗금이 9개 이상이면, 아무 변경 사항이 없습니다."
     },
-    "takeHorror": "모든 조사자는 자기 정신력의 절반(소숫점 버림)만큼 직접적인 공포를 받습니다(*이 공포는 방어할 수 없습니다*). 이렇게 공포를 받아서 가진 공포가 정신력 이상이 되더라도 쓰러지지 않습니다(다음의 “카르코사 왕국에서의 정신력”을 참조합니다)."
+    "takeHorror": "모든 조사자는 자기 정신력의 절반(소숫점 버림)만큼 직접적인 공포를 받습니다(*이 공포는 방어할 수 없습니다*). 이렇게 공포를 받아서 가진 공포가 정신력 이상이 되더라도 쓰러지지 않습니다(다음의 “카르코사 왕국에서의 정신력”을 참조합니다).",
+    "returnTo": {
+      "gatherSets": "또한 다음 조우 세트의 모든 카드를 모읍니다: *돌아온 어스레한 카르코사*, *광기를 부르는 망상*, *하스터의 특사*, *신경증적인 공포*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/return-to-dim-carcosa.png' /><img src='{setImgPath}/maddening-delusions.png' /><img src='{setImgPath}/hasturs-envoys.png' /><img src='{setImgPath}/neurotic-fear.png' /></section>*광기를 부르는 망상*이 *망상*을, *하스터의 특사*가 *하스터의 권속*을, *신경증적인 공포*가 *엄습하는 공포*를 대체합니다. 대체된 조우 세트는 게임에서 제거합니다.",
+      "placeLocations": "기존 ‘왕궁’ 장소를 게임에서 제거하고, 새로운 ‘왕궁 (*하스터의 영지*)’으로 대체합니다. 장소 준비는 평소대로 진행합니다.",
+      "setAside": "새로 추가된 ‘당신의 정신 속 으슥한 곳’, ‘권좌의 방’, ‘와드 극장 무대 위’ 장소를 비플레이 상태로 치워 둡니다.",
+      "additionalRule": "이번 시나리오 동안 다음 규칙을 추가로 적용합니다: 조사자 중 누구도 _비밀을 알고_ 있지 않다면, ‘하스터’의 체력은 조사자당 2 미만으로 줄어들 수 없습니다."
+    }
   },
   "resolutions": {
     "xp": {

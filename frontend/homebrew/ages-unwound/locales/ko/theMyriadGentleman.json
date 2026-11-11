@@ -1,0 +1,28 @@
+{
+  "theMyriadGentleman": {
+    "heading": "시나리오 II",
+    "name": "무수한 신사",
+    "intro": {
+      "title": "시나리오 II: 무수한 신사"
+    },
+    "setup": {
+      "setAsideLocations": "나머지 장소를 모두 비플레이 상태로 치워 둡니다."
+    },
+    "armyOfOne": {
+      "label": {
+        "takeHorror": "공포를 {count} 받습니다"
+      }
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "아무 결말에도 도달하지 못했다면"
+      },
+      "resolution1": {
+        "title": "결말 1"
+      },
+      "resolution2": {
+        "title": "결말 2"
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "nightOfFire": {
+    "heading": "시나리오 I",
+    "name": "불의 밤",
+    "intro": {
+      "title": "시나리오 I: 불의 밤"
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "아무 결말에도 도달하지 못했다면"
+      },
+      "resolution1": {
+        "title": "결말 1"
+      },
+      "resolution2": {
+        "title": "결말 2"
+      },
+      "resolution3": {
+        "title": "결말 3"
+      },
+      "resolution4": {
+        "title": "결말 4"
+      }
+    }
+  }
+}

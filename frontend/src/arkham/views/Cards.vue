@@ -14,14 +14,19 @@ import { shallowRef } from 'vue';
 import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 import { storeToRefs } from 'pinia'
 import { filterDisplayable, isDevBuild } from '@/arkham/displayRules'
-import { homebrewCampaigns, homebrewStandaloneScenarios } from '@/arkham/homebrewData'
+import { homebrewCampaignScope, homebrewCampaigns, homebrewStandaloneScenarios } from '@/arkham/homebrewData'
+import { localizedScenarioName } from '@/arkham/scenarioNames'
 import { useSettings } from '@/stores/settings'
 import { useUserStore } from '@/stores/user'
 import { byPrintedNumber, hasLibraryCards, libraryCards, librarySets, loadLibrary } from '@/arkham/customCardLibrary'
 import { campaignSetIcon, isTypingTarget, scenarioSetIcon } from '@/arkham/helpers'
 import { cardGroupKey, groupCards } from '@/arkham/cardDetails'
 
-const { t } = useI18n()
+const { t, te } = useI18n()
+
+/* Cycle and set names come from cycles.json/sets.json in English; a locale may
+ * name them under cardSetNames.{cycles,sets}.<code>. */
+const localizedOr = (key: string, fallback: string) => te(key) ? t(key) : fallback
 
 enum View {
   Image = "IMAGE",
@@ -59,12 +64,12 @@ const displayOptions = { alpha: dev, beta: !!useUserStore().currentUser?.beta, d
 const homebrewBoxes: { id: string; name: string; icon: string }[] = [
   ...filterDisplayable(homebrewCampaigns, displayOptions).map((campaign) => ({
     id: campaign.id,
-    name: campaign.name,
+    name: localizedOr(`${homebrewCampaignScope(campaign.id)}.name`, campaign.name),
     icon: campaignSetIcon(campaign.id),
   })),
   ...filterDisplayable(homebrewStandaloneScenarios, displayOptions).map((scenario) => ({
     id: scenario.campaign ?? scenario.id,
-    name: scenario.name,
+    name: localizedScenarioName(scenario.id, scenario.name, t, te),
     icon: scenarioSetIcon(scenario.id),
   })),
 ].sort((a, b) => a.name.localeCompare(b.name))
@@ -340,7 +345,7 @@ interface CardSearchIndex {
   encounterCode?: string
 }
 
-const homebrewCycle: CardCycle = { name: 'Homebrew', cycle: HOMEBREW_CYCLE, code: 'homebrew' }
+const homebrewCycle: CardCycle = { name: t('cardsView.homebrew'), cycle: HOMEBREW_CYCLE, code: 'homebrew' }
 const homebrewSets: CardSet[] = homebrewBoxes.map((box) => ({
   name: box.name,
   min: 0,
@@ -353,7 +358,12 @@ const homebrewSets: CardSet[] = homebrewBoxes.map((box) => ({
 const allCycles: CardCycle[] = homebrewSets.length ? [...cycles, homebrewCycle] : cycles
 const allSets: CardSet[] = [...(sets as CardSet[]), ...homebrewSets]
 
-const customCycle: CardCycle = { name: 'Custom', cycle: CUSTOM_CYCLE, code: 'custom' }
+const customCycle: CardCycle = { name: t('cardsView.custom'), cycle: CUSTOM_CYCLE, code: 'custom' }
+
+const cycleLabel = (cycle: CardCycle) => localizedOr(`cardSetNames.cycles.${cycle.code}`, cycle.name)
+// Homebrew and custom sets were named when they were made.
+const setLabel = (set: CardSet) =>
+  set.homebrew || set.custom ? set.name : localizedOr(`cardSetNames.sets.${set.code}`, set.name)
 
 /* Your own cards, grouped the way the library groups them: one nav entry per
  * set that has something in it. They are kept out of `allSets` because nothing
@@ -457,33 +467,9 @@ watch(() => activeChapter.value, (newChapter) => {
   }
 })
 
-watch(() => allCards.value, () => {
-  const language = localStorage.getItem('language') || 'en'
-  if (language === 'en') return
-  if (!allCards.value) return
-
-  for (const card of allCards.value) {
-    const match: ArkhamDBCard | null = store.getDbCard(dbArt(card))
-    if (!match) continue
-
-    // Name
-    card.name.title = match.name
-    if (match.subname) card.name.subtitle = match.subname
-
-    // Class
-    if (match.faction_name && card.classSymbols.length > 0) card.classSymbols[0] = match.faction_name
-    if (match.faction2_name && card.classSymbols.length > 1) {
-      card.classSymbols[1] = match.faction2_name
-      if (match.faction3_name && card.classSymbols.length > 2) card.classSymbols[2] = match.faction3_name
-    }
-
-    // Type
-    card.cardType = match.type_name
-
-    // Traits
-    if (match.traits) card.cardTraits = match.traits.split('.').filter(item => item != "" && item != " ")
-  }
-})
+/* Cards stay English here: class filters, icons and CSS classes key off those
+ * values. What is shown is translated where it is drawn (cardDetails.ts), and
+ * the search index below carries the translated names and traits besides. */
 
 const chapter1Cycles = computed(() => allCycles.filter((c) => !CHAPTER_2_CYCLES.has(c.cycle) && c.cycle !== HOMEBREW_CYCLE))
 const chapter2Cycles = computed(() => allCycles.filter((c) => CHAPTER_2_CYCLES.has(c.cycle)))
@@ -513,7 +499,9 @@ const cardSearchIndex = computed(() => {
       codeLower: card.cardCode.toLowerCase(),
       typeLower: cardType(card).toLowerCase().trim(),
       classSymbolsLower: card.classSymbols.map((cs) => cs.toLowerCase()),
-      traitsLower: card.cardTraits.map((trait) => trait.toLowerCase()),
+      traitsLower: [...card.cardTraits, ...(match?.traits?.split('.') ?? [])]
+        .map((trait) => trait.trim().toLowerCase())
+        .filter((trait) => trait !== ''),
       encounterCode: match?.encounter_code,
     })
   }
@@ -871,16 +859,16 @@ const stepCard = (delta: number) => {
         v-if="!sidebarCollapsed"
         class="sidebar-collapse"
         type="button"
-        aria-label="Hide card sets"
-        title="Hide card sets"
+        :aria-label="$t('cardsView.hideSets')"
+        :title="$t('cardsView.hideSets')"
         @click="sidebarCollapsed = true"
       >
-        <span class="collapse-glyph" aria-hidden="true" data-tooltip="Hide card sets">«</span>
+        <span class="collapse-glyph" aria-hidden="true" :data-tooltip="$t('cardsView.hideSets')">«</span>
       </button>
       <div class="sidebar-content">
       <button class="sidebar-close" @click="showSidebar = false"><font-awesome-icon icon="times" /></button>
       <SegmentedToggle class="sidebar-card-pool card-pool-toggle" :model-value="cardPoolMode" :options="cardPoolOptions" :label="$t('cardsView.cardPool')" @update:model-value="setCardPoolMode" />
-      <div :class="['chapter-tabs segmented', showExtrasChapter ? 'segmented-3' : 'segmented-2']" role="radiogroup" aria-label="Card chapter">
+      <div :class="['chapter-tabs segmented', showExtrasChapter ? 'segmented-3' : 'segmented-2']" role="radiogroup" :aria-label="$t('cardsView.chapter')">
         <input type="radio" :checked="activeChapter === 1" id="chapter-1" @change="activeChapter = 1" />
         <label for="chapter-1">{{ t('cardsView.chapter1') }}</label>
         <input type="radio" :checked="activeChapter === 2" id="chapter-2" @change="activeChapter = 2" />
@@ -905,9 +893,9 @@ const stepCard = (delta: number) => {
                     class="set-icon set-icon--homebrew"
                     :style="{ '--set-icon-url': `url(${setIconSrc(set)})` }"
                     role="img"
-                    :aria-label="set.name"
+                    :aria-label="setLabel(set)"
                   ></span>
-                  <a href="#" @click.prevent="setSet(set)">{{set.name}}</a>
+                  <a href="#" @click.prevent="setSet(set)">{{ setLabel(set) }}</a>
                 </div>
               </li>
             </ol>
@@ -922,9 +910,9 @@ const stepCard = (delta: number) => {
                 class="set-icon"
                 :style="{ '--set-icon-url': `url(${cycleIconSrc(cycle)})` }"
                 role="img"
-                :aria-label="cycle.name"
+                :aria-label="cycleLabel(cycle)"
               ></span>
-              <a href="#" @click.prevent="setCycle(cycle)">{{cycle.name}}</a>
+              <a href="#" @click.prevent="setCycle(cycle)">{{ cycleLabel(cycle) }}</a>
             </div>
             <ol class="set-list">
               <li v-for="set in cycleSets(cycle)" :key="set.code">
@@ -935,9 +923,9 @@ const stepCard = (delta: number) => {
                     class="set-icon"
                     :style="{ '--set-icon-url': `url(${setIconSrc(set)})` }"
                     role="img"
-                    :aria-label="set.name"
+                    :aria-label="setLabel(set)"
                   ></span>
-                  <a href="#" @click.prevent="setSet(set)">{{set.name}}</a>
+                  <a href="#" @click.prevent="setSet(set)">{{ setLabel(set) }}</a>
                 </div>
               </li>
             </ol>
@@ -952,7 +940,7 @@ const stepCard = (delta: number) => {
           v-if="sidebarCollapsed"
           class="desktop-sidebar-toggle"
           @click="sidebarCollapsed = false"
-          title="Show card sets"
+          :title="$t('cardsView.showSets')"
         >
           <font-awesome-icon class="toggle-arrow" icon="chevron-right" />
           <font-awesome-icon icon="book" />

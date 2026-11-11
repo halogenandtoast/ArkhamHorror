@@ -123,16 +123,16 @@ const drownedCityTaskRecommendation = (body: string) => {
       </template>
       <div v-else-if="choice.tag === MessageType.LABEL" class="message-label">
         <button v-if="choice.label == 'Choose {skull}'" @click="choose(index)">
-          Choose <i class="iconSkull"></i>
+          {{ $t('gameUi.choose') }} <i class="iconSkull"></i>
         </button>
         <button v-else-if="choice.label == 'Choose {cultist}'" @click="choose(index)">
-          Choose <i class="iconCultist"></i>
+          {{ $t('gameUi.choose') }} <i class="iconCultist"></i>
         </button>
         <button v-else-if="choice.label == 'Choose {tablet}'" @click="choose(index)">
-          Choose <i class="iconTablet"></i>
+          {{ $t('gameUi.choose') }} <i class="iconTablet"></i>
         </button>
         <button v-else-if="choice.label == 'Choose {elderThing}'" @click="choose(index)">
-          Choose <i class="iconElderThing"></i>
+          {{ $t('gameUi.choose') }} <i class="iconElderThing"></i>
         </button>
         <button
           v-else-if="drownedCityTaskCardCode(choice.label)"

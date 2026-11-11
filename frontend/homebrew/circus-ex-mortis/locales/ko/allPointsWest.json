@@ -1,0 +1,36 @@
+{
+  "allPointsWest": {
+    "heading": "시나리오 IV",
+    "intro": {
+      "title": "시나리오 IV: 서쪽으로 가는 모든 길",
+      "skipToSetup": "게임 준비로 건너뜁니다.",
+      "proceedToSetup": "게임 준비로 이어집니다."
+    },
+    "setup": {
+      "easy": "_쉬움_: -2",
+      "standard": "_보통_: -3",
+      "hard": "_어려움_: -4",
+      "expert": "_전문가_: -5"
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "아무 결말에도 도달하지 못했다면"
+      },
+      "resolution1": {
+        "title": "결말 1"
+      },
+      "resolution2": {
+        "title": "결말 2"
+      },
+      "resolution3": {
+        "title": "결말 3"
+      },
+      "resolution4": {
+        "title": "결말 4"
+      },
+      "resolution5": {
+        "title": "결말 5"
+      }
+    }
+  }
+}

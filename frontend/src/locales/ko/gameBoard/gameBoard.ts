@@ -8,5 +8,7 @@ import scenario from '@/locales/ko/gameBoard/scenario.json'
 import card from '@/locales/ko/gameBoard/card.json'
 import upgrade from '@/locales/ko/gameBoard/upgrade.json'
 import create from '@/locales/ko/gameBoard/create.json'
+import ultimatumsAndBoons from '@/locales/ko/gameBoard/ultimatumsAndBoons.json'
+import achievements from '@/locales/ko/gameBoard/achievements.json'
 
-export default {...base, phase, skillTest, gameBar, historyPanel, investigator, scenario, card, upgrade, create}
+export default {...base, phase, skillTest, gameBar, historyPanel, investigator, scenario, card, upgrade, create, ultimatumsAndBoons, achievements}

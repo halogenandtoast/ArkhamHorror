@@ -1,0 +1,28 @@
+{
+  "redSunrise": {
+    "heading": "시나리오 VII",
+    "intro": {
+      "title": "시나리오 VII: 붉은 일출"
+    },
+    "setup": {
+      "checkAgenda": "캠페인 기록지를 확인합니다.",
+      "checkAct": "캠페인 기록지를 확인합니다."
+    },
+    "silentForest": {
+      "label": {
+        "takeHorror": "공포를 {count} 받습니다"
+      }
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "아무 결말에도 도달하지 못했다면"
+      },
+      "resolution1": {
+        "title": "결말 1"
+      },
+      "resolution2": {
+        "title": "결말 2"
+      }
+    }
+  }
+}

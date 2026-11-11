@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDbCardStore } from '@/stores/dbCards'
 
 type KeyStatus = { tag: "KeyWithInvestigator", contents: string } | { tag: "KeyWithEnemy", contents: [string, string | null] }
 
@@ -21,6 +22,17 @@ const allScarletKeys = {
   c88045: "The Wellspring of Fortune"
 }
 
+const store = useDbCardStore()
+
+/* The keys are two-sided cards ("09519a"/"09519b"); the localized card database knows
+ * them by the printed code, so the English name is only the fallback. */
+const keyName = (cardCode: string, english: string): string => {
+  if ((localStorage.getItem('language') || 'en') === 'en') return english
+  const code = cardCode.replace(/^c/, '')
+  const card = store.getDbCard(code) ?? store.getDbCard(`${code}a`)
+  return card?.name ?? english
+}
+
 const toBearer = (cardCode: string): string | null => {
   const status = props.keys[cardCode]
   if (!status) return null
@@ -38,7 +50,7 @@ const toBearer = (cardCode: string): string | null => {
       <thead><tr><th><span>{{ $t('keysStatus.nameOfArtifact') }}</span></th><th><span>{{ $t('keysStatus.bearer') }}</span></th></tr></thead>
       <tbody>
         <tr v-for="[cardCode, scarletKey] in Object.entries(allScarletKeys)" :key="scarletKey">
-          <td><span class='checkbox'>{{props.keys[cardCode] ? "✓" : null}}</span>{{ scarletKey }}</td>
+          <td><span class='checkbox'>{{props.keys[cardCode] ? "✓" : null}}</span>{{ keyName(cardCode, scarletKey) }}</td>
           <td>{{ toBearer(cardCode) }}</td>
         </tr>
       </tbody>

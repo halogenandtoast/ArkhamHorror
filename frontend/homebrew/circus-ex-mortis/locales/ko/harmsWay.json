@@ -1,0 +1,23 @@
+{
+  "harmsWay": {
+    "heading": "시나리오 III",
+    "intro": {
+      "title": "시나리오 III: 위험 속으로"
+    },
+    "setup": {
+      "checkCampaignLogIllusions": "캠페인 기록지를 확인합니다.",
+      "checkCampaignLogAct": "캠페인 기록지를 확인합니다."
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "결말 1"
+      },
+      "resolution2": {
+        "title": "결말 2"
+      },
+      "resolution3": {
+        "title": "결말 3"
+      }
+    }
+  }
+}

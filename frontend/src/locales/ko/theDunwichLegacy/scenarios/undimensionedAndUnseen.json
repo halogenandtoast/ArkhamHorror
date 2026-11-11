@@ -1,5 +1,12 @@
 {
   "heading": "시나리오 V",
+  "label": {
+    "chooseInvestigatorToPlaceClue": "단서를 놓을 조사자 선택",
+    "cluesToSpend": "소비할 단서 개수",
+    "doNotRemoveCluesFail": "‘요그 소토스의 새끼’에서 단서를 제거하지 않고 능력 테스트에 실패합니다",
+    "doNotRemoveCluesTreatAsMinusFour": "‘요그 소토스의 새끼’에서 단서를 제거하지 않고 -4로 취급합니다",
+    "spawnSetAsideBrood": "치워두었던 ‘요그 소토스의 새끼’ 하나를 무작위 장소에 출현"
+  },
   "tokens": {
     "easyStandard": {
       "skull": "플레이 상태인 ‘요그 소토스의 새끼’마다 -1.",
@@ -12,6 +19,11 @@
       "cultist": "다른 혼돈 토큰을 하나 더 공개합니다. 실패하면, 공포 1과 피해 1을 받습니다.",
       "tablet": "0. 플레이 상태인 ‘요그 소토스의 새끼’ 하나에 놓인 단서를 모두 제거하거나, 또는 이 테스트에 자동으로 실패해야 합니다.",
       "elderThing": "-5. 이 토큰이 ‘요그 소토스의 새끼’에 대해 공격 또는 회피를 시도하는 동안 공개되었다면, 해당 적은 즉시 당신을 공격합니다."
+    }
+  },
+  "tooltips": {
+    "dunwichVillage": {
+      "resign": "당신은 괴물들로부터 몸을 숨깁니다."
     }
   },
   "intro": {
@@ -36,12 +48,23 @@
     },
     "setAside": "모든 ‘비전 마법식’ 사본을 비플레이 상태로 치워 둡니다.",
     "powderOfIbnGhazi": "자기 덱에 ‘이븐 가지의 분말’이 있는 조사자는 덱에서 그것을 찾아서 플레이 영역에 둬도 됩니다.",
-    "randomBasicWeakness": "모든 조사자는 보유 게임에서 무작위 _*정신이상*_, _*부상*_, 또는 _*계약*_ 기본 약점 하나를 무작위로 찾아서 캠페인이 끝날 때까지 자신의 덱에 추가합니다."
+    "randomBasicWeakness": "모든 조사자는 보유 게임에서 무작위 _*정신이상*_, _*부상*_, 또는 _*계약*_ 기본 약점 하나를 무작위로 찾아서 캠페인이 끝날 때까지 자신의 덱에 추가합니다.",
+    "returnTo": {
+      "gatherSets": "또한 다음 조우 세트의 모든 카드를 모읍니다: *돌아온 차원 너머에 보이지 않는 존재*, *변덕스러운 공포*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/return-to-undimensioned-and-unseen.png' /><img src='{setImgPath}/erratic-fear.png' /></section>*변덕스러운 공포*가 *엄습하는 공포*를 대체합니다. 대체된 세트는 게임에서 제거합니다.",
+      "broodOfYogSothoth": "기존의 ‘요그 소토스의 새끼’ 사본 4장을 제거한 뒤, *돌아온 차원 너머의 보이지 않는 존재* 조우 세트의 ‘요그 소토스의 새끼’ 4장으로 대체합니다.",
+      "additionalRule": "이번 시나리오 동안 다음 규칙을 추가로 적용합니다: ‘요그 소토스의 새끼’ 하나를 플레이 영역에 두려 할 경우, 치워 두었던 ‘요그 소토스의 새끼’ 사본 중에서 무작위로 1장을 선택합니다."
+    }
   },
   "choosingARandomLocation": {
     "title": "무작위 장소 선택",
     "body": "이번 시나리오를 진행하는 동안, 이따금씩 무작위 장소를 선택하라는 지시를 받을 것입니다. 이럴 경우, 게임을 준비하는 동안 제거했던 장소 카드 6장(플레이 상태인 각 장소마다 사용하지 않는 카드 1장씩)을 다 같이 섞은 다음, 무작위로 1장을 뽑아 결정하십시오."
   },
+  "specialRules": [
+    {
+      "title": "@:theDunwichLegacy.undimensionedAndUnseen.choosingARandomLocation.title",
+      "body": "@:theDunwichLegacy.undimensionedAndUnseen.choosingARandomLocation.body"
+    }
+  ],
   "resolutions": {
     "noResolution": {
       "title": "결말에 도달하지 못함",
@@ -55,10 +78,5 @@
       "title": "결말 2",
       "body": "<div class='resolution'><p>_결말 2_: 당신은 저 날뛰는 마지막 괴물을 처단하고서 지블런의 집으로 물러납니다. 완전히 녹초가 된 당신은 지금껏 겪은 일을 떠올리며 몸서리칩니다.</p><ul><li>캠페인 기록지에 *요그 소토스의 새끼가 한 마리도 험지로 달아나지 못했다*라고 기록합니다.</li><li>자기 덱에 ‘이븐 가지의 분말’이 포함된 조사자는 자기 덱에서 그 카드를 제거합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
     }
-  },
-  "label": {
-    "chooseInvestigatorToPlaceClue": "단서를 놓을 조사자 선택",
-    "cluesToSpend": "소비할 단서 개수",
-    "spawnSetAsideBrood": "치워두었던 ‘요그 소토스의 새끼’ 하나를 무작위 장소에 출현"
   }
 }

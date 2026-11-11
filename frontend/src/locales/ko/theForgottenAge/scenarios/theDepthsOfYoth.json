@@ -1,5 +1,15 @@
 {
   "heading": "시나리오 VII",
+  "specialRules": [
+    {
+      "title": "@:theForgottenAge.theDepthsOfYoth.depthLevel.title",
+      "body": "@:theForgottenAge.theDepthsOfYoth.depthLevel.body"
+    },
+    {
+      "title": "@:theForgottenAge.theDepthsOfYoth.pursuit.title",
+      "body": "@:theForgottenAge.theDepthsOfYoth.pursuit.body"
+    }
+  ],
   "tokens": {
     "easyStandard": {
       "skull": "-X. X는 현재 깊이입니다.",
@@ -38,7 +48,7 @@
     "intro8": "<p>_도입부 8_: 이츠타카가 유물을 받아 챙깁니다. 그녀의 손등은 단단한 비늘로 덮여 있습니다. 당신은 몇 걸음 뒤로 물러서면서, 분노에 차 손이 하얗게 되도록 주먹을 꽉 쥡니다. “이제 여길 떠나라. 내가 마음을 바꾸기 전에.” 이츠타카가 말합니다. “살고 싶다면 따라오지 마라. 다음엔 가차없을 테니까.” 이츠타카가 재빨리 떠납니다. 그녀는 시야에서 완전히 사라질 때까지 계속 당신을 주시했습니다. 이츠타카는 따라오지 말라고 경고했지만 다른 도리가 없습니다. 당신이 손을 놓는다면 그 누가 인류를 구하겠습니까?</p><p class='basic right'>캠페인 기록지의 *조사자들이 잃어버린 유물을 찾아냈다*에 취소선을 긋습니다. 캠페인 기록지에 *유물을 잃어버렸다*라고 기록합니다. 누군가의 덱에 ‘시대의 유물’이 있다면, 캠페인이 끝날 때까지 그 조사자의 덱에서 ‘시대의 유물’을 제거합니다.</p><p class='basic right'>_게임 준비_로 이어집니다.</p>"
   },
   "setup": {
-    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다. *The Depths of Yoth*, *이그의 권속*, *이그의 맹독*, *Expedition*, *잊힌 유적*, and *독*. 이 세트에는 다음 아이콘이 그려져 있습니다.<section class='encounter-sets'><img src='{setImgPath}/the-depths-of-yoth.png' /><img src='{setImgPath}/agents-of-yig.png' /><img src='{setImgPath}/yigs-venom.png' /><img src='{setImgPath}/expedition.png' /><img src='{setImgPath}/forgotten-ruins.png' /><img src='{setImgPath}/poison.png' /></section>",
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *요스 깊은 곳으로*, *이그의 권속*, *이그의 맹독*, *탐사*, *잊힌 유적*, *독*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/the-depths-of-yoth.png' /><img src='{setImgPath}/agents-of-yig.png' /><img src='{setImgPath}/yigs-venom.png' /><img src='{setImgPath}/expedition.png' /><img src='{setImgPath}/forgotten-ruins.png' /><img src='{setImgPath}/poison.png' /></section>",
     "yigsFury": {
       "description": "캠페인 기록지의 “이그의 격노” 아래에 있는 빗금 개수를 확인합니다.",
       "tally0": "빗금이 0개면, 모아둔 조우 카드에서 ‘구덩이 감시자’ 사본 전부와 ‘이그’를 찾습니다. 찾아온 모든 카드를 게임에서 제거합니다.",
@@ -61,7 +71,13 @@
     "explorationDeck": "다음과 같이 탐사 덱을 만듭니다. 치워 두었던 ‘요스의 계단’ 장소를 가져오고, 그 외의 치워 두었던 나머지 단면 장소 중에서 무작위로 4장을 더 선택하여, 총 5장을 함께 섞어 한 더미로 만듭니다.",
     "currentDepth": "시나리오 참조 카드의 “현재 깊이” 칸에 자원 토큰을 1개 올려놓습니다. 이번 시나리오가 끝날 때까지, “현재 깊이” 칸에 놓인 자원 개수를 현재 깊이라고 부릅니다(다음의 “깊이”를 참조합니다).",
     "setOutOfPlay": "‘시대의 유물(*과거를 되찾다*)’을 비플레이 상태로 치워 둡니다.",
-    "poisoned": "아직 아무 조사자의 덱에 포함되어 있지 않은 ‘중독’ 약점은 모두 비플레이 상태로 치워 둡니다."
+    "poisoned": "아직 아무 조사자의 덱에 포함되어 있지 않은 ‘중독’ 약점은 모두 비플레이 상태로 치워 둡니다.",
+    "returnTo": {
+      "gatherSets": "또한 다음 조우 세트의 모든 카드를 모읍니다: *돌아온 요스 깊은 곳으로*, *독기 어린 증오*, *비운의 탐사*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/return-to-the-depths-of-yoth.png' /><img src='{setImgPath}/venomous-hate.png' /><img src='{setImgPath}/doomed-expedition.png' /></section>*독기 어린 증오*가 *이그의 맹독*을, *비운의 탐사*가 *탐사*를 대체합니다. 대체된 조우 세트는 게임에서 제거합니다.",
+      "harbinger": "게임을 준비한 후, 보유 게임에서 새로운 ‘발루시아의 선봉장 *(잠든 자 되돌아오다)*’을 찾아서 비플레이 상태로 치워 둡니다. 이번 시나리오를 진행하는 동안, ‘발루시아의 선봉장’이 플레이 영역에 들어오려 하면 대신 이 카드를 사용합니다.",
+      "explorationDeck": "게임 준비 중 탐사 덱을 구성한 후, ‘요스에 도사린 위험’ 음모를 탐사 덱에 섞어 넣습니다.",
+      "additionalRule": "이번 시나리오 동안 다음 규칙을 추가로 적용합니다: _강제_ - 주요목적 1b 동안 새로운 탐사 덱을 만든 후: 버린 조우 카드 더미, 모든 비플레이 영역에서 ‘요스에 도사린 위험’을 찾아서 탐사 덱에 섞어넣습니다. 조우 덱을 찾아 봤다면 조우 덱을 섞습니다."
+    }
   },
   "depthLevel": {
     "title": "깊이",
@@ -75,6 +91,7 @@
     "collectedAStrangeLiquid": "기묘한 액체를 수통에 담았다"
   },
   "label": {
+    "chooseYigsFury": "“이그의 격노” 아래에 있는 빗금 개수를 조사자들이 정할 수 있습니다. 빗금 개수가 적을수록 이 시나리오를 더욱 쉽고 안전하게 즐길 수 있습니다.",
     "perilsOfYoth": {
       "fail": "‘요스에 도사린 위험’을 비플레이 상태로 치워 둡니다. (*이번 탐사가 실패합니다.*)",
       "continue": "‘요스에 도사린 위험’을 비플레이 상태로 치워 둡니다. 현재 깊이만큼 공포 또는 피해를 받습니다. 그리고 ‘요스에 도사린 위험’을 뽑지 않았던 것처럼 탐사를 이어갑니다."

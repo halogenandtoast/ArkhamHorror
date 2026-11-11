@@ -3,7 +3,7 @@ import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { isCustomCardCode } from '@/arkham/customCards'
 import { localizeArkhamDBBaseUrl } from '@/arkham/helpers'
 import { altFrontImage, cardBackImage, cardFrontImage, hasCardBackArt } from '@/arkham/cardArt'
-import { cardCost, cardIcons, cardSetText, cardTraits, cardType, levelText } from '@/arkham/cardDetails'
+import { cardClassNames, cardCost, cardIcons, cardSetText, cardTitleParts, cardTraits, cardType, levelText } from '@/arkham/cardDetails'
 import type { CardDef } from '@/arkham/types/CardDef'
 import { useUnwatermarked } from '@/arkham/unwatermark'
 
@@ -34,7 +34,9 @@ function onFrontError() {
 const frontDisplay = useUnwatermarked(frontSrc)
 const backDisplay = useUnwatermarked(backImage)
 
-const title = computed(() => props.unimplemented ? `#${props.card.art}` : props.card.name.title)
+const titleParts = computed(() => cardTitleParts(props.card))
+const title = computed(() => props.unimplemented ? `#${props.card.art}` : titleParts.value.title)
+const classNames = computed(() => cardClassNames(props.card))
 const type = computed(() => props.card.cardType ? cardType(props.card) : '')
 const cost = computed(() => cardCost(props.card))
 const icons = computed(() => cardIcons(props.card))
@@ -106,7 +108,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 
         <div class="info">
           <h2>{{ title }}<span v-if="levelText(card)" class="level">{{ levelText(card) }}</span></h2>
-          <p v-if="card.name.subtitle" class="subtitle">{{ card.name.subtitle }}</p>
+          <p v-if="titleParts.subtitle" class="subtitle">{{ titleParts.subtitle }}</p>
           <p v-if="unimplemented" class="not-implemented">{{ $t('cardDetails.notImplemented') }}</p>
 
           <dl>
@@ -118,7 +120,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
               <dt>{{ $t('cardsList.class') }}</dt>
               <dd>
                 <span v-for="(sym, i) in card.classSymbols" :key="sym" :class="`${sym.toLowerCase()}-sym`">
-                  {{ sym }}{{ i < card.classSymbols.length - 1 ? ', ' : '' }}
+                  {{ classNames[i] }}{{ i < card.classSymbols.length - 1 ? ', ' : '' }}
                 </span>
               </dd>
             </template>

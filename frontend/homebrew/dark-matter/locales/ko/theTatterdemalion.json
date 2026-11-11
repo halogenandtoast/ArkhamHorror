@@ -1,0 +1,19 @@
+{
+  "theTatterdemalion": {
+    "setup": {
+      "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: <i>누더기호</i>, <i>시대착오</i>및 <i>어두운 과거</i>. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{imgPath}/homebrew/dark-matter/sets/the-tatterdemalion.png' /><img src='{imgPath}/homebrew/dark-matter/sets/anachronism.png' /><img src='{imgPath}/homebrew/dark-matter/sets/dark-past.png' /></section>",
+      "setAsideVirtualAccessKey": "‘가상 접속 열쇠’ 이야기 자산을 비플레이 상태로 치워 둡니다.",
+      "scanningDeck": "모든 스캔 카드(뒷면에 기호가 표시된 조우 카드)를 모아서 함께 섞어, 스캔 덱을 만듭니다.",
+      "placeLocations": "나머지 모든 장소를 플레이 영역에 둡니다.",
+      "startAt": "모든 조사자는 ‘동면실’에서 시작합니다."
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "아무 결말에도 도달하지 못했다면"
+      },
+      "resolution1": {
+        "title": "결말 1"
+      }
+    }
+  }
+}

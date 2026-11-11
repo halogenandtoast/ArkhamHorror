@@ -15,7 +15,7 @@ const emit = defineEmits<{ (e: 'inspect'): void }>()
 /* No timestamp means there is no game row behind this room any more: the game was
  * deleted and the room outlived it, which is worth calling out on its own. */
 const deleted = computed(() => !props.room.roomLastUpdatedAt)
-const lastUpdated = computed(() => props.room.roomLastUpdatedAt ?? 'deleted')
+const lastUpdated = computed(() => props.room.roomLastUpdatedAt ?? t('adminRooms.deleted'))
 
 /* All clients and no players: nothing further will happen on that board, so
  * the room is being held open by its watchers (or by a tally nobody is behind).
@@ -39,20 +39,20 @@ async function deleteRoom() {
 <template>
   <div class="room box" :class="{ deleted, 'watchers-only': watchersOnly }">
     <div class="room-stat">
-      <span class="label">Clients</span>
+      <span class="label">{{ t('adminRooms.clients') }}</span>
       <strong>{{ room.roomClients }}</strong>
     </div>
     <div class="room-stat">
-      <span class="label">Watching</span>
+      <span class="label">{{ t('adminRooms.watching') }}</span>
       <strong>{{ room.roomWatchers }}</strong>
     </div>
     <div class="room-stat updated">
-      <span class="label">Last Updated</span>
+      <span class="label">{{ t('adminRooms.lastUpdated') }}</span>
       <span>{{ lastUpdated }}</span>
     </div>
     <div class="room-actions">
       <a href="#" @click.prevent="emit('inspect')">{{ t('admin.inspectRoom') }}</a>
-      <router-link :to="`/admin/games/${room.roomArkhamGameId}`">View</router-link>
+      <router-link :to="`/admin/games/${room.roomArkhamGameId}`">{{ t('adminRooms.view') }}</router-link>
       <a href="#" class="delete" @click.prevent="deleteRoom">
         {{ room.roomClients > 0 ? t('admin.dropRoom') : t('admin.deleteRoom') }}
       </a>

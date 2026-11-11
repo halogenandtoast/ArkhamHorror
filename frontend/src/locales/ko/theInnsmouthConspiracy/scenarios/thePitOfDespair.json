@@ -1,44 +1,87 @@
 {
+  "heading": "시나리오 I",
+  "setup": {
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *절망의 구렁*, *심해의 괴물*, *침수 동굴*, *밀물*, *파편화된 기억*, *크툴루의 권속*, *쥐떼*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/grotto-of-despair.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/flooded-caves.png' /><img src='{setImgPath}/rising-tide.png' /><img src='{setImgPath}/shattered-memories.png' /><img src='{setImgPath}/agents-of-cthulhu.png' /><img src='{setImgPath}/rats.png' /></section>알아두기: 모든 ‘조수 동굴’ 장소의 조우 세트 아이콘은 오직 해당 장소 카드의 공개 면에만 나와 있습니다.",
+    "placeKeys": "다음과 같이 열쇠를 준비합니다:",
+    "faceupKeys": "파란색 열쇠와 초록색 열쇠를 앞면이 보이도록 치워 둡니다.",
+    "facedownKeys": "빨간색, 노란색, 보라색 열쇠는 뒷면으로 치워 둡니다. 이 세 열쇠는 서로 구분할 수 없도록 잘 섞어 둡니다.",
+    "removeKeys": "검은색, 흰색 열쇠는 게임에서 제거합니다. 이 두 열쇠는 이번 시나리오에서 사용하지 않습니다.",
+    "placeLocations": "‘낯선 석실’ 장소를 플레이 영역에 둡니다.",
+    "startAt": "모든 조사자는 ‘낯선 석실’에서 시작합니다.",
+    "setAsideLocations": "‘우상의 방’, ‘데이곤에게 바쳐진 제단’, ‘잠긴 탈출구’ 장소를 비플레이 상태로 치워 둡니다(이러한 장소의 미공개 면은 모두 ‘조수 동굴’ 장소입니다).",
+    "tidalTunnels": "남은 ‘조수 동굴’ 장소를 잘 섞어서 ‘낯선 석실’의 아래쪽/왼쪽/오른쪽에 1장씩 미공개 면으로 놓습니다(다음 쪽의 장소 배치를 참조하여 놓습니다).",
+    "setAsideTidalTunnels": "나머지 ‘조수 동굴’ 장소를 비플레이 상태로 치워 둡니다.",
+    "setAsideCards": "‘융합체’ 적, ‘맹감각’ 음모 사본 2장, ‘구렁 밑바닥으로부터’ 음모 사본 3장을 비플레이 상태로 치워 둡니다.",
+    "floodTokens": "토큰 저장소에 침수 토큰을 함께 모아 둡니다."
+  },
+  "specialRules": [
+    {
+      "title": "조수 동굴",
+      "body": "<p class='basic'>미공개 면이 ‘조수 동굴’인 장소 카드는 한 가지 조우 세트에만 들어 있는 것이 아니라 여러 조우 세트에 나뉘어 있습니다. (예를 들어, 이번 시나리오에서는 침수 동굴과 절망의 구렁 두 조우 세트에 각각 미공개 면이 ‘조수 동굴’인 장소가 포함되어 있습니다.) 이처럼 여러 조우 세트에 걸쳐 있으므로, ‘조수 동굴’의 미공개 면에는 조우 세트 아이콘이 없습니다. ‘조수 동굴’이 어느 조우 세트에 속해 있는지 구분하려면 공개 면을 확인해 보세요.</p>"
+    },
+    {
+      "title": "구렁 밑바닥",
+      "body": "<p class='basic'>이번 시나리오에 속한 일부 카드에는 “구렁 밑바닥”이라는 영역이 언급되어 있습니다. 구렁 밑바닥은 주요목적 덱과 주요사건 덱 옆에 있는 비플레이 영역이며, ‘융합체’ 적은 각종 카드 효과에 의해 구렁 밑바닥을 드나들 수 있습니다. 구렁 밑바닥에 있는 동안 ‘융합체’는 비플레이 상태이며, 플레이어 카드나 조사자 행동에 영향을 받을 수 없습니다.</p><ul><li>‘융합체’가 플레이 영역에서 구렁 밑바닥으로 이동할 때, 열쇠 토큰 외에 ‘융합체’에게 놓인 토큰을 모두 제거합니다. 조사자에 의해 쓰러지는 경우 외의 방법으로 ‘융합체’가 구렁 밑바닥으로 이동할 때, ‘융합체’에 놓여 있던 열쇠 토큰을 제거하지 않습니다. 조사자에 의해 쓰러지는 경우, 그 조사자가 ‘융합체’에 놓여 있던 열쇠 토큰을 모두 가져와 조종합니다.</li></ul>"
+    },
+    {
+      "title": "절망의 구렁에서의 장소 배치와 이웃",
+      "body": "<p class='basic'>이번 시나리오를 진행하는 동안, 장소 카드를 격자 모양으로 배열하게 됩니다. 조수 동굴 덱에서 가져온 새로운 장소를 기존의 장소의 아래쪽/왼쪽/오른쪽에 배치하게 될 것입니다. *(알아두기: 게임 초반부에는 조수 동굴 덱이 존재하지 않습니다. 시나리오를 진행하다 보면 추후 조수 동굴 덱을 구성하라는 지시와 함께, 조수 동굴 덱을 구성하는 방법을 안내받을 것입니다.)*</p><ul><li>이번 시나리오 동안, 각 장소는 (동쪽/서쪽/남쪽/북쪽) 이웃한 모든 장소와 이어져 있습니다.</li><li>아래쪽/왼쪽/오른쪽에 장소를 배치할 때는 기존 장소와 바로 닿게 배치해야 합니다. 즉, 기존 장소와 새로이 놓일 장소 사이에 다른 장소가 있으면 안 됩니다. 이와 같이 다른 장소와 맞닿은 장소는 서로 _이웃_한 것으로 간주합니다.</li><li>장소는 사방(위쪽/아래쪽/왼쪽/오른쪽)으로만 이웃하며 대각선 방향으로는 이웃하지 않습니다.</li><li>새로운 장소를 놓아야 할 칸을 이미 다른 장소가 점유하고 있다면, 그곳에는 장소를 놓을 수 없습니다. 조수 동굴 덱에서 가져온 장소가 놓여야 할 공간을 다른 장소가 점유하고 있다면, 그 새로운 장소는 플레이 영역에 들어오지 않습니다.</li></ul>"
+    },
+    {
+      "title": "회상",
+      "body": "<p class='basic'>인스머스에 드리운 음모 캠페인 내내, 아래와 다음 쪽에 있는 것과 같은 “회상” 장면을 읽으라는 지시를 이따금 받게 됩니다. 각 회상에는 산산이 조각난 당신의 기억 한 조각이 담겨 있습니다. 이 기억들을 충분히 엿본다면, 당신을 이 지경까지 이끈 사건들을 더 깊이 이해할 수 있을지도 모릅니다. 일부 회상은 추가 경험치를 얻거나 혼돈 주머니에서 해로운 기호를 제거하는 등의 추가 혜택을 주기도 합니다.</p>"
+    },
+    {
+      "title": "열쇠",
+      "body": "<div class='red bordered'><p class='basic'>이번 시나리오에서 열쇠는 다음을 나타냅니다:</p><ul><li>파란색: 흉하게 일그러진 수생 동물의 우상.</li><li>초록색: 끝단이 네 갈래로 나뉜 에메랄드 열쇠.</li><li>빨간색: 물고기 심장 모양으로 생긴 호박 조각. 손에 쥐고 있을 때면 머릿속에 기묘한 속삭임이 들립니다.</li><li>노란색: 촉수 형상의 석회화된 키틴질 파편.</li><li>보라색: 일그러진 대리석과 오닉스로 된 들쭉날쭉한 열쇠.</li></ul></div>"
+    }
+  ],
   "intro": {
-    "title": "Scenario I: The Pit of Despair",
-    "body": "<p>Your eyes flutter open with the languor of one who has slept for days on end. Your senses are in no hurry to return. You blink and struggle to see through the inky black surrounding you. Every inch of you aches with dull, throbbing pain. Your skin is cold and numb, and your clothes are waterlogged. Your mind swims with half-articulated thoughts and tangled memories. You have no idea where you are or how you got here.</p><p>You snap to attention, heart racing in your chest. You lie on a jagged stone floor in a shallow pool of dark, ice-cold water. Knowing panic will only make the situation worse, you take a series of deep, meditative breaths. You try to remember something—anything—that might allow you to retrace your steps, but your mind is blank. You remember who you are, but nothing whatsoever from the recent past. You steady yourself and examine your surroundings.</p><p>The chamber appears to be a natural cave formation. Kelp dangles from the ceiling. The stone walls and floor are wet and slimy. A rhythmic drip, drip, drip echoes throughout the otherwise silent cave. This cavern has been underwater, and not too long ago. A result of the tides, perhaps? You swallow your fear like a lump of cold iron. If it is low tide now…A cold shudder ripples up your spine. You examine the ceiling and are surprised to see a slab of metal set into the rough stone overhead. Its polished surface is alien to the rest of the natural cavern. You call out for help, hoping somebody can hear.</p><p>Your dread deepens at the reply: an awful croaking and gurgling that permeates the tunnels—a sound no human could make.</p>"
+    "title": "시나리오 I: 절망의 구렁",
+    "body": "<p>며칠 동안 죽은 듯이 잠이라도 잔 것처럼 나른한 눈을 깜빡여 봅니다. 감각이 쉽사리 돌아오지 않습니다. 눈을 깜빡… 또 깜빡. 사방의 칠흑 같은 어둠을 꿰뚫어 보려고 눈을 연달아 깜빡입니다. 구석구석 묵직한 고통이 온몸을 짓누릅니다. 살갗은 뼈저린 냉기만 느낄 뿐 다른 감각은 무디기만 하고, 옷은 온통 물에 푹 젖어 있습니다. 당신의 정신은 곳곳에 구멍이 뻥뻥 뚫린 생각과 뒤엉킨 기억 속을 휘휘 저으며 헤엄칩니다. 여기가 어딘지도 대체 어쩌다 여기 있는 것인지도 전혀 기억나지 않습니다.</p><p>서둘러 정신을 차리려 애쓰자 가슴팍에서 심장이 널뜁니다. 당신은 들쭉날쭉한 돌바닥 위, 얼음장처럼 차가운 얕은 물웅덩이 속에 누워 있습니다. 겁내 봐야 상황만 나빠질 뿐이란 걸 잘 알기에, 심호흡을 몇 번 하면서 마음을 가다듬습니다. 당신의 발자취를 되짚어 줄 수 있는 거라면 뭐라도 기억해 내려고 끙끙대봤지만, 머릿속은 텅텅 비었습니다. 다행히도 자신이 누구인지까지 잊어버리진 않았지만, 최근 벌어진 일은 전혀 기억에 남지 않았습니다. 당신은 잠시 안정을 취하고서 주변을 살피기 시작합니다.</p><p>이곳은 일종의 자연적으로 형성된 동굴처럼 보입니다. 천장에는 해초 가닥이 매달려 있고, 돌벽과 바닥은 축축하고 개흙투성이입니다. 똑. 똑. 똑. 주기적으로 떨어지는 물방울 소리 외에는 동굴 전체가 고요합니다. 이 동굴은 얼마 전까지만 해도 물에 잠겨 있었을 것이고, 아마도 만조 시기가 오면 다시 물이 차오를 듯합니다. 차가운 쇳덩어리 같은 두려움을 꾹 삼킵니다. 그렇다면 물이 없는 지금은 간조 시기일 테니… 등뼈를 타고 오르는 한기에 절로 몸서리쳐집니다. 당신은 머리 위를 올려다보다 거친 돌 천장에 박힌 금속판을 보고서 화들짝 놀랍니다. 저 반질반질한 금속 표면은 분명 이 자연 동굴의 구조와 이질적입니다. 당신은 누군가 듣기를 간절히 바라며 도와달라고 부르짖습니다.</p><p>하지만 이에 되돌아오는 대답은 무시무시하기 짝이 없었습니다. 개골개골 꺽꺽대는 기괴한 소리가 동굴에 울려 퍼집니다. 필시 인간이 낼 수 있는 소리가 아닙니다.</p>"
   },
   "flashback1": {
     "title": "Flashback 1",
-    "body": "<p>You stand in a small office, examining a worn photograph in a well-polished wooden frame. In the photo, a squad of men in military uniforms pose in front of a Bristol F.2 Fighter plane. Several of the men wear tan British uniforms, but one sports the olive overcoat and khakis of an American soldier. His sleeves each bear a rectangular patch striped vertically with a captain’s paired silver bars. At the bottom of the photograph, in black ink, cursive handwriting reads “British Fourth Army, outside St. Quentin, 1918.”</p><p>The door to the office opens suddenly, startling you. You put the photograph down and turn to address the man entering. You identify him immediately by his dark-brown skin, his strong jaw, and his broad shoulders. It is Thomas Dawson—the American from the photograph—though he has aged a bit since his war days, and heavy bags hang under his eyes. “One war ends; a new one begins,” he says quietly. “Only this enemy is even harder to root out.”</p><p>You ask the man what a war hero is doing in the investigative business, and he chuckles softly in response. “War hero? I don’t know where you heard that from. I was just doing my duty.” You shake your head but do not argue further. You suspect that the squadron Captain Dawson rescued would disagree as well.</p><p>“In any event, I suppose you’re wondering why I summoned you here to Boston,” he says, gesturing for you to take a seat in front of his desk. You sit and respond to his remark with affirmation, wondering aloud why a telephone call would not have sufficed. “This is a… sensitive matter,” he replies. “A few days ago, I lost contact with one of my agents, a Miss Elina Harper. I had her investigating several strange reports I’ve received in the past few months, all concerning a town called Innsmouth. Do you know the place? It’s along the coast to the north of your town of Arkham, just by Ipswich.”</p><P>You know the place. Though most have never heard of the shadowed, decrepit seaport, those who do hear only ill rumors. From what you understand, the town used to be a lively port before the War of 1812, but it has since become dingy and run-down. The only railway line that runs through Innsmouth is abandoned, and there are no references to the town on any maps or in any guidebooks you have ever seen.</p><p>“Perhaps she’s found something curious or has gone into hiding, but I suspect foul play. It could be mob work, but I doubt it. I’m not sending any more agents until I know for sure. However, I have some room in our discretionary budget to hire a third party, such as yourself.” You assume Agent Dawson is dancing around the truth, which is that you are expendable. “I know it isn’t much to go on, but I need to know the status of Agent Harper. Even bad news would be better than no news, at this point. If you do me this favor, our agency will be in your debt.” You ask which agency Dawson is referring to. A smirk tugs at his lips.</p><p>When you snap back to the present, you still gaze at Agent Dawson’s face, only now his smirk is twisted in a haunting visage of agony. It is just one of the many faces that writhe in torment throughout this repulsive creature’s scaly, pulsating flesh.</p>"
+    "body": "<div class='blue'><h1>회상 I</h1><p>당신은 작은 사무실에 서서 반질반질한 나무 액자에 담긴 낡은 사진을 바라봅니다. 사진 속에는 군복을 입은 남자들이 브리스톨 F.2 전투기 앞에서 포즈를 취하고 있습니다. 몇몇은 황갈색 영국 군복 차림이지만, 한 남자는 미국 군복 특유의 올리브색 오버코트와 카키색 바지를 입었습니다. 미국 군복을 입은 사내의 소매에는 대위를 나타내는 은색 막대 2개가 세로로 그어져 있는 직사각형 모양의 휘장이 붙어 있습니다. 사진 아래에는 검은색 잉크로 쓴 필기체 손글씨가 보입니다. “1918년 생캉탱 외곽에서, 영국 제4군단.”</p><p>그때, 갑자기 사무실 문이 열립니다. 당신은 깜짝 놀라 사진을 내려놓고 갑작스레 들어온 남자를 바라봅니다. 구릿빛 피부, 억센 턱, 넓은 어깨. 바로 사진 속에 있던 미국인이었습니다. 이 토머스 도슨이라는 사내는 눈 밑 살이 무겁게 쳐져서 그런지, 세계 대전 때 사진보다 다소 나이가 들어 보입니다. “전쟁이 끝나면 새로운 전쟁이 시작되는 법이라지만, 이번 적은 뿌리 뽑기가 훨씬 더 어렵겠습니다.” 도슨이 나직하게 읊조립니다.</p><p>전쟁 영웅이 왜 사건 수사 쪽에 발을 들였는지 묻자, 도슨이 싱긋 미소짓습니다. “전쟁 영웅이라고요? 어디서 그런 말을 들으셨는지 모르겠군요. 전 그냥 군 복무 중이었을 뿐입니다만.” 도슨 대위가 구해낸 비행대대라면 저 말에 동의하진 않았을 거라고 생각했지만 구태여 입 밖으로 말을 꺼내진 않습니다. 그저 고개만 저으며 딱히 왈가왈부하지는 않기로 합니다.</p><p>“어쨌든 본론으로 넘어갑시다. 왜 여기 보스턴까지 불렀는지 궁금하시죠?” 도슨이 책상 앞에 앉으라고 손짓합니다. 당신은 자리에 앉아, 그렇다고 답하면서 왜 전화로 이야기하지 않았는지 묻습니다. “이건… 좀 민감한 문제라서 말입니다. 며칠 전, 저희 측 요원인 엘리나 하퍼 양과 연락이 끊겼습니다. 최근 몇 달 동안 기묘한 보고가 연이어지기에, 하퍼 요원에게 좀 조사해달라고 부탁했었죠. 모두 인스머스라는 마을에 얽힌 보고였습니다. 혹시 인스머스란 곳을 아십니까? 당신이 사는 아컴에서 동부 해안을 따라 북쪽으로 쭉 가면 있는 작은 어촌입니다. 입스위치 바로 옆에 있죠.”</p><P>인스머스라… 그곳에 대해 기억이 납니다. 보통 사람이라면 음습하고 오래된 인스머스 항에 대해 들어볼 일은 거의 없다시피 하며, 어쩌다 들을 일이 있다 해도 흉흉한 소문 뿐입니다. 당신이 아는 바대로라면, 인스머스는 1812년의 전쟁 이전에는 활기찬 항만 도시였지만 그 이후로는 완전히 변해버렸다고 합니다. 지금은 음침하고 황폐한 어촌에 불과한 데다, 인스머스를 지나는 유일한 철길마저 폐선되었습니다. 게다가 지금까지 접한 어떤 지도책이나 여행 안내서에도 인스머스에 대한 내용은 나와 있지 않았습니다.</p><p>“하퍼가 뭔가 유별난 걸 발견했거나 몸을 숨긴 것일 뿐일지도 모르겠지만, 뭔가 나쁜 일이 일어나진 않았을까 우려됩니다. 폭력 조직이 연관되어 있을 수도 있겠지만, 그럴 가능성은 낮을 것 같군요. 일단은 무슨 일이 벌어졌는지 확실히 알기 전엔 요원을 더 보내진 않을 겁니다. 하지만, 예산 내에서 당신 같은 제삼자를 재량껏 고용할 여지는 있죠.” 진실을 숨기고 변죽만 울리는 도슨 요원의 모습을 보자니, 그는 당신을 그저 소모품으로만 여기는 듯합니다. “사실 별일은 없을 거라고 생각합니다만, 하퍼 요원의 신변을 알아야 해서 그렇습니다. 지금 와선 차라리 나쁜 소식이 무소식보다는 나은 판이니까요. 아무튼 이 사건을 맡아 주시면, 우리 기관에선 큰 빚을 졌다 생각하고 정말 감사히 여기도록 하겠습니다.” 당신은 어느 ‘기관’을 뜻하는 것인지 물어봤지만, 도슨은 입가에 미소만 흘립니다.</p><p>눈앞이 번쩍하더니 다시 현재로 돌아왔지만, 아직도 당신은 도슨 요원의 얼굴을 마주하고 있습니다. 하지만 그의 미소는 악몽에나 나올 것처럼 무시무시하고 고통스러운 얼굴로 뒤틀려버렸습니다. 도슨 요원의 얼굴은 혐오스러운 괴물의 비늘 돋친 몸뚱이에 박힌 채, 꿀렁이는 살갗과 함께 고통스럽게 몸부림치는 무수한 얼굴 중 하나일 뿐입니다.</p><hr /><p class='basic'>캠페인 기록지의 “되찾은 기억” 아래에 *토머스 도슨과의 만남.*이라고 기록합니다.</p></div>"
   },
   "flashback2": {
     "title": "Flashback 2",
-    "body": "<p>An old fishing vessel rocks side to side beneath your feet, assaulted by tempestuous waters and the tentacles of some enormous creature looming just beneath the waves. “Somebody kill that damned thing!” the ship’s captain shouts. A loud crash erupts across the vessel, and the hull howls in protest as a vast tentacle encircles it and draws tight. “It’s got us in its grip! It ain’t goin’ nowhere. Now’s your chance!” the grizzled, old captain yells. With fire in your eyes, you raise your weapon and swing…</p><p>You return to the present, a sickness churning in your stomach. The skeletal remains of the creature stare back at you. What on Earth was that thing?</p>"
+    "body": "<div class='blue'><h1>회상 II</h1><p>흉포하게 몰아치는 파도와 수면 아래서 거대한 괴수가 뻗은 촉수에 휩쓸려 낡은 배가 좌우로 격렬하게 흔들립니다. “누가 저 망할 것 좀 죽여 보쇼!” 선장이 고래고래 소리칩니다. 거대한 촉수가 선체를 휘감고 조여오자 큰 충돌음과 함께 쩍하고 갈라지는 소리가 납니다. “놈이 우리를 휘감았소! 이젠 저것도 어디 내빼지 못할 테니, 지금이 기회요!” 머리가 희끗희끗한 선장이 고함을 지릅니다. 당신은 눈에 불을 켜고 무기를 내리칩니다…</p><p>다시 현재로 돌아왔습니다. 욕지기가 치밉니다. 그 괴수의 머리뼈가 멍하니 당신을 바라보고 있습니다. 대체 저 망할 것의 정체는 무엇이었을까요?</p><hr /><p class='basic'>캠페인 기록지의 “되찾은 기억” 아래에 *무시무시한 악마와의 전투.*라고 기록합니다.</p><p class='basic'>이번 캠페인이 끝날 때까지 혼돈 주머니에서 {'{'}cultist{'}'} 토큰을 1개 제거합니다.</p></div>"
   },
   "flashback3": {
     "title": "Flashback 3",
-    "body": "<p>“Hey, take a look at this.” Your employer shoves a strange figurine into your hands. It is hewn of emerald stone and looks vaguely aquatic, with two unblinking eyes and a row of sharp teeth. A piece of heart-shaped amber is embedded in its center. “What do you make of it?”</p><p>You reply that you have seen nothing quite like it before, but it does happen to match the descriptions you have heard of the “devils” that skulk about the reefs a couple of miles beyond the harbor. “Something fishy is going on here, if you’ll pardon my saying,” the man mutters, folding his arms across his chest. “I’m glad I roped you in on this case. It’s looking less and less like mob work with each passing hour.” You nod in agreement and hand the strange figurine back to the agent. Everything about this town feels foul to you. “Let’s stick together from here on out,” your companion says, his voice darkening.</p>"
+    "body": "<div class='blue'><h1>회상 III</h1><p>“이것 좀 보시죠.” 당신을 고용한 이가 기묘한 조각상을 손에 쥐여줍니다. 에메랄드색 돌로 깎아낸 석상은 미묘하게 수생 동물처럼 보이며, 감정 없이 공허한 두 개의 눈과 날카로운 이빨이 줄지어 돋아 있습니다. 조각상의 한 가운데에는 심장 모양의 호박석 조각이 끼워져 있었습니다. “이게 뭔지 짐작이라도 가십니까?”</p><p>당신은 지금껏 이것과 비슷하기라도 한 것조차 눈으로 본 적은 없지만, 이렇게 생긴 “악마”가 인스머스 항구에서 몇 킬로미터 떨어진 암초에 출몰한다는 소문은 들어 보았다고 답합니다. “여기서 뭔가 수상쩍은 일이 벌어지고 있군요.” 남자가 팔짱을 끼며 중얼거립니다. “이번 사건에 당신을 끌어들여서 정말로 다행이다 싶군요. 조사를 하면 할수록, 이번 일이 단순한 조직 범죄일 가능성은 희박해 보입니다.” 당신은 고개를 끄덕이며 기묘한 조각상을 되돌려주었습니다. 이 마을의 모든 것이 역겹게만 느껴집니다. “여기서부터는 함께 다니도록 하죠…” 그의 말이 점점 흐릿해집니다.</p><hr /><p class='basic'>캠페인 기록지의 “되찾은 기억” 아래에 *함께 수색하기로 결정.*이라고 기록합니다.</p><p class='basic'>이번 캠페인이 끝날 때까지 혼돈 주머니에서 {'{'}tablet{'}'} 토큰을 1개 제거합니다.</p></div>"
   },
   "flashback4": {
     "title": "Flashback 4",
-    "body": "<p>You stand before a terrible onyx statue in a dark, dingy basement. It smells of stale, dank air and rotting fish. The statue depicts a creature that is a hybrid of both fish and human, covered in hideous, misshapen scales. Grotesque gills and fins blend with tortured human features. Its large, round eyes glare at you. In the distance, you hear the faint chanting of some kind of ceremony. “Y’ha-nthlei! Y’ha-nthlei!” the voices cry. Just as you begin to make out the strange syllables, a splash behind you catches your attention. You duck behind the onyx statue and wait patiently as several figures approach where you stood just moments before. You hold your breath. The gentle sloshing of their steps as they wade through the water passes and fades into the distance. You allow a brief sigh of relief, but begin to follow close behind…</p>"
+    "body": "<div class='blue'><h1>회상 IV</h1><p>당신은 음침하고 더러운 지하실 안에서 끔찍하게 생긴 오닉스 조각상을 마주하고 있습니다. 퀴퀴하고 눅눅한 공기에는 생선 썩는 내가 진동합니다. 이 조각상은 물고기와 인간을 합쳐 놓은 괴물처럼 생겼으며, 흉측하고 기형적인 비늘로 뒤덮여 있습니다. 고통에 몸부림치는 인간의 육신에 괴상한 아가미와 지느러미가 뒤섞인 형체입니다. 조각상의 툭 불거진 커다란 눈이 당신을 노려봅니다. 멀리서 모종의 의식을 벌이는 것인지, 기묘한 단어를 부르짖는 소리가 들립니다. “이하 느틀레이! 이하 느틀레이!” 그 기이한 발음을 겨우 알아들으려던 찰나, 뒤에서 물이 철벅하는 소리가 들립니다. 당신은 재빨리 오닉스 조각상 뒤로 몸을 피해서는, 몇몇 사람들이 방금까지 당신이 서 있던 자리로 다가오는 사이 숨소리조차 죽이고서 기다립니다. 저들이 다시 물을 헤치고 나가며 철벅 철벅거리는 소리가 점점 멀어지기 시작합니다. 당신은 잠깐 안도의 한숨을 쉬고는 저들의 뒤로 바짝 따라붙습니다…</p><hr /><p class='basic'>캠페인 기록지의 “되찾은 기억” 아래에 *비의적인 사교집단과의 조우.*라고 기록합니다.</p><p class='basic'>캠페인이 끝날 때까지 혼돈 주머니에서 {'{'}elderThing{'}'} 토큰을 1개 제거합니다.</p></div>"
   },
   "resolutions": {
-    "noResolution": "<p>You sputter and cough up an entire lungful of dirty water and sand. Cold, dark seawater laps at your skin as you spit the last of the bitter salt taste back into the rolling tide.</p><p>A pair of warm hands shoves you onto your back and pulls you up into a sitting position. “Thank goodness you’re alive,” someone says. Even through the strained voice, you can hear a rhythmic Indian accent and the unwavering confidence of a trained professional. As your eyes adjust, they take in a sky of dark crimson, the full moon hanging just below the blackened sun. “We have no time to spare. Come on: get up.”</p><p>You wipe stinging salt water from your eyes, your strength returning slowly. Your savior is a woman with long, raven‑black hair. Her tattered trench coat has seen better days, and bruises splash across her dirt-covered skin. “You seem confused. Why are you looking at me like that?” the stranger asks.</p>",
-    "resolution1": "<p>In the distance, the sky is a dark crimson, and the full moon hangs just below the blackened sun. You are about to close your eyes and surrender to unconsciousness when a stranger’s voice startles you back to your feet. “Oh! You are alive?” Even through her strained voice, you can hear a rhythmic Indian accent and the unwavering confidence of a trained professional. Standing in front of you is a woman with long, raven-black hair. Her tattered trench coat has seen better days, and bruises splash across her dirt-covered skin. “You seem confused. Why are you looking at me like that?” the stranger asks.</p>"
+    "noResolution": {
+      "title": "아무 결말에도 도달하지 못했다면",
+      "body": "<p>_결말에 도달하지 못한 경우_: 당신은 콜록거리며 폐에 가득 찬 더러운 물과 모래를 토해 냅니다. 차갑고 어두운 바닷물이 살갗을 핥는 가운데, 당신은 쓰디쓴 소금기의 마지막 한 모금까지 넘실대는 파도에 뱉어 냅니다.</p><p>그때 등 뒤에서 따스한 두 손이 당신을 끌어당겨 바닷가에 앉힙니다. “살아있어서 정말 다행이네요.” 이 낯설고 긴장된 목소리 속에서 리드미컬한 인도식 억양과 함께 훈련된 전문가로서의 자신감이 묻어납니다. 당신의 시야가 서서히 또렷해지자, 핏빛으로 일렁이는 하늘과 어두운 태양 바로 아래 보름달이 걸린 모습이 보입니다. “낭비할 시간 없어요. 어서 일어나시죠.”</p><p>눈에서 따가운 소금기를 닦아내고, 서서히 몸에 힘이 돌아오는 것을 느낍니다. 당신을 구해낸 사람은 까마귀처럼 새카만 머리를 기른 여자였습니다. 여자의 트렌치코트는 한때 말끔했겠지만 지금은 누더기 꼴이 되어버렸고, 흙투성이 살갗을 따라서 이리저리 멍이 나 있습니다. “아직 정신이 없나 보군요. 왜 그런 눈으로 보는 거죠?” 낯선 여자가 묻습니다.</p>"
+    },
+    "resolution1": {
+      "title": "결말 1",
+      "body": "<p>_결말 1_: 저 멀리 짙은 핏빛 하늘이 일렁이고 어두운 태양 바로 아래 보름달이 걸려 있습니다. 두 눈이 절로 감기고 의식마저 잃으려던 찰나, 당신은 갑자기 들려온 여자의 목소리에 깜짝 놀라 다시 일어섭니다. “오! 살아 있었군요!” 이 낯설고 긴장된 목소리 속에서 리드미컬한 인도식 억양과 함께 훈련된 전문가로서의 자신감이 묻어납니다. 돌아보자 까마귀처럼 새카만 머리를 기른 여자가 서 있습니다. 여자의 트렌치코트는 한때 말끔했겠지만 지금은 누더기 꼴이 되어버렸고, 흙투성이 살갗을 따라서 이리저리 멍이 나 있습니다. “아직 정신이 없나 보군요. 왜 그런 눈으로 보는 거죠?” 낯선 여자가 묻습니다.</p>"
+    }
   },
   "label": {
-    "theAmalgamAttacksYou": "The Amalgam attacks you",
-    "placeKeyOnTheAmalgam": "Place {key} key on the Amalgam"
+    "theAmalgamAttacksYou": "‘융합체’가 당신을 공격합니다",
+    "placeKeyOnTheAmalgam": "{key} 열쇠를 ‘융합체’에 놓습니다"
   },
   "tokens": {
     "easyStandard": {
-      "skull": "-1 (-2 instead if your location is partially flooded; -3 instead if your location is fully flooded).",
-      "cultist": "-2. If you fail and your location is flooded, take 1 damage.",
-      "tablet": "-2. If you fail and you control a key, take 1 horror.",
-      "elderThing": "-3. If you fail and The Amalgam is in the depths, put it into play engaged with you."
+      "skull": "-1(당신이 위치한 장소가 부분적으로 침수된 상태라면 그 대신 -2, 완전히 침수된 상태라면 그 대신 -3).",
+      "cultist": "-2. 당신이 위치한 장소가 침수된 상태이고 이번 테스트가 실패했다면, 피해를 1 받습니다.",
+      "tablet": "-2. 당신이 열쇠를 조종하고 있고 이번 테스트가 실패했다면, 공포를 1 받습니다.",
+      "elderThing": "-3. ‘융합체’가 구렁 밑바닥에 있고 이번 테스트가 실패했다면, ‘융합체’를 당신과 교전한 상태로 플레이 영역에 둡니다."
     },
     "hardExpert": {
-      "skull": "-2 (-3 instead if your location is partially flooded; -4 instead if your location is fully flooded).",
-      "cultist": "-2. If your location is flooded, take 1 damage.",
-      "tablet": "-2. If you control a key, take 1 horror.",
-      "elderThing": "-3. If The Amalgam is in the depths, put it into play engaged with you."
+      "skull": "-2(당신이 위치한 장소가 부분적으로 침수된 상태라면 그 대신 -3, 완전히 침수된 상태라면 그 대신 -4).",
+      "cultist": "-2. 당신이 위치한 장소가 침수된 상태라면, 피해를 1 받습니다.",
+      "tablet": "-2. 당신이 열쇠를 조종하고 있다면, 공포를 1 받습니다.",
+      "elderThing": "-3. ‘융합체’가 구렁 밑바닥에 있다면, ‘융합체’를 당신과 교전한 상태로 플레이 영역에 둡니다."
     }
   }
 }

@@ -1,40 +1,114 @@
 {
-  "tokens": {
-    "easyStandard": {
-      "skull": "-X. X is the number of the current act.",
-      "cultist": "Reveal another token. If you fail, place 1 doom on the current agenda.",
-      "tablet": "-4. If you fail, choose and reveal a copy of Nyarlathotep in your hand. It attacks you and is shuffled into the encounter deck.",
-      "elderThing": "0. The black cat reminds you that it's all a dream."
-    },
-    "hardExpert": {
-      "skull": "-X. X is the number of the current act plus the number of the current agenda.",
-      "cultist": "Reveal another token. If you fail, place 1 doom on the current agenda. This effect may cause the current agenda to advance.",
-      "tablet": "-6. If you fail, choose and reveal a copy of Nyarlathotep in your hand. It attacks you and is shuffled into the encounter deck.",
-      "elderThing": "-1. The black cat reminds you that it's all a dream."
+  "heading": "시나리오 IV-A",
+  "setup": {
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *신들이 기거하는 곳*, *니알라토텝의 권속*, *꿈꾸는 자의 저주*, *휘프노스의 속삭임*, *어둠의 사교*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/where-gods-dwell.png' /><img src='{setImgPath}/agents-of-nyarlathotep.png' /><img src='{setImgPath}/dreamers-curse.png' /><img src='{setImgPath}/whispers-of-hypnos.png' /><img src='{setImgPath}/dark-cult.png' /></section>",
+    "putLocations": "다음 장소를 플레이 영역에 둡니다: ‘렝 고원’, ‘차가운 황무지’, ‘렝 수도원’, ‘오닉스 관문’, ‘오닉스 성채’(추천 장소 배치를 참조합니다).",
+    "beginAtPlateauOfLeng": "모든 조사자는 ‘렝 고원’에서 시작합니다.",
+    "setForsakenTowersAside": "‘버려진 탑’ 장소 사본 6장을 비플레이 상태로 치워 둡니다.",
+    "setCardsAside": "‘형언할 수 없는 고위 사제’, ‘니알라토텝’ 사본 5장, ‘무수한 형상’ 사본 2장, ‘속삭이는 혼돈’ 사본(동쪽/서쪽/남쪽/북쪽) 4장, ‘기어 다니는 안개’를 비플레이 상태로 치워 둡니다.",
+    "buildEncounterDeck": "남은 조우 카드를 함께 섞어, 조우 덱을 만듭니다."
+  },
+  "theEyeOfChaos": {
+    "label": {
+      "choose": "선택하세요:",
+      "nyarlathotepAttackOnce": "‘니알라토텝’이 즉시 당신을 공격하고 조우 덱에 섞여 들어갑니다.",
+      "nyarlathotepAttackThrice": "‘니알라토텝’이 즉시 당신을 세 번 공격하고 그 조사자의 손으로 되돌아갑니다.",
+      "shuffled": "‘니알라토텝’이 즉시 당신을 공격하고 조우 덱에 섞여 들어갑니다.",
+      "returned": "‘니알라토텝’이 즉시 당신을 세 번 공격하고 그 조사자의 손으로 되돌아갑니다."
     }
   },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X는 현재 주요목적 번호입니다.",
+      "cultist": "다른 혼돈 토큰을 하나 더 공개합니다. 실패하면, 현재 주요사건에 파멸을 1개 놓습니다.",
+      "tablet": "-4. 실패하면, 당신의 손에서 ‘니알라토텝’ 사본을 하나 선택해서 공개합니다. 그 적이 당신을 한 번 공격하고 조우 덱에 섞여들어갑니다.",
+      "elderThing": "0. 검은 고양이가 “이건 모두 한낱 꿈이야”라고 일깨워줍니다."
+    },
+    "hardExpert": {
+      "skull": "-X. X는 “현재 주요사건 번호 + 현재 주요목적 번호”입니다.",
+      "cultist": "다른 혼돈 토큰을 하나 더 공개합니다. 실패하면, 현재 주요사건에 파멸을 1개 놓습니다. 이 효과는 현재 주요사건을 진행시킬 수 있습니다.",
+      "tablet": "-6. 실패하면, 당신의 손에서 ‘니알라토텝’ 사본을 하나 선택해서 공개합니다. 그 적이 당신을 한 번 공격하고 조우 덱에 섞여들어갑니다.",
+      "elderThing": "-1. 검은 고양이가 “이건 모두 한낱 꿈이야”라고 일깨워줍니다."
+    }
+  },
+  "intro": {
+    "title": "시나리오 IV-A: 신들이 기거하는 곳",
+    "body": "<p class='basic'>캠페인 기록지를 확인합니다.</p><ul><li>*조사자들이 차가운 황무지로 끌려갔다면*, _도입부 1_로 이어집니다.</li><li>*조사자들이 차가운 황무지로 항해했다면*, _도입부 2_로 건너뜁니다.</li></ul>"
+  },
   "intro1": {
-    "title": "Scenario IV–A: Where the Gods Dwell",
-    "body": "<p>It takes many hours for your steeds to reach their destination. You dare not try to wriggle free, for the fall would surely kill you. Besides, this may be your only chance to find Kadath. The creatures pass under archways of woven shadow, over cerulean seas that glimmer in the moonlight, and through vast swaths of dense mist. Eventually, you reach a continent far to the north, where even your intrepid captain never ventured. Colossal creatures dwell in the deep, dark ocean—a terrible danger to any ship that dares the dreadful seas.</p><p>Your steeds fly over a desolate landscape of ice and snow before landing. In the distance, through a haze of snow, you barely make out the shape of a domed building. One of the winged creatures points in the direction of the foreboding ruin, silently commanding you to proceed. The rest stand silently behind you with perfect patience, guarding against your escape, though you have no intention of fleeing. You will find and scale the peaks of unknown Kadath, or you will die trying.</p>"
+    "title": "시나리오 IV-A: 신들이 기거하는 곳",
+    "body": "<p>_도입부 1:_ 당신을 태운 짐승들이 목적지에 이르기까지 몇 시간이 걸립니다. 떨어지면 목숨을 잃을 것이 뻔하기에 감히 몸부림쳐 빠져나올 엄두조차 나지 않습니다. 게다가 어쩌면 이것이 카다스를 찾을 유일한 기회일지도 모릅니다. 짐승들은 그림자로 엮은 아치 아래를 지나, 달빛에 일렁이는 쪽빛 바다 위를 건너, 짙은 안개가 드넓게 깔린 곳을 통과합니다. 마침내 당신은 저 먼 북쪽, 대담한 선장조차 한 번도 가 본 적 없는 대륙에 다다릅니다. 깊고 어두운 바다에는 거대한 생물들이 도사리고 있어, 이 무시무시한 바다에 감히 들어서는 배라면 어떤 배든 끔찍한 위험에 처하게 됩니다.</p><p>얼음과 눈으로 뒤덮인 황량한 땅을 훨훨 날아 마침내 날짐승이 땅으로 내려가기 시작했습니다. 저 멀리 눈보라 속에서 반구형 건물의 모습이 어렴풋이 보입니다. 날짐승 하나가 저 금단의 폐허 쪽을 가리키며 당신에게 나아가라고 말없이 명령합니다. 나머지 날짐승들은 당신의 뒤편에 서서 탈출로를 막아선 채 조용히 기다리고 있습니다. 물론 기회가 있다 쳐도 당신에겐 달아날 생각이 추호도 없습니다. 당신은 이 황무지에서 미지의 카다스 봉우리를 찾아 등반하거나 아니면 카다스를 찾다 이곳에서 목숨을 잃게 될 운명입니다.</p><p class='basic right'>_게임 준비_로 이어집니다.</p>"
   },
   "intro2": {
-    "title": "Scenario IV–A: Where the Gods Dwell",
-    "body": "<p>The White Ship sails effortlessly through the aether. Along the way, it passes under archways of woven shadow, over cerulean seas that glimmer in the moonlight, and through vast swaths of dense mist. Eventually, you reach a continent far to the north, where even your intrepid captain never ventured. Colossal creatures dwell in the deep, dark ocean—a terrible danger to any ship that dares the dreadful seas. The captain moors the flying ship over a desolate landscape of ice and snow. Several moonbeams emerge from the ship’s white hull, forming a gangway to the tundra below. In the distance, through a haze of snowflakes, you can barely make out the shape of a domed building. “Welcome to the accursed Plateau of Leng,” the elderly captain says with a hint of regret in his voice. “You will find no joy or peace here. Only death. Please, I must implore you once more to forsake this quest and return to fairer lands. Are you sure this is where you would like to disembark?”</p><p>You nod. The captain sighs in reply. “I see. The White Ship shall sail no more to this forsaken place, for it shakes me to my core. You are on your own from here. I bid you farewell and good luck, fellow traveler.” You cross over bright, vivid moonbeams down onto the bleak expanse below. You will find and scale the peaks of unknown Kadath, or you will die trying.</p>"
+    "title": "시나리오 IV-A: 신들이 기거하는 곳",
+    "body": "<p>_도입부 2:_ 하얀 범선이 에테르 속을 유유히 항해합니다. 범선은 그림자로 엮은 아치 아래를 지나, 달빛에 일렁이는 쪽빛 바다 위를 건너, 짙은 안개가 드넓게 깔린 곳을 통과합니다. 마침내 당신은 저 먼 북쪽, 대담한 선장조차 한 번도 가 본 적 없는 대륙에 다다릅니다. 깊고 어두운 바다에는 거대한 생물들이 도사리고 있어, 이 무시무시한 바다에 감히 들어서는 배라면 어떤 배든 끔찍한 위험에 처하게 됩니다.</p><p>선장은 얼음과 눈으로 뒤덮인 황량한 대지 위에 하늘을 나는 배를 정박시킵니다. 배의 하얀 선체에서 달빛 몇 줄기가 뻗어 나와 아래쪽 툰드라로 이어지는 건널판을 이룹니다. 흩날리는 눈송이 너머 저 멀리, 반구형 건물의 형체가 어렴풋이 보입니다.</p><p>“저주받은 렝 고원에 온 것을 환영하오.” 늙은 선장이 회한이 서린 목소리로 말합니다. “이곳에서는 기쁨도 평화도 찾을 수 없을 것이오. 오직 죽음뿐이지. 부디, 다시 한번 간청하건대 이 과업을 포기하고 더 아름다운 땅으로 돌아가시오. 정말 이곳에서 내리시겠소?”</p><p>당신이 고개를 끄덕이자, 선장이 한숨을 내쉽니다. “알겠소. 이 버림받은 곳은 내 뼛속까지 떨리게 하니, 하얀 범선은 다시는 이곳으로 항해하지 않을 것이오. 여기서부터는 그대들 스스로 헤쳐 나가야 하오. 잘 가시오, 길동무여. 행운을 비오.”</p><p>당신은 밝고 선명한 달빛을 건너 아래쪽 황량한 대지로 내려갑니다. 미지의 카다스를 찾아내 그 봉우리에 오르거나, 아니면 그러다 죽을 것입니다.</p><p class='basic right'>_게임 준비_로 이어집니다.</p>"
   },
-  "grandDesign1": "<p><b>Grand Design 1:</b> Higher and higher, you scale the mountains far to the north. Pale light shines from atop a great black peak piercing the vibrant firmament, and you know that you approach the end of your quest. You spend untold hours ascending the snow-covered slopes until finally you reach the forbidden steps leading to the castle’s great hall. The castle stands astride a precipice that overlooks the entire continent and the ocean beyond. It is a majestic sight. Above, countless tenebrous towers loom, swathed in a vortex of snow and hail. You break a trail through the crusted snow before the castle, and it soon gives way to smooth, polished onyx. The biting wind quiets to a whistle. You are bathed in a prodigious darkness that fills the vast space. Soon there is nothing but the echoing of your footsteps on the onyx floor and the quiet, lonely stillness of the great hall. Though you have crossed no doorway, you realize now where you stand: inside the halls of the Great Ones. You expected to be met by guards, servants of the gods, or perhaps even those powerful beings themselves, but you are met only by loneliness and foreboding as chilling as the piercing winds outside. You continue forward until at last you reach the end of the hall. Here, flanked by smooth onyx pillars, you find...nothing.</p><p>There are no gods here. This place is long abandoned.</p><p>Virgil is agape. “I...I don’t understand.”</p>",
-  "grandDesign2": "<p><b>Grand Design 2:</b> You turn to Randolph for answers. He has been your guide through all of this madness. Surely he will know what is going on. “Finally,” he says, gazing upon the hall with wide eyes. “We have reached the halls of the Great Ones, upon whom it is unlawful for mortals to look. We knew it was forbidden, yet here we are, our quest complete.” He turns to Virgil. “Was it worth it, sir? Have you found the evidence you seek?”</p><p>Virgil takes a step back. “What are you on about, Randolph? Was this not your idea? You are the one who led us on this quest to begin with.”</p><p>Randolph smiles and places a hand on Virgil’s shoulder. “Yes, I am. But I am not Randolph Carter.” He pulls back his other arm and, before you can react, drives a razor-sharp blade of onyx through Virgil Gray’s chest. Virgil’s corpse slides to the polished floor, eyes forever frozen in tragic shock. The being that was never Randolph Carter turns toward you, its shadow shifting into myriad shapes as it stretches across the ground. “Behold!” its many voices growl. “Your just reward!”</p>",
-  "grandDesign3": "<p><b>Grand Design 3:</b> Just then, a voice behind you breaks the silence, punctuating your confusion. “Virgil Gray. You have come to see the Great Ones, upon whom it is unlawful for mortals to look.” The voice belongs to a tall, thin figure bedecked in the ornate prismatic robes of an ancient pharaoh, crowned with a golden pschent that glows faintly in the darkness. “What is it you expected to find?”</p><p>“Are you one of the gods who dwells in this castle?” Virgil asks, approaching the being. “Why is this place so dark and lonely?”</p><p>The regal figure permits an unhappy expression to flicker briefly over its countenance. “The gods you seek have fled their castle on unknown Kadath to dwell in another land, a land so marvelous they have forgotten how to be gods. Will you help me right this wrong?” the figure asks. Before Virgil can reply, it pulls its arm back and drives a razor- sharp blade of onyx through Virgil’s chest. His corpse slides to the polished floor, eyes forever frozen in tragic shock. The figure turns toward you, its shadow shifting into myriad shapes as it stretches across the ground. “No,” its many voices growl. “It is not enough.”</p>",
-  "grandDesign4": "<p><b>Grand Design 4:</b> All the while, the black cat stays perched on your shoulder, watching with cold, narrow eyes. It is as if it has read this script many times before, but only now seen the actors play their parts. “I’m sorry, Virgil,” it says. Only it isn’t.</p>",
-  "grandDesign5": "<p>Grand Design 5: The Crawling Chaos splits into a hundred thousand shadows, and vanishes into the cold, dank air.</p>",
+  "grandDesign1": {
+    "title": "시나리오 막간 원대한 계획",
+    "body": "<p>_원대한 계획 1:_ 높이 더 높이, 당신은 북쪽 산자락을 타고 등반했습니다. 거대하고 검은 봉우리 끝에서 창백한 빛이 창공을 꿰뚫는 모습이 보이자 마침내 이 여정도 끝에 다다랐음을 실감합니다. 일행은 이루 말할 수 없이 긴 시간 동안 눈 덮인 비탈길을 올라 마침내 성의 대전당으로 통하는 금단의 계단 앞에 도착했습니다. 성채는 대륙 전체와 그 너머 펼쳐진 바다를 내려다보는 절벽 위에 굳건히 자리하고 있었습니다. 그야말로 장엄한 광경입니다. 무수히도 많은 음침한 탑들이 성채 위로 휘날리는 눈과 우박의 소용돌이를 꿰뚫고 솟아오른 모습이 어렴풋이 보입니다. 성 앞에 세월에 걸쳐 켜켜이 쌓인 눈을 헤치고서 길을 뚫고 나가 매끄럽고 윤나는 오닉스 발판에 들어서자, 살을 에는 바람도 곧 휘파람처럼 잦아들었습니다. 이 광대한 공간에는 어마어마한 어둠만이 드리워 있습니다. 오닉스 바닥에 내딛는 당신의 발소리를 제하고선 대전당에는 외로운 적막만이 감돌았습니다. 따로 문을 열고 들어오진 않았지만 지금 서 있는 이곳이 바로 위대한 존재들의 전당임을 쉬이 깨닫습니다. 수많은 경비병을, 신의 시종을, 아니 어쩌면 강대하며 위대한 존재의 존안을 직접 마주하게 되리라 생각했지만 여기서 당신을 기다리는 것은 참을 수 없는 외로움과 바깥에 부는 칼바람에 잇따르는 오싹한 예감 뿐입니다. 마지막 남은 희망을 품고서 오닉스 기둥이 늘어선 전당의 끝까지 발걸음을 재촉해 봤지만, 그 무엇도… 찾을 수 없었습니다.</p><p>이곳에 신은 없습니다. 이미 오래 전에 버려진 것입니다.</p><p>버질은 어안이 벙벙해진 듯합니다. “이게 무슨… 아니, 전 도저히 이해할 수가 없군요.”</p><ul><li>‘오닉스 성채’를 공개하고, 모든 조사자를 그 장소의 공개 면인 ‘대전당’에 놓습니다.</li><li>‘대전당’을 제외한 다른 모든 장소를 게임에서 제거합니다.</li><li>캠페인 기록지를 확인합니다.<ul><li>*랜돌프가 항해에서 살아남았다면*, _원대한 계획 2_로 이어집니다.</li><li>*랜돌프가 항해에서 살아남지 못했다면*, _원대한 계획 3_으로 건너뜁니다.</li></ul></li></ul>"
+  },
+  "grandDesign2": {
+    "title": "시나리오 막간 원대한 계획",
+    "body": "<p>_원대한 계획 2:_ 당신도 당황하여 이 모든 광기를 지나 카다스까지 당신을 안내해 준 랜돌프를 향해 돌아섰습니다. 랜돌프라면 이게 다 무슨 일인지 알고 있을 테니 말입니다. 그가 대전당을 향해 눈을 크게 뜨며 말합니다. “마침내! 우리가 위대한 존재들의 전당에 도착한 겁니다. 필멸자의 눈에 담는 것조차 불경스런 그분들의 전당! 이 모든 것이 금단의 행위임을 알았지만, 어쨌든 여기에 도착했군요. 우리의 과업도 드디어 끝났습니다.” 랜돌프가 버질에게 돌아섭니다. “그럴 가치가 있지 않았나? 버질 선생. 그대가 원하던 증거를 찾았는가?”</p><p>버질이 뒤로 한 걸음 물러섭니다. “무… 무슨 말이죠, 랜돌프? 이건 모두 당신의 발상이었잖습니까? 우리의 추적과 과업을 처음부터 이끌어 온 게 누군데…”</p><p>랜돌프가 싱긋 웃으며 버질의 어깨에 손을 얹습니다. “그래, 그리하였지. 허나, 나는 랜돌프 카터가 아니다.” 당신이 채 반응하기도 전에 그가 다른 팔을 뒤로 쭉 빼 들더니 날카로운 오닉스 칼을 쥐고서 버질 그레이의 가슴팍에 꽂아 넣습니다. 번들번들한 오닉스 바닥 위로 버질의 시체가 미끄러져 내려갑니다. 버질의 눈은 비극적인 충격 앞에서 영원히 얼어붙어 버렸습니다. 랜돌프 카터… 아니 단 한 순간도 랜돌프 카터인 적이 없었던 존재가 당신 쪽을 돌아봅니다. 그것의 그림자가 수많은 형체로 갈라지고 움직이더니 오닉스 바닥으로 뻗어나갑니다. “잘 보아라!” 그것이 수많은 목소리로 으르렁거립니다. “그대에게 하사하는 보상이노라!”</p><ul><li>덱에 ‘랜돌프 카터(노련한 꿈꾸는 자) (꿈을 먹는 자 #59)’가 포함된 조사자는 캠페인이 끝날 때까지 자신의 덱에서 ‘랜돌프 카터(노련한 꿈꾸는 자)’를 제거합니다.</li><li>캠페인 기록지를 확인합니다.<ul><li>*검은 고양이가 당신 곁에 있다면*, _원대한 계획 4_로 건너뜁니다.</li><li>그 외의 경우, _원대한 계획 5_로 건너뜁니다.</li></ul></li></ul>"
+  },
+  "grandDesign3": {
+    "title": "시나리오 막간 원대한 계획",
+    "body": "<p>_원대한 계획 3:_ 바로 그 때, 등 뒤에서 정적을 깨고 목소리가 들려오는 바람에 당신은 혼란에 빠집니다. “버질 그레이. 그대는 위대한 존재들을 찾아 여기까지 왔지. 하지만 위대한 존재를 눈에 담는 것만으로도 불경스러운 행위란 걸 알지 않느냐.” 화려한 고대 파라오의 예복을 차려입고서 키 크고 강마른 남자가 어둠 속에서 희미하게 빛나는 황금 쉔트 관모를 쓰고서 걸어옵니다. “그대는 여기서 무엇을 찾길 바랐는가?”</p><p>버질이 그에게 다가가며 묻습니다. “그대는 혹시 이 성채에 기거하는 신이십니까? 이 성채는 왜 이리도 음울하고도 적막한 것입니까?”</p><p>고귀한 모습의 남자의 얼굴에 불만족스런 표정이 잠깐 스쳐 지나갑니다. “그대가 찾는 신들은 미지의 카다스에 있는 성채를 떠나 다른 땅에 정착했노라. 너무나도 황홀하고 경이로워 그들 자신이 ‘신’이라는 것조차도 망각해버리는 땅이지. 신들의 잘못을 바로잡을 수 있도록 그대가 도와주겠느냐?” 하지만 버질이 채 대답하기도 전에, 그가 한쪽 팔을 뒤로 쭉 빼 들더니 날카로운 오닉스 칼을 쥐고서 버질 그레이의 가슴팍에 꽂아 넣습니다. 번들번들한 오닉스 바닥 위로 버질의 시체가 미끄러져 내려갑니다. 버질의 눈은 비극적인 충격 앞에서 영원히 얼어붙어 버렸습니다. 그 존재가 당신 쪽을 돌아봅니다. 그것의 그림자가 수많은 형체로 갈라지고 움직이더니 오닉스 바닥으로 뻗어나갑니다. “안 돼.” 그것이 수많은 목소리로 으르렁거립니다. “이것만으로는 부족해.”</p><ul><li>캠페인 기록지를 확인합니다.<ul><li>*검은 고양이가 당신 곁에 있다면*, _원대한 계획 4_로 이어집니다.</li><li>그 외의 경우, _원대한 계획 5_로 건너뜁니다.</li></ul></li></ul>"
+  },
+  "grandDesign4": {
+    "title": "시나리오 막간 원대한 계획",
+    "body": "<p>_원대한 계획 4:_ 이 모든 일이 벌어지는 동안, 검은 고양이는 당신의 어깨 위에 앉아 차가운 눈을 가늘게 뜨고서 지켜보고 있었습니다. 마치 이 상황을 이미 수백 번은 대본으로 접해 보았지만, 실제로 배우들이 연기하는 것은 이제 처음 보는 것 같아 보입니다. “미안해, 버질.” 고양이가 말합니다. 다만 진심은 아닌 것 같습니다.</p><p class='basic right'>_원대한 계획 5_로 이어집니다.</p>"
+  },
+  "grandDesign5": {
+    "title": "시나리오 막간 원대한 계획",
+    "body": "<p>_원대한 계획 5:_ 기어 다니는 혼돈이 무수한 그림자로 흩어지더니 차갑고 눅눅한 공기 중으로 비산합니다.</p><ul><li>치워 두었던 ‘니알라토텝’ 적 사본 중에서 (앞면을 확인하지 않고) 무작위로 1 + 1 {perPlayer}장을 선택하여 조우 덱에 섞어 넣습니다. 나머지 ‘니알라토텝’ 사본은 모두 게임에서 제거합니다.</li><li>치워 두었던 ‘기어 다니는 안개’, ‘무수한 형상’ 사본 2장, ‘속삭이는 혼돈’ 사본(동쪽/서쪽/남쪽/북쪽) 4장을 버린 조우 카드 더미와 함께 조우 덱에 섞어넣습니다.</li><li>치워 두었던 ‘버려진 탑’ 장소 중에서 무작위로 4장을 선택하여 플레이 영역에 둡니다. 이 ‘버려진 탑’ 4장은 ‘대전당’을 둘러싸고 동/서/남/북의 방위로 배치해야 합니다(다음 쪽의 주요 목적 4 & 5에서의 장소 배치를 참조하여 놓습니다).</li><li>시나리오가 끝날 때까지, ‘대전당’의 사방을 둘러싼 모든 ‘버려진 탑’은 방위에 따라서 다음과 같이 칭합니다.<ul><li>‘대전당’ 위쪽의 장소를 “북쪽 탑”이라고 부릅니다.</li><li>‘대전당’ 오른쪽의 장소를 “동쪽 탑”이라고 부릅니다.</li><li>‘대전당’ 아래쪽의 장소를 “남쪽 탑”이라고 부릅니다.</li><li>‘대전당’ 왼쪽의 장소를 “서쪽 탑”이라고 부릅니다.</li></ul></li></ul>"
+  },
   "resolutions": {
-    "noResolution": "<p><b>모든 조사자가 쓰러져서 아무 결말에도 도달하지 못했다면:</b> You startle awake, riveted and dazed by the magnitude of the dream that held your attention for so long. And yet, when you try to recall any of it, you remember very little. It is all a haze—like distant memories from decades ago. Just the hint of the dream remains. A black castle. A ship sailing through space. A staircase. A black cat. The only thing you remember is a voice in your head. A fundamental truth of the universe that you cannot shake from your memory. It speaks to you, even now, as you tremble under the hospital sheets: “Your dreams are mine!”</p>",
-    "resolution1": "<p><b>Resolution 1:</b> The presence taunting your mind retreats into the shadows, and you are left once again with an overwhelming sense of loneliness. The vast halls of the onyx castle are evidence of nothing but despair and sorrow. Whatever gods once inhabited this place left long ago. Coming here was indeed folly. You carry Virgil’s corpse out into the snowy peaks of Kadath and bury him outside the castle. You still do not understand what the being known as Nyarlathotep wanted with him, or with you, but at least now you can leave the Dreamlands behind...if that is truly what you wish to do.</p>",
-    "resolution2": "<p><b>Resolution 2:</b> There is nothing remaining of the presence that once taunted your mind. You are left once again with an overwhelming sense of loneliness. The vast halls of the onyx castle are evidence of nothing but despair and sorrow. But at least now they are no longer haunted by the being that lured you here. You understand now what its purpose was all along: to delve into your mind, discern your shape, and awaken alongside you. To become master of both dreams and reality at once. The black cat—whatever it truly was—must have seen this in its visions. You carry Virgil’s corpse out into the snowy peaks of Kadath and bury him outside the castle. With your quest complete, you have no reason to dwell in this place any longer. You can finally leave the Dreamlands behind...if that is truly what you wish to do.</p>",
-    "resolution3": "<p><b>Resolution 3:</b> You startle awake, riveted and dazed by the magnitude of the dream that held your attention for so long. And yet, when you try to recall any of it, you remember very little. It is all a haze—like distant memories from decades ago. Just the hint of the dream remains. A black castle. A ship sailing through space. A staircase. A black cat. You remember completing some profound quest, but for the life of you, you cannot remember what it was.</p>",
-    "resolution4": "<p><b>Resolution 4:</b> You think about the many journeys you have had in the Dreamlands and the fabulous things you have seen: the mystical forests, the beautiful palaces, the cerulean oceans. Had you ever experienced such wonders in the waking world? Could you really return to such a mundane life after what you have experienced here? Perhaps it would be better to stay. You can escape from this dreaded land of Leng and travel back to safer climes. You can live in the timeless realm of Celephaïs, where pleasures are abundant, and you will never age. Or perhaps live amongst the cats in the pleasant town of Ulthar where your quest began. Or explore the boundaries of the Dreamlands and see all of the marvels that it has to offer. Your mind is made up. You cannot return to the waking world, for you never want to leave.</p>",
-    "resolution5": "<p><b>Resolution 5:</b> You recall what the black cat told you about your companions’ journey. Though you have no desire to leave the surface of the Dreamlands behind, there may be a way you can help your friends. You climb back down the northernmost peaks of Leng, returning to the domed ruins where you were confronted by Nyarlathotep’s high priest. There, in the center of the room, is the gaping pit that leads into the untold depths of the Underworld. Your companions are down there, somewhere...right?</p>"
+    "noResolution": {
+      "title": "아무 결말에도 도달하지 못했다면",
+      "body": "<p>_모든 조사자가 쓰러져서 아무 결말에도 도달하지 못했다면:_ 당신은 소스라치게 놀라며 잠에서 깨어났습니다. 어마어마한 꿈의 여파가 밀려 들어와 오랫동안 머리가 멍하고 제정신을 차릴 수 없었습니다. 꿈속에서 무슨 일이 벌어졌는지 기억하려 해 봐도 떠오르는 것이 많지 않았습니다. 이 모든 것이 수십 년은 된 것처럼, 머릿속이 뿌연 안개 속에 사로잡힌 기분입니다. 꿈의 편린을 되짚어봅니다. 검은 성채, 우주를 항해하는 범선, 계단, 검은 고양이… 기억나는 거라고는 머릿 속에 쩌렁쩌렁 울리는 목소리 뿐입니다. 기억에서 떨쳐낼 수 없는 우주의 근원적 진실이 뇌리에 박혀 버렸습니다. 당신은 병상의 침대보를 뒤집어쓰고 벌벌 떨지만, 그 와중에도 목소리가 당신에게 말을 걸어옵니다. “네 꿈은 이제 내 것이다!”</p><ul><li>캠페인 기록지에 *니알라토텝의 침략이 시작되었다*라고 기록합니다.</li><li>*한 그룹으로 몽환의 추적을 4부작 캠페인으로 진행하고 있다면*, 조사자가 캠페인에서 패배합니다.</li><li>*꿈의 거미줄과 몽환의 추적을 서로 연결된 8부작 캠페인으로 플레이하고 있습니까?*<ul><li>*…그리고 아직 시나리오 4–B: 우주의 가닥을 엮는 자를 진행하지 않았다면*, 그 시나리오로 이어집니다.</li><li>*…그리고 이미 시나리오 4–B: 우주의 가닥을 엮는 자를 진행했다면*, 그 대신 _후일담_으로 이어집니다.</li></ul></li></ul>"
+    },
+    "resolution1": {
+      "title": "결말 1",
+      "body": "<p>_결말 1:_ 당신의 마음을 조롱하던 존재가 그림자 속으로 물러서자, 당신은 또 다시 막막하고 쓸쓸한 공간에 홀로 남게 되었습니다. 오닉스 성채의 광대한 전당에는 절망과 슬픔만이 남았을 뿐, 다른 어떤 위대한 존재의 증거도 없었습니다. 이곳에 어떤 신들이 거했는지는 모르겠지만, 오래 전 이곳을 떠나 버렸습니다. 이 과업 자체야말로 참으로 어리석은 짓이었습니다. 당신은 버질의 시신을 바깥의 눈 덮인 카다스 봉우리로 운반하여 성채 뜰에 묻어 주었습니다. 당신은 아직도 니알라토텝이라는 존재가 버질과 당신에게 무엇을 원했던 것인지 이해할 수가 없습니다. 그렇지만 이제 당신은 몽환의 땅을 뒤로 하고 떠날 수 있게 되었습니다. …당신이 진정 원한다면 말입니다.</p><ul><li>캠페인 기록지에 *꿈꾸는 자들은 니알라토텝의 손아귀에서 달아났다*라고 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.</li><li>각 조사자는 정신적 트라우마를 2씩 겪습니다. 자신의 꿈속에서 벌어진 진실과 허구를 넘나드는 전투로 인한 상흔을 회복할 수 없기 때문입니다.</li><li>조사자들은 다음 중 하나를 선택해야 합니다:<ul><li>*꿈에서 깨어납니다.* _결말 3_으로 건너뜁니다.</li><li>*몽환의 땅 지표에 머무릅니다.* _결말 4_로 건너뜁니다.</li><li>*동료를 찾아 지하세계로 모험을 떠납니다.* 캠페인 기록지에 *꿈꾸는 자들이 다른 길을 알게 되었다*라고 기록되어 있는 경우에만 이 선택지를 고를 수 있습니다. _결말 5_로 건너뜁니다.</li></ul></li></ul>"
+    },
+    "resolution2": {
+      "title": "결말 2",
+      "body": "<p>_결말 2:_ 당신의 마음을 조롱하던 존재는 사라져버렸지만, 당신은 또 다시 막막하고 쓸쓸한 공간에 홀로 남게 되었습니다. 오닉스 성채의 광대한 전당에는 절망과 슬픔만이 남았을 뿐, 다른 어떤 위대한 존재의 증거도 없었습니다. 하지만 적어도 당신을 이곳으로 끌어들였던 존재는 이제 사라졌습니다. 이제야 니알라토텝의 목적이 무엇이었는지 알 법합니다. 당신의 마음속으로 파고들어 당신의 형체를 간파하고서 당신과 함께 꿈에서 깨어나는 것이었습니다. 그로써 현실 세계와 몽환의 땅을 동시에 지배하려고 했던 것입니다. 정체 모를 검은 고양이는 분명 이 장면을 예견했을 터… 당신은 버질의 시신을 바깥의 눈 덮인 카다스 봉우리로 운반하여 성채 뜰에 묻어 주었습니다. 이제는 과업도 끝났으니 이 곳에 더는 머무를 이유가 없습니다. 이제 당신은 몽환의 땅을 뒤로 하고 떠날 수 있게 되었습니다. …당신이 진정 원한다면 말입니다.</p><ul><li>캠페인 기록지에 *꿈꾸는 자들이 니알라토텝을 몽환의 땅에서 추방했다*라고 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다. 니알라토텝의 음모를 영원히 종식시켰으므로, 각 조사자는 경험치를 추가로 5만큼 얻습니다.</li><li>각 조사자는 정신적 트라우마를 2씩 겪습니다. 자신의 꿈속에서 벌어진 진실과 허구를 넘나드는 전투로 인한 상흔을 회복할 수 없기 때문입니다.</li><li>조사자들은 다음 중 하나를 선택해야 합니다:<ul><li>*꿈에서 깨어납니다.* _결말 3_으로 이어집니다.</li><li>*몽환의 땅 지표에 머무릅니다.* _결말 4_로 건너뜁니다.</li><li>*동료를 찾아 지하세계로 모험을 떠납니다.* 캠페인 기록지에 *꿈꾸는 자들이 다른 길을 알게 되었다*라고 기록되어 있는 경우에만 이 선택지를 고를 수 있습니다. _결말 5_로 건너뜁니다.</li></ul></li></ul>"
+    },
+    "resolution3": {
+      "title": "결말 3",
+      "body": "<p>_결말 3:_ 당신은 소스라치게 놀라며 잠에서 깨어났습니다. 어마어마한 꿈의 여파가 밀려 들어와 오랫동안 머리가 멍하고 제정신을 차릴 수 없었습니다. 꿈속에서 무슨 일이 벌어졌는지 기억하려 해 봐도 떠오르는 것이 많지 않았습니다. 이 모든 것이 수십 년은 된 것처럼, 머릿속이 뿌연 안개 속에 사로잡힌 기분입니다. 꿈의 편린을 되짚어봅니다. 검은 성채, 우주를 항해하는 범선, 계단, 검은 고양이… 목숨을 걸고서 중대한 과업을 완수했다는 것이 기억나지만, 대체 무슨 과업이었는지는 도저히 떠오르지 않습니다.</p><ul><li>캠페인 기록지에 *꿈꾸는 자들이 깨어났다*라고 기록합니다.</li><li>*한 그룹으로 몽환의 추적을 4부작 캠페인으로 진행하고 있다면*, 조사자가 캠페인에서 승리합니다!</li><li>*꿈의 거미줄과 몽환의 추적을 서로 연결된 8부작 캠페인으로 플레이하고 있습니까?*<ul><li>*…그리고 아직 시나리오 4–B: 우주의 가닥을 엮는 자를 진행하지 않았다면*, 그 시나리오로 이어집니다.</li><li>*…그리고 이미 시나리오 4–B: 우주의 가닥을 엮는 자를 진행했다면*, 그 대신 _후일담_으로 이어집니다.</li></ul></li></ul>"
+    },
+    "resolution4": {
+      "title": "결말 4",
+      "body": "<p>_결말 4:_ 몽환의 땅에서의 여정과 지금껏 목도한 경이로운 것을 떠올려 봅니다. 신비로운 숲, 아름다운 궁궐, 쪽빛 바다… 이런 놀라운 것을 꿈 바깥 세계에서 목도한 적이 있었을까요? 이곳에서 겪은 모든 것을 뒤로 하고 평범하고 따분한 생활로 진정 돌아갈 수 있을까요? 어쩌면 몽환의 땅에 계속 머무르는 게 좋을지도 모릅니다. 이 끔찍한 렝 고원을 떠나서 더 안전한 곳으로 돌아갈 수도 있을 것입니다. 시간마저 덧없는 셀레파이스의 왕국에서 살아가며 영원불멸한 쾌락을 누리며 늙지 않을 수 있습니다. 아니면 과업을 시작했던 유쾌한 울타르 마을에서 고양이들과 함께 살아갈 수도 있습니다. 어쩌면 몽환의 땅의 드넓은 변경을 탐험하고 온갖 경이로운 것을 마주할 수도 있을 것입니다. 이미 마음이 굳어졌습니다. 꿈 바깥 세계로 돌아가지 않을 작정입니다. 이곳을 떠나고 싶지가 않습니다.</p><ul><li>캠페인 기록지에 *꿈꾸는 자들은 몽환의 땅에 영원히 머물렀다*라고 기록합니다.</li><li>*한 그룹으로 몽환의 추적을 4부작 캠페인으로 진행하고 있다면*, 조사자가 캠페인에서 승리합니다만… 꿈 바깥 세계에서는 영영 행방불명되었습니다.</li><li>*꿈의 거미줄과 몽환의 추적을 서로 연결된 8부작 캠페인으로 플레이하고 있습니까?*<ul><li>*…그리고 아직 시나리오 4–B: 우주의 가닥을 엮는 자를 진행하지 않았다면*, 그 시나리오로 이어집니다.</li><li>*…그리고 이미 시나리오 4–B: 우주의 가닥을 엮는 자를 진행했다면*, 그 대신 _후일담_으로 이어집니다.</li></ul></li></ul>"
+    },
+    "resolution5": {
+      "title": "결말 5",
+      "body": "<p>_결말 5:_ 검은 고양이가 동료 조사자들의 여정에 대해 말했던 걸 떠올려 봅니다. 몽환의 땅의 지표 아래로 들어가는 것은 영 내키지 않지만, 그래도 동료를 도울 수 있는 길이 있을지도 모릅니다. 당신은 렝 고원 최북단 봉우리에서 내려와 니알라토텝의 고위 사제와 맞딱뜨렸던 반구형 유적지로 되돌아왔습니다. 유적지 한가운데에는 깊이를 헤아릴 수 없을 정도로 깊은 구덩이가 있습니다. 이 구덩이는 몽환의 땅 지하세계와 이어집니다. 여러분의 동료는 몽환의 땅 아래 어딘가에 있을 것입니다…</p><ul><li>캠페인 기록지에 *꿈꾸는 자들은 렝 수도원 아래로 내려갔다*라고 기록합니다.</li><li>*아직 시나리오 4–B: 우주의 가닥을 엮는 자를 진행하지 않았다면*, 그 시나리오로 이어집니다.</li><li>*이미 시나리오 4–B: 우주의 가닥을 엮는 자를 진행했다면*, 그 대신 _후일담_으로 이어집니다.</li></ul>"
+    }
   },
   "xp": {
-    "resolution2": "Stopped Nyarlathotep’s scheme once and for all."
+    "resolution2": "니알라토텝의 계략을 완전히 저지했다."
+  },
+  "remembered": {
+    "maneuveredThePriestCloser": "고위 사제를 더 가까이 유인했다.",
+    "stunnedThePriest": "사제를 기절시켰다."
+  },
+  "label": {
+    "abandonedByTheGods": {
+      "choose": "{count}개 선택"
+    },
+    "wakeUp": "꿈에서 깨어납니다.",
+    "remainOnSurface": "몽환의 땅 지표에 머무릅니다.",
+    "ventureIntoUnderworld": "동료 조사자들을 찾아서 지하세계로 나아갑니다."
+  },
+  "theShapeOfChaos": {
+    "label": {
+      "choose": "선택하세요:",
+      "shuffled": "‘니알라토텝’이 즉시 당신을 공격하고 조우 덱에 섞여 들어갑니다.",
+      "returned": "‘니알라토텝’이 즉시 당신을 세 번 공격하고 그 조사자의 손으로 되돌아갑니다."
+    }
   }
 }

@@ -1,9 +1,10 @@
 {
-    "discards": "버리기",
-    "endTurn": "차례 마치기",
-    "skipTriggers": "격발 건너뛰기",
-    "skipAllTriggers": "모든 조사자의 격발 건너뛰기",
-    "devouredCards": "{count}장 집어삼켜짐",
-    "underneathCards": "{count}장 아래에 놓임"
-
+  "discards": "버리기",
+  "endTurn": "차례 마치기",
+  "endTurnShort": "종료",
+  "skipTriggers": "격발 건너뛰기",
+  "skipAllTriggers": "모든 조사자의 격발 건너뛰기",
+  "devouredCards": "{count}장 집어삼켜짐",
+  "underneathCards": "{count}장 아래에 놓임",
+  "freeAbilitiesUnavailable": "<strong>무료 능력 사용 불가</strong><br>즉시 행동 중에는 신속 능력과 무료 능력을 사용할 수 없습니다."
 }

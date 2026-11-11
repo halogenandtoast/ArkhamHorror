@@ -1,0 +1,29 @@
+{
+  "cardOption": {
+    "title": "카드 옵션",
+    "configure": "카드 옵션",
+    "filterPlaceholder": "옵션이 있는 카드 거르기…",
+    "clear": "초기화",
+    "c11582": {
+      "abilities": {
+        "1": "{'{'}fast{'}'} 소름 끼치는 “가면”을 소진한다: 모든 적과 교전을 해제합니다. 당신의 다음 차례 시작까지, 당신은 이동할 수 없고 적에게 피해를 주거나 적과 교전할 수 없습니다."
+      },
+      "onlyWhenEngaged": {
+        "label": "교전 중일 때만 제안"
+      }
+    },
+    "c11756a": {
+      "abilities": {
+        "1": "{'{'}reaction{'}'} 당신이 자원을 1개 이상 얻을 때: 그 자원 중 1개를 ‘짭짤한 돈’ 위에 놓습니다."
+      },
+      "stopAtFiveResources": {
+        "label": "자원이 5개가 되면 제안 중지"
+      }
+    },
+    "c11764": {
+      "treatAsPartiallyFlooded": {
+        "label": "완전 침수를 일부 침수로 취급"
+      }
+    }
+  }
+}

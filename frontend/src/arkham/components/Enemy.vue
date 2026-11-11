@@ -608,7 +608,7 @@ function onDrop(event: DragEvent) {
 
         <template #popper>
         <div class="swarm-popover">
-          <div class="swarm-popover__header">Swarm Cards ({{ swarmCards.length }})</div>
+          <div class="swarm-popover__header">{{ $t('gameUi.swarmCards', { count: swarmCards.length }) }}</div>
           <div class="swarm-popover__cards">
             <Enemy
               v-for="swarmEnemy in swarmEnemies"

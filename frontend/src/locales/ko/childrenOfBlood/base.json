@@ -1,0 +1,21 @@
+{
+  "prologue": {
+    "title": "서막",
+    "xp": {
+      "bonusExperience": "서막"
+    }
+  },
+  "additionalRulesAndClarifications": {
+    "title": "추가 규칙과 규칙 명료화"
+  },
+  "friendsInLowPlaces": {
+    "title": "막간: 밑바닥 친구들",
+    "xp": {
+      "friendsInLowPlaces": "밑바닥 친구들"
+    }
+  },
+  "epilogue": {
+    "title": "후일담",
+    "checkCampaignLog": "캠페인 기록지를 확인합니다."
+  }
+}

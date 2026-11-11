@@ -1,0 +1,27 @@
+{
+  "setup": {
+    "checkCampaignLog": "캠페인 기록지를 확인합니다."
+  },
+  "intro": {
+    "title": "시나리오 III: 재의 여왕",
+    "checkCampaignLog": "캠페인 기록지를 확인합니다.",
+    "otherwise": "그렇지 않다면, _도입부 3_으로 건너뜁니다."
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "아무 결말에도 도달하지 못했다면"
+    },
+    "resolution1": {
+      "title": "결말 1"
+    },
+    "resolution2": {
+      "title": "결말 2"
+    },
+    "resolution3": {
+      "title": "결말 3"
+    },
+    "xp": {
+      "bonus": "추가 경험치"
+    }
+  }
+}

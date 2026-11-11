@@ -1,0 +1,60 @@
+{
+  "keywordsAndConcepts": {
+    "entries": [
+      {
+        "title": "서고"
+      },
+      {
+        "title": "경계"
+      },
+      {
+        "title": "냉담한"
+      },
+      {
+        "title": "도주"
+      }
+    ]
+  },
+  "tokens": {
+    "easyStandard": {
+      "tablet": "-3. 실패하면, 당신이 가진 단서 1개를 당신이 위치한 장소에 올려 놓습니다."
+    },
+    "hardExpert": {
+      "tablet": " -4. 실패하면, 당신이 가진 단서 1개를 당신이 위치한 장소에 놓습니다."
+    }
+  },
+  "setup": {
+    "checkCampaignLog": "캠페인 기록지를 확인합니다.",
+    "readyToBegin": "이제 당신은 게임을 시작할 준비가 되었습니다."
+  },
+  "intro": {
+    "title": "시나리오 II: 연기와 거울"
+  },
+  "tooltips": {
+    "emergentEvils": {
+      "resign": "@:brethrenOfAsh.smokeAndMirrors.tooltips.arkhamAlive.resign"
+    }
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "아무 결말에도 도달하지 못했다면"
+    },
+    "resolution1": {
+      "title": "결말 1"
+    },
+    "resolution2": {
+      "title": "결말 2"
+    }
+  },
+  "codex": {
+    "davidRenfield": {
+      "title": "{'{'}codex{'}'} 서고 1: 데이비드 렌필드"
+    },
+    "naomiOBannion": {
+      "title": "{'{'}codex{'}'} 서고 3: 나오미 오베니언"
+    },
+    "abigailForeman": {
+      "title": "{'{'}codex{'}'} 서고 5: 아비가일 포먼"
+    }
+  }
+}

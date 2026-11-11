@@ -1,0 +1,13 @@
+{
+  "name": "저녁 기도의 밤",
+  "additionalRules": {
+    "title": "추가 규칙과 규칙 명료화"
+  },
+  "prologue": {
+    "title": "서막"
+  },
+  "headings": {
+    "prologue": "서막",
+    "epilogue": "후일담"
+  }
+}

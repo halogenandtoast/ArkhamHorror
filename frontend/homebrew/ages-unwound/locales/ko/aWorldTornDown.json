@@ -1,0 +1,44 @@
+{
+  "aWorldTornDown": {
+    "heading": "시나리오 III",
+    "name": "무너진 세계",
+    "intro": {
+      "title": "시나리오 III: 무너진 세계"
+    },
+    "rules": {
+      "haunted": {
+        "title": "신들린",
+        "body": "<p class='basic'>‘신들린’은 몇몇 장소 카드에 등장하는 새로운 기능입니다. 조사자가 장소를 조사하는 동안 능력 테스트에서 실패할 때마다, 우선 그 능력 테스트의 결과를 모두 적용합니다. 그 후, 그 조사자는 해당 장소의 “신들린 -” 기능을 모두 해결해야 합니다.</p><p class='basic'>(다른 카드 효과를 해결하는 목적에서) 하나 이상의 “신들린 -” 기능을 가진(카드에 인쇄되어 있거나 다른 효과로 인해 “신들린 -” 기능을 갖게 된) 장소는 “신들린” 장소로 간주합니다.</p>"
+      }
+    },
+    "endOfTheLine": {
+      "additionalActions": "수평선의 끝"
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "아무 결말에도 도달하지 못했다면",
+        "body": "<p class='basic'>*아무 결말에도 도달하지 못했다면(모든 조사자가 쓰러졌다면)*:</p>"
+      },
+      "resolution1": {
+        "title": "결말 1",
+        "checkCampaignLog": "<p class='basic'>캠페인 기록지를 확인합니다.</p>"
+      },
+      "resolution2": {
+        "title": "결말 2",
+        "victoryXp": "각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다."
+      },
+      "resolution3": {
+        "title": "결말 3",
+        "victoryXp": "각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다."
+      },
+      "resolution4": {
+        "title": "결말 4",
+        "drivenInsane": "모든 조사자는 미칩니다.",
+        "loseTheCampaign": "조사자는 패배했습니다."
+      },
+      "resolution5": {
+        "title": "결말 5"
+      }
+    }
+  }
+}

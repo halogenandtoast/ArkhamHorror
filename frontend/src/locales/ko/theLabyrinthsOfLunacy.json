@@ -1,0 +1,19 @@
+{
+  "key": {
+    "[groupA]": {
+      "title": "그룹 A",
+      "theGroupEscapedTheLabyrinth": "미궁에서 탈출했다",
+      "theGroupPerished": "미궁에서 죽었다"
+    },
+    "[groupB]": {
+      "title": "그룹 B",
+      "theGroupEscapedTheLabyrinth": "미궁에서 탈출했다",
+      "theGroupPerished": "미궁에서 죽었다"
+    },
+    "[groupC]": {
+      "title": "그룹 C",
+      "theGroupEscapedTheLabyrinth": "미궁에서 탈출했다",
+      "theGroupPerished": "미궁에서 죽었다"
+    }
+  }
+}

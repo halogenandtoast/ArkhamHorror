@@ -422,7 +422,7 @@ function startDrag(event: DragEvent) {
             <button
               type="button"
               class="market-helper-button"
-              aria-label="View Underworld Market known order"
+              :aria-label="$t('gameUi.viewUnderworldMarket')"
               v-tooltip="'View Underworld Market known order'"
               @click.stop.prevent="marketPopoverShown = !marketPopoverShown"
             >
@@ -431,7 +431,7 @@ function startDrag(event: DragEvent) {
 
             <template #popper>
               <div class="market-popover no-card-overlay">
-                <div class="market-popover__header">Underworld Market</div>
+                <div class="market-popover__header">{{ $t('gameUi.underworldMarket') }}</div>
                 <div class="market-popover__slots">
                   <div v-for="slot in marketDeckSlots" :key="slot.position" class="market-popover__slot">
                     <span class="market-popover__number">{{ slot.position }}</span>
@@ -544,7 +544,7 @@ function startDrag(event: DragEvent) {
         :cards="cardsUnderneath"
         :game="game"
         :playerId="playerId"
-        label="Cards underneath"
+        :label="$t('gameUi.cardsUnderneath')"
         @choose="$emit('choose', $event)"
       />
       <Event

@@ -207,11 +207,22 @@ function tokenShapePath(points: Array<[number, number]>, closed: boolean) {
   return `M ${points.map(([x, y]) => `${x} ${y}`).join(' L ')}${closed ? ' Z' : ''}`
 }
 
+/* Every token is drawn in a square cell of this size, centred on its layout
+   point. The token art itself is all different shapes and aspect ratios -- a
+   horror token is 25x22, a resource coin 25x28 -- so laying them out by their
+   top-left corner leaves their visual midpoints up to 4px apart and off the
+   blob's outline. The cell is what gets positioned; the art is centred inside
+   it. The overlay hands this number to the CSS as `--token-size` so the two
+   cannot drift apart. */
+const TOKEN_SIZE = 25
+
 const clumpLayout = computed<ClumpLayout>(() => {
   const n = items.value.length
-  const tokenSize = 24
+  const tokenSize = TOKEN_SIZE
   const padding = 18
-  const margin = padding / 2
+  /* A layout point is a token's CENTRE, so the margin clears half a cell on top
+     of the padding -- otherwise the first token hangs off the blob's edge. */
+  const margin = padding / 2 + tokenSize / 2
   const step = 31
   if (n <= 0) return { positions: [], width: tokenSize, height: tokenSize, shapePath: '' }
 
@@ -250,7 +261,7 @@ const clumpLayout = computed<ClumpLayout>(() => {
   }))
   const width = maxX - minX + tokenSize + padding
   const height = maxY - minY + tokenSize + padding
-  const shapePoints = outline.map(([x, y]) => [x - minX + margin + tokenSize / 2, y - minY + margin + tokenSize / 2] as [number, number])
+  const shapePoints = outline.map(([x, y]) => [x - minX + margin, y - minY + margin] as [number, number])
 
   return { positions, width, height, shapePath: tokenShapePath(shapePoints, closed) }
 })
@@ -331,6 +342,7 @@ function onEnter() {
       top: `${cy - height / 2}px`,
       width: `${width}px`,
       height: `${height}px`,
+      '--token-size': `${TOKEN_SIZE}px`,
     }
   }
   setExpanded(true)
@@ -349,7 +361,7 @@ onUnmounted(() => {
   <div
     class="token-pool"
     :class="{ 'token-pool--clumped': clumped, 'token-pool--row': pairRow }"
-    :style="clumped ? { '--token-count': items.length } : undefined"
+    :style="clumped ? { '--token-count': items.length, '--token-size': `${TOKEN_SIZE}px` } : undefined"
     ref="anchorEl"
     @mouseenter="onEnter"
   >
@@ -420,8 +432,8 @@ onUnmounted(() => {
 .token-pool--clumped {
   display: block;
   position: relative;
-  width: calc(var(--card-token-width) + (var(--token-count, 1) - 1) * 5px);
-  height: var(--card-token-width);
+  width: calc(var(--token-size, 25px) + (var(--token-count, 1) - 1) * 5px);
+  height: var(--token-size, 25px);
   pointer-events: auto;
   overflow: visible;
 }
@@ -432,6 +444,22 @@ onUnmounted(() => {
   left: 0;
   z-index: calc(1 + var(--token-index));
   transform: translateX(calc(var(--token-index) * 5px));
+  /* Same square cell as the fan, so the peeking stack is even too. */
+  width: var(--token-size, 25px) !important;
+  height: var(--token-size, 25px) !important;
+  padding: 0 !important;
+  clip-path: none !important;
+  grid-template-columns: 100%;
+  grid-template-rows: 100%;
+}
+
+.token-pool--clumped :deep(.poolItem img) {
+  /* An absolute length, not 100%: a percentage height resolves against the grid
+     track, which is not always definite, and the art falls back to its intrinsic
+     aspect -- the uneven sizing this is here to remove. */
+  width: var(--token-size, 25px) !important;
+  height: var(--token-size, 25px) !important;
+  object-fit: contain;
 }
 </style>
 
@@ -444,6 +472,13 @@ onUnmounted(() => {
   isolation: isolate;
 }
 
+/* The blob is a tiny polygon stroked very wide, drawn twice (rim, then body).
+   Both paints must be opaque and the whole svg composited once: with per-path
+   alpha the polygon's interior gets painted by four layers (each path's fill
+   *and* its stroke, which reaches all the way across) while the surrounding ring
+   gets two, which showed up as a hard-edged dark square between the tokens.
+   The colours below blend to the same result the alpha layers used to give
+   outside that square. */
 .token-pool-overlay .token-pool-bg {
   position: absolute;
   inset: 0;
@@ -453,35 +488,40 @@ onUnmounted(() => {
   pointer-events: none;
   overflow: visible;
   z-index: 0;
-}
-
-.token-pool-overlay .token-pool-bg path {
-  fill: rgba(0, 0, 0, 0.72);
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  opacity: 0.82;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
 }
 
+.token-pool-overlay .token-pool-bg path {
+  fill: #1e1e1e;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .token-pool-overlay .token-pool-bg-border {
-  stroke: rgba(255, 255, 255, 0.34);
+  stroke: #a9acb3;
   stroke-width: 46;
 }
 
 .token-pool-overlay .token-pool-bg-fill {
-  stroke: rgba(0, 0, 0, 0.72);
+  stroke: #1e1e1e;
   stroke-width: 42;
 }
 
+/* `--token-x`/`--token-y` are the cell's CENTRE, so the cell is shifted back by
+   half itself. Every token then balances on its layout point whatever shape its
+   art is, which is what the per-token nudges used to approximate. */
 .token-pool-overlay .poolItem {
   position: absolute;
   top: 0;
   left: 0;
-  transform: translate(var(--token-x), var(--token-y));
-}
-
-/* The health (damage) token art sits a touch right; nudge it left to balance. */
-.token-pool-overlay .poolItem-health {
-  left: -3px;
+  width: var(--token-size, 25px) !important;
+  height: var(--token-size, 25px) !important;
+  padding: 0 !important;
+  clip-path: none !important;
+  grid-template-columns: 100%;
+  grid-template-rows: 100%;
+  transform: translate(var(--token-x), var(--token-y)) translate(-50%, -50%);
 }
 
 /* The doom token is dark and blends into the blob; trace it with a faint white
@@ -494,12 +534,18 @@ onUnmounted(() => {
     drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.25));
 }
 
+/* Fit the art inside the square cell rather than fixing its width and letting
+   its height fall where it may: every token ends up the same size and centred. */
 .token-pool-overlay .poolItem img {
-  width: var(--card-token-width, 25px) !important;
-  height: auto !important;
+  /* An absolute length, not 100%: a percentage height resolves against the grid
+     track, which is not always definite, and the art falls back to its intrinsic
+     aspect -- the uneven sizing this is here to remove. */
+  width: var(--token-size, 25px) !important;
+  height: var(--token-size, 25px) !important;
+  object-fit: contain;
 }
 
 .token-pool-overlay .poolItem span {
-  font-size: calc(var(--card-token-width, 25px) * 0.62) !important;
+  font-size: calc(var(--token-size, 25px) * 0.62) !important;
 }
 </style>

@@ -26,7 +26,7 @@ empiricalHypothesis = assetWith EmpiricalHypothesis Cards.empiricalHypothesis (m
 instance HasAbilities EmpiricalHypothesis where
   getAbilities (EmpiricalHypothesis a) =
     [ restricted a 1 ControlsThis $ forced $ RoundBegins #when
-    , (if tabooed TabooList23 a then limited (PlayerLimit PerRound 2) else id)
+    , (if tabooed TabooList23 a then limited (GroupLimit PerRound 2) else id)
         $ (cardI18n $ withI18nTooltip "empiricalHypothesis.fastSpend1EvidenceDraw1Card")
         $ restricted a 2 (CanDrawCards <> exists matcher)
         $ FastAbility

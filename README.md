@@ -36,13 +36,11 @@ what it is in beta for.
 
 ### Homebrew
 
-Fifteen community boxes come with the app, five campaigns and ten side stories,
-all of them written by other people. All of it sits behind the same beta
-switch. Two — Night of Vespers and Consternation on the Constellation — are
-further back still, marked dev, and do not appear in the chooser yet.
+There is fan-made content in here too: four campaigns and nine side stories
+written by people in the community. Turn on beta and they show up in the
+chooser alongside everything else.
 
-Writing your own never means touching the base game — see
-[Writing homebrew content](./docs/homebrew.md).
+Want to make your own? See [Writing homebrew content](./docs/homebrew.md).
 
 ## I just want to try this out on my computer
 

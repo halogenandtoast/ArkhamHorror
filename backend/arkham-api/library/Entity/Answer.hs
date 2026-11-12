@@ -26,6 +26,7 @@ import Arkham.Investigator (decklistInvestigatorError)
 import Arkham.Investigator.Types (InvestigatorAttrs (investigatorPlayerId))
 import Arkham.Message
 import Arkham.Source
+import Arkham.Taboo.Types (TabooList)
 import Arkham.Target
 import Arkham.Token
 import Arkham.Window qualified as Window
@@ -77,6 +78,13 @@ data Answer
     leaves the continuation question standing to be answered after.
     -}
     ApplyOverlayAnswer {investigatorId :: InvestigatorId, overlay :: Maybe DeckOverlay}
+  | {- | Change which List of Taboos an investigator's deck is played under.
+    Answered from the same screen, for your own seat only -- which is why this
+    one carries the seat that sent it rather than defaulting to the active
+    player. 'Nothing' plays the deck under no taboo list at all.
+    -}
+    SetTabooAnswer
+      {investigatorId :: InvestigatorId, taboo :: Maybe TabooList, playerId :: PlayerId}
   | JoinCampaignAnswer
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
@@ -342,6 +350,7 @@ answerPlayer = \case
   ExchangeAmountsAnswer {} -> Nothing
   CampaignStepAnswer _ -> Nothing
   ApplyOverlayAnswer {} -> Nothing
+  SetTabooAnswer _ _ pid -> Just pid
   RetireInvestigatorAnswer _ -> Nothing
   RejoinInvestigatorAnswer _ -> Nothing
   JoinCampaignAnswer -> Nothing
@@ -481,6 +490,26 @@ handleAnswer game playerId = \case
             Just seat -> registerDeckOwnerCustomCards (arkhamPlayerUserId seat)
             Nothing -> pure ()
           handled [ApplyDeckOverlay iid o]
+  {- Changing the taboo list an investigator plays under.
+
+  Unlike the roster changes beside it this is NOT gated on holding the
+  continuation ask: only the lead is ever asked 'ContinueCampaign', so
+  requiring it would leave every other player unable to set their own. Being
+  between scenarios plus owning the seat is the real condition.
+  -}
+  SetTabooAnswer iid mtaboo sender
+    | not (atCampaignContinuation game) ->
+        unhandled "A taboo list can only be changed between scenarios"
+    | otherwise -> case Map.lookup iid (entitiesInvestigators (gameEntities game)) of
+        Nothing -> unhandled "Unknown investigator"
+        Just investigator -> do
+          let seat = attr investigatorPlayerId investigator
+          -- Multihanded solo is one user holding several seats, so sameness is
+          -- decided by user rather than by seat.
+          mine <- if seat == sender then pure True else sameUser sender seat
+          if mine
+            then handled [SetTaboo iid mtaboo]
+            else unhandled "You can only change your own investigator's taboo list"
   DeckListAnswer dl _ -> do
     -- 'DB' is rank-1 polymorphic, so the registration has to be applied here
     -- rather than passed as a function.
@@ -511,6 +540,15 @@ handleAnswer game playerId = \case
                 handled [JoinCampaign (PlayerId $ coerce pid)]
               else unhandled "A new player joins this game with its invite link"
   other -> liftIO $ handleAnswerPure game playerId other
+
+-- | Whether two seats in a game belong to the same user.
+sameUser :: PlayerId -> PlayerId -> DB Bool
+sameUser a b = do
+  ma <- P.get (coerce a)
+  mb <- P.get (coerce b)
+  pure $ case (ma, mb) of
+    (Just x, Just y) -> arkhamPlayerUserId x == arkhamPlayerUserId y
+    _ -> False
 
 {- | Mark a deck as just taken into a game. This is the only record of a deck
 being used -- nothing else links a game back to the 'ArkhamDeck' row it was
@@ -555,6 +593,7 @@ handleAnswerPure game@Game {..} playerId = \case
         unhandled "The last investigator cannot leave"
     | otherwise -> handled [LeaveCampaign iid]
   ApplyOverlayAnswer {} -> unhandled "ApplyOverlayAnswer requires database access"
+  SetTabooAnswer {} -> unhandled "SetTabooAnswer requires database access"
   RejoinInvestigatorAnswer iid
     | not (isContinueCampaignAsk game playerId) -> unhandled "Wrong question type"
     | not (atCampaignContinuation game) -> unhandled "Investigators can only rejoin between scenarios"

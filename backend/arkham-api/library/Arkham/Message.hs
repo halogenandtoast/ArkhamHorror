@@ -28,6 +28,7 @@ import Arkham.Question as X
 import Arkham.SimultaneousAsk as X
 import Arkham.SkillTest.Option as X
 import Arkham.Strategy as X
+import Arkham.Taboo.Types (TabooList)
 import Arkham.Text as X
 
 import Arkham.Ability.Types
@@ -1006,6 +1007,13 @@ data Message
     is initialised for what it adds.
     -}
     ApplyDeckOverlay InvestigatorId DeckOverlay
+  | {- | Change which List of Taboos an investigator's deck is played under,
+    from the campaign roster between scenarios. Re-stamps the saved deck, so
+    a mutated card reads the way the chosen list says it does. The next deck
+    upgrade reads @taboo_id@ off the submitted decklist again and overwrites
+    this, which is why nothing here touches the stored deck.
+    -}
+    SetTaboo InvestigatorId (Maybe TabooList)
   | FinishedUpgradingDecks
   | Flip InvestigatorId Source Target
   | Flipped Source Card

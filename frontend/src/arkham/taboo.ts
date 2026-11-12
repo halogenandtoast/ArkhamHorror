@@ -1,5 +1,20 @@
 import { TabooList } from '@/arkham/types/TabooList'
 
+/* Newest first: picking a taboo list almost always means picking the current
+ * one, and the engine only ever compares with >=, so order is presentation. */
+export const allTabooLists: TabooList[] = [
+  "TabooList25",
+  "TabooList24",
+  "TabooList23",
+  "TabooList22",
+  "TabooList21",
+  "TabooList20",
+  "TabooList19",
+  "TabooList18",
+  "TabooList16",
+  "TabooList15",
+]
+
 export function displayTabooList(taboo: TabooList): string {
   switch (taboo) {
     case "TabooList15": return "1.5 (Apr 23, 2019)"

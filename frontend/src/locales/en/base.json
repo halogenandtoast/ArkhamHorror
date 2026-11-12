@@ -465,6 +465,9 @@
   "investigatorRow": {
     "physical": "Physical",
     "mental": "Mental",
+    "setTaboo": "Set taboo list",
+    "noTaboo": "No taboo list",
+    "tabooError": "Could not change the taboo list",
     "earnedCards": "Earned Cards",
     "showModifiers": "Show Modifiers",
     "expand": "Expand",

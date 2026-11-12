@@ -628,6 +628,14 @@ runInvestigatorMessage :: Runner InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   ClearAbilityUse ref -> do
     pure $ a & usedAbilitiesL %~ filter ((/= ref) . (.ref) . usedAbility)
+  -- The cards are re-stamped by the campaign; this is the investigator's own
+  -- half of it, and the record every later deck load reads the taboo from.
+  SetTaboo iid mtaboo | iid == investigatorId -> do
+    pure
+      $ a
+        { investigatorTaboo = mtaboo
+        , investigatorMutated = tabooMutated' mtaboo (coerce investigatorId)
+        }
   SealedChaosToken token miid (isTarget a -> True) -> do
     when (a.id `elem` miid) do
       Lifted.checkWhen (Window.ChaosTokenSealed a.id token)

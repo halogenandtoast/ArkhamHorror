@@ -1364,6 +1364,17 @@ export const retireInvestigator = (gameId: string, investigatorId: string): Prom
 export const rejoinInvestigator = (gameId: string, investigatorId: string): Promise<void> =>
   api.put(`arkham/games/${gameId}`, { tag: 'RejoinInvestigatorAnswer', investigatorId })
 
+/* Changes which List of Taboos an investigator's deck is played under, from the
+ * campaign roster. `taboo` is null to play under none. This applies to the game
+ * only -- the next deck upgrade reads taboo_id off the submitted decklist. */
+export const setInvestigatorTaboo = (
+  gameId: string,
+  investigatorId: string,
+  taboo: string | null,
+  playerId: string,
+): Promise<void> =>
+  api.put(`arkham/games/${gameId}`, { tag: 'SetTabooAnswer', investigatorId, taboo, playerId })
+
 // Lays custom cards over an investigator's campaign deck between scenarios.
 export const applyInvestigatorOverlay = (
   gameId: string,

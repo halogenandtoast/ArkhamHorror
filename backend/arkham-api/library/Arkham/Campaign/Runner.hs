@@ -363,6 +363,28 @@ defaultCampaignRunner msg a = case msg of
        in ( filter (not . matching replaced) cards
           , if n > 0 then (replacement, n) : adds else adds
           )
+  {- Changing the List of Taboos an investigator plays under, from the roster
+  between scenarios.
+
+  The taboo lives on each card (it decides which 'CardDef' the card reads as),
+  so the saved deck has to be re-stamped rather than merely recorded on the
+  investigator. 'setTaboo' also re-registers each card, which is what keeps the
+  game's card table in step. Only the campaign deck is walked: between
+  scenarios that is where the cards are ('getCurrentDeck' falls back to it
+  precisely because the investigator's own deck is empty here).
+  -}
+  SetTaboo iid mtaboo -> do
+    let attrs = toAttrs a
+    mdeck <- for (lookup iid (campaignDecks attrs)) \(Deck deck) ->
+      Deck <$> for deck \pc -> do
+        card <- setTaboo mtaboo (PlayerCard pc)
+        pure $ case card of
+          PlayerCard pc' -> pc'
+          _ -> pc
+    -- Answering cleared the UI, so hand the lead its continuation back, the
+    -- same way the other roster changes do.
+    push (CampaignStep $ campaignStep attrs)
+    pure $ updateAttrs a $ decksL %~ maybe id (insertMap iid) mdeck
   UpgradeDeck iid mUrl deck -> do
     let
       oldDeck = fromJustNote "No deck? (UpgradeDeck)" $ lookup iid (campaignDecks $ toAttrs a)

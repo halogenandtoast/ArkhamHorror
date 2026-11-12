@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import * as Arkham from '@/arkham/types/Game'
-import { ref, computed } from 'vue';
+import { ref, computed, inject, type Ref } from 'vue';
 import { Investigator } from '@/arkham/types/Investigator';
 import Card from '@/arkham/components/Card.vue'
 import DeckList from '@/arkham/components/DeckList.vue'
@@ -11,6 +11,8 @@ import type { Card as CardT, CardContents } from '@/arkham/types/Card';
 import EarnableCardPicker from '@/arkham/components/debug/EarnableCardPicker.vue'
 import { XMarkIcon } from '@heroicons/vue/20/solid'
 import { useDebug } from '@/arkham/debug'
+import { allTabooLists, displayTabooList } from '@/arkham/taboo'
+import { setInvestigatorTaboo } from '@/arkham/api'
 import { gainXpMessage, healTraumaMessage, spendXpMessage, sufferTraumaMessage, type TraumaKind } from '@/arkham/debugPlayer'
 
 export interface Props {
@@ -23,6 +25,12 @@ export interface Props {
   /** Whether debug mode may act on this row. False where the row describes a
    * game the server does not have yet (the import preview). */
   debuggable?: boolean;
+  /** The seat looking at this row, needed to decide whose investigator it is. */
+  playerId?: string;
+  /** Whether this screen is one where the taboo list may be changed -- the
+   * campaign roster between scenarios, which is the only place the server
+   * accepts it. */
+  canSetTaboo?: boolean;
 }
 
 const store = useDbCardStore()
@@ -31,6 +39,7 @@ const props = withDefaults(defineProps<Props>(), {
   showExpand: true,
   dimmed: false,
   debuggable: true,
+  canSetTaboo: false,
 })
 
 const expanded = ref(false)
@@ -73,6 +82,46 @@ const storyCards = computed(() => {
 function getInvestigatorName(cardTitle: string): string {
   const language = localStorage.getItem('language') || 'en'
   return language === 'en'? cardTitle : store.getCardName(cardTitle, "investigator")
+}
+
+/* The taboo list a deck was built under changes how its cards behave (a
+ * mutated card reads differently), so the roster says which one is in
+ * force rather than leaving it to be inferred from play. */
+const tabooList = computed(() =>
+  props.investigator.taboo ? displayTabooList(props.investigator.taboo) : null
+)
+
+/* Your own seat only. Multihanded solo is one user holding every seat, so
+ * there it is all of them -- the same rule the server applies, by user. */
+const solo = inject<Ref<boolean>>('solo', ref(false))
+const canEditTaboo = computed(() =>
+  props.canSetTaboo
+    && !!props.playerId
+    && (solo.value || props.investigator.playerId === props.playerId)
+)
+
+const editingTaboo = ref(false)
+const tabooBusy = ref(false)
+const tabooError = ref<string | null>(null)
+
+async function changeTaboo(event: Event) {
+  const chosen = (event.target as HTMLSelectElement).value
+  tabooBusy.value = true
+  tabooError.value = null
+  try {
+    await setInvestigatorTaboo(
+      props.game.id,
+      props.investigator.id,
+      chosen === '' ? null : chosen,
+      props.playerId as string,
+    )
+    editingTaboo.value = false
+  } catch (e) {
+    console.error(e)
+    tabooError.value = 'tabooError'
+  } finally {
+    tabooBusy.value = false
+  }
 }
 
 const deck = computed(() => {
@@ -163,6 +212,51 @@ const deck = computed(() => {
           <span class="stat-value">{{ investigator.mentalTrauma }}</span>
           <button v-if="debugging" type="button" class="stat-step" v-tooltip="$t('debug.campaign.traumaHint')" @click="stepTrauma('mental', 1)">+</button>
         </div>
+        <!-- Yours to change: the dropdown is the control. With no taboo list
+             there is nothing to show, so a button opens it instead of leaving
+             an empty select sitting in the row. -->
+        <!-- The chip IS the control: the native select is laid over the whole
+             thing, invisible, so the row keeps its own type and colour and
+             still gets the platform's dropdown. -->
+        <div
+          v-if="canEditTaboo && (investigator.taboo || editingTaboo)"
+          class="stat-chip stat-taboo taboo-control"
+          :class="{ 'is-busy': tabooBusy }"
+        >
+          <font-awesome-icon icon="book" />
+          <span class="stat-value">
+            {{ tabooList ? $t('create.tabooList', { tabooList }) : $t('investigatorRow.noTaboo') }}
+          </span>
+          <span class="taboo-caret" aria-hidden="true">
+            <font-awesome-icon icon="angle-down" />
+          </span>
+          <select
+            class="taboo-native"
+            :disabled="tabooBusy"
+            :value="investigator.taboo ?? ''"
+            :aria-label="$t('investigatorRow.setTaboo')"
+            @change="changeTaboo"
+          >
+            <option value="">{{ $t('investigatorRow.noTaboo') }}</option>
+            <option v-for="list in allTabooLists" :key="list" :value="list">
+              {{ displayTabooList(list) }}
+            </option>
+          </select>
+        </div>
+        <button
+          v-else-if="canEditTaboo"
+          type="button"
+          class="stat-chip stat-taboo taboo-set"
+          @click="editingTaboo = true"
+        >
+          <font-awesome-icon icon="book" />
+          <span class="stat-value">{{ $t('investigatorRow.setTaboo') }}</span>
+        </button>
+        <div v-else-if="tabooList" class="stat-chip stat-taboo">
+          <font-awesome-icon icon="book" />
+          <span class="stat-value">{{ $t('create.tabooList', { tabooList }) }}</span>
+        </div>
+        <span v-if="tabooError" class="taboo-error">{{ $t('investigatorRow.tabooError') }}</span>
       </div>
     </div>
 
@@ -383,6 +477,74 @@ const deck = computed(() => {
 .stat-xp .stat-value { color: #a8d080; }
 .stat-health .icon   { color: #f88; }
 .stat-sanity .icon   { color: #8af; }
+
+/* Gold, as taboo reads everywhere else it is shown (deck rows, deck picker). */
+.stat-taboo {
+  background: rgba(200, 169, 110, 0.12);
+  border-color: rgba(200, 169, 110, 0.25);
+  color: #c8a96e;
+}
+
+.stat-taboo .stat-value {
+  color: #c8a96e;
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* The "set one" affordance is the chip itself, so it has to carry the chip's
+   own layout rather than sit inside one. */
+button.stat-taboo {
+  cursor: pointer;
+  font: inherit;
+
+  &:hover { background: rgba(200, 169, 110, 0.22); }
+}
+
+/* The caret is a segment of the chip, divided off at its right edge, so the
+   chip reads as one control rather than a label with a widget stuck beside it.
+   Hence padding-right: 0 -- the segment supplies its own. */
+.taboo-control {
+  cursor: pointer;
+  padding-right: 0;
+  position: relative;
+
+  &:hover { background: rgba(200, 169, 110, 0.22); }
+  &.is-busy { opacity: 0.6; }
+}
+
+.taboo-caret {
+  align-items: center;
+  align-self: stretch;
+  border-left: 1px solid rgba(200, 169, 110, 0.3);
+  display: flex;
+  font-size: 0.8em;
+  margin-left: 4px;
+  padding: 0 8px;
+}
+
+/* Invisible, but still the real control: it keeps keyboard focus, the native
+   popup and the platform's option rendering. */
+.taboo-native {
+  cursor: pointer;
+  height: 100%;
+  inset: 0;
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+
+  &:disabled { cursor: default; }
+}
+
+.taboo-control:focus-within {
+  border-color: rgba(200, 169, 110, 0.65);
+  box-shadow: 0 0 0 1px rgba(200, 169, 110, 0.35);
+}
+
+.taboo-error {
+  color: #e08f8f;
+  font-size: 0.72em;
+}
 
 .bonus-xp {
   font-size: 0.8em;

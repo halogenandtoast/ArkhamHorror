@@ -43,173 +43,18 @@ Want to make your own? See [Writing homebrew content](./docs/homebrew.md).
 
 ## I just want to try this out on my computer
 
-### Prebuilt package (no Docker)
-
-The least work, if there is a build for your machine. One archive with the
-backend, the frontend, PostgreSQL and nginx already in it — nothing to
+Easiest is the [prebuilt package](./docs/install/prebuilt.md): one download
+with the game, the database and the web server already inside it. Nothing to
 install, not even Docker.
 
-Grab the archive for your platform from the
-[releases page](https://github.com/halogenandtoast/ArkhamHorror/releases):
+If you would rather run it in Docker there is a one-liner for
+[Linux](./docs/install/docker-linux.md), a longer path on
+[Windows](./docs/install/docker-windows.md), and a
+[by-hand version](./docs/install/docker-manual.md) if you want to write the
+compose file yourself.
 
-| You have | Download | Then |
-| --- | --- | --- |
-| An Apple Silicon Mac | `ArkhamHorror-macos-arm64.tar.gz` | double-click `Start-ArkhamHorror.command` |
-| Windows | `ArkhamHorror-linux-x86_64.tar.gz` | double-click `Start-ArkhamHorror.bat` |
-| Linux on x86_64 | `ArkhamHorror-linux-x86_64.tar.gz` | `bash game/start.sh` |
-
-Yes, Windows takes the Linux archive: the launcher runs it inside WSL. It
-installs WSL and Ubuntu if they are missing, which wants a reboot the first
-time, and then you double-click again. Leave the terminal window it opens alone
-— closing it or pressing Ctrl+C is how you stop the game, and it writes a
-database backup on the way out.
-
-The first start initialises its own database, imports `setup.sql`, brings up all
-three services and opens http://localhost:3000. Later starts reuse the data.
-`bash game/start.sh --status` and `--stop` do what they say.
-
-Your saved games are kept outside the package, so a newer one does not disturb
-them:
-
-* macOS — `~/Library/Application Support/ArkhamHorror/`
-* Linux and WSL — `~/.local/share/ArkhamHorror/`
-
-A normal shutdown also writes a dump to the package's own `backup/`, which is
-what a later install restores from if it finds no live database.
-
-Images come from the CDN, and nginx falls back to it file by file, so you can
-drop as much or as little local art as you like into `game/frontend/dist/img/`.
-Your own card images go in `cards/` (or `cards_en/`), which are checked first.
-
-To upgrade, download the new archive into the same folder as the old one and
-double-click `Update-ArkhamHorror.command` (`.bat` on Windows). It stops the
-services, swaps `game/` for the new one and leaves `cards/`, `cards_en/` and
-`backup/` where they are. It will not download anything itself.
-
-`offline/README.md` goes deeper: the codes `start.sh` exits with, which log each
-failure lands in, and the order card images are looked up in.
-
-### Linux Users
-
-Install [Docker][docker], then run:
-
-```
-curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/install.sh | bash
-```
-
-This creates an `arkham-horror/` directory, downloads the required files, generates
-a database password, and starts the app. Open http://localhost:3000 when it's done.
-
-The script will ask if you want to download game images (~2.9 GB). If you skip
-this step, the app loads images from the CDN automatically — no extra setup needed.
-
-### Windows Users
-
-- Install Docker, specifically the version of Docker known as [Docker Desktop](https://docs.docker.com/desktop/).
-- Install a "terminal only" version of Ubuntu that can be run inside of Windows, for which the easiest available method is to [install from the Microsoft Store](https://documentation.ubuntu.com/wsl/latest/howto/install-ubuntu-wsl2/#method-3-install-from-the-microsoft-store). You may choose any Linux distro other than Ubuntu if you know what you are doing.
-- In Docker Desktop, go to `Settings > Resources > WSL Integration` and enable integration with Ubuntu Linux distro that you installed in the previous step. This allows us to access Docker from inside Ubuntu.
-- Start the Ubuntu terminal and run:
-  ```
-  curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/install.sh | bash
-  ```
-- The app should start being served at http://localhost:3000, if nothing went wrong.
-- Every time you want to start the app, you can use `docker compose up`
-- If you get around to figuring out how to use Docker Desktop, you could also press buttons to start and stop the app instead of typing commands to run it.
-
-#### Things that can go wrong
-
-If the app doesnt start at all, or it starts but you cannot create a user account, or any other issue due to Murphy's Law, you have to check the logs of the Docker container to find the error messages. In Docker Desktop, you can access this by clicking on the `arkham-horror` "compose stack" found in the `Containers` list.
-
-Possible problems:
-
-| Problem | Solution |
-| ------------- | ------------- |
-| Error involving `docker-credential-desktop.exe` | Try restarting your computer |
-| When clicking on the "REGISTER" button, the error `password authentication failed` is logged| Stop the app using `docker compose down` and then refetch the app using `docker compose pull`
-
-### Manual setup (alternative)
-
-If you prefer not to use the install script, you'll need four files:
-
-```
-mkdir -p arkham-horror/config arkham-horror/scripts arkham-horror/frontend/public/img
-cd arkham-horror
-curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/docker-compose.yml -o docker-compose.yml
-curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/setup.sql -o setup.sql
-curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/scripts/fetch-assets.sh -o scripts/fetch-assets.sh
-# Generate a strong password
-openssl rand -base64 32 > config/postgres_password.txt
-docker compose up -d
-```
-
-The app automatically detects whether local images are present:
-- **No local images** (default after install) → images load from the CDN automatically
-- **Local images present** (after running the fetch service) → images served locally
-
-To fetch images locally, use the `fetch-images` Docker service.
-Once fetched, restart with `docker compose restart web` and the app will switch to local images.
-
-```
-# English only (~1.3 GB) — portraits, tokens, icons, card images
-docker compose --profile fetch-images run --rm fetch-images en
-
-# English + a specific language (recommended for non-English play)
-docker compose --profile fetch-images run --rm fetch-images en+fr   # French
-docker compose --profile fetch-images run --rm fetch-images en+es   # Spanish
-docker compose --profile fetch-images run --rm fetch-images en+ita  # Italian
-docker compose --profile fetch-images run --rm fetch-images en+ko   # Korean
-docker compose --profile fetch-images run --rm fetch-images en+zh   # Chinese
-
-# A single language's card translations only (English assets still load from CDN)
-docker compose --profile fetch-images run --rm fetch-images fr
-
-# Everything (~2.9 GB)
-docker compose --profile fetch-images run --rm fetch-images all
-```
-
-Images are stored in `frontend/public/img/` and mounted into the container.
-After fetching, run `docker compose restart web` to pick them up.
-
-To switch back to CDN at any time, add this to the `web` service environment in `docker-compose.yml`:
-
-```yaml
-    environment:
-      - ASSET_HOST=https://assets.arkhamhorror.app
-```
-
-### Updating
-
-Use the upgrade script. It auto-detects your install type (Docker or git
-checkout), refreshes control files, pulls the latest images, applies database
-migrations, recreates the containers, and re-syncs local images if you have
-them.
-
-Run it from anywhere:
-
-```
-curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/upgrade.sh | bash
-```
-
-Or, from inside your install directory (or a git checkout):
-
-```
-./upgrade.sh
-```
-
-Options (environment variables):
-
-| Variable | Purpose |
-| --- | --- |
-| `ARKHAM_INSTALL_DIR` | Install directory to upgrade (default: `arkham-horror`). Set this if you installed somewhere else. |
-| `ARKHAM_IMAGE_TARGET` | Force an image-sync target (e.g. `en`, `en+fr`, `all`) instead of auto-detecting from what's already on disk. |
-
-```
-# Upgrade an install in a custom directory
-ARKHAM_INSTALL_DIR=~/games/arkham curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/upgrade.sh | bash
-
-# Force re-syncing English + French images
-ARKHAM_IMAGE_TARGET=en+fr ./upgrade.sh
-```
+Later on, [upgrade.sh](./docs/install/updating.md) updates a Docker install or
+a checkout. The prebuilt package updates itself.
 
 ## Local dev
 
@@ -417,5 +262,4 @@ The information presented in this app about [Arkham Horror: The Card Game™][ar
 All artwork and illustrations are the intellectual property of their respective creators. All Arkham Horror: The Card Game™ images and graphics are copyrighted by Fantasy Flight Games.
 
 [arkham]: https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/
-[docker]: https://www.docker.com/
 [wsl2]: https://learn.microsoft.com/en-us/windows/wsl/install

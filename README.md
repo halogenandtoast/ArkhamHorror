@@ -5,11 +5,6 @@
 The goal of this project is to implement a web version of Arkham Horror with as
 many of the rules implemented as possible.
 
-## Warning
-
-This is very much a work in progress. Things may break at any time, but if they do,
-please file a bug.
-
 ## Features
 
 * Multiplayer up to 4 players
@@ -19,11 +14,13 @@ please file a bug.
 
 ## Finished Content
 
-### Player Cards
+### Chapter 1
 
-* Every official player card
+All of it, none of it in beta. Every campaign from The Night of the Zealot
+through The Drowned City, every Return to box, every side story and challenge
+scenario, and every player card printed for them.
 
-### Campaigns
+#### Campaigns
 
 * The Night of the Zealot
   * Return to the Night of the Zealot
@@ -41,10 +38,8 @@ please file a bug.
 * The Scarlet Keys
 * The Feast of Hemlock Vale
 * The Drowned City
-* Brethren of Ash
-* Children of Blood (Beta)
 
-### Side Stories
+#### Side Stories
 
 * Curse of the Rougarou
 * Carnevale of Horrors
@@ -57,9 +52,8 @@ please file a bug.
 * Fortune and Folly
 * The Midwinter Gala
 * Film Fatale
-* Traces to Nowhere (Beta)
 
-### Challenge Scenarios
+#### Challenge Scenarios
 
 * Read or Die
 * All or Nothing
@@ -70,8 +64,28 @@ please file a bug.
 * Relics of the Past
 * Enthralling Encore
 
-Beta content is playable and finished enough to sit in the chooser, which badges
-it the same way, but it has had less play than the rest.
+### Chapter 2
+
+Every player card so far, the 2026 Core Set included. The boxes:
+
+* Brethren of Ash
+* Children of Blood (Beta)
+* Traces to Nowhere (Beta, side story)
+
+Beta content is hidden until you ask for it: switch on **Enroll in beta** in
+Settings and it turns up in the chooser with a beta badge. Expect it to break,
+sometimes badly enough to lose the game, and file a bug when it does — that is
+what it is in beta for.
+
+### Homebrew
+
+Fifteen community boxes come with the app, five campaigns and ten side stories,
+all of them written by other people. All of it sits behind the same beta switch. Two — Night of
+Vespers and Consternation on the Constellation — are further back still, marked
+dev, and do not appear in the chooser yet.
+
+Writing your own never means touching the base game — see
+[Writing homebrew content](./docs/homebrew.md).
 
 ## I just want to try this out on my computer
 

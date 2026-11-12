@@ -190,8 +190,19 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     Cosmos -> pure ()
     ForcedAbilityWithCost {} -> push (PayCosts activeCostId)
     AbilityEffect {} -> push (PayCosts activeCostId)
-    FastAbility' _ mAction ->
-      pushAll $ PayCosts activeCostId : [PerformedActions iid [action] | action <- actionsToList mAction]
+    {- A fast ability takes no action, so nothing else records the action type it
+    designates; this does. Except when the ability delays its additional costs: its
+    action identity is not settled yet, and pre-recording the union of an 'OrActions'
+    ability's branches both invents actions it never performed and falsifies
+    'FirstOneOfPerformed' before the chosen branch charges for it (#5990). Those
+    branches resolve as real actions and record themselves through 'TakenActions'. -}
+    FastAbility' _ mAction -> do
+      delays <- case activeCost.target of
+        ForAbility ability -> abilityDelaysAdditionalCosts iid ability
+        _ -> pure False
+      pushAll
+        $ PayCosts activeCostId
+        : [PerformedActions iid [action] | not delays, action <- actionsToList mAction]
     ForcedWhen _ aType -> startAbilityPayment activeCost iid window aType source noAooFrom
     CustomizationReaction {} -> push (PayCosts activeCostId)
     ConstantReaction {} -> push (PayCosts activeCostId)

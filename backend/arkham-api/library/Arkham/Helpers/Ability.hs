@@ -428,16 +428,31 @@ getCanAffordAbility iid ability ws = do
     , getCanAffordAbilityCost iid ability ws
     ]
 
+{- | Whether this ability puts off its additional costs until the thing they attach to
+has been chosen.
+
+Every additional cost is deferred, the 'ActionCost 0' surcharge sentinel included: the
+surcharge is read off the union of an 'OrActions' ability's branches, so Summoned Hound
+(1)'s Fight/Investigate was charged for a fight before the player chose to investigate
+(#5990). A delaying ability's branches each charge their own.
+
+Three callers and they must agree -- 'getCanAffordAbilityCost' here,
+'Arkham.Game.Runner''s PayForAbility, and 'Arkham.ActiveCost.startAbilityPayment' -- or
+what is offered, what is charged and what is recorded drift apart (#5895).
+-}
+abilityDelaysAdditionalCosts :: HasGame m => InvestigatorId -> Ability -> m Bool
+abilityDelaysAdditionalCosts iid ability = case abilityDelayAdditionalCosts ability of
+  Nothing -> pure False
+  Just DelayAdditionalCosts -> pure True
+  Just (DelayAdditionalCostsWhen c) ->
+    passesCriteria iid Nothing ability.source ability.source [] c
+
 getCanAffordAbilityCost
   :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
 getCanAffordAbilityCost iid a@Ability {..} ws = do
   modifiers <- getModifiers (AbilityTarget iid a.ref)
   imods <- getModifiers iid
-  doDelayAdditionalCosts <- case abilityDelayAdditionalCosts of
-    Nothing -> pure False
-    Just delay -> case delay of
-      DelayAdditionalCosts -> pure True
-      DelayAdditionalCostsWhen c -> passesCriteria iid Nothing abilitySource abilitySource [] c
+  doDelayAdditionalCosts <- abilityDelaysAdditionalCosts iid a
   investigateCosts <-
     if #investigate `elem` abilityActions a
       then do
@@ -532,8 +547,11 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
       abilityAdditionalCosts <> flip mapMaybe modifiers \case
         AdditionalCost x -> Just x
         _ -> Nothing
+    -- Mirrors the sentinel in 'Arkham.Game.Runner''s PayForAbility, and is skipped on
+    -- the same condition: what is charged and what is checked must not drift (#5895).
+    actionSentinel = if doDelayAdditionalCosts then id else (ActionCost 0 <>)
   go
-    ((fold additionalCosts <>) . (ActionCost 0 <>) . costF . (`applyCostModifiers` modifiers))
+    ((fold additionalCosts <>) . actionSentinel . costF . (`applyCostModifiers` modifiers))
     abilityType
  where
   go f = \case

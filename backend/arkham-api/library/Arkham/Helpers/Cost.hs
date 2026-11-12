@@ -62,14 +62,28 @@ import Data.List.Extra (nubOrd)
 import Data.Map.Strict qualified as Map
 import Data.Set qualified as Set
 
+{- | The additional costs that attach to performing @action@ in particular, for a card
+that deferred them until the action was known ('delayAdditionalCosts').
+
+The surcharge half goes through the shared 'Matcher.matchTarget' rather than spelling
+out 'IsAction': an ability whose designated actions are an 'OrActions' is charged at
+activation against the UNION of its branches, so Summoned Hound (1) paid Frozen in
+Fear's first-fight surcharge for an investigate (#5990). Asking per action here is what
+lets the chosen branch pay for itself -- and only 'matchTarget' sees
+'FirstOneOfPerformed'.
+-}
 getAdditionalActionCosts :: HasGame m => InvestigatorId -> Target -> Action -> m [Cost]
 getAdditionalActionCosts iid target action = do
   investigatorModifiers <- getModifiers iid
   targetModifiers <- getModifiers target
+  takenActions <- field InvestigatorActionsTaken iid
+  performedActions <- field InvestigatorActionsPerformed iid
   pure
     $ mapMaybe
       ( \case
-          AdditionalActionCostOf (IsAction action') n | action == action' -> Just (ActionCost n)
+          AdditionalActionCostOf match n
+            | Matcher.matchTarget takenActions performedActions match action ->
+                Just (ActionCost n)
           _ -> Nothing
       )
       investigatorModifiers

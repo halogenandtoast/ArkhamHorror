@@ -67,7 +67,7 @@ import Arkham.Game.Utils
 import Arkham.GameEnv
 import Arkham.GameT (GameT)
 import Arkham.Helpers
-import Arkham.Helpers.Ability (abilityRidesAlong, isForcedAbility)
+import Arkham.Helpers.Ability (abilityDelaysAdditionalCosts, abilityRidesAlong, isForcedAbility)
 import Arkham.Helpers.Action (getPreventedActions, getPreventedPlayerAbilities)
 import Arkham.Helpers.ChaosBag (getBagChaosTokens)
 import Arkham.Helpers.Criteria
@@ -1145,11 +1145,7 @@ runGameMessage msg g = case msg of
       isExplore = abilityIs ability #explore
       isResign = abilityIs ability #resign
 
-    doDelayAdditionalCosts <- case abilityDelayAdditionalCosts ability of
-      Nothing -> pure False
-      Just delay -> case delay of
-        DelayAdditionalCosts -> pure True
-        DelayAdditionalCostsWhen c -> passesCriteria iid Nothing ability.source ability.source [] c
+    doDelayAdditionalCosts <- abilityDelaysAdditionalCosts iid ability
     investigateCosts <-
       if isInvestigate && not doDelayAdditionalCosts
         then do
@@ -1213,6 +1209,13 @@ runGameMessage msg g = case msg of
     -- NOTE: In order for Frozen in Fear to affect free triggered abilities
     -- like those provided by Shortcut (2) we have to add a 0 value ActionCost
     -- here so that it can add the additional
+    --
+    -- Not for an ability that delays its additional costs, though. The surcharge is
+    -- read off 'ability.actions', and for an 'OrActions' ability that is the UNION of
+    -- every branch -- so Summoned Hound (1)'s Fight/Investigate was taxed on #fight
+    -- before the player had even chosen to investigate (#5990). A delaying ability
+    -- defers ALL of its additional costs, this one included, and each branch charges
+    -- its own once the action is known.
     let
       fixEnemy =
         (maybe id replaceThatInvestigator $ getThatInvestigator windows')
@@ -1229,7 +1232,7 @@ runGameMessage msg g = case msg of
                         ++ exploreCosts
                         ++ resignCosts
                         ++ performActionCosts
-                        ++ [ActionCost 0]
+                        ++ [ActionCost 0 | not doDelayAdditionalCosts]
                   )
           , activeCostPayments = Cost.NoPayment
           , activeCostTarget = ForAbility ability

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDebug } from '@/arkham/debug'
 
@@ -14,31 +14,13 @@ const emit = defineEmits<{ refresh: [] }>()
 
 const { t } = useI18n()
 const debug = useDebug()
-const dayTimeDebug = ref(false)
-const hovering = ref(false)
-const shiftHeld = ref(false)
 
-const showDebugToggle = computed(() => dayTimeDebug.value || (hovering.value && shiftHeld.value))
-const isDebugging = computed(() => dayTimeDebug.value)
+const isDebugging = computed(() => debug.active)
 const canDebug = computed(() => isDebugging.value && !!props.gameId)
 
-const onKeyDown = (event: KeyboardEvent) => {
-  if (event.key === 'Shift') shiftHeld.value = true
-}
 
-const onKeyUp = (event: KeyboardEvent) => {
-  if (event.key === 'Shift') shiftHeld.value = false
-}
 
-onMounted(() => {
-  window.addEventListener('keydown', onKeyDown)
-  window.addEventListener('keyup', onKeyUp)
-})
 
-onUnmounted(() => {
-  window.removeEventListener('keydown', onKeyDown)
-  window.removeEventListener('keyup', onKeyUp)
-})
 
 const dayIndex = computed(() => {
   switch (props.day) {
@@ -80,19 +62,10 @@ async function setDayTime(row: number, col: number) {
   <div
     class="sheet"
     :class="{ 'sheet-debugging': isDebugging }"
-    @mouseenter="hovering = true"
-    @mouseleave="hovering = false"
   >
     <div class="frame">
       <div class="header">
         <span>{{ t('theFeastOfHemlockVale.campaignLog.dayTime.title') }}</span>
-        <button
-          v-if="showDebugToggle"
-          type="button"
-          class="daytime-debug-toggle"
-          :class="{ active: isDebugging }"
-          @click="dayTimeDebug = !dayTimeDebug"
-        >Debug</button>
       </div>
 
       <div class="grid">
@@ -179,26 +152,7 @@ async function setDayTime(row: number, col: number) {
   border-bottom: 1px solid rgba(90, 70, 45, 0.22);
 }
 
-.daytime-debug-toggle {
-  position: absolute;
-  top: -2px;
-  right: 0;
-  appearance: none;
-  border: 1px solid rgba(90, 70, 45, 0.5);
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.35);
-  color: rgba(45, 32, 18, 0.9);
-  padding: 2px 7px;
-  font-size: 0.7em;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-}
 
-.daytime-debug-toggle.active {
-  background: #6d1f1f;
-  border-color: #9d3030;
-  color: white;
-}
 
 .sheet-debugging .frame {
   outline: 2px dashed #6d1f1f;

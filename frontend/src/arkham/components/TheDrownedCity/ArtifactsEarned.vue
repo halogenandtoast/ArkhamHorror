@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { LogContents } from '@/arkham/types/Log'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDebug } from '@/arkham/debug'
 
@@ -24,16 +24,8 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1)
 // Hidden debug: hold Shift and hover to reveal a Debug toggle; while active,
 // clicking an unearned artifact records it (mirrors DiscoveredRunes).
 const debug = useDebug()
-const artifactDebug = ref(false)
-const hovering = ref(false)
-const shiftHeld = ref(false)
-const showDebugToggle = computed(() => artifactDebug.value || (hovering.value && shiftHeld.value))
-const canDebug = computed(() => artifactDebug.value && !!props.gameId)
+const canDebug = computed(() => debug.active && !!props.gameId)
 
-const onKeyDown = (e: KeyboardEvent) => { if (e.key === 'Shift') shiftHeld.value = true }
-const onKeyUp = (e: KeyboardEvent) => { if (e.key === 'Shift') shiftHeld.value = false }
-onMounted(() => { window.addEventListener('keydown', onKeyDown); window.addEventListener('keyup', onKeyUp) })
-onUnmounted(() => { window.removeEventListener('keydown', onKeyDown); window.removeEventListener('keyup', onKeyUp) })
 
 async function earn(artifact: string) {
   if (!canDebug.value || !props.gameId || earned.value.has(artifact)) return
@@ -58,18 +50,9 @@ const earned = computed(() => {
   <div
     class="log-section"
     :class="{ debugging: canDebug }"
-    @mouseenter="hovering = true"
-    @mouseleave="hovering = false"
   >
     <h3 class="section-title">
       {{ t('theDrownedCity.artifactsEarned.title') }}
-      <button
-        v-if="showDebugToggle"
-        type="button"
-        class="artifact-debug-toggle"
-        :class="{ active: artifactDebug }"
-        @click="artifactDebug = !artifactDebug"
-      >Debug</button>
     </h3>
     <ul class="artifact-list">
       <li
@@ -109,23 +92,7 @@ const earned = computed(() => {
   border-bottom: 1px solid rgba(255,255,255,0.07);
 }
 
-.artifact-debug-toggle {
-  appearance: none;
-  border: 1px solid rgba(90, 70, 45, 0.5);
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.35);
-  color: rgba(45, 32, 18, 0.9);
-  padding: 2px 7px;
-  font-size: 0.65em;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-}
 
-.artifact-debug-toggle.active {
-  background: #6d1f1f;
-  border-color: #9d3030;
-  color: white;
-}
 
 .log-section.debugging {
   outline: 2px dashed #6d1f1f;

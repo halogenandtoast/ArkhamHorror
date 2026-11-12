@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { imgsrc } from '@/arkham/helpers'
 import { useDebug } from '@/arkham/debug'
@@ -17,30 +17,12 @@ const emit = defineEmits<{ refresh: [] }>()
 
 const { t } = useI18n()
 const debug = useDebug()
-const residentDebug = ref(false)
-const hovering = ref(false)
-const shiftHeld = ref(false)
 
-const showDebugToggle = computed(() => residentDebug.value || (hovering.value && shiftHeld.value))
-const isDebugging = computed(() => residentDebug.value)
+const isDebugging = computed(() => debug.active)
 
-const onKeyDown = (event: KeyboardEvent) => {
-  if (event.key === 'Shift') shiftHeld.value = true
-}
 
-const onKeyUp = (event: KeyboardEvent) => {
-  if (event.key === 'Shift') shiftHeld.value = false
-}
 
-onMounted(() => {
-  window.addEventListener('keydown', onKeyDown)
-  window.addEventListener('keyup', onKeyUp)
-})
 
-onUnmounted(() => {
-  window.removeEventListener('keydown', onKeyDown)
-  window.removeEventListener('keyup', onKeyUp)
-})
 
 type ResidentMeta = {
   card: string
@@ -173,8 +155,6 @@ async function changeRelationship(delta: 1 | -1) {
   <div
     class='resident'
     :class="{ 'resident-crossed-out': crossedOut, 'resident-debugging': isDebugging }"
-    @mouseenter="hovering = true"
-    @mouseleave="hovering = false"
   >
     <div class="resident-card">
       <img v-if="card" :src="card" class="card no-overlay" />
@@ -182,13 +162,6 @@ async function changeRelationship(delta: 1 | -1) {
     <div class="resident-notes">
       <div class="resident-header">
         <h3 class="name">{{ residentName }}</h3>
-        <button
-          v-if="showDebugToggle"
-          type="button"
-          class="resident-debug-toggle"
-          :class="{ active: isDebugging }"
-          @click="residentDebug = !residentDebug"
-        >Debug</button>
       </div>
 
       <div class="notes">
@@ -278,25 +251,7 @@ h4 {
   text-box-edge: text alphabetic;
 }
 
-.resident-debug-toggle {
-  position: absolute;
-  top: 0;
-  right: 0;
-  appearance: none;
-  border: 1px solid #5C757C;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.25);
-  color: var(--color);
-  padding: 3px 8px;
-  font-size: 0.8em;
-  cursor: pointer;
-}
 
-.resident-debug-toggle.active {
-  background: #6d1f1f;
-  border-color: #9d3030;
-  color: white;
-}
 
 .relationship {
   display: flex;

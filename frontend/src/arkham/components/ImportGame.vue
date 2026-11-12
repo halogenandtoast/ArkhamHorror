@@ -405,6 +405,7 @@ defineExpose({
         :investigator="investigator"
         :game="gameStub"
         :show-expand="false"
+        :debuggable="false"
       >
         <template #back>
           <button

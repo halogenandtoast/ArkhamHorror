@@ -8,12 +8,10 @@ import { investigatorPortrait } from '@/arkham/cardImages'
 import { useDbCardStore } from '@/stores/dbCards'
 import { asCardCode, cardId } from '@/arkham/types/Card';
 import type { Card as CardT, CardContents } from '@/arkham/types/Card';
-import DebugToggle from '@/arkham/components/debug/DebugToggle.vue'
 import EarnableCardPicker from '@/arkham/components/debug/EarnableCardPicker.vue'
 import { XMarkIcon } from '@heroicons/vue/20/solid'
 import { useDebug } from '@/arkham/debug'
 import { gainXpMessage, healTraumaMessage, spendXpMessage, sufferTraumaMessage, type TraumaKind } from '@/arkham/debugPlayer'
-import { useShiftHoverDebug } from '@/composable/shiftHoverDebug'
 
 export interface Props {
   investigator: Investigator
@@ -22,7 +20,8 @@ export interface Props {
   showExpand?: boolean;
   /** Fade the portrait and stats: an investigator who is not in the campaign right now. */
   dimmed?: boolean;
-  /** Hold Shift over the row for a Debug button that puts −/+ around its XP and trauma. */
+  /** Whether debug mode may act on this row. False where the row describes a
+   * game the server does not have yet (the import preview). */
   debuggable?: boolean;
 }
 
@@ -31,17 +30,15 @@ const props = withDefaults(defineProps<Props>(), {
   bonusXp: null,
   showExpand: true,
   dimmed: false,
-  debuggable: false,
+  debuggable: true,
 })
 
 const expanded = ref(false)
 
-// Trauma follows the rules: it can kill or drive the investigator insane.
-const { active: debugActive, showToggle, onEnter, onLeave, toggle: toggleDebug } = useShiftHoverDebug()
-const showDebugToggle = computed(() => props.debuggable && showToggle.value)
-const debugging = computed(() => props.debuggable && debugActive.value)
-
 const debug = useDebug()
+// Trauma follows the rules: it can kill or drive the investigator insane.
+const debugging = computed(() => props.debuggable && debug.active)
+
 const sendDebug = (message: unknown) => debug.send(props.game.id, message)
 const stepXp = (by: 1 | -1) =>
   sendDebug(by > 0 ? gainXpMessage(props.investigator.id) : spendXpMessage(props.investigator.id))
@@ -131,7 +128,7 @@ const deck = computed(() => {
 </script>
 
 <template>
-  <div class="investigator" :class="[investigator.class.toLowerCase(), { dimmed }]" @mouseenter="onEnter" @mouseleave="onLeave">
+  <div class="investigator" :class="[investigator.class.toLowerCase(), { dimmed }]">
     <div class="basic">
       <div class="basic-top">
         <div class="portrait-wrap" :class="investigator.class.toLowerCase()">
@@ -166,7 +163,6 @@ const deck = computed(() => {
           <span class="stat-value">{{ investigator.mentalTrauma }}</span>
           <button v-if="debugging" type="button" class="stat-step" v-tooltip="$t('debug.campaign.traumaHint')" @click="stepTrauma('mental', 1)">+</button>
         </div>
-        <DebugToggle v-if="showDebugToggle" :active="debugging" class="row-debug-toggle" @click="toggleDebug" />
       </div>
     </div>
 
@@ -409,10 +405,6 @@ const deck = computed(() => {
 
   &:hover:not(:disabled) { background: #6d1f1f; border-color: #9d3030; }
   &:disabled { opacity: 0.35; cursor: not-allowed; }
-}
-
-.row-debug-toggle {
-  margin-left: auto;
 }
 
 /* ── Earned cards ────────────────────────────────────────── */

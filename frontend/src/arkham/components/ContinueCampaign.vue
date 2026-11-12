@@ -584,7 +584,7 @@ const setIcon = computed(() =>
       <div v-if="investigators.length > 0" id="investigators">
         <section v-if="isScenario" id="investigators-header"><i class="secret"></i> {{t('lead')}}</section>
         <template v-for="investigator in investigators" :key="investigator.id">
-        <InvestigatorRow :investigator="investigator" :game="game" :bonus-xp="bonusXp && bonusXp[investigator.id]" debuggable>
+        <InvestigatorRow :investigator="investigator" :game="game" :bonus-xp="bonusXp && bonusXp[investigator.id]">
           <template v-if="canManageRoster" #actions="{ investigator }">
             <template v-if="canRetire && confirmingRetire === investigator.id">
               <button class="roster-btn roster-btn--danger" :disabled="rosterBusy" @click="retire(investigator.id)">{{ t('campaign.roster.confirmLeave') }}</button>

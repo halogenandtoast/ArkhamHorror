@@ -7,9 +7,7 @@
  * notation: the agenda number and the doom on it, in brackets, as in
  * "the boundary is broken (1,5)".
  */
-import { computed, ref } from 'vue'
-import { useShiftHoverDebug } from '@/composable/shiftHoverDebug'
-import DebugToggle from '@/arkham/components/debug/DebugToggle.vue'
+import { computed, ref, watch } from 'vue'
 import { useDebug } from '@/arkham/debug'
 import { logKeyTitle } from '@/arkham/types/Log'
 import type { Game } from '@/arkham/types/Game'
@@ -19,16 +17,14 @@ const props = defineProps<{ entries: any[]; game: Game }>()
 
 const { t } = useI18n()
 const debug = useDebug()
-const { active, showToggle, onEnter, onLeave, toggle } = useShiftHoverDebug()
+const active = computed(() => debug.active)
 const editing = ref<string | null>(null)
 const agenda = ref<number | string>(1)
 const doom = ref<number | string>(0)
 const saving = ref(false)
 const saveFailed = ref(false)
-function toggleDebug() {
-  toggle()
-  editing.value = null
-}
+// Leaving debug mode closes whatever row was open for editing.
+watch(active, (on) => { if (!on) editing.value = null })
 const validTime = computed(
   () =>
     typeof agenda.value === 'number' &&
@@ -107,13 +103,7 @@ const times = computed(() =>
 </script>
 
 <template>
-  <div class="recorded-times-panel" @mouseenter="onEnter" @mouseleave="onLeave">
-    <DebugToggle
-      v-if="showToggle"
-      :active="active"
-      :disabled="saving"
-      @click="toggleDebug"
-    />
+  <div class="recorded-times-panel">
     <ul class="recorded-times">
       <li v-for="time in times" :key="time.key" :class="{ 'crossed-out': time.crossedOut }">
         <span class="event">{{ time.title }}</span>

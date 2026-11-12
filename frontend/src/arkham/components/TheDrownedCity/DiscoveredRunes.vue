@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { imgsrc } from '@/arkham/helpers'
 import type { LogContents } from '@/arkham/types/Log'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDebug } from '@/arkham/debug'
 
@@ -12,16 +12,8 @@ const { t } = useI18n()
 // Hidden debug: hold Shift and hover to reveal a Debug toggle; while active,
 // clicking an undiscovered glyph translates it (mirrors Feast of Hemlock Vale).
 const debug = useDebug()
-const glyphDebug = ref(false)
-const hovering = ref(false)
-const shiftHeld = ref(false)
-const showDebugToggle = computed(() => glyphDebug.value || (hovering.value && shiftHeld.value))
-const canDebug = computed(() => glyphDebug.value && !!props.gameId)
+const canDebug = computed(() => debug.active && !!props.gameId)
 
-const onKeyDown = (e: KeyboardEvent) => { if (e.key === 'Shift') shiftHeld.value = true }
-const onKeyUp = (e: KeyboardEvent) => { if (e.key === 'Shift') shiftHeld.value = false }
-onMounted(() => { window.addEventListener('keydown', onKeyDown); window.addEventListener('keyup', onKeyUp) })
-onUnmounted(() => { window.removeEventListener('keydown', onKeyDown); window.removeEventListener('keyup', onKeyUp) })
 
 async function discover(letter: string) {
   if (!canDebug.value || !props.gameId || discovered.value.has(letter)) return
@@ -56,18 +48,9 @@ const discovered = computed(() => {
   <div
     class="log-section"
     :class="{ debugging: canDebug }"
-    @mouseenter="hovering = true"
-    @mouseleave="hovering = false"
   >
     <h3 class="section-title">
       {{ t('theDrownedCity.glyphs.title') }}
-      <button
-        v-if="showDebugToggle"
-        type="button"
-        class="glyph-debug-toggle"
-        :class="{ active: glyphDebug }"
-        @click="glyphDebug = !glyphDebug"
-      >Debug</button>
     </h3>
     <div class="glyph-grid">
       <div
@@ -112,23 +95,7 @@ const discovered = computed(() => {
   border-bottom: 1px solid rgba(255,255,255,0.07);
 }
 
-.glyph-debug-toggle {
-  appearance: none;
-  border: 1px solid rgba(90, 70, 45, 0.5);
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.35);
-  color: rgba(45, 32, 18, 0.9);
-  padding: 2px 7px;
-  font-size: 0.65em;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-}
 
-.glyph-debug-toggle.active {
-  background: #6d1f1f;
-  border-color: #9d3030;
-  color: white;
-}
 
 .log-section.debugging {
   outline: 2px dashed #6d1f1f;

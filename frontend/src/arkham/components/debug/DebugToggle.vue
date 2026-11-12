@@ -1,6 +1,8 @@
 <script lang="ts" setup>
-/* The Debug button of a panel's hidden debug controls (see `useShiftHoverDebug`);
- * the parent places it and handles the click. */
+/* A toggle button inside a panel's debug controls -- the parent places it and
+ * handles the click. Whether the controls show at all is the game bar's debug
+ * mode (`useDebug().active`), so this is for a choice *within* them, such as
+ * opening the campaign-log entry editor. */
 defineProps<{ active: boolean }>()
 </script>
 

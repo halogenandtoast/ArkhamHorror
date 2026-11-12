@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { LogContents } from '@/arkham/types/Log'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDebug } from '@/arkham/debug'
 
@@ -70,16 +70,8 @@ const recordType = (entry: Entry) => (entry.generic ? 'RecordableGeneric' : 'Rec
 // Hidden debug: hold Shift and hover to reveal a Debug toggle; while active,
 // clicking a memory recovers or forgets it (mirrors ArtifactsEarned).
 const debug = useDebug()
-const memoryDebug = ref(false)
-const hovering = ref(false)
-const shiftHeld = ref(false)
-const showDebugToggle = computed(() => memoryDebug.value || (hovering.value && shiftHeld.value))
-const canDebug = computed(() => memoryDebug.value && !!props.gameId)
+const canDebug = computed(() => debug.active && !!props.gameId)
 
-const onKeyDown = (e: KeyboardEvent) => { if (e.key === 'Shift') shiftHeld.value = true }
-const onKeyUp = (e: KeyboardEvent) => { if (e.key === 'Shift') shiftHeld.value = false }
-onMounted(() => { window.addEventListener('keydown', onKeyDown); window.addEventListener('keyup', onKeyUp) })
-onUnmounted(() => { window.removeEventListener('keydown', onKeyDown); window.removeEventListener('keyup', onKeyUp) })
 
 async function toggle(entry: Entry) {
   if (!canDebug.value || !props.gameId) return
@@ -98,18 +90,9 @@ async function toggle(entry: Entry) {
   <div
     class="log-section"
     :class="{ debugging: canDebug }"
-    @mouseenter="hovering = true"
-    @mouseleave="hovering = false"
   >
     <h3 class="section-title">
       {{ t('theInnsmouthConspiracy.key.memoriesRecovered') }}
-      <button
-        v-if="showDebugToggle"
-        type="button"
-        class="memory-debug-toggle"
-        :class="{ active: memoryDebug }"
-        @click="memoryDebug = !memoryDebug"
-      >Debug</button>
     </h3>
     <p v-if="entries.length === 0" class="empty">{{ t('campaignLogView.noEntriesYet') }}</p>
     <ul v-else class="memory-list">
@@ -150,23 +133,7 @@ async function toggle(entry: Entry) {
   border-bottom: 1px solid rgba(255,255,255,0.07);
 }
 
-.memory-debug-toggle {
-  appearance: none;
-  border: 1px solid rgba(90, 70, 45, 0.5);
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.35);
-  color: rgba(45, 32, 18, 0.9);
-  padding: 2px 7px;
-  font-size: 0.65em;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-}
 
-.memory-debug-toggle.active {
-  background: #6d1f1f;
-  border-color: #9d3030;
-  color: white;
-}
 
 .log-section.debugging {
   outline: 2px dashed #6d1f1f;

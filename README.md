@@ -18,7 +18,7 @@ many of the rules implemented as possible.
 
 All content is implemented. You can use every player card (including promos and
 parallels) and play every campaign and scenario (including challenge
-scenarios). The only thing currently missing are some of the refractions,
+scenarios). The only things currently missing are some of the refractions,
 designer dares, and other variants.
 
 ### Chapter 2

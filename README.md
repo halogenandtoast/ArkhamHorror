@@ -16,53 +16,10 @@ many of the rules implemented as possible.
 
 ### Chapter 1
 
-All of it, none of it in beta. Every campaign from The Night of the Zealot
-through The Drowned City, every Return to box, every side story and challenge
-scenario, and every player card printed for them.
-
-#### Campaigns
-
-* The Night of the Zealot
-  * Return to the Night of the Zealot
-* The Dunwich Legacy
-  * Return to the Dunwich Legacy
-* The Path to Carcosa
-  * Return to the Path to Carcosa
-* The Forgotten Age
-  * Return to the Forgotten Age
-* The Circle Undone
-  * Return to the Circle Undone
-* The Dream-Eaters
-* The Innsmouth Conspiracy
-* Edge of the Earth
-* The Scarlet Keys
-* The Feast of Hemlock Vale
-* The Drowned City
-
-#### Side Stories
-
-* Curse of the Rougarou
-* Carnevale of Horrors
-* The Labyrinths of Lunacy
-* Guardians of the Abyss
-* Murder at the Excelsior Hotel
-* The Blob That Ate Everything
-* War of the Outer Gods
-* Machinations Through Time
-* Fortune and Folly
-* The Midwinter Gala
-* Film Fatale
-
-#### Challenge Scenarios
-
-* Read or Die
-* All or Nothing
-* Bad Blood
-* By the Book
-* Red Tide Rising
-* Laid to Rest
-* Relics of the Past
-* Enthralling Encore
+All content is implemented. You can use every player card (including promos and
+parallels) and play every campaign and scenario (including challenge
+scenarios). The only thing currently missing are some of the refractions,
+designer dares, and other variants.
 
 ### Chapter 2
 
@@ -80,9 +37,9 @@ what it is in beta for.
 ### Homebrew
 
 Fifteen community boxes come with the app, five campaigns and ten side stories,
-all of them written by other people. All of it sits behind the same beta switch. Two — Night of
-Vespers and Consternation on the Constellation — are further back still, marked
-dev, and do not appear in the chooser yet.
+all of them written by other people. All of it sits behind the same beta
+switch. Two — Night of Vespers and Consternation on the Constellation — are
+further back still, marked dev, and do not appear in the chooser yet.
 
 Writing your own never means touching the base game — see
 [Writing homebrew content](./docs/homebrew.md).

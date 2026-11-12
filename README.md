@@ -23,16 +23,15 @@ designer dares, and other variants.
 
 ### Chapter 2
 
-All content before 2027 is implemented, player cards included.
+All content before 2027 is implemented.
 
 * Brethren of Ash
 * Children of Blood (Beta)
 * Traces to Nowhere (Beta, side story)
 
-Beta content is hidden until you ask for it: switch on **Enroll in beta** in
-Settings and it turns up in the chooser with a beta badge. Expect it to break,
-sometimes badly enough to lose the game, and file a bug when it does — that is
-what it is in beta for.
+You have to turn beta on in Settings before any of it shows up. Expect more
+bugs than usual, and the odd game that can't be recovered. If that happens,
+please file a bug.
 
 ### Homebrew
 

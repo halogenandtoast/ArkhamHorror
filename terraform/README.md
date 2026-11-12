@@ -48,6 +48,8 @@ request/response traffic. Two things stay on TCP regardless:
 
 ## Notes
 
-- The existing AWS Terraform under `infra/terraform/environments/prod/` is unrelated and untouched.
+- This is the only Terraform in the tree. An older AWS/EKS stack lived under
+  `infra/terraform/environments/prod/` and was removed once the DOKS cluster took
+  over; `git log -- infra/terraform` has it if you ever need to read it back.
 - Postgres is **not** provisioned here — pass `database_url` pointing at your existing managed DB.
 - Redis URL is generated and injected automatically; nothing to set manually.

@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useDbCardStore } from '@/stores/dbCards'
 import { localizedScenarioName } from '@/arkham/scenarioNames'
 import { deckRequirementDescriptions } from '@/arkham/deckRestrictions'
-import { sideStoryGroup, type Scenario, type Campaign } from '@/arkham/data'
+import { sideStoryGroup, campaignChapter, type Scenario, type Campaign } from '@/arkham/data'
 import { imgsrc, campaignBox, scenarioBox } from '@/arkham/helpers'
 
 const { t, te } = useI18n()
@@ -19,8 +19,6 @@ function requirementsFor(scenario: Scenario): string[] {
 type GameMode = 'Campaign' | 'SideStory'
 type CampaignGroup = 'chapter1' | 'chapter2' | 'homebrew'
 type ScenarioGroup = 'sideStories' | 'challengeScenarios'
-
-const CHAPTER_2_CAMPAIGN_IDS = new Set(['12', '13'])
 
 const props = defineProps<{
   campaigns: Campaign[]
@@ -39,11 +37,15 @@ const emits = defineEmits(['go'])
 const isChallengeScenario = (scenario: Scenario) =>
   Boolean(scenario.requiredInvestigator) || Boolean(scenario.deckRequirements?.length)
 
+/* Which chapter a campaign belongs to is campaignChapter's call, shared with
+ * the "as if" default so the two cannot drift. Homebrew is filtered out of
+ * both: it has a tab of its own, and a homebrew box declaring `chapter: 2`
+ * would otherwise show up twice. */
 const chapter1Campaigns = computed(() =>
-  props.campaigns.filter((c) => !CHAPTER_2_CAMPAIGN_IDS.has(c.id) && !c.homebrew)
+  props.campaigns.filter((c) => !c.homebrew && campaignChapter(c) === 1)
 )
 const chapter2Campaigns = computed(() =>
-  props.campaigns.filter((c) => CHAPTER_2_CAMPAIGN_IDS.has(c.id))
+  props.campaigns.filter((c) => !c.homebrew && campaignChapter(c) === 2)
 )
 const homebrewCampaigns = computed(() =>
   props.campaigns.filter((c) => c.homebrew)

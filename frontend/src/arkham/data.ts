@@ -66,14 +66,20 @@ export function campaignHasFloodRules(campaign?: Campaign | null): boolean {
 }
 
 /* The chapter whose rules a campaign defaults to (currently only the "as if"
- * ruling). An explicit `chapter` wins; otherwise official campaigns from `11`
+ * ruling). An explicit `chapter` wins; otherwise official campaigns from `12`
  * on are Chapter 2, and everything else — including homebrew campaigns, whose
- * `:`-prefixed ids don't order against official ones — is Chapter 1. */
+ * `:`-prefixed ids don't order against official ones — is Chapter 1.
+ *
+ * 12 is Brethren of Ash, the first Chapter 2 box. The Drowned City is 11 and
+ * belongs to Chapter 1, which is also where its card codes put it (`11xxx`,
+ * below the `12` prefix Arkham.Card.CardCode treats as Chapter 2). This read
+ * `>= '11'`, so starting The Drowned City defaulted it to Chapter 2's "as if"
+ * ruling and opened the side-story chooser on the wrong tab. */
 export function campaignChapter(campaign?: Campaign | null, id?: string | null): 1 | 2 {
   if (campaign?.chapter) return campaign.chapter
   const campaignId = campaign?.id ?? id ?? null
   if (campaignId == null || campaignId.startsWith(':')) return 1
-  return campaignId >= '11' ? 2 : 1
+  return campaignId >= '12' ? 2 : 1
 }
 
 /* Which tab of the side-story chooser a side story sits under. An explicit

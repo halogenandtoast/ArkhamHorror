@@ -36,8 +36,8 @@ usual and the expectation is that games may break in non-recoverable ways.
 ### Homebrew
 
 There is fan-made content in here too: four campaigns and nine side stories
-written by people in the community. Turn on beta and they show up in the
-chooser alongside everything else.
+written by people in the community. Right now all Homebrew content is in
+bbeta so you will need to enroll in the beta program before they show up.
 
 Want to make your own? See [Writing homebrew content](./docs/homebrew.md).
 

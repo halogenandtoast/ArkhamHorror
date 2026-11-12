@@ -9,12 +9,12 @@ import * as ArkhamGame from '@/arkham/types/Game'
 import { MessageType } from '@/arkham/types/Message'
 import { useDebug } from '@/arkham/debug'
 import * as Api from '@/arkham/api'
-import * as CardT from '@/arkham/types/Card'
 import type { CardDef } from '@/arkham/types/CardDef'
 import { fullName } from '@/arkham/types/Name'
 import { useCardStore } from '@/stores/cards'
 import * as DebugMove from '@/arkham/debugCardMove'
 import { cardDropInFlight } from '@/arkham/debugCardDrop'
+import { scenarioEncounterSets as scenarioEncounterSetsFor } from '@/arkham/earnableCards'
 
 export interface Props {
   game: Game
@@ -189,32 +189,12 @@ function debugCardLabel(card: CardDef) {
   return `${fullName(card.name)} [${debugCardCode(card)}]`
 }
 
-// Every encounter card code the scenario has put anywhere on the table, used to
-// work out which encounter sets are in play so the unsearched list is useful.
-const scenarioCardCodes = computed(() => {
-  const scenario = props.game.scenario
-  if (!scenario) return new Set<string>()
-
-  const decks = Object.values(scenario.encounterDecks).flatMap(([deck, discard]) => [...deck, ...discard])
-
-  return new Set([
-    ...scenario.encounterDeck.map((c) => c.cardCode),
-    ...scenario.discard.map((c) => c.cardCode),
-    ...decks.map((c) => c.cardCode),
-    ...scenario.victoryDisplay.map(CardT.asCardCode),
-    ...scenario.setAsideCards.map(CardT.asCardCode),
-  ])
-})
-
-const scenarioEncounterSets = computed(() => {
-  const codes = scenarioCardCodes.value
-  return new Set(
-    debugEncounterCards.value
-      .filter((card) => codes.has(card.cardCode))
-      .map((card) => card.encounterSet)
-      .filter((set) => set != null),
-  )
-})
+// Which encounter sets are in play, so the unsearched list is useful. Derived
+// from the cards the scenario has on the table; shared with the debug
+// earned-cards picker.
+const scenarioEncounterSets = computed(() =>
+  scenarioEncounterSetsFor(props.game.scenario, debugEncounterCards.value),
+)
 
 function isOutsideScenarioSets(card: CardDef) {
   const sets = scenarioEncounterSets.value

@@ -20,6 +20,7 @@ import { useUserStore } from '@/stores/user'
 import { byPrintedNumber, hasLibraryCards, libraryCards, librarySets, loadLibrary } from '@/arkham/customCardLibrary'
 import { campaignSetIcon, isTypingTarget, scenarioSetIcon } from '@/arkham/helpers'
 import { cardGroupKey, groupCards } from '@/arkham/cardDetails'
+import { isCampaignCard } from '@/arkham/earnableCards'
 
 const { t } = useI18n()
 
@@ -193,11 +194,8 @@ const sortCards = (cards: Arkham.CardDef[]) => [...cards].sort((a, b) => {
   return 0
 })
 
-// Blood Token is an encounter card that belongs to no encounter set, so the usual
-// test would file it with the player cards.
-const setlessEncounterCards = new Set(['13119'])
-
-const isCampaignCard = (card: Arkham.CardDef) => card.encounterSet != null || setlessEncounterCards.has(card.art)
+// `isCampaignCard` lives in @/arkham/earnableCards, shared with the debug
+// earned-cards picker and the encounter-deck debug.
 
 /* The Revised Core Set reprints the original's encounter cards under numbers
  * 500 higher. The engine defines each of them once, under the original number,

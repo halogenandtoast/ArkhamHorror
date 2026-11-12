@@ -6,9 +6,10 @@ import Card from '@/arkham/components/Card.vue'
 import DeckList from '@/arkham/components/DeckList.vue'
 import { investigatorPortrait } from '@/arkham/cardImages'
 import { useDbCardStore } from '@/stores/dbCards'
-import { asCardCode } from '@/arkham/types/Card';
-import type { CardContents } from '@/arkham/types/Card';
+import { asCardCode, cardId } from '@/arkham/types/Card';
+import type { Card as CardT, CardContents } from '@/arkham/types/Card';
 import DebugToggle from '@/arkham/components/debug/DebugToggle.vue'
+import EarnableCardPicker from '@/arkham/components/debug/EarnableCardPicker.vue'
 import { useDebug } from '@/arkham/debug'
 import { gainXpMessage, healTraumaMessage, spendXpMessage, sufferTraumaMessage, type TraumaKind } from '@/arkham/debugPlayer'
 import { useShiftHoverDebug } from '@/composable/shiftHoverDebug'
@@ -45,6 +46,18 @@ const stepXp = (by: 1 | -1) =>
   sendDebug(by > 0 ? gainXpMessage(props.investigator.id) : spendXpMessage(props.investigator.id))
 const stepTrauma = (kind: TraumaKind, by: 1 | -1) =>
   sendDebug(by > 0 ? sufferTraumaMessage(props.investigator.id, kind) : healTraumaMessage(props.investigator.id, kind))
+
+const showEarnablePicker = ref(false)
+
+/* Taking an earned card back off an investigator. RemoveCardFromDeckForCampaign
+ * strips it from the deck *and* from the campaign's story cards; removing it
+ * from the game instead would leave the story card behind, and deck loading
+ * between scenarios would hand it back. */
+const unearn = (card: CardT | CardContents) =>
+  sendDebug({
+    tag: 'RemoveCardFromDeckForCampaign',
+    contents: [props.investigator.id, cardId(card)],
+  })
 
 // An investigator you built carries its own portrait; there is nothing for it
 // under the portrait directory.
@@ -157,11 +170,23 @@ const deck = computed(() => {
     </div>
 
     <div v-if="expanded" class="expanded-details">
-      <section v-if="storyCards.length > 0" class="inner-section">
-        <h2>{{ $t('investigatorRow.earnedCards') }}</h2>
+      <section v-if="storyCards.length > 0 || debugging" class="inner-section">
+        <h2>
+          {{ $t('investigatorRow.earnedCards') }}
+          <button v-if="debugging" type="button" class="earned-add" @click="showEarnablePicker = true">
+            {{ $t('debug.earnedCards.add') }}
+          </button>
+        </h2>
         <div class="earned-cards">
-          <div v-for="card in storyCards">
+          <div v-for="card in storyCards" :key="cardId(card)" class="earned-card">
             <Card :game="game" :card="card" :playerId="investigator.id" />
+            <button
+              v-if="debugging"
+              type="button"
+              class="earned-remove"
+              :title="$t('debug.earnedCards.remove')"
+              @click="unearn(card)"
+            >×</button>
           </div>
         </div>
       </section>
@@ -170,6 +195,13 @@ const deck = computed(() => {
         <DeckList :deck="deck" embedded />
       </div>
     </div>
+
+    <EarnableCardPicker
+      v-if="showEarnablePicker"
+      :game="game"
+      :investigatorId="investigator.id"
+      @close="showEarnablePicker = false"
+    />
   </div>
 </template>
 
@@ -406,6 +438,50 @@ const deck = computed(() => {
   flex-direction: row;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.earned-card {
+  position: relative;
+}
+
+.earned-remove {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid var(--button-highlight);
+  border-radius: 50%;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  /* Flex centring, not line-height: the glyph's own metrics leave it sitting
+     high in the circle, and a button's default padding shifts it right. */
+  display: flex;
+  font-family: system-ui, sans-serif;
+  font-size: 15px;
+  height: 22px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  position: absolute;
+  right: -6px;
+  top: -6px;
+  width: 22px;
+
+  &:hover {
+    background: #a33;
+  }
+}
+
+.earned-add {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--button-highlight);
+  border-radius: 4px;
+  color: #eee;
+  cursor: pointer;
+  font-size: 0.7rem;
+  margin-left: 0.6rem;
+  padding: 0.15rem 0.45rem;
+  text-transform: none;
+  vertical-align: middle;
 }
 
 /* ── Deck section ────────────────────────────────────────── */

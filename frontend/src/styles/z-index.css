@@ -73,6 +73,10 @@
   --z-tooltip: var(--z-index-25000);
   --z-card-hover-overlay-over-popover: var(--z-index-30000);
   --z-modal-overlay: var(--z-index-30000);
+  /* A modal that shows cards (the debug earned-card picker) opts in with
+     `data-card-overlay-above`, so hovering one previews over the modal instead
+     of behind it. */
+  --z-card-hover-overlay-over-modal: var(--z-index-100000);
   --z-tooltip-over-menus: var(--z-index-100000);
   /* Above the modal overlay: a toast reports something that just happened and
      must stay readable over whatever is open. */

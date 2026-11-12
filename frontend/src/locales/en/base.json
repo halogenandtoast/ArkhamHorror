@@ -866,6 +866,17 @@
       "addNote": "Record note",
       "addCount": "Record count"
     },
+    "earnedCards": {
+      "title": "Earn a story card",
+      "add": "Add",
+      "remove": "Take this card back for the rest of the campaign",
+      "search": "Search every earnable card by name or code",
+      "loading": "Loading cards…",
+      "empty": "Nothing earnable matches.",
+      "viewAll": "View all",
+      "thisScenario": "This scenario",
+      "thisCampaign": "This campaign"
+    },
     "seals": {
       "sealedTokens": "Sealed Tokens",
       "none": "Nothing sealed here.",

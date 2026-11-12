@@ -194,40 +194,104 @@ ARKHAM_IMAGE_TARGET=en+fr ./upgrade.sh
 
 ## Local dev
 
-### Dependencies
+This is the non-Docker path: the servers run on your machine, from the source
+tree, with rebuilds and hot reload. The Docker instructions above are a
+different thing and need none of this.
 
-* Stack for GHC
-* Node
-* Postgresql
-* Sqitch (optional: for migrations)
-
-### Local Setup
-
-#### Running via Docker
-
-The image is setup to use an external database passed via the `DATABASE_URL` environment variable. Follow the steps below to setup the database and then run the following commands
+### Setup
 
 ```
-docker build -t arkham .
-docker run -t -i -e PORT=3000 -e DATABASE_URL="postgres://docker:docker@host.docker.internal:5432/arkham-horror-backend" -p 3000:3000 arkham
+./scripts/setup
 ```
 
-#### Backend
+It checks for everything the build needs, prints whatever is missing with the
+command that fixes it, and installs them if you say yes. Then it installs the node
+modules, creates the database, applies the migrations, and builds the backend
+once.
 
-Run `stack setup` in the `backend` directory, then run `stack build --fast` (note: this will still take a long time)
+`--check` reports and changes nothing. `--yes` skips the prompt, `--no-build`
+leaves out the backend build, `--no-db` leaves the database alone, and
+`--with-images` also fetches the image assets.
 
-#### Frontend
+What it looks for, if you would rather do it yourself:
 
-Run `npm install` in the `frontend` directory
+* ghcup, and GHC 9.14.1 through it. `backend/stack.yaml` sets `install-ghc:
+  false`, so stack will not fetch a compiler of its own — it wants
+  `ghc-9.14.1` on PATH, whatever plain `ghc` happens to be.
+* Stack 3.7.1 or newer
+* Node 20.19 or newer, which is vite 7's floor
+* Postgres, with something answering on localhost:5432
+* `libpq` and `gmp`, which `postgresql-libpq` and GHC link against
 
-#### Images
+The versions are read out of `backend/stack.yaml` rather than written into the
+script, so a resolver bump carries them along.
+
+### Running the server
+
+```
+./scripts/boot
+```
+
+All three servers in one terminal: the API on :3002, the frontend on :8080, and
+the third edition frontend on :8081. A status block sits at the top of the
+terminal saying what each one is up to — building and which module, build
+failed, hot reload — while their output scrolls past underneath. The keys stop
+and start them one at a time:
+
+| Key | |
+| --- | --- |
+| `a` `f` `t` | stop or start the api, the frontend, the 3ed frontend |
+| `A` `F` `T` | restart it |
+| `l` | cycle which server's output is shown |
+| `s` | print a status block |
+| `b` | open the frontend in a browser |
+| `q` | quit, stopping everything |
+
+The backend rebuilds and restarts itself as you edit, vite keeps its hot
+reload, and each server's output also lands in `tmp/dev/`.
+
+`--no-3ed` leaves the third edition frontend out and `--only api,web` picks
+what to run. `DEBUG=1 ./scripts/boot` turns on the API's info logging (see
+`Arkham.Debug`). `API_TARGET=api.watch.test.entr.log ./scripts/boot` runs the
+test suite on every rebuild too. It always runs the frontends with an empty
+`VITE_ASSET_HOST`, so images come from `frontend/public` instead of the CDN.
+
+Either half still runs on its own, if you would rather keep two shells:
+
+```
+cd backend && make api.watch.entr
+cd frontend && npm run dev
+```
+
+`api.watch.entr` rather than `api.watch` because stack's `--file-watch` stopped
+seeing edits under `library/` on this tree; `backend/Makefile` has the long
+version of why, and every other watch target with it.
+
+### Database
+
+`scripts/setup` creates `arkham-horror-backend` from `setup.sql`, then applies
+everything in `migrations/deploy` that the dump does not already contain,
+recording what it ran in `arkham_schema_migrations`. By hand:
+
+```
+createdb arkham-horror-backend
+psql -d arkham-horror-backend -f setup.sql
+./scripts/setup --no-build      # applies the migrations on top
+```
+
+`migrations/sqitch.plan` and `migrations/sqitch.conf` are still in the tree but
+sqitch is not what deploys any of this — the plan is read for the order of the
+files in `migrations/deploy` and nothing else.
+
+### Images
 
 Image assets (~2.9 GB) are **not stored in the git repository**. They are hosted
-on CloudFront and the app loads them from the CDN by default in both development
-and production — no extra setup needed.
+on CloudFront and the app loads them from the CDN by default — no extra setup
+needed. `scripts/boot` is the exception: it runs the frontends with
+`VITE_ASSET_HOST` empty, which serves them out of `frontend/public`, so fetch
+them if you boot that way and want to see art.
 
-If you need local copies (e.g. for offline development), use the fetch script
-(requires `aws` CLI and `curl`):
+Fetching needs the `aws` CLI and `curl`:
 
 ```
 make fetch-images     # Everything (~2.9 GB)
@@ -241,6 +305,8 @@ make fetch-cards      # English card images only (~755 MB)
 ./scripts/fetch-assets.sh en+ko     # English + Korean
 ./scripts/fetch-assets.sh en+zh     # English + Chinese
 ./scripts/fetch-assets.sh fr        # French card translations only
+./scripts/fetch-assets.sh cards     # English + homebrew card images only (~755 MB)
+./scripts/fetch-assets.sh 3ed       # Third edition images only (~106 MB)
 ```
 
 If you only have Docker (no local AWS CLI), use the Docker-based targets instead:
@@ -255,12 +321,14 @@ docker compose --profile fetch-images run --rm fetch-images en+fr
 docker compose --profile fetch-images run --rm fetch-images fr
 ```
 
-To use local images instead of CDN in local dev, create `frontend/.env.development.local`:
+Running vite yourself, without `scripts/boot`, loads images from the CDN. To
+point it at local copies anyway, create `frontend/.env.development.local`:
 ```
 VITE_ASSET_HOST=
 ```
 
-To revert to CDN, remove the file or set `VITE_ASSET_HOST=https://assets.arkhamhorror.app`.
+To go back to the CDN, remove the file or set
+`VITE_ASSET_HOST=https://assets.arkhamhorror.app`.
 
 If you add new images, sync them to S3 and regenerate the manifest:
 ```
@@ -272,31 +340,18 @@ To install a git hook that warns if you forget to update the manifest:
 make install-hooks
 ```
 
-#### Database
-Create the local database:
+### Tests
 
 ```
-createdb arkham-horror-backend
-cd migrations
-sqitch deploy db:pg:arkham-horror-backend
+cd backend && make test                     # the suite once
+cd backend && make test.watch.entr          # on every change
+cd backend/arkham-api && stack test --fast --test-arguments '-m "CardName"'
 ```
 
-If you do not have sqitch you can `cat migrations/deploy/*` to see the create
-table statements and run them manually, you will want to specifically run the
-`users` and `arkham_games` create table statements first.
-
-### Running the server
-
-* start the backend with `cd backend && make api.watch`
-* start the frontend with `cd frontend && npm run dev`
-
-Or start both at once with `./dev.up` (also `make dev.up`). It checks the
-prerequisites, runs the API and Vite with their output labelled, waits until both
-answer, and stops both on Ctrl-C. It always runs the frontend with an empty
-`VITE_ASSET_HOST`, so images come from `frontend/public` rather than the CDN, and
-passes `DEBUG` through to the API when it is set — `DEBUG=1 ./dev.up` turns on
-the API's info logging (see `Arkham.Debug`). `API_TARGET=api.watch.entr ./dev.up`
-picks a different backend watch target.
+```
+cd frontend && npm run tc                   # typecheck
+cd frontend && npm test
+```
 
 ## Homebrew content
 

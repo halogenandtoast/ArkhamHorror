@@ -80,7 +80,7 @@ file, drop the two `arkham_third_edition_*` tables, then undo the small hooks:
 - `Dockerfile` (the `frontend-3ed` stage, its `COPY --from`, the `ah3e`
   `package.yaml` copy, port 3001), `prod.nginxconf` (the second server block),
   `docker-compose.yml` (port 3001, the two `frontend-3ed` mounts)
-- `dev.up` (the `WEB3ED` server), `Makefile` (`fetch-images-3ed`, the 3ed line
+- `scripts/boot` (the `3ed` server), `Makefile` (`fetch-images-3ed`, the 3ed line
   in `sync-images`, and `ah3e/library ah3e/dev` in `WATCH_SRC` so the watch loops
   rebuild on engine edits), `scripts/` (`generate-manifest.cjs` app list,
   `sync-and-manifest.sh`, `check-manifest.sh`, `fetch-assets.sh`)

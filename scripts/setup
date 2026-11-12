@@ -1,0 +1,423 @@
+#!/usr/bin/env bash
+#
+# scripts/setup -- get a local, non-Docker install ready to boot.
+#
+# Checks for everything the app needs, offers to install whatever is missing,
+# then prepares the parts that are not installs: node modules, the database,
+# and a first build of the backend. Run it again whenever something drifts --
+# every step is a no-op when it is already done.
+#
+# The Docker path is a different thing entirely: install.sh brings up the whole
+# stack in containers and needs none of this.
+#
+# Usage:
+#   scripts/setup                 # check, ask, install, prepare
+#   scripts/setup --check         # report only, change nothing (non-zero if short)
+#   scripts/setup --yes           # install without asking
+#   scripts/setup --no-build      # skip the backend build (the slow step)
+#   scripts/setup --no-db         # leave the database alone
+#   scripts/setup --with-images   # also fetch the image assets (~2.9GB)
+#
+# The versions it insists on are read out of backend/stack.yaml rather than
+# written down here, so a resolver bump does not leave this script behind.
+#
+set -uo pipefail
+
+ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+cd "$ROOT" || exit 1
+
+DO_CHECK=0 ASSUME_YES=0 DO_BUILD=1 DO_DB=1 DO_IMAGES=0
+
+while [ $# -gt 0 ]; do
+  case $1 in
+    --check) DO_CHECK=1 ;;
+    --yes | -y) ASSUME_YES=1 ;;
+    --no-build) DO_BUILD=0 ;;
+    --no-db) DO_DB=0 ;;
+    --with-images) DO_IMAGES=1 ;;
+    -h | --help)
+      sed -n '2,/^set -uo/p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//; $d'
+      exit 0
+      ;;
+    *)
+      printf 'unknown option: %s (try --help)\n' "$1" >&2
+      exit 2
+      ;;
+  esac
+  shift
+done
+
+if [ -t 1 ]; then
+  BOLD=$(tput bold 2>/dev/null) || BOLD=
+  RED=$(tput setaf 1 2>/dev/null) || RED=
+  GREEN=$(tput setaf 2 2>/dev/null) || GREEN=
+  YELLOW=$(tput setaf 3 2>/dev/null) || YELLOW=
+  BLUE=$(tput setaf 4 2>/dev/null) || BLUE=
+  RESET=$(tput sgr0 2>/dev/null) || RESET=
+else
+  BOLD= RED= GREEN= YELLOW= BLUE= RESET=
+fi
+
+step() { printf '%s>>%s %s\n' "$BOLD" "$RESET" "$*"; }
+ok()   { printf '   %s+%s %s\n' "$GREEN" "$RESET" "$*"; }
+warn() { printf '   %s!%s %s\n' "$YELLOW" "$RESET" "$*"; }
+note() { printf '   %s-%s %s\n' "$BLUE" "$RESET" "$*"; }
+bad()  { printf '   %sx%s %s\n' "$RED" "$RESET" "$*"; }
+die()  { bad "$*"; exit 1; }
+
+# ------------------------------------------------------------------ pins
+
+STACK_YAML=$ROOT/backend/stack.yaml
+[ -f "$STACK_YAML" ] || die "no backend/stack.yaml -- run this from a checkout"
+
+GHC_VERSION=$(sed -n 's/^compiler:[[:space:]]*ghc-\([0-9.]*\).*/\1/p' "$STACK_YAML" | head -1)
+STACK_MIN=$(sed -n 's/^require-stack-version:.*>=[[:space:]]*\([0-9.]*\).*/\1/p' "$STACK_YAML" | head -1)
+: "${GHC_VERSION:?could not read the compiler out of backend/stack.yaml}"
+: "${STACK_MIN:=3.7.1}"
+
+# vite 7 is the floor here, and it wants 20.19+ or 22.12+.
+NODE_MIN=20.19.0
+
+# ---------------------------------------------------------------- platform
+
+OS=$(uname -s)
+PKG=
+case $OS in
+  Darwin)
+    PKG=brew
+    ;;
+  Linux)
+    for p in apt-get dnf pacman zypper; do
+      command -v $p >/dev/null 2>&1 && { PKG=$p; break; }
+    done
+    ;;
+esac
+
+# ------------------------------------------------------------------ probes
+#
+# Each shortfall becomes one line in `missing`: label, what is wrong, and the
+# command that fixes it (empty when there is nothing we can safely run).
+
+missing=()
+want() { missing+=("$1"$'\t'"$2"$'\t'"${3-}"); }
+
+# Compares dotted versions: vge 3.11.1 3.7.1 is true.
+vge() {
+  [ "$1" = "$2" ] && return 0
+  [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | head -1)" = "$2" ]
+}
+
+pkg_install() { # pkg_install <formula/package names...>
+  case $PKG in
+    brew)    echo "brew install $*" ;;
+    apt-get) echo "sudo apt-get update && sudo apt-get install -y $*" ;;
+    dnf)     echo "sudo dnf install -y $*" ;;
+    pacman)  echo "sudo pacman -S --needed --noconfirm $*" ;;
+    zypper)  echo "sudo zypper install -y $*" ;;
+    *)       echo "" ;;
+  esac
+}
+
+step "checking the toolchain"
+
+# --- a package manager, on macOS, because every other fix leans on it -------
+if [ "$OS" = Darwin ] && ! command -v brew >/dev/null 2>&1; then
+  want "homebrew" "not installed; the macOS fixes below need it" \
+    '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+  PKG=brew # keep generating brew commands; they run after brew lands
+fi
+
+# --- the basics -------------------------------------------------------------
+for cmd in git curl make awk; do
+  command -v "$cmd" >/dev/null 2>&1 && continue
+  if [ "$OS" = Darwin ]; then
+    want "$cmd" "not on PATH (comes with the Xcode command line tools)" "xcode-select --install"
+  else
+    want "$cmd" "not on PATH" "$(pkg_install "$cmd")"
+  fi
+done
+
+# --- ghcup, which is how GHC and stack get here ------------------------------
+# stack.yaml sets system-ghc + install-ghc: false, so stack will NOT fetch a
+# compiler. Something has to put ghc-$GHC_VERSION on PATH, and ghcup is it.
+have_ghcup=0
+if command -v ghcup >/dev/null 2>&1; then
+  have_ghcup=1
+else
+  want "ghcup" "not installed; it supplies ghc-$GHC_VERSION and stack" \
+    'curl --proto "=https" --tlsv1.2 -sSf https://get-ghcup.haskell.org | BOOTSTRAP_HASKELL_NONINTERACTIVE=1 sh'
+fi
+
+# stack.yaml pins the compiler by version and looks it up by that exact name,
+# so ghc-9.14.1 on PATH is what counts -- whatever plain `ghc` happens to be.
+if command -v "ghc-$GHC_VERSION" >/dev/null 2>&1; then
+  ok "ghc-$GHC_VERSION"
+else
+  want "ghc $GHC_VERSION" "backend/stack.yaml pins it and stack will not install it itself" \
+    "ghcup install ghc $GHC_VERSION"
+fi
+
+if command -v stack >/dev/null 2>&1; then
+  stack_v=$(stack --numeric-version 2>/dev/null)
+  if [ -n "$stack_v" ] && vge "$stack_v" "$STACK_MIN"; then
+    ok "stack $stack_v (needs >= $STACK_MIN)"
+  else
+    want "stack >= $STACK_MIN" "found ${stack_v:-an unreadable version}" "ghcup install stack latest --set"
+  fi
+else
+  want "stack >= $STACK_MIN" "not on PATH" "ghcup install stack latest --set"
+fi
+
+# --- node ---------------------------------------------------------------------
+if command -v node >/dev/null 2>&1; then
+  node_v=$(node --version 2>/dev/null | sed 's/^v//')
+  if [ -n "$node_v" ] && vge "$node_v" "$NODE_MIN"; then
+    ok "node $node_v (needs >= $NODE_MIN)"
+  elif command -v nvm >/dev/null 2>&1 || [ -s "${NVM_DIR:-$HOME/.nvm}/nvm.sh" ]; then
+    want "node >= $NODE_MIN" "found $node_v, and nvm is available" "nvm install --lts && nvm use --lts"
+  else
+    want "node >= $NODE_MIN" "found $node_v, which vite 7 will refuse" "$(pkg_install node)"
+  fi
+else
+  want "node >= $NODE_MIN" "not on PATH" "$(pkg_install node)"
+fi
+
+command -v npm >/dev/null 2>&1 || want "npm" "not on PATH (it ships with node)" ""
+
+# --- native libraries the Haskell packages link against -----------------------
+# postgresql-libpq wants pg_config and libpq; GHC's bignum backend wants gmp.
+# zlib comes out of the macOS SDK, so only Linux needs a package for it.
+if ! command -v pg_config >/dev/null 2>&1; then
+  case $PKG in
+    brew)    want "libpq" "pg_config not on PATH; postgresql-libpq cannot build" "brew install libpq postgresql@14" ;;
+    apt-get) want "libpq-dev" "pg_config not on PATH; postgresql-libpq cannot build" "$(pkg_install libpq-dev)" ;;
+    *)       want "libpq headers" "pg_config not on PATH; postgresql-libpq cannot build" "$(pkg_install libpq-devel)" ;;
+  esac
+else
+  ok "pg_config $(pg_config --version 2>/dev/null | awk '{print $2}')"
+fi
+
+if [ "$OS" = Darwin ]; then
+  if brew list --formula gmp >/dev/null 2>&1; then
+    ok "gmp"
+  else
+    want "gmp" "GHC links against it" "brew install gmp"
+  fi
+else
+  case $PKG in
+    apt-get) want_libs="libgmp-dev zlib1g-dev" ;;
+    dnf)     want_libs="gmp-devel zlib-devel" ;;
+    pacman)  want_libs="gmp zlib" ;;
+    *)       want_libs="" ;;
+  esac
+  # No cheap portable probe for headers, so this one is advisory.
+  [ -n "$want_libs" ] && note "make sure these are installed: $want_libs"
+fi
+
+# --- postgres, both the client and something answering ------------------------
+DB_URL=${DATABASE_URL:-postgres://localhost:5432/arkham-horror-backend}
+DB_NAME=${DB_URL##*/}
+DB_NAME=${DB_NAME%%\?*}
+
+pg_running=0
+if command -v psql >/dev/null 2>&1; then
+  if psql "postgres://localhost:5432/postgres" -Atqc 'select 1' >/dev/null 2>&1 ||
+    psql "$DB_URL" -Atqc 'select 1' >/dev/null 2>&1; then
+    pg_running=1
+    ok "postgres answering on localhost:5432"
+  else
+    case $PKG in
+      brew)
+        pgf=$(brew list --formula 2>/dev/null | grep -m1 '^postgresql@' || true)
+        if [ -n "$pgf" ]; then
+          want "postgres (not running)" "psql is here but nothing answers on localhost:5432" "brew services start $pgf"
+        else
+          want "postgres" "psql is here but nothing answers, and no postgresql formula is installed" "brew install postgresql@14 && brew services start postgresql@14"
+        fi
+        ;;
+      apt-get) want "postgres (not running)" "nothing answers on localhost:5432" "sudo systemctl enable --now postgresql" ;;
+      *) want "postgres (not running)" "nothing answers on localhost:5432" "" ;;
+    esac
+  fi
+else
+  case $PKG in
+    brew)    want "postgres" "psql not on PATH" "brew install postgresql@14 && brew services start postgresql@14" ;;
+    apt-get) want "postgres" "psql not on PATH" "sudo apt-get update && sudo apt-get install -y postgresql && sudo systemctl enable --now postgresql" ;;
+    *)       want "postgres" "psql not on PATH" "$(pkg_install postgresql)" ;;
+  esac
+fi
+
+# ------------------------------------------------------------------ report
+
+if [ ${#missing[@]} -gt 0 ]; then
+  printf '\n'
+  step "missing"
+  while IFS=$'\t' read -r label why fix; do
+    bad "$label -- $why"
+    [ -n "$fix" ] && printf '       %s%s%s\n' "$BOLD" "$fix" "$RESET"
+  done < <(printf '%s\n' "${missing[@]}")
+else
+  ok "everything the build needs is already here"
+fi
+
+if [ "$DO_CHECK" = 1 ]; then
+  printf '\n'
+  if [ ${#missing[@]} -gt 0 ]; then
+    note "run scripts/setup (no --check) to install these and prepare the app"
+    exit 1
+  fi
+  note "run scripts/setup to prepare node modules, the database and a first build"
+  exit 0
+fi
+
+# ----------------------------------------------------------------- install
+
+runnable=0
+for m in ${missing[@]+"${missing[@]}"}; do
+  [ -n "$(printf '%s' "$m" | cut -f3)" ] && runnable=$((runnable + 1))
+done
+
+if [ "$runnable" -gt 0 ]; then
+  printf '\n'
+  if [ "$ASSUME_YES" != 1 ]; then
+    if [ ! -t 0 ]; then
+      die "not a terminal and no --yes, so nothing was installed"
+    fi
+    printf 'Install the %d command(s) above? [y/N] ' "$runnable"
+    read -r reply
+    case $reply in
+      y | Y | yes | YES) ;;
+      *) die "nothing installed" ;;
+    esac
+  fi
+
+  while IFS=$'\t' read -r label why fix; do
+    [ -n "$fix" ] || continue
+    step "installing $label"
+    # ghcup drops its shell hook in ~/.ghcup/env; source it so the commands
+    # after an install in this same run can see what just landed.
+    if ! bash -lc "[ -s \"\$HOME/.ghcup/env\" ] && . \"\$HOME/.ghcup/env\"; $fix"; then
+      die "'$fix' failed -- fix it by hand and run scripts/setup again"
+    fi
+    ok "$label"
+  done < <(printf '%s\n' "${missing[@]}")
+
+  [ -s "$HOME/.ghcup/env" ] && . "$HOME/.ghcup/env"
+  printf '\n'
+  note "if a tool still is not found, open a new shell (installers edit your profile) and run scripts/setup again"
+fi
+
+# ----------------------------------------------------------------- prepare
+
+step "frontend dependencies"
+for dir in frontend frontend-3ed; do
+  if [ ! -d "$ROOT/$dir" ]; then
+    note "$dir is not in this checkout, skipping"
+    continue
+  fi
+  if [ -d "$ROOT/$dir/node_modules" ] && [ "$ROOT/$dir/node_modules" -nt "$ROOT/$dir/package.json" ]; then
+    ok "$dir/node_modules is current"
+    continue
+  fi
+  note "npm install in $dir"
+  (cd "$ROOT/$dir" && npm install) || die "npm install failed in $dir"
+  ok "$dir"
+done
+
+# --- database -----------------------------------------------------------------
+#
+# A fresh database gets setup.sql, which both creates the schema and stamps
+# arkham_schema_migrations with the migrations that dump already contains. The
+# runner below then applies whatever the plan has on top of that. A database
+# that predates the stamping gets the same baseline assumed for it, which is
+# what the docker-compose migrate service does too.
+if [ "$DO_DB" = 1 ]; then
+  step "database ($DB_NAME)"
+  if ! command -v psql >/dev/null 2>&1; then
+    warn "psql not on PATH, skipping the database"
+  elif ! psql "postgres://localhost:5432/postgres" -Atqc 'select 1' >/dev/null 2>&1 &&
+    ! psql "$DB_URL" -Atqc 'select 1' >/dev/null 2>&1; then
+    warn "nothing answering on localhost:5432, skipping the database"
+  else
+    if psql "$DB_URL" -Atqc 'select 1' >/dev/null 2>&1; then
+      ok "$DB_NAME exists"
+    else
+      note "createdb $DB_NAME"
+      createdb "$DB_NAME" 2>/dev/null || die "could not create $DB_NAME"
+      note "loading setup.sql"
+      psql -v ON_ERROR_STOP=1 -q -d "$DB_URL" -f "$ROOT/setup.sql" >/dev/null ||
+        die "setup.sql failed against $DB_NAME"
+      ok "schema loaded"
+    fi
+
+    q() { psql -v ON_ERROR_STOP=1 -qtA -d "$DB_URL" "$@"; }
+    plan=$ROOT/migrations/sqitch.plan
+    if [ ! -f "$plan" ]; then
+      warn "no migrations/sqitch.plan, so nothing to apply"
+    else
+      names=$(grep -vE '^[[:space:]]*(%|#|$)' "$plan" | awk '{print $1}')
+      existed=$(q -c "SELECT to_regclass('public.arkham_schema_migrations') IS NOT NULL")
+      q -c "CREATE TABLE IF NOT EXISTS arkham_schema_migrations (
+              name text PRIMARY KEY,
+              applied_at timestamptz NOT NULL DEFAULT now());" >/dev/null
+
+      if [ "$existed" != "t" ]; then
+        # Derive the baseline from setup.sql's own stamp block rather than
+        # hardcoding it, so regenerating the dump moves this automatically.
+        through=$(grep "INSERT INTO public.arkham_schema_migrations" "$ROOT/setup.sql" |
+          tail -1 | sed "s/.*VALUES ('\([^']*\)').*/\1/")
+        if [ -n "$through" ]; then
+          note "no migration tracking in this database; assuming setup.sql's baseline through '$through'"
+          vals=
+          for n in $names; do
+            vals="${vals:+$vals,}('$n')"
+            [ "$n" = "$through" ] && break
+          done
+          [ -n "$vals" ] && q -c "INSERT INTO arkham_schema_migrations(name) VALUES $vals ON CONFLICT DO NOTHING;" >/dev/null
+        fi
+      fi
+
+      applied=$(q -c "SELECT string_agg(name, ' ') FROM arkham_schema_migrations")
+      count=0
+      for n in $names; do
+        case " $applied " in *" $n "*) continue ;; esac
+        note "applying $n"
+        psql -v ON_ERROR_STOP=1 -q -d "$DB_URL" -f "$ROOT/migrations/deploy/$n.sql" ||
+          die "migration $n failed"
+        q -c "INSERT INTO arkham_schema_migrations(name) VALUES ('$n') ON CONFLICT DO NOTHING;" >/dev/null
+        count=$((count + 1))
+      done
+      if [ "$count" = 0 ]; then ok "schema up to date"; else ok "applied $count migration(s)"; fi
+    fi
+  fi
+fi
+
+# --- images -------------------------------------------------------------------
+if [ "$DO_IMAGES" = 1 ]; then
+  step "image assets"
+  note "this is ~2.9GB and needs the aws CLI"
+  make fetch-images || warn "fetch-images failed; the app still runs off the CDN"
+fi
+
+# --- the backend build --------------------------------------------------------
+if [ "$DO_BUILD" = 1 ]; then
+  step "building the backend"
+  note "a cold build compiles ~9,400 modules and takes 10-30 minutes; later ones are quick"
+  note "peak memory is around 7GB with the default flags (see backend/Makefile)"
+  if (cd "$ROOT/backend" && make --no-print-directory api.build); then
+    ok "backend built"
+  else
+    bad "the build failed -- the output above says why"
+    note "scripts/setup --no-build skips this step once you are past it"
+    exit 1
+  fi
+fi
+
+# ------------------------------------------------------------------ summary
+
+printf '\n'
+step "ready"
+printf '   start everything with %s./scripts/boot%s (or %smake boot%s)\n' "$BOLD" "$RESET" "$BOLD" "$RESET"
+if [ -z "$(find "$ROOT/frontend/public/img/arkham/cards" -type f -print -quit 2>/dev/null)" ]; then
+  note "no local images, so boot serves them from the CDN; 'make fetch-images' (~2.9GB) puts them on disk"
+fi

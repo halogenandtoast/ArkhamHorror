@@ -1,0 +1,702 @@
+#!/usr/bin/env bash
+#
+# scripts/boot -- run the local development stack and stay in charge of it.
+#
+#   api   cd backend        && make api.watch.entr.log   (arkham-api on :3002)
+#   web   cd frontend       && npm run dev               (vite on :8080)
+#   3ed   cd frontend-3ed   && npm run dev               (vite on :8081)
+#
+# Unlike a plain `make api.watch` in one shell and `npm run dev` in another,
+# this keeps a status line for each server -- whether it is building, what it
+# is compiling, whether the last build failed -- and lets you stop, start or
+# restart either half without touching the others. Everything stays in dev
+# mode: the backend rebuilds and restarts itself on a change, vite keeps its
+# hot reload, and the build output scrolls past under the status block.
+#
+#   a / f / t     stop or start the api, the frontend, the 3ed frontend
+#   A / F / T     restart it
+#   l             cycle which server's output is shown
+#   s             print a status block
+#   b             open the frontend in a browser
+#   ?             the key list
+#   q             quit, stopping everything
+#
+# Usage:
+#   scripts/boot                       # all three, CDN off
+#   scripts/boot --no-3ed              # leave the third edition frontend out
+#   scripts/boot --only api,web        # just those
+#   DEBUG=1 scripts/boot               # API info logging (Arkham.Debug)
+#   API_TARGET=api.watch.test.entr.log scripts/boot   # run the suite too
+#
+# Knobs: API_TARGET, API_PORT, WEB_PORT, WEB3ED_PORT, LOG_DIR, DEBUG.
+#
+# Why api.watch.entr.log is the default backend target: stack's --file-watch no
+# longer sees edits under library/ on this tree (backend/Makefile explains why
+# at length), so api.watch would sit there while you edited cards. The .entr
+# targets poll instead and do rebuild. The .log suffix tees the build into
+# .claude/build.host so agents can read compile errors; it costs nothing.
+#
+# VITE_ASSET_HOST is exported *empty* rather than left alone, because
+# frontend/src/stores/site_settings.ts only falls back to the CDN when it is
+# undefined -- defined-but-empty is what makes the frontend load images out of
+# frontend/public. The process environment beats frontend/.env*, so this works
+# whether or not you keep a .env.development.local around.
+#
+set -uo pipefail
+
+if [ -z "${BASH_VERSINFO:-}" ] || [ "${BASH_VERSINFO[0]}" -lt 4 ]; then
+  echo "scripts/boot needs bash 4 or newer (this is ${BASH_VERSION:-unknown})." >&2
+  echo "On macOS: brew install bash" >&2
+  exit 1
+fi
+
+ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+cd "$ROOT" || exit 1
+
+API_TARGET=${API_TARGET:-api.watch.entr.log}
+API_PORT=${API_PORT:-3002}  # backend/arkham-api/config/settings.yml default
+WEB_PORT=${WEB_PORT:-8080}  # frontend/vite.config.js
+WEB3ED_PORT=${WEB3ED_PORT:-8081}
+LOG_DIR=${LOG_DIR:-$ROOT/tmp/dev}
+
+WANT=api,web,3ed
+while [ $# -gt 0 ]; do
+  case $1 in
+    --no-3ed) WANT=api,web ;;
+    --only) shift; WANT=${1:-} ;;
+    --only=*) WANT=${1#--only=} ;;
+    --target) shift; API_TARGET=${1:-} ;;
+    --target=*) API_TARGET=${1#--target=} ;;
+    -h | --help)
+      sed -n '2,/^set -uo/p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//; $d'
+      exit 0
+      ;;
+    *) printf 'unknown option: %s (try --help)\n' "$1" >&2; exit 2 ;;
+  esac
+  shift
+done
+
+# ------------------------------------------------------------------- colours
+
+if [ -t 1 ]; then
+  BOLD=$(tput bold 2>/dev/null) || BOLD=
+  DIM=$(tput dim 2>/dev/null) || DIM=
+  RED=$(tput setaf 1 2>/dev/null) || RED=
+  GREEN=$(tput setaf 2 2>/dev/null) || GREEN=
+  YELLOW=$(tput setaf 3 2>/dev/null) || YELLOW=
+  BLUE=$(tput setaf 4 2>/dev/null) || BLUE=
+  MAGENTA=$(tput setaf 5 2>/dev/null) || MAGENTA=
+  CYAN=$(tput setaf 6 2>/dev/null) || CYAN=
+  RESET=$(tput sgr0 2>/dev/null) || RESET=
+else
+  BOLD= DIM= RED= GREEN= YELLOW= BLUE= MAGENTA= CYAN= RESET=
+fi
+
+step() { printf '%s>>%s %s\n' "$BOLD" "$RESET" "$*"; }
+ok()   { printf '   %s+%s %s\n' "$GREEN" "$RESET" "$*"; }
+warn() { printf '   %s!%s %s\n' "$YELLOW" "$RESET" "$*"; }
+note() { printf '   %s-%s %s\n' "$BLUE" "$RESET" "$*"; }
+die()  { printf '   %sx%s %s\n' "$RED" "$RESET" "$*" >&2; exit 1; }
+
+# ------------------------------------------------------------- service table
+#
+# Indexed arrays rather than associative ones, so the slot number is the
+# service everywhere and the whole thing stays readable.
+
+KEYS=(api web 3ed)
+DIRS=("$ROOT/backend" "$ROOT/frontend" "$ROOT/frontend-3ed")
+PORTS=("$API_PORT" "$WEB_PORT" "$WEB3ED_PORT")
+PATHS=(/health / /)
+HUES=("$CYAN" "$MAGENTA" "$GREEN")
+TOGGLE=(a f t)
+N=${#KEYS[@]}
+
+ENABLED=() PHASE=() NOTE=() SINCE=() PGID=() STOPPING=() RC=()
+for ((i = 0; i < N; i++)); do
+  ENABLED[i]=0; PHASE[i]=stopped; NOTE[i]=; SINCE[i]=$(date +%s)
+  PGID[i]=; STOPPING[i]=0; RC[i]=
+done
+
+for ((i = 0; i < N; i++)); do
+  case ",$WANT," in *",${KEYS[i]},"*) ENABLED[i]=1 ;; esac
+done
+
+# Slot number per key and per letter, as plain variables: handle_msg runs for
+# every line of build output, and a $(subshell) lookup there would fork
+# thousands of times during a cold build.
+for ((i = 0; i < N; i++)); do
+  eval "IDX_${KEYS[i]}=$i"
+  eval "IDX_${TOGGLE[i]}=$i"
+done
+
+idx_of() { # idx_of <key-or-letter> -> slot number, or nothing
+  local want=$1 i
+  for ((i = 0; i < N; i++)); do
+    [ "$want" = "${KEYS[i]}" ] && { echo "$i"; return 0; }
+    [ "$want" = "${TOGGLE[i]}" ] && { echo "$i"; return 0; }
+  done
+  return 1
+}
+
+cmd_for() { # the command line each service runs, as a single string
+  local i=$1 api_env="PORT=${PORTS[0]}"
+  case ${KEYS[i]} in
+    api)
+      [ -n "${DEBUG:-}" ] && api_env="$api_env DEBUG=$DEBUG"
+      printf 'make --no-print-directory %q API_ENV=%q' "$API_TARGET" "$api_env"
+      ;;
+    web | 3ed)
+      printf 'env -u DEBUG VITE_ASSET_HOST= npm run dev -- --port %q --strictPort' "${PORTS[i]}"
+      ;;
+  esac
+}
+
+# ------------------------------------------------------------------ preflight
+
+step "checking prerequisites"
+
+miss=
+for cmd in make stack npm node curl; do
+  command -v "$cmd" >/dev/null 2>&1 || miss="$miss $cmd"
+done
+if [ -n "$miss" ]; then
+  printf '   %sx%s not on PATH:%s\n' "$RED" "$RESET" "$miss" >&2
+  die "run scripts/setup to install what is missing"
+fi
+ok "make, stack, npm, node, curl"
+
+for ((i = 0; i < N; i++)); do
+  [ "${ENABLED[i]}" = 1 ] || continue
+  if [ ! -d "${DIRS[i]}" ]; then
+    warn "${DIRS[i]#$ROOT/} is not in this checkout, leaving ${KEYS[i]} out"
+    ENABLED[i]=0
+    continue
+  fi
+  case ${KEYS[i]} in
+    web | 3ed)
+      [ -d "${DIRS[i]}/node_modules" ] ||
+        die "${DIRS[i]#$ROOT/}/node_modules is missing -- run scripts/setup"
+      ;;
+  esac
+done
+
+# Both address families: a vite on [::1] and an arkham-api on 0.0.0.0 are
+# equally in the way, and lsof reports either for a bare -iTCP:<port>.
+listeners() { lsof -nP -tiTCP:"$1" -sTCP:LISTEN 2>/dev/null | sort -u | tr '\n' ' '; }
+
+for ((i = 0; i < N; i++)); do
+  [ "${ENABLED[i]}" = 1 ] || continue
+  held=$(listeners "${PORTS[i]}")
+  [ -n "$held" ] || continue
+  owner=$(ps -o comm= -p $held 2>/dev/null | sed 's#.*/##' | sort -u | tr '\n' ' ')
+  case "$owner" in
+    *arkham-api*)
+      # A leftover server from a previous run would answer the health check
+      # straight away and make this build look up before it had compiled.
+      warn "an arkham-api already holds :${PORTS[i]} (pid ${held% }) -- stopping it"
+      pkill -x arkham-api 2>/dev/null
+      sleep 1
+      ;;
+    *)
+      die "port ${PORTS[i]} is held by ${owner:-an unknown process} (pid ${held% }); stop it, or set ${KEYS[i]^^}_PORT"
+      ;;
+  esac
+done
+ok "ports are free"
+
+if [ "$API_PORT" != 3002 ]; then
+  warn "vite proxies /api to 127.0.0.1:3002 (frontend/vite.config.js), so API_PORT=$API_PORT will not be reached through the frontend"
+fi
+
+db_url=${DATABASE_URL:-postgres://localhost:5432/arkham-horror-backend}
+if command -v psql >/dev/null 2>&1; then
+  if psql "$db_url" -Atqc 'select 1' >/dev/null 2>&1; then
+    ok "postgres answering at $db_url"
+  else
+    warn "cannot connect to $db_url -- the api will not boot; run scripts/setup"
+  fi
+else
+  note "psql not installed, skipping the database check"
+fi
+
+# Card art is only part of it: the home page and game views also pull set
+# icons and investigator portraits, and `make fetch-cards` fetches none of
+# those -- so check each directory rather than just cards/.
+img=$ROOT/frontend/public/img/arkham
+empty=
+for dir in cards sets portraits; do
+  [ -n "$(find "$img/$dir" -type f -print -quit 2>/dev/null)" ] || empty="$empty $dir"
+done
+if [ -z "$empty" ]; then
+  ok "local images present (cards, sets, portraits)"
+elif [ "$empty" = " cards sets portraits" ]; then
+  warn "no images under frontend/public/img/arkham -- with VITE_ASSET_HOST empty they will 404; run 'make fetch-images' (~2.9GB)"
+else
+  warn "images missing under frontend/public/img/arkham:$empty -- 'make fetch-cards' only fetches cards/, so run 'make fetch-images' for the rest"
+fi
+
+if [ "${ENABLED[2]}" = 1 ] &&
+  [ -z "$(find "$ROOT/frontend-3ed/public/img/ah3e" -type f -print -quit 2>/dev/null)" ]; then
+  warn "no third edition images under frontend-3ed/public/img/ah3e -- run 'make fetch-images-3ed' (~106MB)"
+fi
+
+mkdir -p "$LOG_DIR" || die "cannot create $LOG_DIR"
+
+# --------------------------------------------------------------------- the bus
+#
+# Every server's output and every state change arrives here as one line, and
+# this process is the only thing that writes to the terminal. That is what
+# keeps the status block from being torn in half by a build line landing
+# mid-redraw -- there is no second writer to race with.
+#
+#   o <key> <text>           a line of output
+#   s <key> <phase> <note>   a state change
+#   x <key> <rc>             the server exited
+#
+# Writes are a line at a time and well under PIPE_BUF, so several servers
+# writing at once interleave whole lines rather than fragments.
+
+BUS=$LOG_DIR/.bus
+rm -f "$BUS"
+mkfifo "$BUS" || die "cannot create $BUS"
+# Read-write, so the fifo always has a reader and a writer: servers starting
+# and stopping never give this end an EOF.
+exec 3<>"$BUS"
+
+TTY=0
+[ -t 0 ] && [ -t 1 ] && TTY=1
+STTY_SAVE=
+FILTER=all
+SCR_LINES=24
+SCR_COLS=80
+HDR=$((N + 5))
+DIRTY=1
+LAST_TICK=0
+QUIT=0
+
+# ------------------------------------------------------------------- the screen
+
+screen_on() {
+  [ "$TTY" = 1 ] || return 0
+  STTY_SAVE=$(stty -g 2>/dev/null)
+  # Single keypresses, and no echo of keys we are not reading yet.
+  stty -icanon -echo 2>/dev/null
+  printf '\033[2J\033[H'          # clear
+  printf '\033[?25l'              # hide the cursor; the status block owns the top
+  region
+}
+
+# Pin the status block to the top by shrinking the terminal's scroll region to
+# everything below it. Output printed from here on scrolls inside that region
+# and leaves the block alone, so there is no redraw-on-every-line flicker.
+region() {
+  [ "$TTY" = 1 ] || return 0
+  SCR_LINES=$(tput lines 2>/dev/null || echo 24)
+  SCR_COLS=$(tput cols 2>/dev/null || echo 80)
+  printf '\033[%d;%dr' $((HDR + 1)) "$SCR_LINES"
+  printf '\033[%d;1H' $((HDR + 1))
+}
+
+screen_off() {
+  [ "$TTY" = 1 ] || return 0
+  printf '\033[r'                 # the whole terminal scrolls again
+  printf '\033[?25h'              # cursor back
+  [ -n "$STTY_SAVE" ] && stty "$STTY_SAVE" 2>/dev/null
+  printf '\n'
+}
+
+trap 'region; DIRTY=1' WINCH
+
+# How long a service has been in its current state, in a width that fits.
+ago() {
+  local s=$(( $(date +%s) - $1 ))
+  if [ "$s" -lt 60 ]; then printf '%ds ago' "$s"
+  elif [ "$s" -lt 3600 ]; then printf '%dm ago' $((s / 60))
+  else printf '%dh ago' $((s / 3600)); fi
+}
+
+phase_dot() {
+  case $1 in
+    up)       printf '%s●%s' "$GREEN" "$RESET" ;;
+    building) printf '%s◐%s' "$YELLOW" "$RESET" ;;
+    starting) printf '%s○%s' "$YELLOW" "$RESET" ;;
+    error)    printf '%s●%s' "$RED" "$RESET" ;;
+    exited)   printf '%s●%s' "$RED" "$RESET" ;;
+    *)        printf '%s○%s' "$DIM" "$RESET" ;;
+  esac
+}
+
+draw_header() {
+  [ "$TTY" = 1 ] || return 0
+  local i line rule clock w=$((SCR_COLS - 4))
+  [ "$w" -lt 40 ] && w=40
+  rule=$(printf '─%.0s' $(seq 1 "$w"))
+  clock=$(date +%H:%M:%S)
+
+  printf '\0337'                                  # save the cursor
+  printf '\033[1;1H\033[K  %sarkham dev%s%*s%s%s\n' \
+    "$BOLD" "$RESET" $((w - 10 - ${#clock})) "" "$DIM$clock" "$RESET"
+  printf '\033[2;1H\033[K  %s%s%s\n' "$DIM" "$rule" "$RESET"
+
+  local row=3
+  for ((i = 0; i < N; i++)); do
+    printf '\033[%d;1H\033[K' "$row"
+    if [ "${ENABLED[i]}" = 1 ]; then
+      printf '  %s[%s]%s %s%-4s%s %s %-9s %-22s %-8s %s:%s%s\n' \
+        "$DIM" "${TOGGLE[i]}" "$RESET" \
+        "${HUES[i]}" "${KEYS[i]}" "$RESET" \
+        "$(phase_dot "${PHASE[i]}")" "${PHASE[i]}" \
+        "${NOTE[i]:0:22}" \
+        "$([ "${PHASE[i]}" = stopped ] && printf '' || ago "${SINCE[i]}")" \
+        "$DIM" "${PORTS[i]}" "$RESET"
+    else
+      printf '  %s[%s] %-4s %-34s :%s%s\n' \
+        "$DIM" "${TOGGLE[i]}" "${KEYS[i]}" "out" "${PORTS[i]}" "$RESET"
+    fi
+    row=$((row + 1))
+  done
+
+  printf '\033[%d;1H\033[K  %s%s%s\n' "$row" "$DIM" "$rule" "$RESET"
+  row=$((row + 1))
+  printf '\033[%d;1H\033[K  %sa/f/t%s toggle %s·%s %sA/F/T%s restart %s·%s %sl%s logs:%s %s·%s %ss%s status %s·%s %sb%s browser %s·%s %sq%s quit\n' \
+    "$row" "$BOLD" "$RESET" "$DIM" "$RESET" "$BOLD" "$RESET" "$DIM" "$RESET" \
+    "$BOLD" "$RESET" "$FILTER" "$DIM" "$RESET" "$BOLD" "$RESET" "$DIM" "$RESET" \
+    "$BOLD" "$RESET" "$DIM" "$RESET" "$BOLD" "$RESET"
+  printf '\033[%d;1H\033[K' $((row + 1))
+  printf '\0338'                                  # and back where we were
+}
+
+say() { # a line of our own into the scrolling area
+  printf '%s\n' "$*"
+}
+
+emit() { # emit <slot> <text> -- a server's line, labelled
+  local i=$1; shift
+  case $FILTER in
+    all) ;;
+    "${KEYS[i]}") ;;
+    *) return 0 ;;
+  esac
+  printf '%s[%s]%s %s\n' "${HUES[i]}" "${KEYS[i]}" "$RESET" "$*"
+}
+
+# --------------------------------------------------------------- start / stop
+
+set_state() { # set_state <slot> <phase> [note]
+  local i=$1 phase=$2 note=${3-}
+  [ "${PHASE[i]}" = "$phase" ] && [ "${NOTE[i]}" = "$note" ] && return 0
+  [ "${PHASE[i]}" != "$phase" ] && SINCE[i]=$(date +%s)
+  PHASE[i]=$phase
+  NOTE[i]=$note
+  DIRTY=1
+}
+
+# Runs in the background, one per server: the command, its log file, and the
+# parsing that turns build output into a status. Everything it learns goes
+# back over the bus; it never writes to the terminal itself.
+runner() {
+  local i=$1 log=$LOG_DIR/${KEYS[i]}.log key=${KEYS[i]}
+  local cmd; cmd=$(cmd_for "$i")
+
+  # stack --file-watch reads stdin (enter rebuilds, q quits), so those targets
+  # need one that stays open: a closed stdin kills it outright and reading the
+  # terminal from a background process group would stop it with SIGTTIN. The
+  # .entr targets poll instead and want nothing from stdin.
+  local stdin=/dev/null
+  case $key:$API_TARGET in
+    api:*entr*) stdin=/dev/null ;;
+    api:*) stdin=keep-open ;;
+  esac
+
+  {
+    cd "${DIRS[i]}" || exit 1
+    if [ "$stdin" = keep-open ]; then
+      eval "$cmd" < <(exec tail -f /dev/null) 2>&1
+    else
+      eval "$cmd" </dev/null 2>&1
+    fi
+    printf 'x\t%s\t%s\n' "$key" "$?" >&4
+  } | {
+    : > "$log"
+    local line text n m mod
+    while IFS= read -r line; do
+      printf '%s\n' "$line" >> "$log"
+      text=${line:0:2000}        # keep a bus write inside PIPE_BUF
+      printf 'o\t%s\t%s\n' "$key" "$text" >&4
+
+      case $key in
+        api)
+          if [[ $text =~ \[([0-9]+)\ of\ ([0-9]+)\]\ Compiling\ ([A-Za-z0-9_.\']+) ]]; then
+            n=${BASH_REMATCH[1]}; m=${BASH_REMATCH[2]}; mod=${BASH_REMATCH[3]}
+            printf 's\t%s\tbuilding\t%s/%s %s\n' "$key" "$n" "$m" "${mod##*.}" >&4
+          elif [[ $text == *"Linking"* ]]; then
+            printf 's\t%s\tbuilding\tlinking\n' "$key" >&4
+          elif [[ $text =~ ^Error:|\.hs:[0-9]+:[0-9]+:\ error|\ error:\ \[GHC- ]]; then
+            printf 's\t%s\terror\tbuild failed\n' "$key" >&4
+          elif [[ $text =~ ([0-9]+)\ examples?,\ ([0-9]+)\ failures? ]]; then
+            if [ "${BASH_REMATCH[2]}" = 0 ]; then
+              printf 's\t%s\tup\t%s examples ok\n' "$key" "${BASH_REMATCH[1]}" >&4
+            else
+              printf 's\t%s\terror\t%s of %s failed\n' "$key" \
+                "${BASH_REMATCH[2]}" "${BASH_REMATCH[1]}" >&4
+            fi
+          elif [[ $text == *"Tests failed"* ]]; then
+            printf 's\t%s\terror\ttests failed\n' "$key" >&4
+          elif [[ $text == *"Completed"*"action"* || $text == *"Registering library"* ]]; then
+            printf 's\t%s\tstarting\tbuild ok\n' "$key" >&4
+          fi
+          ;;
+        web | 3ed)
+          if [[ $text == *"ready in"* ]]; then
+            printf 's\t%s\tstarting\tready\n' "$key" >&4
+          elif [[ $text == *"hmr update"* ]]; then
+            mod=${text##*hmr update }
+            printf 's\t%s\tup\thmr %s\n' "$key" "${mod##*/}" >&4
+          elif [[ $text == *"page reload"* ]]; then
+            printf 's\t%s\tup\treload\n' "$key" >&4
+          elif [[ $text == *"Pre-transform error"* || $text == *"Internal server error"* ]]; then
+            printf 's\t%s\terror\ttransform error\n' "$key" >&4
+          fi
+          ;;
+      esac
+    done
+  }
+}
+
+start_svc() {
+  local i=$1
+  [ "${ENABLED[i]}" = 1 ] || { say "   ${KEYS[i]} is not part of this run"; return 1; }
+  [ -n "${PGID[i]}" ] && kill -0 "${PGID[i]}" 2>/dev/null && return 0
+
+  local held; held=$(listeners "${PORTS[i]}")
+  if [ -n "$held" ]; then
+    say "   ${YELLOW}!${RESET} port ${PORTS[i]} is busy (pid ${held% }); not starting ${KEYS[i]}"
+    return 1
+  fi
+
+  STOPPING[i]=0
+  RC[i]=
+  set_state "$i" starting "launching"
+  # Job control just long enough for the fork, so the server lands in a
+  # process group of its own and a group kill later takes down its whole
+  # tree -- make, stack, the server it exec'd. It is switched straight back
+  # off, because with it on every short-lived child of this loop would be
+  # handed the terminal and keypresses would go to it instead of to us.
+  set -m
+  runner "$i" 4>&3 &
+  PGID[i]=$!
+  set +m
+  say "   ${GREEN}+${RESET} ${KEYS[i]} started (pgid ${PGID[i]})"
+}
+
+stop_svc() {
+  local i=$1 g=${PGID[i]} n=0
+  [ -n "$g" ] || { set_state "$i" stopped ""; return 0; }
+  STOPPING[i]=1
+  set_state "$i" stopped "stopping"
+  kill -TERM -"$g" 2>/dev/null
+  while kill -0 "$g" 2>/dev/null && [ $n -lt 50 ]; do
+    sleep 0.1
+    n=$((n + 1))
+  done
+  kill -0 "$g" 2>/dev/null && kill -KILL -"$g" 2>/dev/null
+  # api.watch detaches the server with `&` from inside stack --exec. The group
+  # kill should reach it, but make sure it is gone: a survivor would answer the
+  # health check and the next start would look instantly up.
+  [ "${KEYS[i]}" = api ] && pkill -x arkham-api 2>/dev/null
+  PGID[i]=
+  set_state "$i" stopped ""
+  say "   ${YELLOW}-${RESET} ${KEYS[i]} stopped"
+}
+
+stop_all() {
+  local i
+  for ((i = N - 1; i >= 0; i--)); do
+    [ -n "${PGID[i]}" ] && stop_svc "$i"
+  done
+}
+
+# ---------------------------------------------------------------- the messages
+
+handle_msg() {
+  local msg=$1 kind key rest phase note v i
+  kind=${msg%%$'\t'*}; rest=${msg#*$'\t'}
+  key=${rest%%$'\t'*}; rest=${rest#*$'\t'}
+  v=IDX_$key; i=${!v-}
+  [ -n "$i" ] || return 0
+  case $kind in
+    # rest is the whole remainder, so a log line keeps any tabs of its own.
+    o) emit "$i" "$rest" ;;
+    s)
+      phase=${rest%%$'\t'*}
+      note=${rest#*$'\t'}
+      [ "$note" = "$phase" ] && note=
+      set_state "$i" "$phase" "$note"
+      ;;
+    x)
+      PGID[i]=
+      RC[i]=$rest
+      if [ "${STOPPING[i]}" = 1 ]; then
+        set_state "$i" stopped ""
+      elif [ "$rest" = 0 ]; then
+        set_state "$i" stopped "exited cleanly"
+        say "   ${YELLOW}!${RESET} ${KEYS[i]} exited; press ${TOGGLE[i]} to start it again"
+      else
+        set_state "$i" exited "exit $rest"
+        say "   ${RED}x${RESET} ${KEYS[i]} exited ($rest); its log is ${LOG_DIR#$ROOT/}/${KEYS[i]}.log"
+      fi
+      ;;
+  esac
+}
+
+# localhost rather than 127.0.0.1 on purpose, and it is load-bearing: vite
+# binds ::1 only, while arkham-api binds IPv4 (host: *4 in settings.yml), so
+# neither literal reaches both. curl tries every address the name resolves to
+# and takes the first that answers, which covers either server.
+poll_health() {
+  local i url
+  for ((i = 0; i < N; i++)); do
+    [ "${ENABLED[i]}" = 1 ] || continue
+    [ -n "${PGID[i]}" ] || continue
+    url=http://localhost:${PORTS[i]}${PATHS[i]}
+    if curl -sfo /dev/null --max-time 1 "$url"; then
+      case ${PHASE[i]} in
+        up) ;;
+        error) ;;   # answering, but the last build failed: say so, not "up"
+        *) set_state "$i" up "${NOTE[i]:-answering}" ;;
+      esac
+    else
+      case ${PHASE[i]} in
+        up) set_state "$i" starting "restarting" ;;
+      esac
+    fi
+  done
+}
+
+status_block() {
+  local i
+  say ""
+  say "   ${BOLD}status${RESET}"
+  for ((i = 0; i < N; i++)); do
+    if [ "${ENABLED[i]}" != 1 ]; then
+      say "   ${KEYS[i]}  (not in this run)"
+    elif [ -n "${PGID[i]}" ]; then
+      say "   ${KEYS[i]}  ${PHASE[i]} ${NOTE[i]:+-- ${NOTE[i]}}  pgid ${PGID[i]}  http://localhost:${PORTS[i]}"
+    else
+      say "   ${KEYS[i]}  ${PHASE[i]} ${NOTE[i]:+-- ${NOTE[i]}}  http://localhost:${PORTS[i]}"
+    fi
+  done
+  say "   logs  ${LOG_DIR#$ROOT/}/{api,web,3ed}.log"
+  say "   api   make $API_TARGET${DEBUG:+  DEBUG=$DEBUG}"
+  say ""
+}
+
+help_block() {
+  say ""
+  say "   ${BOLD}keys${RESET}"
+  say "   a f t   stop or start the api, the frontend, the 3ed frontend"
+  say "   A F T   restart it"
+  say "   l       cycle the output shown: all, api, web, 3ed"
+  say "   s       this status block"
+  say "   b       open the frontend in a browser"
+  say "   q       quit, stopping everything"
+  say ""
+}
+
+handle_key() {
+  local k=$1 i
+  case $k in
+    a | f | t)
+      i=$(idx_of "$k") || return 0
+      if [ -n "${PGID[i]}" ]; then stop_svc "$i"; else start_svc "$i"; fi
+      ;;
+    A | F | T)
+      i=$(idx_of "$(printf '%s' "$k" | tr 'AFT' 'aft')") || return 0
+      say "   ${BLUE}-${RESET} restarting ${KEYS[i]}"
+      [ -n "${PGID[i]}" ] && stop_svc "$i"
+      start_svc "$i"
+      ;;
+    l)
+      case $FILTER in
+        all) FILTER=api ;;
+        api) FILTER=web ;;
+        web) FILTER=3ed ;;
+        *) FILTER=all ;;
+      esac
+      say "   ${BLUE}-${RESET} showing: $FILTER"
+      DIRTY=1
+      ;;
+    s) status_block ;;
+    b)
+      if command -v open >/dev/null 2>&1; then open "http://localhost:$WEB_PORT"
+      elif command -v xdg-open >/dev/null 2>&1; then xdg-open "http://localhost:$WEB_PORT" >/dev/null 2>&1
+      else say "   no opener; the frontend is at http://localhost:$WEB_PORT"; fi
+      ;;
+    '?' | h) help_block ;;
+    q) QUIT=1 ;;
+  esac
+}
+
+# ---------------------------------------------------------------------- run
+
+cleanup() {
+  trap '' INT TERM
+  set +m
+  screen_off
+  step "stopping"
+  stop_all
+  exec 3>&-
+  rm -f "$BUS"
+  ok "done"
+}
+
+trap 'QUIT=1' INT TERM
+trap screen_off EXIT
+
+step "starting"
+note "the api rebuilds through 'make $API_TARGET'; a cold build compiles the whole library, so the first one takes minutes"
+note "logs: ${LOG_DIR#$ROOT/}/{api,web,3ed}.log"
+printf '\n'
+
+screen_on
+
+for ((i = 0; i < N; i++)); do
+  [ "${ENABLED[i]}" = 1 ] && start_svc "$i"
+done
+
+DRAIN_WAIT=0.02
+if [ "$TTY" != 1 ]; then
+  DRAIN_WAIT=0.4
+  note "not a terminal, so no keys: streaming everything until interrupted"
+fi
+
+draw_header
+
+while [ "$QUIT" = 0 ]; do
+  # Drain whatever the servers have said, but bounded, so a flood of build
+  # output cannot starve the keyboard. The read timeout is also what paces the
+  # loop: short enough that keys feel instant with a terminal, longer without
+  # one, where there is nothing to be responsive to. Waiting on the bus rather
+  # than on a sleep also means no child to report when a signal arrives.
+  drained=0
+  while IFS= read -r -t "$DRAIN_WAIT" -u 3 msg; do
+    handle_msg "$msg"
+    drained=$((drained + 1))
+    [ "$drained" -ge 200 ] && break
+  done
+
+  if [ "$TTY" = 1 ] && IFS= read -rsn1 -t 0.05 key 2>/dev/null; then
+    handle_key "$key"
+  fi
+
+  now=$(date +%s)
+  if [ "$now" != "$LAST_TICK" ]; then
+    LAST_TICK=$now
+    [ $((now % 2)) = 0 ] && poll_health
+    DIRTY=1
+  fi
+
+  [ "$DIRTY" = 1 ] && { draw_header; DIRTY=0; }
+done
+
+cleanup

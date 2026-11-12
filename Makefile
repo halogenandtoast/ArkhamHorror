@@ -311,8 +311,18 @@ install-hooks:
 .PHONY: install-hooks
 
 ## Start the local dev stack: arkham-api + vite, images served from frontend/public
-dev.up:
-	@./dev.up
+## Install and prepare a local, non-Docker dev environment
+setup:
+	@./scripts/setup
+.PHONY: setup
+
+## Run the local dev stack, with per-server start/stop and build status
+boot:
+	@./scripts/boot
+.PHONY: boot
+
+# What this used to run; scripts/boot replaced it.
+dev.up: boot
 .PHONY: dev.up
 
 ## Count lines of code

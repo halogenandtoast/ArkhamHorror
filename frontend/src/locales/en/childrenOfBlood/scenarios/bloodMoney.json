@@ -31,6 +31,9 @@
     "childOfVengeance": "If you are playing on Hard or Expert difficulty, set Julia Stern (*Child of Vengeance*) aside, out of play. Remove each other copy of Julia Stern from the game.",
     "addCultist": "Add 1 {'{'}cultist{'}'} token to the chaos bag for the remainder of the campaign."
   },
+  "remembered": {
+    "theInvestigatorsSpokeWithPriscillaThomas": "The investigators spoke with Priscilla Thomas."
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is 1 more than the number of {'{'}blood{'}'} tokens sealed on your investigator.",

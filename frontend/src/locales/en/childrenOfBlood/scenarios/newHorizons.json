@@ -13,6 +13,12 @@
     "spendExperienceToRemoveBlood": "<p>Spend 2 {'{'}perPlayer{'}'} total experience, as a group, to remove 1 {'{'}blood{'}'} token from the chaos bag<p>",
     "doNotSpendExperience": "Do not spend experience"
   },
+  "remembered": {
+    "theInvestigatorsFoundForgedPermits": "The investigators found forged permits.",
+    "theInvestigatorsFoundASheetOfArcaneSymbols": "The investigators found a sheet of arcane symbols.",
+    "theInvestigatorsFoundTheManagersKeys": "The investigators found the manager’s keys.",
+    "theInvestigatorsStoleTheManagersKeys": "The investigators stole the manager’s keys."
+  },
   "version1": {
     "setup": {
       "title": "Setup (v. I)",

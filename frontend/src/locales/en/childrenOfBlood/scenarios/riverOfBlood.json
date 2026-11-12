@@ -25,6 +25,9 @@
     "spendExperienceToRemoveBlood": "<p>Spend 2 {'{'}perPlayer{'}'} total experience, as a group, to remove 1 {'{'}blood{'}'} token from the chaos bag<p>",
     "doNotSpendExperience": "Do not spend experience"
   },
+  "remembered": {
+    "theInvestigatorsFoundASacrificialDagger": "The investigators found a sacrificial dagger."
+  },
   "resolutions": {
     "noResolution": {
       "title": "No Resolution",

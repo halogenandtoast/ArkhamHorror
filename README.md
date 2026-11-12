@@ -21,41 +21,43 @@ please file a bug.
 
 ### Player Cards
 
-* All player cards before 2026
+* Every official player card
 
 ### Campaigns
 
-* Night of the Zealot
-  * Return to Night of the Zealot
+* The Night of the Zealot
+  * Return to the Night of the Zealot
 * The Dunwich Legacy
-  * Return to The Dunwich Legacy
-* The Path To Carcosa
-  * Return to The Path To Carcosa
+  * Return to the Dunwich Legacy
+* The Path to Carcosa
+  * Return to the Path to Carcosa
 * The Forgotten Age
-  * Return to The Forgotten Age
+  * Return to the Forgotten Age
 * The Circle Undone
-  * Return to The Circle Undone
+  * Return to the Circle Undone
 * The Dream-Eaters
 * The Innsmouth Conspiracy
 * Edge of the Earth
 * The Scarlet Keys
 * The Feast of Hemlock Vale
+* The Drowned City
 * Brethren of Ash
-* The Drowned City (Beta)
+* Children of Blood (Beta)
 
 ### Side Stories
 
-* The Curse of the Rougarou
+* Curse of the Rougarou
 * Carnevale of Horrors
-* The Labyrinths of Lunacy (Beta)
+* The Labyrinths of Lunacy
+* Guardians of the Abyss
 * Murder at the Excelsior Hotel
-* Guardians of the Abyss (Beta)
 * The Blob That Ate Everything
-* War of the Outer Gods (Beta)
-* Machinations Through Time (Beta)
+* War of the Outer Gods
+* Machinations Through Time
 * Fortune and Folly
 * The Midwinter Gala
 * Film Fatale
+* Traces to Nowhere (Beta)
 
 ### Challenge Scenarios
 
@@ -68,7 +70,56 @@ please file a bug.
 * Relics of the Past
 * Enthralling Encore
 
+Beta content is playable and finished enough to sit in the chooser, which badges
+it the same way, but it has had less play than the rest.
+
 ## I just want to try this out on my computer
+
+### Prebuilt package (no Docker)
+
+The least work, if there is a build for your machine. One archive with the
+backend, the frontend, PostgreSQL and nginx already in it — nothing to
+install, not even Docker.
+
+Grab the archive for your platform from the
+[releases page](https://github.com/halogenandtoast/ArkhamHorror/releases):
+
+| You have | Download | Then |
+| --- | --- | --- |
+| An Apple Silicon Mac | `ArkhamHorror-macos-arm64.tar.gz` | double-click `Start-ArkhamHorror.command` |
+| Windows | `ArkhamHorror-linux-x86_64.tar.gz` | double-click `Start-ArkhamHorror.bat` |
+| Linux on x86_64 | `ArkhamHorror-linux-x86_64.tar.gz` | `bash game/start.sh` |
+
+Yes, Windows takes the Linux archive: the launcher runs it inside WSL. It
+installs WSL and Ubuntu if they are missing, which wants a reboot the first
+time, and then you double-click again. Leave the terminal window it opens alone
+— closing it or pressing Ctrl+C is how you stop the game, and it writes a
+database backup on the way out.
+
+The first start initialises its own database, imports `setup.sql`, brings up all
+three services and opens http://localhost:3000. Later starts reuse the data.
+`bash game/start.sh --status` and `--stop` do what they say.
+
+Your saved games are kept outside the package, so a newer one does not disturb
+them:
+
+* macOS — `~/Library/Application Support/ArkhamHorror/`
+* Linux and WSL — `~/.local/share/ArkhamHorror/`
+
+A normal shutdown also writes a dump to the package's own `backup/`, which is
+what a later install restores from if it finds no live database.
+
+Images come from the CDN, and nginx falls back to it file by file, so you can
+drop as much or as little local art as you like into `game/frontend/dist/img/`.
+Your own card images go in `cards/` (or `cards_en/`), which are checked first.
+
+To upgrade, download the new archive into the same folder as the old one and
+double-click `Update-ArkhamHorror.command` (`.bat` on Windows). It stops the
+services, swaps `game/` for the new one and leaves `cards/`, `cards_en/` and
+`backup/` where they are. It will not download anything itself.
+
+`offline/README.md` goes deeper: the codes `start.sh` exits with, which log each
+failure lands in, and the order card images are looked up in.
 
 ### Linux Users
 
@@ -339,6 +390,37 @@ To install a git hook that warns if you forget to update the manifest:
 ```
 make install-hooks
 ```
+
+### Offline builds
+
+The self-contained packages at the top of this file are built by
+`.github/workflows/build-offline.yml`, which runs on any `v*` tag and puts the
+archives on a GitHub release. Cutting one:
+
+```
+make offline-build
+```
+
+That tags HEAD as `vYYYYMMDD.N` — picking the next free `N` for today — and
+pushes the tag, which is the whole trigger. Two builds run, macOS ARM64 and
+Linux x86_64; the other two platforms are in the matrix but commented out.
+Each job is allowed two hours, which it needs — it compiles the Haskell and
+builds PostgreSQL and nginx from source on top of that.
+
+To build one on this machine instead, which is also how you debug the pipeline:
+
+```
+cd offline
+./build_all.sh                  # --skip-deps, --clean and --verbose all work
+```
+
+It downloads its own GHC, Stack and Node rather than using yours, builds
+PostgreSQL 14.15 and nginx from source so nothing carries a hard-coded path,
+and leaves the archive in `offline/_dist/`. The toolchains and caches land in
+`offline/_deps/` and `offline/_tmp/`, all three gitignored.
+
+The build is not allowed to leave the source tree changed: it may patch the
+frontend while it runs, but it puts it back. `offline/README.md` has the rest.
 
 ### Tests
 

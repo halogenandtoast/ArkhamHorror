@@ -107,6 +107,17 @@ vge() {
   [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | head -1)" = "$2" ]
 }
 
+# Node is its own case: `apt-get install node` is not even the right package
+# name (it is nodejs), and the nodejs a distro ships is usually older than the
+# floor above -- Ubuntu 24.04 is on 18, which vite 7 refuses. nvm gets a
+# current one without root, which is also what a WSL setup wants.
+node_install() {
+  case $PKG in
+    brew) echo "brew install node" ;;
+    *) echo 'curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash && . "$HOME/.nvm/nvm.sh" && nvm install --lts' ;;
+  esac
+}
+
 pkg_install() { # pkg_install <formula/package names...>
   case $PKG in
     brew)    echo "brew install $*" ;;
@@ -176,10 +187,10 @@ if command -v node >/dev/null 2>&1; then
   elif command -v nvm >/dev/null 2>&1 || [ -s "${NVM_DIR:-$HOME/.nvm}/nvm.sh" ]; then
     want "node >= $NODE_MIN" "found $node_v, and nvm is available" "nvm install --lts && nvm use --lts"
   else
-    want "node >= $NODE_MIN" "found $node_v, which vite 7 will refuse" "$(pkg_install node)"
+    want "node >= $NODE_MIN" "found $node_v, which vite 7 will refuse" "$(node_install)"
   fi
 else
-  want "node >= $NODE_MIN" "not on PATH" "$(pkg_install node)"
+  want "node >= $NODE_MIN" "not on PATH" "$(node_install)"
 fi
 
 command -v npm >/dev/null 2>&1 || want "npm" "not on PATH (it ships with node)" ""

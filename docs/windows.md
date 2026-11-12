@@ -1,76 +1,84 @@
-# Setting up for development on Windows
+# Developing on Windows
 
-## Backend
+Everything runs inside WSL. The build leans on a Unix shell throughout — the
+Makefile targets, the watch loops, `scripts/setup` and `scripts/boot` — so
+building against Windows directly is not a path anyone here keeps working.
+Once WSL is up the work is the same as it is on Linux, so most of this page is
+getting WSL ready and then handing over to `scripts/setup`.
 
-### Install Windows Subsystem for Linux (WSL) if you don't have it already
+If you only want to play the game rather than work on it, you do not need any
+of this: see [Installing with Docker on Windows](./install/docker-windows.md)
+or the [prebuilt package](./install/prebuilt.md), which is the easier of the
+two.
+
+## WSL
 
 ```
 wsl --install
 ```
 
-reboot
+Reboot, then open the Ubuntu terminal. Everything below happens in there, and
+the checkout should live in the WSL filesystem (`~/ArkhamHorror`, say) rather
+than under `/mnt/c`. A build on `/mnt/c` is painfully slow, and Postgres will
+not accept a data directory there at all.
 
-### Install Dependencies
+## System packages
 
-In the wsl terminal, run the following commands:
+GHC and the Haskell packages that bind to C libraries need these:
 
 ```
 sudo apt-get update
-sudo apt-get install build-essential curl libffi-dev libffi8ubuntu1 libgmp-dev libgmp10 libncurses-dev libncurses5 libtinfo5 libz-dev libpq-dev postgresql
+sudo apt-get install build-essential curl git pkg-config \
+  libffi-dev libgmp-dev libncurses-dev zlib1g-dev libpq-dev postgresql
 ```
 
+## Postgres
 
-then install ghcup via the WSL way
-
-```
-curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
-```
-
-
-source the env file they tell you to and then install the correct ghc version, (currently 9.8.2) via `ghcup tui`,
-
-
-### Try building the project
-
-run `make api.watch` and wait a long time.
-
-
-## Frontend
-
-Make sure to have installed WSL as instructed above then, in a new terminal I ran:
+WSL does not start services for you unless you have enabled systemd, so start
+it by hand and make yourself a superuser:
 
 ```
-sudo apt-get install nodejs npm
+sudo service postgresql start
+sudo -u postgres createuser -s "$(whoami)"
 ```
 
-
-then upgrade the node version
-
-```
-sudo npm cache clean -f
-sudo npm install -g n
-sudo n stable
-hash -r
-```
-
-then in the `frontend` directory:
+`scripts/setup` creates the database itself, so there is nothing else to do
+here. If it cannot connect, Postgres is probably still set to `peer` or
+`scram-sha-256` for local connections — find the config with
 
 ```
-npm i
-npm run serve
+sudo -u postgres psql -tAc 'show hba_file'
 ```
 
-## Database
+and change the local lines to `trust`, then `sudo service postgresql reload`.
 
-Run `whoami` to check your username, if your username was `halogen64` for example, then run the following:
+Postgres does not survive a reboot of WSL, so `sudo service postgresql start`
+is a thing you will type again.
+
+## The rest
+
+From the checkout:
 
 ```
-sudo -u postgres createuser -s halogen64
-createdb arkham-horror-backend
-psql arkham-horror-backend < setup.sql
+./scripts/setup
 ```
 
+It installs ghcup, the GHC that `backend/stack.yaml` pins (9.14.1 today),
+Stack and a current Node, then the node modules, the database and a first
+build of the backend. `./scripts/setup --check` lists what is missing without
+touching anything.
 
-Then to allow the backend to actually connect, you may need to edit `/etc/postgresql/14/main/pg_hba.conf` and changed all local connections from `peer` and `scram-sha-256` to `trust`
+Then:
 
-After that run the backend and frontend if not already running and you should be able to connect to http://localhost:8080/ and be able to create a new user and get started.
+```
+./scripts/boot
+```
+
+and open http://localhost:8080 in a Windows browser. WSL forwards localhost,
+so the frontend on 8080 and the API on 3002 usually need nothing extra. If the
+page will not load, vite has probably bound to `::1` alone, which the
+forwarding does not always pick up — `npm run dev -- --host` in `frontend/`
+binds everything and settles it.
+
+The [Local dev](../README.md#local-dev) section of the README covers what the
+two scripts do and how to run either half on its own.

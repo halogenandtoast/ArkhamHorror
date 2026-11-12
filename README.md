@@ -68,6 +68,9 @@ different thing and need none of this.
 ./scripts/setup
 ```
 
+On Windows this all happens inside WSL, which takes a few steps first — see
+[Developing on Windows](./docs/windows.md).
+
 It checks for everything the build needs, prints whatever is missing with the
 command that fixes it, and installs them if you say yes. Then it installs the node
 modules, creates the database, applies the migrations, and builds the backend

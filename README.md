@@ -23,7 +23,7 @@ designer dares, and other variants.
 
 ### Chapter 2
 
-Every player card so far, the 2026 Core Set included. The boxes:
+All content before 2027 is implemented, player cards included.
 
 * Brethren of Ash
 * Children of Blood (Beta)

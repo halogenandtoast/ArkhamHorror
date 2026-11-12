@@ -29,9 +29,9 @@ All content before 2027 is implemented.
 * Children of Blood (Beta)
 * Traces to Nowhere (Beta, side story)
 
-You have to turn beta on in Settings before any of it shows up. Expect more
-bugs than usual, and the odd game that can't be recovered. If that happens,
-please file a bug.
+Content marked beta will require enrollment in the beta program which is
+available from the settings page. Beta content is likely to have more bugs than
+usual and the expectation is that games may break in non-recoverable ways.
 
 ### Homebrew
 

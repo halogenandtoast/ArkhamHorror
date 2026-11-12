@@ -10,6 +10,7 @@ import { asCardCode, cardId } from '@/arkham/types/Card';
 import type { Card as CardT, CardContents } from '@/arkham/types/Card';
 import DebugToggle from '@/arkham/components/debug/DebugToggle.vue'
 import EarnableCardPicker from '@/arkham/components/debug/EarnableCardPicker.vue'
+import { XMarkIcon } from '@heroicons/vue/20/solid'
 import { useDebug } from '@/arkham/debug'
 import { gainXpMessage, healTraumaMessage, spendXpMessage, sufferTraumaMessage, type TraumaKind } from '@/arkham/debugPlayer'
 import { useShiftHoverDebug } from '@/composable/shiftHoverDebug'
@@ -186,7 +187,9 @@ const deck = computed(() => {
               class="earned-remove"
               :title="$t('debug.earnedCards.remove')"
               @click="unearn(card)"
-            >×</button>
+            >
+              <XMarkIcon aria-hidden="true" />
+            </button>
           </div>
         </div>
       </section>
@@ -452,19 +455,23 @@ const deck = computed(() => {
   box-sizing: border-box;
   color: #fff;
   cursor: pointer;
-  /* Flex centring, not line-height: the glyph's own metrics leave it sitting
-     high in the circle, and a button's default padding shifts it right. */
+  /* An SVG, not a "×" character: U+00D7 is a math operator whose ink sits
+     below the line-box centre and right of its advance centre, so centring the
+     text still leaves it visibly off in a circle this small. */
   display: flex;
-  font-family: system-ui, sans-serif;
-  font-size: 15px;
   height: 22px;
   justify-content: center;
-  line-height: 1;
   padding: 0;
   position: absolute;
   right: -6px;
   top: -6px;
   width: 22px;
+
+  svg {
+    display: block;
+    height: 14px;
+    width: 14px;
+  }
 
   &:hover {
     background: #a33;

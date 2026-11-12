@@ -849,13 +849,14 @@ function updateGameLog(nextLog: readonly LogRow[]) {
   ])
 }
 
+/* Drawn by the bar itself, not from a menu. Registered all the same, so the
+   binding and SkillTest's deep link still find it by id. */
 addEntry({
   id: 'viewSettings',
   icon: AdjustmentsHorizontalIcon,
   content: t('gameBar.viewSettings'),
   binding: 'viewSettings',
-  nested: 'view',
-  section: 'preferences',
+  nested: 'hidden',
   action: () => (showSettings.value = !showSettings.value),
 })
 
@@ -3112,6 +3113,14 @@ onUnmounted(() => {
             </template>
           </template>
         </Menu>
+      </div>
+      <!-- Its own item rather than a row in View: it is a panel you keep going
+           back to, and View is for what you open to read. -->
+      <div class="game-bar-item" :class="{ active: showSettings }">
+        <button :aria-pressed="showSettings" @click="showSettings = !showSettings">
+          <AdjustmentsHorizontalIcon aria-hidden="true" />
+          {{ $t('gameBar.viewSettings') }}
+        </button>
       </div>
       <div>
         <Menu>

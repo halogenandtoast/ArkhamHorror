@@ -5755,7 +5755,13 @@ instance Query ChaosTokenMatcher where
         isMatch' <- go chaosTokenMatcher t
         pure $ isMatch' && t `elem` sealedTokens
       SealedOnInvestigator investigatorMatcher chaosTokenMatcher -> \t -> do
-        sealedTokens <- selectAgg id InvestigatorSealedChaosTokens investigatorMatcher
+        -- Where a token physically sits is not a question about whether its
+        -- holder can still act, and a scenario resolution runs with everyone
+        -- eliminated. 'IncludeEliminated' keeps 'getInvestigatorsMatching''s
+        -- pre-filter from hiding the seal piles, matching the 'Anyone' that
+        -- 'getSealedChaosTokens' already uses.
+        sealedTokens <-
+          selectAgg id InvestigatorSealedChaosTokens (IncludeEliminated investigatorMatcher)
         isMatch' <- go chaosTokenMatcher t
         pure $ isMatch' && t `elem` sealedTokens
       SealedOnAsset assetMatcher chaosTokenMatcher -> \t -> do

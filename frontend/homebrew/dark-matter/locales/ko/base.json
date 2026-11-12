@@ -1,0 +1,97 @@
+{
+  "difficulty": {
+    "Easy": "달로 가고자 합니다",
+    "Standard": "화성으로 가고자 합니다",
+    "Hard": "성간 여행을 하고자 합니다",
+    "Expert": "아무도 가보지 않은 곳으로 가길 원합니다"
+  },
+  "name": "암흑 물질",
+  "about": {
+    "sections": [
+      {
+        "rows": [
+          {},
+          {}
+        ],
+        "text": [
+          "Thanks to those mentioned above for unspeakable help, whether intentionally or through discussion, without them this campaign would not have been possible.",
+          "Thanks to the amazing design framework created by MJ Newman, Nate French and everyone involved in Arkham Horror: The Card Game at FFG."
+        ]
+      },
+      {
+        "title": "디자인 노트",
+        "text": [
+          "캠페인을 재밌게 즐기셨길 바랍니다! 이 캠페인을 만드는 것은 멋진 여정이었습니다. 이 캠페인은 처음에 누더기호, 전기 신호 속 악몽, 저무는 별로 구성된 3부작 캠페인이었습니다. 하지만 플레이테스팅을 몇 번 거친 후, 이 설정과 이야기는 그렇게 짧게 끝내기에는 너무나도 흥미롭다고 생각했습니다.",
+          "The framework of Arkham Horror LCG is really a medium to tell stories in — and I knew that deep space sci-fi horror is a genre deeply connected to Lovecraftian themes and would have to be explored by custom scenarios eventually. I originally did not want to make it because it would have been very simple for a sci-fi themed campaign to stray in tone from the Arkham Files universe, but when I finally figured out a way to bring the investigators into the future that wasn’t too ridiculous, and how to incorporate the mythos in a way that fits the universe without being too obvious, I just had to create the campaign. The King in Yellow is my favourite Ancient One, with the way it plays with psychological horror and perception of reality, with a certain theatrical flare, and the Path to Carcosa is my favourite campaign released so far, so it was only natural for a virtual reality-bending memory-involved campaign to become a loose sequel to the Path to Carcosa. Hastur is not the Ancient One most would associate with deep space, which is precisely why it fits so well.",
+          "이 캠페인이 심우주 SF 캠페인을 찾는 사람들에게 만족스러웠기를 바랍니다. 판타지 플라이트 게임즈의 글 스타일과 분위기를 유지하면서 ‘SF’ 캠페인에서 기대되는 SF스러운 요소들을 최대한 많이, 유기적으로 접목시키려고 노력했습니다. 다른 사람들도 아컴이라는 프레임워크 안에서 SF 이야기를 더 탐색해 보았으면 하는 바람입니다. 제가 한 것보다 더 먼 미래로 갈 수도 있을 테고, 어쩌면 스페이스 오페라 비슷한 무언가라거나, 에일리언 시리즈를 가져올 수도 있겠죠. 하지만 지금은, 제게는 이 암울한 미래를 다루는 것은 여기까지입니다.",
+          "어쨌든 여러분이 이 캠페인을 재밌게 즐겨 주셨기를 바랍니다. 저는 이제 이토록 어두운 시대를 위한 캠페인 작업에 돌입해야겠군요."
+        ]
+      }
+    ]
+  },
+  "xp": {
+    "heirToCarcosa": "카르코사의 후계자"
+  },
+  "intro": {
+    "title": "우주에서는 그 누구도 그대의 비명을 들을 수 없으리"
+  },
+  "specialRules": [
+    {
+      "title": "스캔",
+      "body": "@:darkMatter.additionalRulesAndClarifications.scan"
+    },
+    {
+      "title": "기억",
+      "body": "@:darkMatter.additionalRulesAndClarifications.memories"
+    },
+    {
+      "title": "경계",
+      "body": "@:darkMatter.additionalRulesAndClarifications.alert"
+    }
+  ],
+  "additionalRulesAndClarifications": {
+    "memories": "<h3>기억</h3><p class='basic'>몇몇 시나리오 카드/결말/막간에서 “기억”이라는 용어를 언급할 것입니다. 각 조사자마다 캠페인 기록지에 개별적으로 자신의 “기억”을 기록합니다. <b>이러한 “기억”은 조사자 각자에게만 귀속되며 서로 공유하지 않으니 유념하세요.</b></p><p class='basic'>종종 특정 조사자의 “기억”에 빗금을 긋거나 빗금에 취소선을 그으라는 지시를 받게 됩니다. 이 경우, 캠페인 기록지의 해당 조사자 “기억” 항목에 빗금을 긋거나 이미 그어진 빗금에 취소선을 긋습니다. 각각의 조사자가 가진 “기억”은 자신의 “기억” 항목에 그어진 빗금 개수와 같습니다(취소선이 그어진 빗금은 세지 않습니다).</p>",
+    "alert": "<h3>경계</h3><p class='basic'>조사자가 경계 키워드가 있는 적으로부터 회피를 시도하는 도중 능력 테스트에 실패할 때마다, 우선 그 능력 테스트의 모든 결과를 적용합니다. 그 후, 그 적이 자신에게 회피를 시도했던 조사자를 상대로 공격을 수행합니다(경계 공격). 적은 경계 공격을 수행한 후에도 소진 상태가 되지 않습니다. 경계 공격은 조사자와 적이 교전하고 있는지 여부에 상관없이 발생합니다.</p>"
+  },
+  "prologue": {
+    "title": "서막"
+  },
+  "label": {
+    "paleBlueDot": {
+      "takeHorror": "공포를 1 받음"
+    },
+    "sceneShifting": {
+      "placeDoom": "현재 주요사건에 파멸을 1개 놓습니다"
+    },
+    "solarEclipse": {
+      "take1Horror": "공포를 1 받음",
+      "locationGets2Shroud": "이번 조사 동안 당신이 위치한 장소의 장막값이 +2 증가합니다"
+    }
+  },
+  "key": {
+    "youWereTransportedToTheVirtualDreamlandsByMaja": "당신은 마자에 의해 가상현실 속 몽환의 땅으로 전송되었다",
+    "youEnteredTheVirtualDreamlandsByYourOwnMeans": "당신은 자력으로 가상현실 속 몽환의 땅에 들어왔다",
+    "youAreTrappedInAVirtualNightmare": "당신은 가상현실 속 악몽에 갇혀 버렸다",
+    "youPartiallyRestoredTheSanityOfK2PS187": "당신은 K2-PS187의 정신을 일부나마 회복시켰다",
+    "youFullyRestoredTheSanityOfK2PS187": "당신은 K2-PS187의 정신을 완전히 회복시켰다",
+    "youHaveWatchedThePerformanceOfHeirToCarcosa": "조사자들이 카르코사의 후계자라는 공연을 관람했다",
+    "youHaveWitnessedThePrimordialChaos": "당신은 태고의 혼돈을 목도했다",
+    "youHaveRescuedTheRemainingCrewOfTheNostalgiaII": "당신은 향수 2호의 남은 승조원을 구출했다",
+    "theNostalgiaIIHasBeenSaved": "향수 2호를 구했다",
+    "youCouldntSaveTheCrewOfTheNostalgiaII": "당신은 향수 2호의 승조원을 단 한 명도 구하지 못했다",
+    "youAreNotInGoodStandingWithTheMiGo": "당신은 미고와 반목하고 있다",
+    "youAreAlliedWithTheMiGo": "당신은 미고와 동맹을 맺었다",
+    "youHaveUncoveredTheCultistsInhumanMethods": "사교도들이 사용하는 추악한 방법을 알아냈다",
+    "youHaveWitnessedTheUnconsciousPandemonium": "당신은 무의식 속의 복마전을 목도했다",
+    "theInvestigatorsAreTrappedWithinCarcosa": "조사자들은 카르코사에 갇혀 버렸다",
+    "theSunWentSupernovaAndWipedOutMostOfTheSolarSystem": "태양이 초신성을 일으켜 태양계 대부분을 말살했다",
+    "hopeWasShieldedFromTheBlast": "‘희망’이 폭발에서 살아남았다",
+    "theUCCEscapedToAnotherGalaxy": "식민지 연방이 다른 은하계로 도망쳤다",
+    "youHaveReturnedToThePalacesOfDimCarcosa": "당신은 어스레한 카르코사의 왕궁으로 돌아갔다",
+    "theInvestigatorsEscapedHastursGrasp": "조사자들이 마침내 하스터의 손아귀에서 벗어났고 하스터가 감옥에서 탈출하지 못하도록 막았다",
+    "theRealmOfCarcosaOvertookOurUniverse": "카르코사 왕국이 현실 세계의 우주와 병합되었고, 타실다가 검은 별들을 모두 다스린다",
+    "hasturAndTassildaAreImprisonedInCarcosaOnceMore": "하스터와 타실다는 다시 한 번 카르코사에 갇혔고, 우주는 피할 수 없는 운명을 뛰어넘었습니다. 적어도 지금은…",
+    "impendingDoom": "임박한 파멸",
+    "memories": "기억"
+  }
+}

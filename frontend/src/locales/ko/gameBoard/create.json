@@ -1,40 +1,117 @@
 {
-    "newGame": "새 게임",
-
-    "numberOfPlayers" : "플레이어 수",
-    "withFriends": "친구와 함께",
-    "multihandedSolo": "혼자서 여러 조사자",
-
-    "campaign": "캠페인",
-    "standalone": "독립 시나리오",
-    "sideStory": "외전 이야기",
-
-    "alphaWarning": "이 캠페인은 현재 작업 중입니다. 아직 작동하지 않을 가능성이 높으므로 버그 리포트를 하지 마세요.",
-    "betaWarning": "이 캠페인은 테스트 준비가 완료되었지만 게임이 자주 중단될 것으로 예상됩니다.",
-    "betaWarningScenario": "이 시나리오는 테스트할 준비가 되었지만 게임이 자주 중단될 것으로 예상됩니다.",
-
-    "normal": "기본",
-    "returnTo": "돌아온...",
-    
-    "fullCampaign": "전체 캠페인",
-    "partialCampaign": "부분 캠페인",
-
-    "difficulty": "난이도",
-    "Easy": "쉬움",
-    "Standard": "보통",
-    "Hard": "어려움",
-    "Expert": "전문가",
-
-    "includeTarotReadings": "타로 점치기 포함하기",
-
-    "gameName": "게임 이름",
-    "create": "생성하기",
-
-    "chooseYourDeck": "덱 선택하기",
-    "tabooList": "금기 목록: {tabooList}",
-    "useExistingDeck": "미리 생성한 덱 사용하기",
-    "loadNewDeck": "새로운 덱 불러오기",
-    "selectADeck": "-- 덱 선택하기 --",
-    "deckUrlPlaceholder": "아컴디비(ko.arkhamdb.com) 또는 아컴빌드(arkham.build) 사이트의 덱 주소",
-    "choose": "선택하기"
+  "difficultyFlavor": {
+    "Easy": "스토리를 경험하고 싶은 플레이어",
+    "Standard": "게임에 도전하고 싶은 플레이어",
+    "Hard": "진정한 악몽을 원하는 플레이어",
+    "Expert": "아컴 호러를 원하는 플레이어"
+  },
+  "newGame": "새 게임",
+  "numberOfPlayers": "플레이어 수",
+  "withFriends": "친구와 함께",
+  "multihandedSolo": "혼자서 여러 조사자",
+  "switchingPerspectives": "시점 전환",
+  "switchingPerspectivesDescription": "1인 다조사자 플레이에서는 특정 조사자의 시점에서 행동해야 할 때가 있습니다. 플레이어 탭의 <strong>눈</strong> 아이콘으로 그 조사자의 시점으로 전환하세요.",
+  "campaign": "캠페인",
+  "standalone": "독립 시나리오",
+  "sideStory": "외전 이야기",
+  "requiresInvestigator": "{name} 필요",
+  "alphaWarning": "이 캠페인은 현재 작업 중입니다. 아직 작동하지 않을 가능성이 높으므로 버그 리포트를 하지 마세요.",
+  "betaWarning": "이 캠페인은 테스트 준비가 완료되었지만 게임이 자주 중단될 것으로 예상됩니다.",
+  "betaWarningScenario": "이 시나리오는 테스트할 준비가 되었지만 게임이 자주 중단될 것으로 예상됩니다.",
+  "normal": "기본",
+  "returnTo": "돌아온...",
+  "fullCampaign": "전체 캠페인",
+  "bothScenarios": "두 시나리오 모두 (캠페인)",
+  "scenarios": "시나리오",
+  "partialCampaign": "부분 캠페인",
+  "multiplayerVariant": "다인 플레이 변형",
+  "campaignType": "캠페인 유형",
+  "pickScenario": "시나리오 선택",
+  "difficulty": "난이도",
+  "Easy": "쉬움",
+  "Standard": "보통",
+  "Hard": "어려움",
+  "Expert": "전문가",
+  "includeTarotReadings": "타로 점치기 포함하기",
+  "allowSpectators": "관전 허용",
+  "allowSpectatorsDescription": "이 게임을 홈 페이지에 표시해 누구나 관전할 수 있게 합니다. 관전자는 테이블을 볼 수 있지만 어떤 행동도 할 수 없습니다. 지금 정하면 게임이 시작된 후에는 바꿀 수 없습니다.",
+  "allowSpectatorsMakeDefault": "기본값으로 저장",
+  "allowSpectatorsDefaultSaved": "기본값으로 저장됨",
+  "playMode": "플레이 모드",
+  "singleGroupMode": "단일 그룹 모드",
+  "epicMultiplayerMode": "대규모 다인 모드",
+  "singleScenarioMode": "단일 시나리오",
+  "miniCampaignMode": "미니 캠페인",
+  "miniCampaignDescription": "<p>각 그룹마다 한 번씩, 원하는 순서로 세 게임을 연달아 플레이합니다. 일반 캠페인과 달리:</p><ul><li>독립 시나리오 덱 구성 규칙을 사용합니다. 경험치 0으로 시작하지 않아도 됩니다.</li><li>시나리오 사이에 조사자나 덱을 바꿔도 됩니다.</li><li>시나리오 사이에 경험치를 얻거나 소비하지 않습니다.</li><li>캠페인 기록지가 없습니다. 조사자는 트라우마를 받지 않으며, 사망하거나 미친 조사자도 다른 시나리오에 사용할 수 있습니다.</li></ul>",
+  "numberOfGroups": "그룹 수",
+  "groupName": "그룹 이름",
+  "groupPlayers": "플레이어",
+  "imposeTimeLimit": "제한 시간 적용",
+  "timeLimitMinutes": "제한 시간 (분)",
+  "gameName": "게임 이름",
+  "create": "생성하기",
+  "chooseYourDeck": "덱 선택하기 | 덱 선택하기",
+  "decksChosen": "{total}개 중 {chosen}개 덱 선택됨",
+  "seatNumber": "조사자 {number}",
+  "seatNoDeckYet": "아직 덱을 고르지 않음",
+  "tabooList": "금기 목록: {tabooList}",
+  "useExistingDeck": "미리 생성한 덱 사용하기",
+  "loadNewDeck": "새로운 덱 불러오기",
+  "selectADeck": "-- 덱 선택하기 --",
+  "deckUrlPlaceholder": "아컴디비 또는 arkham.build 덱 주소",
+  "choose": "선택하기",
+  "variant": "캠페인 변형",
+  "fullCampaignOption": {
+    "theDreamEaters": "꿈을 먹는 자<br><small>8부작 캠페인</small>",
+    "theDreamQuest": "몽환의 추적<br><small>4부작 캠페인</small>",
+    "theWebOfDreams": "꿈의 거미줄<br><small>4부작 캠페인</small>"
+  },
+  "advancedRulesConfiguration": "고급 규칙 설정",
+  "rulesPresets": "사전 설정",
+  "presetCustom": "맞춤형 조사자",
+  "preset": {
+    "chapter1": {
+      "name": "챕터 1",
+      "description": "챕터 1 캠페인에 권장합니다."
+    },
+    "chapter2": {
+      "name": "챕터 2",
+      "description": "챕터 2 캠페인에 권장합니다."
+    }
+  },
+  "chapter1Heading": "챕터 1",
+  "chapter2Heading": "챕터 2",
+  "homebrewHeading": "홈브루",
+  "designedBy": "디자인: {name}",
+  "sideStoriesHeading": "외전 이야기",
+  "challengeScenariosHeading": "도전 시나리오",
+  "asIfAtBehavior": "\"~에 있는 것처럼\" 처리 방식",
+  "asIfAtChapter1": "챕터 1 규칙",
+  "asIfAtChapter1Description": "장소에 \"있는 것처럼\"은 카드나 능력 전체가 해결되는 동안, 다른 카드의 시점 격발까지 포함하여 적용됩니다.",
+  "asIfAtChapter2": "챕터 2 규칙",
+  "asIfAtChapter2Description": "장소에 \"있는 것처럼\"은 지정된 능력이나 행동이 해결되는 동안에만 적용됩니다. 다른 카드 능력과 시점 격발은 실제 게임 상태에 따라 해결됩니다.",
+  "recommendedOptions": "권장 옵션",
+  "recommendedOption": {
+    "PlayersDoNotControlStoryAssetClues": {
+      "title": "플레이어는 이야기 자산의 단서를 조종하지 않음",
+      "description": "〈헴록 베일의 축일〉부터 플레이어는 자신이 조종하는 자산 위의 단서를 조종합니다. 이 캠페인에서는 이 규칙이 이상하게 작용하는 경우가 있으므로, 이 옵션을 켜서 이야기 자산을 그 규칙에서 제외하기를 권장합니다."
+    },
+    "UseSwarmPlaceholders": {
+      "title": "무리에 대리 카드 사용",
+      "description": "대표 조사자의 덱에서 카드를 가져와 무리 카드로 쓰는 대신, 어떤 조사자의 덱에도 속하지 않는 대리 카드를 만들어 사용합니다."
+    }
+  },
+  "narrative": {
+    "title": "이야기 텍스트",
+    "description": "이 캠페인의 이야기를 어떤 판본으로 읽을지 정합니다. 문장만 바뀌며 카드, 규칙, 게임 준비, 캠페인 기록지는 어느 쪽이든 같습니다.",
+    "campaignGuide": "공식 캠페인 안내서",
+    "campaignGuideDescription": "캠페인 안내서에 실린 그대로의 이야기입니다. 기본값입니다.",
+    "community": "커뮤니티 콘텐츠",
+    "beta": "베타 카드",
+    "betaWarning": "테스트할 준비는 되었지만, 커뮤니티 판본은 캠페인 안내서보다 훨씬 적게 플레이되었습니다. 어색한 부분이 있으면 버그를 제보해 주세요.",
+    "by": "작성: {designer}"
+  },
+  "deckRequirements": "덱 요구 사항",
+  "blobElseTitle": "모든 것을 집어삼키는 멍울 - 그 밖의 것도!",
+  "returnToName": "귀환: {name}"
 }

@@ -1,0 +1,49 @@
+{
+  "intro": {
+    "title": "시나리오 III: 피 묻은 돈"
+  },
+  "setup": {
+    "agendaDeck": "캠페인 기록지를 확인합니다.",
+    "addCultist": "캠페인이 끝날 때까지 혼돈 주머니에 {cultist} 토큰을 1개 추가합니다."
+  },
+  "codex": {
+    "partyGuest": {
+      "title": "서고 A: 연회 참석객"
+    },
+    "partyGuestSkull": {
+      "title": "서고 {'{'}skull{'}'}: 연회 참석객"
+    },
+    "partyGuestCultist": {
+      "title": "서고 {'{'}cultist{'}'}: 연회 참석객"
+    },
+    "partyGuestTablet": {
+      "title": "서고 {'{'}tablet{'}'}: 연회 참석객"
+    },
+    "partyGuestElderThing": {
+      "title": "서고 {'{'}elderThing{'}'}: 연회 참석객"
+    },
+    "partyGuestBlood": {
+      "title": "서고 {'{'}blood{'}'}: 연회 참석객"
+    },
+    "partyGuestAutoFail": {
+      "title": "서고 {'{'}autoFail{'}'}: 연회 참석객"
+    },
+    "partyGuestElderSign": {
+      "title": "서고 {'{'}elderSign{'}'}: 연회 참석객"
+    }
+  },
+  "resolutions": {
+    "investigatorDefeat": {
+      "title": "쓰러진 조사자"
+    },
+    "noResolution": {
+      "title": "아무 결말에도 도달하지 못했다면"
+    },
+    "resolution1": {
+      "title": "결말 1"
+    },
+    "resolution2": {
+      "title": "결말 2"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "scenario": {
+    "label": "그리고 아무도 없었다",
+    "fullLabel": "그리고 아무도 없었다",
+    "setup": {
+      "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *그리고 아무도 없었다*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{imgPath}/homebrew/and-then-there-were-none/sets/and-then-there-were-none.png' /></section>"
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "결말 1"
+      },
+      "resolution2": {
+        "title": "결말 2"
+      }
+    },
+    "phantomHands": {
+      "label": {
+        "discardAsset": "당신이 조종하는 자산 1장을 버립니다",
+        "loseResources": "자원을 3개 잃음"
+      }
+    }
+  }
+}

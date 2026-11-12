@@ -6,7 +6,7 @@ import * as Arkham from '@/arkham/types/CardDef'
 import { cardImage } from '@/arkham/cardImages'
 import { isCustomCardCode } from '@/arkham/customCards'
 import { localizeArkhamDBBaseUrl } from '@/arkham/helpers'
-import { cardCost, cardGroupKey as groupKey, cardIcons, cardName, cardSetText, cardTraits, cardType, groupCards, levelText } from '@/arkham/cardDetails'
+import { cardClassNames, cardCost, cardGroupKey as groupKey, cardIcons, cardName, cardSetText, cardTraits, cardType, groupCards, levelText } from '@/arkham/cardDetails'
 
 const props = withDefaults(defineProps<{
   cards: Arkham.CardDef[],
@@ -160,7 +160,7 @@ const attachmentHeading = (card: Arkham.CardDef) => {
             </td>
             <td>
               <span class="class-text">
-                <span v-for="(sym, i) in card.classSymbols" :key="sym" :class="`class-sym ${sym.toLowerCase()}-sym`">{{ sym }}{{ i < card.classSymbols.length - 1 ? ', ' : '' }}</span>
+                <span v-for="(sym, i) in card.classSymbols" :key="sym" :class="`class-sym ${sym.toLowerCase()}-sym`">{{ cardClassNames(card)[i] }}{{ i < card.classSymbols.length - 1 ? ', ' : '' }}</span>
               </span>
               <span class="class-icons">
                 <span v-for="sym in card.classSymbols" :key="sym" :class="[`${sym.toLowerCase()}-icon`, `${sym.toLowerCase()}-sym`]"></span>

@@ -24,6 +24,11 @@
     "placeLocations": {
       "instructions": "‘공연장’, ‘로비’, ‘특별석’, ‘무대 뒤편’ 장소를 플레이 영역에 둡니다. 모든 조사자는 ‘공연장’에서 시작합니다.",
       "lola": "이번 캠페인에서 사용할 조사자로 ‘롤라 헤이즈’를 선택했다면, ‘롤라 헤이즈’는 ‘공연장’ 대신 ‘무대 뒤편’에서 시작합니다."
+    },
+    "returnTo": {
+      "gatherSets": "또한 다음 조우 세트의 모든 카드를 모읍니다: *돌아온 커튼콜*, *광기를 부르는 망상*, *신경증적인 공포*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/return-to-curtain-call.png' /><img src='{setImgPath}/maddening-delusions.png' /><img src='{setImgPath}/neurotic-fear.png' /></section>*광기를 부르는 망상*이 *망상*을, *신경증적인 공포*가 *엄습하는 공포*를 대체합니다. 대체된 조우 세트는 게임에서 제거합니다.",
+      "actDeck": "주요목적 2a - “이방인” 사본을 6장 모두 사용하여 주요목적 덱을 구성합니다.",
+      "royalEmissary": "이 시나리오 카드를 ‘왕실의 특사’에 부착하여 다음을 상기합니다: _강제_ – ‘왕실의 특사’가 승점 더미에 추가된 후, 경고 표시로 이 카드에 자원을 1개 놓습니다. 이 카드에 놓인 경고 하나마다, ‘왕실의 특사’는 체력이 조사자 1명당 1씩 증가합니다."
     }
   },
   "resolutions": {

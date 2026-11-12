@@ -1,5 +1,24 @@
 {
   "heading": "시나리오 VIII",
+  "label": {
+    "standaloneIchtacaSetAgainst": "이츠타카와 척이 졌습니다. 혼돈 주머니에 {'{'}tablet{'}'} 토큰을 3개 추가합니다.",
+    "standaloneAlejandroSetAgainst": "알레한드로와 척이 졌습니다. 혼돈 주머니에 {'{'}cultist{'}'} 토큰을 3개 추가합니다.",
+    "standaloneBothSetAgainst": "이츠타카와 척이 졌습니다. 알레한드로와 척이 졌습니다. 혼돈 주머니에 {'{'}elderThing{'}'} 토큰을 2개 추가합니다. 궁극의 도전을 원한다면 이 선택지를 고르세요.",
+    "yigsMercy": {
+      "refused": "이츠타카가 당신의 요청을 거절합니다.",
+      "reject": "“인류를 저버릴 수는 없어!”",
+      "accept": "“그렇게 하겠어.”"
+    },
+    "anotherWay": {
+      "reject": "“인류를 저버릴 수는 없어!”",
+      "accept": "“그렇게 하겠어.”"
+    },
+    "unknowablePast": {
+      "reveal": "혼돈 토큰을 4개 공개합니다. 공개된 {'{'}skull{'}'}, {'{'}cultist{'}'}, {'{'}tablet{'}'}, {'{'}elderThing{'}'}, {'{'}autoFail{'}'} 기호 하나당 피해 1과 공포 1을 받습니다.",
+      "discard": "당신의 손에서 카드를 1장 선택해서 버리고 ‘미지의 과거’를 탐사 덱에 섞어넣습니다. 탐사 덱에서 ‘미지의 과거’를 뽑았다면, 당신은 이 선택지를 선택할 수 없습니다."
+    },
+    "checkSupplies": "탐험 물자를 확인합니다."
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-2 (당신이 위치한 장소에 ‘시대의 유물’이 있다면, -2 대신 -4).",
@@ -13,22 +32,6 @@
       "tablet": "-3. 당신이 중독되어 있다면, -3 대신 이번 능력 테스트가 자동 실패합니다. 당신이 중독되어 있지 않았고 이번 능력 테스트에 실패했다면, 치워 두었던 ‘중독’ 약점 하나를 가져와 플레이 영역 중 당신의 위협 영역에 둡니다.",
       "elderThing": "-3.버린 조우 카드 더미에서 가장 위에 있는 _사술_ 음모 카드를 탐사 덱에 합친 후 섞습니다."
     }
-  },
-  "label": {
-    "yigsMercy": {
-      "refused": "이츠타카가 당신의 요청을 거절합니다.",
-      "reject": "“인류를 저버릴 수는 없어!”",
-      "accept": "“그렇게 하겠어.”"
-    },
-    "anotherWay": {
-      "reject": "“인류를 저버릴 수는 없어!”",
-      "accept": "“그렇게 하겠어.”"
-    },
-    "unknowablePast": {
-      "reveal": "혼돈 토큰을 4개 공개합니다. 공개한 {'{'}skull{'}'}, {'{'}cultist{'}'}, {'{'}tablet{'}'}, {'{'}elderThing{'}'}, {'{'}autoFail{'}'} 기호마다, 피해 1과 공포 1을 받습니다.",
-      "discard": "당신의 손에서 카드를 1장 선택해서 버리고 ‘미지의 과거’를 탐사 덱에 섞어넣습니다. 탐사 덱에서 ‘미지의 과거’를 뽑았다면, 당신은 이 선택지를 선택할 수 없습니다."
-    },
-    "checkSupplies": "탐험 물자를 확인합니다."
   },
   "intro": {
     "title": "시나리오 VIII: 산산조각난 영겁",
@@ -54,8 +57,20 @@
     "setAsideEnemiesNote": "<div class='columns' style='overflow: none;padding-bottom: 40px;'><div style='flex-basis: 20%;'>*주의: 이 두 카드는 양면 카드로, 반대면은 이야기 카드 양식을 취하고 있습니다. 가급적이면, 반대면을 보라는 지시를 받기 전에는 반대면을 보지 마세요.*</div><div style='flex:1; margin-top: 30px;' class='fan'><img src='{setImgPath}/../cards/04325.avif' /><img src='{setImgPath}/../cards/04326.avif' /></div></div>",
     "setAside": "다음 카드들을 비플레이 상태로 치워 둡니다: ‘형태 없는 종자’, ‘시대의 유물(*시간의 흐름을 풀어놓다*)’, ‘시간의 이질지대’, 주요목적 4a – ‘실낙원’, 주요목적 4a – ‘시한부 종말’, 단면으로 된 6장의 _산산조각난_ 장소.",
     "explorationDeck": "다음과 같이 탐사 덱을 만듭니다. 남은 단면 장소 3장과 다음 조우 카드 사본을 1장씩 함께 섞어 한 더미로 만듭니다: ‘시간의 고문’, ‘세계와 세계 사이’, ‘고대의 악’.",
-    "yigsFury": "캠페인 기록지를 확인합니다. “이그의 격노” 아래에 있는 빗금 10개마다, 대표 조사자의 덱 맨 윗장부터 카드를 1장씩 가져와 승점 더미에 뒷면으로 놓습니다. 시나리오가 끝날 때까지, 이 뒷면 카드들은 _복수 1점_을 갖는 것으로 간주합니다."
+    "yigsFury": "캠페인 기록지를 확인합니다. “이그의 격노” 아래에 있는 빗금 10개마다, 대표 조사자의 덱 맨 윗장부터 카드를 1장씩 가져와 승점 더미에 뒷면으로 놓습니다. 시나리오가 끝날 때까지, 이 뒷면 카드들은 _복수 1점_을 갖는 것으로 간주합니다.",
+    "returnTo": {
+      "gatherSets": "또한 다음 조우 세트의 모든 카드를 모읍니다: *돌아온 산산조각난 영겁*, *시간을 넘나드는 사냥꾼*, *프나코투스 사교*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/return-to-shattered-aeons.png' /><img src='{setImgPath}/temporal-hunters.png' /><img src='{setImgPath}/cult-of-pnakotus.png' /></section>*시간을 넘나드는 사냥꾼*이 *불안정한 시간선*을, *프나코투스 사교*가 *어둠의 사교*를 대체합니다. 대체된 세트들은 게임에서 제거합니다.",
+      "explorationDeck": "탐사 덱을 만들 때, 단면 _다른 세계_ 장소 4장만 사용합니다. 원래 게임 준비 지시에 나열된 다른 조우 카드는 포함하지 않습니다.",
+      "setAside": "또한 새로운 _산산조각난_ 장소들을 비플레이 상태로 치워 둡니다.",
+      "additionalRule": "이번 시나리오 동안 다음 규칙을 추가로 적용합니다: _강제_ - 성공한 탐사가 끝난 후: 조우 덱 맨 위 카드 1장을 탐사 덱에 섞어넣습니다."
+    }
   },
+  "specialRules": [
+    {
+      "title": "@:theForgottenAge.shatteredAeons.storyCards.title",
+      "body": "@:theForgottenAge.shatteredAeons.storyCards.body"
+    }
+  ],
   "storyCards": {
     "title": "이야기 카드",
     "body": "이번 신화 팩에는 이야기 카드라는 새로운 유형의 카드가 추가되었습니다. 이야기 카드는 풍부한 서사를 제공하며, 대개 시나리오 카드의 뒷면으로 구성되어 있습니다. 이야기 키드를 해결하라는 지시를 받으면, 해당 이야기 문구를 읽고 게임 문구를 해결하도록 합니다."

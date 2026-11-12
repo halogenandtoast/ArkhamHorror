@@ -1,0 +1,11 @@
+{
+  "writtenInStone": {
+    "label": {
+      "healPhysicalTrauma": "육체적 트라우마 1 회복",
+      "healMentalTrauma": "정신적 트라우마 1 회복"
+    }
+  },
+  "epilogue": {
+    "title": "후일담"
+  }
+}

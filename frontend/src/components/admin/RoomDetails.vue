@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import api from '@/api'
 import type { RoomConnection, RoomDetails, RoomSweepResult } from './roomTypes'
 
+const { t } = useI18n()
 const props = defineProps<{ details: RoomDetails }>()
 const emit = defineEmits<{ (e: 'update', details: RoomDetails): void }>()
 
@@ -32,8 +34,8 @@ function duration(seconds: number | null): string {
 }
 
 function probeLabel(c: RoomConnection): string {
-  if (c.probeAnswered === null) return 'not asked'
-  return c.probeAnswered ? 'alive' : 'no answer'
+  if (c.probeAnswered === null) return t('adminRooms.probeNotAsked')
+  return c.probeAnswered ? t('adminRooms.probeAlive') : t('adminRooms.probeNoAnswer')
 }
 
 async function run<T>(label: string, call: () => Promise<{ data: T }>, done: (data: T) => void) {
@@ -43,24 +45,24 @@ async function run<T>(label: string, call: () => Promise<{ data: T }>, done: (da
     const { data } = await call()
     done(data)
   } catch (e) {
-    message.value = `${label} failed: ${e}`
+    message.value = t('adminRooms.actionFailed', { action: label, error: String(e) })
   } finally {
     busy.value = null
   }
 }
 
 async function refresh() {
-  await run('Refresh', () => api.get<RoomDetails>(`admin/rooms/${details.value.gameId}`), (d) =>
+  await run(t('adminRooms.refresh'), () => api.get<RoomDetails>(`admin/rooms/${details.value.gameId}`), (d) =>
     emit('update', d),
   )
 }
 
 async function probe() {
-  await run('Probe', () => api.post<RoomDetails>(`admin/rooms/${details.value.gameId}/probe`), (d) => {
+  await run(t('adminRooms.probe'), () => api.post<RoomDetails>(`admin/rooms/${details.value.gameId}/probe`), (d) => {
     emit('update', d)
     const dead = d.connections.filter((c) => c.probeAnswered === false)
     const live = d.connections.filter((c) => c.probeAnswered === true)
-    message.value = `${live.length} answered, ${dead.length} did not.`
+    message.value = t('adminRooms.probeResult', { live: live.length, dead: dead.length })
   })
 }
 
@@ -68,8 +70,8 @@ async function probe() {
  * further happens on that board. A player socket that ANSWERS is, so the
  * server refuses on its own and this only has to report what it said. */
 async function sweep(force: boolean) {
-  const what = force ? 'Force close' : 'Sweep'
-  if (force && !confirm('Close this room regardless of what the probe says?')) return
+  const what = force ? t('adminRooms.forceClose') : t('adminRooms.sweep')
+  if (force && !confirm(t('adminRooms.confirmForceClose'))) return
   await run(
     what,
     () => api.post<RoomSweepResult>(`admin/rooms/${details.value.gameId}/sweep${force ? '?force=true' : ''}`),
@@ -85,14 +87,14 @@ async function sweep(force: boolean) {
   <div class="details box">
     <header>
       <div class="heading">
-        <h3>{{ details.gameName ?? 'No game row (deleted)' }}</h3>
+        <h3>{{ details.gameName ?? t('adminRooms.noGameRow') }}</h3>
         <code>{{ details.gameId }}</code>
       </div>
       <div class="actions">
-        <button :disabled="!!busy" @click="refresh">Refresh</button>
-        <button :disabled="!!busy" @click="probe">Probe</button>
-        <button :disabled="!!busy" class="sweep" @click="sweep(false)">Sweep</button>
-        <button :disabled="!!busy" class="force" @click="sweep(true)">Force close</button>
+        <button :disabled="!!busy" @click="refresh">{{ t('adminRooms.refresh') }}</button>
+        <button :disabled="!!busy" @click="probe">{{ t('adminRooms.probe') }}</button>
+        <button :disabled="!!busy" class="sweep" @click="sweep(false)">{{ t('adminRooms.sweep') }}</button>
+        <button :disabled="!!busy" class="force" @click="sweep(true)">{{ t('adminRooms.forceClose') }}</button>
       </div>
     </header>
 
@@ -101,55 +103,52 @@ async function sweep(force: boolean) {
 
     <div class="stats">
       <div class="stat">
-        <span class="label">Sockets</span>
+        <span class="label">{{ t('adminRooms.sockets') }}</span>
         <strong>{{ details.connections.length }}</strong>
-        <small>{{ details.playerConnections }} player / {{ details.spectatorConnections }} watching</small>
+        <small>{{ t('adminRooms.socketBreakdown', { players: details.playerConnections, watchers: details.spectatorConnections }) }}</small>
       </div>
       <div class="stat">
-        <span class="label">Redis tally</span>
+        <span class="label">{{ t('adminRooms.redisTally') }}</span>
         <strong>{{ details.tally.tallyClients ?? '—' }}</strong>
-        <small>{{ details.tally.tallyWatchers ?? '—' }} watching</small>
+        <small>{{ t('adminRooms.tallyWatching', { count: details.tally.tallyWatchers ?? '—' }) }}</small>
       </div>
       <div class="stat" :class="{ warn: tallyDrift !== null && tallyDrift !== 0 }">
-        <span class="label">Drift</span>
+        <span class="label">{{ t('adminRooms.drift') }}</span>
         <strong>{{ tallyDrift === null ? '—' : tallyDrift }}</strong>
-        <small>tally minus real sockets</small>
+        <small>{{ t('adminRooms.driftHint') }}</small>
       </div>
       <div class="stat">
-        <span class="label">Pods holding it</span>
+        <span class="label">{{ t('adminRooms.podsHolding') }}</span>
         <strong>{{ details.podsHoldingRoom.length }}</strong>
-        <small>of {{ details.podsAnswered.length }} answering</small>
+        <small>{{ t('adminRooms.podsAnswering', { count: details.podsAnswered.length }) }}</small>
       </div>
       <div class="stat">
-        <span class="label">Game last updated</span>
+        <span class="label">{{ t('adminRooms.gameLastUpdated') }}</span>
         <strong class="small">{{ details.gameUpdatedAt ?? '—' }}</strong>
       </div>
     </div>
 
     <p v-if="tallyDrift !== null && tallyDrift > 0" class="diagnosis">
-      Redis counts {{ tallyDrift }} socket(s) nobody is holding — a replica died with them
-      attached. That leftover reads as a seated player, which is why the abandoned-room
-      sweep never closes this one. Sweeping clears the tally as well as the sockets.
+      {{ t('adminRooms.driftDiagnosis', { count: tallyDrift }) }}
     </p>
     <p v-if="unanswered.length > 0" class="diagnosis">
-      {{ unanswered.length }} socket(s) did not answer the probe. Their clients are gone;
-      the connections are half-open and will hold the room open indefinitely.
+      {{ t('adminRooms.unansweredDiagnosis', { count: unanswered.length }) }}
     </p>
 
-    <h4>Connections</h4>
+    <h4>{{ t('adminRooms.connections') }}</h4>
     <div v-if="details.connections.length === 0" class="empty">
-      No pod is holding a socket for this game.
+      {{ t('adminRooms.noConnections') }}
     </div>
     <table v-else>
       <thead>
         <tr>
-          <th>Who</th>
-          <th>Role</th>
-          <th>Pod</th>
-          <th>Connected</th>
-          <th>Last pong</th>
-          <th>Queued</th>
-          <th>Probe</th>
+          <th>{{ t('adminRooms.colWho') }}</th>
+          <th>{{ t('adminRooms.colRole') }}</th>
+          <th>{{ t('adminRooms.colPod') }}</th>
+          <th>{{ t('adminRooms.colConnected') }}</th>
+          <th>{{ t('adminRooms.colLastPong') }}</th>
+          <th>{{ t('adminRooms.colQueued') }}</th>
+          <th>{{ t('adminRooms.colProbe') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -158,24 +157,24 @@ async function sweep(force: boolean) {
           :key="`${c.pod}-${c.connectionId}`"
           :class="{ dead: c.probeAnswered === false, closing: c.closing }"
         >
-          <td>{{ c.username ?? (c.userId ? c.userId : 'anonymous') }}</td>
-          <td>{{ c.spectator ? 'spectator' : 'player' }}</td>
+          <td>{{ c.username ?? (c.userId ? c.userId : t('adminRooms.anonymous')) }}</td>
+          <td>{{ c.spectator ? t('adminRooms.spectator') : t('adminRooms.player') }}</td>
           <td><code>{{ c.pod }}</code></td>
           <td>{{ duration(c.connectedForSeconds) }}</td>
-          <td>{{ duration(c.lastPongSecondsAgo) }} ago</td>
-          <td :class="{ warn: c.overflowed }">{{ c.queued }}{{ c.overflowed ? ' (overflowed)' : '' }}</td>
+          <td>{{ t('adminRooms.ago', { duration: duration(c.lastPongSecondsAgo) }) }}</td>
+          <td :class="{ warn: c.overflowed }">{{ c.queued }}{{ c.overflowed ? t('adminRooms.overflowed') : '' }}</td>
           <td>{{ probeLabel(c) }}</td>
         </tr>
       </tbody>
     </table>
 
-    <h4>Seats</h4>
-    <div v-if="details.seats.length === 0" class="empty">No players recorded for this game.</div>
+    <h4>{{ t('adminRooms.seats') }}</h4>
+    <div v-if="details.seats.length === 0" class="empty">{{ t('adminRooms.noSeats') }}</div>
     <ul v-else class="seats">
       <li v-for="seat in details.seats" :key="seat.userId" :class="{ absent: !seat.connected }">
         {{ seat.username }}
         <small>{{ seat.investigatorId }}</small>
-        <span class="presence">{{ seat.connected ? 'connected' : 'not connected' }}</span>
+        <span class="presence">{{ seat.connected ? t('adminRooms.connected') : t('adminRooms.notConnected') }}</span>
       </li>
     </ul>
   </div>

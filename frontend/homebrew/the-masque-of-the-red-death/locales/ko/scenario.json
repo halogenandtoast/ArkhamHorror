@@ -1,0 +1,17 @@
+{
+  "scenario": {
+    "label": "붉은 죽음의 가면",
+    "fullLabel": "붉은 죽음의 가면",
+    "setup": {
+      "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *붉은 죽음의 가면*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{imgPath}/homebrew/the-masque-of-the-red-death/sets/the-masque-of-the-red-death.png' /></section>"
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "결말 1"
+      },
+      "resolution2": {
+        "title": "결말 2"
+      }
+    }
+  }
+}

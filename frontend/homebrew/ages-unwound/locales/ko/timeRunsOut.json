@@ -1,0 +1,46 @@
+{
+  "timeRunsOut": {
+    "heading": "시나리오 VII",
+    "name": "시간이 다하다",
+    "intro": {
+      "title": "시나리오 VII: 시간이 다하다"
+    },
+    "setup": {
+      "removeOtherVersions": "선택하지 않은 각 장소 1장씩을 게임에서 제거합니다."
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "아무 결말에도 도달하지 못했다면"
+      },
+      "resolution1": {
+        "title": "결말 1"
+      },
+      "resolution2": {
+        "title": "결말 2"
+      },
+      "resolution3": {
+        "title": "결말 3"
+      }
+    },
+    "elderThing": {
+      "label": {
+        "placeDoomOnYourLocation": "당신이 위치한 장소에 파멸을 1개 놓음"
+      }
+    },
+    "dawnOfTheUniverse": {
+      "label": {
+        "takeHorror": "공포를 {count} 받습니다"
+      }
+    },
+    "shatteringParadox": {
+      "label": {
+        "placeDoom": "현재 주요사건에 파멸을 1개 놓습니다"
+      }
+    },
+    "watchYouBreak": {
+      "label": {
+        "placeDoom": "현재 주요사건에 파멸을 1개 놓습니다"
+      }
+    }
+  }
+}

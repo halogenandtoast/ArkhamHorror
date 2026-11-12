@@ -125,7 +125,14 @@ const headerInvestigators = computed<[Investigator, number][]>(() => {
     .filter(([i, t]) => t !== 0 || (investigatorTallies.value[i.id]?.length ?? 0) > 0)
 })
 
+// The few sources the server names in plain English rather than with a "$" key.
+const LITERAL_SOURCES: Record<string, string> = {
+  'Spent Xp': 'upgrade.spentXp',
+  'Victory Display': 'upgrade.victoryDisplay',
+}
+
 function plain(s: string) {
+  if (LITERAL_SOURCES[s]) return t(LITERAL_SOURCES[s])
   return s.startsWith("$") ? handleI18n(s, t) : getCardName(s)
 }
 

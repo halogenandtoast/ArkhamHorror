@@ -1,34 +1,85 @@
 {
-  "tokens": {
-    "easyStandard": {
-      "skull": "-X. X is the amount of damage on this card.",
-      "cultist": "Reveal another token. If you fail, after this skill test ends, draw the top card of the encounter deck.",
-      "tablet": "+1. The black cat helps you navigate through the death-fire. If this token is revealed during an investigation and you succeed, draw 1 card.",
-      "elderThing": "-3. If you fail by 2 or more, choose a ready enemy at your location or a connecting location. That enemy moves to your location, engages you, and makes an immediate attack."
+  "heading": "시나리오 III-B",
+  "setup": {
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *돌아갈 수 없는 다리*, *지하세계의 생물*, *휘프노스의 속삭임*, *고대의 악*, *구울*, *엄습하는 공포*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/point-of-no-return.png' /><img src='{setImgPath}/creatures-of-the-underworld.png' /><img src='{setImgPath}/whispers-of-hypnos.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "setEncounterSetsAside": "다음 조우 세트를 비플레이 상태로 치워 둡니다: *역청 바다 속으로*, *계곡의 공포*, *아틀락 나차의 권속*, *나이트건트*. 이 조우 세트들은 다음 아이콘으로 표시됩니다:<section class='encounter-sets'><img src='{setImgPath}/descent-into-the-pitch.png' /><img src='{setImgPath}/terror-of-the-vale.png' /><img src='{setImgPath}/agents-of-atlach-nacha.png' /><img src='{setImgPath}/nightgaunts.png' /></section>",
+    "putLocations": "‘진의 지하 공동’, ‘구그의 도시’, ‘코스의 탑’, ‘구울의 평원’ 장소를 플레이 영역에 둡니다.",
+    "beginAtVaultsOfZin": "모든 조사자는 ‘진의 지하 공동’에서 시작합니다.",
+    "setOtherLocationsAside": "다른 장소를 모두 비플레이 상태로 치워 둡니다.",
+    "setEnchantedWoodsAside": "보유 게임에서 ‘마법 걸린 숲*(바닥에 난 돌문) (꿈을 먹는 자 #53)*’을 찾아서 비플레이 상태로 치워 둡니다.",
+    "setCardsAside": "‘구그 보초’ 적, ‘리처드 업튼 픽맨’ 이야기 자산, ‘거짓 각성’ 약점을 비플레이 상태로 치워 둡니다.",
+    "checkAct": "캠페인 기록지를 확인합니다. 이번 시나리오에서는 다음 상황에 따라서 어떤 주요목적 1 카드를 사용할지 정합니다. 사용하지 않는 주요목적 1 카드는 모두 게임에서 제거합니다.",
+    "useActV1": "*랜돌프가 지하세계로 내려가는 길에 살아남지 못했다면*, 주요목적 1a - “지하세계로(v. I)”를 사용합니다.",
+    "useActV2": "*랜돌프가 지하세계로 내려가는 길에 살아남았다면*, 주요목적 1a - “지하세계로(v. II)”를 사용합니다.",
+    "checkSteps": "고통과 욕지기가 당신을 무겁게 짓누릅니다. 캠페인 기록지의 “다리의 진척도” 옆에 있는 빗금 개수를 확인합니다.",
+    "noSteps": "*빗금이 하나도 없다면*, 아무 일도 일어나지 않습니다.",
+    "oneToFourSteps": "빗금이 1-4개이므로, 시나리오 참조 카드에 피해를 1개 놓습니다. 이는 몽환의 땅에 작용하고 있는 왜곡 현상을 나타냅니다.",
+    "fiveOrMoreSteps": "빗금이 5개 이상이므로, 시나리오 참조 카드에 피해를 2개 놓습니다. 이는 몽환의 땅에 작용하고 있는 왜곡 현상을 나타냅니다.",
+    "buildEncounterDeck": "남은 조우 카드를 함께 섞어, 조우 덱을 만듭니다."
+  },
+  "rules": {
+    "locations": {
+      "title": "‘돌아갈 수 없는 다리’의 장소 카드",
+      "body": "<p class='basic'>이번 시나리오에 사용하는 모든 장소에는 미공개면이 없습니다. 따라서, 이러한 장소는 (미공개면 대신) 공개면이 보이도록 플레이 영역에 들어옵니다. 이러한 장소의 반대면에는 (미공개면 대신) 이야기 카드가 있습니다. 이번 시나리오에서는 장소가 (준비 과정을 포함하여) 플레이 영역에 들어올 때마다, 일반적인 경우와 마찬가지로 그 장소에 그곳의 단서값만큼 단서 토큰을 놓습니다.</p><p class='basic'>장소는 둘 중 한 가지 방법으로 뒤집게 됩니다. 대부분의 경우 아래에 설명된 ‘가려진’ 키워드를 통해서 뒤집으며, 몇몇 장소는 그 대신, 해당 장소 카드에 표시된 기능을 통해서 뒤집게 됩니다.</p><p class='basic'><strong>장소 카드를 뒤집어서 이야기 문구를 읽은 후에는 이번 게임이 끝날 때까지 다시는 해당 카드를 이야기 카드 면으로 뒤집을 수 없습니다(단, 게임 효과에 의해서 허용된 경우라면 가능합니다).</strong></p>"
     },
-    "hardExpert": {
-      "skull": "-X. X is 1 more than the amount of damage on this card.",
-      "cultist": "Reveal another token. If you fail, after this skill test ends, draw the top card of the encounter deck.",
-      "tablet": "0. The black cat helps you navigate through the death-fire. If this token is revealed during an investigation and you succeed, draw 1 card.",
-      "elderThing": "-4. If you fail by 2 or more, choose a ready enemy at your location or a connecting location. That enemy moves to your location, engages you, and makes an immediate attack."
+    "veiled": {
+      "title": "가려진",
+      "body": "<p class='basic'>이번 시나리오에 등장하는 많은 장소에는 ‘가려진’ 키워드가 나와 있습니다. 이 키워드는 해당 장소에 미지의 지식이 있거나 조사자들이 도움을 받을 수 있다는 것을 뜻합니다.</p><p class='basic'>단서가 하나도 없는 ‘가려진’ 장소에 있는 조사자는 {fast} 기능으로, 그 장소 카드를 뒤집어 반대면의 문구를 해결해도 됩니다.</p>"
     }
   },
+  "specialRules": [
+    {
+      "title": "‘돌아갈 수 없는 다리’의 장소 카드",
+      "body": "<p class='basic'>이번 시나리오에 사용하는 모든 장소에는 미공개면이 없습니다. 따라서, 이러한 장소는 (미공개면 대신) 공개면이 보이도록 플레이 영역에 들어옵니다. 이러한 장소의 반대면에는 (미공개면 대신) 이야기 카드가 있습니다. 이번 시나리오에서는 장소가 (준비 과정을 포함하여) 플레이 영역에 들어올 때마다, 일반적인 경우와 마찬가지로 그 장소에 그곳의 단서값만큼 단서 토큰을 놓습니다.</p><p class='basic'>장소는 둘 중 한 가지 방법으로 뒤집게 됩니다. 대부분의 경우 아래에 설명된 ‘가려진’ 키워드를 통해서 뒤집으며, 몇몇 장소는 그 대신, 해당 장소 카드에 표시된 기능을 통해서 뒤집게 됩니다.</p><p class='basic'><strong>장소 카드를 뒤집어서 이야기 문구를 읽은 후에는 이번 게임이 끝날 때까지 다시는 해당 카드를 이야기 카드 면으로 뒤집을 수 없습니다(단, 게임 효과에 의해서 허용된 경우라면 가능합니다).</strong></p>"
+    },
+    {
+      "title": "가려진",
+      "body": "<p class='basic'>이번 시나리오에 등장하는 많은 장소에는 ‘가려진’ 키워드가 나와 있습니다. 이 키워드는 해당 장소에 미지의 지식이 있거나 조사자들이 도움을 받을 수 있다는 것을 뜻합니다.</p><p class='basic'>단서가 하나도 없는 ‘가려진’ 장소에 있는 조사자는 {fast} 기능으로, 그 장소 카드를 뒤집어 반대면의 문구를 해결해도 됩니다.</p>"
+    }
+  ],
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X는 이 카드에 놓인 피해 개수입니다.",
+      "cultist": "다른 혼돈 토큰을 하나 더 공개합니다. 실패하면, 이번 능력 테스트가 끝난 후, 조우 덱 맨 위 카드를 1장 뽑습니다.",
+      "tablet": "+1. 검은 고양이의 도움을 받아 도깨비불을 무사히 지나갑니다. 이 토큰이 조사 동안 공개되었고 이번 테스트가 성공했다면, 카드를 1장 뽑습니다.",
+      "elderThing": "-3. 난이도에 모자란 차이 2 이상으로 실패했다면, 당신이 위치한 장소 또는 이어진 장소에서 준비 상태인 적을 하나 선택합니다. 그 적이 당신이 위치한 장소로 이동하며, 당신과 교전하고 즉시 당신을 한 번 공격합니다."
+    },
+    "hardExpert": {
+      "skull": "-X. X는 이 카드에 놓인 피해 개수+1 입니다.",
+      "cultist": "다른 혼돈 토큰을 하나 더 공개합니다. 실패하면, 이번 능력 테스트가 끝난 후, 조우 덱 맨 위 카드를 1장 뽑습니다.",
+      "tablet": "0. 검은 고양이의 도움을 받아 도깨비불을 무사히 지나갑니다. 이 토큰이 조사 동안 공개되었고 이번 테스트가 성공했다면, 카드를 1장 뽑습니다.",
+      "elderThing": "-4. 난이도에 모자란 차이 2 이상으로 실패했다면, 당신이 위치한 장소 또는 이어진 장소에서 준비 상태인 적을 하나 선택합니다. 그 적이 당신이 위치한 장소로 이동하며, 당신과 교전하고 즉시 당신을 한 번 공격합니다."
+    }
+  },
+  "intro": {
+    "title": "시나리오 III-B: 돌아갈 수 없는 다리",
+    "body": "<p class='basic'>캠페인 기록지를 확인합니다.</p><ul><li>*랜돌프가 지하세계로 내려가는 길에 살아남지 못했다면*, _도입부 1_로 이어집니다.</li><li>*랜돌프가 지하세계로 내려가는 길에 살아남았다면*, _도입부 2_로 건너뜁니다.</li></ul>"
+  },
   "intro1": {
-    "title": "Scenario III–B: Point of No Return",
-    "body": "<p><b>Intro 1:</b> You have finally reached the Dreamlands, but it is not as you expected. This cyclopean cavern is far from the wondrous lands and fabulous cities described in Virgil Gray’s writings. Perhaps the author never ventured this far underground, never found the horrors that lurk beneath the surface of the Dreamlands. You suspect he wouldn’t have left out tales of such a spine-chilling nature. As you venture into the dark and barren realm, you are filled with hollow despair—an emptiness that gnaws at your heart and mirrors the bleak landscape all around you. You came here to help your friends, and now your only guide through this realm is gone. What if this was all a horrible mistake?</p><p>You shake these dark thoughts from your mind and focus on the path that lies ahead of you. It’s too late to dwell on what you could have done differently. This is your way forward now. Even if you cannot help your friends, even if you are too late to help Randolph, you have another mission now. Clearly this region of the Dreamlands has something to do with the creatures invading your reality. The answers must lie here. Besides, it’s not like you have much choice anymore.</p><p>You walk to the edge of a jagged cliff overlooking the cavernous realm below. This realm is staggeringly vast. In the distance, along the cliffs, you see a walled city, of all things. Among its many towers, a black spire rises so high it must pierce the surface of the Dreamlands. To the south is a stretch of plains that looks over the vale below, and you can see shapes moving throughout the grey, phosphorescent light. You hope the beings who inhabit this realm are ones you might be able to reason with. You have your doubts...but at least now you have a plan. Whether or not it is a good plan remains to be seen.</p>"
+    "title": "시나리오 III-B: 돌아갈 수 없는 다리",
+    "body": "<p><b>도입부 1:</b> 마침내 몽환의 땅에 도달했지만 이곳은 머릿속에 떠올렸던 것과는 완전히 딴판이었습니다. 이 거대한 동굴은 버질 그레이의 작품에서 묘사된 경이로운 땅과 멋진 도시들과는 거리가 멉니다. 아마도 버질은 이렇게 먼 지하세계까지 여행하지 않았기에, 몽환의 땅 표면 아래에 도사린 공포를 목도하지 못했을 것입니다. 이렇게 모골이 송연해질 이야기를 의도적으로 생략하진 않았을 테니 말입니다. 어둡고 황량한 지역으로 들어가자, 마음을 갉아먹고 주변의 암울한 풍경을 비추는 공허한 절망만이 차오릅니다. 동료들을 돕기위해 이 황량한 지하까지 내려왔지만 이제는 당신을 이끌 유일한 안내자마저 잃었습니다. 이 모든 것이 끔찍한 실수였다면 어떻게 해야 할까요?</p><p>마음속에서 어두운 생각들을 떨쳐 내고는 앞에 놓인 길에만 집중하기로 마음먹었습니다. 다른 선택을 했다면 어땠을까 하고 과거만 반추하기에는 이미 너무 늦었습니다. 이 길만이 유일한 길입니다. 동료를 도울 수도 없고, 랜돌프를 돕기에도 너무 늦었을지라도, 이제 당신에겐 또 다른 임무가 있습니다. 꿈 바깥 세계를 침략해 오는 괴물들은 분명 이곳 지하세계와 연관이 있으니, 그 대책도 이 곳에 잠들어 있을 것입니다. 더군다나, 달리 선택지가 남아 있지도 않습니다.</p><p>들쭉날쭉한 낭떠러지 끝으로 걸어가, 아래쪽에 펼쳐진 휑뎅그렁한 지역을 내려다봅니다. 이곳은 믿기 어려울 정도로 광활합니다. 저 멀리 보이는 절벽 근처에서 웬 벽으로 둘러싸인 도시가 우뚝 서 있으며, 그곳의 수많은 탑 사이에 몽환의 땅 지표까지 뚫고 올라갈 듯이 아주 높이 솟은 검은 첨탑 하나가 서 있습니다. 남쪽으로는 계곡이 내려다보이는 평야가 보이며, 그 아래 잿빛 인광 사이로 정체모를 형체들이 움직이고 있습니다. 지하세계에 거주하는 자들과 이성적인 대화가 통하기를 고대하며, 아직 가라앉히지 못한 의구심을 뒤로 하고 계획을 세워 봅니다. 그것이 좋은 계획인지는 아직 알 수 없지만…</p><p class='basic right'>_게임 준비_로 이어집니다.</p>"
   },
   "intro2": {
-    "title": "Scenario III–B: Point of No Return",
-    "body": "<p><b>Intro 2:</b> You have finally reached the Dreamlands, but it is not as you expected. This cyclopean Underworld is far from the wondrous lands and fabulous cities described in Virgil Gray’s writings. Perhaps the author never ventured this far underground, never found the horrors that lurk beneath the surface of the Dreamlands. You suspect he would not have left out tales of such a spine-chilling nature. As you venture into the dark, barren realm, you raise your concerns with Randolph. “It is true that we are farther from your companions than we intended, he affirms. “However, if I may offer another sentiment—perhaps this is a blessing in disguise. Clearly the Underworld has something to do with the creatures invading our reality. I suggest we investigate further while we have the chance. We can return to the surface of the Dreamlands once we have discovered the truth.”</p><p>You ask Randolph if he has any leads, and he steps to the edge of a jagged cliff overlooking the cavernous realm below. “I have been here before,” he says quietly, getting his bearings. “Those walls in the distance belong to the City of Gugs. To the south is a stretch of plains that looks over the vale below. That plain is where the ghouls live. Perhaps there we can learn more.” You raise your doubts aloud, wondering if such creatures are even capable of peaceful conversation. “They are more intelligent than you think, and could be quite helpful if we convince them to aid us. In fact, there is one I count among my friends, an artist by the name of Richard Pickman. If we are fortunate enough to find him, that might be our best chance.” You still have your doubts...but at least now you have a plan. Whether or not it is a good plan remains to be seen.</p>"
+    "title": "시나리오 III-B: 돌아갈 수 없는 다리",
+    "body": "<p><b>도입부 2:</b> 마침내 몽환의 땅에 도달했지만 이곳은 머릿속에 떠올렸던 것과는 완전히 딴판이었습니다. 이 거대한 동굴은 버질 그레이의 작품에서 묘사된 경이로운 땅과 멋진 도시들과는 거리가 멉니다. 아마도 버질은 이렇게 먼 지하세계까지 여행하지 않았기에, 몽환의 땅 표면 아래에 도사린 공포를 목도하지 못했을 것입니다. 이렇게 모골이 송연해질 이야기를 의도적으로 생략하진 않았을 테니 말입니다. 어둡고 황량한 지역으로 들어가며 랜돌프와 걱정을 나눕니다. “의도한 것보다 여러분의 동료들과 멀리 떨어진 건 부인할 수 없겠습니다. 하지만, 좀 다른 관점에서 이야기를 하나 해보죠. 이건 어쩌면 불운으로 가장한 기회일지도 모릅니다. 현실 세계를 침략해 오는 괴물들은 이곳 지하세계와 명백한 관련이 있어요. 기회가 있을 때 더 조사해 보는 게 어떨까요? 진실을 밝혀낸 후에 몽환의 땅의 지표로 돌아가도 늦지 않을 겁니다!”</p><p>랜돌프에게 어디로 가야 하는지 아느냐고 묻자, 그는 들쭉날쭉한 낭떠러지 끝으로 걸어가 아래쪽에 펼쳐진 휑뎅그렁한 지역을 내려다봅니다. “여기에 와 본 적이 있어요. 저 멀리 보이는 벽은 구그의 도시 성벽입니다. 남쪽으로는 계곡이 내려다보이는 평야가 뻗어 있는데, 그곳엔 구울이 살고 있죠. 어쩌면 거기서 더 많은 것을 알아낼 수도 있겠어요.” 당신은 구울 같은 괴물과 평화로운 대화가 가능하기나 한지 의심합니다. “그들은 당신 생각보다 지능이 높아요. 우리를 돕도록 설득할 수만 있다면 꽤 도움이 될 거예요. 사실, 그중에 제 친구 하나가 있는데 리처드 픽맨이라는 예술가죠. 운이 따라서 픽맨을 찾을 수 있다면, 문제가 해결될 가능성이 제일 높지 않겠나 싶네요.” 아직 가라앉히지 못한 의구심을 뒤로 하고 계획을 곱씹어 봅니다. 그것이 좋은 계획인지는 아직 알 수 없지만…</p><p class='basic right'>_게임 준비_로 이어집니다.</p>"
   },
   "resolutions": {
+    "noResolution": {
+      "title": "아무 결말에도 도달하지 못했다면",
+      "body": "<p class='basic'>_결말에 도달하지 못했다면(모든 조사자가 쓰러졌다면):_ _결말 2_로 건너뜁니다.</p>"
+    },
     "resolution1": {
       "title": "결말 1",
-      "body": "<p>The black, tarry liquid rises around you, consuming you, and you fear that you’ve made a grave mistake. The pressure of the dense liquid surrounds your body, crushing you from all sides. But then you emerge on the other side. You fall for a brief, silent moment before being caught by a glowing, sinewy web. Panicking, you scramble to a nearby platform made of solid rock. Your refuge is one of many, each suspended in the air and connected by thick webbing. Beyond that is a vast, cosmic space, an infinite darkness that stretches as far as the eye can see.</p>"
+      "body": "<p>_결말 1:_ 역청질의 검은 액체가 당신을 삼키자 엄청난 실수를 범한 것은 아닐까 하는 두려움에 휩싸였습니다. 빽빽한 액체가 당신의 몸을 둘러싸고 짓눌러 사방에서 당신을 찌그러뜨리려 했지만 그것도 찰나, 당신은 역청 바다의 반대쪽으로 튀어나왔습니다. 아주 짧고 고요한 순간 동안 아래를 향해 떨어지다가 몸 전체가 질기고 빛나는 거미줄에 붙잡혔습니다. 극심한 공포에 빠진 당신은 근처에서 발 디딜 곳을 찾아 재빨리 움직인 끝에, 허공에 둥둥 뜬 채로 거미줄로 얽힌 수많은 바위 섬 중 한 곳에 오를 수 있었습니다. 거미줄 너머로는 감히 눈으로 담을 수 있는 곳보다 멀리 펼쳐진 무한한 어둠이 펼쳐져 있습니다. 바로 광활한 우주 공간입니다.</p><ul><li>캠페인 기록지의 “다리의 진척도” 옆에, 시나리오 참조 카드에 놓인 피해만큼 빗금을 긋습니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.</li><li>*‘꿈의 거미줄’을 4부작 캠페인으로 플레이하고 있다면*, _시나리오 4–B: 우주의 가닥을 엮는 자_로 이어집니다.</li><li>*꿈의 거미줄과 몽환의 추적을 서로 연결된 8부작 캠페인으로 플레이하고 있습니까?*<ul><li>*…그리고 아직 시나리오 3–A: 달의 어두운 면을 플레이하지 않았다면*, 그 시나리오로 이어집니다.</li><li>*…그리고 이미 시나리오 3–A: 달의 어두운 면을 플레이했다면*, 그 대신 _막간 III: 위대한 존재_로 이어집니다.</li></ul></li></ul>"
     },
     "resolution2": {
       "title": "결말 2",
-      "body": "<p>You brace yourself as another wave of distorted reality crashes into you. This feeling, whatever it is, is growing stronger as time marches on. Someone or something is causing it, but how? Just as you are pondering its meaning, you realize something curious: you aren’t the only one affected. Far from it, in fact; the entirety of the Underworld seems to be changing with each wave of warped energy that flows through the realm. Walls shift, the floor skews, and the dim, phosphorescent light scintillates with a cosmic, otherworldly glow. The ground rumbles as another wave of force rushes through the foundations of the dream world. The rocky surface upon which you stand gives way. You flail in the air, attempting to grab hold of something, anything that you can use to pull yourself up. Your hands wrap around a painted plank of wood. You have no time to question its appearance—survival comes first.</p><p>When you pull yourself up, you realize you are curled up on a park bench, surrounded by a thick fog and the grim, gambrel rooftops of Arkham. There is no ground in front of you. Just an open, endless pit into fathomless depths. The Underworld, perhaps? But how is that possible? Virgil’s cat watches you casually from a tree branch that hangs over the park bench. “It won’t stop,” the black cat tells you. “Not until there is nothing left of your world.” You wonder what you could possibly do in the face of such horror. The cat gazes down into the pit below. “It’s waiting for you.”</p><p>Another rumble. In the distance, you watch with horror as an entire building is sucked into the ground. You think you spot a pedestrian in the distance, but it is no human. If this goes on any longer, your companions won’t have a world to awaken to. You steel yourself, look down into the empty pit, and gulp. “Down you go,” the cat says.</p><p>You fall. The roar of the wind is deafening as it whips by your head. You can’t possibly survive a fall like this, you think. But instead of splattering against a hard, rocky ground, you are caught by a glowing, sinewy web. Panicking, you scramble to a nearby platform made of solid rock. Your refuge is one of many, each suspended in the air and connected by thick webbing. Beyond that is a vast, cosmic space, an infinite darkness that stretches as far as the eye can see.</p> "
+      "body": "<p>_결말 2:_ 또 다시 밀려드는 왜곡된 현실의 쇄파 앞에서 당신은 간신히 정신을 지탱합니다. 이 감각의 실체는 알 수가 없지만 다시금 밀려들 때마다 점차 강해지고 있습니다. 누군가 혹은 무언가가 현실을 왜곡시키고 있는 것이지만, 대체 어떻게 이런 일을 벌일 수 있는 걸까요? 왜곡 현상이 어떤 상황인지 고민하던 찰나 한 가지 꺼림칙한 생각이 듭니다. 그러고 보니 이 감각에 영향을 받은 것은 당신만이 아니었습니다. 사실 뒤틀린 기운이 지하세계를 관통해 흐를 때마다 이곳 전체가 변화하는 것처럼 보입니다. 벽이 움직이고 바닥은 기울어지며, 흐릿한 잿빛 인광이 우주의 초차원적인 색채로 번쩍였습니다. 그때 또 다른 힘의 파도가 밀려와 몽환의 땅의 토대를 거쳐 가며 지축을 뒤흔들어 놓았습니다. 그와 함께 당신이 바로 선 암석 표면이 무너져 내렸습니다. 당신은 공중에 뜬 채로 매달릴 것을 찾아 닥치는 대로 손을 뻗었습니다. 다행이라 해야 할지 페인트칠이 된 나무판자가 손에 잡히지만, 왜 여기에 이런 게 있는지 의구심을 가질 시간조차 없었습니다. 일단 살고 봐야 합니다.</p><p>판자 위로 몸을 일으켰다고 생각한 순간, 기묘하게도 당신은 공원 의자에 몸을 웅크리고 있었습니다. 공원은 짙은 안개와 아컴의 음울한 박공지붕으로 둘러싸여 있지만, 당신의 앞쪽에는 아무런 땅이 없이 헤아릴 수 없이 깊은 구덩이 뿐이었습니다. 지하세계로 이어진 구덩이일까요? 그렇게 이어지는 게 가능하기라도 할까요? 공원 의자 위쪽의 나뭇가지에 앉아있던 버질의 고양이가 당신을 무심하게 바라봅니다. “이건 멈추지 않을 거야.” 검은 고양이가 당신을 보며 말합니다. “너희 세계가 모조리 사라질 때까지 계속될 거라고.” 이런 무시무시한 공포에 맞서 과연 당신이 할 수 있는 게 있기나 할까요? 고양이는 구덩이 아래쪽을 응시합니다. “그것이 널 기다리고 있어.”</p><p>또 다시 한바탕 지축이 울립니다. 저 멀리 건물 전체가 땅으로 빨려 들어가는 광경을 두려움에 찬 채 지켜봅니다. 먼 곳에서 보행자처럼 보이는 형체를 발견했지만 그것은 사람이 아니었습니다. 이 현상이 더 계속된다면, 이내 동료들이 깨어날 세상마저 모조리 없어지고 말 것입니다. 당신은 마음을 단단히 먹고, 깊고 텅 빈 구덩이를 보며 침을 꿀꺽 삼킵니다. “내려가야지.” 고양이가 말합니다.</p><p>당신은 구덩이 속으로 한없이 떨어집니다. 울부짖는 바람이 머리를 휩쓸고 지나가자 귀가 먹먹해졌고, 이렇게 높이서 추락한다면 뼈도 못 추릴 거라는 생각마저 들었습니다. 하지만 단단한 돌 바닥에 떨어지는 대신, 질기고 빛나는 거미줄이 당신을 붙들었습니다. 극심한 공포에 빠진 당신은 근처에서 발 디딜 곳을 찾아 재빨리 움직인 끝에, 허공에 둥둥 뜬 채로 거미줄로 얽힌 수많은 바위 섬 중 한 곳에 오를 수 있었습니다. 거미줄 너머로는 감히 눈으로 담을 수 있는 곳보다 멀리 펼쳐진 무한한 어둠이 펼쳐져 있습니다. 바로 광활한 우주 공간입니다.</p><ul><li>대표 조사자는 ‘거짓 각성(꿈을 먹는 자 #275)’ 약점을 얻습니다. 이 카드를 대표 조사자의 덱에 추가합니다. 이 카드는 조사자의 덱 크기를 계산할 때 포함하지 않습니다.</li><li>캠페인 기록지의 “다리의 진척도” 옆에, 시나리오 참조 카드에 놓인 피해만큼 빗금을 긋습니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.</li><li>*‘꿈의 거미줄’을 4부작 캠페인으로 플레이하고 있다면*, _시나리오 4–B: 우주의 가닥을 엮는 자_로 이어집니다.</li><li>*꿈의 거미줄과 몽환의 추적을 서로 연결된 8부작 캠페인으로 플레이하고 있습니까?*<ul><li>*…그리고 아직 시나리오 3–A: 달의 어두운 면을 플레이하지 않았다면*, 그 시나리오로 이어집니다.</li><li>*…그리고 이미 시나리오 3–A: 달의 어두운 면을 플레이했다면*, 그 대신 _막간 III: 위대한 존재_로 이어집니다.</li></ul></li></ul>"
+    }
+  },
+  "besetByMonsters": {
+    "label": {
+      "discardRandom": "무작위로 카드 1장을 버립니다"
     }
   }
 }

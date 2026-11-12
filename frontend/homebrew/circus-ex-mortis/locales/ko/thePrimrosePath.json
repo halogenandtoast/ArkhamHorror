@@ -1,0 +1,19 @@
+{
+  "thePrimrosePath": {
+    "heading": "시나리오 II",
+    "intro": {
+      "title": "시나리오 II: 환락의 길"
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "결말 1"
+      },
+      "resolution2": {
+        "title": "결말 2"
+      },
+      "resolution3": {
+        "title": "결말 3"
+      }
+    }
+  }
+}

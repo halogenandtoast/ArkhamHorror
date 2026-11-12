@@ -1,0 +1,41 @@
+{
+  "name": "돌아온 인스머스에 드리운 음모",
+  "occultation": {
+    "label": {
+      "placeDoom": "현재 주요사건에 파멸을 1개 놓습니다"
+    }
+  },
+  "returnToThePitOfDespair": {
+    "name": "돌아온 절망의 구렁"
+  },
+  "troublingMemories": {
+    "label": {
+      "takeHorror": "공포를 1 받음",
+      "takeDamage": "피해를 1 받습니다"
+    }
+  },
+  "returnToTheVanishingOfElinaHarper": {
+    "name": "돌아온 엘리나 하퍼의 실종"
+  },
+  "returnToInTooDeep": {
+    "name": "돌아온 너무나 깊은 수렁"
+  },
+  "returnToDevilReef": {
+    "name": "돌아온 악마의 암초"
+  },
+  "returnToHorrorInHighGear": {
+    "name": "돌아온 공포의 추격전"
+  },
+  "returnToALightInTheFog": {
+    "name": "돌아온 안개 속 한 줄기 빛",
+    "changing": {
+      "title": "안개 속 한 줄기 빛"
+    }
+  },
+  "returnToTheLairOfDagon": {
+    "name": "돌아온 데이곤의 침소"
+  },
+  "returnToIntoTheMaelstrom": {
+    "name": "돌아온 몰아치는 소용돌이 속으로"
+  }
+}

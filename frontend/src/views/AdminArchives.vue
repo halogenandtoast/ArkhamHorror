@@ -7,12 +7,14 @@
  * running: games offloaded, step rows removed, bytes in the bucket, and how
  * deep the remaining backlog is.
  *
- * Plain strings rather than i18n, matching the rest of the admin panel: it has
- * exactly one reader.
+ * Its strings are in adminArchives.* (locales/<lang>/base.json), like the other
+ * admin sections that have been translated.
  */
 import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import * as Api from '@/arkham/api'
 
+const { t } = useI18n()
 const stats = ref<Api.ArchiveStats | null>(null)
 const loading = ref(true)
 const running = ref(false)
@@ -25,7 +27,7 @@ async function load() {
     error.value = null
   } catch (e) {
     console.error(e)
-    error.value = 'Unable to load archive stats.'
+    error.value = t('adminArchives.loadError')
   } finally {
     loading.value = false
   }
@@ -43,15 +45,14 @@ async function runNow(force = false) {
   canForce.value = false
   try {
     await Api.runArchiveSweep(force)
-    notice.value =
-      'Sweep started. It works in batches until the backlog is empty, so this is hours, not minutes.'
+    notice.value = t('adminArchives.sweepStarted')
   } catch (e) {
     const status = (e as { response?: { status?: number } }).response?.status
     if (status === 409) {
-      error.value = 'A sweep has already run in the last hour.'
+      error.value = t('adminArchives.sweepRecent')
       canForce.value = true
     } else {
-      error.value = 'Could not start a sweep.'
+      error.value = t('adminArchives.sweepFailed')
     }
     console.error(e)
   } finally {
@@ -75,18 +76,18 @@ async function archiveGame(force = false) {
   archiveError.value = null
   needsForce.value = false
   if (!uuidish.test(id)) {
-    archiveError.value = "That does not look like a game id."
+    archiveError.value = t('adminArchives.notGameId')
     return
   }
   archiving.value = true
   try {
     const r = await Api.archiveGameNow(id, force)
-    archiveResult.value = `Archived "${r.game}": ${num(r.steps)} steps, ${bytes(r.bytes)} stored. Press Undo in that game to fetch it back.`
+    archiveResult.value = t('adminArchives.archived', { game: r.game, steps: num(r.steps), size: bytes(r.bytes) })
     gameId.value = ''
     await load()
   } catch (e) {
     const res = (e as { response?: { status?: number; data?: { error?: string } } }).response
-    archiveError.value = res?.data?.error ?? 'Could not archive that game.'
+    archiveError.value = res?.data?.error ?? t('adminArchives.archiveFailed')
     // 409 is the recency guard or an archive that already exists; only the
     // first of those is worth offering to override.
     needsForce.value = res?.status === 409 && (res.data?.error ?? '').includes('force=true')
@@ -106,9 +107,9 @@ async function restore(id: string) {
   archiveResult.value = null
   try {
     await Api.unarchiveGame(id)
-    archiveResult.value = 'Restore started. It runs in the background; refresh in a moment.'
+    archiveResult.value = t('adminArchives.restoreStarted')
   } catch (e) {
-    archiveError.value = 'Could not start that restore.'
+    archiveError.value = t('adminArchives.restoreFailed')
     console.error(e)
   } finally {
     restoring.value = null
@@ -143,9 +144,9 @@ const backlog = computed(() => {
 
 const lastSweep = computed(() => {
   const s = stats.value
-  if (!s?.lastSweepAt) return 'never'
+  if (!s?.lastSweepAt) return t('adminArchives.never')
   const ms = s.lastSweepMs
-  const took = ms === null ? '' : ` (took ${ms < 1000 ? `${ms}ms` : `${Math.round(ms / 1000)}s`})`
+  const took = ms === null ? '' : t('adminArchives.took', { duration: ms < 1000 ? `${ms}ms` : `${Math.round(ms / 1000)}s` })
   return `${when(s.lastSweepAt)}${took}`
 })
 </script>
@@ -153,14 +154,13 @@ const lastSweep = computed(() => {
 <template>
   <section class="admin-block">
     <header class="section-header">
-      <h2>Archived Games</h2>
-      <span v-if="stats && !stats.enabled" class="section-note">disabled — no bucket configured</span>
+      <h2>{{ t('adminArchives.title') }}</h2>
+      <span v-if="stats && !stats.enabled" class="section-note">{{ t('adminArchives.disabled') }}</span>
       <span v-else-if="stats" class="section-note">
         <template v-if="stats.sweepEnabled">
-          nightly · {{ stats.afterMonths }}mo retention · {{ stats.batchSize }} games every
-          {{ stats.pauseSeconds }}s until done
+          {{ t('adminArchives.schedule', { months: stats.afterMonths, batch: stats.batchSize, pause: stats.pauseSeconds }) }}
         </template>
-        <template v-else>manual only — the nightly job is off</template>
+        <template v-else>{{ t('adminArchives.manualOnly') }}</template>
         · {{ stats.bucket }}
       </span>
       <button
@@ -168,31 +168,28 @@ const lastSweep = computed(() => {
         class="run-button"
         :disabled="running"
         :title="stats.sweepEnabled
-          ? 'Archive every game past the retention cutoff, in batches, until none are left'
-          : 'The nightly job is off, but this still archives every game past the cutoff'"
+          ? t('adminArchives.runTitleNightly')
+          : t('adminArchives.runTitleManual')"
         @click="runNow(false)"
       >
-        {{ running ? 'Starting…' : 'Sweep the whole backlog' }}
+        {{ running ? t('adminArchives.starting') : t('adminArchives.sweepAll') }}
       </button>
     </header>
 
-    <div v-if="loading" class="empty box">Loading archive stats…</div>
+    <div v-if="loading" class="empty box">{{ t('adminArchives.loading') }}</div>
     <template v-else-if="stats">
       <p v-if="error" class="empty box">
         {{ error }}
         <button v-if="canForce" class="run-button" :disabled="running" @click="runNow(true)">
-          Run anyway
+          {{ t('adminArchives.runAnyway') }}
         </button>
       </p>
       <p v-if="notice" class="empty box">{{ notice }}</p>
 
       <div v-if="stats.enabled" class="pick box">
-        <label for="archive-game-id">Archive one game</label>
+        <label for="archive-game-id">{{ t('adminArchives.archiveOne') }}</label>
         <p class="pick-hint">
-          A game id — from the dashboard's game lists, or a game's admin page. This ignores the
-          retention cutoff, so it is how you archive a game you have chosen, press Undo
-          in it, and watch the history come back. Nothing is deleted until the uploaded
-          copy has been downloaded again and checked.
+          {{ t('adminArchives.archiveHint') }}
         </p>
         <div class="pick-row">
           <input
@@ -205,46 +202,46 @@ const lastSweep = computed(() => {
             @keyup.enter="archiveGame(false)"
           />
           <button class="run-button" :disabled="archiving || !gameId.trim()" @click="archiveGame(false)">
-            {{ archiving ? 'Archiving…' : 'Archive it' }}
+            {{ archiving ? t('adminArchives.archiving') : t('adminArchives.archiveIt') }}
           </button>
         </div>
         <p v-if="archiveResult" class="pick-ok">{{ archiveResult }}</p>
         <p v-if="archiveError" class="pick-bad">
           {{ archiveError }}
           <button v-if="needsForce" class="run-button" :disabled="archiving" @click="archiveGame(true)">
-            Archive it anyway
+            {{ t('adminArchives.archiveAnyway') }}
           </button>
         </p>
       </div>
 
       <div class="stats-grid">
         <div class="stat-card box">
-          <span class="stat-label">Games Archived</span>
+          <span class="stat-label">{{ t('adminArchives.gamesArchived') }}</span>
           <strong>{{ num(stats.archived) }}</strong>
         </div>
         <div class="stat-card box">
-          <span class="stat-label">Steps Offloaded</span>
+          <span class="stat-label">{{ t('adminArchives.stepsOffloaded') }}</span>
           <strong>{{ num(stats.stepsOffloaded) }}</strong>
         </div>
         <div class="stat-card box">
-          <span class="stat-label">In The Bucket</span>
+          <span class="stat-label">{{ t('adminArchives.inBucket') }}</span>
           <strong>{{ bytes(stats.bytesStored) }}</strong>
         </div>
         <div class="stat-card box">
-          <span class="stat-label">Backlog</span>
+          <span class="stat-label">{{ t('adminArchives.backlog') }}</span>
           <strong>{{ backlog }}</strong>
         </div>
       </div>
 
       <dl class="facts">
-        <div><dt>Last sweep</dt><dd>{{ lastSweep }}</dd></div>
-        <div><dt>Archived in last 24h</dt><dd>{{ num(stats.archivedLastDay) }}</dd></div>
-        <div><dt>Restored in last 7d</dt><dd>{{ num(stats.restoredLastWeek) }}</dd></div>
-        <div><dt>Restores running</dt><dd>{{ num(stats.restoring) }}</dd></div>
-        <div><dt>Brought back (total)</dt><dd>{{ num(stats.restored) }}</dd></div>
-        <div><dt>Failed restores</dt><dd>{{ num(stats.failed) }}</dd></div>
+        <div><dt>{{ t('adminArchives.lastSweep') }}</dt><dd>{{ lastSweep }}</dd></div>
+        <div><dt>{{ t('adminArchives.archivedLastDay') }}</dt><dd>{{ num(stats.archivedLastDay) }}</dd></div>
+        <div><dt>{{ t('adminArchives.restoredLastWeek') }}</dt><dd>{{ num(stats.restoredLastWeek) }}</dd></div>
+        <div><dt>{{ t('adminArchives.restoresRunning') }}</dt><dd>{{ num(stats.restoring) }}</dd></div>
+        <div><dt>{{ t('adminArchives.broughtBack') }}</dt><dd>{{ num(stats.restored) }}</dd></div>
+        <div><dt>{{ t('adminArchives.failedRestores') }}</dt><dd>{{ num(stats.failed) }}</dd></div>
         <div>
-          <dt>Steps ever archived</dt>
+          <dt>{{ t('adminArchives.stepsEver') }}</dt>
           <dd>{{ num(stats.stepsEverArchived) }}</dd>
         </div>
       </dl>
@@ -252,12 +249,12 @@ const lastSweep = computed(() => {
       <table v-if="stats.recent.length" class="recent">
         <thead>
           <tr>
-            <th>Game</th>
-            <th>State</th>
-            <th class="right">Steps</th>
-            <th class="right">Size</th>
-            <th>Last played</th>
-            <th>Archived</th>
+            <th>{{ t('adminArchives.colGame') }}</th>
+            <th>{{ t('adminArchives.colState') }}</th>
+            <th class="right">{{ t('adminArchives.colSteps') }}</th>
+            <th class="right">{{ t('adminArchives.colSize') }}</th>
+            <th>{{ t('adminArchives.colLastPlayed') }}</th>
+            <th>{{ t('adminArchives.colArchived') }}</th>
             <th></th>
           </tr>
         </thead>
@@ -267,7 +264,7 @@ const lastSweep = computed(() => {
               <router-link :to="`/admin/games/${row.gameId}`">{{ row.gameName }}</router-link>
             </td>
             <td>
-              <span class="state" :class="`state--${row.state}`">{{ row.state }}</span>
+              <span class="state" :class="`state--${row.state}`">{{ t(`adminArchives.state.${row.state}`) }}</span>
               <span v-if="row.error" class="row-error" :title="row.error">!</span>
             </td>
             <td class="right">{{ num(row.steps) }}</td>
@@ -281,13 +278,13 @@ const lastSweep = computed(() => {
                 :disabled="restoring === row.gameId"
                 @click="restore(row.gameId)"
               >
-                {{ restoring === row.gameId ? 'Starting…' : 'Restore' }}
+                {{ restoring === row.gameId ? t('adminArchives.starting') : t('adminArchives.restore') }}
               </button>
             </td>
           </tr>
         </tbody>
       </table>
-      <div v-else class="empty box">Nothing has been archived yet.</div>
+      <div v-else class="empty box">{{ t('adminArchives.empty') }}</div>
     </template>
     <p v-else class="empty box">{{ error }}</p>
   </section>

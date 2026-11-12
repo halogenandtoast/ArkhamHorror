@@ -1,0 +1,29 @@
+{
+  "scenario": {
+    "label": "지킬 박사와 하이드 씨의 이상한 사건",
+    "fullLabel": "지킬 박사와 하이드 씨의 이상한 사건",
+    "setup": {
+      "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *지킬 박사와 하이드 씨의 이상한 사건*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{imgPath}/homebrew/the-strange-case-of-dr-jekyll-and-mr-hyde/sets/the-strange-case-of-dr-jekyll-and-mr-hyde.png' /></section>",
+      "doom": "주요사건 1a에 파멸을 1개 올려놓습니다."
+    },
+    "chemicalSpill": {
+      "label": {
+        "loseAction": "행동을 1개 잃음",
+        "takeDamageAndHorror": "피해 1과 공포 1을 받습니다."
+      }
+    },
+    "duplicitousDrug": {
+      "label": {
+        "takeDirectHorror": "직접 공포를 1 받습니다"
+      }
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "결말 1"
+      },
+      "resolution2": {
+        "title": "결말 2"
+      }
+    }
+  }
+}

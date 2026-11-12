@@ -3,7 +3,13 @@
   "setup": {
     "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *회합*, *쥐 떼*, *구울*, *엄습하는 공포*, *고대의 악*, *으스스한 한기*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/the-gathering.png' /><img src='{setImgPath}/rats.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
     "placeLocations": "서재’ 장소 카드를 플레이 영역에 둡니다. 다른 장소 카드는 비플레이 상태로 치워 둡니다. 모든 조사자는 ‘서재’에서 시작합니다.",
-    "setOutOfPlay": "‘구울 사제’와 ‘리타 챈들러’ 카드를 비플레이 상태로 치워 둡니다."
+    "setOutOfPlay": "‘구울 사제’와 ‘리타 챈들러’ 카드를 비플레이 상태로 치워 둡니다.",
+    "returnTo": {
+      "gatherSets": "또한 다음 조우 세트의 모든 카드를 모읍니다: *돌아온 회합*, *우물도스의 구울*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/return-to-the-gathering.png' /><img src='{setImgPath}/ghouls-of-umrdhoth.png' /></section>*우물도스의 구울*은 *구울*을 대체합니다. 대체된 세트는 게임에서 제거합니다.",
+      "mysteriousGateway": "주요목적 덱을 구성할 때, 주요목적 1a—*불가사의한 입구*를 사용합니다. 주요목적 1a—*갇히다*는 게임에서 제거합니다.",
+      "placeLocations": "‘서재’ *(비현실적인 입구)* 장소를 새로운 ‘접객실’, ‘침실’, ‘욕실’ 장소와 함께 플레이 영역에 둡니다. 각 조사자는 ‘서재’ *(비현실적인 입구)*에서 게임을 시작합니다. 기존의 ‘서재’와 ‘복도’ 장소는 게임에서 제거하고, 다른 모든 장소는 비플레이 상태로 치워 둡니다.",
+      "atticAndCellar": "‘다락방’ 2장 중 1장과 ‘지하실’ 2장 중 1장을 무작위로 선택하여 비플레이 상태로 치워둡니다. 선택하지 않은 ‘다락방’과 ‘지하실’은 게임에서 제거합니다."
+    }
   },
   "tokens": {
     "easyStandard": {

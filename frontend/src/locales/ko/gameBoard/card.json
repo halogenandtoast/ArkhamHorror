@@ -1,3 +1,5 @@
 {
-    "vengeance":"복수 {value}점"
+  "vengeance": "복수 {value}점",
+  "resolvedSide": "해결된 면",
+  "front": "앞쪽"
 }

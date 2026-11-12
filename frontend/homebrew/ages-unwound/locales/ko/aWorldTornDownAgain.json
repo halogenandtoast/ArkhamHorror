@@ -1,0 +1,23 @@
+{
+  "aWorldTornDownAgain": {
+    "heading": "시나리오 VI",
+    "name": "다시 무너진 세계",
+    "intro": {
+      "title": "시나리오 VI: 다시 무너진 세계"
+    },
+    "setup": {
+      "checkCampaignLog": "캠페인 기록지를 확인합니다."
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "아무 결말에도 도달하지 못했다면"
+      },
+      "resolution1": {
+        "title": "결말 1"
+      },
+      "resolution2": {
+        "title": "결말 2"
+      }
+    }
+  }
+}

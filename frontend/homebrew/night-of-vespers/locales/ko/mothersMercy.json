@@ -1,0 +1,18 @@
+{
+  "mothersMercy": {
+    "title": "시나리오 V: 어머니의 자비",
+    "intro": {
+      "title": "시나리오 V: 어머니의 자비"
+    },
+    "scaffold": {
+      "title": "시나리오 V: 어머니의 자비"
+    },
+    "rules": {
+      "fadingPalace": {
+        "emptySpace": {
+          "title": "텅 빈 공간"
+        }
+      }
+    }
+  }
+}

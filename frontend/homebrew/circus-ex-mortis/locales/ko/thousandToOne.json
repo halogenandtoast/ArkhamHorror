@@ -1,0 +1,23 @@
+{
+  "thousandToOne": {
+    "heading": "시나리오 VIII",
+    "intro": {
+      "title": "시나리오 VIII: 천에 하나",
+      "decide": "조사자들은 다음 중 하나를 선택해야 합니다:"
+    },
+    "setup": {
+      "checkDoom": "캠페인 기록지를 확인합니다."
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "아무 결말에도 도달하지 못했다면"
+      },
+      "resolution1": {
+        "title": "결말 1"
+      },
+      "resolution2": {
+        "title": "결말 2"
+      }
+    }
+  }
+}

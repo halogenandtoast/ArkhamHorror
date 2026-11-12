@@ -497,9 +497,9 @@ onBeforeUnmount(() => {
             </div>
             <div class="segmented toggle-control">
               <input type="radio" id="opt-asIfRuling-chapter1" name="opt-asIfRuling" :checked="asIfRuling === 'chapter1'" @change="asIfRuling = 'chapter1'" />
-              <label for="opt-asIfRuling-chapter1">Chapter 1</label>
+              <label for="opt-asIfRuling-chapter1">{{ $t('cardsView.chapter1') }}</label>
               <input type="radio" id="opt-asIfRuling-chapter2" name="opt-asIfRuling" :checked="asIfRuling === 'chapter2'" @change="asIfRuling = 'chapter2'" />
-              <label for="opt-asIfRuling-chapter2">Chapter 2</label>
+              <label for="opt-asIfRuling-chapter2">{{ $t('cardsView.chapter2') }}</label>
             </div>
           </div>
 

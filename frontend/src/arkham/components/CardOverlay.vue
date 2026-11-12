@@ -1439,7 +1439,7 @@ watchEffect(() => {
     <span class="fight" v-if="fight">{{ fight }}</span>
     <span class="health" v-if="health">{{ health }}</span>
     <span class="evade" v-if="evade">{{ evade }}</span>
-    <span class="victory" v-if="victory">Victory {{ victory }}.</span>
+    <span class="victory" v-if="victory">{{ $t('gameUi.victory', { victory }) }}</span>
     <span class="keywords" v-if="keywords">{{ keywords }}.</span>
     <PoolItem class="depth" v-if="depth" type="resource" :amount="depth" />
 

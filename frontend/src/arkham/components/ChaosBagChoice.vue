@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
-import { imgsrc, pluralize } from '@/arkham/helpers';
+import { imgsrc } from '@/arkham/helpers';
 import { ChaosBagStep, type ChaosBagStepState } from '@/arkham/types/ChaosBag';
 import Token from '@/arkham/components/Token.vue';
 
@@ -93,13 +93,13 @@ const allResolved = computed(() => {
   <div class="token-choices">
 
     <div class="token-prompt" v-if="isCancel && allResolved">
-      Choose {{pluralize("token", count)}} to cancel
+      {{ $t('gameUi.chooseTokensToCancel', { count }, count) }}
     </div>
     <div class="token-prompt" v-else-if="isIgnore && allResolved">
-      Choose {{pluralize("token", count)}} to ignore
+      {{ $t('gameUi.chooseTokensToIgnore', { count }, count) }}
     </div>
     <div class="token-prompt" v-else-if="isResolve && allResolved">
-      Choose {{pluralize("token", count)}} to resolve
+      {{ $t('gameUi.chooseTokensToResolve', { count }, count) }}
     </div>
 
     <div class="token-choices-inner">
@@ -123,7 +123,7 @@ const allResolved = computed(() => {
           <img :src="imgsrc('chaos-tokens/ct-blank.png')" class="token" />
         </template>
         <template v-else>
-          <div class="error"> Token choice was unhandled, please report with: {{tokenChoice}}</div>
+          <div class="error"> {{ $t('gameUi.unhandledTokenChoice') }} {{tokenChoice}}</div>
         </template>
       </div>
       <template v-if="allResolved">

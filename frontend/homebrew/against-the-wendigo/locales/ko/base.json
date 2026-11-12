@@ -1,0 +1,49 @@
+{
+  "name": "웬디고에 맞서다",
+  "about": {
+    "sections": [
+      {
+        "rows": [
+          {},
+          {},
+          {},
+          {
+            "names": "영혼"
+          },
+          {},
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "text": [
+          "First of all, I warmly thank Kim Taglia for the two illustrations she made exclusively for this scenario.",
+          "I thank all the artists and rights holders who gave me permission to use their works to illustrate this scenario.",
+          "Thanks to Bewise and Pilunte for their French fan-made scenario, as well as for the work on Strange Eons and the French plug-in for this tool.",
+          "Thanks to Berith for his custom inserts.",
+          "Thanks to Metalm23 for the scenario cover card.",
+          "Thanks to all my proofreaders and testers, who have given a lot of their time to help me improve this scenario.",
+          "Thanks to FFG, Chaosium and Éditions Sans-Détour for offering us such remarkable games in the Lovecraftian mythos.",
+          "A huge thank you to SpiriT for his great ideas, advice and considerable amount of time he spent correcting, improving and testing the scenario. Thanks to you and Bboo for your passion and generosity. Without you, this scenario would never have happened.",
+          "Finally, a special thank you for my proofreaders Matthew and Stephen. Without you guys this scenario would never be available in English."
+        ]
+      }
+    ]
+  },
+  "key": {
+    "theSarceeAreHuntingYouDown": "사르시족이 당신을 사냥하고 있다",
+    "youSavedCharlie": "찰리를 구했다",
+    "youSavedTheGoldProspector": "금광 광부를 구했다",
+    "youHaveFoundHanninahsGold": "한니나의 금 광맥을 찾았다",
+    "youAreTheCustodianOfIthaquasKnowledge": "당신은 이타쿠아의 지식의 관리인이다",
+    "youHaveDiscoveredBernardsFate": "버나드의 운명을 알아냈다",
+    "youHaveDiscoveredNormansFate": "노먼의 운명을 알아냈다",
+    "youHaveDiscoveredSylviasFate": "실비아의 운명을 알아냈다",
+    "youHaveDiscoveredTheFateOfDrNadelmannsStudents": "나델만 박사 휘하 학생들의 운명을 알아냈다",
+    "normanIsAlive": "노먼이 살아있다",
+    "youLetNormanDie": "노먼을 죽게 내버려 두었다",
+    "youHaveEnoughEvidenceToClearDrNadelmann": "나델만 박사의 무죄를 입증하기 위한 증거를 수집했다",
+    "theWendigoStillRoamsTheNorthHanninahValley": "웬디고가 아직 북 한니나 계곡을 배회하고 있음을 알고 있다"
+  }
+}

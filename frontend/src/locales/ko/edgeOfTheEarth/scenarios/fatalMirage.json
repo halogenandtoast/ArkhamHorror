@@ -1,52 +1,109 @@
 {
+  "heading": "시나리오 ???",
+  "specialRules": [
+    {
+      "title": "신기루",
+      "body": "<p class='basic'>‘신기루’ 키워드는 당신과 탐사대원들의 기억이 구체화된 장소를 뜻합니다. 이러한 장소에는 미공개 면이 없습니다. 따라서, 이러한 장소는 (미공개 면 대신) 공개 면이 보이도록 플레이 영역에 들어옵니다. 이러한 장소의 반대면에는 (미공개 면 대신) 이야기 카드가 있습니다. 이와 같은 이야기 카드를 통해 조사자들은 기묘한 신기루 더 깊은 곳으로 파고들어, 장소나 조우 카드의 형태로 새로운 기억을 밝혀낼 수 있습니다. ‘신기루’ 키워드와 함께 적힌 숫자는 해당 장소를 뒤집기 위해 필요한 단서 개수를 나타내며, 괄호 안의 카드 명칭은 해당 장소를 뒤집으면 나타날 수 있는 기억을 뜻합니다.</p><ul><li>{'{'}action{'}'} 능력으로, 신기루 장소에 있는 조사자들은 표시된 수만큼의 단서를 그룹으로 소비하여 그 장소를 뒤집고 반대쪽 면의 이야기 카드를 해결할 수 있습니다.</li><li>(게임 준비 과정을 포함하여) ‘신기루’ 키워드를 가진 장소가 플레이 영역에 들어올 때, 그 장소의 ‘신기루’ 키워드 괄호 안에 표시된 카드 가운데 이미 플레이 상태이거나 승점 더미에 있는 것마다, 그 장소의 단서값을 그 장소의 신기루값만큼 낮춥니다.<ul><li>*알아두기: 치명적인 신기루를 처음 진행할 때에는 대개 이러한 상황이 발생하지 않겠지만, 추후 다시 치명적인 신기루를 진행할 때는 자주 접하게 될 것입니다.*</li><li>*예시: ‘기억의 감옥’의 단서 수치는 3 {'{'}perPlayer{'}'}이며 다음 문구가 있습니다: “신기루 1 {'{'}perPlayer{'}'} (베이스캠프, 테오도시아 호 갑판, 미스캐토닉 대학 복도).” ‘기억의 감옥’이 플레이 영역에 들어오면, 조사자들은 신기루 키워드가 가리키는 카드 3장 중 이미 플레이 영역이나 승점 더미에 있는 카드를 확인합니다. ‘미스캐토닉 대학 복도’와 ‘테오도시아 호 갑판’은 이미 플레이 영역에 있지만, ‘베이스캠프’는 아직 치워 둔 상태입니다. 따라서 ‘기억의 감옥’의 단서 수치는 2 {'{'}perPlayer{'}'}만큼 줄어들어, 플레이 영역에 들어올 때 단서가 1 {'{'}perPlayer{'}'}개만 놓입니다.*</li></ul></li><li>‘신기루’ 키워드에 표시된 모든 카드가 플레이 상태거나 승점 더미에 있다면, 해당 장소는 “신기루가 사라진” 것입니다. 이렇게 신기루가 사라진 장소는 다시 뒤집을 수 없습니다.</li></ul>"
+    }
+  ],
+  "tooltips": {
+    "mirage": "신기루"
+  },
+  "label": {
+    "chooseAgenda": "조사자들은 사용할 주요사건을 선택할 수 있습니다(주요사건 번호가 높을수록 조사자들에게 주어지는 시간이 줄어듭니다).",
+    "keepPlaying": "계속 플레이",
+    "moveToPrisonOfMemories": "‘기억의 감옥’으로 이동합니다",
+    "shuffleTekeliliIntoYourDeck": "테켈리 리 덱 맨 위의 카드를 보지 않고 당신의 덱에 섞어 넣습니다.",
+    "averyClaypoolAntarcticGuideResolute": {
+      "revealANewChaosToken": "새로운 혼돈 토큰을 하나 공개합니다",
+      "spend1Supply": "보급을 1개 소비합니다"
+    }
+  },
   "intro1": {
-    "title": "Scenario ???: Fatal Mirage",
-    "body": "<p class='basic valid'>If this is your first time playing Fatal Mirage this campaign, proceed to _도입부 1_. Otherwise, skip to _도입부 2_.</p><p>_도입부 1_: Upon entering the doorway, you find yourself in a web of icy tunnels, swathed in miasma and dripping with prismatic ichor. Your reflection peers back at you in myriad peculiar angles. Your voice echoes throughout this infinite hall of mirrors. You turn around to discover that your entryway has vanished behind you. Then, in the corner of your eye, you spot a familiar figure traversing the same mists—but, no, that can’t be possible. Can it?</p><p class='basic'>Find and read the passage below that corresponds to which character was killed in the plane crash. Then, _게임 준비_로 이어집니다.</p>"
+    "title": "시나리오 ???: 치명적인 신기루",
+    "body": "<p class='basic valid'>이번 캠페인에서 치명적인 신기루를 처음 플레이한다면, _도입부 1_로 이어집니다. 그렇지 않다면, _도입부 2_로 건너뜁니다.</p><p>_도입부 1_: 문을 열고 들어서자, 사방으로 뻗어 나가는 얼음 동굴이 펼쳐집니다. 동굴 전체가 독기에 잠겨있는 데다 곳곳에서 각양각색으로 빛나는 농액이 떨어져 내립니다. 동굴 벽에 기묘한 각도로 비치는 당신의 반영이 당신을 되받아 보고, 당신의 목소리는 이 무한한 거울의 복도에 메아리칩니다. 다시 등 뒤를 돌아봤지만, 문은 사라지고 없었습니다. 그 때, 시야의 언저리에서 똑같은 안개를 가르는 낯익은 형체를 발견했습니다. 설마… 이건 불가능합니다. 아니 이게 말이나 되는 일일까요?</p><p class='basic'>다음 중 비행기 추락으로 인해 사망한 탐사대원에 해당하는 항목을 찾아서 읽습니다. 그런 다음, _게임 준비_로 이어집니다.</p>"
   },
   "intro2": {
-    "title": "Scenario ???: Fatal Mirage",
-    "body": "<p class='basic invalid'>If this is your first time playing Fatal Mirage this campaign, proceed to _도입부 1_. Otherwise, skip to _도입부 2_.</p><p>Once again, you find yourself in a web of icy tunnels, permeated by mist and miasma. The entryway vanishes behind you. Your reflection, shimmering with the slightest hint of incorporeality, stares back at you from many angles at once.</p><p class='normal'>_게임 준비_로 이어집니다.</p>"
+    "title": "시나리오 ???: 치명적인 신기루",
+    "body": "<p class='basic invalid'>이번 캠페인에서 치명적인 신기루를 처음 플레이한다면, _도입부 1_로 이어집니다. 그렇지 않다면, _도입부 2_로 건너뜁니다.</p><p>당신은 또다시 독기와 농액이 스며 나오는 얼음 동굴계 속으로 발을 내딛습니다. 지나온 문은 사라져 버렸습니다. 곳곳에 반사된 당신의 거울상은 실제 물질로 구성된 것이 아닌 듯 아지랑이처럼 어른거리면서, 수많은 각도에서 당신을 응시합니다.</p><p class='normal'>_게임 준비_로 이어집니다.</p>"
   },
   "resolutions": {
     "xp": {
-      "memoriesBanished": "Memories Banished"
+      "memoriesBanished": "사라진 기억"
     },
-    "isThereADifference": "Is there a difference?",
-    "noSay": "But you have no say in the matter.",
-    "victory": "In the “Fatal Mirage” section of the Campaign Log, under “Memories Banished,” record each story card in the victory display. Each investigator earns experience equal to the Victory X value of each card recorded in this way. (*Do not earn experience points for cards already recorded in this section*).",
-    "memoriesDiscovered": " In the “Fatal Mirage” section of the Campaign Log, under “Memories Discovered,” record each non‑_Otherworld_ location in play.",
-    "crossOutMemoriesDiscovered": "Cross off each location recorded under “Memories Discovered” for which the corresponding story card is also recorded under “Memories Banished.”",
-    "nonStoryVictory": "If there are any other non-story cards in the victory display worth Victory X, each investigator earns experience equal to that amount.",
-    "partnerDamage": "In the “Expedition Team” section of the Campaign Log, record the amount of damage and horror on each partner asset in play.",
-    "proceed": "Proceed to the next scenario of the campaign, in numerical order, as follows:",
-    "proceedToTheForbiddenPeaks": "If the last scenario you played before this one was Ice and Death, proceed to _Scenario II: To the Forbidden Peaks_.",
-    "proceedToCityOfTheElderThings": "If the last scenario you played before this one was To the Forbidden Peaks, proceed to _Scenario III: City of the Elder Things_.",
-    "proceedToTheHeartOfMadness": "If the last scenario you played before this one was City of the Elder Things, proceed to _Scenario IV: The Heart of Madness_.",
+    "isThereADifference": "그걸 구분하는 것이 의미가 있기는 한 걸까요?",
+    "noSay": "하지만 당신은 불평불만을 할 처지가 아닙니다.",
+    "victory": "캠페인 기록지의 “치명적인 신기루” 항목의 “사라진 기억” 아래에 승점 더미에 있는 모든 이야기 카드를 기록합니다. 각 조사자는 이렇게 기록한 카드의 승점값만큼 경험치를 얻습니다. *(이미 이전에 여기 기록되어 있던 카드의 승점은 얻지 않습니다.)*",
+    "memoriesDiscovered": " 캠페인 기록지의 “치명적인 신기루” 항목 중 “발견한 기억” 아래에, 플레이 영역에 있는 _다른 세계_가 아닌 모든 장소를 기록합니다.",
+    "crossOutMemoriesDiscovered": "“발견한 기억”에서, “사라진 기억”에도 기록되어 있는 이야기 카드의 명칭과 동일한 모든 장소에 취소선을 긋습니다.",
+    "nonStoryVictory": "이야기 카드 외에도 승점 더미에 승점값을 가진 카드가 있다면, 각 조사자는 이러한 카드의 승점값만큼 경험치를 얻습니다.",
+    "partnerDamage": "캠페인 기록지의 “탐사대” 항목에, 플레이 상태인 각각의 동행마다 놓인 피해와 공포를 기록합니다.",
+    "proceed": "다음과 같이, 번호 순서에 따라 캠페인의 다음 시나리오로 이어집니다:",
+    "proceedToTheForbiddenPeaks": "이 시나리오 직전에 플레이한 시나리오가 얼음과 죽음이었다면, _시나리오 II: 금단의 봉우리를 향해_로 이어집니다.",
+    "proceedToCityOfTheElderThings": "이 시나리오 직전에 플레이한 시나리오가 금단의 봉우리를 향해였다면, _시나리오 III: 옛것의 도시_로 이어집니다.",
+    "proceedToTheHeartOfMadness": "이 시나리오 직전에 플레이한 시나리오가 옛것의 도시였다면, _시나리오 IV: 광기의 심장부_로 이어집니다.",
+    "noResolutionTitle": "아무 결말에도 도달하지 못했다면",
     "title": "결말 (.+)",
-    "noResolution": "<p>_아무 결말에도 도달하지 못했다면(모든 조사자가 쓰러졌다면)_: You stumble wearily to your feet. A dream? Your grip your temples, your mind aching. It feels as though a pneumatic drill has been taken to the inside of your skull. If this is what sleep is to be in this hellish place, you want no part of it.</p>",
-    "resolution1": "<p>_결말 1_: You tumble through the doorway and onto your sleeping mat, flailing within your tangle of warm blankets. No door shuts behind you. Did you only imagine all of that? Or was it all real?</p>"
+    "noResolution": "<p>_아무 결말에도 도달하지 못했다면(모든 조사자가 쓰러졌다면)_: 당신은 지친 몸으로 비틀거리며 일어납니다. 꿈이었을까요? 당신은 관자놀이를 움켜쥡니다. 머리가 지끈거립니다. 마치 두개골 안쪽을 공압 드릴로 뚫어 대는 것만 같습니다. 이 지옥 같은 곳에서 잠이란 것이 이런 거라면, 차라리 자고 싶지 않습니다.</p>",
+    "resolution1": "<p>_결말 1_: 관문을 향해 굴러떨어진 당신은, 잠자리에서 따뜻한 담요에 뒤엉킨 채로 허우적거리고 있었습니다. 당신이 들어왔던 문은 그 어디에도 없었습니다. 그 모든 건 당신 혼자만의 상상이었을까요? 그게 아니라면, 모두 진짜였던 걸까요?</p>"
   },
-  "dyerWasKilledInThePlaneCrash": "<p>_If William Dyer was killed in the plane crash:_</p><p>Professor Dyer is dead. There is no way that can be him. And yet…</p><p>You see him pacing back and forth across one of the reflections, muttering to himself. “It must be stopped. They cannot do this.” He pauses, as if in conversation with another, who goes unheard. “I do not care. It must end at once!” Poor Dyer. He did try to warn you, you recall. And yet, here you are.</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
-  "ellsworthWasKilledInThePlaneCrash": "<p>_If Roald Ellsworth was killed in the plane crash:_</p><p>Ellsworth is dead. There is no way that can be him. And yet…</p><p>You spot him inside a telephone booth, arguing heatedly with somebody on the other end. “I know it is dangerous. But I have to go,” he reasons. “Trust me, this is too important to let go.”</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
-  "ashevakWasKilledInThePlaneCrash": "<p>_If Eliyah Ashevak was killed in the plane crash:_</p><p>Eliyah is dead. There is no way that can be him. And yet…</p><p>Eliyah crawls through the snow, leaving a trail of blood in his wake. “Are you guiding me to safety?” he asks quietly to a large gray dog. You recognize the familiar shape of Anyu, perhaps several years younger but no less enormous.</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
-  "danforthWasKilledInThePlaneCrash": "<p>_If Danforth was killed in the plane crash:_</p><p>Danforth is dead. There is no way that can be him. And yet…</p><p>The student sits at a table in the Orne Library, muttering to himself as he reads: “I saw it. I know I did. I saw it.” He begins to doze off, only to quickly shudder awake. The dark rings under his eyes tell you that he has not slept for many days. “I saw it…it was real…”</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
-  "cookieWasKilledInThePlaneCrash": "<p>_If James “Cookie” Fredericks was killed in the plane crash:_</p><p>Cookie is dead. There is no way that can be him. And yet…</p><p>He is braced against one of the crystalline mirrors, hands shaking as he reloads his rifle. Dirt and soot cover his face and stain his uniform. He looks younger, but no less haggard. “Sergeant Fredericks,” another voice snaps him out of his trance. “Germans broke the line last night. They’re circling around. We have to get out of here!”</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
-  "claypoolWasKilledInThePlaneCrash": "<p>_If Avery Claypool was killed in the plane crash:_</p><p>Claypool is dead. There is no way that can be him. And yet…</p><p>You watch as he studies a map of Antarctica, the regions inside its borders only partially documented. “It would have to be here,” he says, pointing to a spot inside a ring sketched hastily in pencil. “Inside these mountain ranges. But…” he falters, peering over his shoulder at someone you cannot see. “That cannot be the case, can it?”</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
-  "takadaWasKilledInThePlaneCrash": "<p>_If Takada Hiroko was killed in the plane crash:_</p><p>Takada is dead. There is no way that can be her. And yet…</p><p>Despite her youth, you recognize her. She waves as an aeroplane takes off from a rainy runway. Somebody’s hand grips her shoulder encouragingly. “He’ll be back soon,” a voice tells her. But Takada looks unconvinced.</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
-  "sinhaWasKilledInThePlaneCrash": "<p>_If Dr. Mala Sinha was killed in the plane crash:_</p><p>Dr. Sinha is dead. There is no way that can be her. And yet…</p><p>The physician examines what you can only assume to be a corpse, the body limp and lifeless. “Time of death: 14:23. Record it,” she says, her voice steady and calm. But within the misty reflection, you spot her lip quiver ever so slightly as her task takes its toll on her.</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
-  "kenslerWasKilledInThePlaneCrash": "<p>_If Dr. Amy Kensler was killed in the plane crash:_</p><p>Dr. Kensler is dead. There is no way that can be her. And yet…</p><p>The professor writes in a small, leatherbound journal, her office lit dimly by candlelight. You wonder what kind of anatomical diagram she might be sketching, but before you can catch a glimpse, she rips the page out, crumples it, and throws it in the garbage with a sigh.</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
+  "dyerWasKilledInThePlaneCrash": "<p>_‘윌리엄 다이어’가 비행기 추락으로 인해 사망했습니까?_</p><p>다이어 교수는 죽었습니다. 저게 진짜 다이어 교수일 리가 없습니다. 그렇다 해도…</p><p>다이어 교수는 자신의 반영 앞을 왔다 갔다 하며 혼잣말을 합니다. “멈춰야 합니다. 그래선 안 된다고요!” 그는 마치 다른 사람과 대화하다 상대방의 말을 기다리는 양 말을 멈췄지만, 상대방의 목소리는 전혀 들리지 않습니다. “그런 건 신경 안 씁니다. 즉시 중단하세요!” 가련한 다이어 교수는… 당신에게 경고했습니다. 똑똑히 기억합니다. 그런데도 당신은 결국 이곳까지 오고야 말았습니다.</p><p>신기루는 나타났을 때와 마찬가지로 순식간에 사라져버렸습니다. 여긴 대체 어딜까요? 그리고 대체 왜 당신이 관여하지도 않았던 사적인 일이 눈앞에서 펼쳐지고 있는 걸까요?</p>",
+  "ellsworthWasKilledInThePlaneCrash": "<p>_‘로얼드 엘스워스’가 비행기 추락으로 인해 사망했습니까?_</p><p>엘스워스는 죽었습니다. 저게 진짜 엘스워스일 리가 없습니다. 그렇다 해도…</p><p>공중전화 안에 있는 엘스워스는 수화기 너머의 누군가와 격렬하게 논쟁을 벌이고 있습니다. “위험하다는 건 알아. 하지만 가야만 한다고. 믿어 줘. 이건 그냥 넘겨버리기에는 너무나도 중요한 일이야.” 그가 해명합니다.</p><p>신기루는 나타났을 때와 마찬가지로 순식간에 사라져버렸습니다. 여긴 대체 어딜까요? 그리고 대체 왜 당신이 관여하지도 않았던 사적인 일이 눈앞에서 펼쳐지고 있는 걸까요?</p>",
+  "ashevakWasKilledInThePlaneCrash": "<p>_‘엘리야 애쉬버크’가 비행기 추락으로 인해 사망했습니까?_</p><p>엘리야는 죽었습니다. 저게 진짜 엘리야일 리가 없습니다. 그렇다 해도…</p><p>눈 속을 헤쳐 나가는 엘리야의 뒤로 핏자국이 남습니다. “안전한 곳으로 데려가려는 거냐?” 엘리야가 커다란 회색 개에게 조용히 묻습니다. 당신은 몇 년은 더 어리지만, 지금 못지않게 커다란 안유의 모습을 알아봅니다.</p><p>신기루는 나타났을 때와 마찬가지로 순식간에 사라져버렸습니다. 여긴 대체 어딜까요? 그리고 대체 왜 당신이 관여하지도 않았던 사적인 일이 눈앞에서 펼쳐지고 있는 걸까요?</p>",
+  "danforthWasKilledInThePlaneCrash": "<p>_‘댄포스’가 비행기 추락으로 인해 사망했습니까?_</p><p>댄포스는 죽었습니다. 저게 진짜 댄포스일 리가 없습니다. 그렇다 해도…</p><p>댄포스는 오른 도서관의 책상에 앉아 중얼거리고 있습니다. “난 그걸 봤어. 내가 봤다는 걸 알아. 난 그걸 봤어.” 그는 졸기 시작하지만, 금세 몸을 떨며 깨어납니다. 눈 밑에 늘어진 검은 자국을 보아, 그는 며칠간 밤잠을 이루지 못했을 듯합니다. “난 그걸 봤어… 그건 진짜였다고…”</p><p>신기루는 나타났을 때와 마찬가지로 순식간에 사라져버렸습니다. 여긴 대체 어딜까요? 그리고 대체 왜 당신이 관여하지도 않았던 사적인 일이 눈앞에서 펼쳐지고 있는 걸까요?</p>",
+  "cookieWasKilledInThePlaneCrash": "<p>_‘제임스 “쿠키” 프레드릭스’가 비행기 추락으로 인해 사망했습니까?_</p><p>쿠키는 죽었습니다. 저게 진짜 쿠키일 리가 없습니다. 그렇다 해도…</p><p>쿠키가 투명한 거울 중 하나에 나타난 채, 떨리는 손으로 소총을 장전합니다. 그의 얼굴과 군복은 진흙과 그을음투성이입니다. 쿠키는 지금보다 훨씬 젊어 보이지만, 초췌한 몰골이 덜하다고는 하기 어렵습니다. “프레드릭스 병장님,” 다른 목소리가 멍하니 생각에 잠겨 있던 빠진 쿠키를 깨웁니다. “독일군이 지난밤에 전선을 돌파했습니다! 우리를 포위하고 있습니다. 여기서 당장 빠져나가야 합니다!”</p><p>신기루는 나타났을 때와 마찬가지로 순식간에 사라져버렸습니다. 여긴 대체 어딜까요? 그리고 대체 왜 당신이 관여하지도 않았던 사적인 일이 눈앞에서 펼쳐지고 있는 걸까요?</p>",
+  "claypoolWasKilledInThePlaneCrash": "<p>_‘에이버리 클레이풀’이 비행기 추락으로 인해 사망했습니까?_</p><p>클레이풀은 죽었습니다. 저게 진짜 클레이풀일 리가 없습니다. 그렇다 해도…</p><p>당신은 남극 지도를 연구하는 클레이풀의 모습을 보며, 경계선 쳐진 곳 안쪽은 부분적으로만 지형이 기록된 것을 눈치챘습니다. “여기에 있어야 할 텐데 말이죠.” 클레이풀이 연필로 대충 그린 원 안쪽의 한 지점을 가리키며 말합니다. “여기 산맥 어딘가에 말예요. 그렇지만…” 클레이풀은 당신이 볼 수 없는 어깨 너머의 누군가를 바라보며 주춤거립니다. “그럴 리가 없잖아요, 안 그렇습니까?”</p><p>신기루는 나타났을 때와 마찬가지로 순식간에 사라져버렸습니다. 여긴 대체 어딜까요? 그리고 대체 왜 당신이 관여하지도 않았던 사적인 일이 눈앞에서 펼쳐지고 있는 걸까요?</p>",
+  "takadaWasKilledInThePlaneCrash": "<p>_‘타카다 히로코’가 비행기 추락으로 인해 사망했습니까?_</p><p>타카다는 죽었습니다. 저게 진짜 타카다일 리가 없습니다. 그렇다 해도…</p><p>앳된 모습에도 불구하고, 당신은 타카다를 알아볼 수 있었습니다. 타카다는 비가 주룩주룩 내리는 활주로에서 이륙하는 비행기를 향해 손을 흔들고 있습니다. 누군가가 타카다의 어깨를 붙고 격려합니다. “금방 돌아오실 거야.” 하지만 타카다는 납득하지 못한 것 같습니다.</p><p>신기루는 나타났을 때와 마찬가지로 순식간에 사라져버렸습니다. 여긴 대체 어딜까요? 그리고 대체 왜 당신이 관여하지도 않았던 사적인 일이 눈앞에서 펼쳐지고 있는 걸까요?</p>",
+  "sinhaWasKilledInThePlaneCrash": "<p>_‘말라 신하’가 비행기 추락으로 인해 사망했습니까?_</p><p>신하는 죽었습니다. 저게 진짜 신하일 리가 없습니다. 그렇다 해도…</p><p>의사 가운을 입은 신하가 생기 없이 축 늘어진 환자를 돌보고 있습니다. 어딜 봐도 시신이라고밖에 보이지 않습니다. “사망 시각은 14시 23분. 기록하세요.” 신하가 흔들림이라고는 없는 차분한 목소리로 말합니다. 하지만 흐릿한 반영 속에서, 당신은 신하의 입술이 책임감으로 말미암아 아주 미세하게 떨리고 있음을 알아차립니다.</p><p>신기루는 나타났을 때와 마찬가지로 순식간에 사라져버렸습니다. 여긴 대체 어딜까요? 그리고 대체 왜 당신이 관여하지도 않았던 사적인 일이 눈앞에서 펼쳐지고 있는 걸까요?</p>",
+  "kenslerWasKilledInThePlaneCrash": "<p>_‘에이미 켄슬러 박사’가 비행기 추락으로 인해 사망했습니까?_</p><p>켄슬러 박사는 죽었습니다. 저게 진짜 켄슬러 박사일 리가 없습니다. 그렇다 해도…</p><p>켄슬러 박사는 어둑한 촛불에 의지한 채, 교수실에서 가죽 장정의 일지에 뭔가를 쓰고 있습니다. 해부도라도 그리고 있는 건가 궁금했지만, 켄슬러 박사는 당신이 미처 살펴보기도 전에 종잇장을 북하고 찢어내서 구긴 다음 한숨을 쉬며 쓰레기통으로 던져버립니다.</p><p>신기루는 나타났을 때와 마찬가지로 순식간에 사라져버렸습니다. 여긴 대체 어딜까요? 그리고 대체 왜 당신이 관여하지도 않았던 사적인 일이 눈앞에서 펼쳐지고 있는 걸까요?</p>",
   "tokens": {
     "easyStandard": {
-      "skull": "–X. X is the number of story cards in the victory display.",
-      "cultist": "–2. If you fail, place 1 of your clues on your location.",
-      "tablet": "–3. If you fail, you must either move to the Prison of Memories, or shuffle the top card of the Tekeli-li deck into your deck without looking at it.",
-      "elderthing": "–4. If you fail, place 1 doom on an _Eidolon_ enemy in play."
+      "skull": "–X. X는 승점 더미에 있는 이야기 카드 장수입니다.",
+      "cultist": "–2. 실패하면, 당신이 가진 단서 1개를 당신이 위치한 장소에 놓습니다.",
+      "tablet": "–3. 실패하면, ‘기억의 감옥’으로 이동하거나, 테켈리 리 덱 맨 위의 카드를 보지 않고 당신의 덱에 섞어 넣어야 합니다.",
+      "elderthing": "–4. 실패하면, 플레이 상태인 Eidolon 적 하나에 파멸을 1개 놓습니다."
     },
     "hardExpert": {
-      "skull": "–X. X is the current agenda number plus the number of story cards in the victory display.",
-      "cultist": "–2. If you do not succeed by at least 2, place 1 of your clues on your location.",
-      "tablet": "–4. If you fail, you must either move to the Prison of Memories, or shuffle the top card of the Tekeli-li deck into your deck without looking at it. (If you fail by 2 or more, do both instead.)",
-      "elderthing": "–5. If you fail, place 1 doom on an _Eidolon_ enemy in play."
+      "skull": "-X. X는 ‘현재 주요사건 번호 + 승점 더미에있는 이야기 카드 장수’입니다.",
+      "cultist": "-2. ‘난이도를 넘어선 차이 2 이상으로 성공’하지 못했다면, 당신이 가진 단서 1개를 당신이 위치한 장소에 놓습니다.",
+      "tablet": "-4. 실패하면, 당신은 ‘기억의 감옥’으로 이동하거나, 테켈리 리 덱 맨 위 카드 1장을 (앞면을 확인해 보지 않고) 당신의 덱에 섞어넣어야 합니다. (난이도에 모자란 차이 2 이상으로 실패하면, 그 대신 둘 다 합니다.)",
+      "elderthing": "-5. 실패하면, 플레이 상태인 Eidolon 적 하나에 파멸을 1개 놓습니다."
+    }
+  },
+  "setup": {
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *치명적인 신기루*, *미지의 권속*, *남겨진 자들*, *독기*, *형언치 못할 공포*, *고요함과 불가사의*, *테켈리 리*, *으스스한 한기*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/fatal-mirage.png' /><img src='{setImgPath}/agents-of-the-unknown.png' /><img src='{setImgPath}/left-behind.png' /><img src='{setImgPath}/miasma.png' /><img src='{setImgPath}/nameless-horrors.png' /><img src='{setImgPath}/silence-and-mystery.png' /><img src='{setImgPath}/tekeli-li.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
+    "firstTime": {
+      "buildAgendaDeck": "주요사건 1만을 사용하여 주요사건 덱을 구성합니다. 나머지 주요사건 카드는 게임에서 제거합니다.",
+      "buildActDeck": "주요목적 1만을 사용해서 주요목적 덱을 구성합니다. 나머지 주요목적 카드는 게임에서 제거합니다.",
+      "placeLocations": "‘기억의 감옥’ 장소를 공개 면이 보이도록 플레이 영역에 둡니다.",
+      "startAt": "모든 조사자는 ‘기억의 감옥’에서 시작합니다.",
+      "setOtherLocationsAside": "다른 장소를 모두 비플레이 상태로 치워 둡니다.",
+      "setOutOfPlay": "“… 기억” 적 9장, 결연한 특성을 갖는 이야기 자산 9장을 비플레이 상태로 치워 둡니다."
+    },
+    "repeat": {
+      "buildAgendaDeck": "_치명적인 신기루_를 두 번째로 플레이한다면 주요사건 2만, 세 번째로 플레이한다면 주요사건 3만 사용하여 주요사건 덱을 만듭니다. 나머지 주요사건은 게임에서 제거합니다.",
+      "buildActDeck": "_치명적인 신기루_를 두 번째로 플레이한다면 주요목적 2만, 세 번째로 플레이한다면 주요목적 3만 사용하여 주요목적 덱을 만듭니다. 나머지 주요목적은 게임에서 제거합니다.",
+      "memoriesBanished": "캠페인 기록지의 “사라진 기억” 아래에 기록된 모든 이야기 카드를 확인합니다. 이러한 모든 카드를 승점 더미에 둡니다.",
+      "setRemainingMemoriesAside": "나머지 “… 기억” 적을 모두 비플레이 상태로 치워 둡니다.",
+      "memoriesDiscovered": "캠페인 기록지의 “발견한 기억” 아래에 기록된 모든 장소를 찾습니다. 이러한 모든 장소와 ‘기억의 감옥’을 공개 면이 보이도록 플레이 영역에 둡니다(*‘신기루’ 키워드에 따라서 각 장소의 단서값을 조정한다는 것을 잊지 마십시오*).",
+      "startAt": "모든 조사자는 ‘기억의 감옥’에서 시작합니다.",
+      "setOtherLocationsAside": "다른 장소를 모두 비플레이 상태로 치워 둡니다.",
+      "setResoluteAside": "결연한 특성을 갖는 이야기 자산 9장 가운데, 지금까지 치명적인 신기루에서 얻지 않은 자산을 모두 비플레이 상태로 치워 둡니다."
+    },
+    "checkDifficulty": "난이도를 확인합니다.",
+    "hard": "어려움 난이도로 플레이한다면, 주요사건에 파멸을 1개 추가합니다.",
+    "expert": "전문가 난이도로 플레이한다면, 주요사건에 파멸을 2개 추가합니다.",
+    "tekelili": "(아직 조사자 덱의 일부가 아닌) 모든 ‘테켈리 리’ 약점 카드를 함께 섞어 테켈리 리 덱을 만듭니다. 테켈리 리 덱을 주요사건 덱 근처에 놓습니다."
+  },
+  "deckOfTheTheodosia": {
+    "label": {
+      "addShroud": "이번 조사 동안 그 장소의 장막값 +2",
+      "spendAdditionalAction": "추가로 행동을 1회 소비합니다"
+    }
+  },
+  "drKenslersOffice": {
+    "label": {
+      "removeSecret": "당신이 조종하는 자산에서 비밀을 1개 제거합니다"
     }
   }
 }

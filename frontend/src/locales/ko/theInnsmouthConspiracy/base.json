@@ -1,166 +1,232 @@
 {
+  "specialRules": [
+    {
+      "title": "열쇠",
+      "body": "<p class='basic'>이 확장에서는 시나리오 도중 손에 넣고 사용할 수 있는 중요한 물건이나 정보를 나타내는 열쇠 토큰이 등장합니다. 열쇠 토큰은 양면으로 되어 있습니다. 뒷면이 보일 때는 일곱 열쇠 모두 같은 공용 열쇠 기호가 그려져 있어, 조사자들이 어느 것이 어느 열쇠인지 모르게 무작위로 섞을 수 있습니다. 앞면이 보일 때는 각 열쇠가 고유한 색(검은색, 빨간색, 파란색, 초록색, 노란색, 보라색, 흰색)으로 구분됩니다.</p><p class='basic'>시나리오에서 하나 이상의 열쇠를 사용하는 경우, 시나리오 준비 과정에서 특정 열쇠를 치워 두라거나/앞면으로 두라거나/뒷면으로 섞어 두라는 등 상세한 지시를 받게 됩니다. 열쇠는 여러 가지 카드 효과를 통해서 플레이 영역에 들어올 수 있으며, 대개는 적/장소/이야기 자산에 놓입니다. 열쇠는 다음과 같은 세 가지 방식으로 손에 넣을 수 있습니다:</p><ul><li>열쇠가 놓인 장소에 단서가 없다면, 그 장소에 있는 조사자가 {'{'}fast{'}'} 기능을 격발함으로써, 그 장소에 놓인 열쇠를 가져와 조종해도 됩니다.</li><li>열쇠가 놓인 적이 플레이 영역에서 나갔다면, 그 적을 플레이 영역에서 나가도록한 조사자가 반드시 그 적에 놓여 있던 열쇠를 모두 조종해야 합니다. (적이 무언가 다른 이유로 플레이 영역에서 나갔다면, 그 적이 위치한 장소에 열쇠를 놓습니다.)</li><li>그 이외에 여러 가지 카드 효과를 통해서 조사자가 열쇠를 가져와 조종하게 될 수도 있습니다.</li></ul><p class='basic'>조사자가 열쇠를 조종하게 될 때, 그 조사자는 그 열쇠를 자신의 조사자 카드에 놓습니다(뒷면으로 있었다면, 앞면이 보이도록 뒤집어 가져옵니다). 하나 이상의 열쇠를 조종하고 있던 조사자가 탈락하면, 그가 조종하던 모든 열쇠를 그 조사자가 위치한 장소에 놓습니다. 열쇠를 가진 조사자는 {'{'}action{'}'} 기능으로 격발해서, 조종하는 열쇠를 원하는 만큼 같은 장소에 있는 다른 조사자 한 명에게 줘도 됩니다.</p><p class='basic'>열쇠 자체는 고유한 게임 효과를 갖지 않습니다. 하지만 조사자가 어떤 열쇠를 조종하고 있느냐에 따라서 몇몇 카드 효과가 달라지기도 합니다. 또한, 시나리오를 진전시키려면 종종 열쇠가 필요한 상황이 닥칠 것입니다.</p>"
+    },
+    {
+      "title": "침수 토큰",
+      "body": "<p class='basic'>이번 캠페인을 진행하면서, 시나리오 카드 효과에 의해 장소가 침수될 수 있습니다. 각 장소의 침수 수준에는 “침수되지 않음”, “부분적으로 침수”, “완전히 침수”라는 세 가지 상태가 있습니다. 본 딜럭스 확장에 포함된 양면 침수 토큰을 사용하여 장소의 침수 수준을 표시합니다. 장소의 침수 수준 자체는 고유한 게임 효과를 갖지 않습니다. 하지만, 당신이 침수된 장소에 있는 동안, 몇몇 카드의 효과가 달라지거나 위력이 더욱 강해질 수 있습니다. 특히나 완전히 침수된 장소를 주의해야 합니다.</p><ul><li>침수 토큰이 없는 장소는 침수되지 않은 장소입니다.</li><li>장소가 부분적으로 침수되면, 그 장소에 침수 토큰을 “부분적으로 침수” 면이 보이도록 놓습니다.</li><li>장소가 완전히 침수되면, 그 장소에 침수 토큰을 “완전히 침수” 면이 보이도록 놓습니다(이미 부분적으로 침수되어 있던 장소가 완전히 침수되는 경우, 침수 토큰을 뒤집어서 “완전히 침수” 면이 보이게 두면 됩니다).</li><li>장소의 침수 수준을 “한 단계 높입니다”라고 되어 있는 경우, 침수되지 않은 장소는 부분적으로 침수된 상태가 되며 부분적으로 침수된 장소는 완전히 침수된 상태가 됩니다. 이미 완전히 침수된 장소의 침수 수준을 더 높일 수는 없습니다.</li><li>장소의 침수 수준을 “한 단계 낮춥니다”라고 되어 있는 경우, 부분적으로 침수된 장소는 침수되지 않은 상태가 되며 완전히 침수된 장소는 부분적으로 침수된 상태가 됩니다. 어느 장소가 침수되지 않은 상태가 되면, 그 장소에서 침수 토큰을 제거합니다.</li><li>카드 효과를 해결하는 목적에서, 부분적으로 침수된 장소와 완전히 침수된 장소를 통틀어 “침수된” 장소로 간주합니다.</li></ul>"
+    },
+    {
+      "title": "축복 토큰과 저주 토큰",
+      "body": "<p class='basic'>이 확장에서는 두 가지 새로운 혼돈 토큰인 축복({'{'}bless{'}'}) 토큰과 저주({'{'}curse{'}'}) 토큰이 등장합니다. 기본적으로 혼돈 주머니에는 {'{'}bless{'}'} 토큰이나 {'{'}curse{'}'} 토큰이 들어 있지 않습니다. 하지만 특정 카드 효과로 이 토큰들을 혼돈 주머니에 추가하거나 제거할 수 있습니다.</p><ul><li>능력 테스트 도중 공개된 {'{'}bless{'}'} 토큰은 다음 효과를 가집니다: “+2. 토큰을 하나 더 공개합니다. 이 토큰을 혼돈 주머니에 되돌려 놓는 대신, 토큰 저장소에 되돌려 놓습니다.”<ul><li>어느 때든 혼돈 주머니에 들어 있거나 플레이 영역의 카드에 봉인된 {'{'}bless{'}'} 토큰은 모두 합쳐 10개를 넘을 수 없습니다.</li></ul></li><li>능력 테스트 도중 공개된 {'{'}curse{'}'} 토큰은 다음 효과를 가집니다: “–2. 토큰을 하나 더 공개합니다. 이 토큰을 혼돈 주머니에 되돌려 놓는 대신, 토큰 저장소에 되돌려 놓습니다.”<ul><li>어느 때든 혼돈 주머니에 들어 있거나 플레이 영역의 카드에 봉인된 {'{'}curse{'}'} 토큰은 모두 합쳐 10개를 넘을 수 없습니다.</li></ul></li><li>능력 테스트 밖에서 공개된 {'{'}bless{'}'} 토큰이나 {'{'}curse{'}'} 토큰은 카드 효과가 따로 지정하지 않는 한 그 자체로는 아무 효과가 없습니다.</li></ul>"
+    },
+    {
+      "title": "봉인",
+      "body": "<p class='basic'>‘봉인’ 키워드를 가진 카드를 플레이 영역에 두려면 한 가지 추가 비용을 더 지불해야 합니다. 이 추가 비용이란, 해당 카드의 조종자가 혼돈 주머니에서 지정된 혼돈 토큰을 가져와 해당 카드에 놓아 봉인하는 행위를 의미합니다. 봉인할 수 있는 토큰이 여러 개라면, 그중에서 어떤 토큰을 봉인할지는 해당 카드의 조종자가 결정합니다. 하지만 지정된 혼돈 토큰이 혼돈 주머니에 없다면, 해당 카드는 플레이 영역에 들어올 수 없습니다.</p><p class='basic'>봉인된 혼돈 토큰은 혼돈 주머니에 있는 것으로 간주하지 않습니다. 따라서 봉인된 혼돈 토큰은 능력 테스트나 기능에 의하여 혼돈 주머니에서 공개될 수 없습니다. 혼돈 토큰이 “해방”될 때는, 해방된 토큰을 혼돈 주머니에 다시 넣습니다. 이렇게 해방되어 다시 넣은 혼돈 토큰은 더 이상 봉인된 것으로 간주하지 않습니다. 하나 이상의 혼돈 토큰을 봉인하고 있는 카드가 어떠한 이유로든 플레이 영역에서 나가면, 그 위에 봉인된 모든 혼돈 토큰을 즉시 해방합니다.</p><p class='basic'>몇몇 카드는, 그 효과의 일부로서 하나 이상의 혼돈 토큰을 봉인하는 기능을 갖습니다(그 카드에 ‘봉인’ 키워드가 있든 없든 상관없습니다). 이 역시 위와 같은 과정을 그대로 따릅니다: 혼돈 주머니에서 지정된 토큰을 찾고, 그 토큰을 혼돈 주머니에서 제거하여 해당 카드에 놓습니다. 혼돈 주머니에 지정된 토큰이 없다면, 그 효과 해결에 실패합니다.</p>"
+    }
+  ],
+  "interludes": {
+    "1": "기억을 짜맞추다",
+    "2": "천체 정렬",
+    "3": "파도 아래에",
+    "4": "숨은 진실"
+  },
   "interlude1": {
     "part1": {
-      "title": "Interlude I: Puzzle Pieces",
-      "body": "<p>You have no idea who this woman is or how she knows you, yet she seems comfortable and familiar with you. You strain your memory trying to think of how you might have met, but it’s no use. You’re certain she is a complete stranger. Having woken up in a cold, wet prison with no memories, you aren’t feeling very sociable. Your fear and distrust must show, because the woman backs off and narrows her eyes. “What is it? What’s wrong?”</p><p>You respond by asking the woman if you know her. “You truly don’t remember? Well, that’s going to complicate things. What do you recall? Do you remember anything?”</p><p>You relate to the woman the flashes of recollection that you experienced earlier…</p>"
+      "title": "막간 I: 기억을 짜맞추다",
+      "body": "<p>이 여자의 정체도, 어떻게 그녀가 당신을 알고 있는지도 전혀 종잡을 수 없지만, 어째선지 여자 쪽은 당신에게 친숙하고 편한 사이처럼 여기는 듯 보입니다. 만난 적이 있는지 떠올리려고 한참을 기억을 이리저리 뒤져봐도 허사였습니다. 결국, 당신은 저 여자와 구면일 리가 없다고 확신합니다. 게다가 기억을 잃고서 차갑고 축축한 동굴 감옥에서 깨어난 탓에, 지금으로선 사교성이라고는 전혀 발휘할 수가 없는 처지입니다. 그러자 당신의 눈에서 불신과 공포를 읽었는지, 여자가 뒤로 물러서서 눈을 가늘게 뜹니다. “뭐죠? 왜 그래요?”</p><p>당신은 혹시 자신을 아느냐고 되묻습니다. “정말 기억 안 나나 봐요? 음, 일이 상당히 복잡하게 됐는데… 혹시 뭐 기억나는 거 있어요? 뭐라도 말해봐요!”</p><p>당신은 얼마 전 번뜩이며 되돌아왔던 기억을 하나하나 늘어놓습니다…</p>"
     },
     "aMeetingWithThomasDawson": {
-      "title": "If a meeting with Thomas Dawson is listed under “Memories Recovered”:",
-      "body": "<p>You put two and two together and ask if the woman is Miss Harper. “Ah, so you do remember me?” she asks with a playful smirk, but you shake your head in response and explain that you only remember being hired by a man named Thomas Dawson to find her. “But that was…oh. You have forgotten a lot, haven’t you? Speaking of Dawson, where is he? Did you see him down there?”</p><p>Your thoughts turn to the twisted, mangled face that triggered your flashback. Agent Harper’s expression turns dour as she watches your eyes. “…I see. I wish he hadn’t come to this forsaken town. Those brutes are going to pay for this.” You ask who she thinks is responsible for Dawson’s death, and she raises her eyebrows in response. “Right, you don’t remember. As far as I know, the last time anybody saw either of you was just before you visited the Esoteric Order of Dagon. Draw your own conclusions.”</p>"
+      "title": "“되찾은 기억” 아래에 토머스 도슨과의 만남이 있습니까?",
+      "body": "<p>기억을 짜내고 짜내서 혹시 하퍼 요원이 맞는지 묻습니다. “아, 정말로 제가 기억나긴 하나 보네요?” 여자가 장난스럽게 웃으며 묻습니다. 그러나 당신은 고개를 젓고, 토머스 도슨이라는 남자에게 고용되어 하퍼 요원을 찾는 임무를 수행 중이었던 것만 기억난다고 답합니다. “하지만… 그건… 아… 당신 정말 어마어마하게 잊어버렸군요. 말이 나와서 말인데, 도슨 씨는 어디 있죠? 그 아래에 도슨은 없던가요?”</p><p>과거로 되짚어가다가 갑작스러운 회상을 불러일으켰던 일그러진 도슨 요원의 얼굴을 떠올립니다. 당신의 눈을 바라보던 하퍼 요원의 표정이 흐려집니다. “…알겠어요. 차라리 이 저주받은 마을에 오지 않았더라면… 저 짐승만도 못한 놈들, 언젠가 대가를 치르게 될 거예요.” 누가 도슨을 사지로 몰아넣었냐고 묻자, 하퍼가 눈썹을 치켜올립니다. “그래요, 기억이 안 난다고 하셨죠… 제가 아는 한에는, 누군가 당신이나 도슨 씨를 마지막으로 본 때는 데이곤 밀교회당으로 들어가기 직전이라더군요. 무슨 일이 벌어졌는진 직접 떠올려봐요.”</p>"
     },
     "noMemoriesRecovered": {
-      "title": "If nothing is listed under “Memories Recovered”:",
-      "body": "<p>You shake your head. You remember nothing. “That’s going to make this difficult,” the woman says with a sigh. “All right. Well, I’ll tell you what I know. I am Agent Elina Harper. My understanding is that you were hired by my boss, Agent Thomas Dawson, thanks to your deeper understanding of…well, of things that don’t really make sense to the rest of us.” You ask what task you were hired to perform, and the woman smirks. “You were hired to find me, actually. The Order wasn’t all too happy about that. It’s a bit of a long story. Let’s get out of here first, and then I can catch you up on all that.”</p>"
+      "title": "“되찾은 기억” 아래에 아무 것도 기재되어 있지 않습니까?",
+      "body": "<p>당신은 고개를 내젓습니다. 아무것도 떠오르지 않습니다. “일이 심각하게 꼬였군요.” 여자가 한숨을 내쉽니다. “그래요, 좋아요. 일단 제가 아는 데까지 설명해 볼게요. 저는 엘리나 하퍼 요원이고, 당신은 제 상관인 토머스 도슨 요원에게 고용되었다고 알고 있어요. 당신이 그 분야를… 그러니까… 우리 같은 일반인은 이해도 못 할 일들을 잘 아신다고 들었거든요.” 그래서 대체 무슨 일을 위해 고용된 것이냐고 묻자, 하퍼 요원이 히죽 웃습니다. “실은 저를 찾기 위해서 고용된 거예요. 밀교회 놈들에겐 유쾌하지 못한 일이었겠죠. 설명하자면 긴데, 우선 여기부터 뜨고 봐요. 나머진 그 다음에 설명해 드릴게요.”</p>"
     },
     "aBattleWithAHorrifyingDevil": {
-      "title": "If a battle with a horrifying devil is listed under “Memories Recovered”:",
-      "body": "<p>You tell Agent Harper about your battle with some kind of aquatic creature. “Devil Reef,” she says, shuddering. “Whatever is going on in this town, Devil Reef is at the heart of it. Let’s hope we don’t have to head back that way anytime soon…and let’s hope that thing stays dead.”</p>"
+      "title": "“되찾은 기억” 아래에 무시무시한 악마와의 전투가 있습니까?",
+      "body": "<p>당신은 일종의 바다 괴물과 싸웠던 기억이 떠올랐다고 말합니다. 하퍼 요원이 몸서리를 치며 말합니다. “악마의 암초로군요. 이 마을에 벌어지고 있는 일의 내막까진 몰라도, 악마의 암초야말로 그 근원지란 건 확실해요. 거기로 되돌아갈 일이 없길… 부디 놈이 죽은 채 그대로 있길 바라죠.”</p>"
     },
     "aDecisionToStickTogether": {
-      "title": "If a decision to stick together is listed under “Memories Recovered”:",
-      "body": "<p>“So you and Dawson were looking for me together, then? Interesting.” She considers this for a moment. “I guess even the extraordinary Captain Dawson can be rattled from time to time. It’s somewhat gratifying to know he cared that much about finding me. Still…” her gaze wanders toward the horizon. “All right, Dawson. I’ll make sure you didn’t die in vain. I’ll burn this whole town to the ground if I have to.”</p>"
+      "title": "“되찾은 기억” 아래에 함께 수색하기로 결정이 있습니까?",
+      "body": "<p>“그래서 도슨 씨와 함께 저를 찾고 있었다는 거죠? 흥미롭군요.” 하퍼 요원은 한동안 이 말을 곱씹습니다. “그 비범하다는 도슨 대위마저도 당황할 때가 있군요. 그래도 저를 찾느라 그렇게 생고생을 했다니까 감격스럽기도 한걸요. 그래도…” 여자의 시선이 수평선 언저리를 쫓습니다. “알겠어요, 도슨. 당신의 죽음이 헛되지 않게 할게요. 이 마을을 잿더미로 만드는 한이 있더라도…</p>"
     },
     "anEncounterWithASecretCult": {
-      "title": "If an encounter with a secret cult is listed under “Memories Recovered”:",
-      "body": "<p>You describe your memory from inside some kind of cult headquarters. “Sounds like that must have taken place inside the Esoteric Order of Dagon building on the north side of town,” Agent Harper reasons. “That organization is vile: I just know it. I have no evidence to bring back, though, and it sounds like you’ve forgotten everything you learned.” She curses under her breath.</p>"
+      "title": "“되찾은 기억” 아래에 비의적인 사교집단과의 조우가 있습니까?",
+      "body": "<p>일종의 사교집단 본거지에서 벌어졌던 일을 떠올리자 하퍼 요원이 설명합니다. “인스머스 북부에 있는 데이곤 밀교회당에서 벌어진 일처럼 들리는군요. 아주 지독하고도 사악한 사교집단이죠. 확실하지만 물증이 없어요. 게다가 당신은 거기서 알아낸 사실을 모조리 잊어먹었겠고요.” 하퍼가 숨죽여 욕지거리를 뱉습니다.</p>"
     },
     "part2": {
-      "title": "Interlude I: Puzzle Pieces",
-      "body": "<p>You point to the strange, crimson horizon behind Agent Harper and note aloud the alignment of the sun and the moon. “That began just after you and Agent Dawson entered the Order’s headquarters,” she explains. “That was almost three days ago. I have no idea what it means, but I can’t imagine it is anything good. All of Innsmouth’s been locked tight lately. Not a soul in sight. You’re lucky I figured out where to look for you.”</p><p>Your mind reels. The last thing you remember before waking up in that dank pit was enjoying a pleasant late-summer’s eve in Arkham. Now you’re in another town altogether, and your memory is filled with gaping holes. You wonder aloud what the date is, and Agent Harper replies: “It’s the twenty-fourth of September. I don’t know when exactly you arrived in Innsmouth or how much of your memory is missing. Isn’t there anything else you remember? Anything at all?”</p><p>The water sloshes against your feet as you struggle to remember. In minutes, the tide has risen several inches, and there’s no sign of it slowing down. You fix your gaze on the woman who stands before you—her weary eyes, her disheveled clothes, the red marks on her wrists—and something triggers in your recollection.</p><p>“Wake up. We’re almost there.” The memory lurks at the precipice of your consciousness, threatening to draw you into the darkness. “Hey. Wake up, I said.” You clutch your forehead as searing pain bounces throughout your skull. “Wake up, dammit!”</p><p>Darkness pulls at the edges of your vision. More memories come flooding back…</p>"
+      "title": "막간 I: 기억을 짜맞추다",
+      "body": "<p>당신은 하퍼 요원의 뒤쪽으로 펼쳐진 기묘한 진홍빛 수평선을 가리키며, 태양과 달이 정렬되어 있다고 말합니다. “당신과 도슨 요원이 밀교회 본거지에 들어간 직후부터 저렇게 됐어요.” 그녀가 설명합니다. “벌써 사흘이나 됐네요. 저게 뭘 뜻하는진 모르겠지만, 길조일 리는 없어 보이는군요. 요즘 인스머스는 온통 꽁꽁 걸어 잠갔어요. 돌아다니는 사람도 없고요. 제가 그쪽을 찾아낸 게 아주 운이 좋았던 거라고 봐야죠.”</p><p>머릿속이 빙글빙글 돌기 시작합니다. 축축한 구렁에서 깨어나기 전, 마지막으로 기억에 남아 있는 것은 아컴에서의 편안한 늦여름 밤이었습니다. 그러나 지금은 완전히 다른 마을에 와 있고, 기억은 구멍이 숭숭 뚫려 있습니다. 지금이 몇 월 며칠인지 묻자 하퍼 요원이 답합니다. “9월 24일이요. 당신이 언제 인스머스에 도착했는지도, 기억을 얼마나 잃은 건지도 모르겠군요. 그 외에 또 기억나는 게 없나요? 뭐라도 말이에요.”</p><p>혼신을 다해 기억을 짜내려는 당신의 발치로 바닷물이 철썩입니다. 몇 분도 되지 않아, 바닷물은 몇 센티미터 이상 차올랐고 느려질 기미도 보이지 않습니다. 당신의 눈길은 앞에 선 여자의 지친 눈, 흐트러진 옷매무새, 손목에 난 붉은 자국을 맴돕니다. 그 순간, 기억 속의 무언가가 번뜩입니다.</p><p>“정신 차려요. 거의 다 왔어요.” 의식의 벼랑 끝에 숨어 있던 기억이 당신을 당장이라도 어둠 속으로 끌어들이려 위협합니다. “이봐요. 정신 차리라고요.” 두개골 전체에 날카로운 통증이 번져 나가자 당신은 이마를 부여잡습니다. “젠장, 정신 차려요!”</p><p>시야의 가장자리부터 어둠이 갉아 들어옵니다. 더 많은 기억이 밀물처럼 차오릅니다…</p>"
     },
     "xp": {
-      "aMeetingWithThomasDawson": "A meeting with Thomas Dawson",
-      "aBattleWithAHorrifyingDevil": "A battle with a horrifying devil",
-      "aDecisionToStickTogether": "A decision to stick together",
-      "anEncounterWithASecretCult": "An encounter with a secret cult"
+      "aMeetingWithThomasDawson": "토머스 도슨과의 만남",
+      "aBattleWithAHorrifyingDevil": "무시무시한 악마와의 전투",
+      "aDecisionToStickTogether": "함께 수색하기로 결정",
+      "anEncounterWithASecretCult": "비의적인 사교집단과의 조우"
     }
   },
   "interlude2": {
     "theSyzygy1": {
-      "title": "The Syzygy 1",
-      "body": "<p><b>The Syzygy 1:</b> Light flashes in your mind. Shadows drown your thoughts as the memory fades. You are lying once again on the rocky beach off the coast, your skull pounding in agony. Agent Harper leans over you with worry etched in her brow. “Hey! Hey, you finally awake?”</p><p>You sit up, your muscles aching. It looks like the tide rose several more inches while you were out. The cold water laps at your ankles and soaks into your shoes. “What happened?” she says. “What did you see?”</p>"
+      "title": "천체 정렬 1",
+      "body": "<p><b>천체 정렬 1:</b> 불빛이 번쩍입니다. 기억이 희미해지면서 그림자가 당신의 생각을 좀먹습니다. 당신은 또다시 바위투성이 해안가에 널브러져 있고, 두개골 위로 고통이 널뜁니다. 하퍼 요원의 걱정어린 얼굴이 당신을 내려다보고 있습니다. “이봐요! 이봐요! 정신이 들어요?”</p><p>당신은 일어나 앉았지만, 온몸의 근육이 땅깁니다. 정신을 잃었던 동안 물은 수 센티미터는 더 높이 차올랐습니다. 차가운 물이 발목을 적시고 신발 안으로 스며듭니다. “무슨 일이죠? 이번엔 뭘 본 건가요?”</p>"
     },
     "theSyzygy2": {
-      "title": "The Syzygy 2",
-      "body": "<p><b>The Syzygy 2:</b> You tell Harper you remember your mission to find her, but that after a week of searching, you hadn’t been able to do so. The last thing you remember was somebody slipping a notebook under your hotel room door with some information regarding an organization called the “Esoteric Order of Dagon.”</p><p>“Oh. Yeah, that was me. Sorry I couldn’t stick around and chat, but I had some other business to attend to,” she explains. She tells you that after several days in captivity, she finally managed to get the upper hand against her captor and free herself, but she was injured in the process. As if to prove her story, she opens her trenchcoat, and you see dark bloodstains seeping through her button-up shirt. Several bandages peek out beneath the fabric. “Just barely missed my kidney. Lucky me, eh?”</p><p>You complain that you were wasting your time searching high and low for her, and she scoffs. “Hardly! You learned more in one week than I did in two. I knew that you were onto something, and I wanted to help out, but I was still being followed. So I dropped off the one solid bit of research I’d found and laid low for a while. It was you who did the rest, really.” Sadly, you remember nothing of “the rest.”</p>"
+      "title": "천체 정렬 2",
+      "body": "<p><b>천체 정렬 2:</b> 드디어 하퍼 요원을 찾아서 인스머스에 왔던 일이 기억났다고 말하며, 일주일 동안 수색을 벌였지만 결국 하퍼를 찾는 데엔 실패했다고 덧붙입니다. 마지막으로 기억나는 것은 누군가가 당신의 호텔 객실 아래로 “데이곤 밀교회”라는 조직에 관해 기록된 수첩을 밀어 넣었던 일뿐입니다.</p><p>“아, 그렇군요. 그건 저였어요. 미안해요. 합류해서 말을 나눌 시간이 없었어요. 다른 볼일이 있었거든요.” 하퍼가 해명합니다. 하퍼는 며칠간 감금되어 있었지만, 간신히 납치범을 따돌리고 달아났으며 그 과정에서 부상을 당했다고 합니다. 그 말을 입증하려는 듯, 하퍼는 여민 트렌치코트를 펼치며 버튼 업 셔츠 위로 스며 나온 검붉은 핏자국을 보여줍니다. 옷감 밑으로 감긴 붕대가 보입니다. “간신히 신장을 비껴갔어요. 이 정도면 운이 좋은 거겠죠?”</p><p>하퍼를 찾아서 마을을 샅샅이 뒤지느라 시간을 허비했다고 불평하자 그녀가 코웃음 칩니다. “천만에요! 제가 2주에 걸쳐 알아낸 것보다 당신이 단 한 주 만에 알아낸 게 더 많은걸요. 당신이 뭔가를 하려는 듯해서 도움을 주고 싶었지만, 그때까지는 계속 미행 당하고 있었어요. 그래서 제가 찾아낸 정보를 넘기고 한동안은 몸을 사렸죠. 나머지는 당신이 해낸 거예요. 진짜로요.” 애석하게도 그 “나머지”라는 것은 도저히 기억나지 않습니다.</p>"
     },
     "theSyzygy3": {
-      "title": "The Syzygy 3",
-      "body": "<p><b>The Syzygy 3:</b> You tell Harper you remember your mission to find her and the interrogation of her kidnapper. She grins. “Thanks again for that, by the way. I really did have things under control, though,” she jokes. “Do you remember anything after that?”</p><p>You shake your head. The last thing you remember was the mention of an organization called the “Esoteric Order of Dagon.”</p><p>Harper mutters a curse under her breath. “That’s unfortunate. But amnesia or not, at least I know I can trust you. Whether you remember it or not, you’ve come through for me in the past.”</p>"
+      "title": "천체 정렬 3",
+      "body": "<p><b>천체 정렬 3:</b> 하퍼를 찾아 인스머스에 왔던 일과 납치범을 심문했던 것이 떠올랐다고 말하자, 하퍼가 미소짓습니다. “그땐 정말 고마웠어요. 그건 그렇고, 사실은 제가 혼자서 처리할 수 있었다는 거 다 아시죠?” 하퍼가 농담을 던집니다. “그 후로는 기억나는 게 없나요?”</p><p>당신은 고개를 젓습니다. 마지막으로 기억나는 거라곤 “데이곤 밀교회”라는 조직에 관한 이야기입니다.</p><p>하퍼가 낮은 목소리로 욕지거리를 내뱉습니다. “안타깝군요. 기억상실이든 어쨌든 뭐 그래도, 당신을 믿어도 될 것 같아요. 기억과는 별개로 과거에 절 위해 인스머스로 와준 건 변함이 없으니까요.”</p>"
     },
     "theSyzygy4": {
-      "title": "The Syzygy 4",
-      "body": "<p><b>The Syzygy 4:</b> “Don’t worry,” she says, “I’ll catch you up. There’s a lot you still don’t remember.” Just then, a resounding crash of thunder echoes on the eastern horizon, and a powerful wave smashes against the jetties. The sky is a deep crimson red behind blackening storm clouds that swirl around the sun and the moon. The celestial bodies hang together in perfect alignment. “That can’t be good.” Harper’s lips turn rigid with concern. “Okay, new plan. Let’s get back to Innsmouth. I’ll explain what I know along the way.”</p>"
+      "title": "천체 정렬 4",
+      "body": "<p><b>천체 정렬 4:</b> “걱정하지 말아요, 제가 알려줄 테니까. 그쪽이 아직 기억하지 못하는 일이 잔뜩 있어요.” 바로 그때 동쪽 수평선 상에서 뭔가가 떨리는 소리와 함께 강력한 파도가 밀려들어와 방파제에 부서집니다. 해와 달을 둘러싸고 휘도는 검은 폭풍 구름 뒤로 짙은 핏빛 하늘이 펼쳐져 있습니다. 해와 달은 완벽하게 한 곳으로 모인 모습입니다. “좋은 현상일 리가 없겠죠.” 하퍼의 입술이 걱정으로 굳어갑니다. “좋아요, 인스머스로 돌아갑시다. 가는 길에 제가 아는 걸 설명해드리도록 할게요.”</p>"
     }
   },
   "interlude3": {
     "beneathTheWaves1": {
-      "title": "Beneath the Waves 1",
-      "body": "<p>You bounce through your memories, struggling to return to the present. You remember a dark cell. A knife at your throat. A man with wide, unblinking eyes, wearing a long hooded robe. “Oceiros,” another voice calls, “these ones were found in Dagon’s lair as well. We believe they were the ones snooping around Devil Reef.”</p><p>Oceiros nods. The knife at your throat digs deeper. “Take what they have stolen to the lighthouse at once,” he commands. “It is time to begin our great work. None will disrupt the Order’s business ever again.”</p><p>Your mind snaps back to the present. The rumbling of an automobile engine grows as your senses return. Agent Harper grips your shoulder and peers into your eyes. “Another vision,” she utters with a hint of surprise. “Do you remember something? What was it?”</p><p>You shake the ache from your pounding skull and ask Harper if the name Oceiros means anything. “Oceiros Marsh? He’s the keeper of the old lighthouse on Falcon Point,” she replies. “Why? What did you see?”</p>"
+      "title": "파도 아래에 1",
+      "body": "<p>당신은 과거의 기억 사이에서 튕겨 다니며 다시 현재로 돌아가려 애쓰지만, 이내 다른 기억이 이어집니다. 어두운 감방 안, 당신의 목 앞으로 단도가 다가옵니다. 예복 두건을 걸친 사내가 당신 앞에 서 있습니다. 두건 아래, 툭 불거진 두 눈이 전혀 깜박이지 않고서 당신을 노려봅니다. 다른 이가 말합니다. “오세이로스님, 이놈들도 데이곤 님의 침소에 있었습니다. 악마의 암초를 염탐하던 그놈들 같습니다.”</p><p>두건을 쓴 오세이로스가 고개를 끄덕이고, 칼날이 당신의 목을 더 깊게 짓누릅니다. “놈들이 훔친 것을 당장 등대로 가져가라. 우리의 대업을 개시할 시간이 되었도다. 그 누구도 밀교회의 과업을 방해하지 못하리라.”</p><p>그 순간 당신은 다시 현재로 되튕겨져 나옵니다. 정신을 차려 갈수록 자동차의 굉음이 더욱더 세게 귓전을 때립니다. 하퍼가 당신의 어깨를 잡고서 눈을 들여다보고 있습니다. “또다시 과거의 기억을 본 건가요? 이번엔 뭐죠? 뭐가 기억나요?” 하퍼의 목소리에서 깜짝 놀란 기색이 엿보입니다.</p><p>당신은 머리에 널뛰는 통증을 떨쳐내고서 하퍼에게 오세이로스라는 이름을 들어본 적 있냐고 묻습니다. “오세이로스 마쉬 말인가요? 송골매 곶에 있는 오래된 등대에 있는 등대지기죠. 오세이로스는 왜요? 뭘 본 건가요?”</p>"
     },
-    "purpleKey": "<p>You describe the idol found in the undersea grotto. Agent Harper nods along with you. “I remember seeing something like that in some of the notes I found while you were off investigating the reef. It depicts some kind of ancient deity—something those vile creatures worship.” Her voice lowers to little more than a whisper. “Something I suspect is no myth.” You ask where the idol is now, and she shakes her head. “I suspect it was taken from you when you were thrown into that pit,” she replies.</p>",
-    "whiteKey": "<p>You recall the strange mantle you found submerged in the depths of Devil Reef. “Yes, I remember seeing that,” Harper says with a snap of her fingers. “One of the ‘priests’ in that accursed Esoteric Order of Dagon wore it when I first arrived in Innsmouth. It must have been taken to the lighthouse with the rest of your belongings when you were captured at the Order’s headquarters. If we’re lucky, it’ll still be there…”</p>",
-    "blackKey": "<p>You tell Agent Harper about the temple with the two statues you discovered within Devil Reef, and about the crown you stole. “That sounds like the ‘Headdress of Y’ha-nthlei’ I read about while I was researching the Order. I’m impressed you were able to make off with it. Whatever it is, it sounds pretty important to the Order. Although I still have no clue what ‘Y’ha-nthlei’ is.” You remark that you don’t have the crown anymore, and she nods. “It must have been taken from you and brought to the lighthouse with the rest of your things before you lost your memories,” she explains.</p>",
-    "noKeys": "<p>You struggle to remember anything of value beyond your initial exploration of the reef. You recall the uncanny creatures you fought, the various islands you explored, and the steadily rising tides, but no more. Secrets must be hidden in those reefs, but either you were unable to find them, or you simply don’t recall. Your head throbs with pain as you struggle to summon memories from the void within your mind. “That’s okay,” Agent Harper says, placing a hand on your shoulder. “We’ll figure this out together.”</p>",
-    "beneathTheWaves2": "<p>“It seems your memories are starting to return,” Agent Harper says with a tentative grin. “How do you feel?”</p><p>You struggle to find a reply that fits. Part of you is relieved to have your memories returning, but the rest of you wishes they hadn’t been so vivid. You wonder once more if you should simply take this opportunity to drive back to Arkham and never set foot in Innsmouth again. Then your gaze meets Harper’s, and you see the fierce resolve within her eyes. The same resolve that stirs in you.</p><p>You say nothing, but she seems to understand. “This must be a lot to take in. For now, let’s focus on getting to Falcon Point. If what you say is true, and Oceiros is part of the Esoteric Order of Dagon, there should be answers there.” She looks over her shoulder, peering into the western horizon. The sun dips just below the treeline, bathing the sky in deep scarlet. “Something tells me this isn’t over.”</p>",
+    "purpleKey": "<p>당신은 해저 암굴에서 찾아냈던 우상을 떠오르는 대로 묘사했습니다. 하퍼 요원이 맞장구를 칩니다. “당신이 악마의 암초를 조사하러 나간 사이, 기록을 뒤지다 그것과 비슷한 것을 본 적 있어요. 일종의 고대 신을 묘사한 우상 같은데 인스머스에 들끓는 사악한 괴물들이 숭배하는 존재 같더군요.” 하퍼의 목소리가 작아지다 못해 귓속말보다도 더 작아집니다. “다만 이건 그저 신화가 아닌가 봐요…” 우상이 어딨는지 물어보자 하퍼는 고개를 젓습니다. “아마도 당신이 그 구렁에 던져졌을 때 빼앗겼겠죠.”</p>",
+    "whiteKey": "<p>악마의 암초 해저에서 찾아낸 기묘한 망토를 떠올립니다. “그래요, 저도 그런 걸 본 기억이 있어요.” 하퍼가 손가락을 탁 튕기며 답합니다. “제가 처음 인스머스에 도착했을 때, 그 망할 데이곤 밀교회의 ‘사제’인지 뭔지가 그런 걸 입고 있었어요. 당신이 교단의 본거지에 수감된 사이, 당신의 나머지 소지품과 함께 등대로 보내진 듯하네요. 운이 좋다면… 아직 거기 있을지도요.”</p>",
+    "blackKey": "<p>하퍼 요원에게 악마의 암초를 조사하다가 두 개의 석상이 들어선 의식터에서 머리관을 훔쳐냈다고 말합니다. “이하 느틀레이의 머리관이 아닐까 싶어요. 밀교회를 캐다가 관련된 내용을 읽었거든요. 그걸 갖고 도망쳤다니 당신 정말 대단하시군요. 어쨌든 그건 결사단에게 어마어마하게 귀중한 물건일 거예요. ‘이하 느틀레이’라는 게 뭔지는 아직 모르겠지만요.” 하지만 지금은 머리관을 갖고 있지 않다고 말하니 하퍼가 알았다는 듯 고개를 끄덕입니다. “당신이 기억을 잃기 전에 놈들이 당신의 소지품과 함께 등대로 보냈을 거예요.”</p>",
+    "noKeys": "<p>악마의 암초를 처음 탐험했던 기억 뒤로 대체 무엇을 봤는지 떠올리려 머리를 쥐어짭니다. 기묘한 괴물과의 전투, 암초 인근 섬을 조사한 일, 멈출 줄 모르고 차오르는 밀물까지는 기억나지만 그게 다였습니다. 악마의 암초에는 분명 비밀이 숨겨져 있었을 것이나, 당신이 찾아내지 못했을 수도, 아니면 그저 떠올리지 못하는 것일 수도 있습니다. 공허한 머릿속에서 기억을 끄집어내려고 애쓸수록 머리가 욱신거릴 뿐입니다. “괜찮아요. 함께 알아내 보도록 하죠.” 하퍼 요원이 당신의 어깨에 손을 얹으며 위로합니다.</p>",
+    "beneathTheWaves2": "<p>하퍼가 망설이는 듯한 미소를 지으며 말합니다. “이제 기억이 좀 더 돌아오기 시작한 것처럼 보이네요. 그래, 기분이 어떤가요?”</p><p>기분을 묘사할 적절한 단어가 떠오르질 않습니다. 기억이 차차 돌아온다는 점에 안도감이 들기도 하지만, 속으로는 너무 생생한 나머지 고통스러운 기억이 꺼려지기까지 합니다. 이참에 아컴으로 돌아가 다시는 인스머스에 발을 들여놓지 않는 게 정답은 아닐까 싶습니다. 그때 하퍼 요원의 시선을 마주하고, 그 눈에서 맹렬하게 타오르는 결의를 느낍니다. 그 눈을 보며 당신도 다시금 결의의 불꽃을 지펴 올립니다.</p><p>당신은 입을 꾹 다물었지만, 하퍼는 다 이해한 듯합니다. “오롯이 받아들이기에 너무나도 큰 일이겠죠. 일단은 송골매 곶으로 가기로 해요. 당신의 말이 맞다면 오세이로스도 데이곤 밀교회에 속해 있을 테니, 등대에 답이 있겠죠.” 하퍼가 어깨 너머로 서쪽 지평선을 바라봅니다. 수해 아래로 막 가라앉은 태양이 하늘을 짙은 핏빛으로 물들여갑니다. “다만, 이게 다가 아니란 직감이 드네요.”</p>",
     "xp": {
-      "purpleKey": "The idol was brough to the lighthouse.",
-      "whiteKey": "The mantle was brought to the lighthouse.",
-      "blackKey": "The headdress was brought to the lighthouse."
+      "purpleKey": "우상이 등대로 옮겨졌다.",
+      "whiteKey": "망토가 등대로 옮겨졌다",
+      "blackKey": "머리관이 등대로 옮겨졌다"
     }
   },
   "interlude4": {
     "hiddenTruths": {
-      "title": "Interlude IV: Hidden Truths",
-      "body": "<p>As soon as your mind returned to the present, you began formulating your plan. A plan to enter the realm of the Deep Ones and end their conspiracy once and for all. “This is ridiculous, you know that, right?” Harper asks. You nod. Of course it’s ridiculous. You’ve spent the last two days on the run. Chased. Hunted. Tormented.</p><p>But you’ve also spent the last two days recovering the memories you’ve forgotten. And what you’ve seen is something you can’t possibly ignore. You have seen the deity the Esoteric Order of Dagon is named for, and you understand what the Order plans to do. The alignment of the celestial bodies in the sky, the steadily rising tides, the tumultuous, fluctuating weather, the creatures emerging from the deep, all of it is tied together. You have seen it. There will come a flood, a great disaster to wipe out humanity, so only the deep remains. The great city in the reef shall rise once more and become the beating heart of all life on Earth.</p><p>There are still gaps in your memory, but all this you know to be true. All of Innsmouth is consumed by this conspiracy. The Order controlled the town through its oaths and the secret wealth it hoarded from the deep. It was no wonder they treated outsiders like yourself with such scorn.</p><p>You give Harper a knowing glare. She sighs and nods. “I know. It’s the only way.” Together, the two of you plot your course. Abandoned ships still litter the harbor of Innsmouth. Under the cover of night, you must commandeer one of them, sail to Devil Reef, and descend once more into the antediluvian ruins in the depths below the forsaken islands. That is where the other entrance to the city lies. Y’ha-nthlei.</p><p>Your skin prickles with cold shivers as you utter the word aloud. Harper grimaces, though you can sense the determination behind her steely gaze. “I’m going to see this mission through, Dawson. For you.”</p><p>You lay out all of the information you’ve uncovered and the relics you’ve obtained despite the horrors arrayed against you. You know the way to Y’ha-nthlei is sealed tight. There must be a way to gain entrance. Perhaps you already have the answers you seek…</p>"
+      "title": "막간 IV: 숨은 진실",
+      "body": "<p>다시 현재로 돌아오자마자, 당신은 곧바로 계획을 세우기 시작합니다. 심해인의 영지로 들어가서 저들의 음모를 영원히 종식시킬 계획을. “터무니 없는 계획이군요, 당신도 알잖아요?” 하퍼의 물음에 당신은 고개를 끄덕입니다. 단연코 터무니없는 계획입니다. 당신은 어제와 그제 단 이틀 동안 도망치고, 쫓기고, 추적당하고, 고문을 받고 갖은 고초를 다 겪었습니다.</p><p>그러나 머릿속에서 새카맣게 지워졌던 기억을 그 이틀 동안 되찾았습니다. 그리고 당신이 지금껏 목격해 왔던 것을 도저히 좌시할 수가 없습니다. 데이곤 밀교회가 섬기던 신적 존재를 두 눈으로 목도했으며, 밀교회의 음모도 밝혀냈습니다. 하늘에 뜬 천체가 정렬하고 계속해서 밀물이 차올랐으며, 날씨는 시시각각 요란하게 변덕을 뽐냈고 심해에서 괴물이 올라왔습니다. 이 모든 것이 다 한데 엮인 일이었습니다. 당신은 이 모든 것을 두 눈으로 똑똑히 목격했습니다. 이대로 가다간 바닷물이 불어나 궤멸적인 홍수가 되어 전 인류를 지구에서 쓸어버리고, 오직 바닷속 존재만이 남을 것입니다. 그러고 나면 악마의 암초 아래에 있는 거대한 도시가 다시 한번 떠올라, 지구상에 잔존할 생명체들의 중심지로 우뚝 설 것입니다.</p><p>아직 당신의 기억에 텅 빈 부분이 있지만, 당신이 알고 있는 모든 것은 사실입니다. 온 인스머스가 이 음모에 얽혀 있으며, 밀교회는 서약을 강제하고 심해로부터 온 비밀스러운 재물을 사용해 마을을 쥐락펴락해왔습니다. 그렇기에 당신과 같은 외지인을 멸시해온 것도 그리 놀랄 일이 아닙니다.</p><p>당신은 알고 있다는 눈빛으로 하퍼를 바라봅니다. 하퍼가 한숨을 푹 쉬며 고개를 끄덕입니다. “저도 알아요. 그게 유일한 길이겠죠.” 당신과 하퍼는 계획을 검토합니다. 아직 인스머스 항만에 버려진 배가 몇 척 있을 테니, 밤을 틈타 그중 하나를 잡아타고 악마의 암초로 나아가야 합니다. 그러고는 다시 잊힌 섬보다 더 깊은 곳에 있는 고대의 폐허로 내려가, 심해인의 도시인 이하 느틀레이의 또 다른 입구로 향하기로 합니다. 이하 느틀레이…</p><p>그 이름을 입에 담자 소름이 끼칩니다. 하퍼는 얼굴을 잔뜩 찡그리지만, 그 굳은 시선 너머에서 결의가 느껴집니다. “도슨, 저는 임무를 끝까지 마무리 짓겠어요. 당신을 위해서라도.”</p><p>끔찍한 공포와 맞서면서도 지금까지 찾아낸 유물과 모든 정보를 낱낱이 살피기 시작합니다. 이하 느틀레이의 문은 굳게 잠겨 있을 테지만, 분명 입구를 여는 방법이 있을 것입니다. 어쩌면 당신은 이미 해답을 갖고 있을지도 모릅니다…</p>"
     },
-    "guardianDispatched": "<p>You study the trophy you found in the sacrificial pit in which you awoke several days ago—part of what was once the creature that you fought in Devil Reef. It wasn’t the same kind of creature as the “Deep Ones” that the Esoteric Order of Dagon worships, but you cannot help ruminating over the similarities between them. You recall that fish never cease growing as they age, and wonder if the same may be true for Deep Ones. Perhaps it was an ancient breed of Deep One—something so old, it grew enormous and twisted beyond imagination. If so, what was it doing in Devil Reef? Was it guarding Y’ha-nthlei? And if so, what does that bode for you? You decide to take the trophy with you, hoping it is important enough to aid in your mission…</p>",
-    "rightfulKeeper": "<p>You understand now the purpose of the relic you found in Devil Reef. It isn’t just an object of power. It is a badge—an heirloom of sorts, worn by the one who stands guard over the gateway to the Deep Ones’ city. You defeated the one groomed to be its next protector. Now the relic recognizes you as its rightful heir. Perhaps with this, you will be able to gain entrance into Y’ha-nthlei…</p>"
+    "guardianDispatched": "<p>며칠 전 당신이 눈을 떴던 제물 구덩이에서 가져온 노획물을 확인해봅니다. 이것은 악마의 암초에서 당신이 맞서 싸웠던 괴물의 사체 일부였습니다. 그러나 데이곤 밀교회가 섬기는 “심해인”과는 다른 종으로 보입니다. 그러나 심해인과 이 괴물 사이의 유사점이 눈에 밟힙니다. 불현듯 물고기는 나이를 먹더라도 성장을 멈추지 않는 사실을 떠올립니다. 만약 심해인이란 것들도 물고기처럼 성장을 멈추지 않는다고 가정한다면… 저 뒤틀린 괴물은 어쩌면 오랜 세월을 살아온 나머지 상상도 못할 정도로 거대해진 고대 심해인일 수도 있지 않을까요? 그게 사실이라면, 그 괴물은 대체 악마의 암초에서 무엇을 하고 있던 것일까요? 이하 느틀레이를 지키고 있던 것일까요? 그렇다면, 그것은 어떤 흉조인 것일까요? 이것이 당신의 임무에 중대한 도움이 되기만을 바라며, 노획물을 챙겨 가기로 합니다…</p>",
+    "rightfulKeeper": "<p>이제서야 악마의 암초에서 발견했던 유물의 용도를 알겠습니다. 이것은 위력적인 유물일 뿐만 아니라, 심해인 도시의 관문을 지키는 수문장의 상징물이자 계승물이었습니다. 당신은 다음 수문장으로 내정된 이를 쓰러뜨림에 따라, 유물이 이제 당신을 정당한 후계자로 받아들였습니다. 어쩌면 이를 활용하면 이하 느틀레이로 들어갈 수 있지 않을까 싶습니다…</p>",
+    "label": {
+      "keepElinaHarper": "엘리나 하퍼가 이하 느틀레이까지 당신과 동행합니까?",
+      "addElinaHarper": "‘엘리나 하퍼’를 덱에 추가합니다",
+      "doNotAddElinaHarper": "‘엘리나 하퍼’를 덱에 추가하지 않습니다"
+    }
   },
   "epilogue": {
-    "epilogue1":  {
-      "title": "Epilogue",
-      "body": "<p><b>Epilogue 1:</b> The drive home to Arkham is quiet. After everything you have been through, you would have thought the quiet to be a peaceful repreive…but you are alone with your thoughts—thoughts of Innsmouth, of Deep Ones, of enormous monsters dwelling in the depths beneath the waves. You find yourself checking your rearview mirror regularly, waiting to spot the headlights of pursuers who want you dead; the glowing, unblinking eyes of an aquatic horror in your back seat; or perhaps even the cold, dead glare of Thomas Dawson, mutated nearly beyond recognition. But you see nothing. Just an empty road.</p><p>You sigh and run through the events of the past few weeks once more. You believe you have a complete picture of what occurred, and yet you still feel like there is something missing. Another gap in your memories…</p>"
+    "epilogue1": {
+      "title": "후일담",
+      "body": "<p><b>후일담 1:</b> 아컴으로 차를 몰아 돌아오는 길은 조용했습니다. 겪은 일이 일인 만큼, 그간 누릴 수 없었던 이 평화를 보상이라고 생각해야 하겠으나… 당신은 아직도 인스머스와 심해인 그리고 파도 아래서 살아가는 괴물에 대한 생각에 머물러 있습니다. 혹여나 당신을 죽이려 쫓아오는 추격대의 전조등이 비치지나 않을지, 뒷자리에 툭 불거진 심해인의 눈깔이 있지나 않을지, 알아볼 수 없을 정도로 뒤틀린 토머스 도슨의 차가운 시선이 있지 않을지… 당신은 착잡한 망상에 사로잡혀 주기적으로 백미러를 바라봅니다. 그러나 비치는 것은 텅 빈 도로뿐, 다른 것이 비칠 리 없습니다.</p><p>당신은 한숨을 내쉬고는 머리속에서 지난 몇 주간 벌어진 사건을 하나 하나 펼쳐갑니다. 모든 퍼즐 조각을 짜맞췄다고 믿지만, 아직도 뭔가를 놓치고 있다는 느낌을 지울 수가 없습니다. 기억 한 곳에 아직도 메워지지 못한 공백이 있을지도 모릅니다…</p>"
+    },
+    "checkMemories": "캠페인 기록지의 “되찾은 기억” 항목을 확인합니다.",
+    "ifAllFourteen": "“되찾은 기억” 아래에 다음 14개 항목이 모두 기록되어 있다면, _회상 XV_를 읽습니다. 그렇지 않다면, _후일담 2_로 이어집니다.",
+    "memories": {
+      "aMeetingWithThomasDawson": "토머스 도슨과의 만남.",
+      "aBattleWithAHorrifyingDevil": "무시무시한 악마와의 전투.",
+      "aDecisionToStickTogether": "함께 수색하기로 결정.",
+      "anEncounterWithASecretCult": "비의적인 사교집단과의 조우.",
+      "aDealWithJoeSargent": "조 사전트와의 거래.",
+      "aFollowedLead": "이어진 실마리.",
+      "anIntervention": "간섭.",
+      "aJailbreak": "탈옥.",
+      "discoveryOfAStrangeIdol": "기묘한 우상을 발견함.",
+      "discoveryOfAnUnholyMantle": "불경스러운 망토를 발견함.",
+      "discoveryOfAMysticalRelic": "신비한 유물을 발견함.",
+      "aConversationWithMrMoore": "무어 선장과의 대화.",
+      "theLifecycleOfADeepOne": "“심해인”의 생활사",
+      "aStingingBetrayal": "씁쓸한 배신."
     },
     "epilogue2": {
-      "title": "Epilogue",
-      "body": "<p><b>Epilogue 2:</b> …you shake the feeling away. It doesn’t matter anymore. This whole ordeal is behind you now. Innsmouth, Dagon, Hydra, Y’ha-nthlei—just a terrible memory you wish you could forget, like all those other memories you lost. Your foot lies heavy on the accelerator. The faster you are away from this hellish place, the better.</p>"
+      "title": "후일담",
+      "body": "<p><b>후일담 2:</b> …당신은 걱정을 떨쳐냅니다. 이제 아무래도 상관 없는 일입니다. 모든 시련은 지나간 일로 제쳐 두기로 합니다. 인스머스, 데이곤, 하이드라, 이하 느틀레이 같은 것들도 차라리 잊어버린 기억처럼 머릿속에서 다 쓸어내고 싶을 뿐입니다. 당신은 엑셀을 힘껏 내려밟습니다. 이 지옥 같은 곳에서 최대한 빨리 벗어나길 바라며…</p>"
     },
     "flashback15": {
-      "title": "Flashback XV",
-      "body": "<p>You are back in Agent Dawson’s office in Boston. He has stepped out for only a brief moment in order to retrieve some documents for you to sign. Some kind of agreement not to speak of anything you might see or hear while working for the government, no doubt. Several minutes pass. You begin to wander throughout the office, examining the many books and maps Dawson has scattered around. Some are harmless enough—a medical textbook, a history of New England, a treatise on the anatomy of aquatic creatures throughout the Atlantic—but the volumes get stranger and stranger the more of his collection you examine.</p><p>Venturing nearer to Dawson’s side of the office, you notice that the many books, envelopes, and documents spread across the surface of his desk lie atop an unfolded map. You decide to chance a peek, hoping Dawson’s task will keep him from his office for a while longer. Pushing some of the objects in your way aside, you examine the map. It is an enormous nautical chart of the world’s oceans, marked in many spots with fresh black ink. A fountain pen lies nearby.</p><p>The marks that Dawson has made are curious, to say the least. There are over a dozen scattered across the seas. Some lie just off the coast of various continents, while others are in the middle of the ocean, their locations marked with wide, unfilled cirles to show that their exact coordinates unknown. Strange words are scribbled next to each. P’tha’wei in the north Atlantic, near Greenland. Yhe’nthalla in the south Atlantic, just off the coast of Africa. R’lyeh deep in the south Pacific. Th’all-iewa by Australia in the eastern Indian Ocean. And at least ten more, some marked with question marks—an indication that this record is incomplete. You gently push aside the book that lies atop North America and see one more just off the coast of Massachusetts. Y’ha-nthlei.</p><p>You slam on the brakes and screech to a halt as your mind pulls back to the present. No. It can’t be. Your heart twists into a knot as you realize the truth. No—!</p><p>Y’ha-nthlei was not the home of the Deep Ones. It was just one of many.</p>"
+      "title": "회상 XV",
+      "body": "<div class='blue'><h1>회상 XV</h1><p>다시 시간을 거슬러 올라, 보스턴에 있는 도슨 요원의 사무실로 되돌아옵니다. 도슨은 당신에게 서명을 받아야 할 서류를 챙기기 위해 잠시 자리를 비웠습니다. 그래 봐야 분명 연방 정부를 위해 고용된 동안, 듣거나 본 것에 대해 함구하겠다는 비밀유지각서 따위일 것입니다. 몇 분이 지났지만 도슨은 아직 돌아오지 않았습니다. 당신은 사무실을 서성이며 도슨이 여기저기 펼쳐 둔 서적과 지도를 살펴봅니다. 몇몇은 그저 의학 서적, 뉴 잉글랜드의 역사서, 대서양 일대에서 서식하는 수생 동물에 관한 구조를 다룬 논문 등 특별한 것이 없는 문건이지만… 점차 심상치 않은 자료가 눈에 띄기 시작합니다.</p><p>당신은 도슨 요원의 책상으로 조심스럽게 다가가 봅니다. 그의 책상에는 각종 서적과 봉투 그리고 문건이 널브러져 있었으나, 그 밑에 깔린 지도 하나가 보입니다. 부디 도슨 요원이 업무를 처리하는 데 오래 걸리기를 바라며, 지도를 몰래 확인해보기로 합니다. 당신은 지도 위에 널브러진 서류와 책을 치워 내고서 지도를 살펴봅니다. 이것은 전 세계의 대양이 모두 담긴 해도로, 곳곳에 아직 마르지 않은 잉크로 동그라미가 그려져 있습니다. 마침 바로 옆에 만년필도 놓여 있습니다.</p><p>도슨이 표시해둔 곳은 아무리 봐도 기묘합니다. 열 곳도 넘는 해역이 동그라미 쳐져 있습니다. 그중 여러 대륙의 연안에 그려진 동그라미도 있으나, 아직 위치가 불분명한지 해양 한가운데에 커다랗게 동그라미 쳐 둔 곳도 있습니다. 게다가 각 동그라미 옆에는 이상한 단어가 휘갈겨져 있습니다. 그린란드 인근 북대서양에는 프타웨이. 아프리카 연안 남대서양에는 예느탈라. 남태평양 원해에는 르리에. 호주 인근 동인도양에는 트알 이에와. 그 외에도 10개는 넘는 동그라미가 있지만, 일부는 단어 대신 물음표가 그려져 있습니다. 즉, 아직 이 지도는 불완전하다는 뜻입니다. 북아메리카를 덮은 책을 슬며시 밀어내자 매사추세츠 주 연근해에도 동그라미와 함께 그 이름이 적혀 있습니다. 이하 느틀레이…</p><p>머릿속이 번쩍하며 다시 현재로 되돌아오기 무섭게, 당신은 브레이크를 짓밟으며 비명을 내지릅니다. 그럴 리가… 아니… 그럴 리가 없습니다. 진실을 깨닫는 순간 당신의 심장이 뒤틀립니다.</p><p>이하 느틀레이는 심해인의 본거지가 아니었습니다. 그저 수많은 거처 중 하나에 불과할 따름입니다.</p><hr /><p class='basic'>캠페인 기록지의 “되찾은 기억” 아래에 *끔찍한 진실.*이라고 기록합니다.</p></div>"
     }
   },
   "memoriesRecovered": {
-    "aMeetingWithThomasDawson": "A Meeting with Thomas Dawson",
-    "aBattleWithAHorrifyingDevil": "A Battle with a Horrifying Devil",
-    "aDecisionToStickTogether": "A Decision to Stick Together",
-    "anEncounterWithASecretCult": "An Encounter with a Secret Cult",
-    "anIntervention": "An Intervention",
-    "aJailbreak": "A Jailbreak",
-    "aDealWithJoeSargent": "A Deal with Joe Sargent",
-    "aFollowedLead": "A Followed Lead",
-    "discoveryOfAStrangeIdol": "Discovery of a Strange Idol",
-    "discoveryOfAnUnholyMantle": "Discovery of an Unholy Mantle",
-    "discoveryOfAMysticalRelic": "Discovery of a Mystical Relic",
-    "aConversationWithMrMoore": "A Conversation with Mr. Moore",
-    "theLifecycleOfADeepOne": "The Lifecycle of a \"Deep One\"",
-    "aStingingBetrayal": "A Stinging Betrayal"
+    "aMeetingWithThomasDawson": "토머스 도슨과의 만남",
+    "aBattleWithAHorrifyingDevil": "무시무시한 악마와의 전투",
+    "aDecisionToStickTogether": "함께 수색하기로 결정",
+    "anEncounterWithASecretCult": "비의적인 사교집단과의 조우",
+    "anIntervention": "간섭",
+    "aJailbreak": "탈옥",
+    "aDealWithJoeSargent": "조 사전트와의 거래",
+    "aFollowedLead": "이어진 실마리",
+    "discoveryOfAStrangeIdol": "기묘한 우상을 발견함",
+    "discoveryOfAnUnholyMantle": "불경스러운 망토를 발견함",
+    "discoveryOfAMysticalRelic": "신비한 유물을 발견함",
+    "aConversationWithMrMoore": "무어 선장과의 대화",
+    "theLifecycleOfADeepOne": "“심해인”의 생활사",
+    "aStingingBetrayal": "씁쓸한 배신",
+    "youRememberWhereYouHaveToGo": "가야 할 곳을 기억해 냈다",
+    "theHorribleTruth": "끔찍한 진실"
   },
   "possibleHideouts": {
-    "innsmouthJail": "Innsmouth Jail",
-    "shorewardSlums": "Shoreward Slums",
-    "sawboneAlley": "Sawbone Alley",
-    "theHouseOnWaterStreet": "The House on Water Street",
-    "esotericOrderOfDagon": "Esoteric Order of Dagon",
-    "newChurchGreen": "New Church Green"
+    "innsmouthJail": "인스머스 감옥",
+    "shorewardSlums": "해안 빈민가",
+    "sawboneAlley": "쏘본 골목",
+    "theHouseOnWaterStreet": "워터 가에 있는 집",
+    "esotericOrderOfDagon": "데이곤 밀교회당",
+    "newChurchGreen": "뉴 처치 그린"
   },
   "possibleSuspects": {
-    "brianBurnham": "Brian Burnham",
-    "barnabasMarsh": "Barnabas Marsh",
-    "otheraGilman": "Othera Gilman",
-    "zadokAllen": "Zadok Allen",
-    "joyceLittle": "Joyce Little",
-    "robertFriendly": "Robert Friendly"
+    "brianBurnham": "브라이언 버넘",
+    "barnabasMarsh": "바나버스 마쉬",
+    "otheraGilman": "오테라 길먼",
+    "zadokAllen": "제이덕 엘렌",
+    "joyceLittle": "조이스 리틀",
+    "robertFriendly": "로버트 프렌들리"
   },
   "label": {
-    "noAir": "You did not find air, Take 5 direct damage",
-    "shuffleThatCardIntoLeadsDeck": "Shuffle that card into the Leads deck"
+    "noAir": "공기를 찾지 못했습니다. 직접 피해를 5 받습니다",
+    "shuffleThatCardIntoLeadsDeck": "그 카드를 실마리 덱에 섞어 넣습니다"
+  },
+  "syzygy": {
+    "label": {
+      "loseResources": "각 조사자는 자원을 3개 잃습니다.",
+      "takeHorror": "각 조사자는 공포를 2 받습니다.",
+      "placeDoomCanAdvance": "현재 주요사건에 파멸을 1개 올려놓습니다. 이 효과는 현재 주요사건을 진행시킬 수 있습니다."
+    }
+  },
+  "fogOverInnsmouth": {
+    "label": {
+      "putIntoPlay": "‘인스머스에 드리운 안개’를 주요사건 덱 옆 플레이 영역에 놓습니다."
+    }
+  },
+  "furtiveLocals": {
+    "label": {
+      "putIntoPlay": "‘음흉한 주민 무리’를 주요사건 덱 옆 플레이 영역에 놓습니다."
+    }
   },
   "key": {
-    "memoriesRecovered": "Memories recovered",
-    "outForBlood": "Out for blood",
-    "theMissionFailed": "The mission failed",
-    "theMissionWasSuccessful": "The mission was successful",
-    "possibleSuspects": "Possible suspects",
-    "possibleHideouts": "Possible hideouts",
-    "innsmouthWasConsumedByTheRisingTide": "Innsmouth was consumed by the rising tide",
-    "theInvestigatorsMadeItSafelyToTheirVehicles": "The investigators made it safely to their vehicles",
-    "theTideHasGrownStronger": "The tide has grown stronger",
-    "theTerrorOfDevilReefIsStillAlive": "The Terror of Devil Reef is still alive",
-    "theTerrorOfDevilReefIsDead": "The Terror of Devil Reef is dead",
-    "theIdolWasBroughtToTheLighthouse": "The idol was brought to the lighthouse",
-    "theMantleWasBroughtToTheLighthouse": "The mantle was brought to the lighthouse",
-    "theHeaddressWasBroughtToTheLighthouse": "The headdress was brought to the lighthouse",
-    "theInvestigatorsReachedFalconPointBeforeSunrise": "The investigators reached Falcon Point before sunrise",
-    "theInvestigatorsReachedFalconPointAfterSunrise": "The investigators reached Falcon Point after sunrise",
-    "possessesADivingSuit": "Possesses a diving suit",
-    "theInvestigatorsPossessAMapOfYhaNthlei": "The investigators possess a map of Y'ha-Nthlei",
-    "theInvestigatorsPossessTheKeyToYhaNthlei": "The investigators possess the key to Y'ha-Nthlei",
-    "dagonHasAwakened": "Dagon Has Awakened",
-    "dagonStillSlumbers": "Dagon Still Slumbers",
-    "theOrdersRitualWasDisrupted": "The Order's Ritual Was Disrupted",
-    "theGatekeeperHasBeenDefeated": "The Gatekeeper Has Been Defeated",
-    "theGuardianOfYhanthleiIsDispatched": "The Guardian of Y'ha-nthlei is Dispatched",
-    "theGatewayToYhanthleiRecognizesYouAsTheRightfulKeeper": "The Gateway to Y'ha-nthlei Recognizes You as the Rightful Keeper",
-    "theInvestigatorsEscapedYhanthlei": "The Investigators Escaped Y'ha-nthlei",
-    "thePlotOfTheDeepOnesWasThwarted": "The Plot of the Deep Ones Was Thwarted",
-    "theFloodHasBegun": "The Flood Has Begun",
-    "agentHarpersMissionIsComplete": "Agent Harper's Mission is Complete",
-    "theRichesOfTheDeepAreLostForever": "The Riches of the Deep are Lost Forever",
-    "agentHarpersMissionIsCompleteButAtWhatCost": "Agent Harper's Mission is Complete... but at what cost?",
-    "theRichesOfTheDeepAreLostForeverButAtWhatCost": "The Riches of the Deep are Lost Forever... but at what cost?",
-    "theDeepOnesHaveFloodedTheEarth": "The Deep Ones Have Flooded the Earth",
-    "theHorribleTruth": "The Horrible Truth"
+    "memoriesRecovered": "되찾은 기억",
+    "outForBlood": "살기등등",
+    "theMissionFailed": "임무에 실패했다",
+    "theMissionWasSuccessful": "임무를 달성했다",
+    "possibleSuspects": "유력한 용의자",
+    "possibleHideouts": "유력한 은신처",
+    "innsmouthWasConsumedByTheRisingTide": "인스머스가 밀물에 집어삼켜졌다",
+    "theInvestigatorsMadeItSafelyToTheirVehicles": "조사자들이 안전하게 차량에 도착했다",
+    "theTideHasGrownStronger": "밀물이 더욱 높이 차올랐다",
+    "theTerrorOfDevilReefIsStillAlive": "악마의 암초에 도사린 공포가 아직 살아 있다",
+    "theTerrorOfDevilReefIsDead": "악마의 암초에 도사린 공포가 죽었다",
+    "theIdolWasBroughtToTheLighthouse": "우상이 등대로 옮겨졌다",
+    "theMantleWasBroughtToTheLighthouse": "망토가 등대로 옮겨졌다",
+    "theHeaddressWasBroughtToTheLighthouse": "머리관이 등대로 옮겨졌다",
+    "theInvestigatorsReachedFalconPointBeforeSunrise": "조사자들이 동트기 전에 송골매 곶에 도착했다",
+    "theInvestigatorsReachedFalconPointAfterSunrise": "조사자들이 동튼 후에야 송골매 곶에 도착했다",
+    "possessesADivingSuit": "잠수복을 갖고 있다",
+    "theInvestigatorsPossessAMapOfYhaNthlei": "조사자들이 이하 느틀레이의 지도를 갖고 있다",
+    "theInvestigatorsPossessTheKeyToYhaNthlei": "조사자들이 이하 느틀레이의 열쇠를 갖고 있다",
+    "dagonHasAwakened": "데이곤이 깨어났다",
+    "dagonStillSlumbers": "데이곤이 아직 잠들어 있다",
+    "theOrdersRitualWasDisrupted": "밀교회의 의식을 방해했다",
+    "theGatekeeperHasBeenDefeated": "수문장이 쓰러졌다",
+    "theGuardianOfYhanthleiIsDispatched": "이하 느틀레이의 수호자가 죽었다",
+    "theGatewayToYhanthleiRecognizesYouAsTheRightfulKeeper": "이하 느틀레이의 관문이 당신을 정당한 계승자로 받아들인다",
+    "theInvestigatorsEscapedYhanthlei": "조사자들이 이하 느틀레이에서 탈출했다",
+    "thePlotOfTheDeepOnesWasThwarted": "심해인의 음모를 저지했다",
+    "theFloodHasBegun": "대홍수가 시작되었다",
+    "agentHarpersMissionIsComplete": "하퍼 요원이 맡은 임무를 완수했다",
+    "theRichesOfTheDeepAreLostForever": "심해의 보화는 영원히 소실되었다",
+    "agentHarpersMissionIsCompleteButAtWhatCost": "하퍼 요원이 맡은 임무를 완수했지만…그 대가는 무엇일까요?",
+    "theRichesOfTheDeepAreLostForeverButAtWhatCost": "심해의 보화는 영원히 소실되었다... 하지만 그 대가는 무엇일까요?",
+    "theDeepOnesHaveFloodedTheEarth": "심해인이 지구상에서 번영하게 되었다",
+    "theHorribleTruth": "끔찍한 진실"
   }
 }

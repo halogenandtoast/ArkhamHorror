@@ -21,12 +21,24 @@
   "setup": {
     "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *시공간을 헤매다*, *마술*, *저 너머*, *끔찍한 흉물*, *요그 소토스의 권속*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/lost-in-time-and-space.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/agents-of-yog.png' /></section>",
     "placeLocations": "‘또 다른 차원’을 플레이 영역에 둡니다. 모든 조사자는 ‘또 다른 차원’에서 시작합니다.",
-    "setAside": "‘우주의 가장자리’, ‘시간을 가로질러 난 균열’, ‘요그 소토스’를 비플레이 상태로 치워 둡니다."
+    "setAside": "‘우주의 가장자리’, ‘시간을 가로질러 난 균열’, ‘요그 소토스’를 비플레이 상태로 치워 둡니다.",
+    "returnTo": {
+      "gatherSets": "또한 다음 조우 세트의 모든 카드를 모읍니다: *돌아온 시공간을 헤매다*, *문턱 저 너머*, *요그 소토스의 특사*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/return-to-lost-in-time-and-space.png' /><img src='{setImgPath}/beyond-the-threshold.png' /><img src='{setImgPath}/yog-sothoths-emissaries.png' /></section>*문턱 저 너머*가 *저 너머*을, *요그 소토스의 특사*가 *요그소토스의 권속*을 대체합니다. 대체된 세트는 게임에서 제거합니다.",
+      "placeLocations": "‘저 너머의 영토’ 단면 장소 카드를 플레이 영역에 두고 그곳에 ‘요그 소토스’를 출현시킵니다.",
+      "setAside": "또한 ‘세스 비숍’(*요그 소토스의 종복*)을 비플레이 상태로 치워 둡니다.",
+      "actAndAgenda": "주요사건 3a—*돌파하다*를 새로운 주요사건 3a—*돌파하다(v. II)*로 대체합니다. 캠페인 기록지를 확인합니다: *의식이 완전히 거행되었다*면, 주요목적 2a—*저 너머로*도 새로운 주요목적 2a—*저 너머로(v. II)*로 대체합니다."
+    }
   },
   "locationsInTheEncounterDeck": {
     "title": "조우 덱에 있는 장소",
     "body": "<p class='basic'>이 시나리오에는 단면 장소 카드가 몇 장 포함되어 있으며, 이러한 단면 장소는 게임 준비 과정에서 다른 조우 세트와 합쳐 섞여 조우 덱을 구성합니다. 단면 장소에는 공개 면만 있으며, 그 카드를 뽑았을 때 플레이 영역에 두게 하는 <b>폭로</b> 효과가 있습니다.</p><p class='basic'>단면 장소를 플레이 영역에 둘 때는 해당 카드에 미공개 면이 없으므로 공개 면이 보이도록 플레이 영역에 둡니다. 이 점을 제외한 다른 모든 경우에 있어서 일반적인 장소와 동일합니다.</p>"
   },
+  "specialRules": [
+    {
+      "title": "@:theDunwichLegacy.lostInTimeAndSpace.locationsInTheEncounterDeck.title",
+      "body": "@:theDunwichLegacy.lostInTimeAndSpace.locationsInTheEncounterDeck.body"
+    }
+  ],
   "resolutions": {
     "defeated": "<div class='resolution'><p class='basic'>_이 캠페인 안내서에 적힌 다른 결말을 보기 전에, 쓰러진 조사자가 한 명이라도 있다면_: 그 조사자는 아래의 _쓰러진 조사자_를 먼저 읽습니다.</p><p>_쓰러진 조사자_: 당신은 어디에서 왔습니까? 당신은 왜 여기 있습니까? 이곳은 꿈 속입니까, 아니면 현실입니까? 지금 와서 돌이켜보건대, 혹시 이전에도 여기에 온 적이 없었습니까? 어쩌면 이곳이야말로 진짜 당신이 속한 세계인지도 모릅니다. 그렇습니다. 이제 기억납니다. 이곳이 진짜 당신의 집입니다. 지금 당신이 걷고 있는 길은 그저 벼랑 끄트머리일 뿐, 저 아래에는 더욱더 많은 것들이 있습니다. 이제 저 아래로 내려가면, 원래 당신이 있어야 할 곳으로 돌아가는 겁니다. 한 발짝만 더 떼면…</p><ul><li>모든 쓰러진 조사자는 _사망합니다_.</li><li>또 다른 결말에 도달했으면, 다른 조사자들은 그 결말을 읽습니다.</li><li>아무런 결말에 도달하지 못했고(모든 조사자가 쓰러졌고) 시나리오가 끝났을 때 조사자들이 주요목적 4에 있었다면, _결말 2_를 읽습니다.</li><li>아무런 결말에 도달하지 못했고(모든 조사자가 쓰러졌고) 시나리오가 끝났을 때 조사자들이 주요목적 1/2/3에 있었다면, _결말 4_를 읽습니다.</li></ul></div>",
     "resolution1": {
@@ -79,6 +91,9 @@
     "unstableVortex": {
       "chooseTearThroughSpace": "버릴 ‘공간을 가로질러 난 균열’ 사본 1장을 선택합니다.",
       "shuffle": "‘불안정한 소용돌이’를 조우 덱에 섞어 넣습니다."
+    },
+    "dimensionalDoorway": {
+      "shuffle": "‘차원 관문’을 조우 덱에 섞어 넣습니다"
     }
   }
 }

@@ -29,7 +29,7 @@ defineProps<{
           </td>
           <td v-else class="partner-name">
             <span class="name">{{ cardCodeToTitle(cCode) }}</span>
-            <span class="status-mia" v-if="partner.status === 'Mia'">MIA</span>
+            <span class="status-mia" v-if="partner.status === 'Mia'">{{ $t('gameUi.mia') }}</span>
           </td>
           <td>{{ partner.damage }}</td>
           <td>{{ partner.horror }}</td>

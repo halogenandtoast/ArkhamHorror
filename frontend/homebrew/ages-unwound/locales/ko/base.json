@@ -1,0 +1,52 @@
+{
+  "name": "풀려난 시대",
+  "headings": {
+    "interludes": {
+      "1": "막간 I"
+    }
+  },
+  "additionalRulesAndClarifications": {
+    "title": "추가 규칙과 규칙 명료화",
+    "alert": {
+      "title": "경계",
+      "body": "<p class='basic'>조사자가 경계 키워드가 있는 적으로부터 회피를 시도하는 도중 능력 테스트에 실패할 때마다, 우선 그 능력 테스트의 모든 결과를 적용합니다. 그 후, 그 적이 자신에게 회피를 시도했던 조사자를 상대로 공격을 수행합니다(경계 공격). 적은 경계 공격을 수행한 후에도 소진 상태가 되지 않습니다. 경계 공격은 조사자와 적이 교전하고 있는지 여부에 상관없이 발생합니다.</p>"
+    },
+    "storyCards": {
+      "title": "이야기 카드",
+      "body": "<p class='basic'>이야기 카드는 풍부한 서사를 제공하며, 대개 시나리오 카드의 뒷면으로 구성되어 있습니다. 이야기 카드를 해결하라는 지시를 받으면, 해당 이야기 문구를 읽고 게임 문구를 해결하도록 합니다.</p>"
+    },
+    "swarming": {
+      "title": "무리 X"
+    }
+  },
+  "prologue": {
+    "title": "서막"
+  },
+  "epilogue": {
+    "title": "후일담"
+  },
+  "recordedTimes": {
+    "agenda": "주요사건",
+    "doom": "파멸"
+  },
+  "label": {
+    "houndOfUnmaking": {
+      "discardAsset": "당신이 조종하는 자산 1장을 버립니다"
+    },
+    "timeLoop": {
+      "fight": "전투",
+      "move": "이동",
+      "evade": "회피",
+      "investigate": "조사",
+      "play": "플레이",
+      "draw": "뽑기"
+    }
+  },
+  "logEditor": {
+    "remove": "제거",
+    "agenda": "주요사건",
+    "doom": "파멸",
+    "saving": "저장 중...",
+    "investigatorsTab": "조사자"
+  }
+}

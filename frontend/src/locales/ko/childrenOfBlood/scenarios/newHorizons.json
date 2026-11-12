@@ -1,0 +1,44 @@
+{
+  "intro": {
+    "title": "시나리오 II: 새로운 지평",
+    "addCultist": "캠페인이 끝날 때까지 혼돈 주머니에 {cultist} 토큰을 1개 추가합니다."
+  },
+  "version1": {
+    "setup": {
+      "title": "게임 준비(v. I)"
+    }
+  },
+  "version2": {
+    "setup": {
+      "title": "게임 준비(v. II)"
+    }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X는 현재 주요목적 번호입니다."
+    },
+    "hardExpert": {
+      "skull": "-X. X는 현재 주요목적 번호+1입니다."
+    }
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "아무 결말에도 도달하지 못했다면"
+    },
+    "resolution1": {
+      "title": "결말 1"
+    },
+    "resolution2": {
+      "title": "결말 2"
+    },
+    "resolution3": {
+      "title": "결말 3"
+    },
+    "resolution4": {
+      "title": "결말 4"
+    },
+    "resolution5": {
+      "title": "결말 5"
+    }
+  }
+}

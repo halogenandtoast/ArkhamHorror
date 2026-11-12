@@ -1,62 +1,93 @@
 {
+  "heading": "시나리오 II",
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the level of your location.",
-      "cultist": "-1. If you fail, move to the location directly below you.",
-      "tablet": "-3. If you fail, lose contol of an _Expedition_ asset and place it at your location.",
-      "elderThing": "-4. If you fail, the nearest _Elder Thing_ enemy moves once towards you. If it is engaged with you, it attacks."
+      "skull": "–X. X는 당신이 위치한 장소의 고도입니다.",
+      "cultist": "-1. 실패하면, 당신 바로 아래에 있는 장소로 이동합니다.",
+      "tablet": "-3. 실패하면, _탐사_ 자산 하나의 조종권을 잃고 그 자산을 당신이 위치한 장소에 놓습니다.",
+      "elderThing": "–4. 실패하면, 가장 가까운 옛것 적이 당신을 향해 1칸 이동합니다. 그 적이 당신과 교전 상태라면, 그 적이 당신을 공격합니다."
     },
     "hardExpert": {
-      "skull": "-X. X is 2 plus the level of your location.",
-      "cultist": "-1. Move to the location directly below you.",
-      "tablet": "-4. If you fail, lose contol of an _Expedition_ asset and place it at your location.",
-      "elderThing": "-5. If you fail, the nearest _Elder Thing_ enemy moves once towards you. If it is engaged with you, it attacks."
+      "skull": "-X. X는 당신이 위치한 장소의 고도+2입니다.",
+      "cultist": "-1. 당신 바로 아래에 있는 장소로 이동합니다.",
+      "tablet": "-4. 실패하면, _탐사_ 자산 하나의 조종권을 잃고 그 자산을 당신이 위치한 장소에 놓습니다.",
+      "elderThing": "-5. 실패하면, 가장 가까운 옛것 적이 당신을 향해 1칸 이동합니다. 그 적이 당신과 교전 상태라면, 그 적이 당신을 공격합니다."
     }
   },
+  "setup": {
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *금단의 봉우리를 향해*, *악천후*, *옛것*, *위험천만한 남극*, *형언치 못할 공포*, *테켈리 리*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/to-the-forbidden-peaks.png' /><img src='{setImgPath}/deadly-weather.png' /><img src='{setImgPath}/elder-things.png' /><img src='{setImgPath}/hazards-of-antarctica.png' /><img src='{setImgPath}/nameless-horrors.png' /><img src='{setImgPath}/tekeli-li.png' /></section>",
+    "placeLocations": "‘산비탈’ 장소 7장을 섞어서 그중 5장을 대각선 꼴로 플레이 영역에 둡니다. 나머지 두 장소는 비플레이 상태로 치워 둡니다. ‘정상’ 장소를 플레이 영역 중 대각선 맨 위쪽에 가게끔 놓습니다. 각각의 장소는 0에서 5까지의 고도를 갖습니다. 맨 아래쪽 장소는 고도 0이며, 차례대로 1씩 올라가 ‘정상’은 고도 5입니다. (다음과 같은 장소 배치도를 참조합니다.)",
+    "revealLevel0": "고도 0인 장소를 공개합니다. 모든 조사자는 그 장소에서 시작합니다.",
+    "addElderThingToken": "혼돈 주머니에 {'{'}elderThing{'}'} 토큰을 1개 추가합니다.",
+    "suppliesRecovered": "캠페인 기록지의 “수복한 물자” 항목을 확인하여, 그와 일치하는 모든 탐사 이야기 자산을 플레이 영역 중 고도 0 장소에 둡니다. 나머지 탐사 이야기 자산은 게임에서 제거합니다.",
+    "setTerrorOfTheStarsAside": "‘별들의 공포’ 적을 비플레이 상태로 치워 둡니다.",
+    "checkDifficulty": "난이도를 확인합니다.",
+    "hard": "어려움 난이도로 플레이한다면, 주요사건 1a에 파멸을 1개 추가합니다.",
+    "expert": "전문가 난이도로 플레이한다면, 주요사건 1a에 파멸을 2개 추가합니다.",
+    "tekelili": "(아직 조사자 덱의 일부가 아닌) 모든 ‘테켈리 리’ 약점 카드를 함께 섞어 테켈리 리 덱을 만듭니다. 테켈리 리 덱을 주요사건 덱 근처에 놓습니다."
+  },
   "intro1": {
-    "title": "Scenario II: To The Forbidden Peaks",
-    "body": "<p>_도입부 1_: The wind howls as your party prepares for the long journey ahead. There is very little conversation. Even if you could hear each other’s muffled voices through your earmuffs and scarves, what would you say? The silence of your shared terror is loud enough.</p><p>Your destination is many miles ahead of you. The jagged peaks loom far on the horizon, taunting you. You run a mental checklist of your situation…</p>"
+    "title": "시나리오 II: 금단의 봉우리를 향해",
+    "body": "<p>_도입부 1_: 탐사대가 기나긴 여정을 앞두고 준비를 하는 사이, 야영지 바깥에서는 바람이 울부짖듯 맹렬하게 불어옵니다. 그러나 대원들 사이에는 거의 대화가 오가지 않습니다. 귀마개와 목도리 너머로 다른 이들의 먹먹한 목소리를 들을 수 있다 하더라도, 대체 어떤 말을 해야 할까요? 모두의 마음속을 파고드는 극심한 공포는 침묵을 자아냈고, 이 침묵만으로도 귀가 멀어버릴 것 같습니다.</p><p>목적지는 수 킬로미터나 떨어진 곳에 있습니다. 멀리 지평선 위로 비죽비죽 솟은 산봉우리들이 당신을 도발하듯 내려다봅니다. 나아가기에 앞서, 지금 대원들의 정신이 온전한 지 되돌아봅니다…</p>"
   },
   "intro2": {
-    "title": "Scenario II: To The Forbidden Peaks",
-    "body": "<p>_도입부 2_: You hike through the ice and snow for many grueling hours. Luckily, you encounter no more of the creatures from the previous two days, leaving you to ponder if it was all some cruel mirage. But as you draw closer to the base of the jagged snow-tipped mountains, you find another manner of creature altogether.</p><p>It lies frozen and half-buried in the snow, like a macabre waymarker guiding you onward. Its body is shaped like a drum, with thick hide and a pair of torn, leathery wings. A starfish-shaped appendage sticks out of the snow from its top half, adorned with five dead eyes and a set of prismatic cilia. Five sets of tentacles lie frozen in the ice. The sight of the thing chills you more than the Antarctic weather possibly could.</p><p>There can be no doubt: this is one of the “Elder Things” that Professor Dyer and Danforth encountered the last time they ventured into the heart of Antarctica. But what killed it? Surely it was not just the cold?</p><p class='basic right'>_게임 준비_로 이어집니다.</p>"
+    "title": "시나리오 II: 금단의 봉우리를 향해",
+    "body": "<p>_도입부 2_: 당신은 얼음과 눈을 헤치고 수 시간에 걸쳐 고된 발걸음을 옮겼습니다. 운 좋게도, 지난 이틀간 탐사대를 노렸던 괴수는 보이지 않았고, 이제는 그 모든 것이 잔혹한 신기루에 불과한 것은 아닌가 하는 생각에 곰곰이 빠져듭니다. 그러나 비죽비죽한 눈 덮인 산맥의 발치에 가까워졌을 즈음, 그와는 완전히 다른 생명체를 접하게 되었습니다.</p><p>그것은 탐사대를 앞으로 인도하는 무시무시한 표지석처럼, 얼어붙은 채로 눈 속에 반쯤 파묻혀 있었습니다. 그것의 북처럼 생긴 몸통은 두꺼운 외피로 덮여 있고, 한 쌍의 피막 날개는 너덜너덜하게 찢겨 있습니다. 또한 눈 밖으로 튀어나온 상체 쪽에는 불가사리 모양의 부속지가 달려 있으며, 다섯 개의 공허한 눈깔과 다양한 색상의 섬모가 돋아 있습니다. 다섯 개의 촉수는 눈밭 위에 힘 잃고 널브러진 채 완전히 얼어붙어 있습니다. 이 광경을 보자 남극의 냉랭한 날씨가 한층 더 오싹해지는 것만 같았습니다.</p><p>이 생명체가 다이어 교수와 댄포스가 지난번 탐사에서 남극 중심부까지 탐험하다 발견했다던 “옛것”이라는 데에는 의심의 여지가 없습니다. 그러나 무엇이 이 생명체를 죽인 걸까요? 단순한 추위 외에 다른 이유가 있는 것은 아닐까요?</p><p class='basic right'>_게임 준비_로 이어집니다.</p>"
   },
   "interlude": {
-    "title": "Scenario Interlude: Tragedy Strikes",
-    "instructions1": "<p class='basic'>Find each surviving expedition member (including those currently under an investigator’s control) who do not have a checkmark drawn next to their name in the “Expedition Team” section of the Campaign Log, and choose one of them at random. If there are no such expedition members, skip the rest of this interlude.</p>",
-    "paragraph1": "<p>It all happens in the blink of an eye. You have only enough time to scream your companion’s name before they are seized. Its many, shifting shapes coil around their body. They struggle to escape, but it is hopeless.</p>",
-    "cookie": "<p>_If the victim is James “Cookie” Fredericks_:</p><p>The hardened veteran spits out a curse and manages to slip his right arm out of the thing’s grasp. It’s enough for him to take a single shot with his colt. The gunshot thunders across the mountain and rips through the thing’s grotesque, formless mass.</p><p class='basic'>Deal 2 damage to The Terror of the Stars.</p>",
-    "paragraph2": "<p>Then, without a moment of consideration, it shoves its tendrils into its victim’s body and yanks them apart like a piece of uncooked meat. A spray of blood stains the snow crimson. It drops what remains of your companion unceremoniously onto the ground and turns its attention to you.</p>",
-    "instructions2": "<p class='basic'>In the “Expedition Team” section of the Campaign Log, cross off the chosen character’s name. If they were in play, they are defeated and removed from the game.</p></div>"
+    "title": "시나리오 막간: 예상치 못한 비극",
+    "instructions1": "<p class='basic'>살아남은 탐사대원(현재 조사자가 조종 중인 탐사대원도 포함하여) 가운데, 캠페인 기록지의 “탐사대” 항목에서 아직 이름 옆에 체크 표시가 되어 있지 않은 모든 탐사대원을 확인하여, 그중 무작위로 하나를 선택합니다. 그러한 탐사대원이 없다면, 이 막간의 나머지 부분을 건너뜁니다.</p>",
+    "paragraph1": "<p>이 모든 일은 눈 깜짝할 사이에 벌어지고 말았습니다. 동료가 놈에게 붙잡히려는 찰나에 당신이 할 수 있는 거라고는 그 이름을 부르짖는 것뿐이었습니다. 놈의 몸뚱이를 둘러싼 수많은 형상이 변화무쌍하게 몸부림칩니다. 동료는 도망치려고 안간힘을 썼지만, 다 부질없는 짓이었습니다.</p>",
+    "cookie": "<p>희생자가 ‘제임스 “쿠키” 프레드릭스’입니까?</p><p>노련한 참전용사가 욕지거리를 내뱉더니 간신히 놈의 손아귀에서 오른쪽 팔을 비집어 꺼냅니다. 그 짧은 순간도 쿠키가 콜트로 한 발 반격하는 데에는 충분했습니다. 우레와 같은 총성이 메아리치고, 놈의 기괴한 무정형 육체가 찢겨나갑니다.</p><p class='basic'>‘별들의 공포’에게 피해를 2 줍니다.</p>",
+    "paragraph2": "<p>그러더니, 놈은 당신이 대처할 새도 없이 희생자의 몸뚱이에 촉수를 꽂아 넣고서 찢어발겼고, 조금 전까지만 해도 동료였던 것은 한순간에 갈가리 찢긴 고깃덩이가 되고 말았습니다. 선혈이 눈더미를 진홍색으로 물들여갑니다. 놈은 시신을 무정하게 땅에 내던지고는 당신을 향해 돌아섭니다.</p>",
+    "instructions2": "<p class='basic'>캠페인 기록지의 “탐사대” 항목에서, 선택한 탐사대원의 이름에 취소선을 긋습니다. 그 탐사대원이 플레이 상태라면, 그 탐사대원은 즉시 쓰러져 게임에서 제거됩니다.</p></div>"
   },
   "resolutions": {
     "noResolution": {
       "title": "결말에 도달하지 못함",
-      "body": "<div class='resolution'><p><b>아무 결말에도 도달하지 못했다면(모든 조사자가 쓰러졌다면):</p> The remainder of your journey across the peaks is a whirlwind of snow and fear. You climb higher and higher, pushing yourself to extremes you never thought possible. Still the summit remains ever out of reach. As night falls and the weather grows even deadlier, desperation forces you to look elsewhere to survive.</p></div>"
+      "body": "<div class='resolution'><p><b>아무 결말에도 도달하지 못했다면(모든 조사자가 쓰러졌다면):</p> 산봉우리를 향한 등반에는 눈보라와 공포가 따랐습니다. 더는 나아갈 수 없다고 생각할 때까지, 당신은 자기 자신을 극한의 극한까지 밀어붙이며 조금이라도 더 높이 등정을 이어갑니다. 그러나 여전히 산 정상은 저 멀리 닿지 않는 곳에 서 있습니다. 밤이 오고 날씨가 더욱더 혹독해지면서, 당신은 살아남기 위해 필사적으로 피난처를 찾아 나섭니다.</p></div>"
     },
     "resolution1": {
       "title": "결말 1",
-      "body": "<div class='resolution'><p><b>Resolution 1:</b> The view from the summit is breathtaking, but you are in no mood to enjoy the spectacle. Sprawled before you, on the other side of these accursed peaks, lies the city described in Dyer’s report. Its haunting visage is unmistakable. Dozens of conical and pyramidal buildings of dark slate and sandstone are honeycombed throughout the region like a labyrinth of perfect geometric shapes. Though weathered by the ages, the city still stands, hidden by the jagged peaks and the heavy snow.</p><p>For a while, you stand in silence and take in the wondrous sight. If it weren’t for the many trials you faced along the way, it would be a moment of triumph. But after the sacrifices made to get here, the victory rings hollow.</p><p>A freezing wind blows across the peaks. The air is too thin for you to linger here. After a moment’s rest, you begin the long trek down into the alien city. You will have to make camp before you reach the bottom. With any luck, you’ll be hidden from the dreadful creatures that dwell there…</p><ul><li>In your Campaign Log, record *the team climbed to the summit*.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>For each _Expedition_ asset in the victory display, an investigator may choose to add that asset to their deck. It does not count toward their deck size. For each _Expedition_ asset added to an investigator’s deck this way, that investigator earns 1 bonus experience.</li><li>For each _Expedition_ asset that is not in the victory display, cross off its title in the “Supplies Recovered” section of the Campaign Log.</li><li> In the “Expedition Team” section of the Campaign Log, record the amount of damage and horror on each partner asset in play.</li><li>Proceed to _Interlude II: Endless Night_.</li></ul></div>"
+      "body": "<div class='resolution'><p><b>결말 1:</b> 산 정상에서 내려다본 경치는 그야말로 숨 막히는 장관이었지만, 한가로이 경치나 즐기고 있을 여유가 없었습니다. 이 저주받은 봉우리의 반대편에는 바로 다이어 교수의 보고서에 묘사된 도시가 펼쳐져 있던 것입니다. 뇌리에서 영영 잊히지 않을 저 모습을 보자니 그 도시가 틀림없습니다. 수십 개도 넘을 듯한, 어두운 점판암과 사암질의 원뿔형 및 피라미드형 건물이 완벽한 기하학적 미로를 이루며 사방으로 뻗어나갑니다. 비록 오랜 세월 동안 풍상에 시달렸을지라도, 이 도시는 비죽비죽한 산봉우리와 두껍게 쌓인 눈더미에 가린 채 지금까지 잔존했던 것입니다.</p><p>당신은 한참을 아무 말도 못 한 채 경이로운 광경을 눈에만 담았습니다. 그 간 마주했던 수많은 시련이 없었다면 지금이야말로 승리를 자축할 만한 순간이라 하겠건만, 수많은 희생을 거치고 이곳에 다다른 지금 승리란 공허한 말일 뿐입니다.</p><p>살을 에는 바람이 산봉우리를 가로질러 불어옵니다. 이곳에 더 머무르기에는 공기가 너무 희박합니다. 탐사대는 막간을 틈타 휴식을 취한 후, 외계 도시로 내려가는 기나긴 여정을 시작합니다. 우선 도시에 이르기 전에 야영지부터 세워야 할 것입니다. 운이 좋다면, 저곳에 사는 끔찍한 괴물들에게 발각되지 않을 것입니다…</p><ul><li>캠페인 기록지에 *탐사대가 정상까지 등반했다*라고 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>승점 더미에 있는 탐사 자산마다, 조사자 중 한 명이 해당 자산을 자기 덱에 추가해도 됩니다. 이 카드는 조사자의 덱 크기를 계산할 때 포함되지 않습니다. 이렇게 조사자의 덱에 추가한 탐사 자산마다, 해당 조사자는 경험치를 추가로 1만큼 얻습니다.</li><li>승점 더미에 있지 않은 탐사 자산마다, 캠페인 기록지의 “수복한 물자” 항목에서 그 명칭에 취소선을 긋습니다.</li><li> 캠페인 기록지의 “탐사대” 항목에, 플레이 상태인 각각의 동행마다 놓인 피해와 공포를 기록합니다.</li><li>_막간 II: 끝없는 밤_으로 이어집니다.</li></ul></div>"
     },
     "resolution2": {
       "title": "결말 2",
-      "body": "<div class='resolution'><p><b>Resolution 2:</b> Just as you are beginning to lose hope, you find a dark cave embedded in the mountainside. The wind howls outside the cave entrance, bringing with it a sudden deluge of snow. You’re not sure what would be worse—a slow death trapped inside an icy cavern, or an equally slow one failing to reach the summit. But when one of your companions switches on their flashlight, you realize there may be a third option.</p><p>The walls of this narrow tunnel are covered in strange hieroglyphs, the likes of which you’ve never seen. The ancient writings of an alien language, you presume. Possibly even that of the Elder Things who once called this region home. More importantly, the cavern continues deeper and deeper into the side of the mountain, far beyond the reach of your light.</p><p>You take a vote and decide to press onward, hoping beyond hope that the tunnel might take you to another exit. To your surprise, the journey is smooth, although the ever-present darkness, the frightening echoes of uncanny groans, and the muffled voices of something deep below wear upon your sanity. For hours you continue on, until finally, mercifully, you see light in the distance.</p><p>You emerge once more onto the side of the mountain, this time to a breathtaking vista. Sprawled before you lies the city described in Dyer’s report. Its haunting visage is unmistakable. Dozens of conical and pyramidal buildings of dark slate and sandstone are honeycombed throughout the region like a labyrinth of perfect geometric shapes. Though weathered by the ages, the city still stands, hidden by the jagged peaks and the heavy snow.</p><p>For a while, you stand in silence and take in the wondrous sight. Somehow, you have managed to find a way through the mountain. If it weren’t for the many trials you faced along the way, it would be a moment of triumph. But after the sacrifices made to get here, the victory rings hollow. After a moment’s rest, you begin the long trek down into the alien city. You will have to make camp before you reach the bottom. With any luck, you’ll be hidden from the dreadful creatures that dwell there…</p><ul><li>In your Campaign Log, record *the team found another way through the mountains.*</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>Cross off each card title in the “Supplies Recovered” section of the Campaign Log.</li><li>In the “Expedition Team” section of the Campaign Log, record the amount of damage and horror on each partner asset in play.</li><li>Proceed to _Interlude II: Endless Night._</li></ul></div>"
+      "body": "<div class='resolution'><p><b>결말 2:</b> 희망마저 벼랑 끝에 내몰리던 그 순간, 마침내 산 사면 한쪽으로 움푹 들어간 어두운 동굴을 찾아냈습니다. 동굴 입구를 스치는 바람이 울부짖는 소리를 내고, 갑작스러운 눈발을 실어 나릅니다. 얼음 동굴에 갇힌다면 서서히 옥죄어 오는 죽음을 맞이할 것이나, 밖에 머무른다 한들 산 정상에 오르지 못하고 마찬가지로 서서히 얼어 죽을 판이니, 무엇이 더 나쁜 선택인지 쉽사리 판단하기 어렵습니다. 그러나 탐사대원 한 명이 동굴 안으로 손전등을 비춘 순간, 또 다른 선택지가 나타났습니다.</p><p>비좁은 동굴 벽은 평생 본 적 없는 기묘한 상형문자로 뒤덮여 있었습니다. 외계 언어로 적힌 고대 기록물이라고 추정할 따름입니다. 어쩌면 이곳을 고향으로 삼았던 옛것의 기록일지도 모릅니다. 하지만 그런 것보다 더 중요한 것은, 이 동굴이 손전등 빛이 닿지 않는 산 사면 깊숙한 곳까지 이어져 있다는 점이었습니다.</p><p>탐사대는 투표를 거친 끝에, 이 동굴이 다른 출구로 이어지리라는 희망을 품고서 동굴을 따라가 보기로 했습니다. 어둠이 가시질 않는 동굴 안에서도 의아하리만치 길이 순탄했지만, 이따금 우웅거리는 기묘한 소리가 들려와 등골이 서늘해졌으며, 저 아래 깊은 곳에서 들려오는 속삭임이 당신의 이성을 갉아먹어 갔습니다. 그렇게 몇 시간을 나아간 끝에, 마침내 저 멀리서 비치는 빛줄기를 목격하고 나서야 안도감에 빠집니다.</p><p>바깥으로 나오자 또 다른 산비탈이었지만, 이번에는 설원이 아니라 숨 막힐 듯한 장관이 펼쳐져 있습니다. 바로 다이어 교수의 보고서에 묘사된 도시가 눈앞에 펼쳐져 있던 것입니다. 뇌리에서 영영 잊히지 않을 저 모습을 보자니 그 도시가 틀림없습니다. 수십 개도 넘을 듯한, 어두운 점판암과 사암질의 원뿔형 및 피라미드형 건물이 완벽한 기하학적 미로를 이루며 사방으로 뻗어나갑니다. 비록 오랜 세월 동안 풍상에 시달렸을지라도, 이 도시는 비죽비죽한 산봉우리와 두껍게 쌓인 눈더미에 가린 채 지금까지 잔존했던 것입니다.</p><p>당신은 한참을 아무 말도 못 한 채 경이로운 광경을 눈에만 담았습니다. 어찌 됐든, 산을 통과하는 길을 찾아낸 것입니다. 그간 마주했던 수많은 시련이 없었다면 지금이야말로 승리를 자축할 만한 순간이라 하겠건만, 수많은 희생을 거치고 이곳에 다다른 지금 승리란 공허한 말일 뿐입니다. 탐사대는 막간의 휴식을 취한 후, 외계 도시로 내려가는 기나긴 여정을 시작합니다. 우선 도시에 이르기 전에 야영지부터 세워야 할 것입니다. 운이 좋다면, 저곳에 사는 끔찍한 괴물들에게 발각되지 않을 것입니다…</p><ul><li>캠페인 기록지에 *탐사대가 산맥을 지나는 다른 길을 찾아냈다*라고 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>캠페인 기록지의 “수복한 물자” 항목에서 그 명칭에 취소선을 긋습니다.</li><li>캠페인 기록지의 “탐사대” 항목에, 플레이 상태인 각각의 동행마다 놓인 피해와 공포를 기록합니다.</li><li>_막간 II: 끝없는 밤._으로 이어집니다.</li></ul></div>"
     }
   },
   "eliyah": {
-    "alive": "<p>_If Eliyah Ashevak is alive and Wooden Sledge is listed under “Supplies Recovered:_”</p><p>“It is not large or sturdy enough to carry all of us,” Eliyah explains as he hauls the last crate of supplies onto the old sledge, “but it should be able to carry our provisions and equipment, at least.” He makes sure the lines are taut and all of the dogs’ harnesses are properly fastened before giving Anyu, at the head of the pack, a scratch behind her ears. “Not looking forward to having to lug this thing up those mountains, but…we’ll cross that bridge when we get to it. All right, girl. You ready?” Anyu barks once. “Yeah, I know you are.”</p><p class='basic'>The investigators suffer no ill effects.</p>",
-    "otherwise": "<p>_Otherwise:_</p><p>You groan as you heft an enormous, heavy backpack full of equipment onto your back. You’re definitely not looking forward to trekking across the snow with an extra forty pounds, but there’s no avoiding it. You have no idea how long you’re going to be where you’re headed, and you’ll need everything in that backpack if you want to survive.</p><p class='basic'>Add 1 {'{'}frost{'}'} token to the chaos bag.</p>"
+    "alive": "<p>‘엘리야 애쉬버크’가 살아있고 “수복한 물자” 아래에 나무 썰매가 기록되어 있습니까?</p><p>엘리야가 낡은 썰매에 물자가 담긴 마지막 궤짝을 겨우겨우 실으면서 말합니다. “모두가 올라탈 만큼 크지도 튼튼하지도 않지만, 식량과 장비를 운반하는 데 쓰기엔 적당하겠소.” 그는 줄이 팽팽하게 고정되어 있는지와 개들이 단단히 견인줄을 매고 있는지를 확인하고는, 썰매개 대열 맨 앞을 이끄는 안유에게 다가가 귀를 쓰다듬어 주었습니다. “산 위까지 이걸 다 끌고 갈 생각을 하니 끔찍하지만, 그래도… 그때 일은 그때 가서 생각하십시다. 자, 안유. 준비는 됐겠지?” 안유가 컹하고 한 번 짖습니다. “그래, 아무렴. 그럴 줄 알았다, 이 녀석.”</p><p class='basic'>조사자들은 부정적인 효과를 받지 않습니다.</p>",
+    "otherwise": "<p>_그 외의 경우:_</p><p>장비로 가득 차 불룩 튀어나온 배낭을 등에 메자, 절로 신음이 새어 나옵니다. 20킬로그램은 족히 될법한 짐짝을 더 지고서 눈 위를 걷고 싶지는 않지만, 달리 방도가 없습니다. 목적지를 향해 얼마나 오래 걸릴지 모르고, 살아남고자 한다면 배낭에 든 것 중에 어느 것도 버릴 것이 없습니다.</p><p class='basic'>혼돈 주머니에 {'{'}frost{'}'} 토큰을 1개 추가합니다.</p>"
   },
   "claypool": {
-    "alive": "<p>_If Avery Claypool is alive:_</p><p>“Weather might look clear right now,” Claypool explains, “but it could turn on a dime. We’ll be on ice for most of the journey, so be on the lookout for cracks. We need ice about 60 centimeters thick in order to walk across, so stay behind me at all times and I’ll use this augur to make sure it’s safe.” He holds up a spiral-tipped drilling device and leads the way.</p><p class='basic'>The investigators suffer no ill effects.</p>",
-    "otherwise": "<p>_Otherwise:_</p><p> You venture out when the sky looks clear, but it only takes an hour for the weather to take a sudden turn for the worse. The heavy snowfall is bad enough, but it’s the ice that truly slows you down. Without Claypool to safely guide you, you have to proceed slowly and cautiously to ensure you even make it to the mountains alive.</p><p class='basic'>Either add 1 {'{'}frost{'}'} token to the chaos bag, or each investigator suffers 1 physical trauma.</p>"
+    "alive": "<p>_‘에이버리 클레이풀’이 살아있습니까?_</p><p>클레이풀이 설명합니다. “지금은 날씨가 화창해 보입니다만 순식간에 돌변할지도 모르겠습니다. 대부분의 여정을 빙판 위에서 보내게 될 것 같으니, 균열이 있지는 않은지 잘 살펴보세요. 안전하게 횡단하려면 적어도 60센티미터 두께는 넘는 얼음 위를 내디뎌야 하니, 항상 제 뒤에 붙어서 제가 이 장비로 안전하다고 ‘점치기’ 전까지 기다리셔야 합니다.” 클레이풀이 회전 굴착 장비를 들고서 앞장섭니다.</p><p class='basic'>조사자들은 부정적인 효과를 받지 않습니다.</p>",
+    "otherwise": "<p>_그 외의 경우:_</p><p> 하늘이 맑아 보일 때 길을 나섰지만, 한 시간도 채 되지 않아 날씨가 돌변하더니 급격하게 악화되었습니다. 폭설만으로도 충분한 악재였지만, 발길을 느리게 만드는 주된 원인은 얼음이었습니다. 이제는 클레이풀의 안내에 따라 안전한 길을 택할 수도 없으니, 살아서 산맥에 도착하려면 더디더라도 조심스럽게 나아갈 수밖에 없습니다.</p><p class='basic'>혼돈 주머니에 {'{'}frost{'}'} 토큰을 1개 추가하거나, 각 조사자가 육체적 트라우마를 1 받습니다.</p>"
   },
   "takada": {
-    "alive": "<p>_If Takada Hiroko is alive:_</p><p>As you set out, you hear Takada singing something under her breath—just quiet enough that you can’t tell what it is. One of the others, however, seems to recognize it. “That song again,” they say. “Heard you singing it on the Theodosia on the way over.”</p><p>Takada sighs. “It is a song my father taught me. Helps me pass the time,” she explains.</p><p>You ask if she would like to teach it to you, and she gives you the first smile you’ve seen from her since the trek began. “Yes. Yes, I would.” You spend the remainder of the journey singing and bonding together, whittling the time away.</p><p class='basic'>The investigators suffer no ill effects.</p>",
-    "otherwise": "<p>_Otherwise:_</p><p>The party suffers through the cold in unbearable silence. Each footstep is as lonely as it is harrowing.</p><p class='basic'>Either add 1 {'{'}frost{'}'} token to the chaos bag, or each investigator suffers 1 mental trauma.</p>"
+    "alive": "<p>_‘타카다 히로코’가 살아있습니까?_</p><p>길에 오른 순간, 타카다가 나지막이 노래를 부르기 시작합니다. 가사를 알아듣기 어려울 정도로 작은 노랫소리였지만, 다른 탐사대원 하나가 알아듣습니다. “또 그 노래로군요. 남극까지 내려오는 동안 테오도시아 호에서도 불렀던 그 노래죠?”</p><p>타카다가 한숨을 푹 내쉬며 말합니다. “아버지께서 가르쳐주신 노래에요. 시간을 보낼 때 도움이 되더라구요.”</p><p>당신이 혹시 노래를 알려줄 수 있냐고 묻자, 타카다는 야영지를 떠난 이래 처음으로 환한 미소를 지어 보입니다. “좋아요. 그럼요. 당연하죠!” 탐사대원들이 다 함께 노래를 부르며 끈끈한 유대감을 다지는 사이, 혹독한 시간도 절로 흘러갑니다.</p><p class='basic'>조사자들은 부정적인 효과를 받지 않습니다.</p>",
+    "otherwise": "<p>_그 외의 경우:_</p><p>탐사대는 추위 속에서 견딜 수 없는 침묵에 괴로워합니다. 발걸음 하나하나가 참혹하리만치 쓸쓸합니다.</p><p class='basic'>혼돈 주머니에 {'{'}frost{'}'} 토큰을 1개 추가하거나, 각 조사자가 정신적 트라우마를 1 받습니다.</p>"
   },
   "theMountainPass": {
-    "scouted": "<p>_If the investigators scouted the mountain pass:_</p><p>You seek out the safe pass that you and Ellsworth scouted last night, guiding the rest of the team onward. Sheer cliffs flank you as you approach the foothills, blocking the chill wind. The shortcut gives you swift passage as you begin your trek up to the peaks…</p><p class='basic'>During setup, when you reveal the starting location, reduce its clue value by half (rounded up).</p>",
-    "otherwise": "<p>_Otherwise:_</p><p>The frozen tundra leading up to the foothills of the jagged mountains is hard terrain to traverse. Even prepared as you are with snowshoes and warm clothes to fight the cold, the going is slow and rough. The wind fights you at every turn, its gusts strong enough to knock you over. But you continue onward, undeterred.</p><p class='basic'>The investigators suffer no ill effects.</p>"
+    "scouted": "<p>_조사자들이 고갯길을 정찰했다 항목이 있습니까?_</p><p>엘스워스와 함께 지난밤 정찰했던 안전한 고갯길로 탐사대를 안내했습니다. 산기슭에 다다르자 깎아지른 절벽이 측면에서 불어 드는 얼음장 같은 바람을 막아 주었습니다. 지름길을 택한 덕분에, 산봉우리를 향한 등정을 비교적 순탄하게 시작할 수 있었습니다…</p><p class='basic'>게임을 준비하는 동안, 당신이 시작 장소를 공개할 때, 그곳의 단서값을 절반만큼 낮춥니다(단서값은 소수점 버림).</p>",
+    "otherwise": "<p>_그 외의 경우:_</p><p>비죽비죽한 산맥의 발치까지 이어지는 동토는 쉬이 가로지를 수 없는 곳이었습니다. 추위와의 사투를 위하여 눈신을 신고 따뜻한 옷을 껴입었으나 탐사대는 힘겹고 더디게 이동할 수밖에 없었습니다. 당신은 사방에서 불어 드는 바람에 맞서고, 이따금 불어대는 맹렬한 돌풍으로 인해 나자빠질 뻔하기까지 합니다. 그러나 당신은 주저하지 않고 앞으로 나아갑니다.</p><p class='basic'>조사자들은 부정적인 효과를 받지 않습니다.</p>"
+  },
+  "hypothermia": {
+    "label": {
+      "addFrost": "혼돈 주머니에 {frost} 토큰을 1개 추가합니다",
+      "takeHorror": "공포를 {count} 받습니다"
+    }
+  },
+  "label": {
+    "addFrostToken": "혼돈 주머니에 {frost} 토큰을 1개 추가합니다",
+    "eachInvestigatorSuffersPhysicalTrauma": "각 조사자는 육체적 트라우마를 {count} 받습니다.",
+    "eachInvestigatorSuffersMentalTrauma": "각 조사자는 정신적 트라우마를 {count} 받습니다."
+  },
+  "rooflessRampart": {
+    "label": {
+      "removeDoom": "주요사건에서 파멸을 1개 제거합니다",
+      "discardEnemy": "정예가 아닌 적 1장을 버립니다",
+      "discardTreachery": "음모 1장을 버립니다"
+    }
   }
 }

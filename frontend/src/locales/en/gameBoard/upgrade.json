@@ -27,6 +27,7 @@
     "unspendableXp": "Unspendable XP",
     "xp": "{total} XP",
     "victoryDisplay": "Victory Display",
+    "spentXp": "Spent XP",
     "tally": {
       "vengeance": "Vengeance"
     }

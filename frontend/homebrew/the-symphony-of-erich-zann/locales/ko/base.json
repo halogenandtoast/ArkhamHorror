@@ -1,0 +1,23 @@
+{
+  "name": "에리히 잔의 교향곡",
+  "about": {
+    "sections": [
+      {
+        "rows": [
+          {},
+          {}
+        ],
+        "text": [
+          "Thanks to everyone who tried out the scenario!",
+          "This scenario would not have been possible without the amazing design framework created by Matt Newman, Nate French and everyone involved in Arkham Horror: The Card Game at FFG."
+        ]
+      },
+      {
+        "title": "디자인 노트"
+      }
+    ]
+  },
+  "key": {
+    "allIsQuietAtRueDAuseilForNow": "오세이유 거리의 모든 것이 조용하다……. 지금은."
+  }
+}

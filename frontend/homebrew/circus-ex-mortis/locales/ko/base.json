@@ -1,0 +1,65 @@
+{
+  "name": "서커스 엑스 모르티스",
+  "about": {
+    "sections": [
+      {
+        "rows": [
+          {},
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "title": "디자인 노트"
+      }
+    ]
+  },
+  "headings": {
+    "interludes": {
+      "1": "막간",
+      "2": "막간",
+      "3": "막간"
+    }
+  },
+  "specialRules": [
+    {
+      "body": "@:circusExMortis.additionalRules.moonTokens"
+    }
+  ],
+  "prologue": {
+    "title": "서막"
+  },
+  "campaignReading": {
+    "label": {
+      "performCampaignReading": "캠페인 점괘 보기"
+    }
+  },
+  "destiny": {
+    "oneNightOnly": "단 하룻밤의 공연",
+    "thePrimrosePath": "환락의 길",
+    "harm'sWay": "위험 속으로",
+    "allPointsWest": "서쪽으로 가는 모든 길",
+    "piperAtTheGatesOfDawn": "새벽 문간의 피리 부는 자",
+    "bacchanalia": "바카날리아",
+    "redSunrise": "붉은 일출",
+    "thousandToOne": "천에 하나"
+  },
+  "label": {
+    "physicalTrauma": "육체적 트라우마 1을 겪습니다",
+    "mentalTrauma": "정신적 트라우마를 1 겪습니다"
+  },
+  "illusoryLocus": {
+    "cluesToSpend": "소비할 단서"
+  },
+  "primordialEvils": {
+    "label": {
+      "placeDoom": "현재 주요사건에 파멸을 1개 올려놓습니다. 이 효과는 현재 주요사건을 진행시킬 수 있습니다"
+    }
+  },
+  "closeWatch": {
+    "label": {
+      "spendAdditionalAction": "추가로 행동을 1회 소비합니다"
+    }
+  }
+}

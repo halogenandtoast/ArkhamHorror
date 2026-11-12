@@ -1,0 +1,29 @@
+{
+  "piperAtTheGatesOfDawn": {
+    "heading": "시나리오 V",
+    "intro": {
+      "title": "시나리오 V: 새벽 문간의 피리 부는 자",
+      "decide": "조사자들은 다음 중 하나를 선택해야 합니다:"
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "아무 결말에도 도달하지 못했다면"
+      },
+      "resolution1": {
+        "title": "결말 1"
+      },
+      "resolution2": {
+        "title": "결말 2"
+      },
+      "resolution3": {
+        "title": "결말 3"
+      },
+      "resolution4": {
+        "title": "결말 4"
+      },
+      "resolution5": {
+        "title": "결말 5"
+      }
+    }
+  }
+}

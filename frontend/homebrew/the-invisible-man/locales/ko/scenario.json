@@ -1,0 +1,19 @@
+{
+  "scenario": {
+    "label": "투명인간",
+    "fullLabel": "투명인간",
+    "resolutions": {
+      "resolution1": {
+        "title": "결말 1"
+      },
+      "resolution2": {
+        "title": "결말 2"
+      }
+    },
+    "griffinsNotes": {
+      "label": {
+        "noAttacksOfOpportunity": "이 행동은 틈새 공격을 유발하지 않습니다"
+      }
+    }
+  }
+}

@@ -1,46 +1,92 @@
 {
+  "heading": "시나리오 VI",
+  "setup": {
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *안개 속 한 줄기 빛*, *심해의 괴물*, *침수 동굴*, *밀물*, *천체 정렬*, *엄습하는 공포*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/a-light-in-the-fog.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/flooded-caves.png' /><img src='{setImgPath}/rising-tide.png' /><img src='{setImgPath}/syzygy.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "placeLocations": "‘송골매 곶 수위실’, ‘송골매 곶 절벽’, ‘등대 계단실’, ‘등대지기 오두막’을 플레이 영역에 같은 줄로 늘어놓습니다. ‘등명기실’을 ‘등대 계단실’ 바로 위쪽에 놓습니다.",
+    "startAt": "모든 조사자는 ‘송골매 곶 수위실’에서 시작합니다.",
+    "removeUndergroundRivers": "‘조수 동굴’ 장소 중에서 ‘지하 하천’ 장소 2장을 게임에서 제거합니다.",
+    "setAsideOtherLocations": "다른 장소를 모두 비플레이 상태로 치워 둡니다.",
+    "placeKeys": "다음과 같이 열쇠를 준비합니다:",
+    "faceupKeys": "흰색, 검은색, 파란색, 노란색, 빨간색 열쇠는 앞면으로 치워 둡니다.",
+    "facedownKeys": "보라색, 초록색 열쇠는 뒷면으로 치워 둡니다. 이 두 열쇠는 서로 구분할 수 없도록 잘 섞어 둡니다.",
+    "captured": "‘납치당하다!’ 양면 이야기 카드를 플레이 영역 중 시나리오 참조 카드 옆에 이야기 카드 면이 보이도록 둡니다. (이 카드의 반대 면은 ‘구금실’ 장소입니다.) ‘납치당하다!’ 이야기 카드의 문구는 활성화되어 있으니 잘 살펴보세요.",
+    "setAsideCards": "‘오세이로스 마쉬’ 적, ‘제 몫을 다하라’ 음모 사본 2장, ‘사로잡히다’ 음모 사본 2장을 비플레이 상태로 치워 둡니다.",
+    "checkCampaignLog": "캠페인 기록지를 확인합니다.",
+    "wavewornIdol": "_우상이 등대로 옮겨졌다_면, 보유 게임에서 ‘파도에 닳은 우상’을 찾아서 비플레이 상태로 치워 둡니다.",
+    "awakenedMantle": "_망토가 등대로 옮겨졌다_면, 보유 게임에서 ‘깨어난 망토’를 찾아서 비플레이 상태로 치워 둡니다.",
+    "headdressOfYhaNthlei": "_머리관이 등대로 옮겨졌다_면, 보유 게임에서 ‘이하 느틀레이의 머리관’을 찾아서 비플레이 상태로 치워 둡니다.",
+    "checkCampaignLogDoom": "캠페인 기록지를 확인합니다.",
+    "afterSunrise": "_조사자들이 동튼 후에야 송골매 곶에 도착했다_면, 주요사건 1에 파멸을 1개 놓습니다.",
+    "tideHasGrownStronger": "_밀물이 더욱 높이 차올랐다_면, 주요사건 1에 파멸을 1개 놓습니다.",
+    "floodTokens": "토큰 저장소에 침수 토큰을 함께 모아 둡니다."
+  },
+  "specialRules": [
+    {
+      "title": "열쇠",
+      "body": "<div class='red bordered'><p class='basic'>이번 시나리오 동안, 열쇠는 다음을 나타냅니다:</p><ul><li>빨간색: 산호에 금박을 입혀 세공한 열쇠. 기이하게 빛나는 룬 문자가 새겨져 있으며, 손잡이에는 “이하 느틀레이”라는 문구도 새겨져 있습니다.</li><li>파란색: 툭 불거진 물고기 눈깔 모양이 새겨진 열쇠.</li><li>초록색: 주먹 정도 크기에 불가사의한 빛으로 고동치는 감람석 원석.</li><li>노란색: 구금실 열쇠가 주렁주렁 매달린 무거운 철제 열쇠 뭉치.</li><li>보라색: 기형화된 새끼 물고기 사체.</li><li>검은색: 악마의 암초 수면 아래를 그려 둔 지도.</li><li>흰색: 접이식 망원경.</li></ul></div>"
+    }
+  ],
   "intro": {
-    "title": "Scenario VI: A Light in the Fog",
-    "body": "<p>Crimson-tinted fog bathes the sky as you reach the gatehouse of Falcon Point. Atop the cliffs above you, the lighthouse beacon pierces through the mist. Considering the state of Innsmouth, you wonder what purpose the signal serves now. You doubt there are any ships out at sea given the inclement weather.</p><p>Somewhere inside is the evidence you found weeks ago. You suspect that Oceiros—the man who captured you and left you in that pit to die—also resides within. “Are you ready?” Agent Harper asks. “We have no real escape route here, should things go south. Be prepared for anything.”</p><p>You nod. It’s too late to turn back now. Steadily, you make your way toward the cliffs. One way or another, this ends today.</p>"
+    "title": "시나리오 VI: 안개 속 한 줄기 빛",
+    "body": "<p>송골매 곶 등대 수위실에 다다랐을 무렵, 핏빛 안개가 하늘을 물들여 갑니다. 절벽 꼭대기를 올려다보니 등대 불빛이 안개를 꿰뚫고 돌아가고 있습니다. 인스머스의 현 상황을 고려해볼 때, 저 불빛에 무슨 의미가 있을까 싶습니다. 이런 악천후 속에서 바다에 뜬 배가 있을 리도 없어 보이는데 말입니다.</p><p>몇 주 전 당신이 찾아낸 증거가 저 등대 안에 있습니다. 당신을 감금하고 구렁에 던져넣은 장본인, 오세이로스 역시 저기 있을 것입니다. 하퍼 요원이 말합니다. “준비되셨나요? 이제는 일이 잘못되더라도 탈출할 방법이 없을 테니, 단단히 대비하세요.”</p><p>당신은 고개를 끄덕입니다. 되돌아가기엔 늦었습니다. 침착하게 절벽을 향해 발을 딛기 시작합니다. 어떤 결말이 기다리고 있을지 감히 알 수 없지만, 이 모든 것은 바로 오늘, 이곳에서 끝납니다.</p>"
   },
   "flashback12": {
-    "title": "Flashback XII",
-    "body": "<p>You peer up at Falcon Point lighthouse, but from much farther below. You are aboard Mr. Moore’s fishing vessel, during your voyage to Devil Reef several weeks earlier. The ship sways back and forth as angry waves thrash against its hull. “’Fraid it’s gon’ be a bit rocky,” the ship captain shouts over the crashing of the tumultuous sea. “Weather’s been awful wild of late. Strange tides an’ stranger winds.”</p><p>But still you stare up at the ominous lighthouse, its beacon a guiding light, a warning sign, or both. Curious what knowledge he might have, you ask Mr. Moore about the lighthouse. “That ol’ thing? Been there longer’n Innsmouth itself. Marsh family’s kept it runnin’ as long as I remember. Oceiros is keeper now. Strange fella, that Oceiros. They say the only place in town he visits is the Order o’ Dagon hall by New Church Green.” He shakes his head.</p><p>You wonder if there are more secrets inside that lighthouse than meets the eye. Mr. Moore seems to note your curiosity. “I’ve heard them Marshes’ve carved out caverns beneath the lighthouse goin’ all the way down to sea level an’ beyond,” he claims. “Dunno if that’s true, but sometimes when I’m out ta sea I’ve seen groups of ‘em up by the cliffside, all wavin’ an’ kneelin’ like they’re prayin’ or something. Never really paid it much mind, but...” his voice grows quieter. “Jus’ thought you oughta know.”</p><p>You nod and thank him. If what he’s saying is true, perhaps you should give this lighthouse a visit. You make a mental note to research more about Falcon Point once you return to town.</p><p>When your mind snaps back to the present, you recall the legwork you’d done after your expedition to Devil Reef, and the information you found on the vast network of tunnels beneath the lighthouse..."
+    "title": "회상 XII",
+    "body": "<div class='blue'><h1>회상 XII</h1><p>밀물처럼 밀려들어 온 기억 속에서도 당신은 송골매 곶 등대를 올려다보고 있었습니다. 그러나 그 위치는 절벽 위가 아니라, 그 아래 바다에 떠 있는 무어 선장의 어선 위에서였습니다. 몇 주 전 악마의 암초로 향하던 시점의 기억입니다. 성난 파도가 연거푸 뱃전을 때리면서 선체가 세차게 흔들립니다. “바닷길이 아주 험하겠소.” 선장이 요란하게 밀려드는 파도 소리 너머로 고래고래 외칩니다. “최근 들어 날씨가 영 심상찮소. 괴이한 조수에 바람마저 이상하단 말이지.”</p><p>그러나 당신은 아직도 불길한 등대를 바라보고 있습니다. 등대 불빛은 앞길을 안내하는 것처럼 보이지만, 일종의 경고처럼 느껴지기도 합니다. 어쩌면 둘 다일지도 모르겠습니다. 혹시나 해서 무어 영감에게 등대에 관해 물어봅니다. “저 낡은 등대 말이오? 인스머스보다도 오래됐을 거요. 내 기억엔 마쉬 가문이 계속 운영해 왔다지? 요즘은 오세이로스가 지키고 있을 거라오. 괴상한 친구지. 뉴 처치 그린 옆의 데이곤 밀교회당 외엔 마을의 다른 곳엔 전혀 얼씬도 않는단 말까지 있으니.” 무어 영감이 고개를 젓습니다.</p><p>저 등대엔 눈에 보이는 것보다 더 많은 비밀이 있지 않을까 괜스레 궁금해집니다. 이런 궁금증을 단박에 알아챘는지 무어 영감이 말합니다. “마쉬 가문은 등대 밑으로 동굴을 파 내려갔다는 말이 있소. 해수면보다도 더 깊이 팠다던데. 그게 사실인지까진 몰라도, 가끔 바다에 배를 띄우고 있노라면 저 절벽 위에서 마쉬네 놈들이 뭔가 기도하듯 무릎 꿇고 있는 모습이 보이곤 했소. 나야 별 신경 안 쓰지만…” 그의 목소리가 점점 흐려집니다. “그냥 그쪽도 알아 두면 좋을 것 같아서 말하는 거요.”</p><p>당신은 고개를 끄덕이며 무어 영감에게 감사를 표했습니다. 선장이 한 말이 사실이라면, 저 등대를 찾아가 봐야 할 이유가 생긴 셈입니다. 인스머스로 돌아오면 송골매 곶에 관해 좀 더 파헤쳐 보기로 마음을 먹습니다.</p><p>다시 눈앞이 번쩍하며 현재로 되돌아옵니다. 악마의 암초에 다녀온 후 인스머스를 돌아다니며 조사했던 기억과 더불어, 등대 아래 펼쳐진 광대한 동굴 계에 대한 기억이 하나하나 떠오르기 시작합니다…</p><hr /><p class='basic'>캠페인 기록지의 “되찾은 기억” 아래에 *무어 선장과의 대화.*라고 기록합니다.</p><p class='basic'>다음 혼돈 토큰 중 하나를 선택하여, 캠페인이 끝날 때까지 혼돈 주머니에서 제거합니다({'{'}cultist{'}'}, {'{'}tablet{'}'}, {'{'}elderThing{'}'}).</p><p class='basic'>대표 조사자는 토큰 저장소에서 단서를 1{'{'}perPlayer{'}'}개 얻습니다.</p></div>"
   },
   "flashback13": {
-    "title": "Flashback XIII",
-    "body": "<p>You speak with one of the many sailors who frequent a ramshackle tavern by the docks of Innsmouth, somewhere in the southeastern slums of the decrepit seaport. He’s found his own little corner of the pub in which to hide and drown himself in alcohol. So much the better—you’d prefer to keep your investigation quiet.</p><p>You jot down notes as the drunken man rambles on about the creatures he’s seen swimming off the coast and prowling around the reefs. “Deep Ones,” he names them. “Caught one in my net once,” he blabbers through slurred speech. “She an’ her eggs—tha’s right!—’er eggs, bigger’n your fist, an’ squirmin’ an’ wrigglin’, too!”</p><p>Absorbed in the ritual of telling a tale for his fellow sailors, he elaborates: “She had one of ’em in her arms. Tiny little devil, with bulgin’, hateful eyes. Couldn’t stand the sight of it. I threw the net o’er as soon as I realized what I’d caught, an’ came right back ’ere. If I had my way I’d never sail ’gain.”</p><p>You mull this new information over in your head. If this man speaks the truth, these creatures seem to have a lifecycle similar to that of a fish. But then, what is the purpose of the uncanny hybrid creatures you have seen skulking about the town? Are they but figments of your frightened imagination? Or is there a much more sinister part of this lifecycle that you are missing?</p>"
+    "title": "회상 XIII",
+    "body": "<div class='blue'><h1>회상 XIII</h1><p>퇴락한 인스머스 부둣가의 남동쪽 빈민굴, 당장이라도 허물어질 듯 위태위태한 선술집 안은 선원으로 가득합니다. 당신은 술집 구석에 숨어서 술독에 빠진 선원과 이야기를 나누고 있습니다. 보는 눈과 듣는 귀가 적을수록 좋은 법이니, 눈에 띄지 않는 귀퉁이 쪽이라 오히려 다행입니다.</p><p>술에 거나하게 취한 선원은 해안을 따라 헤엄치고, 악마의 암초 주변을 배회한다는 괴수에 대해 이런저런 이야기를 늘어놓습니다. 당신은 그가 “심해인”이라 부르는 생명체에 관하여 간결하게 기록을 남겨둡니다. “그물에 걸려 올라온 적 있었어. 알도 품고 있더라고. 그래 알! 네 주먹만 한 알! 꾸물꾸물 꿈틀꿈틀 움직이더라고.” 선원이 실없이 내뱉는 말이 진짜인지 분별조차 되지 않습니다.</p><p>동료 선원들에게나 의례적으로 풀어놓던 이야기에 심취한 주정뱅이 선원이 이야기에 살을 붙이기 시작합니다. “고놈이 알 하나를 팔에 안고 있더라니까. 무슨 새끼 악마 같았어. 눈깔이 툭 튀어나와 가지고, 나를 죽일 듯이 꼬나보는데 무서워 죽겠더라고. 내가 뭘 잡았나 싶은 생각이 들었다니까. 그대로 그물 채로 던져버렸지. 그리고는 냅다 뭍으로 돌아왔고, 그 후로는 바다에 나갈 생각일랑 접었어.”</p><p>당신은 새로운 정보를 곱씹어봅니다. 주정뱅이 선원의 말이 사실이라면, 이 괴상망측한 괴물은 물고기와 비슷한 생활사를 가진 것으로 보입니다. 그러나, 마을 어귀를 어기적 어기적 돌아다니는 저 혼혈 생물은 대체 무엇일까요? 저 괴물과 인간이 섞인 듯한 것들은 단지 겁에 질린 당신의 상상력이 만들어 낸 허상에 불과할까요? 아니면 저들의 생활사에서 당신이 놓치고 있는 더욱 불길하고 사악한 부분이 있는 걸까요?</p><hr /><p class='basic'>캠페인 기록지의 “되찾은 기억” 아래에 *“심해인”의 생활사.*라고 기록합니다.</p><p class='basic'>다음 혼돈 토큰 중 하나를 선택하여, 캠페인이 끝날 때까지 혼돈 주머니에서 제거합니다({'{'}cultist{'}'}, {'{'}tablet{'}'}, {'{'}elderThing{'}'}).</p></div>"
   },
   "resolutions": {
     "resolution1": {
       "title": "결말 1",
-      "body": "<p>Exhausted, you throw yourself onto the rocky shore. Waves lap at your ankles as you stare up into the sky. Behind the clouds, deep crimson hues spell an ominous end for all of humankind. Your skull pounds with agony as you struggle to remember why. The moon and sun slide into alignment. A thunderous crash resounds in the distance. Dark, churning clouds swirl and seethe over the hateful ocean. What does it all mean? What is the truth behind the Esoteric Order of Dagon? The truth hidden in Devil Reef? Darkness overtakes your senses once more.</p>"
+      "body": "<p>_결말 1_: 탈진한 몸을 이끌고 바위투성이 해안으로 올라와 털썩 쓰러집니다. 일어나 하늘을 바라보는 당신의 발치로 바닷물이 철썩이며 밀려듭니다. 구름 뒤로 전 인류의 종언을 고하는 듯한 불길한 짙은 핏빛 색채가 드리워 있습니다. 인과관계를 떠올려보려 애를 쓰면 쓸수록 머릿속으로 지긋지긋한 고통이 파고듭니다. 해와 달이 일직선상에 놓여 있습니다. 저 멀리서 우레와 같은 충돌음이 들리면서, 가증스러운 바다 위로 어두운 구름이 휘몰아칩니다. 이 모든 게 무엇을 뜻하는 걸까요? 데이곤 밀교회는 무슨 비밀을 숨기고 있는 걸까요? 악마의 암초에 감춰진 비밀은 무엇일까요? 또다시 어둠이 모든 감각을 지배하기 시작합니다.</p>"
     },
     "resolution2": {
       "title": "결말 2",
-      "body": "<p>Exhaustion and despair eat at your muscles as you escape into the dark woods surrounding Falcon Point. You know it is too dangerous to stop moving, but you can hardly stand. You brace yourself against a nearby tree and stare up into the sky. Behind the clouds, deep crimson hues spell an ominous end for all of humankind. Your skull pounds as you struggle to remember why. The moon and sun slide into alignment. A thunderous crash resounds in the distance. Dark, churning clouds swirl and seethe above the hateful ocean. What does it all mean? What is the truth behind the Esoteric Order of Dagon? The truth hidden in Devil Reef? Darkness overtakes your senses once more.</p>"
+      "body": "<p>_결말 2_: 당신은 절망에 굴복하여 만신창이가 된 몸을 이끌고 송골매 곶을 둘러싼 어두운 숲속으로 달아납니다. 이대로 멈춰 서면 너무나도 위험하다는 것을 머리로는 알고 있지만, 제 자리에 서 있기조차 버겁습니다. 근처 나무에 몸을 기대고서 올려다본 하늘에는, 구름 뒤로 전 인류의 종언을 고하는 듯한 불길한 짙은 핏빛 색채가 드리워 있습니다. 인과관계를 떠올려보려 애를 쓰면 쓸수록 머리가 지끈지끈합니다. 해와 달이 일직선상에 놓여 있습니다. 저 멀리서 우레와 같은 충돌음이 들리면서, 가증스러운 바다 위로 어두운 구름이 휘몰아칩니다. 이 모든 게 무엇을 뜻하는 걸까요? 데이곤 밀교회는 무슨 비밀을 숨기고 있는 걸까요? 악마의 암초에 감춰진 비밀은 무엇일까요? 또다시 어둠이 모든 감각을 지배하기 시작합니다.</p>"
     },
     "resolution3": {
       "title": "결말 3",
-      "body": "<p>You panic as the water level rises all the way to the ceiling of the cavern. There is no air left to breathe. You feel the currents pulling you deeper and deeper below the surface, where the bulging, glowing eyes of Deep Ones lie in wait. Desperately, you swim up to the cellar door of the lighthouse. Your only hope is to force it open and crawl up into the buildings above, where sweet oxygen awaits. You shove and push with all of your might, hoping, imagining, praying that any moment now your strength will spring the hatch open. Your lungs are about to burst. No! This cannot be the end! You struggle and fight for survival, but the lock does not budge. Hungry for air, your lungs give. Your throat fills with cold saltwater. The sensation of your ankles being gripped by webbed hands is the last thing you feel.</p>"
+      "body": "<p>_결말 3_: 동굴 천장 끝까지 물이 솟아오르자 당신은 극심한 공포에 빠져 허우적댑니다. 숨 쉴 공기마저 얼마 남지 않았습니다. 거친 수류는 심해인들의 불룩하고 빛나는 눈깔만이 기다리는 저 깊고 깊은 심연으로 깊이 더 깊이 당신을 끌어당깁니다. 젖 먹던 힘까지 짜내어 등대 지하실 문까지 헤엄쳐 올라왔습니다. 당신의 희망은 바로 이 문입니다. 문을 열고 등대 계단실을 기어올라 신선한 산소를 들이켜는 것만이 유일한 희망입니다. 힘으로 문이 열리기를 바라고, 상상하고, 기도까지도 하며 온 힘을 다해 문을 밀쳐내 보지만 소용이 없습니다. 폐가 당장이라도 터져버릴 것 같습니다. 이렇게 죽을 수는 없습니다! 생존을 위한 최후의 분투를 이어나가지만, 자물쇠는 꿈쩍하질 않습니다. 공기에 굶주린 폐가 마침내 굴복하고 맙니다. 목구멍 한가득 차디찬 염수가 밀려듭니다. 물갈퀴 돋친 손이 발목을 부여잡는 것을 끝으로 이 모든 것이 막을 내립니다.</p>"
     },
     "resolution4": {
       "title": "결말 4",
-      "body": "<p>Coming here was a terrible mistake. Falcon Point is no simple lighthouse, but a headquarters for the Order of Dagon, even more hostile and deadly than the town of Innsmouth you left behind. With danger at every turn and the hateful lighthouse keeper hot on your tail, you leave the secrets of the lighthouse behind and flee into the dark woods.</p><p>By the time you are too deep into the treeline to see the lighthouse beacon, you are utterly exhausted. You know it is too dangerous to stop moving, but you can hardly stand. You brace yourself against a nearby tree and stare up into the sky. Behind the clouds, deep crimson hues spell an ominous end for all of humankind. Your skull pounds as you struggle to remember why. The moon and sun slide into alignment. A thunderous crash resounds in the distance. Dark, churning clouds swirl and seethe above the hateful ocean. What does it all mean? What is the truth behind the Esoteric Order of Dagon? The truth hidden in Devil Reef? Darkness overtakes you once more.</p>"
+      "body": "<p>_결말 4_: 여기 오는 건 지독한 실수였습니다. 송골매 곶은 단순한 등대가 아니라, 데이곤 밀교회의 본거지였으며, 더군다나 인스머스 도심보다 더욱더 적대적이고 치명적인 적으로 가득한 마굴이었습니다. 도처에 위험이 산적하고 증오에 찬 등대지기가 뒤를 따라붙은 상황에서, 당신은 등대의 비밀을 뒤로한 채 어두운 숲속으로 달아나기로 했습니다.</p><p>그렇게 한참을 달린 끝에 등대 불빛마저 보이지 않을 숲속 깊숙이 도달했으나, 그야말로 온몸에 힘이 다 빠져버렸습니다. 이대로 멈춰 서면 너무나도 위험하다는 것을 머리로는 알고 있지만, 제 자리에 서 있기조차 버겁습니다. 근처 나무에 몸을 기대고서 올려다본 하늘에는, 구름 뒤로 전 인류의 종언을 고하는 듯한 불길한 짙은 핏빛 색채가 드리워 있습니다. 인과관계를 떠올려보려 애를 쓰면 쓸수록 머리가 지끈지끈합니다. 해와 달이 일직선상에 놓여 있습니다. 저 멀리서 우레와 같은 충돌음이 들리면서, 가증스러운 바다 위로 어두운 구름이 휘몰아칩니다. 이 모든 게 무엇을 뜻하는 걸까요? 데이곤 밀교회는 무슨 비밀을 숨기고 있는 걸까요? 악마의 암초에 감춰진 비밀은 무엇일까요? 또다시 어둠이 모든 감각을 지배하기 시작합니다.</p>"
     }
   },
   "tokens": {
     "easyStandard": {
-      "skull": "-1. If your location is flooded, reveal an additional chaos token.",
-      "cultist": "-2. If you fail, after this test ends, increase the flood level of your location.",
-      "tablet": "-3. If you fail this test and your location is flooded, take 1 damage.",
-      "elderThing": "-4. If you fail, move the nearest ready unengaged enemy once toward your location. It loses aloof during this movement."
+      "skull": "-1. 당신이 위치한 장소가 침수된 상태라면, 다른 혼돈 토큰을 하나 더 공개합니다.",
+      "cultist": "-2. 실패하면, 이번 테스트가 끝난 후, 당신이 위치한 장소의 침수 수준을 한 단계 높입니다.",
+      "tablet": "-3. 당신이 위치한 장소가 침수된 상태이고 이번 테스트가 실패했다면, 피해를 1 받습니다.",
+      "elderThing": "-4. 실패하면, 교전 상태가 아니고 준비 상태인 적 중에, 가장 가까운 적 하나를 당신이 위치한 장소를 향해 1칸 이동시킵니다. 이렇게 이동하는 동안 그 적은 ‘냉담한’ 키워드를 잃습니다."
     },
     "hardExpert": {
-      "skull": "-2. If your location is flooded, reveal an additional chaos token.",
-      "cultist": "-2. If you fail, after this test ends, increase the flood level of your location (if you cannot, take 1 horror instead).",
-      "tablet": "-3. If you fail this test and your location is flooded, take 2 damage.",
-      "elderThing": "-4. Move the nearest unengaged enemy once toward your location. It loses aloof during this movement."
+      "skull": "-2. 당신이 위치한 장소가 침수된 상태라면, 다른 혼돈 토큰을 하나 더 공개합니다.",
+      "cultist": "-2. 실패하면, 이번 테스트가 끝난 후, 당신이 위치한 장소의 침수 수준을 한 단계 높입니다(그렇게 할 수 없다면, 그 대신 공포를 1 받습니다).",
+      "tablet": "-3. 당신이 위치한 장소가 침수된 상태이고 이번 테스트가 실패했다면, 피해를 2 받습니다.",
+      "elderThing": "-4. 교전 상태가 아닌 적 중에, 가장 가까운 적 하나를 당신이 위치한 장소를 향해 1칸 이동시킵니다. 이렇게 이동하는 동안 그 적은 ‘냉담한’ 키워드를 잃습니다."
+    }
+  },
+  "pumpRoom": {
+    "label": {
+      "decreaseFlood": "침수 수준을 낮출 장소를 선택합니다",
+      "increaseFlood": "침수 수준을 높일 장소를 선택합니다"
+    }
+  },
+  "tooltips": {
+    "theMoonRoom": {
+      "resign": "당신은 비어 있는 잠수복 중 하나를 입고 반사 연못으로 뛰어듭니다"
+    },
+    "falconPointGatehouse": {
+      "resign": "당신은 등대와 그곳의 수수께끼를 뒤로하고 다시 숲으로 향합니다."
+    }
+  },
+  "worshippersOfTheDeep": {
+    "label": {
+      "moveBelow": "그들이 있는 장소 바로 아래쪽 장소로 이동합니다"
     }
   }
 }

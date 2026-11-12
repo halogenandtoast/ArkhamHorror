@@ -1,0 +1,107 @@
+{
+  "difficulty": {
+    "Easy": "물 위를 떠다니고 싶습니다",
+    "Standard": "꿈을 꾸고 싶습니다",
+    "Hard": "바닷속으로 뛰어들고 싶습니다",
+    "Expert": "르리에에 닿고 싶습니다"
+  },
+  "specialRules": [
+    {
+      "title": "침수 토큰",
+      "body": "@:theDrownedCity.additionalRulesAndClarifications.floodTokens"
+    },
+    {
+      "title": "성물",
+      "body": "@:theDrownedCity.additionalRulesAndClarifications.artifacts"
+    },
+    {
+      "title": "외계 상형문자",
+      "body": "@:theDrownedCity.additionalRulesAndClarifications.alienGlyphs"
+    },
+    {
+      "title": "새로운 키워드",
+      "body": "@:theDrownedCity.newKeywords.body"
+    }
+  ],
+  "label": {
+    "naomiOBannion": {
+      "doNotTakeDamage": "피해 1을 받지 않습니다"
+    },
+    "dreamingMigration": {
+      "drawTopmostEnemy": "버린 조우 카드 더미에서 가장 위에 있는 적을 뽑습니다."
+    }
+  },
+  "intro": {
+    "body": "<p class='indent'>아아, 그곳은 역사의 시계도 흐르지 못한 헤아릴 수 없는 억겁의 세월 이전, 어두운 별에서 내려온 오싹하고도 가증스러운 존재들이 지어 올렸다는 시체 도시 르리에였다. 그곳의 끈적한 녹색 묘실에는 위대한 크툴루와 그 족속이 함께 잠들어 있으리니, 헤아릴 수 없는 영겁의 주기가 회전한 끝에 마침내 그들은 예민한 이들의 꿈속으로 공포를 퍼뜨리며 속삭였던 것이다. 속히 해방과 부활을 위한 순례에 오르라고…</p><p class='basic right'>”- H. P. 러브크래프트, “크툴루의 부름”</p>"
+  },
+  "prologue": {
+    "title": "서막",
+    "body": "<p><span class='wolgast'>4월 15일</span></p><p>근래 들어 이상한 낌새를 지울 수가 없었습니다. 예년에 비해 비정상적으로 추운 봄 날씨는 폭설과 비 그리고 안개를 실어 나르며 뉴잉글랜드 주의 하늘을 전혀 가실 것 같지 않은 우울함으로 물들였습니다. 알 수 없는 불안감과 초조함이 사람들의 생활 깊은 곳까지 스며들어 갔습니다. 길모퉁이에서의 가벼운 언쟁은 곧 주먹다짐으로 번졌으며, 굳게 닫힌 문 너머에서는 먹먹한 고성과 비명이 울려퍼졌습니다. 미스캐토닉 대학에서 강의에 결석하는 학생도 부지기수로 늘었습니다. 아컴 시민 누구든 뼛속 깊이 느낄 수 있습니다. 뭔가가 달라졌다는 것을. 심상치 않은 일이 벌어지고 있다는 것을.</p><p class='basic right'>_마지막 의뢰._로 이어집니다.</p>"
+  },
+  "additionalRulesAndClarifications": {
+    "title": "추가 규칙과 규칙 명료화"
+  },
+  "newKeywords": {
+    "title": "새로운 키워드"
+  },
+  "glyphs": {
+    "title": "외계 상형문자",
+    "runes": {
+      "a": "무저갱",
+      "c": "옛것",
+      "i": "크툴루",
+      "k": "꿈",
+      "m": "지구",
+      "n": "파멸",
+      "o": "권능",
+      "q": "손",
+      "r": "시간",
+      "s": "기계",
+      "z": "도시"
+    }
+  },
+  "rlyehMap": {
+    "rlyehWesternWall": "서부 장벽",
+    "rlyehDrownedQuarter": "수몰지",
+    "rlyehApiary": "양육장",
+    "rlyehGrandVault": "심부 제어구",
+    "rlyehCourtOfTheAncients": "고대 존재의 전당",
+    "rlyehObsidianCanyons": "흑요석 협곡",
+    "rlyehSepulchreOfTheSleeper": "잠든 자의 묘소"
+  },
+  "key": {
+    "rubyWonTheBet": "루비가 내기에서 이겼다",
+    "rubyLostTheBet": "루비가 내기에서 졌다",
+    "theInvestigatorsDiscoveredAnAlienLanguage": "조사자들이 외계 언어를 해독해냈다.",
+    "walkInFaith": "믿음의 길을 따라",
+    "toeTheLine": "규정 준수",
+    "noPlaceLikeHome": "집만 한 곳도 없지",
+    "goodMoney": "짭짤한 돈",
+    "doNoHarm": "위해를 끼치지 말라",
+    "proveYourWorth": "가치 증명",
+    "dreamsOfDestruction": "파괴의 꿈",
+    "plumbTheDepths": "심오한 탐구",
+    "theExpeditionHeadedWest": "탐사대가 서쪽으로 향했다",
+    "theExpeditionHeadedEast": "탐사대가 동쪽으로 향했다",
+    "theExpeditionHelpedThePilgrim": "탐사대가 순례자를 도왔다",
+    "barrierNode": "방벽 동력원",
+    "obsidianClaw": "흑요석 갈퀴",
+    "shardOfYchlecht": "이흐레흐트의 파편",
+    "tidalTablet": "조수의 서판",
+    "grislyMask": "소름 끼치는 “가면”",
+    "horrorInClay": "점토로 빚은 공포",
+    "discoveredGlyphs": "외계 상형문자",
+    "thePilgrimsWereSaved": "순례자들을 구해냈다",
+    "thePilgrimsWereDevoured": "순례자들이 집어삼켜졌다",
+    "theInvestigatorsExterminatedTheAlienParasites": "조사자들이 외계 기생충을 박멸했다",
+    "thePowerWasDiverted": "동력을 우회시켰다",
+    "theInnerSanctumWasUnsealed": "지성소의 봉인이 풀렸다",
+    "yourAlliesHaveAPlan": "동료들이 계획을 세웠다",
+    "theInvestigatorsStoodTogether": "조사자들이 함께 맞섰다",
+    "theInvestigatorsDidNotConfrontTheNightmare": "조사자들은 악몽과 맞서 싸우지 않았다",
+    "theInvestigatorsHaltedCthulhusAwakening": "조사자들이 크툴루가 깨어나지 못하도록 저지했다",
+    "cthulhuWasDrivenAway": "크툴루가 격퇴당했다",
+    "cthulhuAnnihilatedTheCityOfArkham": "크툴루가 아컴을 완파했다",
+    "cthulhuWasBanished": "크툴루가 축출되었다"
+  }
+}

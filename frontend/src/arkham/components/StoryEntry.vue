@@ -215,7 +215,7 @@ const flippableCard = (cardCode: string) => {
               class="no-overlay task-card-image"
               :alt="maybeFormat(selectedTaskChoice.label)"
             />
-            <span v-else>Select a task to preview its card.</span>
+            <span v-else>{{ $t('gameUi.selectTaskToPreview') }}</span>
           </div>
         </aside>
         <div class="options">
@@ -261,7 +261,7 @@ const flippableCard = (cardCode: string) => {
           class="confirm-task-button"
           :disabled="!selectedTaskChoice.canConfirm"
           @click="confirmDrownedCityTask"
-        >Confirm</button>
+        >{{ $t('gameUi.confirm') }}</button>
       </div>
     </div>
   </div>

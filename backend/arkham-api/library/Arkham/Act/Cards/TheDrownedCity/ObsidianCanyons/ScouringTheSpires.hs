@@ -40,9 +40,8 @@ instance RunMessage ScouringTheSpires where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      selectEach (locationIs Locations.rlyehStreets) removeIgnoringTextBox
-      centralSpire <- selectJust $ locationIs Locations.centralSpire
-      rebuildSkyline centralSpire actTwoLayout
+      centralSpire <- rebuildSkyline Locations.centralSpire actTwoLayout
+      removeIgnoringTextBox centralSpire (locationIs Locations.rlyehStreets)
       scenarioSpecific "shuffleScouringAct2Summit" ()
       advanceActDeck attrs
       pure a

@@ -375,19 +375,23 @@ set-aside open sky cards are laid out per the diagram, and every remaining space
 is filled from the bottom of the deck.
 
 The anchor keeps its own contents — it is the location the investigators are
-standing on when the act advances.
+standing on when the act advances. It is therefore named by its 'CardDef' rather
+than its 'LocationId': in play it is found and left where it stands, and if it
+somehow is not in play the diagram's anchor cell still has to be filled rather
+than kill the scenario on a @selectJust@, #5996. Returns the anchor so the act
+can go on to clear the location it replaces.
 -}
-rebuildSkyline :: ReverseQueue m => LocationId -> SkylineLayout -> m ()
-rebuildSkyline anchor layout = do
+rebuildSkyline :: ReverseQueue m => CardDef -> SkylineLayout -> m LocationId
+rebuildSkyline anchorDef layout = do
+  mAnchor <- selectOne $ locationIs anchorDef
   -- "Shuffle each open sky and Summit location in play except for <anchor> into
   -- the Summit deck. Each card and token at those locations is discarded."
-  -- The act removes R'lyeh Streets from the game first, so by this point
-  -- everything on the grid other than the anchor is open sky or a Summit
-  -- location, and "everything but the anchor" says it more safely than a trait
-  -- check would (Central Spire and Floating Spire do not carry Summit on their
-  -- revealed faces).
+  -- Everything else on the grid is open sky or a Summit location — the locations
+  -- the acts take away by hand (R'lyeh Streets, Central Spire) carry
+  -- @[Rlyeh, Central]@ and so fall out of the sweep by construction, as does the
+  -- anchor itself on its revealed face.
   sweeping <- select $ oneOf [isOpenSky, LocationWithTrait Summit]
-  let leaving = filter (/= anchor) sweeping
+  let leaving = filter ((/= mAnchor) . Just) sweeping
   -- Unlike the winds, the act carries no "or place them in the victory display instead" clause,
   -- so this must not go through 'removeLocation' and its victory diversion, #5662.
   cards <- summitDeckCards leaving
@@ -395,20 +399,39 @@ rebuildSkyline anchor layout = do
 
   -- Build and draw from the new deck in one step. setScenarioDeck is queued, so
   -- calling shuffleIntoSummitDeck followed by drawFromSummitBottom here would
-  -- make the draw see the old deck and leave holes in the new skyline.
+  -- make the draw see the old deck and leave holes in the new skyline. An anchor
+  -- that is still sitting in the deck has to come out in this same read for the
+  -- same reason.
   deck <- getScenarioDeck SummitDeck
-  shuffled <- shuffleM (cards <> deck)
+  let (anchorInDeck, deck') = partition (`cardMatch` cardIs anchorDef) deck
+  shuffled <- shuffleM (cards <> deck')
   let fillCount = length layout.fillPositions
   let (remaining, bottom) = splitAt (max 0 $ length shuffled - fillCount) shuffled
   setScenarioDeck SummitDeck remaining
 
-  push $ PlaceGrid (GridLocation layout.anchorPos anchor)
+  anchor <- case mAnchor of
+    Just lid -> do
+      push $ PlaceGrid (GridLocation layout.anchorPos lid)
+      pure lid
+    Nothing -> do
+      setAsideCopies <-
+        if null anchorInDeck
+          then select $ SetAsideCardMatch $ cardIs anchorDef
+          else pure []
+      card <- maybe (genCard anchorDef) pure $ headMay (anchorInDeck <> setAsideCopies)
+      -- Revealed: the acts read the anchor as the hub everyone is standing on, and
+      -- an unrevealed Summit back would also charge 'summitEntry' on a cell the
+      -- diagram gives nobody a way around.
+      lid <- placeLocationInGrid layout.anchorPos card
+      unsafeReveal lid
+      pure lid
 
   openSkies <- getSetAsideOpenSky (length layout.openSkyPositions)
   for_ (zip layout.openSkyPositions openSkies) (uncurry placeLocationInGrid_)
 
   let fill = reverse bottom
   for_ (zip layout.fillPositions fill) (uncurry placeLocationInGrid_)
+  pure anchor
 
 {- | Take open sky cards from the set-aside pool. Setup puts every unused open sky
 card there, so the acts just draw on it as their diagrams call for; placing a
@@ -452,13 +475,23 @@ surviving locations keep it in their @directions@. Jenny's Searching for Izzie
 attached to R'lyeh Streets survived act 1 that way and left the forced
 "when you are eliminated" ability unclickable, #5812.
 
-Nobody is standing on the location when this runs: every caller's act advances
-only once each undefeated investigator is at the surviving anchor. The scenario's
-generic gap-fill stands down because the act's 'rebuildSkyline' has already
-queued its @PlaceGrid@ ('skylineInstructionsPending').
+Normally nobody is standing on the location: every caller's act advances only
+once each undefeated investigator is at the surviving anchor. An advance that
+reaches side B by some other route can leave somebody behind, and removing the
+ground from under them would both orphan the investigator and fire
+'OtherworldlyStorms'' "when an investigator's location would leave play" with no
+@Central@ location left to move to, so they are put on the anchor first, #5996.
+Hence the anchor argument, and hence the call order: this runs after
+'rebuildSkyline', which has already queued the anchor's placement.
+
+The scenario's generic gap-fill stands down because 'rebuildSkyline' has queued
+its @PlaceGrid@ ('skylineInstructionsPending') by the time any removal resolves.
 -}
-removeIgnoringTextBox :: ReverseQueue m => LocationId -> m ()
-removeIgnoringTextBox = removedLocation
+removeIgnoringTextBox :: ReverseQueue m => LocationId -> LocationMatcher -> m ()
+removeIgnoringTextBox anchor matcher = selectEach matcher \lid -> do
+  selectEach (InvestigatorAt $ LocationWithId lid) \iid ->
+    push $ PlaceInvestigator iid (AtLocation anchor)
+  removedLocation lid
 
 {- | The @[action]@ every act in this scenario shares:
 

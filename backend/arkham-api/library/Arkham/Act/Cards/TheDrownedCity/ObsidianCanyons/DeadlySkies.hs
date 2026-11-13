@@ -40,9 +40,8 @@ instance RunMessage DeadlySkies where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       -- Defying Gravity: the spire falls away and the skyline reforms around
       -- Floating Spire, one row taller than before.
-      selectEach (locationIs Locations.centralSpire) removeIgnoringTextBox
-      floatingSpire <- selectJust $ locationIs Locations.floatingSpire
-      rebuildSkyline floatingSpire actThreeLayout
+      floatingSpire <- rebuildSkyline Locations.floatingSpire actThreeLayout
+      removeIgnoringTextBox floatingSpire (locationIs Locations.centralSpire)
       scenarioSpecific "shuffleAct3Summit" ()
       advanceActDeck attrs
       pure a

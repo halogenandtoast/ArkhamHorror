@@ -45,14 +45,8 @@ instance RunMessage SearchingTheSpires where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      -- Spawn the set-aside The Inescapable at the Central Spire, exhausted and
-      -- unengaged (created at a location with no investigator engagement).
-      createSetAsideEnemyWith_
-        Enemies.theInescapable
-        (locationIs Locations.centralSpire)
-        \c -> c {enemyCreationExhausted = True}
       -- Shuffle the rest of the The Inescapable encounter set (everything except the
-      -- enemy we just spawned) plus the encounter discard back into the encounter deck.
+      -- enemy spawned below) plus the encounter discard back into the encounter deck.
       rest <-
         getSetAsideCardsMatching
           $ CardFromEncounterSet Set.TheInescapable
@@ -61,10 +55,16 @@ instance RunMessage SearchingTheSpires where
       shuffleEncounterDiscardBackIn
 
       -- The Sprawl: the streets fall away and the skyline reforms around Central
-      -- Spire.
-      selectEach (locationIs Locations.rlyehStreets) removeIgnoringTextBox
-      centralSpire <- selectJust $ locationIs Locations.centralSpire
-      rebuildSkyline centralSpire actTwoLayout
+      -- Spire. The rebuild goes first so that the anchor is on the grid before
+      -- R'lyeh Streets is taken away and before the creature looks for a cell.
+      centralSpire <- rebuildSkyline Locations.centralSpire actTwoLayout
+      removeIgnoringTextBox centralSpire (locationIs Locations.rlyehStreets)
+
+      -- Spawn the set-aside The Inescapable at the Central Spire, exhausted and
+      -- unengaged (created at a location with no investigator engagement).
+      createSetAsideEnemyWith_ Enemies.theInescapable (LocationWithId centralSpire) \c ->
+        c {enemyCreationExhausted = True}
+
       -- "along with each remaining set-aside open sky card"
       scenarioSpecific "shuffleSearchingAct2Summit" ()
       advanceActDeck attrs

@@ -24,6 +24,7 @@ import NewDeck from '@/arkham/components/NewDeck.vue'
 import DeckToolbar from '@/arkham/components/DeckToolbar.vue'
 import CustomWeaknessPool from '@/arkham/components/CustomWeaknessPool.vue'
 import { useI18n } from 'vue-i18n'
+import { localizedInvestigatorName } from '@/arkham/investigatorName'
 import { handleEmbeddedI18n } from '@/arkham/i18n'
 
 const { t } = useI18n()
@@ -522,7 +523,7 @@ const needsReply = computed(() => {
                     <span class="stat-value">{{ player.contents.sanity }}</span>
                   </span>
                 </div>
-                <p class="seated-name">{{ player.contents.name.title }}</p>
+                <p class="seated-name">{{ localizedInvestigatorName(player.contents.name.title) }}</p>
               </div>
               <div class="question">
                 <UltimatumsAndBoonsQuestion
@@ -540,9 +541,9 @@ const needsReply = computed(() => {
             <!-- Settled: nothing is being asked, so the seat reads across the
                  row at the same height as one still waiting for a deck. -->
             <div v-else class="seated-summary">
-              <img class="seated-summary-portrait" :src="portraitImage(player.contents)" :alt="player.contents.name.title" />
+              <img class="seated-summary-portrait" :src="portraitImage(player.contents)" :alt="localizedInvestigatorName(player.contents.name.title)" />
               <div class="seated-summary-text">
-                <span class="seated-summary-name">{{ player.contents.name.title }}</span>
+                <span class="seated-summary-name">{{ localizedInvestigatorName(player.contents.name.title) }}</span>
                 <span v-if="tabooList(player.contents)" class="taboo-list">
                   {{$t('create.tabooList', {tabooList: tabooList(player.contents)})}}
                 </span>
@@ -562,7 +563,7 @@ const needsReply = computed(() => {
           <template v-else-if="needsReply && player.id == playerId">
             <div class="deck-main">
               <div v-if="deckRequirements.length" class="deck-requirements-card">
-                <div class="deck-requirements-title">Deck Requirements</div>
+                <div class="deck-requirements-title">{{ $t('deckUi.deckRequirements') }}</div>
                 <div class="deck-requirements-body">
                   <ul class="deck-requirements">
                     <li v-for="requirement in deckRequirements" :key="requirement">{{ requirement }}</li>
@@ -611,9 +612,9 @@ const needsReply = computed(() => {
                         <span
                           v-if="deckHasOverlay(deck)"
                           class="deck-item-overlaid"
-                          title="This deck is laid over with custom cards"
+                          :title="$t('deckUi.overlayDeckTitle')"
                         >
-                          <font-awesome-icon icon="layer-group" /> Overlay
+                          <font-awesome-icon icon="layer-group" /> {{ $t('deckUi.overlay') }}
                         </span>
                         <span v-if="deckId === deck.id && error" class="deck-item-error">{{ error }}</span>
                       </div>
@@ -622,7 +623,7 @@ const needsReply = computed(() => {
                         type="button"
                         class="deck-item-overlay"
                         :class="{ active: overlayFor === deck.id && overlay }"
-                        :title="`Overlay: ${overlaySummary}`"
+                        :title="`${$t('deckUi.overlay')}: ${overlaySummary}`"
                         @click.stop.prevent="toggleOverlayForDeck(deck)"
                       >
                         <font-awesome-icon icon="layer-group" />
@@ -642,26 +643,25 @@ const needsReply = computed(() => {
                       </button>
                       <div v-if="overlayFor === deck.id && overlayOpen" class="weakness-pool-panel deck-item-weakness-pool" @click.stop>
                         <div class="weakness-pool-heading">
-                          <span>Overlay</span>
+                          <span>{{ $t('deckUi.overlay') }}</span>
                           <span class="weakness-pool-summary">{{ overlaySummary }}</span>
                         </div>
                         <p class="weakness-pool-help">
-                          Custom cards, laid over this deck for this game only. The deck itself is
-                          not changed.
+                          {{ $t('deckUi.overlayHelpGame') }}
                         </p>
                         <OverlayEditor v-model="overlay" :slots="deck.list.slots" :investigator="deck.list.investigator_code" />
                       </div>
                       <div v-if="deckId === deck.id && weaknessPoolOpen" class="weakness-pool-panel deck-item-weakness-pool" @click.stop>
                         <div class="weakness-pool-heading">
-                          <span>Random basic weakness pool</span>
+                          <span>{{ $t('deckUi.randomWeaknessPool') }}</span>
                           <span class="weakness-pool-summary">{{ weaknessPoolSummary }}</span>
                         </div>
                         <p class="weakness-pool-help">
-                          Select printed or custom sets. Leave all sets unselected to use the full printed pool.
+                          {{ $t('deckUi.weaknessPoolHelp') }}
                         </p>
                         <div class="weakness-pool-actions">
-                          <button type="button" @click.prevent="setWeaknessPool(weaknessPoolOptions.map((o) => o.token))">Select all</button>
-                          <button type="button" @click.prevent="setWeaknessPool([])">Clear</button>
+                          <button type="button" @click.prevent="setWeaknessPool(weaknessPoolOptions.map((o) => o.token))">{{ $t('deckUi.selectAll') }}</button>
+                          <button type="button" @click.prevent="setWeaknessPool([])">{{ $t('deckUi.clear') }}</button>
                         </div>
                         <div class="weakness-pool-grid">
                           <label v-for="option in weaknessPoolOptions" :key="option.token" class="weakness-pool-option">
@@ -690,16 +690,16 @@ const needsReply = computed(() => {
                     <p v-if="unsavedDeckError" class="deck-form-error">{{ unsavedDeckError }}</p>
                     <div class="weakness-pool-panel">
                       <button type="button" class="weakness-pool-toggle" @click.prevent="weaknessPoolOpen = !weaknessPoolOpen">
-                        <span>Random basic weakness pool</span>
+                        <span>{{ $t('deckUi.randomWeaknessPool') }}</span>
                         <span class="weakness-pool-summary">{{ weaknessPoolSummary }}</span>
                       </button>
                       <div v-if="weaknessPoolOpen" class="weakness-pool-body">
                         <p class="weakness-pool-help">
-                          Select printed or custom sets. Leave all sets unselected to use the full printed pool.
+                          {{ $t('deckUi.weaknessPoolHelp') }}
                         </p>
                         <div class="weakness-pool-actions">
-                          <button type="button" @click.prevent="setWeaknessPool(weaknessPoolOptions.map((o) => o.token))">Select all</button>
-                          <button type="button" @click.prevent="setWeaknessPool([])">Clear</button>
+                          <button type="button" @click.prevent="setWeaknessPool(weaknessPoolOptions.map((o) => o.token))">{{ $t('deckUi.selectAll') }}</button>
+                          <button type="button" @click.prevent="setWeaknessPool([])">{{ $t('deckUi.clear') }}</button>
                         </div>
                         <div class="weakness-pool-grid">
                           <label v-for="option in weaknessPoolOptions" :key="option.token" class="weakness-pool-option">

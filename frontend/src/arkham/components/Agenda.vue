@@ -354,7 +354,7 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
       />
     </div>
     <StackIndicator
-      label="Agenda"
+      :label="$t('gameUi.agenda')"
       :current="currentAgendaPosition"
       :total="totalAgendas"
       :completedCards="completedStack"

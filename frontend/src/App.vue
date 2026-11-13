@@ -8,9 +8,9 @@
     </section>
   </div>
   <div v-else-if="!avifSupported" class="error-message container">
-    <header><h2 class="title">Please update your browser</h2></header>
+    <header><h2 class="title">{{ $t('footer.updateBrowser') }}</h2></header>
     <section class="box">
-      <p>Your browser does not support AVIF images. Please update your browser or switch to a different one.</p>
+      <p>{{ $t('footer.avifUnsupported') }}</p>
     </section>
   </div>
   <template v-else>
@@ -30,7 +30,7 @@
     <ModalsContainer />
   </template>
   <Toasts />
-  <footer><a href="https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/" rel="noreferrer" target="_blank" tabindex="-1">Arkham Horror: The Card Game™</a> and all related content © <a href="https://www.fantasyflightgames.com" rel="noreferrer" target="_blank" tabindex="-1">Fantasy Flight Games (FFG)</a>. This site is not produced, endorsed by or affiliated with FFG. <router-link to="/about">{{$t('nav.about')}}.</router-link></footer>
+  <footer><i18n-t keypath="footer.notice" tag="span" scope="global"><template #game><a href="https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/" rel="noreferrer" target="_blank" tabindex="-1">{{ $t('footer.gameName') }}</a></template><template #ffg><a href="https://www.fantasyflightgames.com" rel="noreferrer" target="_blank" tabindex="-1">{{ $t('footer.ffg') }}</a></template></i18n-t> <router-link to="/about">{{$t('nav.about')}}.</router-link></footer>
 </template>
 
 <script lang="ts" setup>

@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import type { Game } from '@/arkham/types/Game'
 import type { Question } from '@/arkham/types/Question'
 import { QuestionType } from '@/arkham/types/Question'
-import { capitalize, imgsrc, type InvestigatorClass } from '@/arkham/helpers'
+import { imgsrc, type InvestigatorClass } from '@/arkham/helpers'
 import { cardImage } from '@/arkham/cardImages'
 import { useDbCardStore } from '@/stores/dbCards'
 
@@ -189,11 +189,11 @@ function confirm() {
           type="button"
           class="class-pill"
           :class="{ [iclass]: filterClasses.includes(iclass), active: filterClasses.includes(iclass) }"
-          :title="capitalize(iclass)"
+          :title="$t(`classNames.${iclass}`)"
           @click.prevent="toggleClass(iclass)"
         >
           <span :class="`${iclass}-icon`"></span>
-          <span class="pill-label">{{ capitalize(iclass) }}</span>
+          <span class="pill-label">{{ $t(`classNames.${iclass}`) }}</span>
         </button>
       </div>
       <input

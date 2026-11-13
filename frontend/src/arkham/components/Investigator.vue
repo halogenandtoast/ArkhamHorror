@@ -23,6 +23,7 @@ import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import { useMenu } from '@/composable/menu';
 import { useEscape } from '@/composable/escape';
 import { useI18n } from 'vue-i18n';
+import { localizedInvestigatorName } from '@/arkham/investigatorName'
 import useEmitter from '@/composable/useEmitter';
 import useHighlighter from '@/composable/useHighlighter';
 import Resources from '@/arkham/components/Resources.vue';
@@ -482,7 +483,7 @@ const spadeInjury = computed(() => {
 <template>
   <div v-if="portrait" class="portrait-container" :data-id="investigator.id" v-bind="cardDrop">
     <span v-if="isMobile">
-      <i class="action" v-for="n in investigator.remainingActions" :key="n" :class="{ 'action--blocked': n <= blockedActions }" :data-image-id="n <= blockedActions ? blockedActionSources[n - 1] : undefined" :title="n <= blockedActions ? 'This action cannot be spent while the restriction is active' : undefined"></i>
+      <i class="action" v-for="n in investigator.remainingActions" :key="n" :class="{ 'action--blocked': n <= blockedActions }" :data-image-id="n <= blockedActions ? blockedActionSources[n - 1] : undefined" :title="n <= blockedActions ? $t('gameUi.actionBlocked') : undefined"></i>
       <template v-for="(action, actionIndex) in investigator.additionalActions" :key="actionIndex">
         <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigatorClass.toLowerCase()}ActionButton`]">
           <i class="action"></i>
@@ -507,7 +508,7 @@ const spadeInjury = computed(() => {
       :class="portraitClasses"
       :style="replacementMiniCardStyle"
       :draggable="debug.active"
-      v-tooltip="investigator.name.title"
+      v-tooltip="localizedInvestigatorName(investigator.name.title)"
       @click="clicked"
       @dragstart="startDrag($event)"
       @dragstop="endDrag"
@@ -592,7 +593,7 @@ const spadeInjury = computed(() => {
               <i class="heart" v-if="heartInjury"></i>
               <i class="diamond" v-if="diamondInjury"></i>
               <i class="club" v-if="clubInjury"></i>
-              <i class="action" v-for="n in investigator.remainingActions" :key="n" :class="{ 'action--blocked': n <= blockedActions }" :data-image-id="n <= blockedActions ? blockedActionSources[n - 1] : undefined" :title="n <= blockedActions ? 'This action cannot be spent while the restriction is active' : undefined"></i>
+              <i class="action" v-for="n in investigator.remainingActions" :key="n" :class="{ 'action--blocked': n <= blockedActions }" :data-image-id="n <= blockedActions ? blockedActionSources[n - 1] : undefined" :title="n <= blockedActions ? $t('gameUi.actionBlocked') : undefined"></i>
               <template v-for="(action, actionIndex) in investigator.additionalActions" :key="actionIndex">
                 <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigatorClass.toLowerCase()}ActionButton`]">
                   <i class="action"></i>

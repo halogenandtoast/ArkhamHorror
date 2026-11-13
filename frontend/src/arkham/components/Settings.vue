@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { type Game } from '@/arkham/types/Game'
 import { useDebug } from '@/arkham/debug'
 import { useI18n } from 'vue-i18n';
+import { localizedInvestigatorName } from '@/arkham/investigatorName'
 import { updateGameRaw } from '@/arkham/api'
 import CustomWeaknessPool from '@/arkham/components/CustomWeaknessPool.vue'
 import { gameLocalStorageKey, getGameLocalStorageItem, removeGameLocalStorageItem, setGameLocalStorageItem } from '@/arkham/localStorage'
@@ -294,7 +295,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="settings">
     <div class="settings-header" :style="headerStyle">
-      <h2 class="settings-title">{{$t('gameBar.viewSettingTitle', {investigator: investigator?.name.title ?? ''})}}</h2>
+      <h2 class="settings-title">{{$t('gameBar.viewSettingTitle', {investigator: investigator ? localizedInvestigatorName(investigator.name.title) : ''})}}</h2>
     </div>
 
     <div class="settings-tabs" role="tablist" @keydown="navigateTabs">

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, inject, type Ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { localizedInvestigatorName } from '@/arkham/investigatorName'
 import { handleEmbeddedI18n } from '@/arkham/i18n';
 import type { Game } from '@/arkham/types/Game';
 import { QuestionType, type Question } from '@/arkham/types/Question';
@@ -46,7 +47,7 @@ const viewerInvestigatorName = computed(() => {
   if (!viewOnly.value) return ''
   const targetPlayerId = effectivePlayerId.value
   const inv = Object.values(props.game.investigators).find(i => i.playerId === targetPlayerId)
-  return inv?.name.title ?? ''
+  return inv ? localizedInvestigatorName(inv.name.title) : ''
 })
 
 const choiceInvestigator = computed(() => {
@@ -196,9 +197,9 @@ const isBuildSpiritDeckQuestion = (q: Question): q is Question & { tag: Question
         <img
           v-if="choiceInvestigatorPortrait"
           :src="choiceInvestigatorPortrait"
-          :alt="choiceInvestigator.name.title"
+          :alt="localizedInvestigatorName(choiceInvestigator.name.title)"
         />
-        <span>{{ choiceInvestigator.name.title }}</span>
+        <span>{{ localizedInvestigatorName(choiceInvestigator.name.title) }}</span>
       </div>
       <StoryEntry
         :game="game"

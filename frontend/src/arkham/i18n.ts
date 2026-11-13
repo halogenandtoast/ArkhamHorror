@@ -16,7 +16,13 @@ export const handleI18n = (body: string, t: (key: string, params: { [key: string
     if (card) { params.iname = card.name }
   }
 
-  return t(key, params)
+  const text = t(key, params)
+  if (text !== key) return text
+  // A key naming a section rather than a message ("…resolutions.resolution1" is
+  // { title, body }) prints as the bare key; its title is what was meant.
+  const titleKey = `${key}.title`
+  const title = t(titleKey, params)
+  return title !== titleKey ? title : text
 }
 
 export const handleEmbeddedI18n = (body: string, t: (key: string, params: { [key: string]: any }) => string) => {

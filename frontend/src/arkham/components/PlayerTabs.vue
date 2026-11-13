@@ -2,6 +2,7 @@
 import { useStorage } from '@vueuse/core'
 import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { Ref } from 'vue';
+import { useI18n } from 'vue-i18n'
 import type { Game } from '@/arkham/types/Game';
 import Tab from '@/arkham/components/Tab.vue';
 import Player from '@/arkham/components/Player.vue';
@@ -73,9 +74,11 @@ function hasSwitch(investigator: Investigator) {
   return pid !== props.playerId && hasChoices(investigator.playerId)
 }
 
+const { t } = useI18n()
+
 function instructions(investigator: Investigator) {
   if (investigator.playerId !== props.playerId) {
-    return "Switch to this investigator's perspective"
+    return t('gameUi.switchPerspective')
   }
 
   return null
@@ -544,7 +547,7 @@ watch(
       :index="investigator.playerId"
       :selectedTab="selectedTab"
       :playerClass="investigator.class"
-      :title="investigator.name.title"
+      :title="getInvestigatorName(investigator.name.title)"
       :playerId="playerId"
       :investigatorId="investigator.id"
       :activePlayer="investigator.playerId == activePlayerId"
@@ -563,7 +566,7 @@ watch(
       :index="investigator.playerId"
       :selectedTab="selectedTab"
       :playerClass="investigator.class"
-      :title="investigator.name.title"
+      :title="getInvestigatorName(investigator.name.title)"
       :playerId="playerId"
       :investigatorId="investigator.id"
       :activePlayer="investigator.playerId == activePlayerId"

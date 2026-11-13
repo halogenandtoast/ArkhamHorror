@@ -950,6 +950,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     let allowedMulligans = max 0 . (1 +) $ sumOf (traverse . _Mulligans) mods
     let startingHandAmount = max 0 . (5 +) $ sumOf (traverse . _StartingHand) mods
     let additionalStartingCards = concat $ mapMaybe (preview _AdditionalStartingCards) mods
+    -- This runs once per mulligan, so an extra opening-hand card still in hand
+    -- from an earlier round must not be minted (or counted) a second time.
+    let extraIds = map toCardId additionalStartingCards
+    let extraCodes = map toCardCode investigatorStartsWithInHand
+    let isCarriedOverExtra c = toCardId c `elem` extraIds || toCardCode c `elem` extraCodes
+    let carriedOverExtras = filter isCarriedOverExtra investigatorHand
     -- investigatorHand is dangerous, but we want to use it here because we're
     -- only affecting cards actually in hand [I think]
     let excludedCount = length $ filter (\c -> toCardId c `elem` investigatorExcludeFromMulligan) investigatorHand
@@ -957,13 +963,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       if any (`elem` mods) [CannotDrawCards, CannotManipulateDeck]
         then pure (investigatorDiscard, investigatorHand, unDeck investigatorDeck)
         else drawOpeningHand a (startingHandAmount - (length investigatorHand - excludedCount))
-    startsWithInHandCards <- traverse genCard investigatorStartsWithInHand
+    let carriedOverCodes = map toCardCode carriedOverExtras
+    let carriedOverIds = map toCardId carriedOverExtras
+    startsWithInHandCards <-
+      traverse genCard $ filter ((`notElem` carriedOverCodes) . toCardCode) investigatorStartsWithInHand
     for_ startsWithInHandCards \card -> push $ ReplaceCard card.id card
-    let additionalHandCards = additionalStartingCards <> startsWithInHandCards
+    let additionalHandCards =
+          filter ((`notElem` carriedOverIds) . toCardId) additionalStartingCards <> startsWithInHandCards
 
     -- need the virtual hand to get correct length
     hand' <- field InvestigatorHand iid
-    let moreMulligans = (a ^. mulligansTakenL + 1) < allowedMulligans && startingHandAmount - length hand' > 0
+    -- cards excluded from the mulligan are extras on top of the starting hand,
+    -- so they must not count towards it
+    let mulliganableRemaining =
+          length $ filter (\c -> toCardId c `notElem` investigatorExcludeFromMulligan) hand'
+    let needsMoreCards = startingHandAmount > mulliganableRemaining
+    let moreMulligans = (a ^. mulligansTakenL + 1) < allowedMulligans && needsMoreCards
 
     -- Starting keyword: offer search before mulligan cards are shuffled back in
     unless moreMulligans do
@@ -991,6 +1006,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (discardL .~ discard)
       & (handL .~ hand <> additionalHandCards)
       & (deckL .~ Deck deck)
+      & (excludeFromMulliganL %~ (<> map toCardId additionalHandCards))
       & (mulligansTakenL +~ 1)
   ForInvestigator iid BeginGame | iid == investigatorId -> do
     -- if we have any cards with revelations on them, we need to trigger them

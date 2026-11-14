@@ -375,6 +375,21 @@ spec = describe "Return to the Dunwich Legacy achievements" $ do
         _ -> False
       earned `refShouldBe` True
 
+    -- Assignment is deferred: the points only sit in assignedHealthDamage until
+    -- AssignDamage places them, so a survival check read off remaining health at
+    -- the terminal assignment message sees the pre-hit value and passes even for
+    -- an investigator the hit kills.
+    it "is not earned when the 10 damage defeats you" . gameTest $ \self -> do
+      -- in a scenario, because the defeat ends it and the resolution the
+      -- campaign then records has nowhere to go outside one
+      asReturnToTheDunwichLegacyScenario "51025"
+      withProp @"health" 5 self
+      veil <- self `putTreacheryIntoPlay` Treacheries.beyondTheVeil
+      earned <- didEarnDunwich BeyondWhatVeil
+      run $ UseCardAbility (toId self) (TreacherySource veil) 1 [] NoPayment
+      applyAllDamage
+      earned `refShouldBe` False
+
     it "is not earned when the hit is reduced below 10" . gameTest $ \self -> do
       asReturnToTheDunwichLegacy
       withProp @"health" 20 self

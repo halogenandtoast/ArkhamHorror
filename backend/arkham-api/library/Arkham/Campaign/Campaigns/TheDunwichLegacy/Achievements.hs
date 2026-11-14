@@ -186,15 +186,19 @@ runDunwichAchievements msg = whenEligibleCampaign $ case msg of
 
   -- "Beyond What Veil?": Beyond the Veil's full 10 damage resolved against
   -- you (soaking onto your assets still counts as taking the hit; a canceled
-  -- or reduced hit does not) and you survived. This is the terminal
-  -- assignment message: each point was applied as it was assigned, so
-  -- remaining health already reflects the hit and >0 means survival.
+  -- or reduced hit does not) and you survived. This is the terminal assignment
+  -- message, but assignment is *deferred*: each point only bumped
+  -- assignedHealthDamage, and the tokens are not placed until AssignDamage runs
+  -- later. InvestigatorRemainingHealth therefore still reads pre-hit here, so
+  -- survival is the same sum CheckDefeated uses -- damage taken plus damage
+  -- still pending, against modified health.
   InvestigatorDoAssignDamage iid source _ _ 0 0 damageTargets _ -> do
     for_ source.treachery \tid -> do
       isBeyondTheVeil <- selectAny $ TreacheryWithId tid <> treacheryIs Treacheries.beyondTheVeil
       when (isBeyondTheVeil && length damageTargets >= 10) do
         remaining <- field InvestigatorRemainingHealth iid
-        when (remaining > 0) do
+        pending <- field InvestigatorAssignedDamage iid
+        when (remaining > pending) do
           earnAchievement $ TheDunwichLegacyAchievement BeyondWhatVeil
   _ -> pure ()
 

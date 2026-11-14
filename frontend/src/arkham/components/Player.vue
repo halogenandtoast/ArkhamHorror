@@ -1282,7 +1282,7 @@ function closeHand() {
         vertical
         droppable
         draggableCards
-        label="Hidden"
+        :label="$t('gameUi.hidden')"
         placement="left"
         allowInPlayAbilities
         autoShowWhenOnlyChoice
@@ -1432,7 +1432,7 @@ function closeHand() {
               key="as-if-in-hand-cards"
               class="special-hand-cards"
               :cards="asIfInHandCards"
-              label="Out of play cards playable as if in hand"
+              :label="$t('gameUi.playableAsIfInHand')"
               placement="top"
               :game="game"
               :playerId="playerId"
@@ -1530,7 +1530,7 @@ function closeHand() {
         v-show="handAreaPointerEvents === 'auto'"
         class="hand-close-button"
         type="button"
-        aria-label="Close hand"
+        :aria-label="$t('gameUi.closeHand')"
         @click.stop="closeHand"
       >
         <XMarkIcon aria-hidden="true" />
@@ -1540,8 +1540,8 @@ function closeHand() {
         class="hand-sticky-toggle"
         type="button"
         :aria-pressed="stickyHand"
-        :aria-label="stickyHand ? 'Disable sticky hand' : 'Enable sticky hand'"
-        :title="stickyHand ? 'Disable sticky hand' : 'Enable sticky hand'"
+        :aria-label="stickyHand ? $t('gameUi.disableStickyHand') : $t('gameUi.enableStickyHand')"
+        :title="stickyHand ? $t('gameUi.disableStickyHand') : $t('gameUi.enableStickyHand')"
         @click.stop="toggleStickyHand"
       >
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -1567,7 +1567,7 @@ function closeHand() {
             key="as-if-in-hand-cards"
             class="special-hand-cards"
             :cards="asIfInHandCards"
-            label="Out of play cards playable as if in hand"
+            :label="$t('gameUi.playableAsIfInHand')"
             placement="top"
             :game="game"
             :playerId="playerId"

@@ -276,7 +276,7 @@ async function debugAddCardToDeck(card: CardDef) {
     <template v-if="debug.active">
       <button class="debug-open" @click="debuggingDeck = true">{{ $t('enemy.debug') }}</button>
       <Draggable v-if="debuggingDeck">
-        <template #handle><h2>{{ isSpectral ? 'Spectral encounter deck' : 'Encounter deck' }}</h2></template>
+        <template #handle><h2>{{ isSpectral ? $t('gameUi.spectralEncounterDeck') : $t('gameUi.encounterDeck') }}</h2></template>
         <div class="debug-modal debug-window deck-debug">
           <p class="deck-debug__size">{{ $t('debug.deck.size', { count: encounterDeckSize }) }}</p>
           <section class="deck-debug__section">

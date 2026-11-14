@@ -653,7 +653,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
           <span
             v-if="darkTraitRemoved"
             class="lantern-badge"
-            v-tooltip="'The Dark trait is removed'"
+            v-tooltip="$t('gameUi.darkTraitRemoved')"
           >
             <img
               class="lantern-icon"

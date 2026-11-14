@@ -498,15 +498,15 @@ watch(deckRef, (el) => {
           <div class="deck--details">
             <div class="deck-main">
               <h1 class="deck-title">{{deck.name}}</h1>
-              <span v-if="tabooList" class="taboo-badge"><font-awesome-icon icon="book" /> Taboo: {{ tabooList }}</span>
+              <span v-if="tabooList" class="taboo-badge"><font-awesome-icon icon="book" /> {{ $t('deckUi.taboo', { list: tabooList }) }}</span>
               <span v-if="hasOverlay" class="overlay-badge">
                 <font-awesome-icon icon="layer-group" />
-                <span>Overlay<template v-if="overlaySummary">: {{ overlaySummary }}</template></span>
+                <span>{{ $t('deckUi.overlay') }}<template v-if="overlaySummary">: {{ overlaySummary }}</template></span>
                 <button
                   type="button"
                   class="overlay-badge-remove"
                   :disabled="savingOverlay"
-                  title="Remove the overlay — the deck's own list comes back exactly as it was"
+                  :title="$t('deckUi.removeOverlayTitle')"
                   @click="removeOverlay"
                 >
                   <font-awesome-icon icon="times" />
@@ -538,7 +538,7 @@ watch(deckRef, (el) => {
                 class="action-btn"
                 :class="{ 'action-btn--on': overlayEditing || hasOverlay }"
                 href="#"
-                title="Edit overlay"
+                :title="$t('deckUi.editOverlay')"
                 @click.prevent="startOverlay"
               ><font-awesome-icon icon="layer-group" /></a>
               <a class="action-btn action-btn--delete" href="#" :title="$t('deck.deleteDeck')" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
@@ -561,17 +561,15 @@ watch(deckRef, (el) => {
           </div>
           <div v-if="overlayEditing" class="overlay-bar">
             <p class="overlay-help">
-              Custom cards, laid over this deck. Pick what to add below; take cards out with the −
-              on each card in the list. The deck's own list is kept, so removing the overlay puts
-              it back exactly as it was.
+              {{ $t('deckUi.overlayHelpDeck') }}
             </p>
             <!-- Cards come out on the list below, so the picker only puts them in. -->
             <OverlayEditor v-model="overlay" :slots="{}" :investigator="deck.list.investigator_code" />
             <div class="overlay-actions">
               <button type="button" :disabled="savingOverlay" @click="saveOverlay">
-                {{ overlayIsEmpty(overlay) ? 'Remove overlay' : 'Apply overlay' }}
+                {{ overlayIsEmpty(overlay) ? $t('deckUi.removeOverlay') : $t('deckUi.applyOverlay') }}
               </button>
-              <button type="button" @click="overlayEditing = false">Cancel</button>
+              <button type="button" @click="overlayEditing = false">{{ $t('deckUi.cancel') }}</button>
             </div>
           </div>
         </template>
@@ -579,13 +577,13 @@ watch(deckRef, (el) => {
 
       <div class="deck-sections">
         <section v-if="hunchDeckCards.length > 0" class="deck-section deck-section--hunch">
-          <h2 class="deck-section-title">Hunch Deck <span>{{ hunchDeckCards.length }}</span></h2>
+          <h2 class="deck-section-title">{{ $t('deckUi.hunchDeck') }} <span>{{ hunchDeckCards.length }}</span></h2>
           <CardImageView v-if="view == View.Image" :cards="hunchDeckCards" />
           <CardListView v-if="view == View.List" :cards="hunchDeckCards" />
         </section>
 
         <section class="deck-section deck-section--main">
-          <h2 class="deck-section-title">Main Deck <span>{{ cards.length }}</span></h2>
+          <h2 class="deck-section-title">{{ $t('deckUi.mainDeck') }} <span>{{ cards.length }}</span></h2>
           <CardImageView
             v-if="view == View.Image"
             :cards="cards"
@@ -609,7 +607,7 @@ watch(deckRef, (el) => {
         </section>
 
         <section v-if="sideDeckCards.length > 0" class="deck-section deck-section--side">
-          <h2 class="deck-section-title">Side Deck <span>{{ sideDeckCards.length }}</span></h2>
+          <h2 class="deck-section-title">{{ $t('deckUi.sideDeck') }} <span>{{ sideDeckCards.length }}</span></h2>
           <CardImageView v-if="view == View.Image" :cards="sideDeckCards" />
           <CardListView v-if="view == View.List" :cards="sideDeckCards" />
         </section>

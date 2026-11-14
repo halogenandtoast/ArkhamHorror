@@ -516,7 +516,7 @@ const tabooList = function (investigator: Investigator) {
         </div>
         <div v-else class="content">
           <div v-if="tabooList(investigator)" class="taboo-list">
-            Taboo List: {{tabooList(investigator)}}
+            {{ $t('deckUi.tabooList', { list: tabooList(investigator) }) }}
           </div>
         </div>
       </template>

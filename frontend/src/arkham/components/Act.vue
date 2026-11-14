@@ -625,7 +625,7 @@ const chooseFromStoryCollection = (choice: number) => {
           type="button"
           class="story-collection__toggle cards-under-indicator"
           :aria-label="$t('gameUi.storyCardsClickToView', { count: nextToStories.length })"
-          v-tooltip="`Story cards (${nextToStories.length}) — click to view`"
+          v-tooltip="$t('gameUi.storyCardsClickToView', { count: nextToStories.length })"
         >
           <span class="cards-under-indicator__icon" aria-hidden="true">
             <span class="cards-under-indicator__card cards-under-indicator__card--back" />

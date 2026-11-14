@@ -633,10 +633,9 @@ const setIcon = computed(() =>
           </template>
         </InvestigatorRow>
         <div v-if="overlayFor === investigator.id" class="overlay-panel">
-          <h3 class="overlay-title">Overlay</h3>
+          <h3 class="overlay-title">{{ $t('deckUi.overlay') }}</h3>
           <p class="overlay-help">
-            Overlays allow you to add custom cards to your deck to use during the campaign.
-            If custom cards cost trauma or xp this will not be reflected in game.
+            {{ $t('deckUi.overlayHelpCampaign') }}
           </p>
           <OverlayEditor
             v-model="overlay"
@@ -645,7 +644,7 @@ const setIcon = computed(() =>
           />
           <div class="overlay-actions">
             <button class="roster-btn" :disabled="overlayBusy" @click="applyOverlay(investigator.id)">
-              Apply overlay
+              {{ $t('deckUi.applyOverlay') }}
             </button>
             <button class="roster-btn" @click="overlayFor = null">{{ t('cancel') }}</button>
           </div>

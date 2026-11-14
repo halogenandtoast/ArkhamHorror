@@ -9,6 +9,7 @@ import { type Investigator } from '@/arkham/types/Investigator'
 import { type CampaignStep, campaignStepIcon, campaignStepName } from '@/arkham/types/CampaignStep'
 import { Game } from '@/arkham/types/Game'
 import { useI18n } from 'vue-i18n';
+import { localizedInvestigatorName } from '@/arkham/investigatorName'
 import { useDbCardStore } from '@/stores/dbCards'
 
 const { t, te } = useI18n()
@@ -202,7 +203,7 @@ const scenarioIcon = computed<string | null>(() => campaignStepIcon(props.step))
         </div>
       </section>
       <section class="group" v-for="([iid, info]) in Object.entries(perInvestigator)" :key="name">
-        <header class="entry-header"><h3>{{format(allInvestigators[iid]?.name.title ?? iid)}}</h3><span class="amount" :class="{ 'amount--negative': info.total < 0 }">{{ $t('upgrade.xp', {total: info.total}) }}</span></header>
+        <header class="entry-header"><h3>{{ allInvestigators[iid] ? localizedInvestigatorName(allInvestigators[iid].name.title) : format(iid) }}</h3><span class="amount" :class="{ 'amount--negative': info.total < 0 }">{{ $t('upgrade.xp', {total: info.total}) }}</span></header>
         <div v-for="(entry, idx) in info.entries" :key="idx" class="entry">
           <span v-html="format(entry.details.sourceName)"></span>
           <span v-if="entry.tag !== 'InvestigatorLoseXp'" class="amount">+{{entry.details.amount}}</span>

@@ -57,3 +57,23 @@ spec = describe "Safeguard (2)" do
       roland.location `shouldReturn` Just (toId location1)
       questions <- toList . gameQuestion <$> getGame
       liftIO $ show questions `shouldNotContain` "moveToo"
+
+  -- The reaction's default PlayerLimit PerWindow 1 was recorded at window depth 0 and so
+  -- never pruned, and its DuringTurn matcher sees windows that recur verbatim every turn
+  -- (When FastPlayerWindow, When TurnBegins <iid>), so one arming killed it for the rest
+  -- of the scenario. #5999
+  it "can be armed again on a later turn" . gameTest $ \self -> do
+    roland <- addInvestigator rolandBanks
+    location1 <- testLocation
+    self `moveTo` location1
+    roland `moveTo` location1
+
+    safeguard2 <- roland `putAssetIntoPlay` Assets.safeguard2
+    [useSafeguard] <- roland `getActionsFrom` safeguard2
+    roland `useAbility` useSafeguard
+
+    -- the turn ends and upkeep readies it, so only the stale use record could be in the way
+    run $ EndTurn (toId self)
+    run $ Ready (toTarget safeguard2)
+
+    (roland `getActionsFrom` safeguard2) `shouldSatisfyM` notNull

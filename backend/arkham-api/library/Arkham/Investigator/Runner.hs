@@ -283,6 +283,12 @@ onlyCampaignAbilities UsedAbility {..} = case abilityLimitType (abilityLimit use
   Just PerCampaign -> True
   _ -> False
 
+{- | A "once per window" record, in any of the three buckets 'EndCheckWindow' prunes.
+Dropped wholesale at every turn boundary; see the @EndTurn@ handlers.
+-}
+isPerWindowRecord :: UsedAbility -> Bool
+isPerWindowRecord UsedAbility {..} = abilityLimitType (abilityLimit usedAbility) == Just PerWindow
+
 {- | Under the Chapter 2 "as if" ruling (Grimoire) the altered game state applies
 only to the ability being resolved; other abilities triggering during it see the
 actual game state. Bracket the windows where those other abilities get offered.
@@ -3138,12 +3144,32 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & usedAbilitiesL
       %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerRound)
       & (usedAdditionalActionsL .~ mempty)
+  {- A "once per window" bucket cannot outlive the window it was recorded in, and no
+  window spans a turn boundary -- so every seat drops its PerWindow records here, not
+  just the one whose turn it was.
+
+  'EndCheckWindow' is supposed to prune them, but it keeps a record whenever
+  `depth >= usedDepth` and a use answered from a player window is not inside a
+  CheckWindows, so it is stamped `usedDepth = 0` and that test is true forever. The
+  record then blacklists window *values*, which 'getCanAffordUseWith' compares
+  structurally -- and `When FastPlayerWindow` / `When TurnBegins <iid>` recur verbatim
+  every turn. Safeguard (2), whose DuringTurn matcher deliberately matches every window
+  of another investigator's turn (#5784), could be armed once in each shape and then
+  never again: its `nonBlockingExcept (TurnBegins #when Anyone)` prompt was permanently
+  dead and the only offers left rode along in move windows, after the mover had already
+  gone (#5999).
+
+  Deliberately not fixed at the depth-0 test itself: dropping those records on any
+  nested window close would let a reaction used from a player window be re-offered
+  inside that same still-open player window. -}
   EndTurn iid | iid == toId a -> do
     pure
       $ a
       & (endedTurnL .~ True)
       & usedAbilitiesL
       %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerTurn)
+      & (usedAbilitiesL %~ filter (not . isPerWindowRecord))
+  EndTurn _ -> pure $ a & usedAbilitiesL %~ filter (not . isPerWindowRecord)
   UseCardAbility iid (isSource a -> True) 500 _ _ -> handleUseCardAbility a iid
   UseCardAbility iid (isSource a -> True) 501 _ _ -> handleUseCardAbilityV2 a iid
   UseCardAbility iid (isSource a -> True) 502 _ _ -> handleUseCardAbilityV3 a iid

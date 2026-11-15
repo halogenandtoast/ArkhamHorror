@@ -1,10 +1,8 @@
 module Arkham.Event.Events.DirtyDeeds3 (dirtyDeeds3, DirtyDeeds3 (..)) where
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Strategy
@@ -29,13 +27,13 @@ instance RunMessage DirtyDeeds3 where
         (defer attrs IsNotDraw)
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards -> do
-      chooseOne
-        iid
-        [ targetLabel
-          (toCardId card)
-          [AddToHand iid [card], PayCardCost iid card (defaultWindows iid), handleTargetChoice iid attrs card]
-        | card <- cards
-        ]
+      -- playCardPayingCostWithWindows, not a bare PayCardCost: the bare message opens
+      -- no PlayCard window, so "when you play an [[Item]] asset" (Shrewd Dealings) never
+      -- saw the asset this card plays (#5998).
+      chooseOneM iid $ targets cards \card -> do
+        addToHand iid (only card)
+        playCardPayingCostWithWindows iid card (defaultWindows iid)
+        handleTarget iid attrs card
       pure e
     SearchNoneFound iid (isTarget attrs -> True) -> do
       chooseOne iid [Label "$label.noCardsFound" []]
@@ -48,7 +46,11 @@ instance RunMessage DirtyDeeds3 where
                 <> AbilityOnAsset (AssetWithCardId cid)
                 <> PerformableAbility [IgnoreAllCosts]
             )
+      -- "you *may* resolve" -- chooseOrRunOne auto-runs the lone ability, which forced
+      -- Liquid Courage's [action] (and its willpower test) on the player (#5998).
       when (notNull abilities) do
-        chooseOrRunOne iid [AbilityLabel iid ab [] [] [] | ab <- abilities]
+        chooseOne iid
+          $ Label "$label.doNotUseAbility" []
+          : [AbilityLabel iid ab (defaultWindows iid) [] [] | ab <- abilities]
       pure e
     _ -> DirtyDeeds3 <$> liftRunMessage msg attrs

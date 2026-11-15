@@ -927,6 +927,10 @@ handleInvestigatorDrewPlayerCardFrom a@InvestigatorAttrs {..} iid card mDeck msg
           (Window.defaultWindows iid)
           (toCard card)
       reduceCost <- costModifier iid iid (ReduceCostOf (CardWithId card.id) 2)
+      -- playCardPayingCostMessages, not a bare PayCardCost: the bare message opens no
+      -- PlayCard window, so "when/after you play a card" reactions never see this
+      -- Foresight play (#5998)
+      playMsgs <- playCardPayingCostMessages iid (toCard card) (Window.defaultWindows iid)
       pushAll
         $ FocusCards [toCard card]
         : [ chooseOrRunOne player
@@ -940,10 +944,7 @@ handleInvestigatorDrewPlayerCardFrom a@InvestigatorAttrs {..} iid card mDeck msg
                 ]
               <> [ Label
                      "Immediately play that card at -2 cost"
-                     [ UnfocusCards
-                     , reduceCost
-                     , PayCardCost iid (toCard card) (Window.defaultWindows iid)
-                     ]
+                     ([UnfocusCards, reduceCost] <> playMsgs)
                  | playable
                  ]
               <> [Label "$label.drawNormally" $ maybeToList mWhenDraw <> [UnfocusCards, Do msg]]

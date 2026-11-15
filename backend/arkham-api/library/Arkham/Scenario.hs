@@ -294,7 +294,11 @@ instance RunMessage Scenario where
             player <- getPlayer investigator
             choices <- for cards \c -> do
               enabled <- costModifier source investigator (ReduceCostOf (Matcher.CardWithId $ toCardId c) 2)
-              pure $ targetLabel c [enabled, PayCardCost investigator c [duringTurnWindow investigator]]
+              -- playCardPayingCostMessages, not a bare PayCardCost: the bare message opens
+              -- no PlayCard window, so "when/after you play a card" reactions never see
+              -- this play (#5998)
+              playMsgs <- playCardPayingCostMessages investigator c [duringTurnWindow investigator]
+              pure $ targetLabel c (enabled : playMsgs)
 
             pure $ Just $ chooseOne player $ Label "$label.doNotPlayAsset" [] : choices
           pushAll msgs

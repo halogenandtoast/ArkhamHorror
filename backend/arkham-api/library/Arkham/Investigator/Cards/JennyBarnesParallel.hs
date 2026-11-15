@@ -76,7 +76,10 @@ instance RunMessage JennyBarnesParallel where
       pure i
     UseCardAbilityChoiceTarget iid (isSource attrs -> True) 1 (CardIdTarget cid) _ _ -> do
       card <- getCard cid
-      pushAll [PayCardCost iid card [duringTurnWindow iid], ResetMetadata (toTarget attrs)]
+      -- a bare PayCardCost opens no PlayCard window, so "when/after you play a card"
+      -- reactions never see this play (#5998)
+      playCardPayingCostWithWindows iid card [duringTurnWindow iid]
+      push $ ResetMetadata (toTarget attrs)
       pure . JennyBarnesParallel $ attrs `with` Meta (Just card) (resourcesGained meta)
     ResetMetadata (isTarget attrs -> True) ->
       pure . JennyBarnesParallel $ attrs `with` Meta Nothing (resourcesGained meta)

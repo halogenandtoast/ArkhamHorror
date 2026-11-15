@@ -7,6 +7,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Helpers.Action (getActionsWith)
+import Arkham.Helpers.Message (playCardPayingCostMessages)
 import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
@@ -58,12 +59,16 @@ instance RunMessage EonChart1 where
       player <- getPlayer iid
       let validAction x = any (abilityIs x) [#move, #evade, #investigate]
       let valid x = validAction x && (not (tabooed TabooList20 attrs) || abilityBasic x)
+      -- playCardPayingCostMessages, not a bare PayCardCost: the bare message opens no
+      -- PlayCard window, so "when/after you play a card" reactions never see it (#5998)
+      cardChoices <- for playableCards \item ->
+        targetLabel (toCardId item) <$> playCardPayingCostMessages iid item windows'
       push
         $ AskPlayer
         $ Msg.chooseOne player
         $ map
           ((\f -> f windows' [] []) . AbilityLabel iid)
           (filter valid actions)
-        <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- playableCards]
+        <> cardChoices
       pure a
     _ -> EonChart1 <$> liftRunMessage msg attrs

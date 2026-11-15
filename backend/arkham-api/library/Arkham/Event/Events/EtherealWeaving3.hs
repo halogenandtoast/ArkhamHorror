@@ -48,7 +48,9 @@ instance RunMessage EtherealWeaving3 where
             targeting card do
               eventModifier attrs iid (AnySkillValue 2)
               costModifier attrs iid (ReduceCostOf (CardWithId card.id) 1)
-              push $ PayCardCost iid card (defaultWindows iid)
+              -- a bare PayCardCost opens no PlayCard window, so "when/after you play a
+              -- card" reactions never see this play (#5998)
+              playCardPayingCostWithWindows iid card (defaultWindows iid)
               doStep (n - 1) msg'
       pure e
     _ -> EtherealWeaving3 . (`with` meta) <$> liftRunMessage msg attrs

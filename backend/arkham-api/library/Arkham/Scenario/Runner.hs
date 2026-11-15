@@ -1228,6 +1228,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
                   let windows' = [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
                   playableCards <- concatForM (mapToList targetCards) $ \(_, cards) ->
                     filterM (getIsPlayable who source (UnpaidCost NoAction) windows') cards
+                  -- playCardPayingCostMessages, not a bare PayCardCost: the bare message
+                  -- opens no PlayCard window, so "when/after you play a card" reactions
+                  -- never see this play (#5998). Built out here because the choice body
+                  -- below only assembles messages.
+                  playMsgs <-
+                    Map.fromList
+                      <$> for playableCards \card ->
+                        (toCardId card,) <$> playCardPayingCostMessages iid card windows'
                   chooseNM iid n do
                     for_ (mapToList targetCards) \(zone, cards) -> do
                       for_ cards \card -> do
@@ -1238,7 +1246,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
                               chooseOne
                                 iid
                                 [ Label "$label.addToHandSimple" [addFoundToHand]
-                                , Label "$label.playCard" [addFoundToHand, PayCardCost iid card windows']
+                                , Label "$label.playCard"
+                                    $ addFoundToHand
+                                    : findWithDefault [] (toCardId card) playMsgs
                                 ]
                             else push addFoundToHand
             DrawOrCommitFound who n -> do
@@ -1305,12 +1315,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
               playableCards <- for (mapToList targetCards) $ \(zone, cards) -> do
                 cards' <- filterM (getIsPlayable who source (UnpaidCost NoAction) windows') cards
                 pure (zone, cards')
-              let
-                choices =
-                  [ targetLabel (toCardId card) [PayCardCost iid card windows']
-                  | (_, cards) <- playableCards
-                  , card <- cards
-                  ]
+              -- playCardPayingCostMessages, not a bare PayCardCost: the bare message opens
+              -- no PlayCard window, so "when/after you play a card" reactions never see
+              -- this play (#5998)
+              choices <- for [card | (_, cards) <- playableCards, card <- cards] \card ->
+                targetLabel (toCardId card) <$> playCardPayingCostMessages iid card windows'
               chooseN iid n $ if null choices then [Label "$label.noCardsFound" []] else choices
             PlayFoundNoCost who n -> do
               let windows' = [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]

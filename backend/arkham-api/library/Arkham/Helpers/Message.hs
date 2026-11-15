@@ -685,6 +685,29 @@ handleTargetChoice
   :: (Sourceable source, Targetable target) => InvestigatorId -> source -> target -> Message
 handleTargetChoice iid (toSource -> source) (toTarget -> target) = HandleTargetChoice iid source target
 
+{- | Playing a card by paying its cost, as a plain @[Message]@.
+
+A bare 'PayCardCost' opens no 'Window.PlayCard' window at all -- it routes
+@Do (PayCardCost)@ -> @createActiveCostForCard .. NotPlayAction@ -> the @ForCard@
+branch's plain @InitiatePlayCard@ -> @PlayCard .. False@, and only
+'InitiatePlayCardWithWindows' ever opens those windows. So a card played that way
+is invisible to every "when/after you play a card" reaction (Shrewd Dealings,
+issues #5635 and #5998).
+
+This is the 'Arkham.Message.Lifted.Card.playCardPayingCostWithWindows' pairing for
+the sites that still build a pure list of messages for a @targetLabel@/@Label@,
+rather than being restructured into @chooseOneM@. It goes through 'checkWindows'
+for the same reason that helper does: the pure 'frame' would drop the current
+batch id.
+-}
+playCardPayingCostMessages :: HasGame m => InvestigatorId -> Card -> [Window] -> m [Message]
+playCardPayingCostMessages iid card ws = do
+  let (whenWindow, atIfWindow, afterWindow) = timings (Window.PlayCard iid $ Window.CardPlay card False)
+  before <- checkWindows [whenWindow]
+  atIf <- checkWindows [atIfWindow]
+  after <- checkWindows [afterWindow]
+  pure [before, atIf, PayCardCost iid card ws, after]
+
 handleSkillTestNesting
   :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m))
   => SkillTestId

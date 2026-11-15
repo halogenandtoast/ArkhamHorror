@@ -8,7 +8,6 @@ import Arkham.Event.Import.Lifted hiding (InvestigatorResigned)
 import Arkham.Exhaust (mkExhaustion)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Message (handleTargetChoice)
-import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_, modified_, modifyEachMap)
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, getSkillTestSource)
 import Arkham.Matcher
@@ -112,7 +111,12 @@ instance RunMessage TheRavenQuill where
       -- the asset enters play before we get to attach, so bridge the gap
       when (attrs `hasCustomization` SpectralBinding)
         $ for_ xs \x -> cardResolutionModifiers attrs attrs x $ DoNotTakeUpSlot <$> [minBound ..]
-      chooseOne iid $ targetLabels xs \x -> [Msg.addToHand iid x, PayCardCost iid x ws, handleTargetChoice iid attrs x]
+      -- playCardPayingCostWithWindows, not a bare PayCardCost: the bare message opens no
+      -- PlayCard window, so "when you play a card" reactions never see this play (#5998).
+      chooseOneM iid $ targets xs \x -> do
+        addToHand iid (only x)
+        playCardPayingCostWithWindows iid x ws
+        handleTarget iid attrs x
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (CardIdTarget cid) -> do
       selectOne (AssetWithCardId cid) >>= traverse_ \aid -> do

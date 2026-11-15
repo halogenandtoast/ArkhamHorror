@@ -480,12 +480,11 @@ handleResolveSearch a@InvestigatorAttrs {..} = do
             playableCards <- for (mapToList targetCards) $ \(zone, cards) -> do
               cards' <- filterM (getIsPlayable who source (UnpaidCost NoAction) windows') cards
               pure (zone, cards')
-            let
-              choices =
-                [ targetLabel (toCardId card) [PayCardCost iid card windows']
-                | (_, cards) <- playableCards
-                , card <- cards
-                ]
+            -- playCardPayingCostMessages, not a bare PayCardCost: the bare message opens
+            -- no PlayCard window, so "when/after you play a card" reactions never see
+            -- this play (#5998)
+            choices <- for [card | (_, cards) <- playableCards, card <- cards] \card ->
+              targetLabel (toCardId card) <$> playCardPayingCostMessages iid card windows'
             push $ chooseN player n $ if null choices then [Label "$label.noCardsFound" []] else choices
           PlayFoundNoCost who n -> do
             let windows' = [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]

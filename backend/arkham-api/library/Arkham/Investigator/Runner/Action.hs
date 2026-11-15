@@ -198,10 +198,15 @@ handlePerformAction a@InvestigatorAttrs {..} iid source action = do
   let actionCards = filter (elem action . actionsToList . cdActions . toCardDef) handCards
   playableCards <- filterM (getIsPlayable iid source (UnpaidCost NoAction) windows') actionCards
   basics <- basicActions
+  -- playCardPayingCostMessages, not a bare PayCardCost: the bare message opens no
+  -- PlayCard window, so "when/after you play a card" reactions never see this play
+  -- (#5998)
+  cardChoices <- for playableCards \item ->
+    targetLabel (toCardId item) <$> playCardPayingCostMessages iid item windows'
   when (notNull actions || notNull playableCards || notNull basics) do
     Lifted.chooseOne iid
       $ map ((\f -> f windows' [] []) . AbilityLabel iid) actions
-      <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- playableCards]
+      <> cardChoices
       <> basics
   pure a
  where

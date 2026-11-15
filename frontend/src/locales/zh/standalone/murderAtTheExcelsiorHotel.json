@@ -15,7 +15,7 @@
     },
     "bloodstainedDagger": {
       "fight": "{'{'}action{'}'}: _战斗_. 你本次攻击得到 +2 {'{'}combat{'}'}.",
-      "fightExhaust": "{'{'}action{'}'}: 消耗染血匕首并受到1点恐惧: _战斗_. 本次攻击中你获得 +2 {'{'}combat{'}'} 和 +1 伤害。 如果本次攻击击败1个敌人，抽取一张牌。"
+      "fightWithDamage": "{'{'}action{'}'}: 消耗染血匕首并受到1点恐惧: _战斗_. 本次攻击中你获得 +2 {'{'}combat{'}'} 和 +1 伤害。 如果本次攻击击败1个敌人，抽取一张牌。"
     },
     "foyer": {
       "resign": "你逃离了犯罪现场。"
@@ -38,12 +38,6 @@
   "remembered": {
     "thePoliceAreOnYourSide": "警方站在你这边",
     "thePoliceDontBelieveYou": "警方不相信你"
-  },
-  "bloodstainedDagger": {
-    "tooltips": {
-      "fight": "{'{'}action{'}'}: _战斗_. 你本次攻击得到 +2 {'{'}combat{'}'}.",
-      "fightWithDamage": "{'{'}action{'}'}: 消耗染血匕首并受到1点恐惧: _战斗_. 本次攻击中你获得 +2 {'{'}combat{'}'} 和 +1 伤害。 如果本次攻击击败1个敌人，抽取一张牌。"
-    }
   },
   "intro": {
     "title": "艾克塞西尔酒店命案",

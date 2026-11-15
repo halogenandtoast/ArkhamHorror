@@ -16,7 +16,7 @@
     },
     "bloodstainedDagger": {
       "fight": "{action}: _전투._ 당신은 이번 공격에서 +2 {combat}을 얻습니다.",
-      "fightExhaust": "{'{'}action{'}'}: ‘피로 물든 단검’을 소진하고 공포를 1 받습니다: _전투._ 당신은 이번 공격에서 +2 {'{'}combat{'}'}을 얻고 +1 피해를 줍니다. 이번 공격으로 적을 쓰러뜨리면, 카드를 1장 뽑습니다."
+      "fightWithDamage": "{'{'}action{'}'}: ‘피로 물든 단검’을 소진하고 공포를 1 받습니다: _전투._ 당신은 이번 공격에서 +2 {'{'}combat{'}'}을 얻고 +1 피해를 줍니다. 이번 공격으로 적을 쓰러뜨리면, 카드를 1장 뽑습니다."
     },
     "foyer": {
       "resign": "당신은 범죄 현장에서 도주합니다."
@@ -56,12 +56,6 @@
   "remembered": {
     "thePoliceAreOnYourSide": "경찰이 당신 편이다.",
     "thePoliceDontBelieveYou": "경찰이 당신을 믿지 않는다."
-  },
-  "bloodstainedDagger": {
-    "tooltips": {
-      "fight": "{action}: _전투._ 당신은 이번 공격에서 +2 {combat}을 얻습니다.",
-      "fightWithDamage": "{'{'}action{'}'}: ‘피로 물든 단검’을 소진하고 공포를 1 받습니다: _전투._ 당신은 이번 공격에서 +2 {'{'}combat{'}'}을 얻고 +1 피해를 줍니다. 이번 공격으로 적을 쓰러뜨리면, 카드를 1장 뽑습니다."
-    }
   },
   "intro": {
     "title": "엑셀시어 호텔 살인사건",

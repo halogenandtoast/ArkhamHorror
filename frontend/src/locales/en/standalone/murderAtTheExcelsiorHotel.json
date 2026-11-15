@@ -16,7 +16,7 @@
     },
     "bloodstainedDagger": {
       "fight": "{'{'}action{'}'}: _Fight_. You get +2 {'{'}combat{'}'} for this attack.",
-      "fightExhaust": "{'{'}action{'}'}: Exhaust Bloodstained Dagger and take 1 horror: _Fight_. You get +2 {'{'}combat{'}'} and deal +1 damage for this attack. If this attack defeats an enemy, draw 1 card."
+      "fightWithDamage": "{'{'}action{'}'}: Exhaust Bloodstained Dagger and take 1 horror: _Fight_. You get +2 {'{'}combat{'}'} and deal +1 damage for this attack. If this attack defeats an enemy, draw 1 card."
     },
     "foyer": {
       "resign": "You flee the scene of the crime."
@@ -56,12 +56,6 @@
   "remembered": {
     "thePoliceAreOnYourSide": "The police are on your side.",
     "thePoliceDontBelieveYou": "The police don't believe you."
-  },
-  "bloodstainedDagger": {
-    "tooltips": {
-      "fight": "{'{'}action{'}'}: _Fight_. You get +2 {'{'}combat{'}'} for this attack.",
-      "fightWithDamage": "{'{'}action{'}'}: Exhaust Bloodstained Dagger and take 1 horror: _Fight_. You get +2 {'{'}combat{'}'} and deal +1 damage for this attack. If this attack defeats an enemy, draw 1 card."
-    }
   },
   "intro": {
     "title": "Murder at the Excelsior Hotel",

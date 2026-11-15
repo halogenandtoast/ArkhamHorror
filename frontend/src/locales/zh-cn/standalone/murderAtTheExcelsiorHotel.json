@@ -16,7 +16,7 @@
     },
     "bloodstainedDagger": {
       "fight": "{'{'}action{'}'}：_攻击。_本次攻击中你获得+2{'{'}combat{'}'}。",
-      "fightExhaust": "{'{'}action{'}'}：横置血迹斑斑的匕首并承受1点恐惧：_攻击。_本次攻击中你获得+2{'{'}combat{'}'}，并造成+1点伤害。若本次攻击击败一名敌人，抽1张卡牌。"
+      "fightWithDamage": "{'{'}action{'}'}：横置血迹斑斑的匕首并承受1点恐惧：_攻击。_本次攻击中你获得+2{'{'}combat{'}'}，并造成+1点伤害。若本次攻击击败一名敌人，抽1张卡牌。"
     },
     "foyer": {
       "resign": "你逃离犯罪现场。"
@@ -56,12 +56,6 @@
   "remembered": {
     "thePoliceAreOnYourSide": "警方站在你这一边。",
     "thePoliceDontBelieveYou": "警方不相信你。"
-  },
-  "bloodstainedDagger": {
-    "tooltips": {
-      "fight": "{'{'}action{'}'}：_攻击。_本次攻击中你获得+2{'{'}combat{'}'}。",
-      "fightWithDamage": "{'{'}action{'}'}：横置血迹斑斑的匕首并承受1点恐惧：_攻击。_本次攻击中你获得+2{'{'}combat{'}'}，并造成+1点伤害。若本次攻击击败一名敌人，抽1张卡牌。"
-    }
   },
   "intro": {
     "title": "艾肖希尔酒店谋杀案",

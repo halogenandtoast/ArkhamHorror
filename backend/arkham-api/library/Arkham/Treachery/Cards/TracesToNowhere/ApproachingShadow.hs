@@ -26,7 +26,8 @@ instance HasAbilities ApproachingShadow where
 instance RunMessage ApproachingShadow where
   runMessage msg t@(ApproachingShadow attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      placeInThreatArea attrs iid
+      whenNone (treacheryInThreatAreaOf iid <> treacheryIs Cards.approachingShadow) do
+        placeInThreatArea attrs iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 (drawnCard -> drawn) _ -> do
       quietCancelCardDraw drawn.card

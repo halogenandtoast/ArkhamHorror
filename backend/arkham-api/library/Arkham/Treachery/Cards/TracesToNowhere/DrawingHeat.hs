@@ -31,7 +31,8 @@ leftLocation ws = listToMaybe [lid | (Window.windowType -> Window.Leaving _ lid)
 instance RunMessage DrawingHeat where
   runMessage msg t@(DrawingHeat attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      placeInThreatArea attrs iid
+      whenNone (treacheryInThreatAreaOf iid <> treacheryIs Cards.drawingHeat) do
+        placeInThreatArea attrs iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 (leftLocation -> Just lid) _ -> do
       enemies <- select $ enemyAt lid <> UnengagedEnemy <> not_ EliteEnemy

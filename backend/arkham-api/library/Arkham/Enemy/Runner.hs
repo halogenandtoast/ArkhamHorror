@@ -690,12 +690,25 @@ instance RunMessage EnemyAttrs where
           -- `EnemyCheckEngagement` and hid the damage, but that check bails on
           -- aloof/massive/exhausted/prey-restricted enemies — an Aloof Disciple
           -- of the Devourer was fought but never engaged. Issue #5432.
-          case a.placement of
-            InThreatArea {} | isJust enemySpawnDetails -> pure a
-            InThreatArea iid' -> do
-              engagedHere <- (== Just lid) <$> getMaybeLocation iid'
-              pure $ if engagedHere then a else a & placementL .~ AtLocation lid
-            _ -> pure $ a & placementL .~ AtLocation lid
+          --
+          -- A spawn engages *before* its `EnemyEntered`, so a forced reaction in
+          -- the engage window can move the enemy while this write is still
+          -- queued: Voices in the Night made a just-spawned Bat Horror attack,
+          -- and Elusive's flight was dragged straight back (#6007). `EnemyMove`
+          -- clears `enemySpawnDetails` and rewrites the destination, so a
+          -- cleared spawn with a destination other than `lid` means exactly
+          -- that. Mirrors `supersededMidMove` in `Do (EnemyMove)`.
+          let supersededMidSpawn =
+                isNothing enemySpawnDetails
+                  && maybe False ((/= ToLocation lid) . moveDestination) enemyMovement
+          if supersededMidSpawn
+            then pure a
+            else case a.placement of
+              InThreatArea {} | isJust enemySpawnDetails -> pure a
+              InThreatArea iid' -> do
+                engagedHere <- (== Just lid) <$> getMaybeLocation iid'
+                pure $ if engagedHere then a else a & placementL .~ AtLocation lid
+              _ -> pure $ a & placementL .~ AtLocation lid
     After (EnemyEntered eid lid) | eid == enemyId -> do
       case enemyPlacement of
         AsSwarm eid' _ -> push $ After (EnemyEntered eid' lid)

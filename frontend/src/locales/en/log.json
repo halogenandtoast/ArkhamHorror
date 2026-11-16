@@ -91,6 +91,22 @@
     "wild": "Wild"
   },
   "isMovedTo": "{investigator} is moved to {location}",
+  "legacy": {
+    "banished": "{card} is \"banished\"",
+    "coin": {
+      "heads": "The coin lands on heads. Treating token as {token}",
+      "tails": "The coin lands on tails. Treating token as {token}"
+    },
+    "devours": "{investigator} devours {card}",
+    "discardDownTo": "{investigator} must discard down to {count} cards",
+    "drew": "{investigator} drew {card}",
+    "forgot": "Forgot:",
+    "interviewed": "Interviewed {name}",
+    "recorded": "Recorded:",
+    "remembered": "Remembered:",
+    "removedAllCopies": "{source} removed all copies of {card} from the game",
+    "reveals": "{investigator} reveals {cards}"
+  },
   "listLast": " and ",
   "listSeparator": ", ",
   "locationRevealed": "{location} is revealed",
@@ -164,8 +180,8 @@
   "testOpensVs": "{investigator} is testing {skill} against {target} ({difficulty})",
   "testRevealed": "Revealed {tokens}",
   "token": {
-    "plus1": "+1",
     "0": "0",
+    "plus1": "+1",
     "minus1": "-1",
     "minus2": "-2",
     "minus3": "-3",

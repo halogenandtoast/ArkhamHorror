@@ -13,6 +13,9 @@ import LogPart from '@/arkham/components/LogPart.vue'
 import { cardArt } from '@/arkham/cardImages'
 import { investigatorClass } from '@/arkham/helpers'
 import { logEntrySize, type LogEntry } from '@/arkham/types/GameLog'
+import { useI18n } from 'vue-i18n'
+import { useDbCardStore } from '@/stores/dbCards'
+import { renderLogPart } from '@/arkham/logTranscript'
 
 const props = defineProps<{
   entry: LogEntry
@@ -130,26 +133,15 @@ const undoStep = computed(() =>
 /* Flat text for the confirmation, which names the line being undone to. The
    parts are already rendered next to it, so this only needs to be recognisable
    -- i18n parts fall back to their key rather than being resolved twice. */
+const { t } = useI18n()
+const dbCards = useDbCardStore()
+
+/* The entry as a sentence, for the undo confirmation: rendered the way the
+ * transcript renders it, so it reads in the player's language with localized
+ * names rather than the English titles the refs carry. */
 function entryLabel(entry: LogEntry): string {
   return entry.body
-    .map((part) => {
-      switch (part.tag) {
-        case 'LogText':
-          return part.contents
-        case 'LogNumber':
-          return String(part.contents)
-        case 'LogDelta':
-          return part.contents >= 0 ? `+${part.contents}` : String(part.contents)
-        case 'LogRefPart':
-          return part.contents.name
-        case 'LogI18n':
-          return Object.values(part.contents[1]).map((v) => entryLabel({ ...entry, body: [v] })).join(' ')
-        case 'LogList':
-          return part.contents.map((v) => entryLabel({ ...entry, body: [v] })).join(', ')
-        default:
-          return ''
-      }
-    })
+    .map((part) => renderLogPart(part, { t, dbCards }))
     .join('')
     .replace(/\s+/g, ' ')
     .trim()

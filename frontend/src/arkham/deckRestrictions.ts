@@ -76,8 +76,9 @@ const scenarioDeckRestrictions: Record<string, DeckRestriction[]> = {
     cardCodes: NON_WEAKNESS_TOME_ASSET_CODES,
     minimum: 4,
     label: 'non-weakness Tome assets',
-    description: "Daisy Walker's deck must include at least 4 non-weakness Tome assets.",
-    error: (count, minimum) => `Daisy Walker's deck must include at least ${minimum} non-weakness Tome assets (${count}/${minimum})`,
+    description: (t) => t('deckRestrictions.daisyTomes.description', { name: investigatorName('Daisy Walker'), minimum: 4 }),
+    error: (count, minimum, t) => t?.('deckRestrictions.daisyTomes.error', { name: investigatorName('Daisy Walker'), count, minimum })
+      ?? `Daisy Walker's deck must include at least ${minimum} non-weakness Tome assets (${count}/${minimum})`,
   })],
   '90094': [requiresAnyParallelContentInvestigator()],
 }
@@ -91,25 +92,34 @@ const campaignDeckRestrictions: Record<string, DeckRestriction[]> = {
   })],
 }
 
+/* An investigator's printed name in the player's language, from the card
+ * database; the English name where it has none. */
+function investigatorName(name: string): string {
+  if ((localStorage.getItem('language') || 'en') === 'en') return name
+  return useDbCardStore().getCardName(name, 'investigator')
+}
+
 function requiredInvestigator(name: string, codes: string[]): RequiredInvestigatorRestriction {
   const investigatorCodes = new Set(codes)
   return {
     name,
     investigatorCodes,
-    description: `This scenario requires ${name}.`,
-    validate: ({ deckList }) => {
-      return investigatorCodes.has(deckInvestigatorCode(deckList)) ? null : `This scenario requires ${name}`
+    description: (t) => t('deckRestrictions.requiresInvestigator', { name: investigatorName(name) }),
+    validate: ({ deckList, t }) => {
+      return investigatorCodes.has(deckInvestigatorCode(deckList))
+        ? null
+        : t?.('deckRestrictions.requiresInvestigator', { name: investigatorName(name) }) ?? `This scenario requires ${name}`
     },
   }
 }
 
 function requiresAnyParallelContentInvestigator(): DeckRestriction {
   return {
-    description: 'At least 1 investigator with parallel content must be chosen.',
-    validate: ({ deckList, chosenInvestigatorCodes }) => {
+    description: (t) => t('deckRestrictions.parallel.description'),
+    validate: ({ deckList, chosenInvestigatorCodes, t }) => {
       const hasChosenParallel = chosenInvestigatorCodes.some(hasParallelContent)
       if (hasChosenParallel || hasParallelContent(deckInvestigatorCode(deckList))) return null
-      return 'Enthralling Encore requires at least 1 investigator with parallel content'
+      return t?.('deckRestrictions.parallel.error') ?? 'Enthralling Encore requires at least 1 investigator with parallel content'
     },
   }
 }
@@ -124,15 +134,15 @@ function minimumCardCount({
   cardCodes: Set<string>
   minimum: number
   label: string
-  description?: string
-  error?: (count: number, minimum: number) => string
+  description?: DeckRestriction['description']
+  error?: (count: number, minimum: number, t?: Translate) => string
 }): DeckRestriction {
   return {
     description,
-    validate: ({ deckList }) => {
+    validate: ({ deckList, t }) => {
       const count = countDeckSlots(deckList, cardCodes)
       if (count >= minimum) return null
-      return error?.(count, minimum) ?? `Deck must include at least ${minimum} ${label} (${count}/${minimum})`
+      return error?.(count, minimum, t) ?? `Deck must include at least ${minimum} ${label} (${count}/${minimum})`
     },
   }
 }

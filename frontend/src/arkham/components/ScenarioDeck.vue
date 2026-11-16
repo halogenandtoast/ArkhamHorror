@@ -134,15 +134,15 @@ const topOfDiscardImage = computed(() => {
 const deckLabel = computed(() => {
   switch(props.deck[0]) {
     case 'CultistDeck':
-      return "Cultists"
+      return 'gameUi.scenarioDeckLabel.cultists'
     case 'LunaticsDeck':
-      return "Lunatics"
+      return 'gameUi.scenarioDeckLabel.lunatics'
     case 'MonstersDeck':
-      return "Monsters"
+      return 'gameUi.scenarioDeckLabel.monsters'
     case 'LeadsDeck':
-      return "Leads"
+      return 'gameUi.scenarioDeckLabel.leads'
     case 'SummitDeck':
-      return "Summit"
+      return 'gameUi.scenarioDeckLabel.summit'
     default:
       return null
   }
@@ -168,7 +168,7 @@ const deckLabel = computed(() => {
           :class="{ 'can-interact': deckAction !== -1 }"
           @click="choose(deckAction)"
         />
-        <span v-if="deckLabel" class="deck-label">{{deckLabel}}</span>
+        <span v-if="deckLabel" class="deck-label">{{ $t(deckLabel) }}</span>
         <span class="deck-size" :class="{ 'abyss-deck-size': deck[0] === 'AbyssDeck' }">{{deck[1].length}}</span>
         <img
           v-if="investigatorPortrait"

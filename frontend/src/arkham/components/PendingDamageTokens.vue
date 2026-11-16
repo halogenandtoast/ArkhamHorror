@@ -37,7 +37,7 @@ const horrorToken = imgsrc('tokens/horror-token.png')
     <div
       v-if="tokens && (tokens.damage > 0 || tokens.horror > 0)"
       class="pending-damage-tokens"
-      v-tooltip="'Tokens to assign'"
+      v-tooltip="$t('gameUi.tokensToAssign')"
     >
       <span v-if="tokens.damage > 0" class="token-entry">
         <img :src="damageToken" class="token" />

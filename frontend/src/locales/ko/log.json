@@ -91,6 +91,22 @@
     "wild": "만능"
   },
   "isMovedTo": "{investigator} → {location}(으)로 옮겨짐",
+  "legacy": {
+    "banished": "{card} “추방됨”",
+    "coin": {
+      "heads": "동전이 앞면으로 떨어짐. 토큰을 {token} 토큰으로 취급",
+      "tails": "동전이 뒷면으로 떨어짐. 토큰을 {token} 토큰으로 취급"
+    },
+    "devours": "{investigator}: {card} 집어삼킴",
+    "discardDownTo": "{investigator}: 손에 카드가 {count}장 남도록 버려야 함",
+    "drew": "{investigator}: {card} 뽑음",
+    "forgot": "잊음:",
+    "interviewed": "대담함: {name}",
+    "recorded": "기록:",
+    "remembered": "기억:",
+    "removedAllCopies": "{source}: {card}의 모든 사본을 게임에서 제거",
+    "reveals": "{investigator}: {cards} 공개"
+  },
   "listLast": " 및 ",
   "locationRevealed": "{location} 공개",
   "movesTo": "{investigator} → {location}(으)로 이동",
@@ -161,6 +177,16 @@
   "testOpensVs": "{investigator}: {target} 상대 {skill} 테스트 ({difficulty})",
   "testRevealed": "{tokens} 공개",
   "token": {
+    "0": "0",
+    "plus1": "+1",
+    "minus1": "-1",
+    "minus2": "-2",
+    "minus3": "-3",
+    "minus4": "-4",
+    "minus5": "-5",
+    "minus6": "-6",
+    "minus7": "-7",
+    "minus8": "-8",
     "skull": "해골",
     "cultist": "추종자",
     "tablet": "석판",
@@ -179,5 +205,8 @@
   "undoToHere": "여기까지 되돌리기",
   "undoToHereConfirm": "이 시점 이후의 모든 것을 되돌릴까요? 게임이 \"{entry}\" 직전으로 돌아갑니다.",
   "undoToHereConfirmPlain": "이 시점 이후의 모든 것을 되돌릴까요?",
-  "usesAbility": "{investigator}: {source} 사용"
+  "usesAbility": "{investigator}: {source} 사용",
+  "listSeparator": ", ",
+  "scenarioBegins": "{scenario}",
+  "rune": "[{rune} 룬]"
 }

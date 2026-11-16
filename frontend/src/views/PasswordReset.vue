@@ -42,7 +42,7 @@ const toast = useToast()
     </section>
   </form>
   <div v-else class="container box">
-    <p>Check your email inbox (and spam folder) for instructions on how to reset your password.</p>
+    <p>{{ $t('deckUi.checkEmailForReset') }}</p>
   </div>
 </template>
 

@@ -120,10 +120,10 @@ const attachmentHeading = (card: Arkham.CardDef) => {
             <td>
               <div class="card-name-cell">
                 <span v-if="overlayEditing" class="overlay-controls">
-                  <button type="button" title="Take one out" @click="emit('overlay-take', card)">−</button>
+                  <button type="button" :title="$t('deckUi.takeOneOut')" @click="emit('overlay-take', card)">−</button>
                   <button
                     type="button"
-                    title="Put one back"
+                    :title="$t('deckUi.putOneBack')"
                     :disabled="overlayRemoved(card) === 0"
                     @click="emit('overlay-restore', card)"
                   >+</button>
@@ -188,7 +188,7 @@ const attachmentHeading = (card: Arkham.CardDef) => {
                     target="_blank"
                     :href="`${localizeArkhamDBBaseUrl()}/card/${entry.card.art}`"
                   >
-                    <span class="attachment-name">{{ cardName(entry.card) }}{{ levelText(entry.card) }} was branded</span>
+                    <span class="attachment-name">{{ $t('deckUi.wasBranded', { name: cardName(entry.card) + levelText(entry.card) }) }}</span>
                     <span v-if="entry.count > 1" class="attachment-count">x {{ entry.count }}</span>
                   </a>
                 </div>

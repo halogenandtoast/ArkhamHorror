@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Dropdown } from 'floating-vue'
 import { type Card, cardImage, toCardContents, asCardCode } from '@/arkham/types/Card'
 import { resolvedSideArt } from '@/arkham/cardImages'
@@ -22,6 +23,7 @@ export type StackIndicatorGroup = {
   }[]
 }
 
+const { t } = useI18n()
 const props = defineProps<{
   label: string
   current: number
@@ -88,7 +90,7 @@ const currentPosition = computed(() => {
 
 const tooltip = computed(() => {
   const base = `${props.label} ${currentPosition.value} / ${pips.value.length}`
-  return expandable.value ? `${base} — click to view deck` : base
+  return expandable.value ? t('gameUi.clickToViewDeck', { base }) : base
 })
 </script>
 

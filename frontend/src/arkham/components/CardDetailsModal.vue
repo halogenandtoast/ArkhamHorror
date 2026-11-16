@@ -2,7 +2,8 @@
 import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { isCustomCardCode } from '@/arkham/customCards'
 import { localizeArkhamDBBaseUrl } from '@/arkham/helpers'
-import { altFrontImage, cardBackImage, cardFrontImage, hasCardBackArt } from '@/arkham/cardArt'
+import { backImageCandidates, cardBackImage, cardFrontImage, frontImageCandidates, hasCardBackArt } from '@/arkham/cardArt'
+import { nextImageCandidate } from '@/arkham/helpers'
 import { cardClassNames, cardCost, cardIcons, cardSetText, cardTitleParts, cardTraits, cardType, levelText } from '@/arkham/cardDetails'
 import type { CardDef } from '@/arkham/types/CardDef'
 import { useUnwatermarked } from '@/arkham/unwatermark'
@@ -22,17 +23,26 @@ const backFailed = ref(false)
 
 watch(frontImage, (src) => { frontSrc.value = src; backFailed.value = false })
 
+/* Localized face, its 'a' side, then the English pair; see frontImageCandidates. */
 function onFrontError() {
-  if (frontSrc.value !== frontImage.value) return
-  const alt = altFrontImage(frontImage.value)
-  if (alt) frontSrc.value = alt
+  const next = nextImageCandidate(frontImageCandidates(frontImage.value), frontSrc.value)
+  if (next) frontSrc.value = next
+}
+
+const backSrc = ref(backImage.value)
+watch(backImage, (src) => { backSrc.value = src })
+
+function onBackError() {
+  const next = backImage.value ? nextImageCandidate(backImageCandidates(backImage.value), backSrc.value ?? '') : null
+  if (next) backSrc.value = next
+  else backFailed.value = true
 }
 
 /* The CDN watermarks card faces; these are the same pictures with the mark
  * taken back off. A reversal that fails falls through to the marked URL, so
  * the alt-art retry above still gets its error. */
 const frontDisplay = useUnwatermarked(frontSrc)
-const backDisplay = useUnwatermarked(backImage)
+const backDisplay = useUnwatermarked(backSrc)
 
 const titleParts = computed(() => cardTitleParts(props.card))
 const title = computed(() => props.unimplemented ? `#${props.card.art}` : titleParts.value.title)
@@ -96,13 +106,14 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
         </div>
 
         <div class="faces">
-          <img class="face" :src="frontDisplay ?? undefined" :alt="title" @error="onFrontError" />
+          <img class="face" :src="frontDisplay ?? undefined" :alt="title" data-fallback-chain @error="onFrontError" />
           <img
             v-if="backDisplay && !backFailed"
             class="face"
             :src="backDisplay"
             :alt="`${title} — ${$t('cardDetails.back')}`"
-            @error="backFailed = true"
+            data-fallback-chain
+            @error="onBackError"
           />
         </div>
 

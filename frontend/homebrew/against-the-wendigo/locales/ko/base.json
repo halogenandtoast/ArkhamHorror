@@ -1,34 +1,61 @@
 {
   "name": "웬디고에 맞서다",
   "about": {
+    "blurb": "캐나다 북서부의 험준한 한니나 계곡을 탐험하며 나델만 박사 탐사대의 실종된 학생들을 찾는, 아컴 호러: 카드 게임의 비공식 시나리오입니다.",
     "sections": [
       {
         "rows": [
-          {},
-          {},
-          {},
           {
+            "role": "가이드 일러스트",
+            "names": "“웬디고”(1쪽): Frank Victoria — frankvictoria-lepicte.blogspot.com; “일몰”(7쪽): Kim Taglia — facebook.com/KATFantasyArts; “웬디고”(9쪽): Thomas Moor"
+          },
+          {
+            "role": "카드 일러스트",
+            "names": "#8, #9: Lino Drieghe — linodriegheart.com; #12, #18, #19, #25: MCrassus Art — mcrassus.com, facebook.com/mcrassusart; #56: Dehn Sora, Blut Aus Nord의 앨범 Memoria Vetusta III (Saturnian Poetry) 커버에서 발췌"
+          },
+          {
+            "role": "프랑스어 원작 시나리오 및 카드 디자인",
+            "names": "Vinn Quest"
+          },
+          {
+            "role": "수정 및 개선",
             "names": "영혼"
           },
-          {},
-          {},
-          {},
-          {}
+          {
+            "role": "교정",
+            "names": "spiriT, Hypotypoz, Metalm23, plaf"
+          },
+          {
+            "role": "테스터",
+            "names": "spiriT, Bboo, Pilunte, illisae, hopebreaker"
+          },
+          {
+            "role": "영어 번역",
+            "names": "Vinn Quest"
+          },
+          {
+            "role": "교정",
+            "names": "Matthew “sonofyogsothoth” Adams, Stephen ‘St. Cretin’ Wohlert"
+          }
         ]
       },
       {
+        "title": "감사의 말",
         "text": [
-          "First of all, I warmly thank Kim Taglia for the two illustrations she made exclusively for this scenario.",
-          "I thank all the artists and rights holders who gave me permission to use their works to illustrate this scenario.",
-          "Thanks to Bewise and Pilunte for their French fan-made scenario, as well as for the work on Strange Eons and the French plug-in for this tool.",
-          "Thanks to Berith for his custom inserts.",
-          "Thanks to Metalm23 for the scenario cover card.",
-          "Thanks to all my proofreaders and testers, who have given a lot of their time to help me improve this scenario.",
-          "Thanks to FFG, Chaosium and Éditions Sans-Détour for offering us such remarkable games in the Lovecraftian mythos.",
-          "A huge thank you to SpiriT for his great ideas, advice and considerable amount of time he spent correcting, improving and testing the scenario. Thanks to you and Bboo for your passion and generosity. Without you, this scenario would never have happened.",
-          "Finally, a special thank you for my proofreaders Matthew and Stephen. Without you guys this scenario would never be available in English."
+          "먼저, 이 시나리오만을 위해 일러스트 두 점을 그려 주신 킴 탈리아 님께 진심으로 감사드립니다.",
+          "이 시나리오에 작품을 사용할 수 있도록 허락해 주신 모든 작가와 저작권자 여러분께 감사드립니다.",
+          "프랑스어 팬메이드 시나리오를 만들어 주시고, 스트레인지 이온스 작업과 이 도구의 프랑스어 플러그인 작업을 해 주신 비와이즈 님과 필룬트 님께 감사드립니다.",
+          "맞춤 보관함을 만들어 주신 베리스 님께 감사드립니다.",
+          "시나리오 표지 카드를 만들어 주신 메탈름23 님께 감사드립니다.",
+          "이 시나리오를 개선할 수 있도록 많은 시간을 내어 주신 모든 교정자와 테스터 여러분께 감사드립니다.",
+          "러브크래프트 신화를 배경으로 이토록 훌륭한 게임을 선사해 준 판타지 플라이트 게임즈, 케이오시엄, 에디시옹 상데투르에 감사드립니다.",
+          "훌륭한 아이디어와 조언을 주시고, 시나리오를 수정하고 개선하고 테스트하는 데 엄청난 시간을 들여 주신 스피릿 님께 큰 감사를 드립니다. 당신과 부 님의 열정과 너그러움에 감사드립니다. 두 분이 없었다면 이 시나리오는 결코 세상에 나오지 못했을 것입니다.",
+          "마지막으로, 교정을 맡아 주신 매튜 님과 스티븐 님께 특별히 감사드립니다. 두 분이 없었다면 이 시나리오는 결코 영어로 나오지 못했을 것입니다."
         ]
       }
+    ],
+    "notes": [
+      "『웬디고에 홀로 맞서다』는 크툴루의 부름 롤플레잉 게임의 모험으로, 케이오시엄(미국)과 에디시옹 상데투르(프랑스어판)의 소유입니다."
     ]
   },
   "key": {
@@ -43,7 +70,29 @@
     "youHaveDiscoveredTheFateOfDrNadelmannsStudents": "나델만 박사 휘하 학생들의 운명을 알아냈다",
     "normanIsAlive": "노먼이 살아있다",
     "youLetNormanDie": "노먼을 죽게 내버려 두었다",
+    "youDefeatedTheWendigo": "웬디고를 쓰러트렸다.",
     "youHaveEnoughEvidenceToClearDrNadelmann": "나델만 박사의 무죄를 입증하기 위한 증거를 수집했다",
     "theWendigoStillRoamsTheNorthHanninahValley": "웬디고가 아직 북 한니나 계곡을 배회하고 있음을 알고 있다"
+  },
+  "actions": {
+    "Navigate": "카누 타기",
+    "WalkAlongTheRiver": "강을 따라 걷기"
+  },
+  "sarceeTerritory": {
+    "spendResources": "자원을 최대 5개까지 소비하여, 그만큼 난이도를 낮춥니다"
+  },
+  "label": {
+    "northHanninah": {
+      "investigate": "‘탐사 일지’를 조종합니다"
+    }
+  },
+  "tooltips": {
+    "northHanninah": {
+      "investigate": "{action}: _조사_. 성공하면, ‘탐사 일지’를 조종합니다."
+    },
+    "sarceeTerritory": {
+      "persuade": "{action}: _교섭_. {intellect} (6)을 테스트합니다. 자원을 최대 5개까지 소비하여, 그만큼 이 테스트의 난이도를 낮출 수 있습니다. 당신은 그저 이말라와 그녀의 남편이 무사하기를 바랄 뿐이라고 그녀를 설득하려 합니다.",
+      "intimidate": "{action}: _교섭_. {combat} (3)을 테스트합니다. 당신은 이말라를 위협하여 남편이 숨어 있는 곳을 털어놓게 하려 합니다. ‘사르시족이 당신을 사냥하고 있다’고 기록합니다."
+    }
   }
 }

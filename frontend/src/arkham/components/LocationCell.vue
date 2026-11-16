@@ -56,7 +56,7 @@ const emit = defineEmits<{
       <div
         v-if="props.abyssIsLocation && props.location.label === 'theAbyss'"
         class="abyss-location-count"
-        v-tooltip="`${props.abyssDeckCount} cards in The Abyss`"
+        v-tooltip="$t('gameUi.cardsInTheAbyss', { count: props.abyssDeckCount })"
       >
         {{ props.abyssDeckCount }}
       </div>

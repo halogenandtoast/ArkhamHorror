@@ -189,7 +189,7 @@ const drownedCityTaskRecommendation = (body: string) => {
         class="button"
         @click="choose(index)"
       >
-        Use <i :class="`icon${choice.skillType}`"></i>
+        {{ $t('gameUi.use') }} <i :class="`icon${choice.skillType}`"></i>
       </a>
 
       <a
@@ -197,7 +197,7 @@ const drownedCityTaskRecommendation = (body: string) => {
         class="button"
         @click="choose(index)"
       >
-        Use <i :class="`icon${choice.skillType}`"></i>: {{ t(choice.label) }}
+        {{ $t('gameUi.use') }} <i :class="`icon${choice.skillType}`"></i>: {{ t(choice.label) }}
       </a>
     </template>
   </div>

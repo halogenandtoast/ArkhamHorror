@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { cardDropInFlight } from '@/arkham/debugCardDrop'
 import { Dropdown } from 'floating-vue'
 import { type Card as ArkhamCard, type CardContents, cardImage, toCardContents } from '@/arkham/types/Card'
@@ -31,7 +32,7 @@ const props = withDefaults(defineProps<{
   allowInPlayAbilities?: boolean
   autoShowWhenOnlyChoice?: boolean
 }>(), {
-  label: 'Cards underneath',
+  label: '',
   placement: 'bottom',
   // Boolean props are cast to `false` when absent, which would make the
   // uncontrolled case indistinguishable from "the parent says stay closed" and
@@ -74,7 +75,9 @@ async function reposition() {
 const count = computed(() => props.cards.length)
 
 watch(count, () => reposition())
-const tooltip = computed(() => `${props.label} (${count.value}) — click to view`)
+const { t } = useI18n()
+const shownLabel = computed(() => props.label || t('gameUi.cardsUnderneath'))
+const tooltip = computed(() => t('gameUi.cardsClickToView', { label: shownLabel.value, count: count.value }))
 const choices = computed(() => props.game && props.playerId ? ArkhamGame.choices(props.game, props.playerId) : [])
 const interactive = computed(() => props.game !== undefined && props.playerId !== undefined)
 
@@ -229,7 +232,7 @@ onBeforeUnmount(() => finishDrag())
           <span class="cards-under-indicator__card cards-under-indicator__card--front" />
         </slot>
       </span>
-      <span v-if="showLabel" class="cards-under-indicator__label">{{ label }}</span>
+      <span v-if="showLabel" class="cards-under-indicator__label">{{ shownLabel }}</span>
       <span class="cards-under-indicator__count">{{ count }}</span>
     </button>
 
@@ -242,7 +245,7 @@ onBeforeUnmount(() => finishDrag())
         @dragleave="onDragLeave"
         @drop="onDrop"
       >
-        <div class="cards-under-popover__header">{{ label }} ({{ count }})</div>
+        <div class="cards-under-popover__header">{{ shownLabel }} ({{ count }})</div>
         <div class="cards-under-popover__cards" @dragstart="hidePopoverWhileDragging">
           <div
             v-for="(card, i) in cards"

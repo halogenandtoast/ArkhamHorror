@@ -63,7 +63,7 @@ watch(() => props.game.id, () => { selected.value = 'chaos' })
       </div>
       <slot v-else />
       <section v-if="active && debug.active" :key="active.id" class="bag-debug">
-        <h3>Debug bag controls</h3>
+        <h3>{{ $t('debugUi.debugBagControls') }}</h3>
         <TokenBagDebug :game-id="game.id" :bag="active.bag" :bag-key="active.bagKey" :story-id="active.storyId" />
       </section>
     </div>

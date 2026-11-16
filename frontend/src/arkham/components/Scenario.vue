@@ -90,8 +90,17 @@ import * as DebugInPlay from '@/arkham/debugInPlay'
 import { useCardStore } from '@/stores/cards'
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
+import { localizedInvestigatorName } from '@/arkham/investigatorName'
 import { IsMobile } from '@/arkham/isMobile';
-const { t } = useI18n();
+const { t, te } = useI18n();
+/* Card-row titles arrive as English labels from the cards that open them
+ * ("Cards Underneath") or as a scenario deck's key ("ExplorationDeck"). */
+const cardRowLabel = (title: string) => {
+  if (title === 'Cards Underneath') return t('gameUi.cardsUnderneath')
+  const deck = `gameUi.scenarioDeck.${title}`
+  return te(deck) ? t(deck) : title
+}
+
 
 // types
 interface RefWrapper<T> {
@@ -1267,8 +1276,8 @@ const scenarioBadges = computed<ScenarioBadge[]>(() => {
     badges.push({
       key: 'foodAndDrinks',
       icon: '🚫🍔',
-      label: 'No food or drinks',
-      detail: `${Math.min(damage, 3)}/3 damage dealt to Subject 8L-08`,
+      label: t('gameUi.realityAcid.noFood'),
+      detail: t('gameUi.realityAcid.noFoodDetail', { damage: Math.min(damage, 3) }),
     })
   }
 
@@ -1276,8 +1285,8 @@ const scenarioBadges = computed<ScenarioBadge[]>(() => {
     badges.push({
       key: 'language',
       icon: '🗣️?',
-      label: 'Gibberish only',
-      detail: 'The concept of language is devoured until the end of the investigation phase.',
+      label: t('gameUi.realityAcid.gibberish'),
+      detail: t('gameUi.realityAcid.gibberishDetail'),
     })
   }
 
@@ -1285,8 +1294,8 @@ const scenarioBadges = computed<ScenarioBadge[]>(() => {
     badges.push({
       key: 'friendships',
       icon: '🤝⃠',
-      label: 'No cross-commits',
-      detail: 'Friendships are devoured until the end of the round.',
+      label: t('gameUi.realityAcid.noCrossCommits'),
+      detail: t('gameUi.realityAcid.noCrossCommitsDetail'),
     })
   }
 
@@ -1294,8 +1303,8 @@ const scenarioBadges = computed<ScenarioBadge[]>(() => {
     badges.push({
       key: 'senseOfTime',
       icon: '🚫⏱️',
-      label: 'No timekeeping',
-      detail: 'Until the agenda advances, investigators cannot use time-keeping devices, ask about the time, or trigger abilities on cards with “time,” “watch,” or “chrono” in their title.',
+      label: t('gameUi.realityAcid.noTimekeeping'),
+      detail: t('gameUi.realityAcid.noTimekeepingDetail'),
     })
   }
 
@@ -1303,8 +1312,8 @@ const scenarioBadges = computed<ScenarioBadge[]>(() => {
     badges.push({
       key: 'discardPile',
       icon: '🗑️🫥',
-      label: 'No discard piles',
-      detail: 'Until the end of the next mythos phase, cards that would be placed in an investigator discard pile are devoured instead.',
+      label: t('gameUi.realityAcid.noDiscardPiles'),
+      detail: t('gameUi.realityAcid.noDiscardPilesDetail'),
     })
   }
 
@@ -1314,8 +1323,8 @@ const scenarioBadges = computed<ScenarioBadge[]>(() => {
     badges.push({
       key: 'voice',
       icon: '🤐',
-      label: names.length === 1 ? `${names[0]} cannot speak` : 'No speaking/noise',
-      detail: names.length > 0 ? names.join(', ') : 'One or more investigators cannot speak or make noise until the end of the round.',
+      label: names.length === 1 ? t('gameUi.realityAcid.cannotSpeak', { name: names[0] }) : t('gameUi.realityAcid.noSpeaking'),
+      detail: names.length > 0 ? names.join(', ') : t('gameUi.realityAcid.noSpeakingDetail'),
     })
   }
 
@@ -1332,8 +1341,8 @@ const hasturSpeaker = computed(() => {
   return investigators.find((i) => i.playerId === props.playerId) ?? investigators[0] ?? null
 })
 const spokenHasturTooltip = computed(() => {
-  const name = hasturSpeaker.value?.name.title ?? 'an investigator'
-  return `Record that ${name} spoke HASTUR aloud and take 1 horror.`
+  const name = hasturSpeaker.value ? localizedInvestigatorName(hasturSpeaker.value.name.title) : t('gameUi.anInvestigator')
+  return t('gameUi.spokeHastur', { name })
 })
 
 /* Dark Matter's Ultimatum of the Unspeakable Oath is an honor rule -- the engine
@@ -1347,8 +1356,8 @@ const speaksTheUnspeakableOath = computed(
 )
 
 const unspeakableOathTooltip = computed(() => {
-  const name = hasturSpeaker.value?.name.title ?? 'an investigator'
-  return `Record that ${name} spoke HASTUR or TASSILDA aloud and take 1 horror.`
+  const name = hasturSpeaker.value ? localizedInvestigatorName(hasturSpeaker.value.name.title) : t('gameUi.anInvestigator')
+  return t('gameUi.spokeHasturOrTassilda', { name })
 })
 
 // Both recorders do the same thing: 1 horror, from the campaign.
@@ -1870,7 +1879,7 @@ const scenarioCardDrop = cardDropHandlers(props.game.id, () => scenarioTarget)
 // Reactive
 const showCards = reactive<RefWrapper<any>>({ ref: noCards })
 const doShowCards = (cards: ComputedRef<Card[]>, title: string, isDiscards: boolean, revealed = false) => {
-  cardRowTitle.value = title
+  cardRowTitle.value = cardRowLabel(title)
   showCards.ref = cards
   viewingDiscard.value = isDiscards
   revealingCards.value = revealed
@@ -2631,7 +2640,7 @@ async function addChaosToken(face: any){
           <aside
             v-if="resolvingCthulhuDeckStory && resolvingCthulhuDeckStoryImage"
             class="resolving-cthulhu-card"
-            aria-label="Cthulhu deck card currently resolving"
+            :aria-label="$t('gameUi.cthulhuDeckResolving')"
           >
             <img
               class="card"
@@ -2887,28 +2896,28 @@ async function addChaosToken(face: any){
                 v-if="signOfTheGods"
                 class="signOfTheGods"
                 type="resource"
-                tooltip="Sign of the Gods"
+                :tooltip="$t('gameUi.signOfTheGods')"
                 :amount="signOfTheGods"
               />
               <PoolItem
                 v-if="cthulhuRage"
                 class="cthulhuRage"
                 type="resource"
-                tooltip="Cthulhu's Rage"
+                :tooltip="$t('gameUi.cthulhuRage')"
                 :amount="cthulhuRage"
               />
               <PoolItem
                 v-if="distortion"
                 class="distortion"
                 type="damage"
-                tooltip="Distortion"
+                :tooltip="$t('gameUi.distortion')"
                 :amount="distortion"
               />
               <PoolItem
                 v-if="spiritualDisturbance"
                 class="spiritualDisturbance"
                 type="horror"
-                tooltip="Spiritual Disturbance"
+                :tooltip="$t('gameUi.spiritualDisturbance')"
                 :amount="spiritualDisturbance"
               />
               <div class="pool" v-if="hasPool">
@@ -2963,12 +2972,12 @@ async function addChaosToken(face: any){
             <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
           </div>
           <label v-if="debug.active" class="debug-difficulty">
-            <span>Difficulty</span>
+            <span>{{ $t('debugUi.difficulty') }}</span>
             <select :value="displayedScenarioDifficulty" @change="changeScenarioDifficulty">
-              <option value="Easy">Easy</option>
-              <option value="Standard">Standard</option>
-              <option value="Hard">Hard</option>
-              <option value="Expert">Expert</option>
+              <option value="Easy">{{ $t('adminStats.difficulty.Easy') }}</option>
+              <option value="Standard">{{ $t('adminStats.difficulty.Standard') }}</option>
+              <option value="Hard">{{ $t('adminStats.difficulty.Hard') }}</option>
+              <option value="Expert">{{ $t('adminStats.difficulty.Expert') }}</option>
             </select>
           </label>
           <button
@@ -2977,7 +2986,7 @@ async function addChaosToken(face: any){
             class="scenario-debug-toggle"
             @click="showScenarioDebugOptions = true"
           >
-            Debug
+            {{ $t('debugUi.debug') }}
           </button>
           <CardsUnderIndicator
             v-if="cardsUnderScenarioReference.length > 0"
@@ -3023,7 +3032,7 @@ async function addChaosToken(face: any){
         >
         </SkillTest>
 
-        <div v-if="showScenarioNotifierBar" class="scenario-badges" aria-label="Scenario reminders">
+        <div v-if="showScenarioNotifierBar" class="scenario-badges" :aria-label="$t('gameUi.scenarioReminders')">
           <div
             v-for="badge in scenarioBadges"
             :key="badge.key"
@@ -3042,14 +3051,14 @@ async function addChaosToken(face: any){
             type="button"
             class="scenario-badge rain-switch"
             :class="{ 'rain-switch--on': rainEnabled }"
-            :title="rainEnabled ? 'Stop the rain' : 'Let it rain'"
+            :title="rainEnabled ? $t('gameUi.stopRain') : $t('gameUi.letItRain')"
             @click="rainEnabled = !rainEnabled"
           >
             <span class="rain-switch-track" aria-hidden="true">
               <span class="rain-switch-knob"></span>
             </span>
             <span class="scenario-badge-text rain-switch-label">
-              <strong>{{ rainEnabled ? 'Rain on' : 'Rain off' }}</strong>
+              <strong>{{ rainEnabled ? $t('gameUi.rainOn') : $t('gameUi.rainOff') }}</strong>
             </span>
           </button>
           <span
@@ -3062,7 +3071,7 @@ async function addChaosToken(face: any){
               <span class="reality-acid-light-switch-knob"></span>
             </span>
             <span class="scenario-badge-text reality-acid-light-switch-label">
-              <strong>{{ realityAcidLightActive ? 'Lights off' : 'Lights on' }}</strong>
+              <strong>{{ realityAcidLightActive ? $t('gameUi.lightsOff') : $t('gameUi.lightsOn') }}</strong>
             </span>
           </span>
           <Teleport to="body">
@@ -3077,14 +3086,14 @@ async function addChaosToken(face: any){
                 width: `${realityAcidLightRect.width}px`,
                 height: `${realityAcidLightRect.height}px`,
               }"
-              :title="realityAcidLightActive ? 'Turn the lights back on' : 'Turn the lights off'"
+              :title="realityAcidLightActive ? $t('gameUi.lightsBackOn') : $t('gameUi.turnLightsOff')"
               @click="$emit('toggleRealityAcidLight')"
             >
               <span class="reality-acid-light-switch-track" aria-hidden="true">
                 <span class="reality-acid-light-switch-knob"></span>
               </span>
               <span class="scenario-badge-text reality-acid-light-switch-label">
-                <strong>{{ realityAcidLightActive ? 'Lights off' : 'Lights on' }}</strong>
+                <strong>{{ realityAcidLightActive ? $t('gameUi.lightsOff') : $t('gameUi.lightsOn') }}</strong>
               </span>
             </button>
           </Teleport>
@@ -3134,7 +3143,7 @@ async function addChaosToken(face: any){
             class="zoom-btn"
             :class="{ 'zoom-btn--active': locationsUnlocked }"
             @click.stop="toggleLocationsUnlocked"
-            v-tooltip="locationsUnlocked ? 'Lock locations' : 'Unlock locations to drag'"
+            v-tooltip="locationsUnlocked ? $t('gameUi.lockLocations') : $t('gameUi.unlockLocations')"
           >
             <LockOpenIcon v-if="locationsUnlocked" class="zoom-btn__icon" />
             <LockClosedIcon v-else class="zoom-btn__icon" />
@@ -3143,7 +3152,7 @@ async function addChaosToken(face: any){
             v-if="hasAnyOffset"
             class="zoom-btn"
             @click.stop="resetLocationsLayout"
-            v-tooltip="'Reset location positions'"
+            v-tooltip="$t('gameUi.resetLocations')"
           >
             <ArrowUturnLeftIcon class="zoom-btn__icon" />
           </button>
@@ -3151,7 +3160,7 @@ async function addChaosToken(face: any){
             class="zoom-btn"
             :class="{ 'zoom-btn--active': locationsFullscreen }"
             @click.stop="locationsFullscreen = !locationsFullscreen"
-            v-tooltip="locationsFullscreen ? 'Exit fullscreen locations (Esc)' : 'Expand locations to full screen'"
+            v-tooltip="locationsFullscreen ? $t('gameUi.exitFullscreenLocations') : $t('gameUi.fullscreenLocations')"
           >
             <ArrowsPointingInIcon v-if="locationsFullscreen" class="zoom-btn__icon" />
             <ArrowsPointingOutIcon v-else class="zoom-btn__icon" />
@@ -3330,7 +3339,7 @@ async function addChaosToken(face: any){
               class="zoom-btn"
               :class="{ 'zoom-btn--active': locationsUnlocked }"
               @click.stop="toggleLocationsUnlocked"
-              v-tooltip="locationsUnlocked ? 'Lock locations' : 'Unlock locations to drag'"
+              v-tooltip="locationsUnlocked ? $t('gameUi.lockLocations') : $t('gameUi.unlockLocations')"
             >
               <LockOpenIcon v-if="locationsUnlocked" class="zoom-btn__icon" />
               <LockClosedIcon v-else class="zoom-btn__icon" />
@@ -3339,7 +3348,7 @@ async function addChaosToken(face: any){
               v-if="hasAnyOffset"
               class="zoom-btn"
               @click.stop="resetLocationsLayout"
-              v-tooltip="'Reset location positions'"
+              v-tooltip="$t('gameUi.resetLocations')"
             >
               <ArrowUturnLeftIcon class="zoom-btn__icon" />
             </button>
@@ -3347,7 +3356,7 @@ async function addChaosToken(face: any){
               class="zoom-btn"
               :class="{ 'zoom-btn--active': locationsFullscreen }"
               @click.stop="locationsFullscreen = !locationsFullscreen"
-              v-tooltip="locationsFullscreen ? 'Exit fullscreen locations (Esc)' : 'Expand locations to full screen'"
+              v-tooltip="locationsFullscreen ? $t('gameUi.exitFullscreenLocations') : $t('gameUi.fullscreenLocations')"
             >
               <ArrowsPointingInIcon v-if="locationsFullscreen" class="zoom-btn__icon" />
               <ArrowsPointingOutIcon v-else class="zoom-btn__icon" />
@@ -3355,8 +3364,8 @@ async function addChaosToken(face: any){
           </div>
         </PlayerTabs>
         <div id="totals">
-          <PoolItem type="doom" :amount="game.totalDoom" tooltip="Total Doom" />
-          <PoolItem type="clue" :amount="game.totalClues" tooltip="Total Spendable Clues" />
+          <PoolItem type="doom" :amount="game.totalDoom" :tooltip="$t('gameUi.totalDoom')" />
+          <PoolItem type="clue" :amount="game.totalClues" :tooltip="$t('gameUi.totalClues')" />
           <hr v-if="hasBagTotals" class="totals-rule" />
           <PoolItem v-if="blessTokens > 0" type="chaos-tokens/ct-bless" :amount="blessTokens" />
           <PoolItem v-if="curseTokens > 0" type="chaos-tokens/ct-curse" :amount="curseTokens" />

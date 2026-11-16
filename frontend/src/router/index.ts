@@ -4,6 +4,7 @@ import { getToken } from '@/authToken'
 import { reloadIfStaleChunk } from '@/chunkRecovery'
 import baseRoutes from '@/routes';
 import arkhamRoutes from '@/arkham/routes';
+import { localizeTitle } from '@/locales/i18n'
 
 const routes: Array<RouteRecordRaw> = [
   ...baseRoutes,
@@ -30,13 +31,13 @@ router.beforeEach(async (to) => {
   if (flagged('requiresAuth')) {
     if (getToken() === null) return { path: '/sign-in', query: { nextUrl: to.fullPath } }
     if (flagged('requiresAdmin') && !store.isAdmin) return { path: '/' }
-    document.title = `${to.meta.title}`
+    document.title = localizeTitle(`${to.meta.title}`)
     return
   }
 
   if (flagged('guest')) {
     if (getToken() !== null) return { path: '/' }
-    document.title = `${to.meta.title}`
+    document.title = localizeTitle(`${to.meta.title}`)
   }
 });
 

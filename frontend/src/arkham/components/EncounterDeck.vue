@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import Draggable from '@/components/Draggable.vue'
 import { useEscape } from '@/composable/escape'
 import { Game } from '@/arkham/types/Game'
@@ -22,6 +23,7 @@ export interface Props {
   spectral?: number
 }
 
+const { t } = useI18n()
 const isSpectral = computed(() => props.spectral !== undefined && props.spectral !== null)
 const deckKey = computed(() => {
   if (isSpectral.value) return "SpectralEncounterDeck"
@@ -244,7 +246,7 @@ async function openDebugAddCard() {
       )
     } catch (error) {
       console.error(error)
-      debugAddCardError.value = 'Unable to load encounter cards.'
+      debugAddCardError.value = t('debugUi.unableToLoadEncounterCards')
     } finally {
       debugAddCardLoading.value = false
     }
@@ -265,7 +267,7 @@ async function debugAddCardToDeck(card: CardDef) {
     showDebugAddCard.value = false
   } catch (error) {
     console.error(error)
-    debugAddCardError.value = `Unable to add ${fullName(card.name)} to the encounter deck.`
+    debugAddCardError.value = t('debugUi.unableToAddToEncounterDeck', { name: fullName(card.name) })
   }
 }
 
@@ -276,7 +278,7 @@ async function debugAddCardToDeck(card: CardDef) {
     <template v-if="debug.active">
       <button class="debug-open" @click="debuggingDeck = true">{{ $t('enemy.debug') }}</button>
       <Draggable v-if="debuggingDeck">
-        <template #handle><h2>{{ isSpectral ? 'Spectral encounter deck' : 'Encounter deck' }}</h2></template>
+        <template #handle><h2>{{ isSpectral ? $t('gameUi.spectralEncounterDeck') : $t('gameUi.encounterDeck') }}</h2></template>
         <div class="debug-modal debug-window deck-debug">
           <p class="deck-debug__size">{{ $t('debug.deck.size', { count: encounterDeckSize }) }}</p>
           <section class="deck-debug__section">
@@ -299,7 +301,7 @@ async function debugAddCardToDeck(card: CardDef) {
             </div>
           </section>
           <section class="deck-debug__section">
-            <button type="button" @click="debuggingDeck = false; openDebugAddCard()">+ Card to deck</button>
+            <button type="button" @click="debuggingDeck = false; openDebugAddCard()">{{ $t('debugUi.cardToDeck') }}</button>
           </section>
           <button class="debug-close" @click="debuggingDeck = false">{{ $t('debug.common.close') }}</button>
         </div>
@@ -313,22 +315,21 @@ async function debugAddCardToDeck(card: CardDef) {
         @click.self="showDebugAddCard = false"
       >
         <div class="debug-add-card-modal">
-          <h3>Shuffle an encounter card into the {{ isSpectral ? 'spectral ' : '' }}encounter deck</h3>
+          <h3>{{ isSpectral ? $t('debugUi.shuffleIntoSpectralDeck') : $t('debugUi.shuffleIntoEncounterDeck') }}</h3>
           <p class="debug-add-card-warning">
-            Cards from outside the scenario's own encounter sets can reference locations,
-            enemies, or campaign state that this scenario never set up, and may break the game.
+            {{ $t('debugUi.outsideSetsWarning') }}
           </p>
           <label>
-            Search card
+            {{ $t('debugUi.searchCard') }}
             <input
               v-model="debugCardSearch"
               type="search"
               autofocus
-              placeholder="Name, code, type, encounter set, or trait"
+              :placeholder="$t('debugUi.encounterCardPlaceholder')"
               @keydown.stop
             />
           </label>
-          <p v-if="debugAddCardLoading" class="debug-add-card-status">Loading encounter cards…</p>
+          <p v-if="debugAddCardLoading" class="debug-add-card-status">{{ $t('debugUi.loadingEncounterCards') }}</p>
           <p v-if="debugAddCardError" class="debug-add-card-error">{{ debugAddCardError }}</p>
           <div v-else class="debug-add-card-results">
             <button
@@ -340,7 +341,7 @@ async function debugAddCardToDeck(card: CardDef) {
             >
               <span>
                 {{ debugCardLabel(card) }}
-                <em v-if="isOutsideScenarioSets(card)" class="debug-add-card-foreign">not in this scenario</em>
+                <em v-if="isOutsideScenarioSets(card)" class="debug-add-card-foreign">{{ $t('debugUi.notInThisScenario') }}</em>
               </span>
               <small>{{ card.cardType }} · {{ card.encounterSet }}</small>
             </button>

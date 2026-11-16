@@ -10,7 +10,7 @@ import {
   onUnmounted,
   type VNodeRef,
 } from 'vue'
-import { cardImg, formatContent, imgsrc, isLocalized, toCamelCase } from '@/arkham/helpers'
+import { cardImg, formatContent, imgsrc, isLocalized, toCamelCase, withoutLanguageRoot } from '@/arkham/helpers'
 import { useUnwatermarked, warmCards } from '@/arkham/unwatermark'
 import { homebrewTokenMap } from '@/arkham/homebrewAssets'
 import { originalArt } from '@/arkham/artVariants'
@@ -43,12 +43,28 @@ const imgARCache = reactive(new Map<string, number>())
  * board. Nothing can be magnified that did not load, so remember the failure
  * and show no overlay at all. */
 const imgBroken = reactive(new Set<string>())
+/* A localized face the host does not have is magnified as the English one at
+ * the same path; only when that fails too is nothing shown. */
+const imgRedirect = reactive(new Map<string, string>())
+const resolveRedirect = (url: string) => {
+  let target = url
+  for (let hops = 0; hops < 4 && imgRedirect.has(target); hops++) target = imgRedirect.get(target)!
+  return target
+}
 const loadAR = (url: string) => {
-  if (!url || imgARCache.has(url) || imgBroken.has(url)) return
+  if (!url || imgARCache.has(url) || imgBroken.has(url) || imgRedirect.has(url)) return
   const i = new Image()
   i.decoding = 'async'
   i.onload = () => imgARCache.set(url, i.naturalWidth / i.naturalHeight)
-  i.onerror = () => imgBroken.add(url)
+  i.onerror = () => {
+    const english = withoutLanguageRoot(url)
+    if (english !== url) {
+      imgRedirect.set(url, english)
+      loadAR(english)
+    } else {
+      imgBroken.add(url)
+    }
+  }
   i.src = url
 }
 
@@ -455,7 +471,8 @@ onUnmounted(() => { hoveredObserver?.disconnect(); hoveredObserver = null })
 
 const card = computed<string | null>(() => {
   void hoveredVersion.value
-  const src = hoveredElement.value ? getImage(hoveredElement.value) : null
+  const raw = hoveredElement.value ? getImage(hoveredElement.value) : null
+  const src = raw ? resolveRedirect(raw) : null
   // Every part of the overlay hangs off this, so a URL known to 404 turns the
   // whole magnifier off rather than framing a broken image. See `imgBroken`.
   return src && imgBroken.has(src) ? null : src

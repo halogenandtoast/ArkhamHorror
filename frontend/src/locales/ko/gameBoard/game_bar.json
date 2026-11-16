@@ -49,7 +49,7 @@
     "scopeEverywhere": "모든 곳",
     "scopeThisGame": "이 게임",
     "scope": {
-      "you": "네놈은",
+      "you": "나",
       "browser": "이 브라우저",
       "game": "이 게임",
       "everyone": "모두"
@@ -58,9 +58,10 @@
     "hideInertCardsTitle": "지속 효과가 없는 카드 숨기기",
     "hideInertCards": "게임 준비가 끝나면, 덱 구성이나 게임 준비 때만 적용되는 영속 카드(‘깊이 휘말리다’, ‘적응력’, ‘자애로운 눈길’ 등)를 플레이 영역 옆에 쌓아 둡니다.",
     "keybindingsTitle": "키보드 단축키",
-    "keybindings": "Tabletop Simulator 방식의 단축키를 사용합니다. 일부는 디버그 모드에서만 작동합니다.",
+    "keybindings": "테이블탑 시뮬레이터 방식의 단축키를 사용합니다. 일부는 디버그 모드에서만 작동합니다.",
     "keybindingProfile": {
-      "default": "기본"
+      "default": "기본",
+      "tts": "테이블탑 시뮬레이터"
     },
     "inlineModalsTitle": "인라인 대화 상자",
     "inlineModals": "대화 상자를 보드 위가 아닌 게임 상단에 표시합니다. 대화 상자 영역을 스크롤할 수 있어 휴대폰에서 더 편합니다.",

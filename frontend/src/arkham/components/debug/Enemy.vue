@@ -217,7 +217,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
           </div>
           <div class="debug-row">
             <select v-model="placeTokenType">
-              <option v-for="token in tokenTypes" :key="token" :value="token">{{ token }}</option>
+              <option v-for="token in tokenTypes" :key="token" :value="token">{{ $te(`token.${token}`) ? $t(`token.${token}`) : token }}</option>
             </select>
             <button
               v-tooltip="$t('debug.enemy.shiftFive')"

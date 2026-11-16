@@ -1,3 +1,18 @@
 {
-  "name": "붉은 죽음의 가면"
+  "name": "붉은 죽음의 가면",
+  "key": {
+    "theRedDeathRavagedArkham": "붉은 죽음이 아컴을 휩쓸었다.",
+    "theRedDeathWasEnded": "붉은 죽음은 종식되었다."
+  },
+  "debauchery": {
+    "label": {
+      "doomOnFurthestCultistEnemy": "당신에게서 가장 멀리 있는 *광신도* 적에 파멸을 1개 놓습니다",
+      "damageOrHorrorAndDoomOnNearestCultistAsset": "피해 또는 공포를 1 받고, 당신에게서 가장 가까운 *광신도* 이야기 자산에 파멸을 1개 놓습니다"
+    }
+  },
+  "chamberToll": {
+    "label": {
+      "doomOnGuest": "이 장소에 있는 *손님* 자산에 파멸을 {count}개 놓습니다"
+    }
+  }
 }

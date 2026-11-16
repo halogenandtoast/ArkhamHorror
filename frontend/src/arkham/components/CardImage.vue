@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useAttrs, inject, onBeforeUnmount, ref, computed, watch, type Ref } from 'vue'
-import { altFrontImage, cardBackImage, cardFrontImage } from '@/arkham/cardArt'
+import { backImageCandidates, cardBackImage, cardFrontImage, frontImageCandidates } from '@/arkham/cardArt'
+import { nextImageCandidate } from '@/arkham/helpers'
 import { isMarked, warmCard } from '@/arkham/unwatermark'
 import { CardDef } from '@/arkham/types/CardDef'
 import { ArrowPathIcon } from '@heroicons/vue/20/solid'
@@ -33,19 +34,29 @@ const backImage = computed(() => cardBackImage(props.card, ignoreVariants))
 // Every card can be turned over, generic backs included; only a back whose art
 // turns out not to exist (an unimplemented placeholder) loses the flip.
 const backMissing = ref(false)
-watch(backImage, () => { backMissing.value = false })
+const backSrc = ref(backImage.value)
+watch(backImage, (src) => { backSrc.value = src; backMissing.value = false })
+
+// A localized back that is missing falls back to the English one; only when
+// that fails too is the back treated as absent.
+function onBackError() {
+  const next = nextImageCandidate(backImageCandidates(backImage.value), backSrc.value)
+  if (next) backSrc.value = next
+  else backMissing.value = true
+}
 
 const flippable = computed(() => !backMissing.value)
 const flipped = computed(() => wantsFlip.value && flippable.value)
 
-// Some cards store their front art as an 'a' side; retry there once.
+// Some cards store their front art as an 'a' side, and a localized face can be
+// missing from the host; walk frontImageCandidates (localized, its 'a' side,
+// then the English pair) one failure at a time.
 const frontSrc = ref(image.value)
 watch(image, (src) => { frontSrc.value = src })
 
 function onFrontError() {
-  if (frontSrc.value !== image.value) return
-  const alt = altFrontImage(image.value)
-  if (alt) frontSrc.value = alt
+  const next = nextImageCandidate(frontImageCandidates(image.value), frontSrc.value)
+  if (next) frontSrc.value = next
 }
 
 // Full-height backs (an act/agenda that flips to an enemy or location) are stored
@@ -74,7 +85,7 @@ function reverse(which: 'front' | 'back') {
    * this when the card itself changes, so it is the right thing to stop on. */
   if (clean.value) return
   ;(which === 'front' ? dropFront : dropBack)?.()
-  const src = which === 'front' ? frontSrc.value : backImage.value
+  const src = which === 'front' ? frontSrc.value : backSrc.value
   if (!src || !isMarked(src)) return
   const stop = warmCard(src, (objectUrl) => { clean.value = objectUrl })
   if (which === 'front') dropFront = stop
@@ -82,7 +93,7 @@ function reverse(which: 'front' | 'back') {
 }
 
 watch(frontSrc, () => { frontClean.value = null })
-watch(backImage, () => { backClean.value = null })
+watch(backSrc, () => { backClean.value = null })
 onBeforeUnmount(() => { dropFront?.(); dropBack?.() })
 
 </script>
@@ -101,6 +112,7 @@ onBeforeUnmount(() => { dropFront?.(); dropBack?.() })
         :src="frontClean ?? frontSrc"
         @load="reverse('front')"
         @error="onFrontError"
+        data-fallback-chain
         v-bind="attrs"
       />
       <button v-if="flippable" @click.prevent.stop="wantsFlip = !wantsFlip"><ArrowPathIcon aria-hidden="true" /></button>
@@ -108,11 +120,12 @@ onBeforeUnmount(() => { dropFront?.(); dropBack?.() })
     <div v-if="flippable" class="back" :class="{flipped}">
       <img
         loading="lazy"
-        :crossorigin="isMarked(backImage) ? 'anonymous' : undefined"
+        :crossorigin="isMarked(backSrc) ? 'anonymous' : undefined"
         :class="['card', 'card-back', { flipped }, attrs.class]"
-        :src="backClean ?? backImage"
+        :src="backClean ?? backSrc"
         @load="($event) => { updateBackOrientation($event); reverse('back') }"
-        @error="backMissing = true"
+        @error="onBackError"
+        data-fallback-chain
         v-bind="attrs"
       />
       <button @click.prevent.stop="wantsFlip = !wantsFlip"><ArrowPathIcon aria-hidden="true" /></button>

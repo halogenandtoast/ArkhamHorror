@@ -16,6 +16,9 @@ import { ArrowUturnLeftIcon } from '@heroicons/vue/20/solid'
 import LogPart from '@/arkham/components/LogPart.vue'
 import GameLogEntry from '@/arkham/components/GameLogEntry.vue'
 import type { LogEntry, LogGroupItem } from '@/arkham/types/GameLog'
+import { useI18n } from 'vue-i18n'
+import { useDbCardStore } from '@/stores/dbCards'
+import { renderLogPart } from '@/arkham/logTranscript'
 
 const props = defineProps<{
   group: LogGroupItem
@@ -62,9 +65,12 @@ function toggle() {
   if (hasDetail.value) emit('toggle', props.path, !open.value)
 }
 
+const { t } = useI18n()
+const dbCards = useDbCardStore()
+
 function bandLabel(): string {
   return bandSentence.value
-    .map((part) => (part.tag === 'LogText' ? part.contents : part.tag === 'LogRefPart' ? part.contents.name : ''))
+    .map((part) => renderLogPart(part, { t, dbCards }))
     .join('')
     .replace(/\s+/g, ' ')
     .trim()

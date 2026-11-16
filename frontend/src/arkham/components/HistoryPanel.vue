@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 import { useStorage } from '@vueuse/core';
 import { useI18n } from 'vue-i18n';
+import { localizedInvestigatorName } from '@/arkham/investigatorName'
 import type { Game } from '@/arkham/types/Game';
 import type { History, SkillTestResult, DefeatedEnemy, PlayedCard } from '@/arkham/types/History';
 import Card from '@/arkham/components/Card.vue';
@@ -119,7 +120,7 @@ function investigatorFor(iid: string) {
 
 function investigatorName(iid: string): string {
   const inv = investigatorFor(iid)
-  return inv ? inv.name.title : iid
+  return inv ? localizedInvestigatorName(inv.name.title) : iid
 }
 
 function investigatorClassKey(iid: string): string {

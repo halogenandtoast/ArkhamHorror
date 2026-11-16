@@ -2,6 +2,7 @@
 import { useDbCardStore } from '@/stores/dbCards'
 import { chaosTokenImage, type ChaosToken } from '@/arkham/types/ChaosToken';
 import { useI18n } from 'vue-i18n';
+import { localizedInvestigatorName } from '@/arkham/investigatorName'
 import { handleEmbeddedI18n, parseInput } from '@/arkham/i18n';
 import { formatCost } from '@/arkham/cost';
 import { abilityNeedsGhostModal } from '@/arkham/ghostAbility';
@@ -170,7 +171,7 @@ const cardOwner = (card: ArkhamCard): string | null => toCardContents(card).owne
 
 function ownerName(owner: string): string {
   const inv = props.game.investigators[owner] ?? props.game.otherInvestigators[owner]
-  return inv?.name.title ?? owner
+  return inv ? localizedInvestigatorName(inv.name.title) : owner
 }
 
 function ownerZoneLabel(owner: string, zone: string): string {
@@ -396,14 +397,14 @@ const focusedCardGroups = computed<SearchedCardGroup[]>(() => {
     return [{
       key: 'focused-summit-deck',
       zone: 'SummitDeck',
-      label: t('cards'),
+      label: t('gameUi.cards'),
       cards: focusedCardsForGroups.value,
     }]
   }
 
   const grouped = new Map<string, ArkhamCard[]>()
   for (const card of focusedCardsForGroups.value) {
-    const label = focusedCardSourceLabel(toCardContents(card).id) ?? t('cards')
+    const label = focusedCardSourceLabel(toCardContents(card).id) ?? t('gameUi.cards')
     grouped.set(label, [...(grouped.get(label) ?? []), card])
   }
 

@@ -193,8 +193,8 @@ const setCount = (key: string) => {
   <div class="scenario-debug-modal-overlay" @click.self="emit('close')">
     <div class="scenario-debug-modal" role="dialog" aria-modal="true" aria-labelledby="scenario-debug-title" @click="openRealityAcidDropdown = null">
       <header class="scenario-debug-modal-header">
-        <h2 id="scenario-debug-title">Scenario Debug</h2>
-        <button type="button" aria-label="Close scenario debug" @click="emit('close')">×</button>
+        <h2 id="scenario-debug-title">{{ $t('debugUi.scenarioDebug') }}</h2>
+        <button type="button" :aria-label="$t('debugUi.closeScenarioDebug')" @click="emit('close')">×</button>
       </header>
       <div class="scenario-debug-options">
         <section v-for="entry in tokenBags" :key="entry.key" class="scenario-debug-section">
@@ -202,7 +202,7 @@ const setCount = (key: string) => {
           <TokenBag :game-id="game.id" :bag-key="entry.key" :bag="entry.bag" />
         </section>
         <section v-if="scenario.id === 'c85001'" class="scenario-debug-section">
-          <span class="scenario-debug-label">Reality Acid tokens</span>
+          <span class="scenario-debug-label">{{ $t('debugUi.realityAcidTokens') }}</span>
           <div class="scenario-debug-row">
             <div class="reality-acid-token-dropdown" @click.stop>
               <button
@@ -254,18 +254,18 @@ const setCount = (key: string) => {
             </div>
           </div>
           <div class="reality-acid-preview">
-            <span class="reality-acid-preview-label">Will devour</span>
+            <span class="reality-acid-preview-label">{{ $t('debugUi.willDevour') }}</span>
             <span>{{ realityAcidPreview }}</span>
           </div>
-          <button type="button" @click="setRealityAcidDebugTokens">Use for next Reality Acid</button>
+          <button type="button" @click="setRealityAcidDebugTokens">{{ $t('debugUi.useForNextRealityAcid') }}</button>
           <button v-if="realityAcidDebugChoice" type="button" @click="clearRealityAcidDebugTokens">
-            Clear (currently {{ realityAcidDebugChoiceLabel }})
+            {{ $t('debugUi.clearCurrently', { value: realityAcidDebugChoiceLabel }) }}
           </button>
         </section>
 
         <section v-if="isDoomOfArkhamPartII" class="scenario-debug-section">
-          <span class="scenario-debug-label">Cthulhu deck</span>
-          <button type="button" @click="drawCthulhuCard">Draw top card</button>
+          <span class="scenario-debug-label">{{ $t('debugUi.cthulhuDeck') }}</span>
+          <button type="button" @click="drawCthulhuCard">{{ $t('debugUi.drawTopCard') }}</button>
         </section>
 
         <section v-if="debugCounts.length > 0" class="scenario-debug-section">
@@ -276,7 +276,7 @@ const setCount = (key: string) => {
             </span>
             <div class="count-editor">
               <input v-model.number="editedCounts[count.key]" type="number" min="0" class="count-input" />
-              <button type="button" class="count-set" :disabled="!countChanged(count.key)" @click="setCount(count.key)">Set</button>
+              <button type="button" class="count-set" :disabled="!countChanged(count.key)" @click="setCount(count.key)">{{ $t('debugUi.set') }}</button>
             </div>
           </div>
         </section>

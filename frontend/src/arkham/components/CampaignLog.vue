@@ -42,6 +42,7 @@ import campaignJSON from '@/arkham/data/campaigns.json'
 import { homebrewCampaigns, homebrewCampaignScope, homebrewStandaloneScenarios } from '@/arkham/homebrewData'
 import { useI18n } from 'vue-i18n'
 import { useDbCardStore } from '@/stores/dbCards'
+import { localizedInvestigatorName } from '@/arkham/investigatorName'
 
 import DiscoveredRunes from '@/arkham/components/TheDrownedCity/DiscoveredRunes.vue'
 import ArtifactsEarned from '@/arkham/components/TheDrownedCity/ArtifactsEarned.vue'
@@ -1183,7 +1184,7 @@ onUnmounted(() => {
             <div class="supplies-content">
               <Supplies v-for="i in investigators" :key="i.id" :player="i">
                 <template #heading>
-                  <h3>{{ i.name.title }}</h3>
+                  <h3>{{ localizedInvestigatorName(i.name.title) }}</h3>
                 </template>
               </Supplies>
             </div>

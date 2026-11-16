@@ -61,15 +61,15 @@ const lastPlayed = computed(() => {
           <span
             v-if="hasOverlay"
             class="overlay-badge"
-            title="Overlay — this deck is laid over with custom cards"
-            aria-label="Overlay"
+            :title="$t('deckUi.overlayBadgeTitle')"
+            :aria-label="$t('deckUi.overlay')"
           >
             <font-awesome-icon icon="layer-group" />
           </span>
           <span class="deck-name">{{ deck.name }}</span>
         </div>
         <div class="deck-badges">
-          <span v-if="tabooList" class="taboo-badge"><font-awesome-icon icon="book" /> Taboo: {{ tabooList }}</span>
+          <span v-if="tabooList" class="taboo-badge"><font-awesome-icon icon="book" /> {{ $t('deckUi.taboo', { list: tabooList }) }}</span>
           <span class="last-played">
             {{ lastPlayed ? $t('deck.lastPlayed', { date: lastPlayed }) : $t('deck.neverPlayed') }}
           </span>

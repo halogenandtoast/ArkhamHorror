@@ -1205,6 +1205,18 @@ data Message
   | RevelationSkipped InvestigatorId Source
   | RevelationChoice InvestigatorId Source Int
   | ResolveRevelation InvestigatorId Card
+  | {- | The drawn player cards whose revelations are parked behind
+    'EndSkillTestWindow' (FAQ 2.25). One of these sits in the queue per skill test
+    and carries its own payload: a later deferral in the same test rewrites it in
+    place rather than queueing a second one, so the collector never has to read the
+    queue back.
+
+    Weakness and encounter cards resolve first (FAQ 2.25), then the drawing
+    investigator orders the /Dilemmas/, each re-checking its own card limits as it
+    resolves so that "Max 2 Dilemma per round" counts the uses the earlier ones
+    recorded.
+    -}
+    ResolveDeferredRevelations [(InvestigatorId, Card)]
   | Run [Message]
   | RemoveFromBearersDeckOrDiscard PlayerCard
   | SetActions InvestigatorId Source Int
@@ -1685,6 +1697,15 @@ pattern AfterSkillTestOption iid t ms = SkillTestMessage (AfterSkillTestOption_ 
 
 pattern EndSkillTestWindow :: Message
 pattern EndSkillTestWindow = SkillTestMessage EndSkillTestWindow_
+
+{- | The one 'ResolveDeferredRevelations' a skill test can have queued. Looked up so
+a second deferral in the same test extends its payload instead of parking a message
+of its own.
+-}
+isDeferredRevelations :: Message -> Bool
+isDeferredRevelations = \case
+  ResolveDeferredRevelations {} -> True
+  _ -> False
 
 pattern ReturnSkillTestRevealedChaosTokens :: Message
 pattern ReturnSkillTestRevealedChaosTokens = SkillTestMessage ReturnSkillTestRevealedChaosTokens_

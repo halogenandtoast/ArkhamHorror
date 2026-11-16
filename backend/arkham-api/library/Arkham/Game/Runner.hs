@@ -69,6 +69,7 @@ import Arkham.GameT (GameT)
 import Arkham.Helpers
 import Arkham.Helpers.Ability (abilityDelaysAdditionalCosts, abilityRidesAlong, isForcedAbility)
 import Arkham.Helpers.Action (getPreventedActions, getPreventedPlayerAbilities)
+import Arkham.Helpers.Card (passesLimits)
 import Arkham.Helpers.ChaosBag (getBagChaosTokens)
 import Arkham.Helpers.Criteria
 import Arkham.Helpers.Customization
@@ -103,6 +104,7 @@ import Arkham.Investigator (
   returnToBody,
  )
 import Arkham.Investigator.Cards qualified as Investigators
+import Arkham.Investigator.Runner.Card (revelationResolution)
 import Arkham.Investigator.Types (Investigator, InvestigatorAttrs (..))
 import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Keyword qualified as Keyword
@@ -155,6 +157,7 @@ import Arkham.Target
 import Arkham.Tarot qualified as Tarot
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
+import Arkham.Trait qualified as Trait
 import Arkham.Treachery
 import Arkham.Treachery.Types (
   Field (..),
@@ -4221,6 +4224,45 @@ runGameMessage msg g = case msg of
             <> show (toCardType card)
             <> ": "
             <> show card
+  {- The deferred block FAQ 2.25 parks behind 'EndSkillTestWindow'.
+
+  Two rules meet here. A weakness or encounter card resolves before a /Dilemma/, so
+  those go first, in draw order, with no choice. The Dilemmas are simultaneous, so the
+  investigator who drew them picks the order -- and that choice matters, because
+  @Max 2 Dilemma per round@ decides which of them resolve at all.
+
+  The limit has to be read HERE, one resolution at a time: 'recordLimit' only fires
+  inside the 'Revelation' handler, so the draw-time 'passesLimits' of every Dilemma
+  deferred out of one test sees zero uses and passes. Re-filtering on each re-entry is
+  what makes the third one stop (#6006); it is left in hand, exactly as an over-limit
+  draw outside a test already is.
+  -}
+  ResolveDeferredRevelations pending -> do
+    let (dilemmas, others) = partition (\(_, c) -> Trait.Dilemma `member` Trait.toTraits c) pending
+    if notNull others
+      then
+        pushAll
+          $ concatMap (uncurry revelationResolution) others
+          <> [ResolveDeferredRevelations dilemmas]
+      else do
+        resolvable <- filterM (uncurry passesLimits) dilemmas
+        case resolvable of
+          [] -> pure ()
+          [(iid, card)] -> pushAll $ revelationResolution iid card
+          xs -> do
+            let askerId = case nub (map fst xs) of
+                  [iid] -> iid
+                  _ -> gameLeadInvestigatorId g
+            player <- getPlayer askerId
+            push
+              $ questionLabel "$label.chooseDilemmaToResolve" player
+              $ ChooseOne
+                [ targetLabel (toCardId card)
+                    $ revelationResolution iid card
+                    <> [ResolveDeferredRevelations (filter ((/= toCardId card) . toCardId . snd) xs)]
+                | (iid, card) <- xs
+                ]
+    pure g
   ResolveRevelation iid card -> do
     getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))
     let

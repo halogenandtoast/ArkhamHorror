@@ -972,16 +972,33 @@ errors when nothing matches.
 Both queue operations are 'lift'ed: these handlers run inside 'runQueueT', whose own
 inbox is empty and only flushes to the front of the real queue afterwards, so an
 unlifted read would never see the sentinel and an unlifted insert would miss it.
+
+What gets parked is one 'ResolveDeferredRevelations' carrying the cards, not the
+resolutions themselves. That indirection is what makes the card limit right:
+@Max 2 Dilemma per round@ is only recorded when a revelation /resolves/ ('recordLimit'
+in @Game.Runner@'s 'Revelation' handler), so the draw-time 'passesLimits' of every
+Dilemma deferred out of one test reads zero uses and passes (#6006). The collector
+re-checks each one at the moment it resolves, and lets the investigator order them.
 -}
 deferDilemmaRevelation
   :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m))
-  => Card -> [Message] -> t m Bool
-deferDilemmaRevelation card msgs = do
+  => InvestigatorId -> Card -> t m Bool
+deferDilemmaRevelation iid card = do
   shouldDefer <-
     if Dilemma `member` toTraits card
       then lift $ fromQueue (elem EndSkillTestWindow)
       else pure False
-  when shouldDefer $ lift $ insertAfterMatching msgs (== EndSkillTestWindow)
+  when shouldDefer $ lift do
+    -- The payload travels IN the queued message, appended in draw order. Parking a
+    -- second message and having the collector gather its siblings back out of the
+    -- queue does not work: the collector's own read comes up empty and each sibling
+    -- is then processed as a no-op, silently dropping that revelation.
+    queued <- fromQueue (any isDeferredRevelations)
+    if queued
+      then replaceMessageMatching isDeferredRevelations \case
+        ResolveDeferredRevelations pending -> [ResolveDeferredRevelations (pending <> [(iid, card)])]
+        other -> [other]
+      else insertAfterMatching [ResolveDeferredRevelations [(iid, card)]] (== EndSkillTestWindow)
   pure shouldDefer
 
 handleDoInvestigatorDrewPlayerCardFrom a@InvestigatorAttrs {..} iid card mdeck = do
@@ -991,7 +1008,7 @@ handleDoInvestigatorDrewPlayerCardFrom a@InvestigatorAttrs {..} iid card mdeck =
   if hasRevelation card && inLimit
     then do
       -- The draw window still fires at its normal time; only the revelation waits.
-      deferred <- deferDilemmaRevelation (toCard card) (revelationResolution iid card)
+      deferred <- deferDilemmaRevelation iid (toCard card)
       if deferred
         then push afterDraw
         else case revelationResolution iid card of
@@ -1164,9 +1181,8 @@ handleDoAddToHand a@InvestigatorAttrs {..} iid cards = do
     inLimit <- passesLimits iid (toCard card)
     if hasRevelation card && inLimit
       then do
-        let resolution = revelationResolution iid card
-        deferred <- deferDilemmaRevelation (toCard card) resolution
-        pure $ if deferred then Nothing else Just resolution
+        deferred <- deferDilemmaRevelation iid (toCard card)
+        pure $ if deferred then Nothing else Just (revelationResolution iid card)
       else
         pure
           $ if toCardType card == PlayerEnemyType

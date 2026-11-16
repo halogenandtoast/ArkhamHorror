@@ -29,6 +29,7 @@
   "chooseAfterSkillTestEffect": "Choose after skill test effect to resolve",
   "chooseAgility": "Choose Agility",
   "chooseCommitOrder": "Multiple committed cards have on-commit effects — choose the order to resolve them",
+  "chooseDilemmaToResolve": "Choose a Dilemma to resolve",
   "chooseCombat": "Choose Combat",
   "chooseCultist": "Choose {'{'}cultist{'}'}",
   "chooseElderThing": "Choose {'{'}elderThing{'}'}",

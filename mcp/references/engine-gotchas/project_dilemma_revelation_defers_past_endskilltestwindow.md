@@ -42,6 +42,34 @@ errors. Both the read and the insert need `lift`; the enclosing `do` must then c
 `(MonadTrans t, HasQueue Message m, HasQueue Message (t m))`. Same hazard as
 [[project_cancelenemydefeat_queue_layer]].
 
+**A deferred revelation's card limit must be read when it RESOLVES, not when it is drawn
+(#6006).** All six Dilemmas print "Max 2 Dilemma per round" and carry
+`MaxPerTraitPerRound Dilemma 2`. `passesLimits` reads that count from `getAllCardUses`
+(`Helpers/Card.hs:297`), and the count is only *written* by `recordLimit` inside
+`Game/Runner.hs`'s `Revelation iid (CardIdSource …)` handler — i.e. when a revelation
+resolves. Both draw sites check the limit *before* deferring, so every Dilemma deferred out
+of one skill test is measured against **zero** uses, all pass, and all resolve: a live
+Return to Innsmouth game resolved **four** in round 16. (The ordinary sequential draw path
+is fine, because each card's revelation resolves before the next card's handler runs; it is
+the deferred block and `handleDoAddToHand`'s up-front batch check that see a stale count.)
+
+So the deferral parks one `ResolveDeferredRevelations [(iid, card)]` after the sentinel, and
+a second deferral in the same test **rewrites that message in place**
+(`replaceMessageMatching`) to append to its payload. The collector then, on each re-entry:
+
+1. resolves any non-Dilemma parked revelation first, no choice — §2.25's first clause;
+2. re-runs `passesLimits` over the remaining Dilemmas, so the cap counts what the previous
+   choice just recorded;
+3. asks the drawing investigator which to resolve (`$label.chooseDilemmaToResolve`), since
+   simultaneous effects are the active investigator's to order — and with a cap of 2 that
+   choice decides which Dilemmas resolve at all;
+4. carries the rest forward in the message, never back into the queue.
+
+An over-limit Dilemma simply does nothing and stays in hand, matching what an over-limit
+draw outside a test already did. Note this also fixed the order: the old
+`insertAfterMatching … (== EndSkillTestWindow)` put each new deferral *first*, so they
+resolved in reverse draw order.
+
 Keep `Revelation` and `ResolvedCard` together when deferring: `ResolvedCard`
 (`Game/Runner.hs:4056`) does the surge check, clears `resolvingCard`/`activeCard`, pops the
 `cardPlayStack` log block and ends `EffectCardResolutionWindow` (`Effect/Runner.hs:157`).

@@ -1097,11 +1097,6 @@
       "moveToConnecting": "...移动到一个连接地点",
       "discoverClueAtTheirLocation": "...发现其所在地点的1个线索"
     },
-    "teachingsOfTheOrder": {
-      "defeatANon_elite_EnemyAtYourLocation": "击败一个你所在地点的非_精英_敌人",
-      "removeAFlood": "移除一个非_圣堂_地点的淹没标记",
-      "removeAllCurseTokensFromTheChaosBag": "从混乱袋中移除所有{'{'}curse{'}'}标记"
-    },
     "terribleSecret": {
       "keepRemainingCards": "保留剩余卡牌"
     },

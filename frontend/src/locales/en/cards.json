@@ -1184,11 +1184,6 @@
       "moveToConnecting": "...move to a connecting location.",
       "discoverClueAtTheirLocation": "...discover 1 clue at their location"
     },
-    "teachingsOfTheOrder": {
-      "defeatANon_elite_EnemyAtYourLocation": "Defeat a non-_Elite_ enemy at your location.",
-      "removeAFlood": "Remove a flood token from a non-_Sanctum_ location.",
-      "removeAllCurseTokensFromTheChaosBag": "Remove all {'{'}curse{'}'} tokens from the chaos bag."
-    },
     "terribleSecret": {
       "keepRemainingCards": "Keep Remaining Cards"
     },

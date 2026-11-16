@@ -1184,11 +1184,6 @@
       "moveToConnecting": "...이어진 장소로 이동합니다.",
       "discoverClueAtTheirLocation": "...자신이 위치한 장소에서 단서 1개를 발견합니다"
     },
-    "teachingsOfTheOrder": {
-      "defeatANon_elite_EnemyAtYourLocation": "당신이 위치한 장소에 있는 _정예_가 아닌 적 하나를 쓰러뜨립니다.",
-      "removeAFlood": "_성역_이 아닌 장소에서 침수 토큰 1개를 제거합니다.",
-      "removeAllCurseTokensFromTheChaosBag": "혼돈 주머니에서 {'{'}curse{'}'} 토큰을 모두 제거합니다."
-    },
     "terribleSecret": {
       "keepRemainingCards": "남은 카드 유지"
     },

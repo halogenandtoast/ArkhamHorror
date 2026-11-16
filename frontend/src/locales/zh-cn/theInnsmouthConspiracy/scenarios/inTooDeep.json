@@ -17,7 +17,7 @@
     "removeElderThing": "移除{'{'}elderThing{'}'}",
     "teachingsOfTheOrder": {
       "removeAllCurseTokensFromTheChaosBag": "从混乱袋中移除所有{'{'}curse{'}'}标记。",
-      "removeAFloodTokenFromANon_sanctum_Location": "从一个非_圣所_地点移除洪水标记。",
+      "removeAFlood": "从一个非_圣所_地点移除洪水标记。",
       "defeatANon_elite_EnemyAtYourLocation": "击败你所在地点的一个非_精英_敌人。"
     }
   },
@@ -66,13 +66,6 @@
       "cultist": "-4. 如果你检定失败，移动到你东面的连接地点，忽略所有屏障。",
       "tablet": "-5. 如果你检定失败，选择一个与你所在地点之间没有屏障的连接地点。在该地点与你所在地点之间放置1个屏障。",
       "elderThing": "-X. X为你所在地点和所有连接地点之间的屏障数量的两倍。"
-    }
-  },
-  "teachingsOfTheOrder": {
-    "label": {
-      "removeCurseTokens": "从混乱袋中移除所有{'{'}curse{'}'}标记。",
-      "removeFlood": "从一个非_圣所_地点移除洪水标记。",
-      "defeatEnemy": "击败你所在地点的一个非_精英_敌人。"
     }
   },
   "tooltips": {

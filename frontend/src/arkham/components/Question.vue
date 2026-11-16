@@ -397,14 +397,14 @@ const focusedCardGroups = computed<SearchedCardGroup[]>(() => {
     return [{
       key: 'focused-summit-deck',
       zone: 'SummitDeck',
-      label: t('cards'),
+      label: t('gameUi.cards'),
       cards: focusedCardsForGroups.value,
     }]
   }
 
   const grouped = new Map<string, ArkhamCard[]>()
   for (const card of focusedCardsForGroups.value) {
-    const label = focusedCardSourceLabel(toCardContents(card).id) ?? t('cards')
+    const label = focusedCardSourceLabel(toCardContents(card).id) ?? t('gameUi.cards')
     grouped.set(label, [...(grouped.get(label) ?? []), card])
   }
 

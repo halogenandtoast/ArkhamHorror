@@ -1,41 +1,181 @@
 {
   "name": "돌아온 인스머스에 드리운 음모",
+  "about": {
+    "sections": [
+      {
+        "rows": [
+          {
+            "role": "디자인 및 개발",
+            "names": "DerBK"
+          },
+          {
+            "role": "그래픽",
+            "names": "Hauke"
+          },
+          {
+            "role": "구분 카드 템플릿",
+            "names": "fabula_rasa"
+          },
+          {
+            "role": "카드 상자 제작 설명서",
+            "names": "Peyo"
+          },
+          {
+            "role": "카드 상자 디자인 템플릿",
+            "names": "RebelSpy"
+          },
+          {
+            "role": "프린트 앤 플레이 지원",
+            "names": "coldtoes"
+          },
+          {
+            "role": "원작 확장 디자인 및 개발",
+            "names": "엠제이 뉴먼, 제러미 즈윈, 조사이아 “듀크” 해리스트"
+          }
+        ]
+      },
+      {
+        "title": "감사의 말",
+        "text": [
+          "지금까지 플레이테스트에 참여하거나 의견을 주신 모든 분께 감사드립니다. 여러분 덕분에 이 세트가 더 좋아질 수 있었습니다. 디스코드, 채팅, 레딧 등에서 의견을 남겨 주신 모든 분께도 마찬가지로 감사드립니다. 끝으로, 스트레인지 이온스와 줍 같은 도구를 만들어 주신 커뮤니티 분들께도 특별한 감사를 전합니다. 그런 도구가 없었다면 이 커스텀 확장을 만드는 것은 불가능했을 것입니다."
+        ]
+      }
+    ],
+    "notes": [
+      "카드 일러스트를 포함한 아컴 호러: 카드 게임의 모든 것은 판타지 플라이트 게임즈에 저작권이 있습니다. 이 프로젝트는 판타지 플라이트 게임즈와 어떠한 방식으로도 제휴하거나 지원을 받지 않습니다."
+    ]
+  },
+  "designer": "DerBK",
   "occultation": {
     "label": {
       "placeDoom": "현재 주요사건에 파멸을 1개 놓습니다"
     }
   },
+  "struggleForAir": {
+    "label": {
+      "doNotDiscard": "자산 버리기 완료"
+    }
+  },
   "returnToThePitOfDespair": {
+    "setup": {
+      "gatherSets": "다음 조우 세트의 카드를 모두 모읍니다. <span class='return-to-swap'>*돌아온 절망의 구렁*</span>, *절망의 구렁*, *심해의 괴물*, *침수 동굴*, <span class='return-to-swap'>*돌아온 침수 동굴*</span>, <span class='return-to-swap'>*넘실대는 파도*</span>, *파편화된 기억*, <span class='return-to-swap'>*크툴루의 추적자*</span>, *쥐떼*. 이 세트들은 다음 아이콘으로 표시됩니다.<section class='encounter-sets'><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/018.png' /><img src='{setImgPath}/grotto-of-despair.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/flooded-caves.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/return-to-flooded-caverns.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/rolling-tide.png' /><img src='{setImgPath}/shattered-memories.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/stalkers-of-cthulhu.png' /><img src='{setImgPath}/rats.png' /></section>참고: 각 ‘조수 동굴’ 장소의 조우 세트 아이콘은 장소의 공개된 면에만 있습니다.",
+      "replacedSets": "*크툴루의 추적자*가 *크툴루의 권속*을, *넘실대는 파도*가 *밀물*을 대체합니다. 대체된 세트는 게임에서 제거합니다.",
+      "replacedCards": "주요목적 1a로 원래 카드 대신 *돌아온 절망의 구렁*의 *구렁*을 사용합니다.",
+      "tidalTunnels": "*침수 동굴*의 ‘조수 웅덩이’, ‘지하 하천’, ‘수중 동굴’을 각각 하나씩 *돌아온 침수 동굴*의 대응 카드로 교체하여, 서로 다른 ‘조수 동굴’ 6장이 남도록 합니다.",
+      "setAsideTroublingMemories": "또한 *뒤숭숭한 기억* 음모 2장을 모두 비플레이 상태로 치워 둡니다."
+    },
     "name": "돌아온 절망의 구렁"
   },
   "troublingMemories": {
     "label": {
       "takeHorror": "공포를 1 받음",
-      "takeDamage": "피해를 1 받습니다"
+      "takeDamage": "피해를 1 받습니다",
+      "discardCard": "손에서 카드 1장을 버립니다",
+      "gainSurge": "‘뒤숭숭한 기억’이 급증을 얻습니다"
     }
   },
   "returnToTheVanishingOfElinaHarper": {
-    "name": "돌아온 엘리나 하퍼의 실종"
+    "setup": {
+      "gatherSets": "다음 조우 세트의 카드를 모두 모읍니다. <span class='return-to-swap'>*돌아온 엘리나 하퍼의 실종*</span>, *엘리나 하퍼의 실종*, *데이곤의 권속*, <span class='return-to-swap'>*인스머스의 연무*</span>, *인스머스 토박이*, *으스스한 한기*, <span class='return-to-swap'>*바리케이드 친 문*</span>, *나이트건트*, *한밤의 가면*. 이 세트들은 다음 아이콘으로 표시됩니다.<section class='encounter-sets'><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/022.png' /><img src='{setImgPath}/disappearance-of-elina-harper.png' /><img src='{setImgPath}/agents-of-dagon.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/innsmouth-haze.png' /><img src='{setImgPath}/locals.png' /><img src='{setImgPath}/chilling-cold.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/barricaded-doors.png' /><img src='{setImgPath}/nightgaunts.png' /><img src='{setImgPath}/midnight-masks.png' /></section>한밤의 가면 조우 세트를 모을 때는 음모 카드 5장(‘수사가 난항에 빠지다’ 2장과 ‘추적해오는 그림자’ 3장)만 모읍니다. 그 조우 세트의 다른 카드는 모으지 않습니다.",
+      "replacedSets": "*인스머스의 연무*가 *인스머스에 드리운 안개*를, *바리케이드 친 문*이 *잠긴 문*을 대체합니다. 대체된 세트는 게임에서 제거합니다.",
+      "replacedCards": "주요목적 1a로 원래 카드 대신 *돌아온 엘리나 하퍼의 실종*의 *하퍼 요원을 찾아서*를 사용합니다.",
+      "hybridLeads": "*“꼬마” 젬마*, *론 스톨윅*, *로더릭* 이야기 자산도 실마리 덱에 섞어 넣습니다.",
+      "setAsideCards": "다음 카드를 각각 비플레이 상태로 치워 둡니다. ‘토머스 도슨’과 ‘엘리나 하퍼’ 이야기 자산, ‘추적해오는 나이트건트’ 적 2장, <span class='return-to-swap'>*실체 없는 자*</span> 적(*인스머스의 연무*가 ‘날개 돋친 괴수’를 대신합니다)."
+    },
+    "name": "돌아온 엘리나 하퍼의 실종",
+    "extraResolution": "결말 1~7 중 하나를 해결하는 동안, 다음도 함께 해결합니다.",
+    "townspeopleInsight": "마을 사람들과의 교류를 통해 이곳에서 무슨 일이 벌어지고 있는지 통찰을 얻었습니다. 각 조사자는 승점 더미에 있는 용의자 적마다 경험치를 1 추가로 얻습니다."
+  },
+  "growingSuspicion": {
+    "label": {
+      "placeClue": "당신의 단서 하나를 가장 가까운 용의자 적에게 놓습니다",
+      "suspectAttacks": "가장 가까운 용의자 적이 당신을 공격합니다",
+      "removeHybrid": "당신이 조종하는 융합체 이야기 자산 하나를 게임에서 제거합니다"
+    }
   },
   "returnToInTooDeep": {
+    "setup": {
+      "gatherSets": "다음 조우 세트의 카드를 모두 모읍니다. <span class='return-to-swap'>*돌아온 너무나 깊은 수렁*</span>, *너무나 깊은 수렁*, *심해의 괴물*, <span class='return-to-swap'>*넘실대는 파도*</span>, <span class='return-to-swap'>*엄폐*</span>, *인스머스 토박이*, <span class='return-to-swap'>*크툴루의 추적자*</span>. 이 세트들은 다음 아이콘으로 표시됩니다.<section class='encounter-sets'><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/028.png' /><img src='{setImgPath}/in-too-deep.png' /><img src='{setImgPath}/undersea-creatures.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/rolling-tide.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/occultation.png' /><img src='{setImgPath}/locals.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/stalkers-of-cthulhu.png' /></section>",
+      "replacedSets": "*크툴루의 추적자*가 *크툴루의 권속*을, *넘실대는 파도*가 *밀물*을, *엄폐*가 *천체 정렬*을 대체합니다. 대체된 세트는 게임에서 제거합니다.",
+      "replacedCards": "주요목적 1a로 원래 카드 대신 *돌아온 너무나 깊은 수렁*의 *미궁같은 마을을 헤치고*를 사용합니다.",
+      "setAsideCards": "다음 카드를 비플레이 상태로 치워 둡니다. ‘심해에서 올라온 파괴자’ 적 2장, <span class='return-to-swap'>*심해인 매복꾼*</span> 적 2장(*크툴루의 추적자*가 ‘어린 심해인’을 대신합니다), ‘조 사전트’ 이야기 자산, ‘밀교회의 교리’ 이야기 자산, ‘인스머스 쇼고스’ 적.",
+      "setAsideInnsmouthInfluence": "또한 *인스머스 영향력* 4장을 모두 비플레이 상태로 치워 둡니다."
+    },
     "name": "돌아온 너무나 깊은 수렁"
   },
   "returnToDevilReef": {
-    "name": "돌아온 악마의 암초"
+    "name": "돌아온 악마의 암초",
+    "setup": {
+      "gatherSets": "다음 조우 세트의 카드를 모두 모읍니다. <span class='return-to-swap'>*돌아온 악마의 암초*</span>, *악마의 암초*, *하이드라의 권속*, *심해의 괴물*, *침수 동굴*, <span class='return-to-swap'>*돌아온 침수 동굴*</span>, *고장*, <span class='return-to-swap'>*넘실대는 파도*</span>. 이 세트들은 다음 아이콘으로 표시됩니다.<section class='encounter-sets'><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/031.png' /><img src='{setImgPath}/devil-reef.png' /><img src='{setImgPath}/agents-of-hydra.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/flooded-caves.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/return-to-flooded-caverns.png' /><img src='{setImgPath}/malfunction.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/rolling-tide.png' /></section>",
+      "replacedSets": "*넘실대는 파도*가 *밀물*을 대체합니다. 대체된 세트는 게임에서 제거합니다.",
+      "replacedCards": "원래 카드 대신 *돌아온 악마의 암초*의 *어선* 이야기 자산을 사용합니다.",
+      "tidalTunnels": "*침수 동굴*과 *돌아온 침수 동굴*을 합치되, ‘조수 웅덩이’, ‘지하 하천’, ‘수중 동굴’을 각각 하나씩 교체하여 서로 다른 ‘조수 동굴’ 6장이 남도록 합니다.",
+      "devilReefLocations": "*동굴 입구*를 악마의 암초 장소 5장과 함께 섞은 다음, 6장 모두 미공개 면이 위로 오도록 플레이 영역에 놓습니다. 어떤 장소도 제거하지 않습니다. 이 장소들은 ‘휘몰아치는 해역’과 인접하게 놓지 않습니다. 이 장소들은 인접 여부가 아니라 연결 기호를 통해 이어집니다."
+    },
+    "aBargain": {
+      "title": "시나리오 막간: 거래",
+      "intro": "_거래 1:_ 당신은 물고기 같은 생김새에 부풀어 오른 형상을 새긴 커다란 석상 앞에 서 있습니다. 당신을 이곳으로 이끈 목소리는 이제 속삭임에 불과하지만, 석상에서 힘이 뿜어져 나오는 것이 느껴지고, 당신은 그것 때문에 이곳에 왔다는 것을 압니다. 바로 이 힘이 당신을 부르고 있습니다. 원하는 모든 재물을, 그리고 그것을 누릴 긴 수명을 가질 수 있다고 속삭이면서.",
+      "body": "석상에 다가가면서, 당신은 치러야 할 대가가 무엇인지 깨닫습니다. 당신은 선택지를 저울질합니다.",
+      "chooseOne": "하나를 선택합니다.",
+      "payThePrice": "당신은 대가를 치릅니다. 당신의 컬렉션에서 (*돌아온 너무나 깊은 수렁* 세트의) ‘인스머스 영향력’ 1장을 찾아 당신의 덱에 추가합니다. ‘하이드라에게 바쳐진 신단’에 있는 단서를 모두 발견하고 자원 5개를 얻습니다.",
+      "backOut": "당신은 정신을 차리고 물러섭니다. 목소리가 잠잠해집니다.",
+      "label": {
+        "payThePrice": "당신은 대가를 치릅니다.",
+        "backOut": "당신은 정신을 차리고 물러섭니다. 목소리가 잠잠해집니다."
+      }
+    }
   },
   "returnToHorrorInHighGear": {
-    "name": "돌아온 공포의 추격전"
+    "name": "돌아온 공포의 추격전",
+    "setup": {
+      "gatherSets": "다음 조우 세트의 카드를 모두 모읍니다. <span class='return-to-swap'>*돌아온 공포의 추격전*</span>, *공포의 추격전*, <span class='return-to-swap'>*인스머스의 연무*</span>, *고장*, *파편화된 기억*, *고대의 악*. 이 세트들은 다음 아이콘으로 표시됩니다.<section class='encounter-sets'><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/035.png' /><img src='{setImgPath}/horror-in-high-gear.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/innsmouth-haze.png' /><img src='{setImgPath}/malfunction.png' /><img src='{setImgPath}/shattered-memories.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
+      "replacedSets": "*인스머스의 연무*가 *인스머스에 드리운 안개*를 대체합니다. 대체된 세트는 게임에서 제거합니다.",
+      "roadDeck": "도로 덱을 만들기 전에, *진흙 길*과 *직선 구간*을 (‘멀고 먼 우회로’가 아닌) 다른 도로 장소들과 함께 섞은 다음, 그중 2장을 보지 않고 무작위로 게임에서 제거합니다.",
+      "endOfRound": "이 시나리오 동안, 다음 기능이 활성화됩니다. _강제_ – 라운드 종료 시: 장소에 부착된 _덫_이 아닌 카드를 모두 버립니다."
+    }
   },
   "returnToALightInTheFog": {
     "name": "돌아온 안개 속 한 줄기 빛",
+    "setup": {
+      "gatherSets": "다음 조우 세트의 카드를 모두 모읍니다. <span class='return-to-swap'>*돌아온 안개 속 한 줄기 빛*</span>, *안개 속 한 줄기 빛*, *심해의 괴물*, *침수 동굴*, <span class='return-to-swap'>*돌아온 침수 동굴*</span>, <span class='return-to-swap'>*넘실대는 파도*</span>, <span class='return-to-swap'>*엄폐*</span>, *엄습하는 공포*. 이 세트들은 다음 아이콘으로 표시됩니다.<section class='encounter-sets'><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/039.png' /><img src='{setImgPath}/a-light-in-the-fog.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/flooded-caves.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/return-to-flooded-caverns.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/rolling-tide.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/occultation.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+      "replacedSets": "*엄폐*가 *천체 정렬*을, *넘실대는 파도*가 *밀물*을 대체합니다. 대체된 세트는 게임에서 제거합니다.",
+      "replacedCards": "주요사건 4a로 원래 카드 대신 *돌아온 안개 속 한 줄기 빛*의 *송골매 곶에 도사린 공포*를 사용합니다.",
+      "tidalTunnels": "*침수 동굴*과 *돌아온 침수 동굴*을 합치되, ‘조수 웅덩이’, ‘지하 하천’, ‘수중 동굴’을 각각 하나씩 교체하여 서로 다른 ‘조수 동굴’ 6장이 남도록 합니다.",
+      "setAsideGrapplers": "또한 *심해인 포박꾼* 적 3장을 모두 비플레이 상태로 치워 두고, *번식을 위해 태어나다* 2장을 모두 조우 덱에 섞어 넣습니다."
+    },
     "changing": {
-      "title": "안개 속 한 줄기 빛"
+      "title": "안개 속 한 줄기 빛",
+      "instructions": "결말 1, 2, 4 중 하나를 해결하는 동안, 모든 심해인 조사자는 다음을 읽어야 합니다.",
+      "body": "<p>당신은 퍼뜩 잠에서 깹니다. 꿈이 아직도 눈앞에 선합니다. 깊은 곳을 헤엄치며, 점점 더 깊이 이끌려 들어가는 꿈. 그 아래에는 당신과 함께인 다른 이들도 있었습니다. 지금까지 거듭 마주쳐 온 뒤틀린 물고기 같은 생물들과 똑같이 생긴 이들이었지요. 그들은 이상하리만치 친숙하게 느껴졌습니다. 마치 좋은 친구들처럼. 혹은 가족처럼.</p><p>당신은 똑바로 일어나 앉아 잠기운을 비벼 떨치려다가, 자신의 손을 보고 흠칫 물러섭니다. 손가락 두 개 사이의 물갈퀴가 당신의 두려움을 확인시켜 줍니다... 상상이 아니었습니다. 당신은 실제로 변하고 있습니다. 이 마을에서 벗어나야 합니다. 그것도 당장.</p>",
+      "trauma": "몸이 겪고 있는 변화를 정신이 감당하려 애쓰면서, 당신은 정신적 트라우마를 1 얻습니다."
     }
   },
   "returnToTheLairOfDagon": {
-    "name": "돌아온 데이곤의 침소"
+    "name": "돌아온 데이곤의 침소",
+    "setup": {
+      "gatherSets": "다음 조우 세트의 카드를 모두 모읍니다. <span class='return-to-swap'>*돌아온 데이곤의 침소*</span>, *데이곤의 침소*, *데이곤의 권속*, *침수 동굴*, <span class='return-to-swap'>*돌아온 침수 동굴*</span>, <span class='return-to-swap'>*엄폐*</span>, *어둠의 사교*, <span class='return-to-swap'>*바리케이드 친 문*</span>. 이 세트들은 다음 아이콘으로 표시됩니다.<section class='encounter-sets'><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/043.png' /><img src='{setImgPath}/lair-of-dagon.png' /><img src='{setImgPath}/agents-of-dagon.png' /><img src='{setImgPath}/flooded-caves.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/return-to-flooded-caverns.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/occultation.png' /><img src='{setImgPath}/dark-cult.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/barricaded-doors.png' /></section>",
+      "replacedSets": "*엄폐*가 *천체 정렬*을, *바리케이드 친 문*이 *잠긴 문*을 대체합니다. 대체된 세트는 게임에서 제거합니다.",
+      "replacedCards": "주요목적 2a로 원래 카드 대신 *돌아온 데이곤의 침소*의 *두 번째 서약*을 사용합니다.",
+      "tidalTunnels": "*침수 동굴*과 *돌아온 침수 동굴*을 합치되, ‘조수 웅덩이’, ‘지하 하천’, ‘수중 동굴’을 각각 하나씩 교체하여 서로 다른 ‘조수 동굴’ 6장이 남도록 합니다.",
+      "doorway": "*깊은 곳으로의 관문* 세 가지 버전을 함께 섞은 다음, 그중 2장을 보지 않고 무작위로 게임에서 제거하고, 남은 1장은 보지 않고 치워 둡니다.",
+      "setAsideStirring": "또한 *잠결에 뒤척이는 그* 1장을 비플레이 상태로 치워 둡니다."
+    }
   },
   "returnToIntoTheMaelstrom": {
-    "name": "돌아온 몰아치는 소용돌이 속으로"
+    "name": "돌아온 몰아치는 소용돌이 속으로",
+    "setup": {
+      "gatherSets": "다음 조우 세트의 카드를 모두 모읍니다. <span class='return-to-swap'>*돌아온 몰아치는 소용돌이 속으로*</span>, *몰아치는 소용돌이 속으로*, *하이드라의 권속*, *심해의 괴물*, *침수 동굴*, <span class='return-to-swap'>*돌아온 침수 동굴*</span>, *파편화된 기억*, <span class='return-to-swap'>*엄폐*</span>, *고대의 악*. 이 세트들은 다음 아이콘으로 표시됩니다.<section class='encounter-sets'><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/048.png' /><img src='{setImgPath}/into-the-maelstrom.png' /><img src='{setImgPath}/agents-of-hydra.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/flooded-caves.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/return-to-flooded-caverns.png' /><img src='{setImgPath}/shattered-memories.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/occultation.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
+      "replacedSets": "*엄폐*가 *천체 정렬*을 대체합니다. 대체된 세트는 게임에서 제거합니다.",
+      "replacedCards": "원래 카드 대신 *돌아온 몰아치는 소용돌이 속으로*의 *수면 아래*와 *정렬된 천체* 주요사건, *다시 해저로* 주요목적을 사용합니다.",
+      "tidalTunnels": "*침수 동굴*과 *돌아온 침수 동굴*을 합치되, ‘조수 웅덩이’, ‘지하 하천’, ‘수중 동굴’을 각각 하나씩 교체하여 서로 다른 ‘조수 동굴’ 6장이 남도록 합니다.",
+      "setAsideCards": "또한 *잠결에 뒤척이는 그들* 2장과 *아버지의 현존*, *어머니의 현존* 각 1장을 비플레이 상태로 치워 둡니다."
+    }
+  },
+  "flashbackXVI": {
+    "title": "회상 XVI",
+    "body": "<div class='blue'><h1>회상 XVI</h1><p>인스머스 마을을 벗어나는 데는 성공했을지 모르지만, 차 안에 앉아 있는 당신은 그 일부를 함께 가져왔다는 것을 깨닫습니다. 영원히. 당신의 몸에는 옛 존재의 영향을 받은 흔적이 있습니다. 분명히. 아까 알아챈 손가락 몇 개 사이의 물갈퀴. 가려운 피부의 반점들. 그리고 특히 한쪽 팔꿈치의 피부는 하루가 다르게 가죽처럼 질겨지는 것만 같습니다.</p><p>이 모든 것이 몹시 불안하지만, 당신의 머릿속에서 일어나는 일에 비하면 아무것도 아닙니다. 당신은 죄책감을 느낍니다. 당신의 후원자들을 배신한 데 대한 죄책감. 새로운 가족에게서, 바닷속 당신의 자리에서 달아난 데 대한 죄책감.</p><p>그러나 가장 기묘한 것은 이따금 당신을 덮치는 기억의 물결입니다. 당신이 있지도 않았던 장소와 사건에 대한 기억이 그럼에도 머릿속에 떠오릅니다. 이 기억은 대개 잠든 사이에 찾아오지만, 이제는 깨어 있을 때도 떠오르기 시작했습니다. 들어 본 적도 없는 존재들의 이름, 가 본 적도 없는 장소들의 이름이 기억납니다.</p><p>이런 통찰의 섬광 가운데, 한 이름이 거듭해서 되풀이됩니다. 르리에. 지금 그것을 생각하는 순간에도, 당신은 소리 없이 그 단어를 입에 올립니다. 르리에. 그것이 무슨 뜻인지는 모르지만, 동시에 그 이름은 당신에게 위안을 줍니다. 르리에. 당신은 인스머스에서 멀어지고 싶었지만, 이것이 더 중요합니다. 르리에. 그곳이 당신이 필요한 곳입니다.</p><hr /><p class='basic'>캠페인 기록지의 “되찾은 기억” 아래에 *가야 할 곳이 기억났다*라고 기록합니다.</p><p class='basic'>후일담 동안, 회상 XV를 읽을 수 있는지 결정할 때 이 기억은 다른 기억 하나를 대신할 수 있습니다(여전히 이 기억을 포함해 14개 이상의 회상을 해금해야 합니다). 이는 심해인 조사자가 심해인이 아닌 조사자와 다른 후일담을 맞이할 수도 있다는 뜻입니다.</p><p class='basic'>_후일담 1_로 이어집니다.</p></div>"
+  },
+  "xp": {
+    "townspeopleInsight": "이곳에서 무슨 일이 벌어지고 있는지에 대한 통찰"
   }
 }

@@ -1,6 +1,6 @@
 // Which art a CardDef shows on each side. Shared by CardImage (one side at a
 // time, with a flip) and CardDetailsModal (both sides at once).
-import { cardImg, imgsrc } from '@/arkham/helpers'
+import { cardImg, imgsrc, withoutLanguageRoot } from '@/arkham/helpers'
 import type { CardDef } from '@/arkham/types/CardDef'
 
 const ENCOUNTER_BACK = 'backs/back_encounter.jpg'
@@ -70,4 +70,18 @@ export function hasCardBackArt(card: CardDef, ignoreVariants = false): boolean {
 export function altFrontImage(src: string): string | null {
   const alt = src.replace(/(\d)\.avif$/, '$1a.avif')
   return alt === src ? null : alt
+}
+
+/* Every URL a card front may be found at, in the order to try them: the
+ * localized art and its 'a' side first, and only once both have failed the
+ * English art at the same path, then its 'a' side. For an English src the
+ * English entries are the same URLs and drop out. */
+export function frontImageCandidates(src: string): (string | null)[] {
+  const english = withoutLanguageRoot(src)
+  return [src, altFrontImage(src), english, altFrontImage(english)]
+}
+
+/* A card back has no 'a' side: the localized art, then the English. */
+export function backImageCandidates(src: string): (string | null)[] {
+  return [src, withoutLanguageRoot(src)]
 }

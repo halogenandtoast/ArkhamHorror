@@ -23,7 +23,7 @@
           </transition>
         </router-view>
         <template #fallback>
-          Loading...
+          {{ $t('deckUi.loading') }}
         </template>
       </Suspense>
     </main>
@@ -39,7 +39,7 @@ import { computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSiteSettingsStore } from '@/stores/site_settings'
 import { maintenanceActive, maintenanceMessage } from '@/maintenance'
-import { checkImageExists } from '@/arkham/helpers'
+import { checkImageExists, installLocalizedImageFallback } from '@/arkham/helpers'
 import { hideAppLoading } from '@/appLoading'
 import { primeWatermark } from '@/arkham/unwatermark'
 import NavBar from '@/components/NavBar.vue'
@@ -69,6 +69,7 @@ onMounted(async () => {
   /* 13KB, needed before any card can be un-watermarked; fetching it now keeps
    * it off the critical path of the first card someone looks at. */
   primeWatermark()
+  installLocalizedImageFallback()
   await settingsStore.init()
   avifSupported.value = await checkAvifSupport();
   await checkImageExists()

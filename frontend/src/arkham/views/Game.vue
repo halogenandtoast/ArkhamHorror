@@ -785,7 +785,19 @@ function clearDrawSpotlight() {
   flightPlaceholders.value = []
 }
 
+/* Card pop-up titles: most are i18n tokens, but a few the engine sends as fixed
+ * English words ("Revelation", "Revealed", an act's flip title). */
+const FIXED_CARD_TITLES: Record<string, string> = {
+  Revelation: 'gameUi.cardTitle.revelation',
+  Revealed: 'gameUi.cardTitle.revealed',
+  'A Mistake': 'gameUi.cardTitle.aMistake',
+  'The Bliss': 'gameUi.cardTitle.theBliss',
+  'The Brilliance': 'gameUi.cardTitle.theBrilliance',
+}
+
 const format = (str: string) => {
+  const fixed = FIXED_CARD_TITLES[str]
+  if (fixed) return t(fixed)
   return handleEmbeddedI18n(str, t)
 }
 

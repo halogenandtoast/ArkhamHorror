@@ -92,7 +92,15 @@ import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { localizedInvestigatorName } from '@/arkham/investigatorName'
 import { IsMobile } from '@/arkham/isMobile';
-const { t } = useI18n();
+const { t, te } = useI18n();
+/* Card-row titles arrive as English labels from the cards that open them
+ * ("Cards Underneath") or as a scenario deck's key ("ExplorationDeck"). */
+const cardRowLabel = (title: string) => {
+  if (title === 'Cards Underneath') return t('gameUi.cardsUnderneath')
+  const deck = `gameUi.scenarioDeck.${title}`
+  return te(deck) ? t(deck) : title
+}
+
 
 // types
 interface RefWrapper<T> {
@@ -1871,7 +1879,7 @@ const scenarioCardDrop = cardDropHandlers(props.game.id, () => scenarioTarget)
 // Reactive
 const showCards = reactive<RefWrapper<any>>({ ref: noCards })
 const doShowCards = (cards: ComputedRef<Card[]>, title: string, isDiscards: boolean, revealed = false) => {
-  cardRowTitle.value = title
+  cardRowTitle.value = cardRowLabel(title)
   showCards.ref = cards
   viewingDiscard.value = isDiscards
   revealingCards.value = revealed
@@ -2964,12 +2972,12 @@ async function addChaosToken(face: any){
             <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
           </div>
           <label v-if="debug.active" class="debug-difficulty">
-            <span>Difficulty</span>
+            <span>{{ $t('debugUi.difficulty') }}</span>
             <select :value="displayedScenarioDifficulty" @change="changeScenarioDifficulty">
-              <option value="Easy">Easy</option>
-              <option value="Standard">Standard</option>
-              <option value="Hard">Hard</option>
-              <option value="Expert">Expert</option>
+              <option value="Easy">{{ $t('adminStats.difficulty.Easy') }}</option>
+              <option value="Standard">{{ $t('adminStats.difficulty.Standard') }}</option>
+              <option value="Hard">{{ $t('adminStats.difficulty.Hard') }}</option>
+              <option value="Expert">{{ $t('adminStats.difficulty.Expert') }}</option>
             </select>
           </label>
           <button
@@ -2978,7 +2986,7 @@ async function addChaosToken(face: any){
             class="scenario-debug-toggle"
             @click="showScenarioDebugOptions = true"
           >
-            Debug
+            {{ $t('debugUi.debug') }}
           </button>
           <CardsUnderIndicator
             v-if="cardsUnderScenarioReference.length > 0"

@@ -1,13 +1,100 @@
 {
+  "difficulty": {
+    "Easy": "즐거운 저녁",
+    "Standard": "시내에서의 하룻밤",
+    "Hard": "기억에 남을 밤",
+    "Expert": "잊고 싶은 밤"
+  },
+  "campaign": {
+    "title": "저녁 기도의 밤"
+  },
   "name": "저녁 기도의 밤",
+  "jinx": "징크스",
+  "about": {
+    "sections": [
+      {
+        "rows": [
+          {
+            "role": "디자인",
+            "names": "Alex // Exhaled Innards (aughhhh)"
+          },
+          {
+            "role": "캠페인 가이드 표지 그림",
+            "names": "Vanessa Lemen"
+          },
+          {
+            "role": "내보내기 배너 그림",
+            "names": "Betty Jiang"
+          }
+        ],
+        "text": [
+          "토머스 드 퀸시의 『심연에서의 탄식』, 다리오 아르젠토의 세 어머니 3부작, 케빈 로스의 『슬픔의 성모들』에서 영감을 받았습니다.",
+          "개발 버전: 캠페인 이야기와 진행은 구현되었지만, 시나리오 보드, 조우 카드, 결말은 아직 개발 중입니다."
+        ]
+      }
+    ]
+  },
   "additionalRules": {
-    "title": "추가 규칙과 규칙 명료화"
+    "title": "추가 규칙과 규칙 명료화",
+    "jinx": {
+      "title": "새로운 키워드: 징크스 & 징크스 걸림",
+      "body": "<ul><li>조사자들은 저녁 기도의 밤 캠페인 내내 <b>징크스</b>와 <b>징크스 걸림</b> 키워드의 형태로 고대 마법의 만연하고 예측할 수 없는 효과와 마주하게 됩니다.</li><li>_징크스 걸림 키워드를 가진 카드가 조사자가 위치한 장소에 있을 때 그 조사자가 전투, 회피, 조사 테스트에 실패하면, 그 장소에 있는 플레이어들은 현재 주요목적 또는 주요사건을 참조하여 굵은 글씨의 <b>징크스</b> 문구에 연결된 강제 효과를 처리해야 합니다._<ul><li>*_예시:_ 신화 단계 동안, _세바스티안 베니테스_가 징크스 걸림 키워드를 가진 채 그의 장소에서 플레이 영역에 들어오는 음모를 뽑습니다. 이어지는 조사 단계 동안, 그는 그 장소에서 조사 행동을 하고 실패합니다. 현재 주요사건에는 “_징크스_ — 라운드 종료 시까지 당신이 위치한 장소의 장막값을 1 증가시킵니다.”라는 문구가 있습니다. 징크스 걸림 키워드를 가진 음모가 그의 장소의 플레이 영역에 있는 동안 세바스티안이 조사 테스트에 실패했으므로, 라운드 종료 시까지 그가 위치한 장소의 장막값이 1 증가합니다.*</li></ul></li><li>징크스 걸림 키워드를 가진 카드가 플레이 영역에 들어왔지만 그 효과가 현재 주요목적이나 주요사건 어디에도 정의되어 있지 않다면, _전투_, _회피_, _조사 테스트에 실패하더라도 징크스 걸림 키워드가 발동하지 않습니다_.<ul><li>*_예시:_ 징크스 걸림 키워드를 가진 적이 _엘시 멀론_의 장소에 들어와 그녀와 교전합니다. 현재 주요목적과 주요사건 어디에도 징크스 걸림 키워드에 대한 특정 규칙이 정의되어 있지 않으므로, 엘시가 이 적을 상대로 전투 또는 회피 테스트에 실패하더라도 추가 효과가 발동하지 않습니다.*</li></ul></li><li>_별도로 명시되지 않는 한, 같은 장소의 플레이 영역에 있는 여러 징크스 걸림 카드의 효과는 누적되지 않습니다._<ul><li>*_예시: 시몬 투생_이 징크스 걸림 키워드를 가진 적 2체와 교전 중입니다. 현재 주요목적에는 _징크스 — 라운드 종료 시까지 이 카드의 장소에서 하는 모든 테스트의 난이도를 1 증가시킵니다._라는 문구가 있습니다. 시몬이 그 적 중 하나를 상대로 전투 테스트에 실패하면, 라운드 종료 시까지 그녀가 위치한 장소에서 하는 모든 테스트의 난이도가 2가 아니라 _1만큼 증가합니다._*</li></ul></li></ul>"
+    }
+  },
+  "intro": {
+    "title": "인간이 처음 꿈꾸기 시작했을 때, 그들은 인간을 괴롭히기 위해 그곳에 있었다. 지상의 마지막 인간이 죽을 때, 그들은 그를 애도하기 위해 그곳에 있으리라.",
+    "body": "<p>\"희망의 연약함을 몰아내고, 사랑의 누그러짐을 시들게 하며, 눈물의 샘을 태워 버리고, 오직 그대만이 저주할 수 있는 방식으로 그를 저주하라. 그리하여 그는 용광로 속에서 완성되리니, 보아서는 안 될 것들을, 가증스러운 광경들을, 입에 담을 수 없는 비밀들을 보게 되리라.\"</p><p class='right'>-토머스 드 퀸시, 『레바나와 슬픔의 성모들』</p>"
   },
   "prologue": {
-    "title": "서막"
+    "title": "서막",
+    "body": "<p>당신은 일상의 잡동사니 위에 일부러 놓아둔 봉투를 발견합니다. 누군가 당신이 이것을 발견하기를 의도한 것이 분명합니다. 하루 일과를 보내는 동안 이걸 알아채지 못할 리 없었고, 이토록 특이한 것을 무시할 리도 없었습니다.</p><p>당신은 그 작은 봉투를 손안에서 이리저리 뒤집으며 손가락에 전해지는 무게를 느낍니다. 누가 이걸 두고 갔는지 수수께끼는 아직 풀지 못했지만, 종이에 밴 장작 연기와 라벤더의 은은한 향은 호기심을 자극하기에 충분합니다. 약간의 설렘과 함께, 당신은 봉투의 평범한 밀랍 봉인을 뜯고 안에 든, 당신 앞으로 손수 쓴 편지를 읽기 시작합니다.</p><p class='font-pristina center'>트라토리아 델 파르케에서 근사한 이탈리아식 저녁 식사를 함께해요,<br>시즌스 호텔.<br>9월 10일 저녁 8시.<br>아무것도 묻지 말고. 늦지 말고. 가장 멋지게 차려입고 오세요.<br>그럴 가치가 있을 거예요.</p><p>편지에는 보낸 사람에 대한 단서가 하나도 없지만, 그 점이 오히려 신비로움을 더할 뿐입니다. 작년에 바렐리 가문의 저택이 시즌스 호텔로 탈바꿈한 이래, 이곳은 순식간에 매사추세츠 최고의 호텔들 가운데서도 보석 같은 존재로 떠올랐습니다. 정체 모를 초대자가 이 화려한 호텔을 만남의 장소로 골랐다면, 꽤나 매혹적인 저녁이 될 것이 분명합니다.</p><p>오늘은 9월 9일입니다. 입을 옷을 찾을 시간은 딱 충분합니다.</p><p class='basic right'>_시나리오 I: 계절의 끝_(으)로 이어집니다.</p>"
   },
   "headings": {
     "prologue": "서막",
+    "interlude1": "두 통의 전보",
+    "interlude2": "토스카나의 장미",
+    "interlude3": "세 어머니",
+    "interlude4": "슬픔의 성모들",
+    "travel": "세 어머니 — 다음 목적지를 선택하십시오",
     "epilogue": "후일담"
+  },
+  "key": {
+    "finlayODoyleIsAssistingTheInvestigation": "핀레이 오도일이 조사를 돕고 있다.",
+    "gigiGiulianoIsAssistingTheInvestigation": "지지 줄리아노가 조사를 돕고 있다.",
+    "knowsTheNameOfTheRose": "장미의 이름을 안다.",
+    "youLearnedAboutTheTenebrarumMurders": "당신은 테네브라룸 살인 사건에 대해 알게 되었다.",
+    "drArmitageTaughtYouAboutTheThreeMothers": "아미티지 박사가 당신에게 세 어머니에 대해 가르쳐 주었다.",
+    "youHadAPropheticDream": "당신은 예지몽을 꾸었다.",
+    "youLearnedWhereToFindHelenaNussbaum": "당신은 헬레나 누스바움을 찾을 곳을 알아냈다.",
+    "youDiscoveredAnaGiulianosConnectionToAmaliaVerdi": "당신은 아나 줄리아노와 아말리아 베르디의 관계를 알아냈다.",
+    "youWereInvitedToJoinTheTenebrarumLodge": "당신은 테네브라룸 결사단에 가입하라는 초대를 받았다.",
+    "youReadSgtMandelsFile": "당신은 맨델 경사의 파일을 읽었다.",
+    "annaKaslowDirectedYouTowardAnOldColleague": "안나 캐슬로가 당신에게 옛 동료를 소개해 주었다.",
+    "maddalenaGuidesYourPath": "마달레나가 당신의 길을 인도한다.",
+    "youVisitedSanFrancisco": "당신은 샌프란시스코를 방문했다.",
+    "youVisitedFreiburgImBreisgau": "당신은 프라이부르크 임 브라이스가우를 방문했다.",
+    "youVisitedTheGulfOfNaples": "당신은 나폴리 만을 방문했다.",
+    "youDecidedToBeginTheSearchInTheCityOfFreiburg": "당신은 프라이부르크 시내에서 수색을 시작하기로 했다.",
+    "youDecidedToBeginTheSearchInTheSchauinsland": "당신은 샤우인슬란트에서 수색을 시작하기로 했다.",
+    "youDecidedToBeginTheSearchInTheBlackForest": "당신은 검은 숲에서 수색을 시작하기로 했다.",
+    "theInvestigatorsDefeatedTheThreeMothersAndEscapedThePalaceOfSorrows": "조사자들은 세 어머니를 쓰러뜨리고 슬픔의 궁전을 탈출했다.",
+    "theInvestigatorsDefeatedANewbornGoddessAndEscapedThePalaceOfSorrows": "조사자들은 갓 태어난 여신을 쓰러뜨리고 슬픔의 궁전을 탈출했다.",
+    "theInvestigatorsUnboundAFracturedGoddess": "조사자들은 조각난 여신을 풀어 주었다.",
+    "finlaySurvived": "핀레이가 살아남았다.",
+    "gigiSurvived": "지지가 살아남았다.",
+    "naomiOBannionIsAssistingTheInvestigation": "나오미 오베니언이 조사를 돕고 있다.",
+    "aBargainWasMade": "거래가 성사되었다.",
+    "stolasIsUnbound": "스톨라스가 풀려났다."
+  },
+  "remembered": {
+    "threwAChairThroughTheConservatoryWindow": "당신은 “온실 창문으로 의자를 집어 던졌다.”",
+    "foundAWayThroughTheHedgeMaze": "당신은 “산울타리 미로를 빠져나갈 길을 찾았다.”",
+    "forcedOpenTheRooftopSkylight": "당신은 “옥상 채광창을 억지로 열었다.”"
+  },
+  "interludes": {
+    "1": "두 통의 전보",
+    "2": "토스카나의 장미",
+    "3": "세 어머니",
+    "4": "슬픔의 성모들"
   }
 }

@@ -1,19 +1,50 @@
 {
+  "difficulty": {
+    "Easy": "서커스에서 하루를 보내고 싶어요",
+    "Standard": "관객을 즐겁게 하고 싶어요",
+    "Hard": "목숨을 건 묘기를 펼치고 싶어요",
+    "Expert": "서커스 세 무대를 한꺼번에 운영하고 싶어요"
+  },
   "name": "서커스 엑스 모르티스",
   "about": {
     "sections": [
       {
         "rows": [
-          {},
-          {},
-          {},
-          {}
+          {
+            "role": "캠페인 디자인",
+            "names": "타일러 고치"
+          },
+          {
+            "role": "달 토큰 디자인",
+            "names": "하우케"
+          },
+          {
+            "role": "플레이테스터",
+            "names": "Tofu Mushroom, Pugtato, Flanfy, Aughhhh, Gold, TerranChef, Deutereum, Antimarkovnikov, Erik T, Zyloemm, BardofSnow, Jefferson, DanDanRevolution, MickeytheQ, Drust, SimonD, thenumberInick, Buteremelse, Karrius, Jared Boyce, Marcus Lemmon, Harrison F, Chad Reverman"
+          },
+          {
+            "role": "아컴 호러: 카드 게임 디자인",
+            "names": "네이트 프렌치, 엠제이 뉴먼"
+          }
         ]
       },
       {
-        "title": "디자인 노트"
+        "title": "디자인 노트",
+        "text": [
+          "플레이해 주셔서 감사합니다! 서커스 엑스 모르티스는 제가 한동안 품어 왔던 또 하나의 아이디어로, 크툴루 신화에 서커스의 화려함과 신비로움을 더할 기회이자, 신화에서 그토록 큰 비중을 차지하면서도 비교적 다뤄진 범위가 좁은 그레이트 올드 원인 슈브 니구라스와의 흥미로운 연결 고리이기도 했습니다.",
+          "슈브 니구라스에 관해서는, 제가 캠페인에 포함하기로 한 ‘검은 염소’를 둘러싼 애매한 부분이 있습니다. 어떤 글에서는 검은 염소를 만물의 어머니의 또 다른 측면으로 언급하고, 다른 글에서는 교단의 일종의 상징적 수장 역할을 하는 별개의 뚜렷한 남성 존재로 언급합니다. 이로부터 검은 염소가 실베스터 블레이크로 변장해 서커스의 임무를 이끈다는 아이디어가 나왔습니다.",
+          "고대 로마의 역사와 현대의 리베르 파테르 협회(이 자체도 교단과 주제적으로 연결된 헬파이어 클럽의 패스티시입니다)처럼, 줄거리의 여러 요소가 서로를 뒷받침하며 거의 동시에 발전했습니다. 저는 아컴의 정사와 실제 역사적 사건 양쪽에 무언가를 맞춰 넣는 데 특히 매력을 느끼기 때문에, 아풀레이우스나 정확히 그 날짜에 남부 캘리포니아에서 일어난 일식 같은 많은 요소는 신화에 맞게 조정했을 뿐 역사적 사실입니다.",
+          "그와 같은 동시적인 설계는 ‘아말테아 위버’와 ‘데 쿨투스 베스티아이’에서도 함께 이루어졌습니다. 이 카드들을 넣은 이유는 이야기를 조사자들에게 더 개인적인 것으로 만들려는 것만큼이나, 줄거리와 함께 성장하는 이야기 자산을 넣고 싶었기 때문입니다. 운명과 예언에 관한 온갖 이야기에도 불구하고, 플레이어들이 미래를 스스로 결정할 수 있다고 느끼기를 바랐습니다.",
+          "거의 전적으로 비밀리에 혹은 외딴 곳에서 벌어지는 다른 캠페인들과 달리, 서커스는 매우 공개적인 행사이고 블레이크의 계략이 순회 서커스의 관객들을 이용해 슈브 니구라스의 어린 것을 키우는 것이기에, 평소보다 주변인들을 더 많이 관여시키게 되었습니다. 하지만 매 임무를 지루한 호위 임무로 만들지 않으면서 주변인들이 꾸준히 관여하게 하는 것은 예상보다 어려운 과제였습니다.",
+          "다시 한번 플레이해 주셔서, 그리고 피드백이 있다면 보내 주셔서 감사합니다. 다음 캠페인에서 만나요!"
+        ]
       }
     ]
+  },
+  "interludes": {
+    "1": "미래와 과거",
+    "2": "돌에 새겨진 운명",
+    "3": "좋은 징조"
   },
   "headings": {
     "interludes": {
@@ -22,17 +53,31 @@
       "3": "막간"
     }
   },
+  "intro": "<h1>신월의 그림자 속에서</h1><p>뉴 문 서커스가 단 하룻밤의 공연을 위해 아컴에 왔습니다. 그리고 실종 사건과 의문의 죽음이 해안을 따라 서커스의 뒤를 쫓아왔습니다. 서커스 엑스 모르티스는 타일러 고치가 디자인한 아컴 호러: 카드 게임용 8부작 팬메이드 캠페인입니다.</p>",
   "specialRules": [
     {
+      "title": "달 토큰",
       "body": "@:circusExMortis.additionalRules.moonTokens"
     }
   ],
+  "tokens": {
+    "moon": "0. 이 토큰을 당신의 조사자 카드 위에 봉인하고 토큰을 하나 더 공개합니다."
+  },
+  "additionalRules": {
+    "title": "추가 규칙: 달 토큰",
+    "moonTokens": "<p class='basic'>이 캠페인에서는 새로운 종류의 혼돈 토큰인 달({'{'}moon{'}'}) 토큰이 등장합니다. *서커스 엑스 모르티스* 캠페인에서는 달이 중요한 역할을 하며, 달 토큰은 그 기묘한 영향력의 강도와 심각성을 모두 나타냅니다.</p><ul><li>능력 테스트 중에 공개된 {'{'}moon{'}'} 토큰은 다음 효과를 가집니다: “0. 이 토큰을 당신의 조사자 카드 위에 봉인하고 토큰을 하나 더 공개합니다.”</li><li>당신의 조사자 카드 위에 봉인된 {'{'}moon{'}'} 토큰은 그 자체로는 아무 효과가 없지만, 일부 카드 효과는 당신의 조사자 카드 위에 {'{'}moon{'}'} 토큰이 봉인되어 있는지, 또는 당신의 조사자 카드 위에 봉인된 {'{'}moon{'}'} 토큰의 개수를 참조할 수 있습니다.</li><li>라운드 종료 시, 당신의 조사자 카드 위에 봉인된 {'{'}moon{'}'} 토큰 1개마다 당신은 다음 중 하나를 선택해야 합니다:<ul><li>그 토큰은 당신의 조사자 카드 위에 봉인된 채로 남습니다.</li><li>피해 1 또는 공포 1을 받습니다. 그 후 그 토큰을 해제합니다.</li></ul></li><li>능력 테스트 외의 상황에서 공개된 {'{'}moon{'}'} 토큰은 카드 효과가 따로 명시하지 않는 한 그 자체로는 아무 효과가 없습니다.</li></ul>"
+  },
   "prologue": {
-    "title": "서막"
+    "title": "서막",
+    "body": "<p class='center basic'>_{asterisk}{asterisk}{asterisk}{asterisk}{asterisk} 개봉 박두 – 뉴 문 서커스! {asterisk}{asterisk}{asterisk}{asterisk}{asterisk}{asterisk}_</p><p class='center basic'>_세계_ 최고의 _쇼_를 보러 오세요!</p><p class='center basic'>_목숨을 건_ 곡예! _최강의 힘과 기술_의 묘기!</p><p class='center basic'>_세상에서 가장 놀라운 생물들의 동물원!_</p><p class='center basic'>여러분의 마을에 _이번 일요일! 단 하룻밤만!_</p><p class='center basic'>_{asterisk}{asterisk} 일생일대의 기회를 놓치지 마세요! {asterisk}{asterisk}_</p><p>1923년 8월 26일 일요일. 매사추세츠주 아컴.</p><p>뉴 문 서커스는 한 주 내내 마을의 화젯거리였습니다. 순회 서커스는 수익만 생각해서 대도시를 찾는 경향이 있었고, 아컴에서 충동적으로 보스턴이나 뉴욕, 필라델피아까지 갈 시간이나 돈이 있는 사람은 거의 없었습니다. 서커스가 보통 상류층의 관심을 끌지는 못했지만, 프랑스 언덕의 엘리트들조차 재미 삼아 서커스를 보러 가자며 농담을 하기 시작했습니다. 고백하자면 당신도 서커스에 관심이 좀 있었지만, 남들과 같은 이유 때문은 아니었습니다.</p><p>그 우연의 일치들을 처음 당신에게 알려 준 사람은 아컴 애드버타이저의 미니 클라인이었습니다. 벨마네 식당에서 당신을 기다리던 미니는 손에 수첩을 들고 눈을 굶주린 듯 빛내고 있었는데, 점심 특선 때문은 아니었습니다. “이것 좀 봐요.” 그녀가 연필을 교사의 지시봉처럼 쓰며 말합니다. “뉴 문 서커스는 원래 남부에서 평범한 순회 공연을 했어요. 애틀랜타나 잭슨빌 같은 대도시를 돌았고, 멤피스보다 북쪽으로는 올라간 적이 없었죠. 그런데 한 달 전에 갑자기 해안을 따라 올라오기 시작하더니, 북쪽으로 가는 길에 있는 시골 마을들을 줄줄이 돌기 시작했어요. 서배너 이후로 들른 곳 중에선 아컴이 제일 커요.”</p><p>당신은 서커스의 결정 뒤에 무언가 이상한 점이 있을 거라는 데는 동의하지만, 그게 왜 미니를 그토록 흥분시켰는지는 잘 모르겠습니다. 그녀가 재빨리 설명을 덧붙입니다. “뉴 문 서커스가 들른 모든 마을에서, 서커스가 머무는 동안 실종 사건 _그리고_ 의문의 죽음이 있었어요. 그리고 여기서부터가 핵심이에요.” 미니는 수첩 아래쪽을 톡톡 두드리며 자랑스럽게 미소 짓습니다. “서커스를 보러 간 사람들이요? 아무도 구체적인 걸 기억하지 못해요. 세 개 주나 떨어진 곳에 사는 두 사람이 각자 지역 신문에 자기 경험에 대해 토씨 하나 다르지 않은 똑같은 말을 했다니까요. 이 정도면 수상하지 않아요?”</p><p>적어도 당신이 조사할 만큼은 수상합니다. 그리하여 당신은 표를 손에 쥐고 만일의 사태에 대비한 준비를 마친 뒤 서커스로 향합니다. 계절 탓에 저녁인데도 아직 환하지만, 보름달은 벌써 떠오르고 있습니다.</p>",
+    "addMoonTokens": "캠페인의 남은 기간 동안 {'{'}moon{'}'} 토큰 3개를 혼돈 주머니에 넣습니다."
   },
   "campaignReading": {
+    "title": "타로 덱",
+    "body": "<p class='basic'>조사자들이 돌아온 끝맺지 못한 의식 확장의 타로 덱을 사용하기로 했다면, 서커스 엑스 모르티스 캠페인과 주제적으로 연관된 부분이 있습니다. 조사자들은 다음 8장의 카드를 이 순서대로 사용하여 8장짜리 캠페인 점괘를 볼 수 있습니다: 마법사, 은둔자, 힘, 전차, 악마, 절제, 태양, 달</p>",
     "label": {
-      "performCampaignReading": "캠페인 점괘 보기"
+      "performCampaignReading": "캠페인 점괘 보기",
+      "performIndividualReadings": "대신 각 시나리오 전에 타로 점괘를 봅니다"
     }
   },
   "destiny": {
@@ -45,21 +90,131 @@
     "redSunrise": "붉은 일출",
     "thousandToOne": "천에 하나"
   },
+  "moonToken": {
+    "label": {
+      "endOfRoundQuestion": "당신의 조사자 카드 위에 {'{'}moon{'}'} 토큰이 봉인되어 있습니다. 다음 중 하나를 선택해야 합니다:",
+      "keepSealed": "그 토큰은 당신의 조사자 카드 위에 봉인된 채로 남습니다",
+      "takeDamageAndRelease": "피해를 1 받습니다. 그 후 그 토큰을 해제합니다",
+      "takeHorrorAndRelease": "공포를 1 받습니다. 그 후 그 토큰을 해제합니다"
+    }
+  },
   "label": {
     "physicalTrauma": "육체적 트라우마 1을 겪습니다",
-    "mentalTrauma": "정신적 트라우마를 1 겪습니다"
+    "mentalTrauma": "정신적 트라우마를 1 겪습니다",
+    "sealMoonToken": "<span>혼돈 주머니에서 {'{'}moon{'}'} 토큰을 찾아 당신의 조사자 카드 위에 봉인합니다</span>",
+    "circusEncampment": {
+      "doneReleasingMoonTokens": "달 토큰 해제 완료"
+    }
   },
   "illusoryLocus": {
     "cluesToSpend": "소비할 단서"
   },
+  "remembered": {
+    "aViceForRevelry": "{name}에게 “향락의 악덕”이 있다.",
+    "aViceForIntimacy": "{name}에게 “애욕의 악덕”이 있다.",
+    "aViceForOpulence": "{name}에게 “사치의 악덕”이 있다.",
+    "aViceForViolence": "{name}에게 “폭력의 악덕”이 있다."
+  },
+  "key": {
+    "theRingmasterDoesNotSuspectYou": "단장은 당신을 의심하지 않는다.",
+    "theRingmasterHasHisEyeOnYou": "단장이 당신을 주시하고 있다.",
+    "theInvestigatorsWereLostInTheArkhamWoods": "조사자들은 아컴 숲에서 길을 잃었다.",
+    "theInvestigatorsBypassedTheIllusions": "조사자들은 환영을 우회했다.",
+    "groupsOfCitizensWereSavedFromTheCircus": "서커스에서 구출된 시민 무리",
+    "theRingmasterHadDaysToPrepare": "단장이 준비할 수 있었던 날수",
+    "theInvestigatorsCouldNotEscapeTheCircus": "조사자들은 서커스에서 탈출하지 못했다.",
+    "theInvestigatorsClashedWithBlake": "조사자들은 블레이크와 충돌했다.",
+    "theInvestigatorsUnmaskedBlake": "조사자들은 블레이크의 가면을 벗겼다.",
+    "theInvestigatorsStruckDownBlake": "조사자들은 블레이크를 쓰러뜨렸다.",
+    "theInvestigatorsMustFollowTheCult": "조사자들은 교단을 미행해야 한다.",
+    "theInvestigatorsDiscoveredTheRitualsLocation": "조사자들이 의식 장소를 알아냈다.",
+    "theInvestigatorsDidNotArriveInTime": "조사자들은 제시간에 도착하지 못했다.",
+    "theCultRallies": "교단이 결집한다.",
+    "theInvestigatorsWereDevouredByTheThousandYoung": "조사자들은 천 마리 새끼들에게 잡아먹혔다.",
+    "theInvestigatorsEndedTheRitual": "조사자들은 의식을 끝냈다.",
+    "shubNiggurathReignsOverAnEclipsedWorld": "슈브 니구라스가 일식에 가려진 세계를 지배한다.",
+    "shubNiggurathVanishedWithTheEclipse": "슈브 니구라스가 일식과 함께 사라졌다.",
+    "theProphecyWasFulfilled": "예언이 성취되었다.",
+    "theProphecyWasUnfulfilled": "예언은 성취되지 않았다.",
+    "destinies": "운명",
+    "theNewMoonCircusWasNeverSeenAgain": "뉴 문 서커스는 다시는 모습을 드러내지 않았다.",
+    "theNewMoonCircusMaySomedayReturn": "뉴 문 서커스는 언젠가 돌아올지도 모른다."
+  },
+  "tooltips": {
+    "moonlitForestShadowedPath": "달빛 비치는 숲 (그늘진 길): 당신의 조사자 카드 위에 {'{'}moon{'}'} 토큰이 봉인되어 있지 않다면 공포를 1 받습니다."
+  },
+  "theBigTopThirdRing": {
+    "label": {
+      "takeMove": "즉시 이동 행동을 합니다",
+      "takeEvade": "즉시 회피 행동을 합니다"
+    }
+  },
+  "endlessSpawn": {
+    "label": {
+      "autoSucceed": "<span>혼돈 주머니에서 {'{'}moon{'}'} 토큰을 찾아 당신의 조사자 카드 위에 봉인하여 자동으로 성공합니다</span>"
+    }
+  },
+  "lostAllControl": {
+    "label": {
+      "directDamage": "그 카드에 직접 피해를 1 줍니다",
+      "directHorror": "그 카드에 직접 공포를 1 줍니다"
+    }
+  },
   "primordialEvils": {
     "label": {
+      "reduceTokens": "<span>‘태고의 악’을 시나리오 참조 카드에 부착합니다. 각 {'{'}skull{'}'}, {'{'}cultist{'}'}, {'{'}tablet{'}'}, {'{'}elderThing{'}'}, {'{'}moon{'}'} 토큰의 수정치를 1 감소시킵니다</span>",
       "placeDoom": "현재 주요사건에 파멸을 1개 올려놓습니다. 이 효과는 현재 주요사건을 진행시킬 수 있습니다"
+    }
+  },
+  "amaltheaWeaverOracleOfMystery": {
+    "label": {
+      "drawTopCard": "자신의 덱 맨 위 카드를 뽑습니다",
+      "drawBottomCard": "자신의 덱 맨 아래 카드를 뽑습니다"
+    }
+  },
+  "invocationOfDiana": {
+    "label": {
+      "releaseTokens": "자신이 조종하는 카드 위에 봉인된 {'{'}moon{'}'} 토큰을 최대 2개까지 해제합니다"
     }
   },
   "closeWatch": {
     "label": {
-      "spendAdditionalAction": "추가로 행동을 1회 소비합니다"
+      "spendAdditionalAction": "추가로 행동을 1회 소비합니다",
+      "discardUntilEnemy": "이 행동을 완료한 후, 적이 버려질 때까지 조우 덱 맨 위에서 카드를 버리고, 그 적을 당신이 위치한 장소에 출현시킵니다"
+    }
+  },
+  "hiddenInPlainSight": {
+    "label": {
+      "spendCluesToAutoSucceed": "그룹으로서 단서를 소비하여 자동으로 성공합니다",
+      "doNotSpendClues": "단서를 {count}개 소비하지 않습니다"
+    }
+  },
+  "underLockAndKey": {
+    "label": {
+      "spendCluesToAutoSucceed": "그룹으로서 단서를 소비하여 자동으로 성공합니다",
+      "doNotSpendClues": "단서를 {count}개 소비하지 않습니다"
+    }
+  },
+  "clappedInIrons": {
+    "label": {
+      "chooseDamage": "단서 비용을 줄이기 위해 그룹이 피해를 얼마나 받겠습니까?"
+    }
+  },
+  "hypnoticState": {
+    "label": {
+      "chooseHorror": "단서 비용을 줄이기 위해 그룹이 공포를 얼마나 받겠습니까?"
+    }
+  },
+  "audienceParticipation": {
+    "label": {
+      "sealOnTheBlackGoat": "혼돈 주머니에서 {'{'}moon{'}'} 토큰을 찾아 ‘검은 염소’ 위에 봉인합니다",
+      "putMonstrousTransformationIntoPlay": "당신의 덱, 버린 카드 더미, 손에서 ‘괴물로의 변신’을 찾아 플레이 영역에 놓습니다"
+    }
+  },
+  "theBlackGoat": {
+    "label": {
+      "releaseMoonToken": "<span>‘검은 염소’에서 {'{'}moon{'}'} 토큰을 1개 해제합니다</span>",
+      "readiesAndAttacks": "‘검은 염소’가 준비 상태가 되고 당신을 즉시 공격합니다"
     }
   }
 }

@@ -13,6 +13,7 @@
  * discover it by looking.
  */
 import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import api from '@/api'
 
 type ApiKey = {
@@ -26,14 +27,12 @@ type ApiKey = {
   createdAt: string
 }
 
-const SCOPES = [
-  { id: 'cards:read', label: 'Read my custom cards', hint: 'List sets, read card definitions.' },
-  {
-    id: 'cards:write',
-    label: 'Create and change my custom cards',
-    hint: 'Save cards, delete cards, create/rename/delete sets.',
-  },
-] as const
+const { t } = useI18n()
+
+const SCOPES = computed(() => [
+  { id: 'cards:read', label: t('apiKeys.scopeRead'), hint: t('apiKeys.scopeReadHint') },
+  { id: 'cards:write', label: t('apiKeys.scopeWrite'), hint: t('apiKeys.scopeWriteHint') },
+])
 
 const keys = ref<ApiKey[]>([])
 const loading = ref(true)
@@ -57,7 +56,7 @@ async function load() {
     const { data } = await api.get<ApiKey[]>('api-keys')
     keys.value = data
   } catch {
-    failure.value = 'Could not load your keys.'
+    failure.value = t('apiKeys.loadFailed')
   } finally {
     loading.value = false
   }
@@ -80,20 +79,20 @@ async function create() {
     expiresInDays.value = ''
     await load()
   } catch (e) {
-    failure.value = errorMessage(e) ?? 'Could not create the key.'
+    failure.value = errorMessage(e) ?? t('apiKeys.createFailed')
   } finally {
     creating.value = false
   }
 }
 
 async function revoke(key: ApiKey) {
-  if (!window.confirm(`Revoke "${key.name}"? Anything using it stops working immediately.`)) return
+  if (!window.confirm(t('apiKeys.revokeConfirm', { name: key.name }))) return
   failure.value = null
   try {
     await api.delete(`api-keys/${key.id}`)
     await load()
   } catch (e) {
-    failure.value = errorMessage(e) ?? 'Could not revoke the key.'
+    failure.value = errorMessage(e) ?? t('apiKeys.revokeFailed')
   }
 }
 
@@ -123,9 +122,9 @@ function when(value: string | null): string {
 }
 
 function status(key: ApiKey): string {
-  if (key.revokedAt) return `revoked ${when(key.revokedAt)}`
-  if (key.expiresAt && new Date(key.expiresAt) <= new Date()) return `expired ${when(key.expiresAt)}`
-  return key.lastUsedAt ? `last used ${when(key.lastUsedAt)}` : 'never used'
+  if (key.revokedAt) return t('apiKeys.revokedOn', { date: when(key.revokedAt) })
+  if (key.expiresAt && new Date(key.expiresAt) <= new Date()) return t('apiKeys.expiredOn', { date: when(key.expiresAt) })
+  return key.lastUsedAt ? t('apiKeys.lastUsed', { date: when(key.lastUsedAt) }) : t('apiKeys.neverUsed')
 }
 
 onMounted(load)
@@ -133,37 +132,29 @@ onMounted(load)
 
 <template>
   <section class="box column">
-    <h3>API keys</h3>
-    <p>
-      A key lets a tool — an MCP client, a script — write custom cards on your
-      account without signing in as you. It carries only what you grant it, you can
-      revoke it on its own, and you can see when it was last used.
-    </p>
-    <p class="caution">
-      Do not paste your login token into a tool instead. It never expires, covers
-      everything you can do including deleting your account, and cannot be revoked
-      by itself.
-    </p>
+    <h3>{{ $t('apiKeys.title') }}</h3>
+    <p>{{ $t('apiKeys.intro') }}</p>
+    <p class="caution">{{ $t('apiKeys.caution') }}</p>
 
     <div v-if="minted" class="minted">
-      <h4>“{{ minted.name }}” is ready</h4>
-      <p>This is the only time it is shown — only a hash of it is stored.</p>
+      <h4>{{ $t('apiKeys.ready', { name: minted.name }) }}</h4>
+      <p>{{ $t('apiKeys.shownOnce') }}</p>
       <code>{{ minted.key }}</code>
       <div class="row">
-        <button type="button" @click="copyKey">{{ copied ? 'Copied' : 'Copy' }}</button>
-        <button type="button" class="quiet" @click="minted = null">Done</button>
+        <button type="button" @click="copyKey">{{ copied ? $t('apiKeys.copied') : $t('apiKeys.copy') }}</button>
+        <button type="button" class="quiet" @click="minted = null">{{ $t('apiKeys.done') }}</button>
       </div>
-      <p class="hint">Send it as <code>Authorization: Bearer {{ minted.key.slice(0, 9) }}…</code></p>
+      <p class="hint">{{ $t('apiKeys.sendItAs') }} <code>Authorization: Bearer {{ minted.key.slice(0, 9) }}…</code></p>
     </div>
 
     <form class="column create" @submit.prevent="create">
       <label>
-        What is it for?
-        <input v-model="name" placeholder="Claude on my laptop" maxlength="80" />
+        {{ $t('apiKeys.whatFor') }}
+        <input v-model="name" :placeholder="$t('apiKeys.namePlaceholder')" maxlength="80" />
       </label>
 
       <fieldset class="column">
-        <legend>What may it do?</legend>
+        <legend>{{ $t('apiKeys.whatMayItDo') }}</legend>
         <label v-for="scope in SCOPES" :key="scope.id" class="check">
           <input
             type="checkbox"
@@ -178,37 +169,37 @@ onMounted(load)
       </fieldset>
 
       <label>
-        Expires after (days, optional)
-        <input v-model="expiresInDays" type="number" min="1" placeholder="never" />
+        {{ $t('apiKeys.expiresAfter') }}
+        <input v-model="expiresInDays" type="number" min="1" :placeholder="$t('apiKeys.never')" />
       </label>
 
       <button type="submit" :disabled="!canCreate || creating">
-        {{ creating ? 'Creating…' : 'Create key' }}
+        {{ creating ? $t('apiKeys.creating') : $t('apiKeys.createKey') }}
       </button>
     </form>
 
     <p v-if="failure" class="failure">{{ failure }}</p>
 
-    <div v-if="loading">Loading…</div>
+    <div v-if="loading">{{ $t('apiKeys.loading') }}</div>
     <table v-else-if="keys.length" class="keys">
       <thead>
-        <tr><th>Name</th><th>Key</th><th>Scopes</th><th>Status</th><th></th></tr>
+        <tr><th>{{ $t('apiKeys.colName') }}</th><th>{{ $t('apiKeys.colKey') }}</th><th>{{ $t('apiKeys.colScopes') }}</th><th>{{ $t('apiKeys.colStatus') }}</th><th></th></tr>
       </thead>
       <tbody>
         <tr v-for="key in keys" :key="key.id" :class="{ dead: !!key.revokedAt }">
           <td>{{ key.name }}</td>
           <td><code>{{ key.prefix }}…</code></td>
-          <td>{{ key.scopes.join(', ') || 'none' }}</td>
+          <td>{{ key.scopes.join(', ') || $t('apiKeys.none') }}</td>
           <td>{{ status(key) }}</td>
           <td>
             <button v-if="!key.revokedAt" type="button" class="quiet" @click="revoke(key)">
-              Revoke
+              {{ $t('apiKeys.revoke') }}
             </button>
           </td>
         </tr>
       </tbody>
     </table>
-    <p v-else class="hint">No keys yet.</p>
+    <p v-else class="hint">{{ $t('apiKeys.noKeys') }}</p>
   </section>
 </template>
 

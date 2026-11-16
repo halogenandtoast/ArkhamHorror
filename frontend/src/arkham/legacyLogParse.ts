@@ -1,4 +1,5 @@
 import { parseInput } from '@/arkham/i18n'
+import { localizeLegacyParts } from '@/arkham/legacyLogLocalize'
 import type { LogEntry, LogPart, LogRef, LogRefKind, LogRow } from '@/arkham/types/GameLog'
 
 /* Parsing the old flat log format into parts.
@@ -139,7 +140,7 @@ export function parseLegacyLogBody(body: string, locations: LegacyLocationLookup
       parts.push(...parseTextRun(fragment))
     }
   }
-  return parts
+  return localizeLegacyParts(parts)
 }
 
 /* A legacy row as an entry. Flat by definition: the old format had no nesting,

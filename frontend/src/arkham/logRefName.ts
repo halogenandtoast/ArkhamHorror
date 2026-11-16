@@ -36,6 +36,14 @@ export function logRefName(ref: LogRef, dbCards: DbCards): string {
       const card = dbCards.getDbCard(code) ?? dbCards.getDbCard(code.replace(/[a-h]$/, ''))
       if (card?.name) return card.name
     }
+    return ref.name
   }
-  return ref.name
+  /* No code at all (a legacy campaign-log record names its card by title):
+   * the localized database can still answer by English name, with or without
+   * the subtitle the title carries. */
+  const byName = dbCards.getCardName(ref.name)
+  if (byName !== ref.name) return byName
+  const bare = ref.name.split(': ')[0] ?? ref.name
+  const bareName = dbCards.getCardName(bare)
+  return bareName !== bare ? bareName : ref.name
 }

@@ -153,7 +153,7 @@ const hasPool = computed(() => {
       <div class="asset--side">
       <div v-if="placeTokens" class="buttons">
         <select v-model="placeTokenType">
-          <option v-for="token in tokenTypes" :key="token" :value="token">{{ token }}</option>
+          <option v-for="token in tokenTypes" :key="token" :value="token">{{ $te(`token.${token}`) ? $t(`token.${token}`) : token }}</option>
         </select>
         <button @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'PlaceTokens_', contents: [{ tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}, placeTokenType, 1]}})">{{ $t('debug.common.place') }}</button>
       </div>
@@ -162,7 +162,7 @@ const hasPool = computed(() => {
         <button @click="showSlots = false">{{ $t('debug.common.back') }}</button>
       </div>
       <div v-else-if="inspectSpiritDeck" class="spirit-deck-inspector">
-        <div class="spirit-deck-inspector__header">Spirit Deck ({{ spiritDeck.length }})</div>
+        <div class="spirit-deck-inspector__header">{{ $t('debugUi.spiritDeck', { count: spiritDeck.length }) }}</div>
         <div v-if="spiritDeck.length > 0" class="spirit-deck-inspector__cards">
           <div v-for="(card, index) in spiritDeck" :key="`${toCardContents(card).id}-${index}`" class="spirit-deck-inspector__card">
             <span class="spirit-deck-inspector__position">{{ index + 1 }}</span>
@@ -174,7 +174,7 @@ const hasPool = computed(() => {
             <span class="spirit-deck-inspector__name">{{ spiritDeckCardName(card) }}</span>
           </div>
         </div>
-        <div v-else class="spirit-deck-inspector__empty">The spirit deck is empty.</div>
+        <div v-else class="spirit-deck-inspector__empty">{{ $t('debugUi.spiritDeckEmpty') }}</div>
         <button @click="inspectSpiritDeck = false">{{ $t('debug.common.back') }}</button>
       </div>
       <div v-else-if="setModifiers" class="buttons">
@@ -191,7 +191,7 @@ const hasPool = computed(() => {
         <button v-if="asset.owner" @click="debug.send(game.id, {tag: 'Discard', contents: [null, { tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}]})">{{ $t('debug.asset.discard') }}</button>
         <button v-if="returnToHandInvestigator" @click="returnToHand">{{ $t('debug.common.returnToHand') }}</button>
         <button v-if="canFlip" @click="debug.send(game.id, {tag: 'Flip', contents: [flipInvestigator, { tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}]})">{{ $t('debug.asset.flip') }}</button>
-        <button v-if="asset.spiritDeck" @click="inspectSpiritDeck = true">Inspect spirit deck</button>
+        <button v-if="asset.spiritDeck" @click="inspectSpiritDeck = true">{{ $t('debugUi.inspectSpiritDeck') }}</button>
         <button v-if="slots.length > 0" @click="showSlots = true">{{ $t('debug.asset.showSlots') }}</button>
         <router-link
           v-if="isCustomCardCode(cardCode)"
@@ -199,7 +199,7 @@ const hasPool = computed(() => {
           target="_blank"
           class="edit-custom-card"
         >
-          Edit custom card
+          {{ $t('debugUi.editCustomCard') }}
         </router-link>
         <button @click="setModifiers = true">{{ $t('debug.common.modifiers') }}</button>
       </div>

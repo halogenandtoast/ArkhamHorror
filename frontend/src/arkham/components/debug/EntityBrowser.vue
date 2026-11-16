@@ -305,26 +305,26 @@ async function copyJson() {
   <div v-show="!openPanel" class="entity-browser-overlay" @click.self="emit('close')">
     <div class="entity-browser" role="dialog" aria-modal="true" aria-labelledby="entity-browser-title">
       <header class="entity-browser-header">
-        <h2 id="entity-browser-title">Entities</h2>
+        <h2 id="entity-browser-title">{{ $t('debugUi.entities') }}</h2>
         <span class="entity-browser-count">
-          {{ totalCount }} in play<template v-if="danglingCount > 0">, <span class="dangling-count">{{ danglingCount }} dangling</span></template>
+          {{ $t('debugUi.inPlay', { count: totalCount }) }}<template v-if="danglingCount > 0">, <span class="dangling-count">{{ $t('debugUi.dangling', { count: danglingCount }) }}</span></template>
         </span>
-        <button type="button" aria-label="Close entity browser" @click="emit('close')">×</button>
+        <button type="button" :aria-label="$t('debugUi.closeEntityBrowser')" @click="emit('close')">×</button>
       </header>
 
       <div class="entity-browser-controls">
-        <input v-model="filter" type="search" placeholder="Filter by id, code, name, placement…" />
+        <input v-model="filter" type="search" :placeholder="$t('debugUi.entityFilterPlaceholder')" />
         <label class="entity-browser-toggle">
           <input v-model="danglingOnly" type="checkbox" />
-          <span>Dangling only</span>
+          <span>{{ $t('debugUi.danglingOnly') }}</span>
         </label>
-        <button type="button" class="entity-browser-copy" @click="copyJson">Copy JSON</button>
+        <button type="button" class="entity-browser-copy" @click="copyJson">{{ $t('debugUi.copyJson') }}</button>
       </div>
 
       <div class="entity-browser-body">
-        <p v-if="visibleGroups.length === 0" class="entity-browser-empty">Nothing matches.</p>
+        <p v-if="visibleGroups.length === 0" class="entity-browser-empty">{{ $t('debugUi.nothingMatches') }}</p>
         <section v-for="group in visibleGroups" :key="group.label">
-          <h3>{{ group.label }} <span class="group-count">{{ group.visible.length }}/{{ group.rows.length }}</span></h3>
+          <h3>{{ $te(`debugUi.entityGroup.${group.label}`) ? $t(`debugUi.entityGroup.${group.label}`) : group.label }} <span class="group-count">{{ group.visible.length }}/{{ group.rows.length }}</span></h3>
           <table>
             <tbody>
               <tr v-for="row in group.visible" :key="row.id" :class="{ 'row--dangling': row.dangling.length > 0 }">
@@ -341,13 +341,13 @@ async function copyJson() {
                     type="button"
                     class="row-debug"
                     @click="openPanel = { kind: row.panel, id: row.id }"
-                  >Debug</button>
+                  >{{ $t('debugUi.debug') }}</button>
                   <button
                     v-if="row.discardTag"
                     type="button"
                     class="row-debug row-discard"
                     @click="discardRow(row)"
-                  >Discard</button>
+                  >{{ $t('debugUi.discard') }}</button>
                 </td>
               </tr>
             </tbody>

@@ -99,7 +99,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
       </div>
       <div v-if="placeTokens" class="buttons">
         <select v-model="placeTokenType">
-          <option v-for="token in tokenTypes" :key="token" :value="token">{{ token }}</option>
+          <option v-for="token in tokenTypes" :key="token" :value="token">{{ $te(`token.${token}`) ? $t(`token.${token}`) : token }}</option>
         </select>
         <button @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'PlaceTokens_', contents: [{ tag: 'GameSource' }, { tag: 'LocationTarget', contents: id}, placeTokenType, 1]}})">{{ $t('debug.common.place') }}</button>
         <button @click="placeTokens = false">{{ $t('debug.common.back') }}</button>

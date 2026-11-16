@@ -1,3 +1,9 @@
 {
-  "name": "컨스텔레이션호의 대소동"
+  "name": "컨스텔레이션호의 대소동",
+  "key": {
+    "theRitualAtSeaWasCompleted": "바다에서의 의식이 완료되었다.",
+    "theRitualAtSeaWasHalted": "바다에서의 의식이 저지되었다.",
+    "theConstellationWasSaved": "컨스텔레이션호를 구했다.",
+    "theConstellationWasLostToTheDepths": "컨스텔레이션호가 심해로 가라앉았다."
+  }
 }

@@ -61,6 +61,74 @@ export async function checkImageExists(language: string = localStorage.getItem('
   helper.loaded.value = true
 }
 
+/* `…/img/arkham/<language root>/<path>` → [root, path], or null for an English
+ * (root-less) image. */
+function languageRootPattern(): RegExp {
+  const roots = [...imgHelper.values()].map((h) => h.root).filter(Boolean)
+  return new RegExp(`/img/arkham/(${roots.join('|')})/(.+)$`)
+}
+
+/* The English image at the same path as a localized one: the language folder
+ * taken out, nothing else changed. An English URL comes back as it is. */
+export function withoutLanguageRoot(url: string): string {
+  const match = url.match(languageRootPattern())
+  if (!match) return url
+  const [whole, , path] = match
+  return url.slice(0, url.length - whole.length) + `/img/arkham/${path}`
+}
+
+/* The next URL to try after `current` failed, walking `candidates` in order;
+ * null once the last one has failed. */
+export function nextImageCandidate(candidates: (string | null)[], current: string): string | null {
+  const list = candidates.filter((c, i): c is string => !!c && candidates.indexOf(c) === i)
+  const at = list.indexOf(current)
+  return at >= 0 && at < list.length - 1 ? list[at + 1]! : null
+}
+
+/* A localized image the digest lists can still be missing from the host (a
+ * partial upload, a file removed after the digest was built), and the host then
+ * answers with the app's HTML, which fails to decode. An image that has no
+ * retries of its own falls back to the English art at the same path: the failed
+ * <img> is pointed at it, and the path is marked not fetchable so later `imgsrc`
+ * calls answer English directly.
+ *
+ * An image that does have its own retries (card faces try the 'a' side first)
+ * carries `data-fallback-chain` and walks its own list, which ends in English;
+ * stepping in there would cut the localized retries short. Error events do not
+ * bubble, hence the capture listener; it only acts on paths under a language
+ * root, so an English failure cannot loop. */
+let localizedFallbackInstalled = false
+
+export function installLocalizedImageFallback() {
+  if (localizedFallbackInstalled || typeof document === 'undefined') return
+  localizedFallbackInstalled = true
+
+  document.addEventListener(
+    'error',
+    (event) => {
+      const img = event.target
+      if (!(img instanceof HTMLImageElement)) return
+      if (img.dataset.fallbackChain !== undefined) return
+      const url = img.currentSrc || img.src
+      const match = url.match(languageRootPattern())
+      if (!match) return
+      const [, root, rawPath] = match
+      const path = decodeURIComponent((rawPath ?? '').split(/[?#]/)[0] ?? '')
+
+      for (const helper of imgHelper.values()) {
+        if (helper.root !== root) continue
+        const flag = helper.data.get(path)
+        if (flag) flag.value = false
+        else helper.data.set(path, ref(false))
+      }
+
+      if (img.srcset) img.removeAttribute('srcset')
+      img.src = withoutLanguageRoot(url)
+    },
+    true,
+  )
+}
+
 export function toCapitalizedWords(name: string) {
   const words = name.match(/[A-Z]?[a-z']+|[A-Z]/g) || [];
   return capitalize(words.map(lowercase).join(" "));

@@ -33,6 +33,7 @@ import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import * as Arkham from '@/arkham/types/Investigator';
 import { useI18n } from 'vue-i18n';
+import { localizedInvestigatorName } from '@/arkham/investigatorName';
 import Draw from '@/arkham/components/Draw.vue'
 import CardView from '@/arkham/components/Card.vue';
 import { CARD_FLIGHT_ATTR, cardFlightStyle, useCardFlightState } from '@/arkham/cardFlight';
@@ -48,7 +49,15 @@ import { fullName } from '@/arkham/types/Name';
 import { isCthulhuBoardEnemy } from '@/arkham/components/TheDrownedCity/cthulhuBoard'
 import { useCardStore } from '@/stores/cards';
 import { getGameLocalStorageItem, setGameLocalStorageItem } from '@/arkham/localStorage';
-const { t } = useI18n();
+const { t, te } = useI18n();
+/* Card-row titles arrive as English labels from the cards that open them
+ * ("Cards Underneath") or as a scenario deck's key ("ExplorationDeck"). */
+const cardRowLabel = (title: string) => {
+  if (title === 'Cards Underneath') return t('gameUi.cardsUnderneath')
+  const deck = `gameUi.scenarioDeck.${title}`
+  return te(deck) ? t(deck) : title
+}
+
 
 interface RefWrapper<T> {
   ref: ComputedRef<T>
@@ -501,7 +510,7 @@ const handSizeClasses = computed(() => ({
 }))
 
 const doShowCards = (event: Event, cards: ComputedRef<ArkhamCard.Card[]>, title: string, isDiscards: boolean) => {
-  cardRowTitle.value = title
+  cardRowTitle.value = cardRowLabel(title)
   showCards.ref = cards
   viewingDiscard.value = isDiscards
 }
@@ -771,7 +780,7 @@ async function openDebugAddCard() {
       debugPlayerCards.value = allCards.filter(isDebugPlayerCard)
     } catch (error) {
       console.error(error)
-      debugAddCardError.value = 'Unable to load player cards.'
+      debugAddCardError.value = t('debugUi.unableToLoadPlayerCards')
     } finally {
       debugAddCardLoading.value = false
     }
@@ -792,7 +801,7 @@ async function debugAddCardToHand(card: CardDef) {
     showDebugAddCard.value = false
   } catch (error) {
     console.error(error)
-    debugAddCardError.value = `Unable to add ${fullName(card.name)} to hand.`
+    debugAddCardError.value = t('debugUi.unableToAddToHand', { name: fullName(card.name) })
   }
 }
 
@@ -1256,7 +1265,7 @@ function closeHand() {
                 :aria-expanded="showDebugSlotMenu"
                 @click="showDebugSlotMenu = !showDebugSlotMenu"
               >
-                <span>Add Slot</span>
+                <span>{{ $t('debugUi.addSlot') }}</span>
                 <span>{{ showDebugSlotMenu ? '−' : '+' }}</span>
               </button>
               <div v-if="showDebugSlotMenu" class="debug-add-slots-menu">
@@ -1264,11 +1273,11 @@ function closeHand() {
                   v-for="slot in debugSlotTypes"
                   :key="slot.type"
                   type="button"
-                  :title="`Add ${slot.label} Slot`"
+                  :title="$t('debugUi.addSlotOf', { slot: $t(`slot.${slot.label.toLowerCase()}`) })"
                   @click="debugAddSlot(slot.type)"
                 >
                   <img :src="imgsrc(slot.icon)" />
-                  <span>{{ slot.label }}</span>
+                  <span>{{ $t(`slot.${slot.label.toLowerCase()}`) }}</span>
                 </button>
               </div>
             </div>
@@ -1324,18 +1333,18 @@ function closeHand() {
       @click.self="showDebugAddCard = false"
     >
       <div class="debug-add-card-modal">
-        <h3>Add player card to {{ fullName(investigator.name) }}'s hand</h3>
+        <h3>{{ $t('debugUi.addCardToHandTitle', { name: localizedInvestigatorName(fullName(investigator.name)) }) }}</h3>
         <label>
-          Search card
+          {{ $t('debugUi.searchCard') }}
           <input
             v-model="debugCardSearch"
             type="search"
             autofocus
-            placeholder="Name, code, type, class, or trait"
+            :placeholder="$t('debugUi.playerCardPlaceholder')"
             @keydown.stop
           />
         </label>
-        <p v-if="debugAddCardLoading" class="debug-add-card-status">Loading player cards…</p>
+        <p v-if="debugAddCardLoading" class="debug-add-card-status">{{ $t('debugUi.loadingPlayerCards') }}</p>
         <p v-if="debugAddCardError" class="debug-add-card-error">{{ debugAddCardError }}</p>
         <div v-else class="debug-add-card-results">
           <button
@@ -1345,7 +1354,7 @@ function closeHand() {
             @click="debugAddCardToHand(card)"
           >
             <span>{{ debugCardLabel(card) }}</span>
-            <small>{{ card.cardType }} · {{ card.classSymbols.join(', ') || 'Neutral' }}</small>
+            <small>{{ card.cardType }} · {{ card.classSymbols.join(', ') || $t('classNames.neutral') }}</small>
           </button>
         </div>
         <button type="button" @click="showDebugAddCard = false">{{ $t('close') }}</button>
@@ -1490,8 +1499,8 @@ function closeHand() {
 
         </transition-group>
         <div class="hand-debug-actions" v-if="debug.active">
-          <button type="button" @click="openDebugAddCard">+ Card to hand</button>
-          <button v-if="customCardsEnabled" type="button" @click="showCustomCardPicker = true">+ Custom card</button>
+          <button type="button" @click="openDebugAddCard">{{ $t('debugUi.cardToHand') }}</button>
+          <button v-if="customCardsEnabled" type="button" @click="showCustomCardPicker = true">{{ $t('debugUi.customCard') }}</button>
           <button type="button" :disabled="investigator.hand.length === 0" @click="discardRandom">{{ $t('debug.hand.discardRandom') }}</button>
         </div>
         <div v-if="investigator.handSize" class="hand-size" :class="handSizeClasses" :current-length="totalHandSize">{{ t('handSize') }}: {{totalHandSize}}/{{investigator.handSize}}</div>
@@ -1515,7 +1524,7 @@ function closeHand() {
         class="hand-debug-mobile"
       >
         <button class="hand-debug-add-button" type="button" @click.stop="openDebugAddCard">
-          + Card
+          {{ $t('debugUi.card') }}
         </button>
         <button
           class="hand-debug-add-button"

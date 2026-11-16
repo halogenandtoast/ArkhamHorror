@@ -602,7 +602,7 @@ const setIcon = computed(() =>
                 class="roster-btn"
                 :class="{ 'roster-btn--on': overlayFor === investigator.id }"
                 :disabled="overlayBusy"
-                v-tooltip="'Lay custom cards over this deck'"
+                v-tooltip="$t('deckUi.layCustomCards')"
                 @click="openOverlay(investigator.id)"
               ><font-awesome-icon icon="layer-group" /></button>
               <button

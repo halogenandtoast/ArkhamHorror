@@ -10,30 +10,40 @@
     "sections": [
       {
         "rows": [
-          {},
-          {}
+          {
+            "role": "디자인",
+            "names": "아홀로틀"
+          },
+          {
+            "role": "특별히 감사드릴 분들 (순서 무관)",
+            "names": "MJ Grenier, bluehg (Pat), Ekthelion, Jaxtraxi, Eole, Syndicateassassin, The Beard, Zow Martinez, Spencer Wilkinson, Goober, Knot_I, Serpentine, DerBK, Dr. Jack Science, ZinjanthrOpus, LordHypnos, toastsushi, HarrisonF, Tofu Mushroom (작업 중인 버전을 10번 넘게 플레이해 주셨습니다!), CuddlyZombie, dantrolene, zyloemm, Gold, Curtis, Thoth, Tranman, lados_Kairon, zzorba, Pax Cecilia, SpiritReacher, Jam, Lew, ArtemisHarp 님과 트위치 방송, Kodab Games 님과 트위치 방송, PlayingBoardGames 님과 유튜브 채널, MythosBusters 여러분, SCED 개발자 여러분, Jefferson, bigstupidgrin, TerranChef, Serendipigans, Pugtato, brandonglee 123, mnBroncos, AnJoPeC, Argus, hunterSa, socraticmethod, TheBudiez, Bires, Sycopath, Antimarkovnikov, PuertoMateo, BMac, ElseWhere (Strength in Numbers 블로그도 확인해 보세요!), LuChu 외 여러분. (빠뜨린 분이 없기를 바랍니다.)"
+          }
         ],
         "text": [
-          "Thanks to those mentioned above for unspeakable help, whether intentionally or through discussion, without them this campaign would not have been possible.",
-          "Thanks to the amazing design framework created by MJ Newman, Nate French and everyone involved in Arkham Horror: The Card Game at FFG."
+          "의도했든 토론을 통해서든 이루 말할 수 없는 도움을 주신 위의 모든 분들께 감사드립니다. 이분들이 없었다면 이 캠페인은 불가능했을 것입니다.",
+          "엠제이 뉴먼, 네이트 프렌치, 그리고 판타지 플라이트 게임즈에서 아컴 호러 카드 게임에 참여한 모든 분들이 만들어 낸 놀라운 디자인 체계에 감사드립니다."
         ]
       },
       {
         "title": "디자인 노트",
         "text": [
           "캠페인을 재밌게 즐기셨길 바랍니다! 이 캠페인을 만드는 것은 멋진 여정이었습니다. 이 캠페인은 처음에 누더기호, 전기 신호 속 악몽, 저무는 별로 구성된 3부작 캠페인이었습니다. 하지만 플레이테스팅을 몇 번 거친 후, 이 설정과 이야기는 그렇게 짧게 끝내기에는 너무나도 흥미롭다고 생각했습니다.",
-          "The framework of Arkham Horror LCG is really a medium to tell stories in — and I knew that deep space sci-fi horror is a genre deeply connected to Lovecraftian themes and would have to be explored by custom scenarios eventually. I originally did not want to make it because it would have been very simple for a sci-fi themed campaign to stray in tone from the Arkham Files universe, but when I finally figured out a way to bring the investigators into the future that wasn’t too ridiculous, and how to incorporate the mythos in a way that fits the universe without being too obvious, I just had to create the campaign. The King in Yellow is my favourite Ancient One, with the way it plays with psychological horror and perception of reality, with a certain theatrical flare, and the Path to Carcosa is my favourite campaign released so far, so it was only natural for a virtual reality-bending memory-involved campaign to become a loose sequel to the Path to Carcosa. Hastur is not the Ancient One most would associate with deep space, which is precisely why it fits so well.",
+          "아컴 호러 카드 게임이라는 체계는 그야말로 이야기를 들려주는 매체입니다. 그리고 저는 심우주 공상과학 호러가 러브크래프트풍 주제와 깊이 맞닿아 있는 장르이며, 언젠가는 커스텀 시나리오로 다뤄 봐야 할 장르라는 것을 알고 있었습니다. 처음에는 만들고 싶지 않았습니다. 공상과학 테마 캠페인은 아컴 파일 세계관의 분위기에서 너무나 쉽게 벗어날 수 있었기 때문입니다. 하지만 조사자들을 너무 터무니없지 않은 방식으로 미래로 데려갈 방법과, 너무 노골적이지 않으면서 세계관에 어울리게 신화를 녹여낼 방법을 마침내 찾아내자, 이 캠페인을 만들지 않을 수 없었습니다. 황색의 왕은 심리적 공포와 현실 인식을 가지고 노는 방식과 특유의 연극적인 멋 때문에 제가 가장 좋아하는 고대의 존재이고, 카르코사로 가는 길은 지금까지 출시된 캠페인 중 제가 가장 좋아하는 캠페인입니다. 그러니 가상현실로 현실을 비틀고 기억을 다루는 캠페인이 카르코사로 가는 길의 느슨한 후속작이 된 것은 자연스러운 일이었습니다. 하스터는 대부분의 사람들이 심우주와 연관 짓는 고대의 존재가 아니며, 바로 그렇기 때문에 이토록 잘 어울립니다.",
           "이 캠페인이 심우주 SF 캠페인을 찾는 사람들에게 만족스러웠기를 바랍니다. 판타지 플라이트 게임즈의 글 스타일과 분위기를 유지하면서 ‘SF’ 캠페인에서 기대되는 SF스러운 요소들을 최대한 많이, 유기적으로 접목시키려고 노력했습니다. 다른 사람들도 아컴이라는 프레임워크 안에서 SF 이야기를 더 탐색해 보았으면 하는 바람입니다. 제가 한 것보다 더 먼 미래로 갈 수도 있을 테고, 어쩌면 스페이스 오페라 비슷한 무언가라거나, 에일리언 시리즈를 가져올 수도 있겠죠. 하지만 지금은, 제게는 이 암울한 미래를 다루는 것은 여기까지입니다.",
           "어쨌든 여러분이 이 캠페인을 재밌게 즐겨 주셨기를 바랍니다. 저는 이제 이토록 어두운 시대를 위한 캠페인 작업에 돌입해야겠군요."
         ]
       }
+    ],
+    "notes": [
+      "이 캠페인은 비공식 팬 창작물이며 판타지 플라이트 게임즈와는 어떠한 관련도 없습니다. 삽화의 모든 권리는 해당 작가에게 있습니다."
     ]
   },
   "xp": {
     "heirToCarcosa": "카르코사의 후계자"
   },
   "intro": {
-    "title": "우주에서는 그 누구도 그대의 비명을 들을 수 없으리"
+    "title": "우주에서는 그 누구도 그대의 비명을 들을 수 없으리",
+    "body": "<p class='basic'>“그는 카르코사에 왕조가 세워진 일, 하스터와 알데바란을 잇는 호수들, 그리고 히아데스의 신비에 대해 언급했다. 그는 카실다와 카밀라에 대해 이야기했고, 뎀헤의 흐린 심연과 할리 호수의 깊이를 헤아렸다.”</p><p class='basic right'>– 로버트 W. 체임버스, 「명예 회복자」</p><p>때는 2147년, 당신은 버려진 것처럼 보이는 우주선에서 동면에서 막 깨어났습니다. 그리고 그때부터 당신은 인류의 멸종을 막기 위해 태양계를 가로지르는 심우주 모험에 휘말리게 됩니다. 오스카 리오스의 『카르코사에서 온 파문』과 마이클 C. 라보시에르 박사의 『종말의 시간』이라는 크툴루의 부름 보충 자료를 바탕으로 한 <i>암흑 물질</i>은 아홀로틀이 디자인한 1~4인용 <i>아컴 호러 카드 게임</i> 팬메이드 캠페인으로, 8개의 시나리오로 구성되어 있습니다. 이 캠페인을 플레이하려면 <i>카르코사로 가는 길</i> 디럭스 확장이 필요하며, 최고의 경험을 위해 플레이하기 전에 <i>카르코사로 가는 길</i>을 먼저 완료하기를 강력히 권장합니다.</p>"
   },
   "specialRules": [
     {
@@ -50,48 +60,165 @@
     }
   ],
   "additionalRulesAndClarifications": {
+    "title": "추가 규칙 및 설명",
+    "scan": "<h3>스캔</h3><p class='basic'>이 캠페인의 몇몇 조우 카드는 뒷면으로 놓였을 때 카드 아래쪽에 아이콘이 표시되어 있습니다. 이러한 조우 카드는 “스캔 덱”을 구성하는 데 사용됩니다. 스캔 덱은 일부 시나리오의 게임 준비 동안 구성되는 비플레이 상태의 카드 덱입니다.</p><p class='basic'>이 캠페인에서 <b>스캔</b> 행동 지정자로 표시된 능력을 사용하면 조사자는 주변 환경을 탐색할 수 있습니다. 이러한 능력은 일반적으로 각 시나리오를 진행하는 데 도움이 되는 이야기 자산, 이야기 카드 또는 장소를 스캔 덱에서 찾는 데 사용되며, 항상 그런 것은 아니지만 대개 “발동” 행동으로 개시합니다.</p><p class='basic'><b>스캔</b> 능력은 특정 아이콘과 일치하는 스캔 덱의 맨 위 카드를 찾으라고 지시합니다. 이 경우, 스캔 덱 맨 위 카드의 아래쪽에 있는 아이콘을 확인합니다. <b>스캔 덱 맨 위 카드에 당신이 스캔하려는 아이콘과 일치하는 아이콘이 있다면, 그 카드를 뽑습니다.</b> 이것을 “성공한” 스캔으로 간주합니다. 카드를 한 장도 뽑지 못했다면, 그 스캔은 “실패한” 것으로 간주합니다.</p><p class='basic'>맨 위 카드에 일치하는 아이콘이 없다면, 그 카드를 스캔 덱 옆에 뒷면으로 놓고, 스캔 덱의 다음 카드에서 일치하는 아이콘을 찾습니다. 지정된 종류의 카드를 뽑을 때까지 이 과정을 반복합니다. 이 행동이 끝난 후, 스캔 덱 옆에 놓인 모든 카드를 스캔 덱에 다시 넣고 섞습니다.</p><p class='basic'><b>스캔</b> 능력은 항상 그런 것은 아니지만 대개 장소의 아이콘을 가리킵니다. 장소의 아이콘이란 카드 왼쪽 위 모서리에 있는 연결 기호입니다.</p><p class='basic'>뒷면이 스캔 카드인 카드를 버리거나 다른 덱에 섞어 넣어야 하는 상황이 생긴다면, 그 대신 그 카드를 스캔 덱에 다시 넣고 섞습니다.</p>",
     "memories": "<h3>기억</h3><p class='basic'>몇몇 시나리오 카드/결말/막간에서 “기억”이라는 용어를 언급할 것입니다. 각 조사자마다 캠페인 기록지에 개별적으로 자신의 “기억”을 기록합니다. <b>이러한 “기억”은 조사자 각자에게만 귀속되며 서로 공유하지 않으니 유념하세요.</b></p><p class='basic'>종종 특정 조사자의 “기억”에 빗금을 긋거나 빗금에 취소선을 그으라는 지시를 받게 됩니다. 이 경우, 캠페인 기록지의 해당 조사자 “기억” 항목에 빗금을 긋거나 이미 그어진 빗금에 취소선을 긋습니다. 각각의 조사자가 가진 “기억”은 자신의 “기억” 항목에 그어진 빗금 개수와 같습니다(취소선이 그어진 빗금은 세지 않습니다).</p>",
     "alert": "<h3>경계</h3><p class='basic'>조사자가 경계 키워드가 있는 적으로부터 회피를 시도하는 도중 능력 테스트에 실패할 때마다, 우선 그 능력 테스트의 모든 결과를 적용합니다. 그 후, 그 적이 자신에게 회피를 시도했던 조사자를 상대로 공격을 수행합니다(경계 공격). 적은 경계 공격을 수행한 후에도 소진 상태가 되지 않습니다. 경계 공격은 조사자와 적이 교전하고 있는지 여부에 상관없이 발생합니다.</p>"
   },
   "prologue": {
-    "title": "서막"
+    "title": "서막",
+    "body": "<p>당신은 손에 든 접힌 프로그램을 뒤집어, 백 번째는 되는 것 같은 기분으로 다시 읽어 봅니다. “미스캐토닉 극단 제공: 황색의 왕.” 프로그램에는 이렇게 적혀 있습니다. “아컴의 자랑, 와드 극장에서 단 하룻밤만 열리는 특별 공연. 2막으로 구성된 거부할 수 없는 연극. 연출 및 감독 나이젤 엔그램.” 출연진은 소규모 앙상블이며, 마지막에 배역 이름 없이 한 줄이 적혀 있습니다. “이방인.”</p><p>그토록 기대를 모은 연극이 저 멀리 파리에서 아컴까지 온다는 것은 비록 단 하룻밤이라 해도 주목할 만한 사건입니다. 공연을 앞둔 몇 주 동안, 이 연극은 온 도시의 화젯거리였습니다. 그저 평범한 연극처럼 보였지만… 당신에게는 무언가 불길한 일이 벌어지고 있다는 증거가 있습니다. 시작은 극장 무대 담당자 한 명의 실종이었습니다. 겨우 열일곱 살인 소년이 어느 날 밤 리허설에 나타나지 않더니 다시는 모습을 보이지 않았습니다. 그다음, 공연을 2주도 채 남기지 않고 입에 총구를 문 채 시체로 발견된 음악가가 있었습니다. 그중에서도 가장 소름 끼치는 것은 경찰이 인디펜던스 광장에서 붙잡은 미치광이였습니다. 그는 “왕의 귀환”에 대해 고래고래 떠들어 댔습니다. 그는 아컴 정신병원으로 이송되었는데, 놀랍게도 그런 망상에 빠진 사람이 그 혼자가 아니었습니다.</p><p>이 사건들을 수상히 여긴 당신과 동료들은 이 일을 더 깊이 파고들었습니다. 연관성을 증명할 수는 없지만, 곧 막을 올릴 이 연극을 둘러싼 기이한 사건은 그것만이 아니었습니다. 연극이 지나간 자리에는 자살과 광기가 뒤따랐고, 당신은 그 이유를 밝혀내기로 결심했습니다.</p><p>객석의 조명이 어두워지고, 스포트라이트가 무대를 비춥니다. 펼쳐지는 공연은 당신의 예상과는 사뭇 다릅니다. 느리고 단조로운 <i>황색의 왕</i>의 1막은 지루하기 짝이 없습니다. 배경과 등장인물은 흥미롭지만, 두서없고 무의미한 이야기는 재미도 정보도 거의 주지 못합니다. 당신은 <i>황색의 왕</i>을 둘러싼 끔찍한 사건들이 결국 서로 관련이 없는 것은 아닌가 하는 생각이 들기 시작합니다. 어쩌면 그저 당신의 지나친 상상이었을지도 모릅니다. 이렇게 하찮고 평범한 공연이 어떻게 그런 대혼란을 일으킬 수 있겠습니까? 놀랍게도 1막은 어떠한 긴장감도 폭로도 없이 막을 내립니다. 휴식 시간을 알리며 조명이 밝아지고, 당신은 하품을 참으며 일찍 자리를 뜰까 고민합니다. 하지만 결정을 내리기도 전에, 당신은 스르르… 스르르… 잠에 빠져듭니다.</p><p class='basic right'><b>시나리오 I: 누더기호</b>(으)로 이어집니다.</p>"
   },
   "label": {
+    "alienAid": {
+      "readyAndMoveMiGoScientist": "‘미고 과학자’를 준비시키고 원하는 장소로 이동시킴"
+    },
+    "arrivalOfTheKing": {
+      "memoriesToCrossOut": "당신의 “기억”에 있는 빗금에 원하는 개수만큼 취소선을 그음"
+    },
+    "biologyLab": {
+      "healDamage": "당신이 위치한 장소의 각 조사자에게서 피해를 1 회복시킴",
+      "healHorror": "당신이 위치한 장소의 각 조사자에게서 공포를 1 회복시킴"
+    },
+    "contamination": {
+      "discardAlly": "부착된 조력자를 버림",
+      "placeDoom": "부착된 조력자에 파멸을 1개 놓음"
+    },
+    "delights": {
+      "doNotRemoveAToken": "토큰을 제거하지 않음",
+      "removeSkull": "혼돈 주머니에서 해골 토큰을 1개 제거함",
+      "removeCultist": "혼돈 주머니에서 사교도 토큰을 1개 제거함",
+      "removeTablet": "혼돈 주머니에서 석판 토큰을 1개 제거함",
+      "removeElderThing": "혼돈 주머니에서 옛것 토큰을 1개 제거함",
+      "removeElderSign": "혼돈 주머니에서 옛 표식 토큰을 1개 제거함"
+    },
+    "desync": {
+      "traumaAndExile": "정신적 트라우마를 1 겪고 당신의 “기억”에 빗금을 1개 그은 다음, 이 카드를 추방함",
+      "returnToDeck": "당신의 덱에 카드가 5장 이상 있다면, 이 카드를 당신의 덱에 다시 넣고 섞음. 그렇지 않다면, 이 카드를 버림"
+    },
+    "evaSuit": {
+      "doNotPutIntoPlay": "‘선외활동복’을 플레이 영역에 두지 않음"
+    },
+    "fromTheDark": {
+      "takeDamage": "피해를 {count} 받음",
+      "drawAMimic": "조우 덱과 버린 조우 카드 더미에서 ‘모사체’ 적을 찾아 뽑음"
+    },
+    "innocentMishap": {
+      "damageNearestBrain": "가장 가까운 ‘두뇌’ 이야기 자산에 피해를 1 줌",
+      "damageMiGoScientist": "‘미고 과학자’에게 피해를 2 줌",
+      "take2DirectDamage": "직접 피해를 2 받음"
+    },
+    "internationalCollaboration": {
+      "gainResources": "그 대신 그 자원을 얻음",
+      "drawCards": "그 대신 그 카드를 뽑음",
+      "decline": "거절함"
+    },
+    "jv7Hyades": {
+      "trefoil": "클로버 아이콘을 스캔함",
+      "t": "T자 아이콘을 스캔함"
+    },
+    "medicalFoam": {
+      "doNotPutIntoPlay": "‘의료용 폼’을 플레이 영역에 두지 않음"
+    },
+    "micrometeoroid": {
+      "discardEachEvent": "당신의 손에 있는 모든 이벤트를 버림"
+    },
+    "mindMachineInterface": {
+      "doNotPutIntoPlay": "‘정신-기계 인터페이스’를 플레이 영역에 두지 않음"
+    },
     "paleBlueDot": {
-      "takeHorror": "공포를 1 받음"
+      "takeHorror": "공포를 1 받음",
+      "placeDoom": "현재 주요사건에 파멸을 1개 놓고 이 카드를 버림"
+    },
+    "paradoxicalThreat": {
+      "placeFacedown": "조우 덱 맨 위 카드 3장을 당신의 위협 영역에 뒷면으로 놓음",
+      "doomAndDraw": "현재 주요사건에 파멸을 1개 놓고 당신의 위협 영역에서 뒷면 카드 3장을 뽑음"
+    },
+    "radiationTablets": {
+      "doNotPutIntoPlay": "‘방사선 방호제’를 플레이 영역에 두지 않음"
+    },
+    "scan": {
+      "atYourLocation": "당신이 위치한 장소에서 스캔함"
     },
     "sceneShifting": {
-      "placeDoom": "현재 주요사건에 파멸을 1개 놓습니다"
+      "placeDoom": "현재 주요사건에 파멸을 1개 놓습니다",
+      "moveEnemies": "모든 적을 당신을 향해 장소 1곳만큼 이동시킴. 당신이 위치한 장소의 모든 적은 즉시 당신을 공격함"
+    },
+    "scienceExpansion": {
+      "purchase": "‘연구 완료’ 과학 이야기 자산을 1장 구매함",
+      "donePurchasing": "아무것도 구매하지 않음"
     },
     "solarEclipse": {
       "take1Horror": "공포를 1 받음",
       "locationGets2Shroud": "이번 조사 동안 당신이 위치한 장소의 장막값이 +2 증가합니다"
+    },
+    "surprise": {
+      "moveBoogeyman": "‘부기맨’을 당신이 현재 위치한 장소로 이동시킴",
+      "boogeymanAttacks": "‘부기맨’이 즉시 당신을 공격함"
+    },
+    "virtualAccessKey": {
+      "addToDeck": "‘가상 접속 열쇠’를 당신의 덱에 추가함",
+      "doNotAddToDeck": "덱에 추가하지 않음"
+    },
+    "whatTypeOfShipIsThis": {
+      "placeDoom": "현재 주요사건에 파멸을 1개 놓고 이 카드를 승점 더미에 추가함",
+      "removeFromGame": "이 카드를 게임에서 제거함"
+    },
+    "withoutATrace": {
+      "assumeCommandOfTheShip": "우주선의 지휘권을 넘겨받음",
+      "scavengeTheShipForParts": "우주선을 뒤져 부품을 회수함"
     }
   },
   "key": {
     "youWereTransportedToTheVirtualDreamlandsByMaja": "당신은 마자에 의해 가상현실 속 몽환의 땅으로 전송되었다",
     "youEnteredTheVirtualDreamlandsByYourOwnMeans": "당신은 자력으로 가상현실 속 몽환의 땅에 들어왔다",
+    "hasBeenInfectedByTheCybervirus": "사이버바이러스에 감염되었다.",
     "youAreTrappedInAVirtualNightmare": "당신은 가상현실 속 악몽에 갇혀 버렸다",
     "youPartiallyRestoredTheSanityOfK2PS187": "당신은 K2-PS187의 정신을 일부나마 회복시켰다",
     "youFullyRestoredTheSanityOfK2PS187": "당신은 K2-PS187의 정신을 완전히 회복시켰다",
     "youHaveWatchedThePerformanceOfHeirToCarcosa": "조사자들이 카르코사의 후계자라는 공연을 관람했다",
+    "theElbrusStationHasBeenLostInTheQuantumRealm": "엘브루스 기지가 양자 영역에서 소실되었다.",
+    "theElbrusStationHasBeenFullyStabilized": "엘브루스 기지가 완전히 안정화되었다.",
     "youHaveWitnessedThePrimordialChaos": "당신은 태고의 혼돈을 목도했다",
     "youHaveRescuedTheRemainingCrewOfTheNostalgiaII": "당신은 향수 2호의 남은 승조원을 구출했다",
     "theNostalgiaIIHasBeenSaved": "향수 2호를 구했다",
     "youCouldntSaveTheCrewOfTheNostalgiaII": "당신은 향수 2호의 승조원을 단 한 명도 구하지 못했다",
+    "allInvestigatorsHaveBeenCorruptedByTheEarth": "모든 조사자가 지구에 의해 타락했다.",
     "youAreNotInGoodStandingWithTheMiGo": "당신은 미고와 반목하고 있다",
     "youAreAlliedWithTheMiGo": "당신은 미고와 동맹을 맺었다",
     "youHaveUncoveredTheCultistsInhumanMethods": "사교도들이 사용하는 추악한 방법을 알아냈다",
     "youHaveWitnessedTheUnconsciousPandemonium": "당신은 무의식 속의 복마전을 목도했다",
+    "youHaveWitnessedTheManifestedMadness": "당신은 현현한 광기를 목도했다.",
     "theInvestigatorsAreTrappedWithinCarcosa": "조사자들은 카르코사에 갇혀 버렸다",
+    "theInvestigatorsKnowOfTheAbjurationOfTheThrone": "조사자들은 왕좌의 포기에 대해 알고 있다.",
     "theSunWentSupernovaAndWipedOutMostOfTheSolarSystem": "태양이 초신성을 일으켜 태양계 대부분을 말살했다",
+    "miGoSafelyReturnedToTheirHomeWorld": "미고가 무사히 고향 세계로 돌아갔다.",
     "hopeWasShieldedFromTheBlast": "‘희망’이 폭발에서 살아남았다",
     "theUCCEscapedToAnotherGalaxy": "식민지 연방이 다른 은하계로 도망쳤다",
+    "livedTheRemainderOfTheirDaysWithHope": "‘희망’에서 여생을 보냈다.",
+    "livedTheRemainderOfTheirDaysOnParadise": "‘낙원’에서 여생을 보냈다.",
     "youHaveReturnedToThePalacesOfDimCarcosa": "당신은 어스레한 카르코사의 왕궁으로 돌아갔다",
+    "wasCaughtInTheSupernovasBlast": "초신성 폭발에 휘말렸다.",
     "theInvestigatorsEscapedHastursGrasp": "조사자들이 마침내 하스터의 손아귀에서 벗어났고 하스터가 감옥에서 탈출하지 못하도록 막았다",
     "theRealmOfCarcosaOvertookOurUniverse": "카르코사 왕국이 현실 세계의 우주와 병합되었고, 타실다가 검은 별들을 모두 다스린다",
     "hasturAndTassildaAreImprisonedInCarcosaOnceMore": "하스터와 타실다는 다시 한 번 카르코사에 갇혔고, 우주는 피할 수 없는 운명을 뛰어넘었습니다. 적어도 지금은…",
     "impendingDoom": "임박한 파멸",
     "memories": "기억"
+  },
+  "electricNightmare": {
+    "label": {
+      "noInvestigatorAddsK2": "아무 조사자도 덱에 추가하지 않음"
+    }
+  },
+  "scienceExpansion": {
+    "title": "과학 확장",
+    "description": "암흑 물질 과학 확장을 포함합니다: 시나리오 사이마다 경험치와 “기억”으로 구매할 수 있는 ‘연구 완료’ 과학 이야기 자산 10장과, 저무는 별의 스캔 덱에 섞어 넣는 추가 스캔 카드 5장이 포함됩니다. ‘케이트 윈스롭’은 포함되지 않습니다.",
+    "purchase": "과학 카드 구매",
+    "shuffleIn": "과학 확장 스캔 카드 5장을 스캔 덱에 넣고 섞음",
+    "instructions": "‘연구 완료’ 과학 이야기 자산을 1장 구매하거나, 구매를 멈춥니다. 각 카드의 가격은 카드 앞면에 인쇄된 경험치와 “기억”입니다.",
+    "waiting": "{investigator}이(가) 과학 카드를 구매하기를 기다리는 중…",
+    "experienceRemaining": "경험치: {count}",
+    "memoriesRemaining": "“기억”: {count}",
+    "donePurchasing": "구매 완료"
   }
 }

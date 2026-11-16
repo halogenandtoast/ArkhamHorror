@@ -2,6 +2,7 @@ module Arkham.Skill.Cards.QuickThinking (quickThinking) where
 
 import Arkham.Card
 import Arkham.Helpers.Modifiers (ModifierType (..), semaphore)
+import Arkham.Helpers.Modifiers qualified as Modifiers
 import Arkham.Message.Lifted.Choose
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
@@ -18,7 +19,10 @@ instance RunMessage QuickThinking where
   runMessage msg s@(QuickThinking attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ n | n >= 2 -> do
       semaphore (toCardCode attrs) do
-        when (tabooed TabooList18 attrs) $ roundModifier attrs (toCardCode attrs) Semaphore
+        when (tabooed TabooList18 attrs) do
+          -- Priority, because the sibling copies' PassedSkillTest messages are too and
+          -- get pulled ahead of a plainly pushed effect, leaving the semaphore free (#6005)
+          push . Priority =<< Modifiers.roundModifier attrs (toCardCode attrs) Semaphore
         skillTestCardOption attrs do
           chooseOneM iid do
             labeledI "takeAdditionalAction" $ doStep 1 msg

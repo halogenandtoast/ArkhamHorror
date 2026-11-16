@@ -1,13 +1,13 @@
 module Arkham.Asset.Assets.TheMilitarysPlan (theMilitarysPlan) where
 
 import Arkham.Ability
-import Arkham.Scenarios.TheBlobThatAteEverything.Helpers
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheBlobThatAteEverything.Helpers
 import Arkham.Trait (Trait (Oozified))
 
 newtype TheMilitarysPlan = TheMilitarysPlan AssetAttrs
@@ -43,6 +43,6 @@ instance RunMessage TheMilitarysPlan where
       withLocationOf iid \lid -> removeTokens (attrs.ability 1) lid #horror 1
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      removeTokens (attrs.ability 2) attrs #damage 1
+      removeTokens (attrs.ability 1) attrs #damage 1
       pure a
     _ -> TheMilitarysPlan <$> liftRunMessage msg attrs

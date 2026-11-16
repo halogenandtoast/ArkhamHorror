@@ -38,28 +38,29 @@ instance RunMessage DefuseTheExplosives where
       fungusMound <- getJustLocationByName "Fungus Mound"
       createEnemyAt_ Enemies.miGoMeddler fungusMound
       plan <- getSetAsideCard Assets.theMilitarysPlan
-      createAssetAt_ plan Global
+      obtainCard plan
+      planId <- createAssetAt plan Global
+      placeTokens attrs planId #damage 5
       n <- getPlayerCount
-      doStep (1 + n) msg
+      doStep n msg
       pure $ DefuseTheExplosives $ attrs & placementL .~ Global
-    DoStep n msg'@(ResolveThisStory _ (is attrs -> True)) | n > 1 -> do
+    DoStep n msg'@(ResolveThisStory _ (is attrs -> True)) | n > 0 -> do
       crater <- getJustLocationByName "The Crater"
       locations <-
         select
           $ FarthestLocationFromLocation
             crater
             (LocationWithTrait Oozified <> LocationCanHaveAttachments <> not_ (LocationWithToken #horror))
-      if length locations <= n
-        then do
-          for_ locations \lid -> placeTokens attrs lid #horror 1
-          doStep (n - length locations) msg'
-        else do
-          leadChooseOneM $ targets locations \lid -> placeTokens attrs lid #horror 1
-          doStep (n - 1) msg'
-      pure s
-    DoStep 1 msg'@(ResolveThisStory _ (is attrs -> True)) -> do
-      selectOne (assetIs Assets.theMilitarysPlan) >>= traverse_ \aid -> placeTokens attrs aid #damage 5
-      doStep 0 msg'
+      if null locations
+        then doStep 0 msg'
+        else
+          if length locations <= n
+            then do
+              for_ locations \lid -> placeTokens attrs lid #horror 1
+              doStep (n - length locations) msg'
+            else do
+              leadChooseOneM $ targets locations \lid -> placeTokens attrs lid #horror 1
+              doStep (n - 1) msg'
       pure s
     DoStep 0 (ResolveThisStory _ (is attrs -> True)) -> do
       pure $ DefuseTheExplosives $ attrs & metaL .~ toJSON True

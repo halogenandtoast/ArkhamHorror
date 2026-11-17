@@ -5,13 +5,15 @@
 # schema baseline. upgrade.sh then applies only genuinely-newer migrations
 # instead of guessing whether the DB is current.
 #
-# setup.sql is a manual pg_dump and can lag the migration plan. Pass the last
-# migration your current setup.sql actually contains as the argument; the
-# emitted INSERTs cover the plan up to and including it. With no argument, the
-# whole plan is stamped (use only when setup.sql is fully current).
+# Normally called by scripts/gen-setup-sql.sh, which generates setup.sql from
+# the migrations themselves and so stamps the whole plan -- pass no argument for
+# that. The optional argument exists for a setup.sql that was NOT generated from
+# the plan and therefore lags it: name the last migration it actually contains
+# and the stamp stops there, leaving the rest to be applied.
 #
-# Usage (run after regenerating setup.sql):
-#   scripts/gen-schema-baseline.sh add_step_constraint >> setup.sql
+# Usage:
+#   scripts/gen-schema-baseline.sh                      # stamp the whole plan
+#   scripts/gen-schema-baseline.sh add_step_constraint  # stamp up to there
 #
 set -euo pipefail
 
@@ -42,5 +44,8 @@ SQL
 while IFS= read -r n; do
   [ -n "$n" ] || continue
   printf "INSERT INTO public.arkham_schema_migrations (name) VALUES ('%s') ON CONFLICT DO NOTHING;\n" "$n"
-  [ "$n" = "$THROUGH" ] && break
+  # Guarded so the final iteration does not leave a non-zero status behind:
+  # with no THROUGH the test never matches, and `test && break` as the last
+  # statement of the loop would make the whole script exit 1 under `set -e`.
+  if [ -n "$THROUGH" ] && [ "$n" = "$THROUGH" ]; then break; fi
 done <<< "$names"

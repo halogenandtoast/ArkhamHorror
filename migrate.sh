@@ -14,9 +14,13 @@ PGUSER="${PGUSER:-arkham_pg_user}"
 PGDATABASE="${PGDATABASE:-arkham-horror-backend}"
 export PGHOST PGUSER PGDATABASE
 
-# Last migration the shipped setup.sql contains. A DB with no tracking table is
-# assumed initialised from setup.sql, so migrations after this are applied.
-# Keep in sync with BASELINE_THROUGH in upgrade.sh.
+# setup.sql now carries its own stamp for every migration it contains (it is
+# generated from the plan by scripts/gen-setup-sql.sh), so a database built from
+# a current dump arrives here already tracked and this value is not consulted.
+# It is the fallback for a database with NO tracking table, meaning one
+# initialised from a setup.sql older than the stamping block: credit it with
+# what that dump is known to have had, and apply everything after.
+# Keep in sync with BASELINE_THROUGH in offline's start.sh.
 BASELINE_THROUGH="add_step_constraint"
 PLAN="/migrations/sqitch.plan"
 DEPLOY="/migrations/deploy"

@@ -209,6 +209,14 @@ make install-hooks
 
 ### Offline builds
 
+This is about *cutting* a prebuilt package. If you only want to run one, see
+[Prebuilt package](./docs/install/prebuilt.md) instead, and
+[offline/README.md](./offline/README.md) for the detail behind it:
+[the Windows first-run flow](./offline/README.md#windows), [the codes
+`start.sh` exits with](./offline/README.md#error-code-quick-reference), and
+[the FAQ](./offline/README.md#faq) for card images, WSL and `initdb`
+permissions.
+
 The self-contained packages at the top of this file are built by
 `.github/workflows/build-offline.yml`, which runs on any `v*` tag and puts the
 archives on a GitHub release. Cutting one:
@@ -236,7 +244,33 @@ and leaves the archive in `offline/_dist/`. The toolchains and caches land in
 `offline/_deps/` and `offline/_tmp/`, all three gitignored.
 
 The build is not allowed to leave the source tree changed: it may patch the
-frontend while it runs, but it puts it back. `offline/README.md` has the rest.
+frontend while it runs, but it puts it back.
+[offline/README.md](./offline/README.md) documents the pipeline stage by stage.
+
+### Database schema
+
+`setup.sql` is the schema every fresh install starts from — the offline
+package, a new Docker install, a new checkout. It is a **generated file**:
+`scripts/gen-setup-sql.sh` replays `migrations/deploy/*.sql` in `sqitch.plan`
+order into a throwaway database, dumps the result, and stamps
+`arkham_schema_migrations` with the whole plan. The migrations are the source
+of truth; setup.sql is derived from them.
+
+So after adding a migration:
+
+```
+make setup-sql          # regenerate setup.sql (needs postgres 14 or docker)
+make setup-sql-check    # verify it matches migrations/, without rewriting it
+```
+
+`make install-hooks` installs a pre-commit hook that refuses a commit touching
+`migrations/` without a regenerated `setup.sql`. It used to be a hand-taken
+dump, which is how it ended up 26 migrations behind and broke registration for
+everyone installing the offline package.
+
+Existing databases catch up on their own: Docker installs run `migrate.sh` as a
+one-shot compose service, and the offline package applies pending migrations
+from `start.sh` on every launch.
 
 ### Tests
 

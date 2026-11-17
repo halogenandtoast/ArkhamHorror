@@ -1,5 +1,11 @@
 # Arkham Horror LCG: Offline Build System
 
+> **Just want to play?** Start at
+> [docs/install/prebuilt.md](../docs/install/prebuilt.md) — download, launch,
+> upgrade. This file is the reference behind it, and the parts you are most
+> likely to want are [Windows, start to finish](#windows), the
+> [error codes](#error-code-quick-reference) and the [FAQ](#faq).
+
 ## Background
 
 [Arkham Horror LCG](https://github.com/halogenandtoast/ArkhamHorror) is a web-based implementation of the Arkham Horror LCG card game.
@@ -59,7 +65,8 @@ The generated distribution does not depend on Docker and can run directly after 
      │   ├── nginx.conf          # Generated at runtime
      │   ├── mime.types          # Minimal built-in MIME types
      │   └── settings.yml        # Yesod config
-     ├── setup.sql               # Full database schema/data import file
+     ├── setup.sql               # Full database schema import file (generated from migrations/)
+     ├── migrations/             # Shipped migration plan; the launcher applies anything newer
      ├── start.sh                # Start script (--status / --stop)
      ├── start.bat               # Windows launcher (double-click to use)
      └── stop.sh                 # Stop shortcut
@@ -269,6 +276,7 @@ On every normal shutdown, a logical backup is also written to `data/backup/lates
 | 2008 | Invalid PostgreSQL cluster cleanup failed | — |
 | 2009 | Logical backup restore failed | `pg_restore.log` |
 | 2010 | Another startup is already in progress | — |
+| 2011 | Schema migration failed | `migrate.log` |
 
 ### `start.sh` (3xxx: application services)
 
@@ -297,11 +305,34 @@ All logs live under the distribution package `data/` directory:
 - `psql.log` (SQL import)
 - `pg_dump.log` (logical backup export)
 - `pg_restore.log` (logical backup restore)
+- `migrate.log` (schema migrations)
 - `arkham-api.log` (backend API)
 - `error.log` (nginx errors)
 - `access.log` (nginx access log)
 
 Logs are cleared automatically after a normal Ctrl+C shutdown. They are preserved when startup fails.
+
+## Schema Migrations
+
+`setup.sql` installs the schema as of the build. It is not written by hand: it
+is generated from `migrations/` by `scripts/gen-setup-sql.sh`, and it ends by
+stamping `arkham_schema_migrations` with every migration it contains.
+
+The package also ships the migrations themselves, and `start.sh` applies any
+that the database does not already have, on every start, before the API comes
+up. That is what lets an old install heal itself: a database created by a
+package from months ago gets the newer migrations applied the next time it is
+launched, instead of failing at runtime on a column the engine expects and the
+database has never had. Already-applied migrations are skipped, so this costs
+nothing on a current install.
+
+A database with no `arkham_schema_migrations` table at all was built from a
+`setup.sql` that predates the stamping block. It is credited with the
+migrations that dump is known to have contained (through `add_step_constraint`)
+and the rest are applied.
+
+This mirrors `migrate.sh`, the one-shot service that does the same job for
+Docker installs, so every way of running the game converges on the same schema.
 
 ## FAQ
 
@@ -351,6 +382,32 @@ The current frontend generates these card image request forms:
 nginx matches those paths with regex locations in `start.sh` and applies the local-first fallback chain directly.
 
 To fetch images, run `scripts/fetch-assets.sh en` (English, about 1.3 GB) or `scripts/fetch-assets.sh en+zh` (English + Chinese, about 1.5 GB) from the repository root, then copy `frontend/public/img/` into `frontend/dist/img/` in the distribution package. You do not have to download everything; nginx automatically falls back to the CDN for missing files.
+
+**Q: Nothing happens when I click Register, and `pg.log` says a column of
+relation "users" does not exist.**
+
+A: The database is older than the game binary. This was possible in packages
+built before November 2026, where `setup.sql` had drifted 26 migrations behind
+and nothing in the package could bring it forward. Launch a current package
+against the same data directory and it will migrate the database on startup;
+`migrate.log` records what it applied. See [Schema Migrations](#schema-migrations).
+
+**Q: Extracting the archive on Windows fails on a symbolic link.**
+
+A: Windows will not create symlinks for an unprivileged account. Turn on
+**Developer Mode** (Settings → System → For developers) and extract again, or
+extract from an elevated prompt. The library links inside the package are
+repaired by the launcher at startup, and it falls back to copying where the
+filesystem has no symlinks, so a link that came out as a copy is harmless — an
+extraction that stopped partway is not.
+
+**Q: `pg.log` says `FATAL: role "arkham" does not exist`.**
+
+A: Noise, not a failure. `pg_isready` probes the server without a role name, so
+it connects as the OS user `arkham` while the database role is `arkham_user`;
+PostgreSQL logs the rejection but the probe has what it wanted — an answer from
+a live server. Two of these per start, during the wait loop, are expected. A
+real connection problem shows up as error code 2005, 2006 or 3003.
 
 **Q: What if `initdb` reports `invalid permissions` on WSL/NTFS?**
 

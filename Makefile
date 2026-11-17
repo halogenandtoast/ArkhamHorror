@@ -303,11 +303,21 @@ sync-and-manifest:
 	./scripts/sync-and-manifest.sh
 .PHONY: sync-and-manifest
 
+## Regenerate setup.sql from migrations/ (run after adding a migration)
+setup-sql:
+	./scripts/gen-setup-sql.sh
+.PHONY: setup-sql
+
+## Check setup.sql matches migrations/ (replays them; needs postgres 14 or docker)
+setup-sql-check:
+	./scripts/gen-setup-sql.sh --check
+.PHONY: setup-sql-check
+
 ## Install git hooks
 install-hooks:
-	cp scripts/check-manifest.sh .git/hooks/pre-commit
+	cp scripts/hooks-pre-commit.sh .git/hooks/pre-commit
 	chmod +x .git/hooks/pre-commit
-	@echo "Pre-commit hook installed."
+	@echo "Pre-commit hook installed (image manifest + setup.sql checks)."
 .PHONY: install-hooks
 
 ## Start the local dev stack: arkham-api + vite, images served from frontend/public

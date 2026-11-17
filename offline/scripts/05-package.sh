@@ -125,6 +125,92 @@ die() {
     exit "$code"
 }
 
+# ── Schema migrations ────────────────────────────────────────────────────────
+# setup.sql installs the schema as of the build, and `arkham_schema_migrations`
+# records which migrations that schema already contains. Anything newer in the
+# shipped plan is applied here, so a database made by an older package catches
+# up on the next launch instead of erroring on a column that does not exist yet.
+#
+# Mirrors migrate.sh (the docker one-shot) so both paths behave the same.
+MIGRATIONS_DIR_NAME="migrations"
+# The last migration a setup.sql from before the stamping block contained. A
+# database with no tracking table is assumed to be one of those.
+BASELINE_THROUGH="add_step_constraint"
+
+apply_migrations() {
+    local mdir="$DATA_DIR/$MIGRATIONS_DIR_NAME"
+    local plan="$mdir/sqitch.plan"
+    local log="$DATA_DIR/migrate.log"
+
+    if [ ! -f "$plan" ]; then
+        # Older package, or a build where migrations were not bundled. The
+        # shipped setup.sql is still self-consistent, so this is not fatal.
+        warn "No migration plan in the package; skipping schema migrations."
+        return 0
+    fi
+
+    local names
+    names="$(grep -vE '^[[:space:]]*(%|#|$)' "$plan" | awk '{print $1}')"
+    [ -n "$names" ] || return 0
+
+    local q_existed
+    q_existed="$(psql_cmd -qtA -d "$PG_DB" \
+        -c "SELECT to_regclass('public.arkham_schema_migrations') IS NOT NULL" \
+        2>>"$log" || echo "")"
+    if [ -z "$q_existed" ]; then
+        die 2011 "Could not read the schema migration table" "$log"
+    fi
+
+    psql_cmd -qtA -d "$PG_DB" -c "CREATE TABLE IF NOT EXISTS arkham_schema_migrations (
+        name text PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now());" \
+        >> "$log" 2>&1 || die 2011 "Could not create the schema migration table" "$log"
+
+    # No tracking table means a database built from a setup.sql that predates
+    # the stamping block. Credit it with the migrations that dump contained;
+    # guessing high would skip migrations it genuinely needs, so this stops at
+    # the known baseline and lets the rest apply.
+    if [ "$q_existed" != "t" ]; then
+        info "No migration history; seeding baseline through '$BASELINE_THROUGH'."
+        local vals="" n
+        while IFS= read -r n; do
+            [ -n "$n" ] || continue
+            vals="${vals:+$vals,}('$n')"
+            if [ "$n" = "$BASELINE_THROUGH" ]; then break; fi
+        done <<< "$names"
+        if [ -n "$vals" ]; then
+            psql_cmd -qtA -d "$PG_DB" \
+                -c "INSERT INTO arkham_schema_migrations(name) VALUES $vals ON CONFLICT DO NOTHING;" \
+                >> "$log" 2>&1 || die 2011 "Could not seed the migration baseline" "$log"
+        fi
+    fi
+
+    local applied
+    applied="$(psql_cmd -qtA -d "$PG_DB" \
+        -c "SELECT coalesce(string_agg(name, ' '), '') FROM arkham_schema_migrations" \
+        2>>"$log")" || die 2011 "Could not read applied migrations" "$log"
+
+    local count=0 n
+    while IFS= read -r n; do
+        [ -n "$n" ] || continue
+        case " $applied " in *" $n "*) continue ;; esac
+        if [ ! -f "$mdir/deploy/$n.sql" ]; then
+            warn "Plan names '$n' but the package has no deploy script for it; skipping."
+            continue
+        fi
+        info "Applying migration $n ..."
+        psql_cmd -v ON_ERROR_STOP=1 -q -d "$PG_DB" -f "$mdir/deploy/$n.sql" \
+            >> "$log" 2>&1 || die 2011 "Migration '$n' failed" "$log"
+        psql_cmd -qtA -d "$PG_DB" \
+            -c "INSERT INTO arkham_schema_migrations(name) VALUES ('$n') ON CONFLICT DO NOTHING;" \
+            >> "$log" 2>&1 || die 2011 "Could not record migration '$n'" "$log"
+        count=$((count + 1))
+    done <<< "$names"
+
+    if [ "$count" -gt 0 ]; then
+        info "Schema updated ($count migration(s) applied)."
+    fi
+}
+
 # Open a URL in the default browser (cross-platform, silently ignore failures)
 open_browser() {
     local url="$1"
@@ -1250,6 +1336,12 @@ do_start() {
         info "Database recreation complete."
     fi
 
+    # Bring the schema up to date before anything connects to it. This is what
+    # makes an older install heal itself: the package ships every migration, and
+    # a database created from an earlier setup.sql gets the newer ones applied
+    # on the next launch rather than failing at runtime on a missing column.
+    apply_migrations
+
     # 2. arkham-api (port 3002)
     info "Starting backend API ..."
     export DATABASE_URL="postgres://${PG_USER}@127.0.0.1:${PG_PORT}/${PG_DB}"
@@ -2057,13 +2149,40 @@ main() {
     local pg_share="${DEPS_DIR}/postgres/share"
     [ -d "$pg_share" ] && { ensure_dir "${PKG_DIR}/game/pgsql/share"; cp -r "${pg_share}/"* "${PKG_DIR}/game/pgsql/share/" 2>/dev/null || true; }
 
-    # setup.sql is a full production database dump (tables + columns + constraints + indexes + triggers)
-    # Docker initializes the database directly from this file instead of composing Sqitch migrations
+    # setup.sql is the whole schema, generated from migrations/ by
+    # scripts/gen-setup-sql.sh. It also stamps arkham_schema_migrations with the
+    # migrations it contains, which is what lets the launcher tell a database
+    # built from this dump apart from one that is behind.
     if [ -f "$SETUP_SQL" ]; then
         cp "$SETUP_SQL" "${PKG_DIR}/game/data/setup.sql"
-        substep "setup.sql copied to game/data/ (full production database dump)"
+        substep "setup.sql copied to game/data/ (generated schema)"
     else
         warn "setup.sql not found"
+    fi
+
+    # Ship the migrations too, so the launcher can bring an older install's
+    # database up to date by itself. Without this a package could only ever
+    # install the schema it shipped with: the database Desther's package built
+    # in November still had August's `users` table, and registration failed on
+    # the missing phase_transition_notifications column with nothing in the
+    # package able to fix it.
+    local migrations_src="${PROJECT_ROOT}/migrations"
+    if [ -f "${migrations_src}/sqitch.plan" ]; then
+        ensure_dir "${PKG_DIR}/game/data/migrations/deploy"
+        cp "${migrations_src}/sqitch.plan" "${PKG_DIR}/game/data/migrations/sqitch.plan"
+        local _m _mcount=0
+        while IFS= read -r _m; do
+            [ -n "$_m" ] || continue
+            if [ -f "${migrations_src}/deploy/${_m}.sql" ]; then
+                cp "${migrations_src}/deploy/${_m}.sql" "${PKG_DIR}/game/data/migrations/deploy/"
+                _mcount=$((_mcount + 1))
+            else
+                warn "plan names '${_m}' but migrations/deploy/${_m}.sql is missing"
+            fi
+        done < <(grep -vE '^[[:space:]]*(%|#|$)' "${migrations_src}/sqitch.plan" | awk '{print $1}')
+        substep "${_mcount} migrations copied to game/data/migrations/"
+    else
+        warn "migrations/sqitch.plan not found — package will not be able to self-migrate"
     fi
 
     # Config files

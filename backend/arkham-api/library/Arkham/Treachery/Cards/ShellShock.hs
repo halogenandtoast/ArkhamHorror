@@ -15,7 +15,10 @@ shellShock = treachery ShellShock Cards.shellShock
 instance RunMessage ShellShock where
   runMessage msg t@(ShellShock attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      horrorCount <- fieldMap InvestigatorDamage (`div` 2) iid
-      assignHorror iid attrs horrorCount
+      -- Damage assignment is deferred, so a point already assigned to the investigator
+      -- is still pending here; Mark's own reaction can reveal this mid-assignment (#6011)
+      damage <- field InvestigatorDamage iid
+      pending <- field InvestigatorAssignedDamage iid
+      assignHorror iid attrs ((damage + pending) `div` 2)
       pure t
     _ -> ShellShock <$> liftRunMessage msg attrs

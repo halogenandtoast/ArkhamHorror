@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useDbCardStore } from '@/stores/dbCards'
 import * as Arkham from '@/arkham/types/CardDef'
 import { localizeArkhamDBBaseUrl } from '@/arkham/helpers'
 import { cardGroupKey as groupKey, groupCards } from '@/arkham/cardDetails'
@@ -96,11 +98,14 @@ const isAncestralKnowledgeCard = (card: Arkham.CardDef) => ancestralKnowledgeCar
 const isBewitchingCard = (card: Arkham.CardDef) => bewitchingCardCount(card) > 0
 const isEldritchBrandCard = (card: Arkham.CardDef) => eldritchBrandCardCount(card) > 0
 
+const { t } = useI18n()
+const dbCardStore = useDbCardStore()
+
 const attachmentTitle = (card: Arkham.CardDef) => {
-  if (card.art === '90052') return 'Spirit deck'
-  if (card.art === '09077') return 'Underworld Market'
-  if (card.art === '11080') return 'Eldritch Brand'
-  return 'Attached cards'
+  if (card.art === '90052') return t('gameUi.spiritDeckTitle')
+  if (card.art === '09077') return t('gameUi.underworldMarket')
+  if (card.art === '11080') return dbCardStore.getDbCard('11080')?.name ?? 'Eldritch Brand'
+  return t('gameUi.attachedCards')
 }
 
 const cardName = (card: Arkham.CardDef) => {

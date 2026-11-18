@@ -35,6 +35,7 @@ import * as Arkham from '@/arkham/types/Asset';
 import { useSettings } from '@/stores/settings';
 import { isManifestedSpiritAsset } from '@/arkham/spiritVisuals';
 import { useDbCardStore } from '@/stores/dbCards'
+import { useI18n } from 'vue-i18n'
 import { useCardStore } from '@/stores/cards'
 
 const props = withDefaults(defineProps<{
@@ -54,6 +55,7 @@ const cardFlightStyle = useCardFlight(() => props.asset.cardId)
 const debugging = ref(false)
 const frame = ref(null)
 const dbCardStore = useDbCardStore()
+const { t } = useI18n()
 
 const emits = defineEmits<{
   choose: [value: number]
@@ -115,7 +117,7 @@ const marketDeckCardImageId = (card: ArkhamCard) => toCardContents(card).art ?? 
 const marketDeckCardName = (card: ArkhamCard) => {
   const contents = toCardContents(card)
   const dbCard = dbCardStore.getDbCard(contents.art ?? marketDeckCardCode(card))
-  if (!dbCard) return 'Unknown card'
+  if (!dbCard) return t('gameUi.unknownCard')
   return dbCard.subname ? `${dbCard.name}: ${dbCard.subname}` : dbCard.name
 }
 const marketDeckSize = computed(() => props.asset.marketDeck?.length ?? 0)

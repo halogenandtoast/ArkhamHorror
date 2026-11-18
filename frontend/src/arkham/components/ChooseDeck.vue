@@ -27,7 +27,7 @@ import { useI18n } from 'vue-i18n'
 import { localizedInvestigatorName } from '@/arkham/investigatorName'
 import { handleEmbeddedI18n } from '@/arkham/i18n'
 
-const { t } = useI18n()
+const { t, te } = useI18n()
 const dbCards = useDbCardStore()
 
 let customWeaknessSave: Promise<boolean> = Promise.resolve(true)
@@ -108,23 +108,30 @@ watch(
 )
 
 const weaknessPoolOptions = [
-  { token: 'cycle:core', label: 'Core Set', aliases: ['core'] },
+  { token: 'cycle:core', label: 'Core Set', setKey: 'core', aliases: ['core'] },
   { token: 'cycle:rcore', label: 'Revised Core Set', aliases: ['rcore'] },
-  { token: 'cycle:dwl', label: 'The Dunwich Legacy', aliases: ['dwl', 'dwlp'] },
-  { token: 'cycle:ptc', label: 'The Path to Carcosa', aliases: ['ptc', 'ptcp'] },
-  { token: 'cycle:tfa', label: 'The Forgotten Age', aliases: ['tfa', 'tfap'] },
-  { token: 'cycle:tcu', label: 'The Circle Undone', aliases: ['tcu', 'tcup'] },
-  { token: 'cycle:tde', label: 'The Dream-Eaters', aliases: ['tde', 'tdep'] },
-  { token: 'cycle:tic', label: 'The Innsmouth Conspiracy', aliases: ['tic', 'ticp'] },
-  { token: 'cycle:eote', label: 'Edge of the Earth', aliases: ['eote', 'eoep'] },
-  { token: 'cycle:tsk', label: 'The Scarlet Keys', aliases: ['tsk', 'tskp'] },
-  { token: 'cycle:fhv', label: 'The Feast of Hemlock Vale', aliases: ['fhv', 'fhvp'] },
-  { token: 'cycle:tdc', label: 'The Drowned City', aliases: ['tdc', 'tdcp'] },
-  { token: 'cycle:core_ch2', label: 'Chapter 2 Core Set', aliases: ['core_ch2', 'core2026', 'core_2026'] },
+  { token: 'cycle:dwl', label: 'The Dunwich Legacy', setKey: 'dwl', aliases: ['dwl', 'dwlp'] },
+  { token: 'cycle:ptc', label: 'The Path to Carcosa', setKey: 'ptc', aliases: ['ptc', 'ptcp'] },
+  { token: 'cycle:tfa', label: 'The Forgotten Age', setKey: 'tfa', aliases: ['tfa', 'tfap'] },
+  { token: 'cycle:tcu', label: 'The Circle Undone', setKey: 'tcu', aliases: ['tcu', 'tcup'] },
+  { token: 'cycle:tde', label: 'The Dream-Eaters', setKey: 'tde', aliases: ['tde', 'tdep'] },
+  { token: 'cycle:tic', label: 'The Innsmouth Conspiracy', setKey: 'tic', aliases: ['tic', 'ticp'] },
+  { token: 'cycle:eote', label: 'Edge of the Earth', setKey: 'eoe', aliases: ['eote', 'eoep'] },
+  { token: 'cycle:tsk', label: 'The Scarlet Keys', setKey: 'tsk', aliases: ['tsk', 'tskp'] },
+  { token: 'cycle:fhv', label: 'The Feast of Hemlock Vale', setKey: 'fhv', aliases: ['fhv', 'fhvp'] },
+  { token: 'cycle:tdc', label: 'The Drowned City', setKey: 'tdc', aliases: ['tdc', 'tdcp'] },
+  { token: 'cycle:core_ch2', label: 'Chapter 2 Core Set', setKey: 'core2026', aliases: ['core_ch2', 'core2026', 'core_2026'] },
   { token: 'cycle:return', label: 'Return To boxes', aliases: ['return'] },
-  { token: 'cycle:investigator_decks', label: 'Investigator Starter Decks', aliases: ['investigator_decks'] },
-  { token: 'cycle:investigator_decks_ch2', label: 'Chapter 2 Investigator Decks', aliases: ['investigator_decks_ch2'] },
+  { token: 'cycle:investigator_decks', label: 'Investigator Starter Decks', setKey: 'investigator', aliases: ['investigator_decks'] },
+  { token: 'cycle:investigator_decks_ch2', label: 'Chapter 2 Investigator Decks', setKey: 'investigator2', aliases: ['investigator_decks_ch2'] },
 ]
+
+/* Shown in the UI language: a product the card browser names (cardSetNames.cycles)
+ * uses that name; the two it does not (rcore, return) are under deckUi. */
+function weaknessPoolLabel(option: { token: string, label: string, setKey?: string }): string {
+  const key = option.setKey ? `cardSetNames.cycles.${option.setKey}` : `deckUi.weaknessPoolOption.${option.token.slice(6)}`
+  return te(key) ? t(key) : option.label
+}
 
 function normalizeWeaknessPoolToken(token: string): string {
   const trimmed = token.trim()
@@ -145,10 +152,10 @@ const currentDeckList = computed(() => {
 const playerCustomWeaknessPool = computed(() => props.game.settings.settingsCustomRandomWeaknessPools[props.playerId] ?? [false, []] as [boolean, string[]])
 const weaknessPoolSummary = computed(() => {
   const [enabled, sets] = playerCustomWeaknessPool.value
-  const customSummary = enabled && sets.length ? ` · ${sets.length} custom set${sets.length === 1 ? '' : 's'}` : ''
-  if (selectedWeaknessPool.value.length === 0) return enabled && sets.length ? sets.join(', ') : 'All printed basic weaknesses'
-  const names = selectedWeaknessPool.value.map((token) => weaknessPoolOptions.find((o) => o.token === token)?.label ?? token)
-  return (names.length <= 2 ? names.join(', ') : `${names.length} products selected`) + customSummary
+  const customSummary = enabled && sets.length ? ` · ${t('deckUi.weaknessPoolCustomSets', sets.length)}` : ''
+  if (selectedWeaknessPool.value.length === 0) return enabled && sets.length ? sets.join(', ') : t('deckUi.weaknessPoolAll')
+  const names = selectedWeaknessPool.value.map((token) => { const option = weaknessPoolOptions.find((o) => o.token === token); return option ? weaknessPoolLabel(option) : token })
+  return (names.length <= 2 ? names.join(', ') : t('deckUi.weaknessPoolProducts', { count: names.length })) + customSummary
 })
 
 function deckToArkhamDbDecklist(deck: Arkham.Deck): ArkhamDbDecklist {
@@ -574,7 +581,7 @@ const needsReply = computed(() => {
                     :class="{ active: validOnly }"
                     @click.prevent="validOnly = !validOnly"
                   >
-                    {{ validOnly ? 'Showing Valid Decks' : 'Filter Valid Decks' }}
+                    {{ validOnly ? $t('deckUi.showingValidDecks') : $t('deckUi.filterValidDecks') }}
                   </button>
                 </div>
               </div>
@@ -666,7 +673,7 @@ const needsReply = computed(() => {
                         <div class="weakness-pool-grid">
                           <label v-for="option in weaknessPoolOptions" :key="option.token" class="weakness-pool-option">
                             <input type="checkbox" :value="option.token" v-model="selectedWeaknessPool" @change="weaknessPoolTouched = true" />
-                            <span>{{ option.label }}</span>
+                            <span>{{ weaknessPoolLabel(option) }}</span>
                           </label>
                         </div>
                         <CustomWeaknessPool v-if="customCardsEnabled" :game="game" :playerId="playerId" @saving="trackCustomWeaknessSave" />
@@ -704,7 +711,7 @@ const needsReply = computed(() => {
                         <div class="weakness-pool-grid">
                           <label v-for="option in weaknessPoolOptions" :key="option.token" class="weakness-pool-option">
                             <input type="checkbox" :value="option.token" v-model="selectedWeaknessPool" @change="weaknessPoolTouched = true" />
-                            <span>{{ option.label }}</span>
+                            <span>{{ weaknessPoolLabel(option) }}</span>
                           </label>
                         </div>
                         <CustomWeaknessPool v-if="customCardsEnabled" :game="game" :playerId="playerId" @saving="trackCustomWeaknessSave" />

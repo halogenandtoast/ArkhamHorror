@@ -1,4 +1,5 @@
 import { useDbCardStore } from '@/stores/dbCards'
+import { localizeEngineText } from '@/arkham/engineText'
 
 export const handleI18n = (body: string, t: (key: string, params: { [key: string]: any }) => string) => {
   const {key, params} = parseInput(body)
@@ -31,6 +32,9 @@ export const handleEmbeddedI18n = (body: string, t: (key: string, params: { [key
   if (isWholeI18nToken(trimmed)) {
     return handleI18n(trimmed, t)
   }
+
+  // No key at all: the engine wrote this text out in English.
+  if (!body.includes('$')) return localizeEngineText(body)
 
   return body.replace(/\$[A-Za-z0-9_.]+(?!\s+[A-Za-z0-9_]+=[is]:)/g, (token) => {
     const localized = handleI18n(token, t)

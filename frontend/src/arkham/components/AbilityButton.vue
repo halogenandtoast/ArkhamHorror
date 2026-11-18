@@ -12,6 +12,7 @@ import { MessageType } from '@/arkham/types/Message';
 import { replaceIcons, formatContent } from '@/arkham/helpers';
 import { homebrewActionScope } from '@/arkham/homebrewData';
 import { handleI18n } from '@/arkham/i18n';
+import { localizeEngineText } from '@/arkham/engineText';
 import { useI18n } from 'vue-i18n';
 
 const { t, te } = useI18n()
@@ -42,7 +43,7 @@ const attributes = computed(() => {
 const tooltip = computed(() => {
   var body = ability.value && ability.value.tooltip
   if (body) {
-    body = body.startsWith("$") ? handleI18n(body, t) : body
+    body = body.startsWith("$") ? handleI18n(body, t) : localizeEngineText(body)
     const content = replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>')
     return { content, html: true }
   }
@@ -197,7 +198,7 @@ const isEngage = computed(() => isAction("Engage"))
 
 const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
 const maybeFormat = function(body: string) {
-  return body.startsWith("$") ? handleI18n(tformat(body), t) : body
+  return body.startsWith("$") ? handleI18n(tformat(body), t) : localizeEngineText(body)
 }
 
 /* A homebrew campaign names its own actions in its own locale scope, so that

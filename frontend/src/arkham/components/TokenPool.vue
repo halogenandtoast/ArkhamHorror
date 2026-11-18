@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, ref, nextTick, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import { customTokenSlug, type Token, type Tokens } from '@/arkham/types/Token'
 import { customSetToken } from '@/arkham/customCards'
@@ -97,6 +98,15 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{ choose: [key: string] }>()
 
 const debug = useDebug()
+const { t, te } = useI18n()
+
+/* Tooltips are written in English ('Scouting Report'); a locale names them under
+ * `token.<Name>` with the spaces dropped, the same keys the token names use. */
+function localTooltip(tooltip: string | undefined): string | undefined {
+  if (!tooltip) return tooltip
+  const key = `token.${tooltip.replace(/\s+/g, '')}`
+  return te(key) ? t(key) : tooltip
+}
 
 /* Debug-only: drag a token off the card and onto the token panel's trash to remove it. */
 function removeAttrs(item: TokenPoolItem & { count: number }) {
@@ -142,7 +152,7 @@ const tokenItems = computed<TokenPoolItem[]>(() => tokenKeys.value.flatMap((toke
   return [{
     key: token,
     type: override.type ?? config.type,
-    tooltip: override.tooltip ?? config.tooltip,
+    tooltip: localTooltip(override.tooltip ?? config.tooltip),
     image: config.image,
     class: override.class,
     amount,

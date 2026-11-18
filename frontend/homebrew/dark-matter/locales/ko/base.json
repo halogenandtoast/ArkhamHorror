@@ -97,11 +97,11 @@
       "returnToDeck": "당신의 덱에 카드가 5장 이상 있다면, 이 카드를 당신의 덱에 다시 넣고 섞음. 그렇지 않다면, 이 카드를 버림"
     },
     "evaSuit": {
-      "doNotPutIntoPlay": "‘선외활동복’을 플레이 영역에 두지 않음"
+      "doNotPutIntoPlay": "‘우주복’을 플레이 영역에 두지 않음"
     },
     "fromTheDark": {
       "takeDamage": "피해를 {count} 받음",
-      "drawAMimic": "조우 덱과 버린 조우 카드 더미에서 ‘모사체’ 적을 찾아 뽑음"
+      "drawAMimic": "조우 덱과 버린 조우 카드 더미에서 ‘모방꾼’ 적을 찾아 뽑음"
     },
     "innocentMishap": {
       "damageNearestBrain": "가장 가까운 ‘두뇌’ 이야기 자산에 피해를 1 줌",
@@ -118,7 +118,7 @@
       "t": "T자 아이콘을 스캔함"
     },
     "medicalFoam": {
-      "doNotPutIntoPlay": "‘의료용 폼’을 플레이 영역에 두지 않음"
+      "doNotPutIntoPlay": "‘의료용 흡착제’를 플레이 영역에 두지 않음"
     },
     "micrometeoroid": {
       "discardEachEvent": "당신의 손에 있는 모든 이벤트를 버림"
@@ -135,7 +135,7 @@
       "doomAndDraw": "현재 주요사건에 파멸을 1개 놓고 당신의 위협 영역에서 뒷면 카드 3장을 뽑음"
     },
     "radiationTablets": {
-      "doNotPutIntoPlay": "‘방사선 방호제’를 플레이 영역에 두지 않음"
+      "doNotPutIntoPlay": "‘방사선 알약’을 플레이 영역에 두지 않음"
     },
     "scan": {
       "atYourLocation": "당신이 위치한 장소에서 스캔함"

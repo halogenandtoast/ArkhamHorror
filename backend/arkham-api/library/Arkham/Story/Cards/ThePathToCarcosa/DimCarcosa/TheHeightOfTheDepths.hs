@@ -23,6 +23,6 @@ instance RunMessage TheHeightOfTheDepths where
         Nothing -> error "missing"
         Just xs -> sample xs
       depthsOfDemhe <- selectJust $ locationIs Locations.depthsOfDemheTheHeightOfTheDepths
-      push $ ReplaceLocation depthsOfDemhe otherDepthsOfDemhe DefaultReplace
+      push $ ReplaceLocation depthsOfDemhe otherDepthsOfDemhe DefaultReplace Nothing
       pure s
     _ -> TheHeightOfTheDepths <$> liftRunMessage msg attrs

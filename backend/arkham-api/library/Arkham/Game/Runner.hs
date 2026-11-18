@@ -1426,18 +1426,18 @@ runGameMessage msg g = case msg of
       . (focusedCardsL %~ map (filter ((/= cardId) . toCardId)))
   GameOver -> endGame Nothing g
   GameOverWith verdict -> endGame (Just verdict) g
-  PlaceLocation lid card ->
+  PlaceLocation lid card miid ->
     if isNothing $ g ^. entitiesL . locationsL . at lid
       then do
         let location = lookupLocation (toCardCode card) lid (toCardId card)
-        push (PlacedLocation (toName location) (toCardCode card) lid)
+        push (PlacedLocation (toName location) (toCardCode card) lid miid)
         pure $ g & entitiesL . locationsL . at lid ?~ location
       else pure g
-  PlaceLocationWith lid card update ->
+  PlaceLocationWith lid card update miid ->
     if isNothing $ g ^. entitiesL . locationsL . at lid
       then do
         let location = overAttrs (updateLocation [update]) (lookupLocation (toCardCode card) lid (toCardId card))
-        push (PlacedLocation (toName location) (toCardCode card) lid)
+        push (PlacedLocation (toName location) (toCardCode card) lid miid)
         pure $ g & entitiesL . locationsL . at lid ?~ location
       else pure g
   -- Place an enemy-location card directly into play as an enemy-location entity.
@@ -1445,7 +1445,7 @@ runGameMessage msg g = case msg of
     if isNothing $ g ^. entitiesL . enemyLocationsL . at lid
       then do
         let el = lookupEnemyLocation (toCardCode card) lid (toCardId card)
-        push (PlacedLocation (toName el) (toCardCode card) lid)
+        push (PlacedLocation (toName el) (toCardCode card) lid Nothing)
         pure $ g & entitiesL . enemyLocationsL . at lid ?~ el
       else pure g
   -- Flip a location to its enemy-location side.
@@ -1558,7 +1558,7 @@ runGameMessage msg g = case msg of
         <> NotAsset StoryAsset
     pushAll $ concatMap (resolve . toDiscard GameSource) assets
     pure $ g & entitiesL . enemyLocationsL %~ deleteMap lid
-  ReplaceLocation lid card replaceStrategy -> do
+  ReplaceLocation lid card replaceStrategy miid -> do
     -- if replaceStrategy is swap we also want to copy over revealed, all tokens
     location <- getLocation lid
     let
@@ -1606,7 +1606,7 @@ runGameMessage msg g = case msg of
       then pushAll $ map EnemyCheckEngagement enemies
       else
         pushAll
-          $ [PlacedLocation (toName card) (toCardCode card) lid]
+          $ [PlacedLocation (toName card) (toCardCode card) lid miid]
           <> map EnemyCheckEngagement enemies
     pure $ g & entitiesL . locationsL . at lid ?~ location'
   ReplaceEnemy eid card replaceStrategy -> do
@@ -4215,7 +4215,7 @@ runGameMessage msg g = case msg of
 
           pushAll
             $ afterDraw
-            : PlacedLocation (toName location) (toCardCode card) locationId
+            : PlacedLocation (toName location) (toCardCode card) locationId (Just iid)
             : (guard (not ignoreRevelation) *> resolve (Revelation iid (LocationSource locationId)))
           pure $ g' & (entitiesL . locationsL . at locationId ?~ location)
         _ ->
@@ -4316,7 +4316,7 @@ runGameMessage msg g = case msg of
 
         pushAll
           $ ObtainCard card.id
-          : PlacedLocation (toName location) (toCardCode card) locationId
+          : PlacedLocation (toName location) (toCardCode card) locationId (Just iid)
           : (guard (not ignoreRevelation) *> resolve (Revelation iid (LocationSource locationId)))
         pure $ g' & (entitiesL . locationsL . at locationId ?~ location)
       _ ->

@@ -263,17 +263,26 @@ createEnemyEngagedWithPrey_ = fmap snd . createEnemyEngagedWithPrey
 placeLocation :: MonadRandom m => Card -> m (LocationId, Message)
 placeLocation c = do
   locationId <- getRandom
-  pure (locationId, PlaceLocation locationId c)
+  pure (locationId, PlaceLocation locationId c Nothing)
+
+{- | 'placeLocation', crediting one investigator with the placement. Only an
+'Arkham.Campaigns.TheForgottenAge.Helpers.explore' has one: every other
+placement is an act, agenda or scenario card the players advance as a group.
+-}
+placeLocationBy :: MonadRandom m => InvestigatorId -> Card -> m (LocationId, Message)
+placeLocationBy iid c = do
+  locationId <- getRandom
+  pure (locationId, PlaceLocation locationId c (Just iid))
 
 placeLocationWith :: MonadRandom m => Card -> Update Location -> m (LocationId, Message)
 placeLocationWith c update = do
   locationId <- getRandom
-  pure (locationId, PlaceLocationWith locationId c update)
+  pure (locationId, PlaceLocationWith locationId c update Nothing)
 
 placeLocationInGrid :: MonadRandom m => Pos -> Card -> m (LocationId, Message)
 placeLocationInGrid pos c = do
   locationId <- getRandom
-  pure (locationId, Run [PlaceLocation locationId c, PlaceGrid (GridLocation pos locationId)])
+  pure (locationId, Run [PlaceLocation locationId c Nothing, PlaceGrid (GridLocation pos locationId)])
 
 placeLocation_ :: MonadRandom m => Card -> m Message
 placeLocation_ = fmap snd . placeLocation

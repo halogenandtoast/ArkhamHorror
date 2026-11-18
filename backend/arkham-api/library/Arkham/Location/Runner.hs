@@ -392,15 +392,19 @@ instance RunMessage LocationAttrs where
             pushM $ checkAfter $ Window.LastClueRemovedFromLocation a.id
           pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
         else pure $ a & tokensL %~ subtractTokens tType n
-    PlacedLocation _ _ lid | lid == locationId -> do
+    PlacedLocation _ _ lid miid | lid == locationId -> do
       let
-        -- PlacedLocation carries no investigator: locations are put into play by
-        -- acts, agendas and other scenario cards, and the players advance those as
-        -- a group, so each investigator counts as having put it into play. Crediting
-        -- the active investigator instead fired "after you put a location into play"
-        -- for exactly one of them, and for nobody at all whenever that select came
-        -- back empty.
-        doPlace = pushM $ checkAfter $ Window.PutLocationIntoPlayByGroup lid
+        -- With no investigator behind the placement -- an act, agenda or other
+        -- scenario card, which the players advance as a group -- each investigator
+        -- counts as having put it into play (FAQ v2.5 Q&A 088), which is what the
+        -- ByGroup window means. An explore is one investigator's action, so only
+        -- that investigator put the location into play and the window names them;
+        -- otherwise Templo Mayor (175) shuffled and drew a weakness for whichever
+        -- seat its group-limited Forced ability happened to reach first (#6013).
+        doPlace =
+          pushM
+            $ checkAfter
+            $ maybe (Window.PutLocationIntoPlayByGroup lid) (`Window.PutLocationIntoPlay` lid) miid
       pushM $ checkAfter $ Window.LocationEntersPlay lid
       if locationRevealed
         then do

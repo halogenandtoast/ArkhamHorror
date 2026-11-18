@@ -182,7 +182,7 @@ instance RunMessage FragmentOfCarcosa where
     location (which will have a different name). Then, add clues on that location
     up to its clue value." 'Arkham.Homebrew.DarkMatter.Helpers.flipToOtherSide'
     defers this step until after the swap has resolved. -}
-    DoStep 1 (ReplaceLocation lid _ Swap) -> do
+    DoStep 1 (ReplaceLocation lid _ Swap _) -> do
       value <- getGameValue =<< field LocationRevealClues lid
       current <- field LocationClues lid
       when (value > current) $ placeClues ScenarioSource lid (value - current)

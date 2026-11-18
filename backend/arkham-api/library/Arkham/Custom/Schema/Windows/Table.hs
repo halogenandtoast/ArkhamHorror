@@ -198,7 +198,7 @@ windowTable =
   , ("PlayEvent", ["PlayEvent"])
   , ("PlayEventDiscarding", ["PlayEventDiscarding"])
   , ("PlayerHasPlayableCard", [])
-  , ("PutLocationIntoPlay", ["PutLocationIntoPlay", "RevealLocationByGroup"])
+  , ("PutLocationIntoPlay", ["PutLocationIntoPlay", "PutLocationIntoPlayByGroup"])
   , ("RememberedLogKey", ["RememberedLogKey"])
   , ("RemovedBreach", ["RemovedBreach"])
   , ("RemovedBreaches", ["RemovedBreaches"])

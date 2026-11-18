@@ -25,7 +25,7 @@ instance RunMessage TheArchway where
       dimStreets <- selectJust $ locationIs Locations.dimStreetsTheArchway
       sid <- getRandom
       beginSkillTest sid iid attrs iid #willpower (Fixed 1)
-      push $ ReplaceLocation dimStreets otherDimStreets DefaultReplace
+      push $ ReplaceLocation dimStreets otherDimStreets DefaultReplace Nothing
       pure s
     PassedThisSkillTestBy _ (isSource attrs -> True) n -> do
       eachInvestigator \iid -> whenM (canHaveHorrorHealed attrs iid) $ healHorror iid attrs n

@@ -51,6 +51,6 @@ instance RunMessage BarrierCoreInactive where
       pure l
     Flip _ _ (isTarget attrs -> True) -> do
       let active = lookupCard Cards.barrierCoreActive attrs.cardId
-      push $ ReplaceLocation attrs.id active Swap
+      push $ ReplaceLocation attrs.id active Swap Nothing
       pure l
     _ -> BarrierCoreInactive <$> liftRunMessage msg attrs

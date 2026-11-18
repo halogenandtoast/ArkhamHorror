@@ -234,7 +234,7 @@ instance RunMessage WhereDoomAwaits where
           gameOverLost
         other -> throwIO $ UnknownResolution other
       pure s
-    PlacedLocation name _ lid -> do
+    PlacedLocation name _ lid _ -> do
       when (name == "Altered Path") $ do
         alteredCount <- selectCount $ LocationWithTrait Altered
         push (SetLocationLabel lid $ "alteredPath" <> tshow alteredCount)

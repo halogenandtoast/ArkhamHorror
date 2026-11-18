@@ -465,14 +465,14 @@ Will keep revealed status
 -}
 swapLocation
   :: (ReverseQueue m, AsId location, IdOf location ~ LocationId, IsCard card) => location -> card -> m ()
-swapLocation location card = push $ Msg.ReplaceLocation (asId location) (toCard card) Msg.Swap
+swapLocation location card = push $ Msg.ReplaceLocation (asId location) (toCard card) Msg.Swap Nothing
 
 {- | Replaces the location
 Will not keep revealed status
 -}
 replaceLocation
   :: (ReverseQueue m, AsId location, IdOf location ~ LocationId, IsCard card) => location -> card -> m ()
-replaceLocation location card = push $ Msg.ReplaceLocation (asId location) (toCard card) Msg.DefaultReplace
+replaceLocation location card = push $ Msg.ReplaceLocation (asId location) (toCard card) Msg.DefaultReplace Nothing
 
 getLocationGlobalMeta
   :: (FromJSON a, HasGame m, ToId location LocationId) => Aeson.Key -> location -> m (Maybe a)

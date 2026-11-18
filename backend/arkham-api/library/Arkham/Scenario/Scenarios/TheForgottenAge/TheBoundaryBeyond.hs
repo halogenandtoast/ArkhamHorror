@@ -266,7 +266,7 @@ instance RunMessage TheBoundaryBeyond where
       case mreplacement of
         Just replacement -> do
           card <- genCard replacement
-          push $ ReplaceLocation lid card Swap
+          push $ ReplaceLocation lid card Swap Nothing
           pure s
         Nothing -> TheBoundaryBeyond <$> liftRunMessage msg attrs
     ResolveChaosToken _ chaosTokenFace iid | chaosTokenFace `elem` [Cultist, Tablet] -> do

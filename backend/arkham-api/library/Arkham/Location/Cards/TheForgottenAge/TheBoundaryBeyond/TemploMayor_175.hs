@@ -19,7 +19,9 @@ instance HasAbilities TemploMayor_175 where
   getAbilities (TemploMayor_175 attrs) =
     extendRevealed
       attrs
-      [ mkAbility attrs 1 $ forced $ PutLocationIntoPlay #after Anyone (be attrs)
+      [ -- "Shuffle your discard pile into your deck": the investigator who put
+        -- Templo Mayor into play, not whoever the group window reaches first
+        mkAbility attrs 1 $ forced $ PutLocationIntoPlay #after You (be attrs)
       , groupLimit PerPhase
           $ restricted attrs 2 (Here <> canDiscoverCluesAt (LocationWithId attrs.id))
           $ actionAbilityWithCost (ShuffleDiscardCost 1 WeaknessCard)

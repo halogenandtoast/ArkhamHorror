@@ -657,7 +657,9 @@ data Message
   | AdvanceAgendaIfThresholdSatisfied
   | AdvanceAgendaDeck Int Source
   | AdvanceCurrentAgenda
-  | ReplaceLocation LocationId Card ReplaceStrategy
+  | -- The trailing investigator is the one responsible for the replacement, as
+    -- on 'PlaceLocation'; 'Nothing' is a group placement.
+    ReplaceLocation LocationId Card ReplaceStrategy (Maybe InvestigatorId)
   | ReplaceEnemy EnemyId Card ReplaceStrategy
   | ReplaceAgenda AgendaId Card
   | RevertAgenda AgendaId
@@ -1097,8 +1099,14 @@ data Message
   | PlaceDoomOnAgenda Source Int CanAdvance
   | PlaceEnemyOutOfPlay OutOfPlayZone EnemyId
   | PlaceEnemy EnemyId Placement
-  | PlaceLocation LocationId Card
-  | PlaceLocationWith LocationId Card (Update Location)
+  | {- | Place a location into play. The trailing investigator is the one
+    responsible for the placement, when exactly one is: an 'Explore' is an
+    action a single investigator performs, so only that investigator put the
+    location into play. 'Nothing' means a group placement -- see
+    'PlacedLocation'.
+    -}
+    PlaceLocation LocationId Card (Maybe InvestigatorId)
+  | PlaceLocationWith LocationId Card (Update Location) (Maybe InvestigatorId)
   | PlaceLocationMatching CardMatcher
   | PlaceEnemyLocation LocationId Card
   | FlipToEnemyLocation LocationId Card
@@ -1108,7 +1116,16 @@ data Message
   | PlacedUnderneath Target Card
   | RemoveFromUnderneath Target [Card]
   | PlaceNextTo Target [Card]
-  | PlacedLocation Name CardCode LocationId
+  | {- | A location has entered play. The trailing investigator is whoever put
+    it there, when exactly one did (an 'Explore'); 'Nothing' means nobody in
+    particular did, i.e. an act, agenda or other scenario card placed it, and
+    "because acts and agendas are advanced by the players, as a group, each
+    investigator is considered to have put the location(s) into play" (FAQ v2.5
+    Q&A 088). 'Arkham.Location.Runner' turns the two cases into
+    'Arkham.Window.PutLocationIntoPlay' and
+    'Arkham.Window.PutLocationIntoPlayByGroup' respectively.
+    -}
+    PlacedLocation Name CardCode LocationId (Maybe InvestigatorId)
   | PlacedLocationDirection LocationId Direction LocationId
   | LocationMoved LocationId
   | PlayCard InvestigatorId Card (Maybe Target) Payment [Window] Bool
@@ -2702,6 +2719,30 @@ mconcat
               pure $ case contents of
                 Right (a, b, c, d, s) -> FindEncounterCard a b c d s
                 Left (a, b, c, d) -> FindEncounterCard a b c d LeadChooses
+            -- The four placement messages below gained a trailing investigator
+            -- when the explorer started being credited for the placement they
+            -- cause (#6013). A queue persisted before that has the shorter
+            -- shape, and decodes to the group placement it used to be.
+            "PlaceLocation" -> do
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              pure $ case contents of
+                Right (a, b, miid) -> PlaceLocation a b miid
+                Left (a, b) -> PlaceLocation a b Nothing
+            "PlaceLocationWith" -> do
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              pure $ case contents of
+                Right (a, b, c, miid) -> PlaceLocationWith a b c miid
+                Left (a, b, c) -> PlaceLocationWith a b c Nothing
+            "PlacedLocation" -> do
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              pure $ case contents of
+                Right (a, b, c, miid) -> PlacedLocation a b c miid
+                Left (a, b, c) -> PlacedLocation a b c Nothing
+            "ReplaceLocation" -> do
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              pure $ case contents of
+                Right (a, b, c, miid) -> ReplaceLocation a b c miid
+                Left (a, b, c) -> ReplaceLocation a b c Nothing
             -- Renamed from LoseStandardActions: "standard action" is the base
             -- three in the core rules, not what this message counts.
             "LoseStandardActions" -> do

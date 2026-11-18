@@ -58,7 +58,7 @@ instance RunMessage PastAndPresent where
         chooseOrRunOneM iid do
           targets replacements \replacement -> do
             push $ RemoveCardFromScenarioDeck ExplorationDeck replacement
-            push $ ReplaceLocation lid replacement DefaultReplace
+            push $ ReplaceLocation lid replacement DefaultReplace Nothing
       pure a
     DoStep 2 (AdvanceAct (isSide B attrs -> True) _ _) -> do
       padma <- getSetAsideCard Enemies.padmaAmrita

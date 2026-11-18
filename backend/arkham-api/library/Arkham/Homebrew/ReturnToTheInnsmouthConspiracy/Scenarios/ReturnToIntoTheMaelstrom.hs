@@ -27,7 +27,7 @@ returnToIntoTheMaelstrom difficulty =
   scenarioWith
     (ReturnToIntoTheMaelstrom . IntoTheMaelstrom)
     ":return-to-the-innsmouth-conspiracy:048"
-    "Return to IntoTheMaelstrom"
+    "Return to Into the Maelstrom"
     difficulty
     []
     (referenceL .~ "07311")

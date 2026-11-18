@@ -29,7 +29,7 @@ returnToALightInTheFog difficulty =
   scenarioWith
     (ReturnToALightInTheFog . ALightInTheFog)
     ":return-to-the-innsmouth-conspiracy:039"
-    "Return to ALightInTheFog"
+    "Return to A Light in the Fog"
     difficulty
     []
     (referenceL .~ "07231")

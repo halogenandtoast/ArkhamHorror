@@ -31,7 +31,7 @@ returnToTheLairOfDagon difficulty =
   scenarioWith
     (ReturnToTheLairOfDagon . TheLairOfDagon)
     ":return-to-the-innsmouth-conspiracy:043"
-    "Return to TheLairOfDagon"
+    "Return to The Lair of Dagon"
     difficulty
     scenarioLayout
     (referenceL .~ "07274")

@@ -33,7 +33,7 @@ returnToDevilReef difficulty =
   scenarioWith
     (ReturnToDevilReef . DevilReef)
     ":return-to-the-innsmouth-conspiracy:031"
-    "Return to DevilReef"
+    "Return to Devil Reef"
     difficulty
     []
     (referenceL .~ "07163")

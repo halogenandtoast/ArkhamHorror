@@ -166,3 +166,17 @@ const homebrewBoxNames: Map<string, string> = new Map([
 export function homebrewBoxName(box: string): string | null {
   return homebrewBoxNames.get(box) ?? null
 }
+
+/* Where a box's name is translated: a campaign under its own scope's `name`,
+the way the card browser's sidebar reads it; a standalone scenario under
+`scenarioNames`, as localizedScenarioName does. */
+const homebrewBoxLabelKeys: Map<string, string> = new Map([
+  ...homebrewCampaigns.map((c) => [c.id.replace(/^:/, ''), `${homebrewCampaignScope(c.id)}.name`] as const),
+  ...homebrewStandaloneScenarios.map(
+    (s) => [(s.campaign ?? s.id).replace(/^:/, ''), `scenarioNames.${s.id.replace(/^c(?=[0-9:])/, '')}`] as const,
+  ),
+])
+
+export function homebrewBoxLabelKey(box: string): string | null {
+  return homebrewBoxLabelKeys.get(box) ?? null
+}

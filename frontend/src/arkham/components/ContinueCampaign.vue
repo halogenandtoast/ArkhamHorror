@@ -442,7 +442,7 @@ async function applyOverlay(investigatorId: string) {
     overlayFor.value = null
   } catch (e) {
     console.error(e)
-    rosterError.value = 'Could not apply the overlay'
+    rosterError.value = t('deckUi.overlayApplyError')
   } finally {
     overlayBusy.value = false
   }

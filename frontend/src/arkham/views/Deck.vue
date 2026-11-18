@@ -159,10 +159,10 @@ async function removeOverlay() {
     await removeDeckOverlay(deck.value.id)
     deck.value = await fetchDeck(deck.value.id)
     overlayEditing.value = false
-    toast.success('Overlay removed')
+    toast.success(t('deckUi.overlayRemoved'))
   } catch (e) {
     console.error(e)
-    toast.error('Could not remove the overlay')
+    toast.error(t('deckUi.overlayRemoveError'))
   } finally {
     savingOverlay.value = false
   }
@@ -177,10 +177,10 @@ async function saveOverlay() {
     else await removeDeckOverlay(deck.value.id)
     deck.value = await fetchDeck(deck.value.id)
     overlayEditing.value = false
-    toast.success(applying ? 'Overlay applied' : 'Overlay removed')
+    toast.success(applying ? t('deckUi.overlayApplied') : t('deckUi.overlayRemoved'))
   } catch (e) {
     console.error(e)
-    toast.error('Could not save the overlay')
+    toast.error(t('deckUi.overlaySaveError'))
   } finally {
     savingOverlay.value = false
   }

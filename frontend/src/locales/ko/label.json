@@ -29,6 +29,7 @@
   "chooseAfterSkillTestEffect": "해결할 능력 테스트 후 효과 선택",
   "chooseAgility": "민첩 선택",
   "chooseCommitOrder": "투입한 카드 여러 장에 투입 시 효과가 있습니다 — 해결할 순서를 고르세요",
+  "chooseDilemmaToResolve": "해결할 딜레마 선택",
   "chooseCombat": "힘 선택",
   "chooseCultist": "{'{'}cultist{'}'} 선택",
   "chooseElderThing": "{'{'}elderThing{'}'} 선택",
@@ -342,6 +343,8 @@
   "yes": "예",
   "no": "아니오",
   "cost": {
+    "x": "X {inner}",
+    "separator": ", ",
     "action": "행동 {count}회 | 행동 {count}회",
     "additionalAction": "추가 행동",
     "addCurseTokens": "혼돈 주머니에 {'{'}curse{'}'} {count}개 추가",

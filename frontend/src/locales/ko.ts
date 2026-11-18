@@ -29,6 +29,8 @@ import xp from '@/locales/ko/xp.json'
 import scenarioNames from '@/locales/ko/scenarioNames.json'
 import campaignNames from '@/locales/ko/campaignNames.json'
 import cardSetNames from '@/locales/ko/cardSetNames.json'
+// English the engine sends as plain text, not as a key (see arkham/engineText.ts).
+export { default as engineText } from '@/locales/ko/engineText.json'
 
 export default
   { ...base

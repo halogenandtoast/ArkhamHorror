@@ -1403,13 +1403,13 @@ async function onImport(event: Event) {
            to when the two libraries have drifted. -->
       <div v-if="importReview && (importReview.updated.length || importReview.added.length || importReview.removed.length)" class="review-changes">
         <p v-if="importReview.identical" class="note">
-          {{ importReview.identical }} unchanged
+          {{ t('customCardSets.reviewMarkUnchanged', { count: importReview.identical }) }}
         </p>
 
         <ul class="changed">
           <li v-for="card in importReview.updated" :key="card.cardCode" class="changed-card">
             <button type="button" class="change-head" @click="toggleChange(card.cardCode)">
-              <span class="mark changed">changed</span>
+              <span class="mark changed">{{ t('customCardSets.reviewMarkChanged') }}</span>
               <span class="who">{{ card.title }}</span>
               <span class="keys">{{ changeLabel(card) }}</span>
             </button>
@@ -1425,13 +1425,13 @@ async function onImport(event: Event) {
           </li>
           <li v-for="card in importReview.added" :key="card.cardCode" class="changed-card">
             <span class="change-head plain">
-              <span class="mark added">new</span>
+              <span class="mark added">{{ t('customCardSets.reviewMarkAdded') }}</span>
               <span class="who">{{ card.title }}</span>
             </span>
           </li>
           <li v-for="card in importReview.removed" :key="card.cardCode" class="changed-card">
             <span class="change-head plain">
-              <span class="mark removed">dropped</span>
+              <span class="mark removed">{{ t('customCardSets.reviewMarkRemoved') }}</span>
               <span class="who">{{ card.title }}</span>
             </span>
           </li>

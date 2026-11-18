@@ -1,5 +1,6 @@
 import { uiLocaleFor, type UiLocale } from '@/locales/language'
 import { iconPlaceholderPattern } from '@/arkham/icons'
+import { registerEngineText, type EngineTextTable } from '@/arkham/engineText'
 
 const localeLoaders = {
   en: () => import('@/locales/en'),
@@ -56,5 +57,7 @@ function normalizeIconPlaceholders<T>(value: T): T {
 export async function loadLocaleMessages(locale: string) {
   const normalizedLocale = normalizeLocale(locale)
   const messages = await localeLoaders[normalizedLocale]()
+  // Literal engine text (see arkham/engineText.ts) lives beside the messages, not in them.
+  registerEngineText(normalizedLocale, (messages as { engineText?: EngineTextTable }).engineText)
   return { locale: normalizedLocale, messages: normalizeIconPlaceholders(messages.default) }
 }

@@ -525,7 +525,7 @@ watch(
         :class='tabClass(investigator)'
       >
         <i v-if="hasActions(investigator)" class="tab-pulse" aria-hidden="true"></i>
-        <span>{{ investigator.name.title }}</span>
+        <span>{{ getInvestigatorName(investigator.name.title) }}</span>
         <button
           v-if="solo"
           v-tooltip="instructions(investigator)"

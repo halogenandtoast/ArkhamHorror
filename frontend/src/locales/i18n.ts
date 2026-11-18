@@ -36,6 +36,13 @@ export function localizeTitle(title: string): string {
   return global.te(key) ? `${base}: ${global.t(key)}` : `${base}: ${m[1]}`
 }
 
+/** The locale the UI is showing right now ('en' before the app has started). */
+export function currentLocale(): string {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const locale = (instance?.global as any)?.locale
+  return String((locale && typeof locale === 'object' ? locale.value : locale) ?? 'en')
+}
+
 /** Messages for one locale, merged over whatever is already there. */
 export function mergeMessages(locale: string, messages: Record<string, unknown>) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

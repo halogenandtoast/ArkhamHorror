@@ -133,7 +133,7 @@ function validationErrorsFromResponse(err: unknown): string[] {
     if (payload && typeof payload === 'object' && 'message' in payload) {
       return [String((payload as { message: unknown }).message)]
     }
-    return ['Unable to validate deck']
+    return [t('deckUi.unableToValidate')]
   }
 
   return payload.map((e) => {

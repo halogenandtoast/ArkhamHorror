@@ -46,6 +46,31 @@
     "role": {
       "organizer": "Organizer",
       "player": "Player"
+    },
+    "organizer": {
+      "mainStreetSwap": "Main Street group swap",
+      "mainStreetHint": "Groups appear here after an investigator activates Main Street. Resolving the swap is a permanent undo barrier.",
+      "firstReadyGroup": "First ready group",
+      "secondReadyGroup": "Second ready group",
+      "selectGroup": "Select group",
+      "swapInvestigators": "Swap investigators",
+      "replicatingAberration": "Replicating Aberration",
+      "replicatingHint": "Nominate a spotted condition. The chosen group may spend 1 countermeasure to cancel it.",
+      "group": "Group",
+      "replicateCondition": "Replicate condition",
+      "target": "Target",
+      "offerReplication": "Offer replication",
+      "aberration": {
+        "89010a": "Manifold enemy at exactly 1 remaining health",
+        "89010b": "Oozeling whose spawn location does not exist",
+        "89010c": "Manifold enemy defeated by excess damage",
+        "89010d": "Last clue discovered from an Oozified location",
+        "89010e": "Isolated investigator",
+        "89010f": "Asset defeated by an Ooze attack",
+        "89010g": "Investigator with 3+ resources on It’s got me!",
+        "89010h": "Enemy with Alien Food Chain attached",
+        "89010i": "Location with Sticky Feet attached"
+      }
     }
   }
 }

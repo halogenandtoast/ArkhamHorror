@@ -371,50 +371,50 @@ onUnmounted(() => {
 
       <section v-if="isOrganizer && mainStreetReadyGroups.length" class="advance-panel replicate-panel">
         <header class="advance-header">
-          <h3>Main Street group swap</h3>
-          <p class="advance-hint">Groups appear here after an investigator activates Main Street. Resolving the swap is a permanent undo barrier.</p>
+          <h3>{{ t('event.organizer.mainStreetSwap') }}</h3>
+          <p class="advance-hint">{{ t('event.organizer.mainStreetHint') }}</p>
         </header>
         <div class="replicate-controls">
           <label>
-            First ready group
+            {{ t('event.organizer.firstReadyGroup') }}
             <select v-model.number="firstSwapGroup">
-              <option :value="null">Select group</option>
+              <option :value="null">{{ t('event.organizer.selectGroup') }}</option>
               <option v-for="group in mainStreetReadyGroups" :key="group.ordinal" :value="group.ordinal">{{ groupLabel(group) }}</option>
             </select>
           </label>
           <label>
-            Second ready group
+            {{ t('event.organizer.secondReadyGroup') }}
             <select v-model.number="secondSwapGroup">
-              <option :value="null">Select group</option>
+              <option :value="null">{{ t('event.organizer.selectGroup') }}</option>
               <option v-for="group in mainStreetReadyGroups" :key="group.ordinal" :value="group.ordinal">{{ groupLabel(group) }}</option>
             </select>
           </label>
           <button type="button" class="advance-submit" :disabled="firstSwapGroup === null || secondSwapGroup === null || firstSwapGroup === secondSwapGroup || swapping" @click="submitMainStreetSwap">
-            Swap investigators
+            {{ t('event.organizer.swapInvestigators') }}
           </button>
         </div>
       </section>
 
       <section v-if="isOrganizer && event?.playWithBlobElse" class="advance-panel replicate-panel">
         <header class="advance-header">
-          <h3>Replicating Aberration</h3>
-          <p class="advance-hint">Nominate a spotted condition. The chosen group may spend 1 countermeasure to cancel it.</p>
+          <h3>{{ t('event.organizer.replicatingAberration') }}</h3>
+          <p class="advance-hint">{{ t('event.organizer.replicatingHint') }}</p>
         </header>
         <div class="replicate-controls">
           <label>
-            Group
+            {{ t('event.organizer.group') }}
             <select v-model.number="replicateGroup">
               <option v-for="group in groupDigests" :key="group.ordinal" :value="group.ordinal">{{ groupLabel(group) }}</option>
             </select>
           </label>
           <label>
-            Replicate condition
+            {{ t('event.organizer.replicateCondition') }}
             <select v-model="replicateCard">
-              <option v-for="[code, description] in aberrations" :key="code" :value="code">{{ code }} — {{ description }}</option>
+              <option v-for="[code, description] in aberrations" :key="code" :value="code">{{ code }} — {{ t(`event.organizer.aberration.${code}`, description) }}</option>
             </select>
           </label>
           <label>
-            Target
+            {{ t('event.organizer.target') }}
             <select v-model.number="replicateTargetIndex">
               <option v-for="(target, index) in selectedReplicateGroup?.replicateTargets ?? []" :key="`${target.kind}-${target.cardCode}-${index}`" :value="index">
                 {{ replicateTargetLabel(target) }}
@@ -422,7 +422,7 @@ onUnmounted(() => {
             </select>
           </label>
           <button type="button" class="advance-submit" :disabled="!selectedReplicateTarget || replicating" @click="submitReplicate">
-            Offer replication
+            {{ t('event.organizer.offerReplication') }}
           </button>
         </div>
       </section>

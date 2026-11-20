@@ -38,6 +38,7 @@ import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Capability
 import Arkham.Card
+import Arkham.Card.CardOption (offerDuringSkillTestsOption)
 import Arkham.Card.PlayerCard
 import Arkham.Card.Settings
 import Arkham.Classes.HasGame
@@ -68,6 +69,7 @@ import Arkham.Helpers.Ability (
 import Arkham.Helpers.Action (getActions)
 import Arkham.Helpers.Campaign (getCampaignStoryCards)
 import Arkham.Helpers.Card (cardIsFast', getModifiedCardCost)
+import Arkham.Helpers.CardOption (cardOptionSetIn)
 import Arkham.Helpers.ChaosToken (chaosTokenSymbolEffectsIgnored)
 import Arkham.Helpers.Cost (getAdditionalActionCosts, getCanAffordCost)
 import Arkham.Helpers.Criteria (passesCriteria)
@@ -594,7 +596,13 @@ runWindow attrs windows allActions playableCards = do
                 getSkillTest >>= \case
                   Nothing -> pure True
                   Just st -> case ab.wantsSkillTest of
-                    Nothing -> pure $ not $ globalSkip && isFastAbility ab
+                    -- A fast ability that says nothing about skill tests is assumed
+                    -- unrelated, unless its card declares the opt-in option and the
+                    -- controller has it on (Rod of Carnamagos, Pet Oozeling). #6014
+                    Nothing ->
+                      pure
+                        $ not (globalSkip && isFastAbility ab)
+                        || cardOptionSetIn attrs.settings ab.cardCode offerDuringSkillTestsOption
                     Just matcher -> skillTestMatches iid GameSource st matcher
         actions' <- filterM applySettingsFilter actions
         -- NOT split per window, unlike the forced branch: a triggered ability worded
@@ -675,7 +683,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   UpdateCardSetting iid cCode s | iid == a.id -> do
     pure $ a & settingsL %~ updateCardSetting cCode s
   SetCardOption iid cCode k v | iid == a.id -> do
-    pure $ a & settingsL %~ setCardOption cCode k v
+    let attrs' = a & settingsL %~ setCardOption cCode k v
+    -- Same reasoning as UpdateGlobalSetting: offerDuringSkillTests is turned on
+    -- precisely because the ability is missing from the window that is open.
+    currentWindows <- concat <$> getWindowStack
+    when (any (\w -> Window.windowType w == Window.FastPlayerWindow) currentWindows) do
+      push $ Do (CheckWindows currentWindows)
+    pure attrs'
   SetCardSilenced iid cCode v | iid == a.id -> do
     let attrs' = a & settingsL %~ setCardSilenced cCode v
     -- Same reasoning as UpdateGlobalSetting: silencing a card while its window

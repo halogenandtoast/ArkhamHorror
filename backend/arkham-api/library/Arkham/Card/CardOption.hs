@@ -75,6 +75,19 @@ cardChoice k vals def = CardOption k (OptionChoice vals def) Nothing
 forAbility :: Int -> CardOption -> CardOption
 forAbility n option = option {cardOptionAbility = Just n}
 
+{- | While a skill test is live, a fast ability declaring no
+'Arkham.Ability.Types.abilityWantsSkillTest' is dropped from the window for
+anyone with Skip Triggers on. A card whose chaos token reveals still matter
+inside a test (FAQ 2.5: Rod of Carnamagos) declares this option so its
+controller can opt back in. Off by default.
+-}
+offerDuringSkillTestsOption :: Text
+offerDuringSkillTestsOption = "offerDuringSkillTests"
+
+-- | 'offerDuringSkillTestsOption' as a toggle on one of the card's abilities.
+offerDuringSkillTests :: Int -> CardOption
+offerDuringSkillTests n = forAbility n $ cardToggle offerDuringSkillTestsOption False
+
 cardOptionDefault :: CardOption -> OptionValue
 cardOptionDefault (CardOption _ t _) = case t of
   OptionToggle b -> OptionBool b

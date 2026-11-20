@@ -19,9 +19,17 @@ export type OptionGroup = {
 }
 
 /* Card codes carry a 'c' prefix everywhere the frontend sees them (ToJSON
- * CardCode adds it); dbCards are keyed by the bare ArkhamDB code. */
-export const cardOptionName = (cardCode: string): string =>
-  useDbCardStore().getDbCard(cardArt(cardCode))?.name ?? cardCode;
+ * CardCode adds it); dbCards are keyed by the bare ArkhamDB code.
+ *
+ * The level is part of the name here: a card and its upgrade declare the same
+ * options under the same printed title, so without it the list shows "Rod of
+ * Carnamagos" twice with nothing to pick between them. `(N)` is the suffix the
+ * card overlay and the deckbuilder already use. */
+export const cardOptionName = (cardCode: string): string => {
+  const dbCard = useDbCardStore().getDbCard(cardArt(cardCode));
+  if (!dbCard) return cardCode;
+  return (dbCard.xp ?? 0) > 0 ? `${dbCard.name} (${dbCard.xp})` : dbCard.name;
+};
 
 /* Every card that declares options, whether or not it is in play. Sorted by
  * localized name so the filter list reads the same way the player does. */

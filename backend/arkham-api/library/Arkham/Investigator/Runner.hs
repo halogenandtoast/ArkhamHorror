@@ -286,10 +286,30 @@ onlyCampaignAbilities UsedAbility {..} = case abilityLimitType (abilityLimit use
   _ -> False
 
 {- | A "once per window" record, in any of the three buckets 'EndCheckWindow' prunes.
-Dropped wholesale at every turn boundary; see the @EndTurn@ handlers.
+Dropped at every turn boundary unless the queue still owes its window a check; see
+'expiredPerWindowRecord' and the @EndTurn@ handlers.
 -}
 isPerWindowRecord :: UsedAbility -> Bool
 isPerWindowRecord UsedAbility {..} = abilityLimitType (abilityLimit usedAbility) == Just PerWindow
+
+{- | 'isPerWindowRecord', minus the records whose window the queue still owes a
+@Do (CheckWindows ws)@ for.
+
+The window a record was made in is normally long closed by the turn boundary -- but a Forced
+ability that ENDS THE TURN is resolving inside its own still-open window when 'EndTurn'
+arrives, and 'WindowAsk' has already queued that window's trailing re-check. Dropping the
+record there lets the re-check re-derive the ability, which ends the turn again, which drops
+the record again: Frozen Spring offered its Forced "lose your actions and end your turn"
+without end (#6018). Same guard, and the same reason, as 'EndCheckWindow' (#5772).
+
+Not patchable on the card with @onlyOnce@: 'UnrevealLocation' exists (The Spaces Between
+turns over every non-Sentinel-Hill location in that very scenario), so a re-reveal must fire
+the ability again, and a @PerGame@ bucket would have silenced it for good.
+-}
+expiredPerWindowRecord :: HasQueue Message m => m (UsedAbility -> Bool)
+expiredPerWindowRecord = do
+  pendingChecks <- queuedWindowChecks
+  pure \u -> isPerWindowRecord u && not (any (`elem` pendingChecks) (usedAbilityWindows u))
 
 {- | Under the Chapter 2 "as if" ruling (Grimoire) the altered game state applies
 only to the ability being resolved; other abilities triggering during it see the
@@ -3158,9 +3178,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & usedAbilitiesL
       %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerRound)
       & (usedAdditionalActionsL .~ mempty)
-  {- A "once per window" bucket cannot outlive the window it was recorded in, and no
-  window spans a turn boundary -- so every seat drops its PerWindow records here, not
-  just the one whose turn it was.
+  {- A "once per window" bucket cannot outlive the window it was recorded in, so every seat
+  drops its PerWindow records here, not just the one whose turn it was.
+
+  A window CAN span this boundary, though -- 'expiredPerWindowRecord' is why the purge is
+  not unconditional. A Forced ability that ends the turn is resolving inside its own window
+  when EndTurn arrives, so a blanket drop fed its own trailing re-check and looped (#6018).
 
   'EndCheckWindow' is supposed to prune them, but it keeps a record whenever
   `depth >= usedDepth` and a use answered from a player window is not inside a
@@ -3177,13 +3200,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   nested window close would let a reaction used from a player window be re-offered
   inside that same still-open player window. -}
   EndTurn iid | iid == toId a -> do
+    expired <- lift expiredPerWindowRecord
     pure
       $ a
       & (endedTurnL .~ True)
       & usedAbilitiesL
       %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerTurn)
-      & (usedAbilitiesL %~ filter (not . isPerWindowRecord))
-  EndTurn _ -> pure $ a & usedAbilitiesL %~ filter (not . isPerWindowRecord)
+      & (usedAbilitiesL %~ filter (not . expired))
+  EndTurn _ -> do
+    expired <- lift expiredPerWindowRecord
+    pure $ a & usedAbilitiesL %~ filter (not . expired)
   UseCardAbility iid (isSource a -> True) 500 _ _ -> handleUseCardAbility a iid
   UseCardAbility iid (isSource a -> True) 501 _ _ -> handleUseCardAbilityV2 a iid
   UseCardAbility iid (isSource a -> True) 502 _ _ -> handleUseCardAbilityV3 a iid

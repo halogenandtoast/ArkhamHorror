@@ -7,6 +7,7 @@ import Arkham.ChaosBag.Base
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken.Types
 import Arkham.Classes.HasGame
+import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Types (Field (..))
@@ -15,6 +16,7 @@ import Arkham.Homebrew.Tokens (chaosTokenFacePool)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message (Message, pattern AddChaosToken)
 import Arkham.Scenario.Types (Field (..))
 
 -- These can be queried outside of a scenario (e.g. while gathering actions
@@ -45,14 +47,26 @@ getRemainingBlessTokens = selectCount $ InTokenPool #bless
 getRemainingBloodTokens :: HasGame m => m Int
 getRemainingBloodTokens = selectCount $ InTokenPool #blood
 
+-- | How many tokens of this face could be added to the chaos bag, capped at n.
+getAvailableChaosTokenFaces :: HasGame m => Int -> ChaosTokenFace -> m Int
+getAvailableChaosTokenFaces n face = case chaosTokenFacePool face of
+  Nothing -> pure n
+  Just _ -> min n <$> selectCount (InTokenPool $ ChaosTokenFaceIs face)
+
 -- | Whether n more tokens of this face could be added to the chaos bag.
 canAddChaosTokenFaces :: HasGame m => Int -> ChaosTokenFace -> m Bool
-canAddChaosTokenFaces n face = case chaosTokenFacePool face of
-  Nothing -> pure True
-  Just _ -> (>= n) <$> selectCount (InTokenPool $ ChaosTokenFaceIs face)
+canAddChaosTokenFaces n face = (>= n) <$> getAvailableChaosTokenFaces n face
 
 canAddChaosTokenFace :: HasGame m => ChaosTokenFace -> m Bool
 canAddChaosTokenFace = canAddChaosTokenFaces 1
+
+{- | Add as many tokens of this face as the supply allows, up to n: an effect adds
+as many as it can (bless/curse FAQ 2).
+-}
+addChaosTokens :: (HasGame m, HasQueue Message m) => Int -> ChaosTokenFace -> m ()
+addChaosTokens n face = do
+  x <- getAvailableChaosTokenFaces n face
+  pushAll $ replicate x (AddChaosToken face)
 
 getSealedChaosTokens :: HasGame m => m [ChaosToken]
 getSealedChaosTokens =

@@ -214,6 +214,7 @@ reduceDamageDealt eid n = lift $ overMessagesM $ rewriteQueuedM \case
 
 addCurseTokens :: ReverseQueue m => Maybe InvestigatorId -> Int -> m ()
 addCurseTokens mWho n = do
+  -- the window carries the full intent, unclamped, so parallel Rex can convert it
   batchId <- getId
   would <-
     Msg.checkWindows

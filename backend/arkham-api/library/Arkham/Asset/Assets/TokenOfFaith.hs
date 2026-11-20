@@ -39,7 +39,6 @@ instance RunMessage TokenOfFaith where
   runMessage msg a@(TokenOfFaith attrs) = case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (getTokens -> tokens') _ -> do
       let tokens = filter ((`elem` [#autofail, #curse]) . (.face)) tokens'
-      n <- min (length tokens) <$> getRemainingBlessTokens
-      pushAll $ replicate n $ AddChaosToken #bless
+      addChaosTokens (length tokens) #bless
       pure a
     _ -> TokenOfFaith <$> runMessage msg attrs

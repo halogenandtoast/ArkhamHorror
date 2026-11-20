@@ -391,7 +391,13 @@ multiStepUndoHandler runStepBack gameId = do
       -- via its own patch, so it is skipped.
       for_ mPropagate \(eid, shared) -> propagateShared eid (Just gameId) shared
 
--- | Multi-step scenario undo: roll back to scenarioSteps = 1 (start of scenario).
+{- | Multi-step scenario undo: roll back to the start of the scenario being
+played. That is "gameUndoScenarioStep", not a flat 1: a scenario that hands off
+to a second scenario inside the same game (Fortune and Folly, Part II) keeps
+counting scenarioSteps, so 1 is the start of the FIRST part (#6019). Games saved
+before the field existed have no boundary and fall back to 1, which is what they
+have always done.
+-}
 stepBackScenario
   :: UserId
   -> ArkhamGameId
@@ -399,7 +405,8 @@ stepBackScenario
 stepBackScenario userId gameId = do
   lockGame gameId
   rawGame <- get404 (ArkhamGameRawKey gameId)
-  stepBackToScenarioStep userId gameId rawGame 1
+  let target = fromMaybe 1 $ getMaybeIntField "gameUndoScenarioStep" rawGame.currentData
+  stepBackToScenarioStep userId gameId rawGame target
 
 {- | Multi-step undo to a boundary recorded in the raw JSON (e.g.
 "undoActionStep"). Errors out if the boundary is not set.

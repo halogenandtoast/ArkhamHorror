@@ -205,6 +205,7 @@ export type Game = {
   undoTurnStep: number | null;
   undoPhaseStep: number | null;
   undoRoundStep: number | null;
+  undoScenarioStep: number | null;
   roundHistory: Record<string, History>;
   phaseHistory: Record<string, History>;
   turnHistory: Record<string, History>;
@@ -462,13 +463,14 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
     undoTurnStep: v2Optional(JsonDecoder.number()),
     undoPhaseStep: v2Optional(JsonDecoder.number()),
     undoRoundStep: v2Optional(JsonDecoder.number()),
+    undoScenarioStep: v2Optional(JsonDecoder.number()),
     roundHistory: v2Optional(JsonDecoder.record<History>(historyDecoder, 'Dict<InvestigatorId, History>')),
     phaseHistory: v2Optional(JsonDecoder.record<History>(historyDecoder, 'Dict<InvestigatorId, History>')),
     turnHistory: v2Optional(JsonDecoder.record<History>(historyDecoder, 'Dict<InvestigatorId, History>')),
     enemyAttackTargets: JsonDecoder.fallback([], JsonDecoder.array(JsonDecoder.object<EnemyAttackTarget>({ enemy: JsonDecoder.string(), target: targetDecoder }, 'EnemyAttackTarget'), 'EnemyAttackTarget[]')),
   },
   'Game',
-).map(({mode, killedInvestigators, retiredInvestigators, settings, gameSettings, inAction, undoActionStep, undoTurnStep, undoPhaseStep, undoRoundStep, roundHistory, phaseHistory, turnHistory, ...game}) => ({
+).map(({mode, killedInvestigators, retiredInvestigators, settings, gameSettings, inAction, undoActionStep, undoTurnStep, undoPhaseStep, undoRoundStep, undoScenarioStep, roundHistory, phaseHistory, turnHistory, ...game}) => ({
   scenario: mode?.That ?? null,
   campaign: mode?.This ?? null,
   killedInvestigators: killedInvestigators ?? {},
@@ -489,6 +491,7 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
   undoTurnStep: undoTurnStep ?? null,
   undoPhaseStep: undoPhaseStep ?? null,
   undoRoundStep: undoRoundStep ?? null,
+  undoScenarioStep: undoScenarioStep ?? null,
   roundHistory: roundHistory ?? {},
   phaseHistory: phaseHistory ?? {},
   turnHistory: turnHistory ?? {},

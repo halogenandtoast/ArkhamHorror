@@ -2009,7 +2009,10 @@ const runHoverShortcut = (event: KeyboardEvent): boolean => {
 
 const canUndoScenario = computed(() => {
   if (!game.value) return false
-  return game.value.scenarioSteps > 1
+  // Not a flat 1: a game whose scenario handed off to a second part inside the
+  // same game (Fortune and Folly, Part II) starts that part partway up the
+  // scenarioSteps count. Older games have no boundary and fall back to 1.
+  return game.value.scenarioSteps > (game.value.undoScenarioStep ?? 1)
 })
 
 const canUndoBoundary = (boundary: number | null): boolean => {

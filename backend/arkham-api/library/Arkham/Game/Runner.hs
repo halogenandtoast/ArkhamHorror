@@ -17,6 +17,7 @@ import Arkham.Calculation qualified as Calc
 import Arkham.Campaign.Option
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
 import Arkham.CampaignLog
+import Arkham.CampaignStep (CampaignStep (ScenarioStep))
 import Arkham.Campaigns.TheScarletKeys.Key.Id
 import Arkham.Campaigns.TheScarletKeys.Keys
 import Arkham.Card
@@ -4854,6 +4855,27 @@ instance RunMessage Game where
 
 runPreGameMessage :: Runner Game
 runPreGameMessage msg g = case msg of
+  {- A scenario that hands off to a SECOND scenario inside the same game
+  (Fortune and Folly's checkpoint -> Part II) never goes through StartScenario,
+  so scenarioSteps keeps climbing and every boundary still points into the part
+  just finished. Re-base them, or "restart scenario" in Part II rewinds all the
+  way to the start of Part I (#6019).
+
+  Here rather than in 'runGameMessage' because that runs AFTER the entities, by
+  which point the scenario has already swapped itself for the new part and the
+  guard below cannot tell a real handoff from a step naming the scenario already
+  being played (Fortune and Folly pushes one of those for Part I). For the same
+  reason scenarioSteps is still the pre-handoff value, so +1 is the new part's
+  first step. -}
+  ScenarioCampaignStep (ScenarioStep sid)
+    | Just sid /= (attr scenarioId <$> modeScenario (g ^. modeL)) ->
+        pure
+          $ g
+          & (undoScenarioStepL ?~ (gameScenarioSteps g + 1))
+          & (undoActionStepL .~ Nothing)
+          & (undoTurnStepL .~ Nothing)
+          & (undoPhaseStepL .~ Nothing)
+          & (undoRoundStepL .~ Nothing)
   {- Opens the log block around a location turning face up: the clues it is
   stocked with, and anything an "after you reveal" ability does.
 
@@ -4962,6 +4984,8 @@ runPreGameMessage msg g = case msg of
       & (undoTurnStepL .~ Nothing)
       & (undoPhaseStepL .~ Nothing)
       & (undoRoundStepL .~ Nothing)
+      -- scenarioSteps restarts at 0 above, so step 1 is this scenario's start.
+      & (undoScenarioStepL ?~ 1)
   EndSetup -> do
     -- setup is not a round/turn, so a card limit spent there must not carry into round 1
     let setupUses = cardUsesMatching (\l -> isPerRoundLimit l || isPerTurnLimit l) g

@@ -23,6 +23,8 @@
   "attackOfOpportunityIgnoredBy": "{name}'s attack of opportunity is ignored by {source}",
   "baseValue": "base value",
   "cannotActivateAbility": "{investigator} cannot activate the ability on {source} ({blocker})",
+  "cannotGainResources": "{investigator} cannot gain {count} resource | {investigator} cannot gain {count} resources",
+  "cannotGainResourcesBecause": "{investigator} cannot gain {count} resource ({blocker}) | {investigator} cannot gain {count} resources ({blocker})",
   "cannotTriggerAbility": "{investigator} cannot trigger the {symbol} ability on {source} ({blocker})",
   "chaosTokenCancelled": "{token} is cancelled",
   "chaosTokenCancelledBy": "{token} is cancelled by {source}",

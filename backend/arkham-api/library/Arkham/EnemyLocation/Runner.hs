@@ -154,6 +154,7 @@ instance RunMessage EnemyLocationAttrs where
           { option = Label lbl option
           , kind = OriginalOptionKind
           , criteria = Nothing
+          , whenUnmet = Nothing
           }
       pure a
     -- Enemy-locations aren't regular Location entities, so the Location runner's
@@ -183,6 +184,7 @@ instance RunMessage EnemyLocationAttrs where
                 ]
           , kind = OriginalOptionKind
           , criteria = Nothing
+          , whenUnmet = Nothing
           }
       pure a
     -- Only deal standard damage when the attack resolves against the enemy-location
@@ -203,6 +205,7 @@ instance RunMessage EnemyLocationAttrs where
                 ]
           , kind = OriginalOptionKind
           , criteria = Nothing
+          , whenUnmet = Nothing
           }
       pure a
     Successful (Action.Evade, _) iid source target n | isEnemyTarget a target -> do

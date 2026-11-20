@@ -1366,6 +1366,7 @@ instance RunMessage EnemyAttrs where
                 ]
           , kind = OriginalOptionKind
           , criteria = Nothing
+          , whenUnmet = Nothing
           }
       pure a
     Successful (Action.Fight, _) iid source target n | isTarget a target -> do
@@ -1509,6 +1510,7 @@ instance RunMessage EnemyAttrs where
                 ]
           , kind = OriginalOptionKind
           , criteria = Nothing
+          , whenUnmet = Nothing
           }
       pure a
     Successful (Action.Evade, _) iid source target n | isTarget a target -> do

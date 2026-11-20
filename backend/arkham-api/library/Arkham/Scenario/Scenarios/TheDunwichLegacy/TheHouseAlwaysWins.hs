@@ -5,6 +5,8 @@ import Arkham.Agenda.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as A
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDunwichLegacy.ChaosBag
 import Arkham.Campaigns.TheDunwichLegacy.Key
+import Arkham.Capability
+import Arkham.Criteria
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Enemies
 import Arkham.Exception
@@ -14,6 +16,7 @@ import Arkham.Helpers.Narrative
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
 import Arkham.Location.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Locations
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
@@ -103,18 +106,18 @@ instance RunMessage TheHouseAlwaysWins where
             chaosTokenEffect Skull drawnToken $ ChaosTokenFaceModifier [Zero]
           labeled "skull.doNotSpend" nothing
       pure s
-    {- No criterion on "can you gain resources". 'takeResources' asks that
-    question itself when it runs, and asking it twice was both wrong and silent:
-    wrong because the pre-check used the player-card-effect form while the token
-    is a scenario effect, and silent because an option the criterion rejects is
-    dropped from the prompt with nothing said. O'Bannion's Thug in your threat
-    area then ate a Cultist token's 3 resources without a word (#6017) -- now
-    the attempt is made and the log reports the refusal and who caused it.
+    {- 'offeredWhen', not 'withCriteria': there is nothing to choose about an
+    option that cannot pay, so it is kept off the prompt, but it still resolves
+    so 'takeResources' can refuse it out loud. O'Bannion's Thug in your threat
+    area used to eat these 3 resources without a word (#6017).
 
-    Resolving it later still matters: the option carries forward unresolved, so
-    killing the Thug with the same test's fight means these resources do land. -}
+    'FromOtherSource' because the token is a scenario effect, not a player card
+    one -- the same question 'takeResources' asks when it runs. -}
     PassedSkillTestWithToken iid Cultist | isEasyStandard attrs -> do
-      tokenSkillTestOption Cultist $ takeResources iid Cultist 3
+      tokenSkillTestOptionOfferedWhen
+        (exists $ investigator_ $ can.gain.resources FromOtherSource (InvestigatorWithId iid))
+        Cultist
+        $ takeResources iid Cultist 3
       pure s
     FailedSkillTestWithToken iid Cultist | isHardExpert attrs -> do
       spendResources iid 3

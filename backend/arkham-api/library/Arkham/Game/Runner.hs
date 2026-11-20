@@ -2871,28 +2871,43 @@ runGameMessage msg g = case msg of
             pushAll [msg', msg]
           _ ->
             getSkillTest >>= \case
-              Just st -> case opts of
-                [opt] -> when (opt.kind /= PreOriginalOptionKind) do
-                  case opt.criteria of
-                    Nothing -> push $ uiToRun opt.option
-                    Just c -> do
-                      ok <- passesCriteria st.investigator Nothing st.source st.source [] c
-                      when ok $ push $ uiToRun opt.option
-                _ -> do
-                  opts' <-
-                    opts & mapMaybeM \opt -> do
-                      case opt.criteria of
-                        Nothing -> pure $ Just opt
-                        Just c -> do
-                          ok <- passesCriteria st.investigator Nothing st.source st.source [] c
-                          pure $ if ok then Just opt else Nothing
-                  let blocked = any (\opt -> opt.kind == BlockingOptionKind) opts'
-                  pid <- getPlayer st.investigator
-                  push $ Ask pid $ ChooseOne $ opts & eachWithRest & mapMaybe \(opt, rest) -> do
-                    guard $ elem opt opts'
-                    guard $ not blocked || opt.kind /= OriginalOptionKind
-                    guard $ opt.kind /= PreOriginalOptionKind || any (\o -> o.kind == OriginalOptionKind) rest
-                    pure $ uiAnd opt.option (SkillTestResultOptions rest)
+              Just st -> do
+                {- This is where a gated option lives or dies. An option whose
+                criteria fail is not offered, but it rides on in @rest@ and is
+                asked again each time the remaining options are, so "not now"
+                is not "not ever" -- only the last option standing is settled.
+                'whenUnmet' is its parting shot: see the field's own note. -}
+                let unmet opt = pushAll (fromMaybe [] opt.whenUnmet)
+                case opts of
+                  [opt] -> when (opt.kind /= PreOriginalOptionKind) do
+                    case opt.criteria of
+                      Nothing -> push $ uiToRun opt.option
+                      Just c -> do
+                        ok <- passesCriteria st.investigator Nothing st.source st.source [] c
+                        if ok then push (uiToRun opt.option) else unmet opt
+                  _ -> do
+                    opts' <-
+                      opts & mapMaybeM \opt -> do
+                        case opt.criteria of
+                          Nothing -> pure $ Just opt
+                          Just c -> do
+                            ok <- passesCriteria st.investigator Nothing st.source st.source [] c
+                            pure $ if ok then Just opt else Nothing
+                    let blocked = any (\opt -> opt.kind == BlockingOptionKind) opts'
+                    pid <- getPlayer st.investigator
+                    let
+                      choices =
+                        opts & eachWithRest & mapMaybe \(opt, rest) -> do
+                          guard $ elem opt opts'
+                          guard $ not blocked || opt.kind /= OriginalOptionKind
+                          guard $ opt.kind /= PreOriginalOptionKind || any (\o -> o.kind == OriginalOptionKind) rest
+                          pure $ uiAnd opt.option (SkillTestResultOptions rest)
+                    {- Every option gated out at once leaves nothing to ask, and
+                    'chooseOne' on an empty list throws. They are all settled
+                    here, so spend their 'whenUnmet' rather than the game. -}
+                    if null choices
+                      then traverse_ unmet opts
+                      else push $ Ask pid $ ChooseOne choices
               Nothing -> error "missing skill test"
     pure g
   CollectSkillTestOptions -> do

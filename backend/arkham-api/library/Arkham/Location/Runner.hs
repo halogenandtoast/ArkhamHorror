@@ -185,6 +185,7 @@ instance RunMessage LocationAttrs where
               { option = Label lbl option
               , kind = OriginalOptionKind
               , criteria = Nothing
+              , whenUnmet = Nothing
               }
           )
       pure a
@@ -202,6 +203,7 @@ instance RunMessage LocationAttrs where
               { option = Label lbl option
               , kind = OriginalOptionKind
               , criteria = Nothing
+              , whenUnmet = Nothing
               }
           )
       pure a

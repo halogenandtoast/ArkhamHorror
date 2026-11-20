@@ -2338,6 +2338,7 @@ mconcat
                       { option = Label a b
                       , kind = OriginalOptionKind
                       , criteria = Nothing
+                      , whenUnmet = Nothing
                       }
             "SkillTestResultOptions" -> do
               econtents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
@@ -2349,6 +2350,7 @@ mconcat
                       { option = a
                       , kind = OriginalOptionKind
                       , criteria = Nothing
+                      , whenUnmet = Nothing
                       }
             "LoseAll" -> do
               (iid, source, tkn) <- o .: "contents"

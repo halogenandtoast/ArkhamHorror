@@ -27,12 +27,12 @@ instance HasAbilities RexMurphyParallel where
     [ restricted a 1 Self
         $ ForcedWhen isForced
         $ freeReaction
-        $ WindowWhen (HasNRemainingCurseTokens $ atLeast 2)
-        $ WouldPlaceClueOnLocation #when You YourLocation (atLeast 1)
-    , restricted a 2 Self
-        $ freeReaction
-        $ WindowWhen (exists $ You <> InvestigatorAt Anywhere <> InvestigatorWithAnyClues)
-        $ WouldAddChaosTokensToChaosBag #when (Just You) (atLeast 2) #curse
+        $ oneOf
+          [ WindowWhen (HasNRemainingCurseTokens $ atLeast 2)
+              $ WouldPlaceClueOnLocation #when You YourLocation (atLeast 1)
+          , WindowWhen (exists $ You <> InvestigatorAt Anywhere <> InvestigatorWithAnyClues)
+              $ WouldAddChaosTokensToChaosBag #when (Just You) (atLeast 2) #curse
+          ]
     ]
    where
     isForced =
@@ -61,53 +61,49 @@ instance RunMessage RexMurphyParallel where
       n <- selectCount $ RevealedChaosTokens $ ChaosTokenFaceIs #curse
       drawCardsIfCan attrs.id (#elderSign :: Source) n
       pure i
-    UseCardAbility iid (isSource attrs -> True) 1 [w] _ -> do
-      case windowType w of
-        Window.WouldPlaceClueOnLocation _ _ _ n -> do
-          curses <- getRemainingCurseTokens
-          clues <- field InvestigatorClues iid
-          let clueDiff = max 0 (n - clues)
-          let mandatoryTimes = max 1 clueDiff
-          let optionalTimes = max 0 $ min (n - mandatoryTimes) (curses `div` 2)
-          if optionalTimes > 0
-            then
-              questionLabel "$cards.label.rexMurphyParallel.conversion" iid
-                $ DropDown
-                  [ (tshow x, DoStep x msg)
-                  | x <- [mandatoryTimes .. (mandatoryTimes + optionalTimes)]
-                  ]
-            else doStep mandatoryTimes msg
-        _ -> pure ()
-      pure $ RexMurphyParallel $ deleteMetaKey "forced" attrs
-    UseCardAbility iid (isSource attrs -> True) 2 [w] _ -> do
-      case windowType w of
-        Window.WouldAddChaosTokensToChaosBag _ tokens -> do
-          let numCurse = count (== #curse) tokens
-          numClues <- field InvestigatorClues iid
-          n <- getRemainingCurseTokens
+    UseCardAbility iid (isSource attrs -> True) 1 [w] _ -> case windowType w of
+      Window.WouldPlaceClueOnLocation _ _ _ n -> do
+        curses <- getRemainingCurseTokens
+        clues <- field InvestigatorClues iid
+        let clueDiff = max 0 (n - clues)
+        let mandatoryTimes = max 1 clueDiff
+        let optionalTimes = max 0 $ min (n - mandatoryTimes) (curses `div` 2)
+        if optionalTimes > 0
+          then
+            questionLabel "$cards.label.rexMurphyParallel.conversion" iid
+              $ DropDown
+                [ (tshow x, DoStep x msg)
+                | x <- [mandatoryTimes .. (mandatoryTimes + optionalTimes)]
+                ]
+          else doStep mandatoryTimes msg
+        pure $ RexMurphyParallel $ deleteMetaKey "forced" attrs
+      Window.WouldAddChaosTokensToChaosBag _ tokens -> do
+        let numCurse = count (== #curse) tokens
+        numClues <- field InvestigatorClues iid
+        n <- getRemainingCurseTokens
 
-          -- Let's figure out the required number of times
-          -- curseDiff: how many times we need to do this in order to be consistent with tokens available, we add 1 to handle the odd case (i.e. you've asked for 3 tokens, but 0 are in the bag)
-          -- mandatoryTimes: if we didn't need to curse diff, then we should do these at least once
-          -- optionalTimes: If we can still do it more we will ask
-          let curseDiff = max 0 ((numCurse - n + 1) `div` 2)
-          let mandatoryTimes = max 1 curseDiff
-          let denominator = max 0 (2 * (numClues - mandatoryTimes))
-          let optionalTimes :: Int =
-                if denominator == 0
-                  then 0
-                  else max 0 (numCurse - (2 * mandatoryTimes) + 1) `div` denominator
+        -- Let's figure out the required number of times
+        -- curseDiff: how many times we need to do this in order to be consistent with tokens available, we add 1 to handle the odd case (i.e. you've asked for 3 tokens, but 0 are in the bag)
+        -- mandatoryTimes: if we didn't need to curse diff, then we should do these at least once
+        -- optionalTimes: If we can still do it more we will ask
+        let curseDiff = max 0 ((numCurse - n + 1) `div` 2)
+        let mandatoryTimes = max 1 curseDiff
+        let denominator = max 0 (2 * (numClues - mandatoryTimes))
+        let optionalTimes :: Int =
+              if denominator == 0
+                then 0
+                else max 0 (numCurse - (2 * mandatoryTimes) + 1) `div` denominator
 
-          if optionalTimes > 0
-            then
-              questionLabel "$cards.label.rexMurphyParallel.conversion" iid
-                $ DropDown
-                  [ (tshow x, DoStep x msg)
-                  | x <- [mandatoryTimes .. (mandatoryTimes + optionalTimes)]
-                  ]
-            else doStep mandatoryTimes msg
-        _ -> pure ()
-      pure i
+        if optionalTimes > 0
+          then
+            questionLabel "$cards.label.rexMurphyParallel.conversion" iid
+              $ DropDown
+                [ (tshow x, DoStep x msg)
+                | x <- [mandatoryTimes .. (mandatoryTimes + optionalTimes)]
+                ]
+          else doStep mandatoryTimes msg
+        pure i
+      _ -> pure i
     DoStep n (UseCardAbility iid (isSource attrs -> True) 1 [w] _) -> do
       case windowType w of
         Window.WouldPlaceClueOnLocation _ lid source clues -> do
@@ -124,13 +120,9 @@ instance RunMessage RexMurphyParallel where
                     }
                 ]
             push $ Would batchId [would, InvestigatorPlaceCluesOnLocation iid source remainingClues]
-        _ -> pure ()
-      pure i
-    DoStep n (UseCardAbility iid (isSource attrs -> True) 2 [w] _) -> do
-      case windowType w of
         Window.WouldAddChaosTokensToChaosBag mWho tokens -> do
           push $ CancelBatch $ Window.getBatchId [w]
-          push $ Do (InvestigatorPlaceCluesOnLocation iid (attrs.ability 2) n)
+          push $ Do (InvestigatorPlaceCluesOnLocation iid (attrs.ability 1) n)
           -- we need to check if we need to recreate the window
           let remainingTokens = foldr deleteFirst tokens (replicate @[ChaosTokenFace] (n * 2) #curse)
           unless (null remainingTokens) do

@@ -454,8 +454,20 @@ instance RunMessage FortuneAndFolly where
         _ -> error "invalid resolution"
       pure s
     ScenarioCampaignStep (CheckpointStep 1) -> scope "checkpoint1" do
-      story $ i18nWithTitle "thePlan1"
-      story $ i18nWithTitle "thePlan3"
+      {- The two options hang off The Plan 1's own screen rather than a continue
+      button and then a second prompt, so the explainer in thePlan1's copy sits
+      right above the buttons it is explaining. 'withTitle' is the builder form
+      of 'i18nWithTitle' and yields the identical FlavorText.
+
+      Flavor only, deliberately: The Plan 2 (play on now) and The Plan 3 (resume
+      later) describe the same resulting game state and differ just in the
+      bookkeeping a physical table does by hand -- what to write in the Campaign
+      Log versus what to leave out on the table. The app already carries all of
+      it (the meta keys below plus the scenario log), so both branches read their
+      passage and then share the identical tail. -}
+      storyWithChooseOneM (withTitle "thePlan1") do
+        labeled "continuePart2Now" $ story $ i18nWithTitle "thePlan2"
+        labeled "playPart2Later" $ story $ i18nWithTitle "thePlan3"
       theStakeout <- selectJust $ storyIs Stories.theStakeout
       n <- perPlayer 1
       -- Investigators who reach a resolution without being eliminated never moved
@@ -606,6 +618,9 @@ instance RunMessage FortuneAndFollyPart2 where
 
       setAgendaDeck [Agendas.openingHand, Agendas.theTurn, Agendas.allBetsDown]
       setActDeck [Acts.theTake, Acts.theExit]
+
+      needTimeToRest <- remembered TheInvestigatorsNeedTimeToRest
+      when needTimeToRest $ placeDoomOnAgenda attrs 1
 
       startAt =<< place Locations.casinoFloorBusyNight
 

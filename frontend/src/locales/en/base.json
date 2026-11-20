@@ -949,6 +949,10 @@
     "cannotSpendCluesBecause": "{source} is preventing you from spending clues",
     "cannotDiscoverOrSpendClues": "An effect is preventing you from discovering or spending clues",
     "cannotDiscoverOrSpendCluesBecause": "{source} is preventing you from discovering or spending clues",
+    "cannotGainResources": "An effect is preventing you from gaining resources",
+    "cannotGainResourcesBecause": "{source} is preventing you from gaining resources",
+    "cannotGainResourcesFromCards": "An effect is preventing you from gaining resources from card effects",
+    "cannotGainResourcesFromCardsBecause": "{source} is preventing you from gaining resources from card effects",
     "silenceCard": "Silence — skip this card's free triggers and reactions while it is hidden",
     "unsilenceCard": "Unsilence — offer this card's triggers again"
   },

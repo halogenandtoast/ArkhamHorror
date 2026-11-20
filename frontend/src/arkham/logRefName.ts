@@ -15,8 +15,15 @@ export type DbCards = ReturnType<typeof useDbCardStore>
  *
  * Lives here rather than in LogPart.vue because the transcript export renders
  * the same entries to text, and a second copy of this would drift.
+ *
+ * Takes only the two fields it reads, not a whole 'LogRef', so a caller holding
+ * just a card code can name it without inventing the rest of a log entry --
+ * resourceProhibitions.ts names a modifier's source that way.
  */
-export function logRefName(ref: LogRef, dbCards: DbCards): string {
+export function logRefName(
+  ref: Pick<LogRef, 'cardCode' | 'name'> & Partial<LogRef>,
+  dbCards: DbCards,
+): string {
   if (ref.cardCode) {
     /* A custom card is in nobody's ArkhamDB index — look it up in the local
      * registry instead, or a custom investigator renders as its '*'-prefixed

@@ -1,51 +1,51 @@
 {
   "intro": {
-    "title": "剧本II：新地平线",
-    "body": "雷诺兹侦探陪在你身边，你们前往滨水区的新地平线工厂。“依我看，我们有两个选择，”雷诺兹说，“我们可以现在就进去搜查。我有搜查令，这样更正式，但里面还有在干活的人，人多事就复杂。或者……”他掏出一套开锁工具，“我们等天黑以后再说。”",
+    "title": "冒险II：新视野",
+    "body": "你和警探瑞若兹一起前往滨水区的新视野工厂。“唔，眼下我看咱们有两个选择。”瑞若兹说，“我们可以现在就进去，开始搜查。我有搜查令，这样行动就更官方了，但里面还有人上班，他们可能会把事情搞复杂。或者……”他做了个撬锁的手势，“我们等到天黑后再动手。”",
     "addCultist": "在本战役剩余时间内，向混乱袋中加入1个{'{'}cultist{'}'}标记。",
-    "chooseAsGroup": "调查员必须以小组为单位做出选择：",
-    "searchDuringTheDay": "白天搜查（提示：准备好用话术蒙混进去）。前往_准备（v. I）_。",
-    "searchAfterDark": "天黑后搜查（提示：准备好用武力闯进去）。跳至_准备（v. II）_。"
+    "chooseAsGroup": "调查员必须共同选择：",
+    "searchDuringTheDay": "在白天搜查<i>提示：准备好谈判</i>。进入_冒险设置(版本一)_。",
+    "searchAfterDark": "等天黑后再搜查<i>提示：准备好战斗</i>。跳至_冒险设置(版本二)_。"
   },
   "label": {
-    "searchDuringTheDay": "白天搜查",
-    "searchAfterDark": "天黑后搜查",
-    "spendExperienceToRemoveBlood": "<p>以小组为单位，共花费2个{'{'}perPlayer{'}'}经验，从混乱袋中移除1个{'{'}blood{'}'}标记<p>",
+    "searchDuringTheDay": "在白天搜查",
+    "searchAfterDark": "等天黑后再搜查",
+    "spendExperienceToRemoveBlood": "<p>共同花费总计2{'{'}perPlayer{'}'}点经验值，以从混乱袋中移除1个{'{'}blood{'}'}标记<p>",
     "doNotSpendExperience": "不花费经验"
   },
   "version1": {
     "setup": {
-      "title": "准备（v. I）",
-      "gatherSets": "收集以下遭遇牌组中的所有卡牌：<section class='encounter-sets grid'><div><img src='{setImgPath}/new-horizons.png' /><span>新地平线</span></div><div><img src='{setImgPath}/afflicted.png' /><span>患病</span></div><div><img src='{setImgPath}/blood-blight.png' /><span>鲜血瘟疫</span></div><div><img src='{setImgPath}/bloodthirst.png' /><span>嗜血</span></div><div><img src='{setImgPath}/hunted.png' /><span>被追猎</span></div><div><img src='{setImgPath}/infected.png' /><span>感染</span></div><div><img src='{setImgPath}/sanguine-secrets.png' /><span>血色秘密</span></div><div><img src='{setImgPath}/vermin.png' /><span>害虫</span></div><div><img src='{setImgPath}/flying-terrors.png' /><span>飞行恐惧{'{'}asterisk{'}'}</span></div></section><div class='center'>{'{'}asterisk{'}'}此遭遇牌组可在《诡镇奇谈：卡牌版》核心游戏中找到。</div>",
-      "gatherLocations": "收集_新地平线_遭遇牌组中的每个地点。",
-      "day": "将每个_白天_地点放入游戏中。将每个_夜晚_地点移出游戏。每位调查员从其选择的一个工厂车间地点开始游戏。",
-      "shallowTunnels": "若在简单或标准难度下游玩，将洞穴入口（*浅层隧道*）、下行隧道以及全部3个侧室（*浅层隧道*）放到一旁，不放入游戏中。将其余每个地点移出游戏。",
-      "darkestDepths": "若在困难或专家难度下游玩，将洞穴入口（*最深之渊*）、下行隧道以及全部3个侧室（*最深之渊*）放到一旁，不放入游戏中。将其余每个地点移出游戏。",
-      "agendaDeck": "使用密谋 1a——“忙碌的白天”与密谋 2a——“深挖（v. I）”构建密谋牌库。将其他每张密谋移出游戏。",
-      "factoryWorkers": "在每个工厂车间地点出现1个工厂工人敌人。",
-      "zburamoarte": "收集泽布拉莫阿拉敌人的每个副本。",
-      "lethargicBeast": "若在简单难度下游玩，将泽布拉莫阿拉（*懒散的野兽*）放到一旁，不放入游戏中。将泽布拉莫阿拉的其他每个副本移出游戏。",
-      "sourceOfTheBlight": "若在标准难度下游玩，将泽布拉莫阿拉（*鲜血瘟疫之源*）放到一旁，不放入游戏中。将泽布拉莫阿拉的其他每个副本移出游戏。",
-      "progenitorOfMonsters": "若在困难或专家难度下游玩，将泽布拉莫阿拉（*怪物之祖*）放到一旁，不放入游戏中。将泽布拉莫阿拉的其他每个副本移出游戏。",
-      "setAside": "将以下卡牌放到一旁，不放入游戏中：哈维尔·里维拉敌人、每个染病的工人敌人副本、每个“黑暗中的回响”诡计副本、_感染_与_飞行恐惧_遭遇牌组，以及伪造许可和血歌故事支援。",
-      "removeNightWatchman": "将夜间守卫敌人移出游戏。"
+      "title": "冒险设置(版本一)",
+      "gatherSets": "收集以下遭遇牌组中的所有卡牌：<section class='encounter-sets grid'><div><img src='{setImgPath}/new-horizons.png' /><span>新视野</span></div><div><img src='{setImgPath}/afflicted.png' /><span>磨难</span></div><div><img src='{setImgPath}/blood-blight.png' /><span>鲜血枯疫</span></div><div><img src='{setImgPath}/bloodthirst.png' /><span>嗜血成性</span></div><div><img src='{setImgPath}/hunted.png' /><span>惨遭追猎</span></div><div><img src='{setImgPath}/infected.png' /><span>惨遭感染</span></div><div><img src='{setImgPath}/sanguine-secrets.png' /><span>血色秘密</span></div><div><img src='{setImgPath}/vermin.png' /><span>害兽</span></div><div><img src='{setImgPath}/flying-terrors.png' /><span>飞天恐怖{'{'}asterisk{'}'}</span></div></section><div class='center'>{'{'}asterisk{'}'}此遭遇牌组可在《诡镇奇谈：卡牌版》第二章基础游戏《灰烬同袍会》中找到。</div>",
+      "gatherLocations": "收齐<b>新视野</b>遭遇组的所有地点。",
+      "day": "将每张_白日_地点放置入场。将每张_黑夜_地点从游戏中移除。每位调查员自选一个工厂车间地点开始游戏。",
+      "shallowTunnels": "如果进行的是简单或普通难度，将岩穴入口<i>（浅层通道）</i>、下行通道、全部3张侧边洞室<i>（浅层通道）</i>放在一边，位于场外。将剩余的所有地点从游戏中移除。",
+      "darkestDepths": "如果进行的是困难或专家难度，将岩穴入口<i>（至暗深渊）</i>、下行通道、全部3张侧边洞室<i>（至暗深渊）</i>放在一边，位于场外。将剩余的所有地点从游戏中移除。",
+      "agendaDeck": "使用密谋1a“白日喧嚣”和密谋2a“掘入更深（版本一）”构建密谋牌库。将其他每张密谋从游戏中移除。",
+      "factoryWorkers": "在每个工厂车间地点生成1个工厂工人敌人。",
+      "zburamoarte": "收齐每张_孜卜拉牟特_敌人。",
+      "lethargicBeast": "如果正在进行简单难度，将孜卜拉牟特<i>（困倦巨兽）</i>放在一边，位于场外。将其他每张孜卜拉牟特从游戏中移除。",
+      "sourceOfTheBlight": "如果正在进行普通难度，将孜卜拉牟特<i>（枯疫源头）</i>放在一边，位于场外。将其他每张孜卜拉牟特从游戏中移除。",
+      "progenitorOfMonsters": "如果正在进行困难或专家难度，将孜卜拉牟特<i>（怪物始祖）</i>放在一边，位于场外。将其他每张孜卜拉牟特从游戏中移除。",
+      "setAside": "将下列卡牌放在一边，位于场外：贾维尔·里维拉敌人、每张枯疫工人敌人、每张幽暗回声诡计、<b>惨遭感染</b>和<b>飞天恐怖</b>遭遇组、伪造许可和血色歌谣剧情支援。",
+      "removeNightWatchman": "将_夜班看守_敌人从游戏中移除。"
     }
   },
   "version2": {
     "setup": {
-      "title": "准备（v. II）",
-      "gatherSets": "收集以下遭遇牌组中的所有卡牌：<section class='encounter-sets grid'><div><img src='{setImgPath}/new-horizons.png' /><span>新地平线</span></div><div><img src='{setImgPath}/afflicted.png' /><span>患病</span></div><div><img src='{setImgPath}/children-of-blood.png' /><span>血之子女</span></div><div><img src='{setImgPath}/infected.png' /><span>感染</span></div><div><img src='{setImgPath}/preyed-upon.png' /><span>被猎食</span></div><div><img src='{setImgPath}/sanguine-secrets.png' /><span>血色秘密</span></div><div><img src='{setImgPath}/stalked.png' /><span>被跟踪</span></div><div><img src='{setImgPath}/flying-terrors.png' /><span>飞行恐惧{'{'}asterisk{'}'}</span></div><div><img src='{setImgPath}/reeking-decay.png' /><span>恶臭的腐败{'{'}asterisk{'}'}</span></div></section><div class='center'>{'{'}asterisk{'}'}此遭遇牌组可在《诡镇奇谈：卡牌版》核心游戏中找到。</div>",
-      "gatherLocations": "收集_新地平线_遭遇牌组中的每个地点。",
-      "night": "将每个_夜晚_地点放入游戏中。将每个_白天_地点移出游戏。每位调查员从其选择的一个工厂车间地点开始游戏。",
-      "shallowTunnels": "若在简单或标准难度下游玩，将洞穴入口（*浅层隧道*）、下行隧道以及全部3个侧室（*浅层隧道*）放到一旁，不放入游戏中。将其余每个地点移出游戏。",
-      "darkestDepths": "若在困难或专家难度下游玩，将洞穴入口（*最深之渊*）、下行隧道以及全部3个侧室（*最深之渊*）放到一旁，不放入游戏中。将其余每个地点移出游戏。",
-      "agendaDeck": "使用密谋 1a——“寂静之夜”与密谋 2a——“深挖（v. II）”构建密谋牌库。将其他每张密谋移出游戏。",
-      "zburamoarte": "收集泽布拉莫阿拉敌人的每个副本。",
-      "lethargicBeast": "若在简单难度下游玩，将泽布拉莫阿拉（*懒散的野兽*）放到一旁，不放入游戏中。将泽布拉莫阿拉的其他每个副本移出游戏。",
-      "sourceOfTheBlight": "若在标准难度下游玩，将泽布拉莫阿拉（*鲜血瘟疫之源*）放到一旁，不放入游戏中。将泽布拉莫阿拉的其他每个副本移出游戏。",
-      "progenitorOfMonsters": "若在困难或专家难度下游玩，将泽布拉莫阿拉（*怪物之祖*）放到一旁，不放入游戏中。将泽布拉莫阿拉的其他每个副本移出游戏。",
-      "setAside": "将以下卡牌放到一旁，不放入游戏中：夜间守卫敌人、每个染病的工人敌人副本、每个“黑暗中的回响”诡计副本、_感染_与_飞行恐惧_遭遇牌组，以及伪造许可和血歌故事支援。",
-      "removeJavierRivera": "将哈维尔·里维拉敌人以及每个工厂工人副本移出游戏。"
+      "title": "冒险设置(版本二)",
+      "gatherSets": "收集以下遭遇牌组中的所有卡牌：<section class='encounter-sets grid'><div><img src='{setImgPath}/new-horizons.png' /><span>新视野</span></div><div><img src='{setImgPath}/afflicted.png' /><span>磨难</span></div><div><img src='{setImgPath}/children-of-blood.png' /><span>鲜血之子</span></div><div><img src='{setImgPath}/infected.png' /><span>惨遭感染</span></div><div><img src='{setImgPath}/preyed-upon.png' /><span>惨遭捕食</span></div><div><img src='{setImgPath}/sanguine-secrets.png' /><span>血色秘密</span></div><div><img src='{setImgPath}/stalked.png' /><span>如影随形</span></div><div><img src='{setImgPath}/flying-terrors.png' /><span>飞天恐怖{'{'}asterisk{'}'}</span></div><div><img src='{setImgPath}/reeking-decay.png' /><span>恶臭腐败{'{'}asterisk{'}'}</span></div></section><div class='center'>{'{'}asterisk{'}'}此遭遇牌组可在《诡镇奇谈：卡牌版》第二章基础游戏《灰烬同袍会》中找到。</div>",
+      "gatherLocations": "收齐<b>新视野</b>遭遇组的所有地点。",
+      "night": "将每张_黑夜_地点放置入场。将每张_白日_地点从游戏中移除。每位调查员自选一个工厂车间地点开始游戏。",
+      "shallowTunnels": "如果进行的是简单或普通难度，将岩穴入口<i>（浅层通道）</i>、下行通道、全部3张侧边洞室<i>（浅层通道）</i>放在一边，位于场外。将剩余的所有地点从游戏中移除。",
+      "darkestDepths": "如果进行的是困难或专家难度，将岩穴入口<i>（至暗深渊）</i>、下行通道、全部3张侧边洞室<i>（至暗深渊）</i>放在一边，位于场外。将剩余的所有地点从游戏中移除。",
+      "agendaDeck": "使用密谋1a“黑夜寂静”和密谋2a“掘入更深（版本二）”构建密谋牌库。将其他每张密谋从游戏中移除。",
+      "zburamoarte": "收齐每张_孜卜拉牟特_敌人。",
+      "lethargicBeast": "如果正在进行简单难度，将孜卜拉牟特<i>（困倦巨兽）</i>放在一边，位于场外。将其他每张孜卜拉牟特从游戏中移除。",
+      "sourceOfTheBlight": "如果正在进行普通难度，将孜卜拉牟特<i>（枯疫源头）</i>放在一边，位于场外。将其他每张孜卜拉牟特从游戏中移除。",
+      "progenitorOfMonsters": "如果正在进行困难或专家难度，将孜卜拉牟特<i>（怪物始祖）</i>放在一边，位于场外。将其他每张孜卜拉牟特从游戏中移除。",
+      "setAside": "将下列卡牌放在一边，位于场外：夜班看守敌人、每张枯疫工人敌人、每张幽暗回声诡计、<b>惨遭感染</b>和<b>飞天恐怖</b>遭遇组、伪造许可和血色歌谣剧情支援。",
+      "removeJavierRivera": "将贾维尔·里维拉敌人和每张工厂工人敌人从游戏中移除。"
     }
   },
   "tokens": {
@@ -62,31 +62,31 @@
       "elderThing": "-4。本次检定结算后，若你的调查员身上封印着1个{'{'}blood{'}'}标记，则承受1点伤害，并释放你身上封印的1个{'{'}blood{'}'}标记。"
     }
   },
-  "spendExperience": "以小组为单位，共花费2个{'{'}perPlayer{'}'}经验，从混乱袋中移除1个{'{'}blood{'}'}标记",
+  "spendExperience": "共同花费总计2{'{'}perPlayer{'}'}点经验值，以从混乱袋中移除1个{'{'}blood{'}'}标记",
   "resolutions": {
     "noResolution": {
-      "title": "无结算",
-      "body": "<p>_若未达成结算（每位调查员都被击败）_：“那里面的情况糟透了。”</p><p>你在雷诺兹侦探的呼唤声中醒来。在清晨的光线中，你坐起身来，僵硬的关节一阵阵刺痛。雷诺兹把手放在你的肩上。“别逼自己了，”他说，“再说，我一直在工厂后面盯着，看看有没有人——或者有什么东西——跟着我们出来。”</p><ul><li>在本战役剩余时间内，向混乱袋中加入1个{'{'}blood{'}'}标记。</li><li>每位调查员获得等于胜利区中每张卡牌_胜利 X_ 值之和的经验。<ul><li>_经验_：{xp}</li></ul></li><li>跳至_结算5_。</li></ul>"
+      "title": "无结局",
+      "body": "<p>_若未达成结局（每位调查员都被击败）_：“事情变得相当棘手了。”</p><p>你醒来听到了警探瑞若兹的声音。你在晨光中眨眨眼睛，坐了起来，僵硬的关节还是阵痛。瑞若兹把手搭在你的肩膀上。“别太拼命。”他说，“而且我一直盯着工厂后面，留心有没有人——或是东西——要跟着我们出去。””</p><ul><li>在剧本之后的部分，在混乱袋中加入1个{'{'}blood{'}'}标记。</li><li>每位调查员取得经验值，数量等于胜利区所有卡牌的<b>胜利X</b>数值之和。<ul><li>_经验_：{xp}</li></ul></li><li>跳至_结局5_。</li></ul>"
     },
     "resolution1": {
-      "title": "结算1",
-      "body": "<p>_结算1_：你终于从肉类加工厂里走了出来，感觉并不比挂在里面钩子上的牛肉好多少。你希望自己所完成的事情足够有用，即使你没能查明邪教在仓库里到底在做什么。至少，你有了一个名字可以追查——霍华德·威尔克斯，新地平线的老板，也是潜伏在其深处的邪教头目。</p><ul><li>在你的战役日志中记录*调查员没有完成他们的搜寻*。</li><li>在你的战役日志中记录*调查员让泽布拉莫阿拉活了下来*。</li><li>每位调查员获得等于胜利区中每张卡牌_胜利 X_ 值之和的经验。<ul><li>_经验_：{xp}</li></ul></li><li>调查员可以决定以小组为单位，共花费2个{'{'}perPlayer{'}'}经验，从混乱袋中移除1个{'{'}blood{'}'}标记。</li><li>跳至_结算5_。</li></ul>"
+      "title": "结局1",
+      "body": "<p>_结局1_：你终于从加工厂里出来了，觉得自己不比挂在钩子上的牛侧腹好多少。你希望自己所做的一切能起到某些作用，哪怕你并没有弄清楚仓库里面的教派到底在干什么。至少，你搞到了一个名字——霍华德·威尔克斯，新视野的老板，也是那个居于深处的教派的领袖。</p><ul><li>在剧本日志中，记录*调查员没有完成搜查*。</li><li>在剧本日志中,记录*调查员没能杀死孜卜拉牟特*。</li><li>每位调查员取得经验值，数量等于胜利区所有卡牌的<b>胜利X</b>数值之和。<ul><li>_经验_：{xp}</li></ul></li><li>调查员可以决定共同花费总计2{'{'}perPlayer{'}'}点经验值，以从混乱袋中移除1个{'{'}blood{'}'}标记。</li><li>跳至_结局5_。</li></ul>"
     },
     "resolution2": {
-      "title": "结算2",
-      "body": "<p>_结算2_：你已经查明了邪教在仓库里的活动。虽然你选择让隧道深处潜伏的任何怪物活着，但你只能希望自己的努力足以让这一切平息。至少，你有了一个名字可以追查——霍华德·威尔克斯，新地平线的老板，也是潜伏在其深处的邪教头目。</p><ul><li>在你的战役日志中记录*调查员完成了他们的搜寻*。</li><li>在你的战役日志中记录*调查员让泽布拉莫阿拉活了下来*。</li><li>每位调查员获得等于胜利区中每张卡牌_胜利 X_ 值之和的经验。<ul><li>_经验_：{xp}</li></ul></li><li>调查员可以决定以小组为单位，共花费2个{'{'}perPlayer{'}'}经验，从混乱袋中移除1个{'{'}blood{'}'}标记。</li><li>跳至_结算5_。</li></ul>"
+      "title": "结局2",
+      "body": "<p>_结局2_：你明白了仓库里面的教派到底在干什么，但无论隧道深处潜伏的怪物是什么，你都没把它杀掉。你只能希望你的努力已经足够终结这一切。至少，你搞到了一个名字——霍华德·威尔克斯，新视野的老板，也是那个居于深处的教派的领袖。</p><ul><li>在剧本日志中，记录*调查员完成了搜查*。</li><li>在剧本日志中，记录*调查员没能杀死孜卜拉牟特*。</li><li>每位调查员取得经验值，数量等于胜利区所有卡牌的<b>胜利X</b>数值之和。<ul><li>_经验_：{xp}</li></ul></li><li>调查员可以决定共同花费总计2{'{'}perPlayer{'}'}点经验值，以从混乱袋中移除1个{'{'}blood{'}'}标记。</li><li>跳至_结局5_。</li></ul>"
     },
     "resolution3": {
-      "title": "结算3",
-      "body": "<p>_结算3_：在与这个真正庞大的敌人经过一场艰苦的搏斗后，你终于将这头怪物放倒了。这头野兽，即泽布拉莫阿拉，正是邪教仪式所用的受感染鲜血的来源，它借受污染的肉类，把鲜血瘟疫散播到了阿卡姆的各个角落。鲜血瘟疫的源头已被击败，你希望新地平线工厂里不会再有人像朱莉娅·斯特恩和其他人那样沦陷。但案子还没有结束，因为你得知新地平线的老板霍华德·威尔克斯，也是泽布拉莫阿拉邪教的头目。是时候让他为自己的罪行付出代价了。</p><ul><li>在你的战役日志中记录*调查员完成了他们的搜寻*。</li><li>在你的战役日志中记录*调查员击败了泽布拉莫阿拉*。</li><li>从混乱袋中移除1个{'{'}blood{'}'}标记。</li><li>每位调查员获得等于胜利区中每张卡牌_胜利 X_ 值之和的经验。<ul><li>_经验_：{xp}</li></ul></li><li>跳至_结算5_。</li></ul>"
+      "title": "结局3",
+      "body": "<p>_结局3_：这畸形的怪物实在庞大，经历一番艰苦卓绝的战斗，你终于击败了它。这头怪兽孜卜拉牟特就是感染的血液的源头，教派的仪式用它的血液污染肉类，在整个阿卡姆散播鲜血枯疫。鲜血枯疫的源头被击败了，你希望不再有人沦入朱利亚·斯特恩，还有新视野工厂里其他人一样的命运。不过，事情还没完，你知道霍华德·威尔克斯，新视野的老板，就是孜卜拉牟特教派的领袖。是时候让他为自己的罪行付出代价了。</p><ul><li>在剧本日志中，记录*调查员完成了搜查*。</li><li>在剧本日志中，记录*调查员击败了孜卜拉牟特*。</li><li>从混乱袋中移除1个{'{'}blood{'}'}标记。</li><li>每位调查员取得经验值，数量等于胜利区所有卡牌的<b>胜利X</b>数值之和。<ul><li>_经验_：{xp}</li></ul></li><li>跳至_结局5_。</li></ul>"
     },
     "resolution4": {
-      "title": "结算4",
-      "body": "<p>_结算4_：你很快便被邪教压倒，被拖进洞穴深处，耳边不断重复着“泽布拉莫阿拉，泽布拉莫阿拉，泽布拉莫阿拉……”的呼喊。所幸在邪教仪式进行期间你失去了意识，等你再次醒来时，你独自躺在工厂的地板上，清晨的第一缕光线透过窗户照了进来。你撑起身子，活动着酸痛的关节，迅速离开了那里。</p><ul><li>在你的战役日志中记录*调查员被留给了邪教的摆布*。</li><li>在本战役剩余时间内，向混乱袋中加入2个{'{'}blood{'}'}标记。</li><li>每位没有“鲜血瘟疫”弱点的调查员，成为一张放到一旁的“鲜血瘟疫”弱点的持有者。</li><li>每位调查员获得等于胜利区中每张卡牌_胜利 X_ 值之和的经验。<ul><li>_经验_：{xp}</li></ul></li><li>前往_结算5_。</li></ul>"
+      "title": "结局4",
+      "body": "<p>_结局4_：教派的围攻将你迅速击垮。他们把你拖入下面的洞穴，一边重复念着“孜卜拉牟特、孜卜拉牟特……”的名字。幸运的是，你在教派的仪式中昏了过去。等你醒来，你独自留在工厂地上，晨曦第一缕阳光刺透窗户照了进来。你站起身，舒展疼痛的关节，迅速离开。</p><ul><li>在剧本日志中，记录*调查员任由教派摆布*。</li><li>在剧本之后的部分，在混乱袋中加入2个{'{'}blood{'}'}标记。</li><li>每位没有鲜血枯疫弱点的调查员，拥有一张放在一边的鲜血枯疫弱点。</li><li>每位调查员取得经验值，数量等于胜利区所有卡牌的<b>胜利X</b>数值之和。<ul><li>_经验_：{xp}</li></ul></li><li>前往_结局5_。</li></ul>"
     },
     "resolution5": {
-      "title": "结算5",
-      "body": "<p>_结算5_：你与雷诺兹侦探重新集合，准备追查这个霍华德·威尔克斯，让他为工厂里发生的一切负责。</p><ul><li>若“_调查员找到了一张奥术符号的纸_”，任意调查员可以成为一张放到一旁的血歌故事支援的持有者。</li><li>若“_调查员找到了伪造许可_”，任意调查员可以成为一张放到一旁的伪造许可故事支援的持有者。</li><li>每位在剧本结束时身上封印着2个{'{'}blood{'}'}标记的调查员，若尚未成为“鲜血瘟疫”弱点的持有者，则成为一张放到一旁的“鲜血瘟疫”弱点的持有者。</li><li>释放每一个被封印的{'{'}blood{'}'}标记，并将它们放回混乱袋。</li><li>前往_插曲：狐朋狗友_。</li></ul>"
+      "title": "结局5",
+      "body": "<p>_结局5_：你和警探瑞若兹碰头，准备查查这个霍华德·威尔克斯，让他为工厂里发生的一切付出代价。</p><ul><li>若“_调查员找到了一页奥术符号_”，选择一位调查员拥有放在一边的血色歌谣剧情支援。</li><li>若“_调查员找到了伪造许可_”，选择一位调查员拥有放在一边的伪造许可剧情支援。</li><li>每位在冒险结束时身上封印了2个{'{'}blood{'}'}标记的调查员拥有一张放在一边的鲜血枯疫弱点（如果该调查员尚未拥有）。</li><li>释放所有封印的{'{'}blood{'}'}标记，将其返回混乱袋。</li><li>进入_幕间故事：狐朋狗友_。</li></ul>"
     }
   }
 }

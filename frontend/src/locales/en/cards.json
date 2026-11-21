@@ -1437,6 +1437,10 @@
       "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test. (+2 {'{'}agility{'}'} instead if this is an attack or evasion).",
       "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test. (+2 {'{'}combat{'}'} instead if this is an attack or evasion)."
     },
+    "grislyMask": {
+      "disengage": "{'{'}fast{'}'} Exhaust Grisly “Mask”: Disengage from each enemy. Until the beginning of your next turn, you cannot move and cannot damage enemies or engage them.",
+      "horrorForDamage": "{'{'}fast{'}'} Take 1 direct horror and exhaust Grisly “Mask”: Deal 2 damage to an enemy at your location."
+    },
     "hardKnocks": {
       "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
       "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test."
@@ -1461,6 +1465,9 @@
       "fightWithSealBless": "{'{'}action{'}'} Search the chaos bag for 2 {'{'}bless{'}'} tokens and seal them on Holy Spear: _Fight_. You get +4{'{'}combat{'}'} and deal +2 damage for this attack.",
       "actionSearchThe": "{'{'}action{'}'} Search the chaos bag for 2 {'{'}bless{'}'} tokens and seal them on Holy Spear: _Fight_. You get +4{'{'}combat{'}'} and deal +2 damage for this attack.",
       "actionYouGet2": "{'{'}action{'}'}: _Fight_. You get +2 {'{'}willpower{'}'} and deal +1 damage for this attack. When you initiate this ability, you may release a {'{'}bless{'}'} token sealed on Holy Spear."
+    },
+    "horrorInClay": {
+      "blankOrMove": "{'{'}fast{'}'} Exhaust Horror in Clay: Either treat this asset’s printed text box as if it were blank until the end of the round (except for <b>Traits</b>), or move a _Star Spawn_ enemy once in any direction."
     },
     "hyperawareness": {
       "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
@@ -1576,6 +1583,10 @@
       "spendChargeForClue": "Spend 1 charge to discover 1 additional clue",
       "doNotSpendCharge": "Do not spend charge"
     },
+    "shardOfYchlecht": {
+      "ignoreAttack": "{'{'}reaction{'}'} You may ignore the first attack made against you by a _Star Spawn_ or _Deep One_ enemy each round.",
+      "exhaustEnemy": "{'{'}reaction{'}'} When a _Star Spawn_ or _Deep One_ enemy enters your location, exhaust this card: Exhaust that enemy."
+    },
     "sharpRhetoric": {
       "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test. (+2 {'{'}intellect{'}'} instead if this is an investigation or parley).",
       "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test. (+2 {'{'}willpower{'}'} instead if this is an investigation or parley)."
@@ -1648,6 +1659,10 @@
     "thomasDawsonsCarRunning": {
       "ifYouAre": "If you are this vehicle's driver: Draw the top card of the encounter deck. Then, move this vehicle to a connecting _Road_ location. (Max once per round.)",
       "ifYouAre2": "If you are this vehicle's driver: You stop the car. Flip this vehicle over."
+    },
+    "tidalTablet": {
+      "moveOnFlood": "{'{'}reaction{'}'} When your location’s flood level is increased: Move to a connecting location.",
+      "shiftFloodLevel": "{'{'}fast{'}'} Exhaust Tidal Tablet: Increase the flood level of your location. Then, choose another flooded location and decrease its flood level."
     },
     "timewornBrand5": {
       "actionExhaustTimeworn": "{'{'}action{'}'} Exhaust Timeworn Brand: _Fight_. Add your {'{'}willpower{'}'} to your skill value for this attack. This attack deals +3 damage. If this attack defeats an _Elite_ enemy, draw 3 cards. (Max once per game.)",

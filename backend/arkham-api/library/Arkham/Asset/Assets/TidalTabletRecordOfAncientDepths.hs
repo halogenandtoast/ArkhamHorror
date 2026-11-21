@@ -10,6 +10,7 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (
  )
 import Arkham.Helpers.Investigator (getJustLocation)
 import Arkham.Helpers.Location (getAccessibleLocations)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -26,10 +27,14 @@ instance HasModifiersFor TidalTabletRecordOfAncientDepths where
 
 instance HasAbilities TidalTabletRecordOfAncientDepths where
   getAbilities (TidalTabletRecordOfAncientDepths a) =
-    [ restricted a 1 ControlsThis
+    [ cardI18n (withI18nTooltip "tidalTablet.moveOnFlood")
+        $ restricted a 1 ControlsThis
         $ triggered (FloodLevelIncreased #after YourLocation) Free
     , -- Only usable once the glyphs naming this ability have been translated.
-      restricted a 2 (ControlsThis <> glyphsAllKnown "LKD") $ FastAbility $ exhaust a
+      cardI18n (withI18nTooltip "tidalTablet.shiftFloodLevel")
+        $ restricted a 2 (ControlsThis <> glyphsAllKnown "LKD")
+        $ FastAbility
+        $ exhaust a
     , artifactAbility a 3
     ]
 

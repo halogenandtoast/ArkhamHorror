@@ -31,7 +31,7 @@ instance HasAbilities CatsFromSaturn where
           $ forced
           $ oneOf
             [ EnemyEvaded #after Anyone (be attrs)
-            , EnemyMovedTo #after Anywhere MovedViaAny (be attrs)
+            , EnemyMoves #after Anywhere (be attrs)
             ]
       ]
 

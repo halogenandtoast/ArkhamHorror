@@ -774,7 +774,15 @@ instance RunMessage EnemyAttrs where
             traverse
               (\(iid', eid') -> checkWindows [mkAfter (Window.EnemyEntersYourLocation iid' eid' lid)])
               [(iid', eid') | iid' <- iidsHere, eid' <- entries]
-          pushAll (afterWindows <> yourLocationAfters)
+          -- An engaged enemy dragged along by the investigator it is engaged
+          -- with has moved, so "after this enemy moves" abilities owe their
+          -- window. The generic `EnemyMove` path raises this itself; this path
+          -- never reaches it, which left Cats from Saturn's printed Forced
+          -- ability dead -- once engaged, following is the only way a hunter
+          -- enemy ever moves (#6025). Swarming X moves "as a single entity", so
+          -- the window is raised once for the host, not per swarm card.
+          movedWindow <- checkAfter $ Window.EnemyMoves eid lid
+          pushAll (afterWindows <> yourLocationAfters <> [movedWindow])
       pure a
     Ready (isTarget a -> True) -> do
       whenM (getCanReady a) do

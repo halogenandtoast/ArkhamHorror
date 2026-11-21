@@ -24,6 +24,7 @@
       "drawEncounter": "Draw from the encounter deck as normal"
     },
     "naomiOBannion": {
+      "chooseDamage": "Choose an investigator to take 1 damage to prevent Naomi O’Bannion from readying",
       "preventReadying": "Take 1 damage to prevent Naomi O’Bannion from readying",
       "doNotTakeDamage": "Do not take 1 damage"
     },

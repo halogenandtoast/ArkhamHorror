@@ -10070,6 +10070,8 @@ test-suite spec
       Arkham.Location.Cards.DreamGatePointlessRealitySpec
       Arkham.Location.Cards.DreamGateWondrousJourneySpec
       Arkham.Location.Cards.TheDreamEaters.BeyondTheGatesOfSleep.EnchantedWoodsVillageOfZoogsSpec
+      Arkham.Location.Cards.TheDunwichLegacy.WhereDoomAwaits.FrozenSpringSpec
+      Arkham.Location.Cards.TheForgottenAge.Rainforest.OvergrownRuinsSpec
       Arkham.Location.Cards.TheInnsmouthConspiracy.FloodedCaverns.UndergroundRiverSpec
       Arkham.Location.Cards.TheScarletKeys.CongressOfTheKeys.CongressChamberLairSpec
       Arkham.Location.TypesSpec

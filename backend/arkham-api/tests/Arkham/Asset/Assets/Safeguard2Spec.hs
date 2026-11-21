@@ -3,6 +3,8 @@ module Arkham.Asset.Assets.Safeguard2Spec (spec) where
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes.HasGame (getGame)
 import Arkham.Investigator.Cards (rolandBanks)
+import Arkham.Window (defaultWindows, mkAfter)
+import Arkham.Window qualified as Window
 import TestImport.New
 
 spec :: Spec
@@ -74,6 +76,31 @@ spec = describe "Safeguard (2)" do
 
     -- the turn ends and upkeep readies it, so only the stale use record could be in the way
     run $ EndTurn (toId self)
+    run $ Ready (toTarget safeguard2)
+
+    (roland `getActionsFrom` safeguard2) `shouldSatisfyM` notNull
+
+  {- The #6018 fix narrowed that purge rather than removing it: a PerWindow record now
+  survives EndTurn while the queue still owes a `Do (CheckWindows ws)` for the record's OWN
+  window. Ending a turn for real always leaves such a check pending -- `resolveWithWindow`
+  queues the `#after TurnEnds` check behind EndTurn -- so a guard that kept records whenever
+  ANY check was pending would bring #5999 straight back. Unlike the test above, the use here
+  records the windows the limit actually counts against; `useAbility` passes none at all. -}
+  it "can be armed again even with an unrelated window check still pending" . gameTest $ \self -> do
+    roland <- addInvestigator rolandBanks
+    location1 <- testLocation
+    self `moveTo` location1
+    roland `moveTo` location1
+
+    safeguard2 <- roland `putAssetIntoPlay` Assets.safeguard2
+    [useSafeguard] <- roland `getActionsFrom` safeguard2
+    run $ UseAbility (toId roland) useSafeguard (defaultWindows $ toId roland)
+    run $ Ready (toTarget safeguard2)
+
+    -- readied again, so the use record is the only thing that can keep it off the list
+    (roland `getActionsFrom` safeguard2) `shouldReturn` []
+
+    pushAndRunAll [EndTurn (toId self), CheckWindows [mkAfter $ Window.TurnEnds (toId self)]]
     run $ Ready (toTarget safeguard2)
 
     (roland `getActionsFrom` safeguard2) `shouldSatisfyM` notNull

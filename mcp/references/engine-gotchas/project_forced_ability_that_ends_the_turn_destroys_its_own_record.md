@@ -60,8 +60,56 @@ suspecting the window matcher — the matcher is usually fine. The signature in 
 is an empty `usedAbilities` on the acting investigator beside a pending `AbilityLabel`
 for a `GroupLimit PerWindow 1` ability, plus several identical `Do (CheckWindows …)`
 copies in `choiceMessages` (one per loop iteration). Cards with the same shape that this
-also fixed: Overgrown Ruins, Exhibit Hall (Athabaskan Exhibit), Rope Bridge, Apex
-Strangleweed, Pocket Portal (ability 2), Mt. Ngranek, homebrew Classroom_227.
+also fixed: Overgrown Ruins (#6027), Exhibit Hall (Athabaskan Exhibit), Rope Bridge, Apex
+Strangleweed, Pocket Portal (ability **1**, `AssetEntersPlay #after`), Mt. Ngranek (whose
+end-turn rides its ability's `FailedThisSkillTest`, still ahead of the window's trailing
+check) and Bathroom (Return to the Gathering, `RevealChaosToken #after`).
+
+**Not** Classroom_227, Cafeteria or Ritual Circle 224: those end the turn from a
+**Haunted** ability, and `getResolvableHauntedAbilities` collects those at one point in
+`ActiveCost` / `SkillTest.Runner` instead of deriving them from a window, so there is no
+trailing re-check to re-offer them. Same for every action ability and event that ends a
+turn (Rite of Seeking, Flurry of Blows (5), Let God Sort Them Out).
+
+**Every other use-record bucket was audited (2026-11-21) and is not exposed.** The loop
+needs three things at once: a bucket some boundary message purges unconditionally, an
+ability whose own handler causes that boundary, and a *window-derived* ability, so that a
+trailing `Do (CheckWindows ws)` exists to re-derive it.
+
+- `PerTurn`, purged unconditionally at `EndTurn`: no card that ends a turn carries an
+  explicit `PerTurn` limit -- every one of them is a default Forced, i.e. `PerWindow`.
+- `PerPhase` (`EndInvestigation`/`EndEnemy`/`EndUpkeep`/`EndMythos`/`EndSetup`) and
+  `PerRound` (`EndRound`): no card handler pushes a phase or round end at all; only
+  scenario and phase code does.
+- `PerTest`/`PerTestOrAbility` (`SkillTestEnds`): no card pushes `SkillTestEnds`, and a
+  result window's trailing check runs ahead of the test teardown regardless. Subterranean
+  Swamp and Museum of Egyptian Antiquities do end the turn from a `SkillTestResult #after`
+  forced, but that is a `GroupLimit PerTest 1`, which `EndTurn` never touched.
+- `PerDepthLevel` (`ScenarioCountIncrementBy CurrentDepth`): neither Bright Canyon's nor
+  Dark Young Host's handler changes the depth.
+- `PerSpawn` (`EnemySpawned`, scoped to that enemy) and `PerMove`/`PerMovement`
+  (`ResolvedMovement`, scoped to that movement): no card re-spawns the same enemy from
+  inside its own spawn window, and an `Enters` forced is stamped `PerMovement` with the
+  live movement id, which a nested move's `ResolvedMovement` does not match.
+
+Worth remembering about the guard itself: `queuedWindowChecks` does not unwrap
+`PhaseStep`, so the phase-boundary `CheckWindows [mkWhen FastPlayerWindow]` blocks are
+invisible to it -- which is what stops them preserving a depth-0 record (#5999's immortal
+shape) across a turn end. The bare `FastPlayerWindow` checks, in `SkillTest/Runner`
+(`StartSkillTest`, `BeginSkillTestAfterFast`), are consumed during test setup, before any
+Forced can end a turn.
+
+**Regression specs** (all three fail on the pre-fix blanket purge, verified by reverting
+`expiredPerWindowRecord` to `pure isPerWindowRecord`):
+`tests/Arkham/Location/Cards/TheDunwichLegacy/WhereDoomAwaits/FrozenSpringSpec.hs` and
+`tests/Arkham/Location/Cards/TheForgottenAge/Rainforest/OvergrownRuinsSpec.hs` cover both
+windows in the bucket plus the re-reveal that must fire again, and
+`tests/Arkham/Asset/Assets/Safeguard2Spec.hs` holds the #5999 side -- "can be armed again
+even with an unrelated window check still pending", which an unscoped guard fails because
+`resolveWithWindow` always leaves the `#after TurnEnds` check queued behind `EndTurn`. They
+answer the forced window with `resolveForcedAbility` (`TestImport.New`), which pushes the
+server's `ClearUI` ahead of the answer; without it the answered question lingers in
+`gameQuestion` and a re-offer cannot be told from the offer just taken.
 
 Related: [[project_perwindow_record_at_depth_zero_is_immortal]],
 [[project_materialised_initiations_outlive_their_window_match]],

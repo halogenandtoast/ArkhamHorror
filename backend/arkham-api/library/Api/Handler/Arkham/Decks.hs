@@ -11,6 +11,7 @@ module Api.Handler.Arkham.Decks (
   deleteApiV1ArkhamDeckOverlayR,
   putApiV1ArkhamDeckUrlR,
   normalizeArkhamBuildDeckCodes,
+  deckApiUrl,
 ) where
 
 import Import hiding (delete, on, update, (=.), (==.))
@@ -406,6 +407,52 @@ fromPostData userId CreateDeckPost {..} = do
     , arkhamDeckLastUsedAt = Nothing
     }
 
+{- | The api url behind a deck's public page.
+
+A player pastes the page they were just looking at, which is not what
+'getDeckList' can read: ArkhamDB and arkham.build both serve a deck's json from
+somewhere else entirely. The client converts one before posting a *new* deck
+(@ArkhamDbDeck.vue@), so every url this app has ever saved is an api url
+already, and the rest of the app reads that shape back -- the upgrade step
+recognizes an arkham.build deck by its @api.arkham.build@ prefix
+(@UpgradeDeck.vue@). Repointing a saved deck takes whatever the player has in
+hand, so the same conversion has to exist on this side, and its result is what
+gets stored.
+
+An api url, and anything unrecognized, converts to itself. An arkham.build
+@/decklist/@ page is left alone on purpose: 'getDeckList' converts that one
+itself, to an endpoint that is fetched with a header.
+-}
+deckApiUrl :: Text -> Text
+deckApiUrl url = fromMaybe url $ asum [arkhamDb, arkhamBuildShare]
+ where
+  hostAndPath = case T.breakOn "://" url of
+    (_, rest) | not (T.null rest) -> T.drop 3 rest
+    _ -> url
+  (host, path) = T.break (== '/') hostAndPath
+  segments =
+    filter (not . T.null) . T.splitOn "/" . T.takeWhile (`notElem` ['?', '#']) $ path
+
+  -- ArkhamDB serves each translation from its own subdomain, api included.
+  arkhamDb = do
+    guard $ host == "arkhamdb.com" || ".arkhamdb.com" `T.isSuffixOf` host
+    -- A decklist page carries a slug after its id; a deck page does not.
+    (kind, deckId) <- case segments of
+      [kind, deckId] -> Just (kind, deckId)
+      (kind : "view" : deckId : _) -> Just (kind, deckId)
+      _ -> Nothing
+    guard $ kind `elem` ["deck", "decklist"]
+    pure $ "https://" <> host <> "/api/public/" <> kind <> "/" <> deckId
+
+  arkhamBuildShare = do
+    guard $ host == "arkham.build"
+    shareId <- case segments of
+      ["deck", "view", shareId] -> Just shareId
+      ["share", shareId] -> Just shareId
+      ["share", "view", shareId] -> Just shareId
+      _ -> Nothing
+    pure $ "https://api.arkham.build/v1/public/share/" <> shareId
+
 arkhamBuildDecklistUrl :: Text -> Maybe Text
 arkhamBuildDecklistUrl url = do
   rest <-
@@ -569,8 +616,10 @@ putApiV1ArkhamDeckUrlR :: ArkhamDeckId -> Handler (Entity ArkhamDeck)
 putApiV1ArkhamDeckUrlR deckId = do
   deck <- ownedDeck deckId
   UpdateDeckUrlPost {..} <- requireCheckJsonBody
-  let deckUrl = T.strip updateDeckUrl
-  when (T.null deckUrl) $ deckError "Enter the url of the deck to point this at"
+  let given = T.strip updateDeckUrl
+  when (T.null given) $ deckError "Enter the url of the deck to point this at"
+  -- What the player pasted is a page; the deck is fetched from the api behind it.
+  let deckUrl = deckApiUrl given
   -- The deck may name cards only this user has built.
   registerUserCustomCards (arkhamDeckUserId deck)
   decklist <- fetchDecklistFor deckUrl >>= validateDecklist

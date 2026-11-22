@@ -17,6 +17,7 @@ import Arkham.Calculation qualified as Calc
 import Arkham.Campaign.Option
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
 import Arkham.CampaignLog
+import Arkham.CampaignStep (CampaignStep (ScenarioStep))
 import Arkham.Campaigns.TheScarletKeys.Key.Id
 import Arkham.Campaigns.TheScarletKeys.Keys
 import Arkham.Card
@@ -73,6 +74,7 @@ import Arkham.Helpers.Card (passesLimits)
 import Arkham.Helpers.ChaosBag (getBagChaosTokens)
 import Arkham.Helpers.Criteria
 import Arkham.Helpers.Customization
+import Arkham.Helpers.Dreaming (canCreateDreamingCard, getDreamingValue)
 import Arkham.Helpers.Enemy (getModifiedKeywords, spawnAt)
 import Arkham.Helpers.Investigator hiding (findCard, investigator)
 import Arkham.Helpers.Log (hasCampaignOption)
@@ -1426,18 +1428,18 @@ runGameMessage msg g = case msg of
       . (focusedCardsL %~ map (filter ((/= cardId) . toCardId)))
   GameOver -> endGame Nothing g
   GameOverWith verdict -> endGame (Just verdict) g
-  PlaceLocation lid card ->
+  PlaceLocation lid card miid ->
     if isNothing $ g ^. entitiesL . locationsL . at lid
       then do
         let location = lookupLocation (toCardCode card) lid (toCardId card)
-        push (PlacedLocation (toName location) (toCardCode card) lid)
+        push (PlacedLocation (toName location) (toCardCode card) lid miid)
         pure $ g & entitiesL . locationsL . at lid ?~ location
       else pure g
-  PlaceLocationWith lid card update ->
+  PlaceLocationWith lid card update miid ->
     if isNothing $ g ^. entitiesL . locationsL . at lid
       then do
         let location = overAttrs (updateLocation [update]) (lookupLocation (toCardCode card) lid (toCardId card))
-        push (PlacedLocation (toName location) (toCardCode card) lid)
+        push (PlacedLocation (toName location) (toCardCode card) lid miid)
         pure $ g & entitiesL . locationsL . at lid ?~ location
       else pure g
   -- Place an enemy-location card directly into play as an enemy-location entity.
@@ -1445,7 +1447,7 @@ runGameMessage msg g = case msg of
     if isNothing $ g ^. entitiesL . enemyLocationsL . at lid
       then do
         let el = lookupEnemyLocation (toCardCode card) lid (toCardId card)
-        push (PlacedLocation (toName el) (toCardCode card) lid)
+        push (PlacedLocation (toName el) (toCardCode card) lid Nothing)
         pure $ g & entitiesL . enemyLocationsL . at lid ?~ el
       else pure g
   -- Flip a location to its enemy-location side.
@@ -1558,7 +1560,7 @@ runGameMessage msg g = case msg of
         <> NotAsset StoryAsset
     pushAll $ concatMap (resolve . toDiscard GameSource) assets
     pure $ g & entitiesL . enemyLocationsL %~ deleteMap lid
-  ReplaceLocation lid card replaceStrategy -> do
+  ReplaceLocation lid card replaceStrategy miid -> do
     -- if replaceStrategy is swap we also want to copy over revealed, all tokens
     location <- getLocation lid
     let
@@ -1606,7 +1608,7 @@ runGameMessage msg g = case msg of
       then pushAll $ map EnemyCheckEngagement enemies
       else
         pushAll
-          $ [PlacedLocation (toName card) (toCardCode card) lid]
+          $ [PlacedLocation (toName card) (toCardCode card) lid miid]
           <> map EnemyCheckEngagement enemies
     pure $ g & entitiesL . locationsL . at lid ?~ location'
   ReplaceEnemy eid card replaceStrategy -> do
@@ -2093,6 +2095,25 @@ runGameMessage msg g = case msg of
         push $ addToHand iid card
         pure $ g & entitiesL . skillsL %~ deleteMap skillId
       Nothing -> pure g
+  {- "Flip facedown" = leave play and go into the dream zone. The asset LEAVES
+  PLAY, so `RemoveFromPlay` does the whole teardown (leave-play windows, sealed
+  tokens returned, attachments discarded, damage and uses gone with the entity,
+  slot freed) -- do not hand-roll any of it. Mirrors ReturnToHand below.
+
+  Gated on the cap up front: at the cap a forced flip does NOTHING, so the asset
+  must not leave play either. -}
+  FlipAssetFacedown iid assetId n -> do
+    whenM (canCreateDreamingCard iid) do
+      maybeAsset assetId >>= traverse_ \_ -> do
+        removeAllMessagesMatching \case
+          Discarded (AssetTarget assetId') _ _ -> assetId == assetId'
+          _ -> False
+        card <- field AssetCard assetId
+        underneath <- field AssetCardsUnderneath assetId
+        flippedWindow <- checkWindows [mkAfter (Window.AssetFlippedFacedown iid assetId)]
+        pushAll [RemoveFromPlay (toSource assetId), PlaceDreamingCard iid card n, flippedWindow]
+        for_ underneath (push . addToDiscard iid)
+    pure g
   ReturnToHand iid (AssetTarget assetId) -> do
     -- If we try to return to hand but the asset is gone, then do nothing
     mAsset <- maybeAsset assetId
@@ -2239,6 +2260,10 @@ runGameMessage msg g = case msg of
       <> [Do (CheckWindows ws) | notNull ws, notNull kept, not selfRechecking]
 
     pure g
+  {- A dreaming card was paid for by going facedown into the dream zone, so the
+  play is already complete and nothing may be put into play now. It enters play
+  later, through `PutCardIntoPlay`, when its last dream comes off. -}
+  PlayCard _ _ _ payment _ False | Cost.wasDreamed payment -> pure g
   PlayCard iid card mtarget payment windows' False -> do
     let ignoreSelfModifiers = card.cardCode `elem` ["90088", "90089", "90090", "90091", "90092"]
     cardMods <- getModifiers (CardIdTarget $ toCardId card)
@@ -2326,8 +2351,14 @@ runGameMessage msg g = case msg of
                 (SetOriginalCardCode $ pcOriginalCardCode pc)
                 (createAsset card aid)
           let isPermanent = cdPermanent $ toCardDef pc
+          {- A dreaming card is PLAYED once, facedown, and the last dream coming
+          off only makes it ENTER play -- the keyword says "it enters play", not
+          that it is played again. `PlayCard` short-circuits on a dreamed
+          payment, so no route reaches here having paid resources for a card with
+          a dreaming value, and the play windows must stay shut. -}
+          notPlayed <- (isPermanent ||) . isJust <$> getDreamingValue card
           playWindowMsgs <-
-            if isPermanent
+            if notPlayed
               then pure []
               else do
                 whenPlayAsset <- checkWindows [mkWindow #when $ Window.PlayAsset iid aid]
@@ -2871,28 +2902,43 @@ runGameMessage msg g = case msg of
             pushAll [msg', msg]
           _ ->
             getSkillTest >>= \case
-              Just st -> case opts of
-                [opt] -> when (opt.kind /= PreOriginalOptionKind) do
-                  case opt.criteria of
-                    Nothing -> push $ uiToRun opt.option
-                    Just c -> do
-                      ok <- passesCriteria st.investigator Nothing st.source st.source [] c
-                      when ok $ push $ uiToRun opt.option
-                _ -> do
-                  opts' <-
-                    opts & mapMaybeM \opt -> do
-                      case opt.criteria of
-                        Nothing -> pure $ Just opt
-                        Just c -> do
-                          ok <- passesCriteria st.investigator Nothing st.source st.source [] c
-                          pure $ if ok then Just opt else Nothing
-                  let blocked = any (\opt -> opt.kind == BlockingOptionKind) opts'
-                  pid <- getPlayer st.investigator
-                  push $ Ask pid $ ChooseOne $ opts & eachWithRest & mapMaybe \(opt, rest) -> do
-                    guard $ elem opt opts'
-                    guard $ not blocked || opt.kind /= OriginalOptionKind
-                    guard $ opt.kind /= PreOriginalOptionKind || any (\o -> o.kind == OriginalOptionKind) rest
-                    pure $ uiAnd opt.option (SkillTestResultOptions rest)
+              Just st -> do
+                {- This is where a gated option lives or dies. An option whose
+                criteria fail is not offered, but it rides on in @rest@ and is
+                asked again each time the remaining options are, so "not now"
+                is not "not ever" -- only the last option standing is settled.
+                'whenUnmet' is its parting shot: see the field's own note. -}
+                let unmet opt = pushAll (fromMaybe [] opt.whenUnmet)
+                case opts of
+                  [opt] -> when (opt.kind /= PreOriginalOptionKind) do
+                    case opt.criteria of
+                      Nothing -> push $ uiToRun opt.option
+                      Just c -> do
+                        ok <- passesCriteria st.investigator Nothing st.source st.source [] c
+                        if ok then push (uiToRun opt.option) else unmet opt
+                  _ -> do
+                    opts' <-
+                      opts & mapMaybeM \opt -> do
+                        case opt.criteria of
+                          Nothing -> pure $ Just opt
+                          Just c -> do
+                            ok <- passesCriteria st.investigator Nothing st.source st.source [] c
+                            pure $ if ok then Just opt else Nothing
+                    let blocked = any (\opt -> opt.kind == BlockingOptionKind) opts'
+                    pid <- getPlayer st.investigator
+                    let
+                      choices =
+                        opts & eachWithRest & mapMaybe \(opt, rest) -> do
+                          guard $ elem opt opts'
+                          guard $ not blocked || opt.kind /= OriginalOptionKind
+                          guard $ opt.kind /= PreOriginalOptionKind || any (\o -> o.kind == OriginalOptionKind) rest
+                          pure $ uiAnd opt.option (SkillTestResultOptions rest)
+                    {- Every option gated out at once leaves nothing to ask, and
+                    'chooseOne' on an empty list throws. They are all settled
+                    here, so spend their 'whenUnmet' rather than the game. -}
+                    if null choices
+                      then traverse_ unmet opts
+                      else push $ Ask pid $ ChooseOne choices
               Nothing -> error "missing skill test"
     pure g
   CollectSkillTestOptions -> do
@@ -3113,7 +3159,12 @@ runGameMessage msg g = case msg of
       withActiveInvestigator x
         $ map (uncurry $ AbilityPrevented x)
         <$> getPreventedPlayerAbilities x
-    pushAll $ prevented <> [whenWindow, afterWindow]
+    {- "At the start of your turn, you remove 1 dream from each dreaming card you
+    control." A separate message, not inline: this handler returns
+    `turnStartState x player g` and an inline write would be clobbered. It carries
+    `x` because BeginTurn runs before `activeInvestigatorIdL` is x, so reading the
+    active investigator here would sweep the wrong seat. -}
+    pushAll $ prevented <> [RemoveDreamsAtTurnStart x, whenWindow, afterWindow]
     pure $ turnStartState x player g
   SetPlayerOrder -> do
     lead <- getLead
@@ -4215,7 +4266,7 @@ runGameMessage msg g = case msg of
 
           pushAll
             $ afterDraw
-            : PlacedLocation (toName location) (toCardCode card) locationId
+            : PlacedLocation (toName location) (toCardCode card) locationId (Just iid)
             : (guard (not ignoreRevelation) *> resolve (Revelation iid (LocationSource locationId)))
           pure $ g' & (entitiesL . locationsL . at locationId ?~ location)
         _ ->
@@ -4316,7 +4367,7 @@ runGameMessage msg g = case msg of
 
         pushAll
           $ ObtainCard card.id
-          : PlacedLocation (toName location) (toCardCode card) locationId
+          : PlacedLocation (toName location) (toCardCode card) locationId (Just iid)
           : (guard (not ignoreRevelation) *> resolve (Revelation iid (LocationSource locationId)))
         pure $ g' & (entitiesL . locationsL . at locationId ?~ location)
       _ ->
@@ -4839,6 +4890,27 @@ instance RunMessage Game where
 
 runPreGameMessage :: Runner Game
 runPreGameMessage msg g = case msg of
+  {- A scenario that hands off to a SECOND scenario inside the same game
+  (Fortune and Folly's checkpoint -> Part II) never goes through StartScenario,
+  so scenarioSteps keeps climbing and every boundary still points into the part
+  just finished. Re-base them, or "restart scenario" in Part II rewinds all the
+  way to the start of Part I (#6019).
+
+  Here rather than in 'runGameMessage' because that runs AFTER the entities, by
+  which point the scenario has already swapped itself for the new part and the
+  guard below cannot tell a real handoff from a step naming the scenario already
+  being played (Fortune and Folly pushes one of those for Part I). For the same
+  reason scenarioSteps is still the pre-handoff value, so +1 is the new part's
+  first step. -}
+  ScenarioCampaignStep (ScenarioStep sid)
+    | Just sid /= (attr scenarioId <$> modeScenario (g ^. modeL)) ->
+        pure
+          $ g
+          & (undoScenarioStepL ?~ (gameScenarioSteps g + 1))
+          & (undoActionStepL .~ Nothing)
+          & (undoTurnStepL .~ Nothing)
+          & (undoPhaseStepL .~ Nothing)
+          & (undoRoundStepL .~ Nothing)
   {- Opens the log block around a location turning face up: the clues it is
   stocked with, and anything an "after you reveal" ability does.
 
@@ -4947,6 +5019,8 @@ runPreGameMessage msg g = case msg of
       & (undoTurnStepL .~ Nothing)
       & (undoPhaseStepL .~ Nothing)
       & (undoRoundStepL .~ Nothing)
+      -- scenarioSteps restarts at 0 above, so step 1 is this scenario's start.
+      & (undoScenarioStepL ?~ 1)
   EndSetup -> do
     -- setup is not a round/turn, so a card limit spent there must not carry into round 1
     let setupUses = cardUsesMatching (\l -> isPerRoundLimit l || isPerTurnLimit l) g

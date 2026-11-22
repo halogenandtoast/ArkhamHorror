@@ -141,6 +141,26 @@ genMyCard self = genCard >=> setOwner self.id
 useForcedAbility :: HasCallStack => TestAppT ()
 useForcedAbility = chooseOptionMatching "use forced ability" isForcedAbilityLabel
 
+{- | 'useForcedAbility', but answered the way the server does: with a @ClearUI@ ahead of the
+answer's messages (@Api.Handler.Arkham.Games.Shared@).
+
+The other helpers skip that, so the question they answered stays parked in @gameQuestion@ and
+anything read out of it afterwards cannot tell a fresh offer from the one just taken. Use
+this whenever a spec asserts on what is (or is not) offered AFTER resolving a forced
+ability -- the shape of the #6018 loop, where the window's trailing @Do (CheckWindows ws)@
+re-derived the same ability.
+-}
+resolveForcedAbility :: HasCallStack => TestAppT ()
+resolveForcedAbility = do
+  questionMap <- gameQuestion <$> getGame
+  case mapToList questionMap of
+    [(_, question)] -> case stripQuestionWrappers question of
+      ChooseOne msgs -> case find isForcedAbilityLabel msgs of
+        Just msg -> pushAll [ClearUI, uiToRun msg] >> runMessages
+        Nothing -> expectationFailure $ "expected a forced ability in: " <> show msgs
+      q -> expectationFailure $ "expected a choice of abilities, got: " <> show q
+    other -> expectationFailure $ "expected exactly one question, got: " <> show other
+
 {- | 'useForcedAbility' / 'skip' for a window that has parked a question on several seats.
 
 A spec pushes a choice's messages straight onto the queue rather than going through

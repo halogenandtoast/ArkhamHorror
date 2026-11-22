@@ -444,7 +444,7 @@ runCustomize env spec = do
   offers = \case
     CustomizationTraitChoice -> [(displayTrait t, ChosenTrait t) | t <- allTraits]
     CustomizationSkillChoice -> [(tshow st, ChosenSkill st) | st <- [minBound ..]]
-    CustomizationIndexChoice zs -> [(tshow z, ChosenIndex n) | (n, z) <- withIndex zs]
+    CustomizationIndexChoice zs -> [(z, ChosenIndex n) | (n, z) <- withIndex zs]
     CustomizationCardChoice matcher ->
       [ (title, ChosenCard title)
       | title <-

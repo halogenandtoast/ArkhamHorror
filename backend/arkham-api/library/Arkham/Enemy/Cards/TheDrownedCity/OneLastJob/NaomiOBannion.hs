@@ -27,20 +27,20 @@ instance HasAbilities NaomiOBannion where
       $ groupLimit PerRound
       $ mkAbility attrs 1
       $ forced
-      $ EnemyEvaded #after Anyone (be attrs)
+      $ EnemyEvaded #after You (be attrs)
 
 instance RunMessage NaomiOBannion where
   runMessage msg e@(NaomiOBannion attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       investigators <- select $ InvestigatorAt $ locationWithEnemy attrs.id
-      if null investigators then readyThis attrs else forTargets investigators msg
-      pure e
-    ForTargets [] (UseThisAbility _ (isSource attrs -> True) 1) -> do
-      readyThis attrs
-      pure e
-    ForTargets (InvestigatorTarget iid : rest) msg'@(UseThisAbility _ (isSource attrs -> True) 1) -> do
-      campaignI18n $ chooseOneM iid do
-        labeled "naomiOBannion.preventReadying" $ assignDamage iid (attrs.ability 1) 1
-        labeled "naomiOBannion.doNotTakeDamage" $ forTargets rest msg'
+      campaignI18n $ case investigators of
+        [] -> readyThis attrs
+        [sole] -> chooseOneM iid do
+          labeled "naomiOBannion.preventReadying" $ assignDamage sole (attrs.ability 1) 1
+          labeled "naomiOBannion.doNotTakeDamage" $ readyThis attrs
+        _ -> chooseOneM iid do
+          questionLabeled "naomiOBannion.chooseDamage"
+          targets investigators \i -> assignDamage i (attrs.ability 1) 1
+          labeled "naomiOBannion.doNotTakeDamage" $ readyThis attrs
       pure e
     _ -> NaomiOBannion <$> liftRunMessage msg attrs

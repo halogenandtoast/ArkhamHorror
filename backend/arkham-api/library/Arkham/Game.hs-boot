@@ -70,6 +70,7 @@ instance Query SourceMatcher
 instance Query TreacheryMatcher
 instance Query KeyMatcher
 instance Query ConcealedCardMatcher
+instance Query DreamingCardMatcher
 
 instance Projection Act
 instance Projection Agenda

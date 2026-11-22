@@ -31,7 +31,7 @@ replaceCarPool trait = do
     selectOne (LocationWithTrait trait) >>= \case
       Just lid -> do
         bankReplacedCar lid
-        push $ ReplaceLocation lid card DefaultReplace
+        push $ ReplaceLocation lid card DefaultReplace Nothing
         reveal lid
       Nothing -> reveal =<< placeLocation card
 

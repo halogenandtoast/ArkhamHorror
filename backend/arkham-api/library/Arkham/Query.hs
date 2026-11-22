@@ -6,6 +6,7 @@ import Arkham.Campaigns.TheScarletKeys.Key.Id
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Card
 import Arkham.ChaosToken.Types
+import Arkham.DreamingCard (DreamingCard)
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Prelude
@@ -38,6 +39,7 @@ type family QueryElement a where
   QueryElement KeyMatcher = KeyWithDetails
   QueryElement ScarletKeyMatcher = ScarletKeyId
   QueryElement ConcealedCardMatcher = ConcealedCard
+  QueryElement DreamingCardMatcher = DreamingCard
 
 data SomeQuery a where
   AssetQuery :: AssetMatcher -> SomeQuery (QueryElement AssetMatcher)
@@ -66,6 +68,7 @@ data SomeQuery a where
   SourceQuery :: SourceMatcher -> SomeQuery (QueryElement SourceMatcher)
   KeyQuery :: KeyMatcher -> SomeQuery (QueryElement KeyMatcher)
   ConcealedCardQuery :: ConcealedCardMatcher -> SomeQuery (QueryElement ConcealedCardMatcher)
+  DreamingCardQuery :: DreamingCardMatcher -> SomeQuery (QueryElement DreamingCardMatcher)
 
 deriving stock instance Show (SomeQuery a)
 deriving stock instance Eq (SomeQuery a)

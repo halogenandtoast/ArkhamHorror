@@ -74,6 +74,7 @@ import Arkham.Campaigns.TheScarletKeys.Concealed.Kind (ConcealedCardKind (..))
 import Arkham.Campaigns.TheScarletKeys.Concealed.Matcher (
   ConcealedCardMatcher (ConcealedCardWithId),
  )
+import Arkham.Capability (FromSource (FromPlayerCardEffect))
 import Arkham.Card
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasGame
@@ -85,7 +86,18 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Game.Base (Game (..))
 import Arkham.Game.Utils (modeScenario)
 import Arkham.GameEnv (getCardMaybe, getLogBlockStack, getSkillTest)
-import Arkham.Helpers.Modifiers (ModifierType (EntersLocationNarratedAs), getModifiers)
+import Arkham.Helpers.Dreaming (canCreateDreamingCard, getDreamingCardLimit)
+import Arkham.Helpers.Message (sourceToFromSource)
+import Arkham.Helpers.Modifiers (
+  ModifierType (
+    CannotGainResources,
+    CannotGainResourcesFromPlayerCardEffects,
+    EntersLocationNarratedAs
+  ),
+  getModifiers,
+  getModifiers',
+ )
+import Arkham.Helpers.Playable (cardUniquenessOk)
 import Arkham.Helpers.Scenario (getInResolution)
 import Arkham.Helpers.SkillTest (
   calculateSkillTestResultsData,
@@ -106,6 +118,7 @@ import Arkham.Matcher (
  )
 import Arkham.Message
 import Arkham.Message qualified as Msg
+import Arkham.Modifier (Modifier (..))
 import Arkham.Movement (moveForced)
 import Arkham.Name (display, toName)
 import Arkham.Phase
@@ -459,15 +472,92 @@ oneShot = \case
       ref <- mRef
       (key, n) <- surchargeWording cost
       pure $ notice [ikeyPart key ["count" ~> n, "source" ~> ref]]
-  {- Resources gained.
+  {- Resources gained, or refused.
 
   Only the @False@ variant. @True@ is the resource /action/, and its handler
   pushes a @False@ one to do the actual gaining
   (@Investigator/Runner/Action.hs:289@) -- so matching both logged every resource
-  action twice. -}
-  TakeResources iid n _ False | n > 0 -> Just do
+  action twice.
+
+  The gain may not happen at all: 'handleTakeResourcesV2' drops it when the
+  investigator cannot take resources, and this message is narrated /before/ that
+  handler runs, off the same modifiers it is about to read -- so narrating it
+  unconditionally claimed a gain that never arrived. The House Always Wins
+  showed what that costs a reader: a Cultist token's "gain 3 resources" went
+  nowhere because O'Bannion's Thug was in the player's threat area, and the log
+  said nothing either way (#6017).
+
+  A 'notice' and the blocker named, for the reason 'AbilityPrevented' gives:
+  without it the player sees an effect plainly say "gain 3 resources" and no
+  resources. The predicate is 'can.gain.resources' transcribed (see
+  "Arkham.Capability"); it is read off the one modifier list that also supplies
+  the blocker, so the verdict and the explanation cannot disagree. -}
+  TakeResources iid n source False | n > 0 -> Just do
     who <- investigatorRefFor iid
-    pure $ Just $ mechanic [ikeyPart "log.gainsResources" ["investigator" ~> who, "count" ~> n]]
+    mods <- getModifiers' iid
+    let fromSource = sourceToFromSource source
+    let
+      blockers =
+        [ s
+        | Modifier {modifierSource = s, modifierType = ty} <- mods
+        , case ty of
+            CannotGainResources -> True
+            CannotGainResourcesFromPlayerCardEffects -> fromSource == FromPlayerCardEffect
+            _ -> False
+        ]
+    case blockers of
+      [] ->
+        pure $ Just $ mechanic [ikeyPart "log.gainsResources" ["investigator" ~> who, "count" ~> n]]
+      blocker : _ -> do
+        mBlockedBy <- sourceRefFor blocker
+        pure $ Just case mBlockedBy of
+          Just blockedBy ->
+            notice
+              [ ikeyPart
+                  "log.cannotGainResourcesBecause"
+                  ["investigator" ~> who, "count" ~> n, "blocker" ~> blockedBy]
+              ]
+          Nothing ->
+            notice [ikeyPart "log.cannotGainResources" ["investigator" ~> who, "count" ~> n]]
+  {- A dreaming card the control limit refuses. A notice, and ONLY in that case:
+  without it the player sees an effect plainly say "dream this card" and nothing
+  happen (#5998, #6017). Narrated before the handler runs, off the same cap it is
+  about to read, so the verdict and the line cannot disagree.
+
+  The card is not named. It is about to sit facedown, and its identity is not the
+  log's to give away. -}
+  PlaceDreamingCard iid _ _ -> Just $ dreamLimitRefusal iid
+  {- The same refusal on the flip path, which the notice above cannot reach:
+  'FlipAssetFacedown' checks the cap itself and never pushes 'PlaceDreamingCard'
+  when it refuses. Without this, 14057 failing its test and then visibly doing
+  nothing is silent (#5998, #6017). Same body, so the two lines cannot disagree. -}
+  FlipAssetFacedown iid _ _ -> Just $ dreamLimitRefusal iid
+  {- A third refusal, on a different axis: the flip-faceup itself. Uniqueness bars
+  a card from ENTERING play, and a dreaming card's resolution is not a play, so
+  the playability gate never saw the copy another investigator played while this
+  one sat facedown. The handler refuses the flip and leaves the record in the
+  dream zone; its own key, because this is not the control limit. -}
+  FlipDreamingCardFaceup iid cid -> Just do
+    dreamingCards <- fromMaybe [] <$> fieldMay Investigator.InvestigatorDreamingCards iid
+    case find ((== cid) . (.id)) dreamingCards of
+      Nothing -> pure Nothing
+      Just dc -> do
+        card <- fromMaybe dc.card <$> getCardMaybe cid
+        ok <- cardUniquenessOk (toCardDef card)
+        who <- investigatorRefFor iid
+        pure
+          $ guard (not ok)
+          *> Just (notice [ikeyPart "log.cannotFlipDreamingCardFaceup" ["investigator" ~> who]])
+  {- A fourth refusal, and the one the narrator cannot derive for itself: the
+  dreaming value was named by a cost that is already paid, so by the time the
+  hand turns out to hold nothing at that value there is no other message to read
+  it off -- an empty choice pushes nothing at all. The site that knows pushes
+  'NoCardInHandWithDreaming' purely so this line can exist (#6017). -}
+  NoCardInHandWithDreaming iid n -> Just do
+    who <- investigatorRefFor iid
+    pure
+      $ Just
+      $ notice [ikeyPart "log.noCardInHandWithDreaming" ["investigator" ~> who, "count" ~> n]]
   EvadeMessage (EvadedTarget_ iid target) -> Just do
     who <- investigatorRefFor iid
     mRef <- targetRefFor target
@@ -1000,6 +1090,19 @@ oneShot = \case
       $ closesGroup key
       $ mechanic [ikeyPart "log.placedConcealed" ["investigator" ~> who, "count" ~> total]]
   _ -> Nothing
+
+{- | The control limit refusing a dreaming card, narrated off the cap the handler
+is about to read. ONE body for both the place and the flip-facedown path: two
+copies of a cap read is how the two lines eventually disagree.
+-}
+dreamLimitRefusal :: HasGame m => InvestigatorId -> m (Maybe LogEntry)
+dreamLimitRefusal iid = do
+  who <- investigatorRefFor iid
+  canDream <- canCreateDreamingCard iid
+  limit <- getDreamingCardLimit iid
+  pure
+    $ guard (not canDream)
+    *> Just (notice [ikeyPart "log.cannotDreamAnotherCard" ["investigator" ~> who, "count" ~> limit]])
 
 -- | "Ghoul Priest attacks Daisy Walker." A massive attack names everyone it hits.
 renderEnemyAttack :: HasGame m => EnemyAttackDetails -> m (Maybe LogEntry)

@@ -20,6 +20,30 @@
         "label": "Stop offering at 5 resources"
       }
     },
+    "c10085": {
+      "abilities": {
+        "1": "{'{'}fast{'}'} Choose a non-Elite enemy at any location and exhaust Rod of Carnamagos: Reveal 5 random chaos tokens from the chaos bag. If a {'{'}curse{'}'} token is revealed, search your bonded cards for a random _Rot_ event and attach it to that enemy."
+      },
+      "offerDuringSkillTests": {
+        "label": "Offer during skill tests"
+      }
+    },
+    "c10098": {
+      "abilities": {
+        "1": "{'{'}fast{'}'} Choose a non-Elite enemy at any location and exhaust Rod of Carnamagos: Reveal 5 random chaos tokens from the chaos bag. For each {'{'}curse{'}'} token revealed, you may search your bonded cards for a _Rot_ event and attach it to that enemy."
+      },
+      "offerDuringSkillTests": {
+        "label": "Offer during skill tests"
+      }
+    },
+    "c85030": {
+      "abilities": {
+        "1": "{'{'}fast{'}'} Defeat a non-Elite enemy at your location with 2 or less remaining health. Then, heal all damage from Pet Oozeling, place 1 resource on it, and reveal X chaos tokens, where X is the number of resources on it. If an {'{'}autoFail{'}'} symbol is revealed, you are defeated and suffer 1 physical trauma."
+      },
+      "offerDuringSkillTests": {
+        "label": "Offer during skill tests"
+      }
+    },
     "c11764": {
       "treatAsPartiallyFlooded": {
         "label": "Treat fully flooded as partially flooded"

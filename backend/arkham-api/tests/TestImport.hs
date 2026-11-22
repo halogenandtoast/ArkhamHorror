@@ -953,6 +953,7 @@ newGame scenario' investigator = do
         , gameUndoTurnStep = Nothing
         , gameUndoPhaseStep = Nothing
         , gameUndoRoundStep = Nothing
+        , gameUndoScenarioStep = Nothing
         , gameAsIfAtIgnored = mempty
         , gameLocationOffsets = mempty
         , gameCardPlayStack = mempty

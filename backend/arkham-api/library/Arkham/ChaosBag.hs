@@ -1123,24 +1123,10 @@ instance RunMessage ChaosBag where
         & (choiceL .~ Nothing)
         & (tokenPoolL %~ (\\ tokens'))
     AddChaosToken chaosTokenFace -> do
-      mtoken <- case chaosTokenFace of
-        BlessToken ->
-          pure
-            $ Just
-            $ fromMaybe (error "no more bless tokens")
-            $ find ((== #bless) . (.face)) chaosBagTokenPool
-        CurseToken ->
-          pure
-            $ Just
-            $ fromMaybe (error "no more curse tokens")
-            $ find ((== #curse) . (.face)) chaosBagTokenPool
-        FrostToken ->
-          pure
-            $ Just
-            $ fromMaybe (error "no more frost tokens")
-            $ find ((== #frost) . (.face)) chaosBagTokenPool
-        BloodToken -> pure $ find ((== #blood) . (.face)) chaosBagTokenPool
-        _ -> Just <$> createChaosToken chaosTokenFace
+      -- a face with a supply only ever comes out of the pool, so a dry pool adds nothing
+      mtoken <- case chaosTokenFacePool chaosTokenFace of
+        Just _ -> pure $ find ((== chaosTokenFace) . (.face)) chaosBagTokenPool
+        Nothing -> Just <$> createChaosToken chaosTokenFace
       pure $ case mtoken of
         Nothing -> c
         Just token -> c & chaosTokensL %~ sort . (token :) & tokenPoolL %~ delete token

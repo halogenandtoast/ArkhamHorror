@@ -155,6 +155,9 @@
       "useAgility": "Use agility",
       "useWillpower": "Use willpower"
     },
+    "boardingParty5": {
+      "doNotAttackAgain": "Do not exhaust an Ally to attack again"
+    },
     "bonesaw": {
       "doNotTakeDamage": "Do not take damage",
       "take1DamageToDo1Damage": "Take 1 damage to do +1 damage"
@@ -197,6 +200,10 @@
     "callOfMadness": {
       "shuffleTekelili": "Shuffle the top 3 cards of the Tekeli-li deck into your deck"
     },
+    "callOfTheDreamlands": {
+      "reduceCost": "Play it, reducing its cost by 1",
+      "reduceDreaming": "Play it, reducing its dreaming value by 1"
+    },
     "carolynFern": {
       "doNotHeal": "Do not heal anything"
     },
@@ -232,6 +239,10 @@
     "corrosiveSlime": {
       "devourResource": "Subject 8L-08 devours one of your resources",
       "devourRandomCardFromHand": "Subject 8L-08 devours a random card from your hand"
+    },
+    "corsairsCache": {
+      "addToHand": "Add it to your hand",
+      "discardForResources": "Discard it and gain resources equal to its printed cost"
     },
     "cosmicFlame": {
       "spendChargeForDamage": "Spend 1 charge to deal +1 damage"
@@ -362,8 +373,14 @@
       "draw1Card": "Draw 1 card",
       "take2Resources": "Take 2 resources"
     },
+    "dreamQuest": {
+      "drawCard": "Draw 1 card"
+    },
     "dreamersChronicle": {
       "takeHorror": "Take 1 horror to discover 1 additional clue at your location"
+    },
+    "dreamsOfPeace": {
+      "healDamageAndHorror": "Heal 1 damage and 1 horror"
     },
     "earthlySerenity1": {
       "doNotSpendAChargeToHeal": "Do not spend a charge to heal",
@@ -407,6 +424,12 @@
       "doNotSpendUse": "Do not spend use",
       "spend1UseToEmpower": "Spend 1 use to empower"
     },
+    "enchantingFife": {
+      "spendCharge": "Spend 1 charge",
+      "placeDream": "Place 1 dream on a dreaming card you control",
+      "drawACard": "Draw 1 card",
+      "doNotDrawACard": "Do not draw a card"
+    },
     "enervation": {
       "discardHighestCost": "Choose the card with the highest printed cost in your hand and discard it"
     },
@@ -415,6 +438,9 @@
     },
     "everVigilant1": {
       "doNotPlayAsset": "Do not play asset"
+    },
+    "explorersSextant": {
+      "exhaustForClue": "Exhaust Explorer's Sextant to discover 1 additional clue at your location"
     },
     "extraRations1": {
       "heal1DamageFromYourself": "Heal 1 damage from yourself"
@@ -683,6 +709,9 @@
     "knightOfSwords3": {
       "discardKnightOfSwordsToGet3Instead": "Discard Knight of Swords to get +3 instead"
     },
+    "knightsLongsword": {
+      "doNotExhaust": "Do not exhaust Knight's Longsword"
+    },
     "knowledgeIsPower": {
       "discardToDraw": "Discard to draw 1 card",
       "discard": "Discard to draw 1 card"
@@ -696,6 +725,9 @@
       "spendActionForDamage": "Spend 1 action to deal +1 damage",
       "skipAdditionalKukriDamage": "Skip additional Kukri damage",
       "spend1ActionToDeal1Damage": "Spend 1 action to deal +1 damage"
+    },
+    "lashOfUlthar2": {
+      "exhaustToEvade": "Exhaust Lash of Ulthar to automatically evade that enemy"
     },
     "leadingLadyEnchantress": {
       "removeDoom": "Remove 1 doom from a player card at your location"
@@ -732,6 +764,13 @@
     "lukeRobinson": {
       "currentLocation": "Play at current location",
       "connectingLocation": "Play at connecting location"
+    },
+    "lunarCharts": {
+      "doNotMoveDream": "Do not move a dream"
+    },
+    "lunarSight3": {
+      "spendChargeForShroudAndClue": "Spend 1 charge to reduce your location's shroud by 2 and discover 1 additional clue",
+      "takeHorrorAndDiscard": "Take 1 horror and discard Lunar Sight"
     },
     "machete": {
       "doNotExhaustMachete": "Do not exhaust Machete",
@@ -986,6 +1025,10 @@
       "moveThatMuch": "Move that much damage/horror from investigator or Ally assets at your location to Ravenous Myconid",
       "healFromMyconid": "Heal that much damage/horror from Ravenous Myconid",
       "moveDamageToMyconid": "Move that much damage/horror from investigator or Ally assets at your location to Ravenous Myconid"
+    },
+    "realityFracture3": {
+      "spendChargeForFightAndDamage": "Spend 1 charge to reduce the attacked enemy's fight by 2 and deal +1 damage",
+      "takeDamageAndDiscard": "Take 1 damage and discard Reality Fracture"
     },
     "rexMurphy": {
       "fail": "Automatically fail to draw 3"
@@ -1437,6 +1480,10 @@
       "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test. (+2 {'{'}agility{'}'} instead if this is an attack or evasion).",
       "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test. (+2 {'{'}combat{'}'} instead if this is an attack or evasion)."
     },
+    "grislyMask": {
+      "disengage": "{'{'}fast{'}'} Exhaust Grisly “Mask”: Disengage from each enemy. Until the beginning of your next turn, you cannot move and cannot damage enemies or engage them.",
+      "horrorForDamage": "{'{'}fast{'}'} Take 1 direct horror and exhaust Grisly “Mask”: Deal 2 damage to an enemy at your location."
+    },
     "hardKnocks": {
       "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
       "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test."
@@ -1461,6 +1508,9 @@
       "fightWithSealBless": "{'{'}action{'}'} Search the chaos bag for 2 {'{'}bless{'}'} tokens and seal them on Holy Spear: _Fight_. You get +4{'{'}combat{'}'} and deal +2 damage for this attack.",
       "actionSearchThe": "{'{'}action{'}'} Search the chaos bag for 2 {'{'}bless{'}'} tokens and seal them on Holy Spear: _Fight_. You get +4{'{'}combat{'}'} and deal +2 damage for this attack.",
       "actionYouGet2": "{'{'}action{'}'}: _Fight_. You get +2 {'{'}willpower{'}'} and deal +1 damage for this attack. When you initiate this ability, you may release a {'{'}bless{'}'} token sealed on Holy Spear."
+    },
+    "horrorInClay": {
+      "blankOrMove": "{'{'}fast{'}'} Exhaust Horror in Clay: Either treat this asset’s printed text box as if it were blank until the end of the round (except for <b>Traits</b>), or move a _Star Spawn_ enemy once in any direction."
     },
     "hyperawareness": {
       "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
@@ -1576,6 +1626,10 @@
       "spendChargeForClue": "Spend 1 charge to discover 1 additional clue",
       "doNotSpendCharge": "Do not spend charge"
     },
+    "shardOfYchlecht": {
+      "ignoreAttack": "{'{'}reaction{'}'} You may ignore the first attack made against you by a _Star Spawn_ or _Deep One_ enemy each round.",
+      "exhaustEnemy": "{'{'}reaction{'}'} When a _Star Spawn_ or _Deep One_ enemy enters your location, exhaust this card: Exhaust that enemy."
+    },
     "sharpRhetoric": {
       "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test. (+2 {'{'}intellect{'}'} instead if this is an investigation or parley).",
       "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test. (+2 {'{'}willpower{'}'} instead if this is an investigation or parley)."
@@ -1648,6 +1702,10 @@
     "thomasDawsonsCarRunning": {
       "ifYouAre": "If you are this vehicle's driver: Draw the top card of the encounter deck. Then, move this vehicle to a connecting _Road_ location. (Max once per round.)",
       "ifYouAre2": "If you are this vehicle's driver: You stop the car. Flip this vehicle over."
+    },
+    "tidalTablet": {
+      "moveOnFlood": "{'{'}reaction{'}'} When your location’s flood level is increased: Move to a connecting location.",
+      "shiftFloodLevel": "{'{'}fast{'}'} Exhaust Tidal Tablet: Increase the flood level of your location. Then, choose another flooded location and decrease its flood level."
     },
     "timewornBrand5": {
       "actionExhaustTimeworn": "{'{'}action{'}'} Exhaust Timeworn Brand: _Fight_. Add your {'{'}willpower{'}'} to your skill value for this attack. This attack deals +3 damage. If this attack defeats an _Elite_ enemy, draw 3 cards. (Max once per game.)",

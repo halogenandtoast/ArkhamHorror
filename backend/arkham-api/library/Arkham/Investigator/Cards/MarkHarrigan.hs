@@ -4,7 +4,9 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
+import Arkham.Investigator.Types (Field (InvestigatorAssignedDamage))
 import Arkham.Matcher
+import Arkham.Projection
 
 newtype MarkHarrigan = MarkHarrigan InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -27,7 +29,9 @@ instance HasAbilities MarkHarrigan where
 
 instance HasChaosTokenValue MarkHarrigan where
   getChaosTokenValue iid ElderSign (MarkHarrigan attrs) | attrs `is` iid = do
-    pure $ ChaosTokenValue ElderSign $ PositiveModifier attrs.healthDamage
+    -- Deferred assignment keeps part of a hit off the card until AssignDamage (#6011)
+    pending <- field InvestigatorAssignedDamage iid
+    pure $ ChaosTokenValue ElderSign $ PositiveModifier (attrs.healthDamage + pending)
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage MarkHarrigan where

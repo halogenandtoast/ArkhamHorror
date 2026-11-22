@@ -833,6 +833,17 @@ const customizationSkills = computed<string[]>(() => {
   return out
 })
 
+// Each ChosenIndex as [customization row, chosen index]. The row is needed because
+// the index means nothing on its own -- see DOMINANCE_SLOT_ORDER below.
+const customizationIndexes = computed<[number, number][]>(() => {
+  if (!cardCode.value || !customizations.value) return []
+  const out: [number, number][] = []
+  for (const [row, [, arr]] of customizations.value) {
+    arr.forEach(a => { if (a.tag === 'ChosenIndex') out.push([row, Number(a.contents)]) })
+  }
+  return out
+})
+
 /** -------------------- Tick tables ----------------- **/
 type TickTable = Record<string, { top: Record<number, number>, left: Record<number, number> }>
 const TICK_TABLE: TickTable = {
@@ -1070,6 +1081,33 @@ const skillItems = computed<SkillRender[]>(() => {
     const cx = (pos.left / 100) * vbW + r
     const cy = (pos.top  / 100) * vbH + r
     return [{ cx, cy, r, name: skillName }]
+  })
+})
+
+/** ---------- "(circle one)" rings (09080 Summoned Servitor, Dominance) ----------
+ * Same wash-and-ring treatment as Living Ink's skill circles above, stretched to
+ * an ellipse because the thing circled is a word rather than an icon. */
+/* The sheet prints "(circle one): arcane / ally", but ChosenIndex is an index into
+ * the card's PRINTED SLOT order, which is the other way round -- the same trap that
+ * made the engine free the wrong slot (#6016). Resolve the index to a slot name
+ * first, then look the word up by name, so the two orders can never be confused. */
+const DOMINANCE_ROW = 5
+const DOMINANCE_SLOT_ORDER = ['ally', 'arcane'] as const
+const DOMINANCE_WORDS: Record<string, LabelGeom> = {
+  arcane: { top: 69.5, left: 36.2, width: 12.0, height: 3.6 },
+  ally:   { top: 69.5, left: 49.8, width: 7.1,  height: 3.6 },
+}
+
+type ChoiceRing = { cx: number; cy: number; rx: number; ry: number; name: string }
+const choiceRings = computed<ChoiceRing[]>(() => {
+  if (cardCode.value !== '09080') return []
+  return customizationIndexes.value.flatMap(([row, n]) => {
+    if (row !== DOMINANCE_ROW) return []
+    const slot = DOMINANCE_SLOT_ORDER[n]
+    const geom = slot ? DOMINANCE_WORDS[slot] : undefined
+    if (!geom) return []
+    const px = rectFromPct(geom)
+    return [{ cx: px.x + px.w / 2, cy: px.y + px.h / 2, rx: px.w / 2, ry: px.h / 2, name: slot }]
   })
 })
 
@@ -1416,6 +1454,10 @@ watchEffect(() => {
 
           <template v-for="s in skillItems" :key="`skill-09079-${s.name}`">
             <circle :cx="s.cx" :cy="s.cy" :r="s.r" fill="rgba(0,0,0,0.4)" stroke="var(--neutral-extra-dark)" stroke-width="2" />
+          </template>
+
+          <template v-for="c in choiceRings" :key="`choice-${cardCode}-${c.name}`">
+            <ellipse :cx="c.cx" :cy="c.cy" :rx="c.rx" :ry="c.ry" fill="rgba(0,0,0,0.4)" stroke="var(--neutral-extra-dark)" stroke-width="2" />
           </template>
         </g>
       </svg>

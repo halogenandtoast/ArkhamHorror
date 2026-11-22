@@ -35,6 +35,6 @@ instance RunMessage CustomAmmunition3 where
 
       chooseTargetM iid assets \asset -> do
         place attrs (AttachedToAsset asset Nothing)
-        addUses attrs asset Ammo 2
+        whenM (asset <=~> AssetCanHaveUses Ammo) $ addUses attrs asset Ammo 2
       pure e
     _ -> CustomAmmunition3 <$> liftRunMessage msg attrs

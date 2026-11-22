@@ -192,6 +192,14 @@ data Game = Game
   , gameUndoTurnStep :: Maybe Int
   , gameUndoPhaseStep :: Maybe Int
   , gameUndoRoundStep :: Maybe Int
+  , gameUndoScenarioStep :: Maybe Int
+  {- ^ The scenario step the CURRENT scenario began at, i.e. what "restart
+  scenario" undoes to. Normally step 1, but a scenario that starts a
+  second scenario inside the same game (Fortune and Folly, Part II)
+  moves it forward so a restart there does not rewind into Part I.
+  'Nothing' on games saved before this field existed; readers fall back
+  to 1.
+  -}
   , gameAsIfAtIgnored :: Set InvestigatorId -- transient: investigators with AsIfAt suppressed during window processing
   , gameLocationOffsets :: Map LocationId (Double, Double) -- player-driven board layout overrides; shared across players
   , gameCardPlayStack :: [CardId]

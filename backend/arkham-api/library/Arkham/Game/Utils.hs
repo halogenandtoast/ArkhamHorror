@@ -24,6 +24,7 @@ import Arkham.Game.State
 import Arkham.Helpers.Action (getActionCost)
 import Arkham.Helpers.Calculation
 import Arkham.Helpers.Card
+import Arkham.Helpers.Dreaming (dreamingValueWith)
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Modifiers
 import Arkham.Id
@@ -310,45 +311,51 @@ getCostForCard iid card isPlayAction = do
             Keyword.Seal sealing -> sealingToCost sealing
             _ -> Nothing
 
-      resourceCost <- case mResources of
-        Nothing -> pure Cost.UnpayableCost
-        Just resources -> case cdCost (toCardDef card) of
-          Just (AnyMatchingCardCost ecMatcher) -> do
-            cards <- select ecMatcher
-            pure $ case nubOrd (map (Cost.ResourceCost . getCost) cards) of
-              [x] -> x
-              xs -> Cost.OrCost xs
-          Just (MatchingEnemyFieldCost enemyMatcher enemyCostField) -> do
-            enemies <- select enemyMatcher
-            let enemyField = case enemyCostField of
-                  EnemyRemainingHealthField -> EnemyRemainingHealth
-            values <- mapMaybeM (field enemyField) enemies
-            pure $ Cost.OrCost $ map Cost.ResourceCost $ nubOrd values
-          _
-            | isDynamic card -> do
-                -- a reduction past zero is credited to X when the cost is paid, so the player
-                -- should not be offered resources to spend on it as well
-                ucost <- fromMaybe 0 <$> getUnboundedModifiedCardCost iid card
-                let discount = max 0 (negate ucost)
-                let availableForX = max 0 (investigatorResources (toAttrs investigator') - resources)
-                let
-                  dynamicPart = case maxDynamic card of
-                    Nothing -> Cost.UpTo (Fixed availableForX) (Cost.ResourceCost 1)
-                    -- NB. MaxCalculation is min and MinCalculation is max, so this is
-                    -- min (max 0 (cap - discount)) availableForX
-                    Just c ->
-                      Cost.UpTo
-                        ( MaxCalculation
-                            (MinCalculation (Fixed 0) (SubtractCalculation c (Fixed discount)))
-                            (Fixed availableForX)
-                        )
-                        (Cost.ResourceCost 1)
-                -- keep a resource cost around when discounted so the discount still gets credited
-                pure
-                  $ if resources == 0 && discount == 0
-                    then dynamicPart
-                    else Cost.ResourceCost resources <> dynamicPart
-          _ -> pure $ if resources == 0 then Cost.Free else Cost.ResourceCost resources
+      {- A dreaming card REPLACES its resource cost, never appends to it: a
+      dreaming card has @cdCost = Nothing@, whose resource cost is
+      'UnpayableCost', and 'getCanAffordCost_'s 'Costs' branch is a conjunction,
+      so appending would make it unaffordable forever. -}
+      resourceCost <- case dreamingValueWith cardMods card of
+        Just dreams -> pure $ Cost.DreamCost dreams
+        Nothing -> case mResources of
+          Nothing -> pure Cost.UnpayableCost
+          Just resources -> case cdCost (toCardDef card) of
+            Just (AnyMatchingCardCost ecMatcher) -> do
+              cards <- select ecMatcher
+              pure $ case nubOrd (map (Cost.ResourceCost . getCost) cards) of
+                [x] -> x
+                xs -> Cost.OrCost xs
+            Just (MatchingEnemyFieldCost enemyMatcher enemyCostField) -> do
+              enemies <- select enemyMatcher
+              let enemyField = case enemyCostField of
+                    EnemyRemainingHealthField -> EnemyRemainingHealth
+              values <- mapMaybeM (field enemyField) enemies
+              pure $ Cost.OrCost $ map Cost.ResourceCost $ nubOrd values
+            _
+              | isDynamic card -> do
+                  -- a reduction past zero is credited to X when the cost is paid, so the player
+                  -- should not be offered resources to spend on it as well
+                  ucost <- fromMaybe 0 <$> getUnboundedModifiedCardCost iid card
+                  let discount = max 0 (negate ucost)
+                  let availableForX = max 0 (investigatorResources (toAttrs investigator') - resources)
+                  let
+                    dynamicPart = case maxDynamic card of
+                      Nothing -> Cost.UpTo (Fixed availableForX) (Cost.ResourceCost 1)
+                      -- NB. MaxCalculation is min and MinCalculation is max, so this is
+                      -- min (max 0 (cap - discount)) availableForX
+                      Just c ->
+                        Cost.UpTo
+                          ( MaxCalculation
+                              (MinCalculation (Fixed 0) (SubtractCalculation c (Fixed discount)))
+                              (Fixed availableForX)
+                          )
+                          (Cost.ResourceCost 1)
+                  -- keep a resource cost around when discounted so the discount still gets credited
+                  pure
+                    $ if resources == 0 && discount == 0
+                      then dynamicPart
+                      else Cost.ResourceCost resources <> dynamicPart
+            _ -> pure $ if resources == 0 then Cost.Free else Cost.ResourceCost resources
 
       investigateCosts <- runDefaultMaybeT [] do
         guard isInvestigate

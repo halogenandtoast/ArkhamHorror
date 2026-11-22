@@ -9,7 +9,7 @@ import Arkham.Classes.Query
 import Arkham.Enemy.Types (Enemy, Field (..))
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.Game ()
-import Arkham.GameEnv (getCard)
+import Arkham.GameEnv (getCard, getCardMaybe)
 import Arkham.Helpers.Location
 import Arkham.Helpers.Query
 import Arkham.Id
@@ -22,7 +22,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Skill.Types (Field (..))
 import Arkham.Target
-import Arkham.Trait (Trait)
+import Arkham.Trait (Trait, toTraits)
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Zone (knownOutOfPlayZone, overOutOfPlayZones)
 import Data.Proxy
@@ -45,6 +45,8 @@ targetTraits = \case
   IndexedTarget _ t -> targetTraits t
   ScarletKeyTarget _ -> pure mempty
   ConcealedCardTarget _ -> pure mempty
+  -- the card's traits, since a dreaming card is still that card
+  DreamingCardTarget cid -> maybe mempty toTraits <$> getCardMaybe cid
   EnemyTarget eid -> do
     result <-
       runMaybeT

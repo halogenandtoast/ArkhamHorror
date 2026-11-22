@@ -27,7 +27,7 @@ instance RunMessage WithoutATrace where
         when clueless $ for_ derelict \lid ->
           labeled "withoutATrace.assumeCommandOfTheShip" do
             cassilda <- getSetAsideCard Locations.theCassilda
-            push $ ReplaceLocation lid cassilda Swap
+            push $ ReplaceLocation lid cassilda Swap Nothing
             addToVictory iid attrs
         labeled "withoutATrace.scavengeTheShipForParts" do
           drawCards iid attrs 1

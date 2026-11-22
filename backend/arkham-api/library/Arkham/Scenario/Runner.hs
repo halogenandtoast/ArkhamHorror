@@ -345,7 +345,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     locationId <- getRandom
     case filterCards (Matcher.CardWithType LocationType <> cardMatcher) scenarioSetAsideCards of
       [] -> error "There were no locations with that name"
-      (card : _) -> push (PlaceLocation locationId card)
+      (card : _) -> push (PlaceLocation locationId card Nothing)
     pure a
   PlaceDoomOnAgenda source n canAdvance -> do
     select Matcher.UnflippedAgenda >>= \case
@@ -648,7 +648,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure a
   SetCardAside card -> pure $ a & setAsideCardsL %~ (card :)
   ReplaceAgenda _ card -> pure $ a & setAsideCardsL %~ delete card
-  PlaceLocation _ card ->
+  PlaceLocation _ card _ ->
     pure
       $ a
       & setAsideCardsL
@@ -658,7 +658,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       %~ delete card
       & discardL
       %~ filter ((/= card) . EncounterCard)
-  ReplaceLocation _ card _ -> pure $ a & setAsideCardsL %~ delete card
+  ReplaceLocation _ card _ _ -> pure $ a & setAsideCardsL %~ delete card
   CreateWeaknessInThreatArea card _ -> pure $ a & setAsideCardsL %~ delete card
   ShuffleCardsIntoTopOfDeck Deck.EncounterDeck n (onlyEncounterCards -> cards) -> do
     let (cards', rest) = draw n scenarioEncounterDeck

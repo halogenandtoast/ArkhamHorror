@@ -312,6 +312,9 @@ handleInvestigatorEliminated a@InvestigatorAttrs {..} iid = do
     & (tokensL %~ (removeAllTokens Clue . removeAllTokens Resource))
     & (keysL .~ mempty)
     & (handL .~ mempty)
+    -- with the hand: a dream record that outlives the scenario holds a CardId whose
+    -- registry entry ResetGame wipes, and `getCard` on it is a hard error
+    & (dreamingCardsL .~ mempty)
     & (discardL .~ mempty)
     & (deckL .~ mempty)
     & (eliminatedL .~ True)

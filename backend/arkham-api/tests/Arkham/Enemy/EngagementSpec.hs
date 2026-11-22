@@ -2,6 +2,7 @@ module Arkham.Enemy.EngagementSpec (spec) where
 
 import Arkham.Attack qualified as Attack
 import Arkham.Enemy.CardDefs.NightOfTheZealot.Rats qualified as Cards
+import Arkham.Enemy.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as DarkSideOfTheMoon
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exhaust (mkExhaustion)
 import Arkham.Helpers.Cost (getCanAffordCost)
@@ -17,8 +18,12 @@ import TestImport.New
 -- swarm card. `testEnemy` is inserted directly into the entity map, so the
 -- `Swarming` spawn flow never runs and we place the swarm card by hand.
 swarmingEnemyEngagedWith :: Investigator -> Location -> TestAppT (EnemyId, EnemyId)
-swarmingEnemyEngagedWith self location = do
-  host <- testEnemy
+swarmingEnemyEngagedWith = swarmingEnemyDefEngagedWith Cards.swarmOfRats
+
+swarmingEnemyDefEngagedWith
+  :: CardDef -> Investigator -> Location -> TestAppT (EnemyId, EnemyId)
+swarmingEnemyDefEngagedWith def self location = do
+  host <- testEnemyWithDef def id
   host `spawnAt` location
   run $ EnemyEngageInvestigator (toId host) (toId self)
   card <- genCard Cards.swarmOfRats
@@ -429,3 +434,29 @@ spec = describe "Enemy engagement" do
       swarm.location `shouldReturn` Just (toId location2)
       engaged <- self.engagedEnemies
       sort engaged `shouldBe` sort [host, swarm]
+
+  -- Regression for issue #6025 (Cats from Saturn 06228, "Forced - After the host
+  -- Cats from Saturn moves or is evaded: Discard 1 of its swarm cards"). An
+  -- engaged enemy dragged along by its investigator takes the
+  -- `EnemyEnteredFollowing` path, which raised no "enemy moved" window at all --
+  -- `Window.EnemyMovesTo` comes only from the hunter and patrol paths, and
+  -- `Window.EnemyMoves` only from `EnemyMove`. A hunter enemy never hunter-moves
+  -- while engaged, so following was the only move it ever made and the printed
+  -- Forced ability was dead.
+  it "fires a swarming host's after-it-moves ability when it follows its investigator"
+    . gameTest
+    $ \self -> do
+      location1 <- testLocation
+      location2 <- testLocation
+      self `moveTo` location1
+
+      (host, _swarm) <-
+        swarmingEnemyDefEngagedWith DarkSideOfTheMoon.catsFromSaturn self location1
+
+      self `moveTo` location2
+
+      useForcedAbility
+      chooseOnlyOption "discard a swarm card"
+
+      host.location `shouldReturn` Just (toId location2)
+      selectCount (Matcher.SwarmOf host) `shouldReturn` 0

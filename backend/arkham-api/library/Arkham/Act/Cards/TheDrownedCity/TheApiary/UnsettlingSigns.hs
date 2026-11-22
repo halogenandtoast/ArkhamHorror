@@ -190,7 +190,7 @@ flipApiaryEntranceToDangerousExit :: ReverseQueue m => m ()
 flipApiaryEntranceToDangerousExit =
   selectOne (locationIs Locations.apiaryEntranceBeckoningLight) >>= traverse_ \lid -> do
     cardId <- field LocationCardId lid
-    push $ ReplaceLocation lid (lookupCard Locations.apiaryEntranceDangerousExit cardId) Swap
+    push $ ReplaceLocation lid (lookupCard Locations.apiaryEntranceDangerousExit cardId) Swap Nothing
 
 {- | "Spawn the set-aside The Inescapable enemy at the location farthest from all
 investigators. Shuffle the rest of The Inescapable encounter set into the encounter

@@ -1379,6 +1379,7 @@ const needsReply = computed(() => {
   --weakness-pool-surface: color-mix(in srgb, currentColor 4%, transparent);
   --weakness-pool-border: color-mix(in srgb, currentColor 20%, transparent);
   --weakness-pool-text: currentColor;
+  --weakness-pool-desc: color-mix(in srgb, currentColor 70%, transparent);
 }
 
 .weakness-pool-panel {

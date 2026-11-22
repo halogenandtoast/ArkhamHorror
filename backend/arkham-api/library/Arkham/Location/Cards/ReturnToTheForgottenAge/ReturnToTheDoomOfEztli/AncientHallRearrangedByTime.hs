@@ -31,7 +31,7 @@ instance HasAbilities AncientHallRearrangedByTime where
 
 instance RunMessage AncientHallRearrangedByTime where
   runMessage msg l@(AncientHallRearrangedByTime attrs) = runQueueT $ case msg of
-    PlacedLocation _ _ lid | lid == attrs.id -> do
+    PlacedLocation _ _ lid _ | lid == attrs.id -> do
       n <- perPlayer 1
       AncientHallRearrangedByTime <$> liftRunMessage msg (attrs & tokensL %~ addTokens #doom n)
     UseThisAbility _ (isSource attrs -> True) 1 -> do

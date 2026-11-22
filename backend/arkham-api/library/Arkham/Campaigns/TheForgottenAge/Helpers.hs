@@ -296,12 +296,15 @@ explore iid source cardMatcher exploreRule matchCount = do
               unfocusCards
               setScenarioDeck ExplorationDeck deck'
 
+              -- An explore is one investigator's action, so it is that
+              -- investigator who put the location into play, not the group
+              -- (FAQ v2.5 Q&A 088 is about acts and agendas) -- #6013.
               lid <- case exploreRule of
-                PlaceExplored -> placeLocation x
+                PlaceExplored -> placeLocationBy iid x
                 ReplaceExplored -> do
                   let lSymbol = fromJustNote "no location symbol" $ cdLocationRevealedSymbol (toCardDef x)
                   lid <- selectJust (LocationWithSymbol lSymbol)
-                  push $ ReplaceLocation lid x DefaultReplace
+                  push $ ReplaceLocation lid x DefaultReplace (Just iid)
                   pure lid
 
               -- we want to have kept track of revealed and without clues
@@ -323,7 +326,7 @@ explore iid source cardMatcher exploreRule matchCount = do
                 unfocusCards
                 setScenarioDeck ExplorationDeck deck'
 
-          locations <- traverse placeLocation xs
+          locations <- traverse (placeLocationBy iid) xs
           when canMove do
             chooseTargetM iid locations $ moveTo source iid
             updateHistory iid $ HistoryItem HistorySuccessfulExplore True

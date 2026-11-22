@@ -2461,6 +2461,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.AssetEntersPlay timing assetMatcher -> guardTiming timing $ \case
       Window.EnterPlay (AssetTarget aid) -> elem aid <$> select assetMatcher
       _ -> noMatch
+    -- The WHO comes from the payload. Running an investigator matcher over the
+    -- asset instead would offer a location-only `Who` to every seat (#5685/#6013),
+    -- and the asset has already left play by the time this fires.
+    Matcher.AssetFlippedFacedown timing whoMatcher assetMatcher -> guardTiming timing $ \case
+      Window.AssetFlippedFacedown who aid ->
+        andM [matchWho iid who whoMatcher, elem aid <$> select assetMatcher]
+      _ -> noMatch
     Matcher.AssetLeavesPlay timing assetMatcher -> guardTiming timing $ \case
       Window.LeavePlay (AssetTarget aid) -> elem aid <$> select assetMatcher
       _ -> noMatch

@@ -37,6 +37,7 @@ targetToMaybeCard = \case
   LocationTarget aid -> fieldMay LocationCard aid
   SearchedCardTarget cId -> Just <$> getCard cId
   CardIdTarget cId -> getCardMaybe cId
+  DreamingCardTarget cId -> getCardMaybe cId
   BothTarget a b -> do
     aCard <- targetToMaybeCard a
     bCard <- targetToMaybeCard b
@@ -113,6 +114,7 @@ sourceToMaybeTarget = \case
   ActiveCostSource acId -> Just $ ActiveCostTarget acId
   ScarletKeySource kId -> Just $ ScarletKeyTarget kId
   ConcealedCardSource kId -> Just $ ConcealedCardTarget kId
+  DreamingCardSource cId -> Just $ DreamingCardTarget cId
   UltimatumOrBoonSource b -> Just $ UltimatumOrBoonTarget b
 
 targetToSource :: Target -> Source
@@ -166,3 +168,4 @@ targetToSource = \case
   LabeledTarget _ target -> targetToSource target
   ScarletKeyTarget kId -> ScarletKeySource kId
   ConcealedCardTarget kId -> ConcealedCardSource kId
+  DreamingCardTarget cId -> DreamingCardSource cId

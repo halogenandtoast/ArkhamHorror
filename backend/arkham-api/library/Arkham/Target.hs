@@ -79,6 +79,11 @@ data Target
   | ThisTarget -- Used with withModifiers
   | ScarletKeyTarget ScarletKeyId
   | ConcealedCardTarget ConcealedCardId
+  | {- | A card facedown in an investigator's dream zone, addressed by its
+    'CardId'. Deliberately NOT 'CardIdTarget', which is "the card in every
+    zone": the dream zone must not be addressable as if the card were in play.
+    -}
+    DreamingCardTarget CardId
   | IndexedTarget Int Target
   deriving stock (Show, Eq, Ord, Data, Generic)
 

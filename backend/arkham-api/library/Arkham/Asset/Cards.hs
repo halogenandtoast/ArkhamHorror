@@ -9,6 +9,7 @@ import Arkham.Asset.Cards.MarieLambeau2 as X
 import Arkham.Asset.Cards.MiguelDeLaCruz as X
 import Arkham.Asset.Cards.NightOfTheZealot as X
 import Arkham.Asset.Cards.Parallel as X
+import Arkham.Asset.Cards.PowerOfTheDreamlands as X
 import Arkham.Asset.Cards.Promo as X
 import Arkham.Asset.Cards.RedTideRising as X
 import Arkham.Asset.Cards.RelicsOfThePast as X
@@ -1112,6 +1113,23 @@ allPlayerAssetCards =
       , --- Traces to Nowhere
         azizaSteerHardboiled
       , azizaSteerHasABoneToPick
+      , --- Power of the Dreamlands
+        knightOfCelephais
+      , knightsLongsword
+      , somniumShotcaster4
+      , grimoireOfAges
+      , lunarCharts
+      , dalkura
+      , bladeOfTheSkySea3
+      , enchantingFife
+      , lukeRobinson
+      , lunarSight3
+      , realityFracture3
+      , explorersSextant
+      , lashOfUlthar2
+      , idolOfBokrug5
+      , sigilOfThalarion2
+      , staffOfAtal3
       ]
 
 -- with encounter backs

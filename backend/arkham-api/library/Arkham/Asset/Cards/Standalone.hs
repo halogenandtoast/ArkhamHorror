@@ -772,6 +772,7 @@ petOozeling =
     { cdSkills = [#agility, #wild]
     , cdCardTraits = setFromList [Ally, Monster, Ooze]
     , cdUnique = True
+    , cdOptions = [offerDuringSkillTests 1]
     }
 
 miGoWeapon :: CardDef

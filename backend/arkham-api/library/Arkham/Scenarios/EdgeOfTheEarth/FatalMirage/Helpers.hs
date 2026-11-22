@@ -79,7 +79,7 @@ mirageRunner storyCard mirageCards m msg attrs = case msg of
   Flip iid _ (isTarget attrs -> True) -> do
     readStory iid attrs storyCard
     pure attrs
-  PlacedLocation _ _ (is attrs -> True) -> do
+  PlacedLocation _ _ (is attrs -> True) _ -> do
     n <- length <$> mapMaybeM getSetAsideCardMaybe mirageCards
     liftRunMessage msg (attrs & revealCluesL .~ PerPlayer (m * n))
   _ -> liftRunMessage msg attrs

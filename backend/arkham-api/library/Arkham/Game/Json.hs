@@ -93,6 +93,7 @@ instance ToJSON Game where
       , "gameUndoTurnStep" .= gameUndoTurnStep g
       , "gameUndoPhaseStep" .= gameUndoPhaseStep g
       , "gameUndoRoundStep" .= gameUndoRoundStep g
+      , "gameUndoScenarioStep" .= gameUndoScenarioStep g
       , "gameAsIfAtIgnored" .= gameAsIfAtIgnored g
       , "gameLocationOffsets" .= gameLocationOffsets g
       , "gameCardPlayStack" .= gameCardPlayStack g
@@ -171,6 +172,7 @@ instance ToJSON Game where
       <> ("gameUndoTurnStep" .= gameUndoTurnStep g)
       <> ("gameUndoPhaseStep" .= gameUndoPhaseStep g)
       <> ("gameUndoRoundStep" .= gameUndoRoundStep g)
+      <> ("gameUndoScenarioStep" .= gameUndoScenarioStep g)
       <> ("gameAsIfAtIgnored" .= gameAsIfAtIgnored g)
       <> ("gameLocationOffsets" .= gameLocationOffsets g)
       <> ("gameCardPlayStack" .= gameCardPlayStack g)
@@ -263,6 +265,7 @@ instance FromJSON Game where
     gameUndoTurnStep <- o .:? "gameUndoTurnStep" .!= Nothing
     gameUndoPhaseStep <- o .:? "gameUndoPhaseStep" .!= Nothing
     gameUndoRoundStep <- o .:? "gameUndoRoundStep" .!= Nothing
+    gameUndoScenarioStep <- o .:? "gameUndoScenarioStep" .!= Nothing
     let gameAsIfAtIgnored = mempty
     gameLocationOffsets <- o .:? "gameLocationOffsets" .!= mempty
     -- .:? with a default: existing saves predate the stack.

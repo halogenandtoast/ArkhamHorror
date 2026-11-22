@@ -159,7 +159,7 @@ instance RunMessage TheMiskatonicMuseum where
       restrictedHall <- fetchCard Locations.exhibitHallRestrictedHall
       bottom' <- shuffle $ restrictedHall : bottom
       addExtraDeck ExhibitDeck $ top <> bottom'
-    PlacedLocation name _ lid -> do
+    PlacedLocation name _ lid _ -> do
       when (nameTitle name == "Exhibit Hall") $ do
         hallCount <- selectCount $ LocationWithTitle "Exhibit Hall"
         push (SetLocationLabel lid $ "hall" <> tshow hallCount)

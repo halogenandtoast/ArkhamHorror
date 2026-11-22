@@ -38,8 +38,7 @@ instance RunMessage TokenOfFaith3 where
   runMessage msg a@(TokenOfFaith3 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getTest -> st) _ -> do
       let tokens = filter ((`elem` [#autofail, #curse]) . (.face)) $ skillTestRevealedChaosTokens st
-      n <- min (length tokens) <$> getRemainingBlessTokens
-      pushAll $ replicate n $ AddChaosToken #bless
+      addChaosTokens (length tokens) #bless
       case skillTestResult st of
         FailedBy {} -> do
           sid <- getRandom

@@ -71,7 +71,7 @@ playAsset :: Investigator -> Asset -> Message
 playAsset i a = PlaceAsset (toId a) (InPlayArea $ toId i)
 
 placedLocation :: Location -> Message
-placedLocation l = PlacedLocation (toName l) (toCardCode l) (toId l)
+placedLocation l = PlacedLocation (toName l) (toCardCode l) (toId l) Nothing
 
 playCard :: Investigator -> Card -> Message
 playCard i c = InitiatePlayCardWithWindows (toId i) c Nothing NoPayment (defaultWindows $ toId i) True

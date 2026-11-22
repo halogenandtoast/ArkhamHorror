@@ -51,7 +51,7 @@ instance RunMessage MichaelMcGlen where
       gainResources iid (attrs.ability 1) 1
       pure $ MichaelMcGlen $ setMetaKey "perFirearmAssetPerRound" (aid : firearms) attrs
     ElderSignEffect iid | iid == attrs.id -> do
-      firearms <- select $ assetControlledBy iid <> #firearm
+      firearms <- select $ assetControlledBy iid <> #firearm <> AssetCanHaveUses Ammo
       unless (null firearms) do
         chooseOneM iid do
           cardI18n (scope "michaelMcGlen" $ labeled "doNotAdd") nothing

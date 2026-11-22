@@ -9,7 +9,7 @@ import Arkham.Card
 import Arkham.ForMovement
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Location (onSameLocation)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen, modifySelfWhen)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen, modifySelf)
 import Arkham.Helpers.SkillTest.Lifted (investigateLocation_)
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
@@ -28,11 +28,7 @@ summonedServitor = asset SummonedServitor Cards.summonedServitor
 
 instance HasModifiersFor SummonedServitor where
   getModifiersFor (SummonedServitor a) = do
-    let indexes = [i | ChosenIndex i <- concatMap snd (toList a.customizations)]
-    modifySelfWhen
-      a
-      (a `hasCustomization` Dominance)
-      [DoNotTakeUpSlot $ if 0 `elem` indexes then #arcane else #ally]
+    for_ (dominanceSlot a) \slot -> modifySelf a [DoNotTakeUpSlot slot]
     modifySelectWhen
       a
       (a `hasCustomization` ArmoredCarapace)

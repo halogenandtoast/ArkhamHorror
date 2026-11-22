@@ -103,7 +103,7 @@ instance RunMessage TheDoomOfArkham where
           lead <- getLead
           drawCthulhuDeckCard lead attrs
         (card : _) -> do
-          push $ ReplaceLocation lid card Swap
+          push $ ReplaceLocation lid card Swap Nothing
           {- 'Swap' carries `revealed` across, so the Ruined card would come in
           already revealed; the unreveal is what makes it "unrevealed side faceup".
           Anyone still standing there then reveals it the same way entering would,

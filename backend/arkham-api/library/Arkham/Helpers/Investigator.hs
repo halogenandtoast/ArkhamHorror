@@ -492,6 +492,7 @@ investigator f cardDef Stats {..} =
                 , investigatorDecks = mempty
                 , investigatorDiscard = mempty
                 , investigatorHand = mempty
+                , investigatorDreamingCards = mempty
                 , investigatorTraits = cdCardTraits cardDef
                 , investigatorKilled = False
                 , investigatorDrivenInsane = False

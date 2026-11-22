@@ -58,12 +58,16 @@ export interface MapData {
 
 const send = inject<(msg: string) => void>('send', () => {})
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   game: Game
   playerId: string
   mapData: MapData
   embark: boolean
-}>()
+  /* Read-only for a seat the engine is not asking. The server attributes a
+   * CampaignSpecificAnswer to the active player whoever sent it, so the travel
+   * handlers below fail closed rather than relying on the hidden buttons. */
+  viewOnly?: boolean
+}>(), { viewOnly: false })
 
 const isFinale = computed(() => {
   return props.mapData.available.length === 1
@@ -163,6 +167,7 @@ function select(location: MapLocationId) {
 }
 
 function travelToSelected() {
+  if (props.viewOnly) return
   if (selectedLocation.value) {
     const goTo = selectedLocation.value  
     selectedLocation.value = null
@@ -174,6 +179,7 @@ function travelToSelected() {
 }
 
 function travelViaSelected() {
+  if (props.viewOnly) return
   if (selectedLocation.value) {
     const goTo = selectedLocation.value  
     selectedLocation.value = null
@@ -185,6 +191,7 @@ function travelViaSelected() {
 }
 
 function travelWithTicket() {
+  if (props.viewOnly) return
   if (selectedLocation.value) {
     const goTo = selectedLocation.value  
     selectedLocation.value = null
@@ -719,6 +726,7 @@ onUnmounted(() => document.removeEventListener('fullscreenchange', onFullscreenC
           :locationData="locationData"
           :mapData="mapData"
           :embark="embark"
+          :viewOnly="viewOnly"
           :isFinale="isFinale"
           @close="closePopup"
           @travelTo="travelToSelected"
@@ -749,6 +757,7 @@ onUnmounted(() => document.removeEventListener('fullscreenchange', onFullscreenC
           :locationData="locationData"
           :mapData="mapData"
           :embark="embark"
+          :viewOnly="viewOnly"
           :isFinale="isFinale"
           @close="closePopup"
           @travelTo="travelToSelected"

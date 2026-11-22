@@ -262,6 +262,11 @@ data WindowType
   | AmongSearchedCards BatchId InvestigatorId
   | AnyPhaseBegins
   | AssetDefeated AssetId DefeatedBy
+  | {- | An asset an investigator controlled was flipped facedown into their dream
+    zone. Its own window because 'LeavePlay' carries no reason and would fire on
+    every asset discard.
+    -}
+    AssetFlippedFacedown InvestigatorId AssetId
   | AssignedHorror Source InvestigatorId [Target]
   | AtBeginningOfRound
   | AtEndOfRound

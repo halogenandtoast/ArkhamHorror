@@ -33,8 +33,6 @@ instance HasAbilities GuardianAngel where
 instance RunMessage GuardianAngel where
   runMessage msg a@(GuardianAngel attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 windows' _ -> do
-      let damage = getTotalDamage windows'
-      n <- min damage <$> getRemainingBlessTokens
-      pushAll $ replicate n $ AddChaosToken BlessToken
+      addChaosTokens (getTotalDamage windows') BlessToken
       pure a
     _ -> GuardianAngel <$> runMessage msg attrs

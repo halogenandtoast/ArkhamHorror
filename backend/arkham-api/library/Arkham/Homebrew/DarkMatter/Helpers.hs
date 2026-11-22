@@ -1065,7 +1065,7 @@ silently left alone.
 flipToOtherSide :: ReverseQueue m => InvestigatorId -> LocationAttrs -> m ()
 flipToOtherSide iid attrs =
   for_ (toCardDef attrs).flip \other -> do
-    let replace = ReplaceLocation attrs.id (lookupCard other attrs.cardId) Swap
+    let replace = ReplaceLocation attrs.id (lookupCard other attrs.cardId) Swap Nothing
     -- 'ReplaceLocation' does not itself open a flip window (only Hemlock's
     -- enemy-location flips do), so the when/after frames are opened here.
     -- Cave Dweller, Tattered Curtains, Hastur's Domain and Broken Reality all

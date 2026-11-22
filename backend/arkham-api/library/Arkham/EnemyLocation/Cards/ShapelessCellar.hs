@@ -40,7 +40,7 @@ instance HasAbilities ShapelessCellar where
 
 instance RunMessage ShapelessCellar where
   runMessage msg el@(ShapelessCellar attrs) = runQueueT $ case msg of
-    PlacedLocation _ _ lid | lid == attrs.id -> do
+    PlacedLocation _ _ lid _ | lid == attrs.id -> do
       placeClues attrs attrs =<< perPlayer 3
       pure el
     UseThisAbility iid (isSource attrs -> True) 1 -> do

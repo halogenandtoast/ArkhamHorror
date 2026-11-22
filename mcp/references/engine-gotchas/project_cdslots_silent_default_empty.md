@@ -10,8 +10,9 @@ metadata:
 
 `cdSlots` defaults to `mempty` (`Arkham/Card/CardDef.hs:395`) and `AssetAttrs` seeds
 `assetSlots = cdSlots cardDef` at creation (`Arkham/Asset/Types.hs:488`). Nothing
-validates that an `Ally`/`Hand`/`Arcane` card actually declares a slot — `backend/validate`
-has no slot check — so an omitted `cdSlots` produces an asset that enters play occupying
+validates that an `Ally`/`Hand`/`Arcane` card actually declares a slot (`backend/validate`
+had no slot check, and that package was removed entirely on 2026-11-22) — so an omitted
+`cdSlots` produces an asset that enters play occupying
 **no slot at all**, with no warning anywhere.
 
 Two compounding traps:

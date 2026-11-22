@@ -36,6 +36,12 @@ data Keyword
   | Retaliate
   | Surge
   | Uses Int
+  | {- | The dreaming keyword, and its dreaming value. Never read off
+    'cdKeywords' directly: a grant ('AddKeyword') or a reduction
+    ('ReduceDreaming') makes the printed value the wrong answer. Go through
+    'Arkham.Helpers.Dreaming.getDreamingValue'.
+    -}
+    Dreaming Int
   | Exceptional
   | Permanent
   | Researched CampaignLogKey
@@ -69,6 +75,11 @@ data Keyword
 
 class HasKeywords a where
   toKeywords :: a -> Set Keyword
+
+_Dreaming :: Prism' Keyword Int
+_Dreaming = prism' Dreaming $ \case
+  Dreaming n -> Just n
+  _ -> Nothing
 
 _Swarming :: Prism' Keyword GameValue
 _Swarming = prism' Swarming $ \case

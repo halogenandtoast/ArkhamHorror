@@ -657,7 +657,9 @@ data Message
   | AdvanceAgendaIfThresholdSatisfied
   | AdvanceAgendaDeck Int Source
   | AdvanceCurrentAgenda
-  | ReplaceLocation LocationId Card ReplaceStrategy
+  | -- The trailing investigator is the one responsible for the replacement, as
+    -- on 'PlaceLocation'; 'Nothing' is a group placement.
+    ReplaceLocation LocationId Card ReplaceStrategy (Maybe InvestigatorId)
   | ReplaceEnemy EnemyId Card ReplaceStrategy
   | ReplaceAgenda AgendaId Card
   | RevertAgenda AgendaId
@@ -1097,8 +1099,14 @@ data Message
   | PlaceDoomOnAgenda Source Int CanAdvance
   | PlaceEnemyOutOfPlay OutOfPlayZone EnemyId
   | PlaceEnemy EnemyId Placement
-  | PlaceLocation LocationId Card
-  | PlaceLocationWith LocationId Card (Update Location)
+  | {- | Place a location into play. The trailing investigator is the one
+    responsible for the placement, when exactly one is: an 'Explore' is an
+    action a single investigator performs, so only that investigator put the
+    location into play. 'Nothing' means a group placement -- see
+    'PlacedLocation'.
+    -}
+    PlaceLocation LocationId Card (Maybe InvestigatorId)
+  | PlaceLocationWith LocationId Card (Update Location) (Maybe InvestigatorId)
   | PlaceLocationMatching CardMatcher
   | PlaceEnemyLocation LocationId Card
   | FlipToEnemyLocation LocationId Card
@@ -1108,7 +1116,16 @@ data Message
   | PlacedUnderneath Target Card
   | RemoveFromUnderneath Target [Card]
   | PlaceNextTo Target [Card]
-  | PlacedLocation Name CardCode LocationId
+  | {- | A location has entered play. The trailing investigator is whoever put
+    it there, when exactly one did (an 'Explore'); 'Nothing' means nobody in
+    particular did, i.e. an act, agenda or other scenario card placed it, and
+    "because acts and agendas are advanced by the players, as a group, each
+    investigator is considered to have put the location(s) into play" (FAQ v2.5
+    Q&A 088). 'Arkham.Location.Runner' turns the two cases into
+    'Arkham.Window.PutLocationIntoPlay' and
+    'Arkham.Window.PutLocationIntoPlayByGroup' respectively.
+    -}
+    PlacedLocation Name CardCode LocationId (Maybe InvestigatorId)
   | PlacedLocationDirection LocationId Direction LocationId
   | LocationMoved LocationId
   | PlayCard InvestigatorId Card (Maybe Target) Payment [Window] Bool
@@ -1414,6 +1431,42 @@ data Message
   | RemoveAllConcealed
   | SetLocationOutOfGame LocationId
   | ReturnLocationToGame LocationId
+  | {- | Dream a card into the investigator's dream zone, facedown, with @n@
+    dreams on it. The CREATION point, and one of the two pushers of
+    @Do (CheckDreamingCard ..)@ -- a dreaming value of 0 flips immediately.
+
+    A hard cap (3, plus 'AdditionalDreamingCard'): at the cap this does nothing,
+    which is narrated rather than silent.
+    -}
+    PlaceDreamingCard InvestigatorId Card Int
+  | {- | Flip an in-play asset facedown into its controller's dream zone with @n@
+    dreams on it. The asset LEAVES PLAY ('RemoveFromPlay'), so damage, uses and
+    attachments go with it and its slot frees.
+    -}
+    FlipAssetFacedown InvestigatorId AssetId Int
+  | -- | Remove the dream record and put the card into play / resolve it as if played from hand.
+    FlipDreamingCardFaceup InvestigatorId CardId
+  | {- | Idempotent: flips the named dreaming card faceup iff the record still
+    exists and holds 0 dreams. Pushed from the single dream-removal point and
+    from 'PlaceDreamingCard'; deliberately NOT from @BeginTurn@, since dreams
+    come off mid-turn too.
+    -}
+    CheckDreamingCard InvestigatorId CardId
+  | {- | "At the start of your turn, you remove 1 dream from each dreaming card you
+    control." Carries the investigator explicitly: @BeginTurn@ runs before
+    @activeInvestigatorIdL@ is set, so reading the active investigator here
+    sweeps the wrong seat.
+    -}
+    RemoveDreamsAtTurnStart InvestigatorId
+  | {- | Narration only: an effect asked for a card in hand with a given dreaming
+    value and the hand held none at that value. Nothing in the engine reads it.
+
+    Pushed where the refusal happens because nothing downstream can work it out:
+    the value is named by a cost that is already paid -- Dalkura spends 1-5
+    resources and only then reads the hand -- so the ability cannot gate on it,
+    and an empty choice is skipped without pushing anything at all (#6017).
+    -}
+    NoCardInHandWithDreaming InvestigatorId Int
   | -- Commit
     Do Message
   | DoBatch BatchId Message
@@ -2321,6 +2374,7 @@ mconcat
                       { option = Label a b
                       , kind = OriginalOptionKind
                       , criteria = Nothing
+                      , whenUnmet = Nothing
                       }
             "SkillTestResultOptions" -> do
               econtents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
@@ -2332,6 +2386,7 @@ mconcat
                       { option = a
                       , kind = OriginalOptionKind
                       , criteria = Nothing
+                      , whenUnmet = Nothing
                       }
             "LoseAll" -> do
               (iid, source, tkn) <- o .: "contents"
@@ -2702,6 +2757,30 @@ mconcat
               pure $ case contents of
                 Right (a, b, c, d, s) -> FindEncounterCard a b c d s
                 Left (a, b, c, d) -> FindEncounterCard a b c d LeadChooses
+            -- The four placement messages below gained a trailing investigator
+            -- when the explorer started being credited for the placement they
+            -- cause (#6013). A queue persisted before that has the shorter
+            -- shape, and decodes to the group placement it used to be.
+            "PlaceLocation" -> do
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              pure $ case contents of
+                Right (a, b, miid) -> PlaceLocation a b miid
+                Left (a, b) -> PlaceLocation a b Nothing
+            "PlaceLocationWith" -> do
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              pure $ case contents of
+                Right (a, b, c, miid) -> PlaceLocationWith a b c miid
+                Left (a, b, c) -> PlaceLocationWith a b c Nothing
+            "PlacedLocation" -> do
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              pure $ case contents of
+                Right (a, b, c, miid) -> PlacedLocation a b c miid
+                Left (a, b, c) -> PlacedLocation a b c Nothing
+            "ReplaceLocation" -> do
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              pure $ case contents of
+                Right (a, b, c, miid) -> ReplaceLocation a b c miid
+                Left (a, b, c) -> ReplaceLocation a b c Nothing
             -- Renamed from LoseStandardActions: "standard action" is the base
             -- three in the core rules, not what this message counts.
             "LoseStandardActions" -> do

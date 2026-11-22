@@ -20,6 +20,7 @@ export const TOKENS = [
   "Discovery",
   "Doom",
   "Dose",
+  "Dream",
   "Durability",
   "Eclipse",
   "Empowerment",
@@ -111,9 +112,15 @@ export const TokenType = Object.fromEntries(TOKENS.map((t) => [t, t])) as {
 };
 export type Tokens = Partial<Record<Token, number>>;
 export function isUse(t: Token): boolean {
-  return t !== 'Damage' && t !== 'Horror' && t !== 'Clue' && t !== 'Doom';
+  /* `Dream` is excluded to match the engine's `tokenIsUse` (Token.hs): a dream is
+   * the dreaming keyword's countdown, not a supply the card spends. */
+  return t !== 'Damage' && t !== 'Horror' && t !== 'Clue' && t !== 'Doom' && t !== 'Dream';
 }
-const tokenPairsDecoder =
+/* `Map Token Int` encodes as a list of pairs -- `Token`'s `ToJSONKey` comes from
+ * `deriving anyclass`, so there is no text key form. Exported because a zone
+ * that decodes its own tokens must read them through this: resolving them off a
+ * `Card` instead silently yields none (`cardContentsDecoder` hardcodes `{}`). */
+export const tokenPairsDecoder =
   JsonDecoder.array<[Token, number]>(
     JsonDecoder.tuple([tokenDecoder, JsonDecoder.number()], 'Token[]'),
     'Token[]'

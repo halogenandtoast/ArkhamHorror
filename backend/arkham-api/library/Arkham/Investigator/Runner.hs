@@ -1656,10 +1656,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   DoStep 1 (DiscoverClues iid d) | iid == investigatorId && not investigatorEliminated -> do
     mods <- getModifiers iid
     dmods <- getModifiers $ DiscoverTarget d.id
-    let additionalDiscoveredAt = Map.fromListWith (<>) [(olid, Sum x) | DiscoveredCluesAt olid x <- mods]
+    -- Only the investigate action's own discovery takes the test's clue bonuses.
+    -- A discovery that merely happens as a result of one -- Trish Scarborough's
+    -- reaction, Rex Murphy's -- would otherwise be paid the same bonus a second
+    -- time (#6043). 'dmods' is exempt: it names this one discover id, so it
+    -- cannot reach a later discovery.
+    let takesBonus = takesInvestigateClueBonus d.isInvestigate
+    let additionalDiscoveredAt =
+          Map.fromListWith (<>) [(olid, Sum x) | takesBonus, DiscoveredCluesAt olid x <- mods]
     let additionalDiscovered =
           getSum
-            ( fold $ [Sum x | d.isInvestigate == IsInvestigate, DiscoveredClues x <- mods]
+            ( fold $ [Sum x | takesBonus, DiscoveredClues x <- mods]
                 <> [Sum x | DiscoveredClues x <- dmods]
             )
 
@@ -1754,7 +1761,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         -- The investigation one is offered up front at ST.7 (see 'withExposeInsteadOfInvestigating'
         -- in "Arkham.Helpers.Discover"), so offering it again here would prompt twice for the same
         -- investigation. (#5387)
-        let exposeHere = d.isInvestigate == NotInvestigate
+        let exposeHere = not (countsAsInvestigate d.isInvestigate)
         if
           | notNull concealed && exposeHere && clueCount > 0 ->
               Choose.chooseOneM iid do

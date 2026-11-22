@@ -36,7 +36,7 @@ instance RunMessage TheKeyReliquarySanctum where
   runMessage msg (TheKeyReliquarySanctum attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       pure $ TheKeyReliquarySanctum $ attrs & setMeta True
-    Msg.DiscoverClues iid d | d.location == DiscoverAtLocation attrs.id && d.isInvestigate == IsInvestigate -> do
+    Msg.DiscoverClues iid d | d.location == DiscoverAtLocation attrs.id && countsAsInvestigate d.isInvestigate -> do
       if getLocationMetaDefault False attrs
         then do
           ks <-

@@ -47,12 +47,15 @@ instance RunMessage TrishScarborough where
     UseCardAbility iid (isSource attrs -> True) 1 (discoveredLocation -> lid) _ -> do
       let source = attrs.ability 1
       let evadeMatcher = if tabooed TabooList21 attrs then NonEliteEnemy else AnyEnemy
-      ok <- getCanDiscoverClues IsInvestigate iid lid
+      ok <- getCanDiscoverClues AsResultOfInvestigate iid lid
       enemies <- select $ enemyAt lid <> evadeMatcher <> EnemyCanBeEvadedBy source
       concealed <- getConcealedIds (ForExpose $ toSource iid) iid
       chooseOrRunOneM iid do
         when ok do
-          withI18n $ countVar 1 $ labeled "discoverAdditionalClues" $ discoverAt IsInvestigate iid source 1 lid
+          withI18n
+            $ countVar 1
+            $ labeled "discoverAdditionalClues"
+            $ discoverAt AsResultOfInvestigate iid source 1 lid
         when (notNull enemies || notNull concealed) do
           labeledI "automaticallyEvadeThatEnemy" do
             chooseAutomaticallyEvadeAt iid iid (LocationWithId lid) evadeMatcher

@@ -39,9 +39,12 @@ instance RunMessage KeziahsRoom where
   runMessage msg l@(KeziahsRoom (attrs `With` meta)) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       pure $ KeziahsRoom $ attrs `with` Metadata True
-    Msg.DiscoverClues iid d | revealTopCard meta && d.location == DiscoverAtLocation attrs.id && d.isInvestigate == IsInvestigate -> do
-      push $ DrawCards iid $ targetCardDraw attrs UnknownPlacesDeck 1
-      pure $ KeziahsRoom $ attrs `with` Metadata False
+    Msg.DiscoverClues iid d
+      | revealTopCard meta
+      , d.location == DiscoverAtLocation attrs.id
+      , countsAsInvestigate d.isInvestigate -> do
+          push $ DrawCards iid $ targetCardDraw attrs UnknownPlacesDeck 1
+          pure $ KeziahsRoom $ attrs `with` Metadata False
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
       for_ drewCards.cards \card -> do
         lid <- placeLabeledLocation "unknownPlaces" card

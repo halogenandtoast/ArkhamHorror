@@ -885,16 +885,15 @@ runDiscover env spec = do
     source = stepSource env
     isInvestigate =
       if KeyMap.lookup "via" o == Just (String "investigate") then IsInvestigate else NotInvestigate
-    action = guard (isInvestigate == IsInvestigate) $> #investigate
   when (n > 0) $ case KeyMap.lookup "location" o >>= decodeWith env of
     Nothing -> do
       discovery <- discoverAtYourLocation source n
-      push $ Msg.DiscoverClues iid discovery {discoverAction = action}
+      push $ Msg.DiscoverClues iid discovery {discoverVia = isInvestigate}
     Just lid -> whenM (getCanDiscoverClues isInvestigate iid lid) do
       did <- getRandom
       push
         $ Msg.DiscoverClues iid
-        $ (discoverPure did (lid :: LocationId) source n) {discoverAction = action}
+        $ (discoverPure did (lid :: LocationId) source n) {discoverVia = isInvestigate}
 
 {- | Put copies of named cards into the set-aside zone, owned by an investigator.
 

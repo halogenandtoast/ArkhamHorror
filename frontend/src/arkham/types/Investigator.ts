@@ -9,6 +9,7 @@ import { LogRef, logRefDecoder } from '@/arkham/types/GameLog';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import { Seal, sealDecoder } from '@/arkham/types/Seal';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
+import { DreamingCard, dreamingCardsDecoder } from '@/arkham/types/DreamingCard';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';
 import { TabooList, tabooListDecoder } from '@/arkham/types/TabooList';
 import type { OptionValue } from '@/arkham/types/CardDef';
@@ -212,6 +213,13 @@ export type Investigator = {
   meta: any;
   settings: CardSettings;
   handSize?: number | null;
+  /* The dream zone, in the engine's order: append-only, removed by `CardId`,
+   * never re-sorted. Do not sort it here either -- the order is the contract. */
+  dreamingCards: DreamingCard[];
+  /* The resolved cap, granted by the engine the way `handSize` is. Not derived
+   * from modifiers: the UI never recomputes it. May be exceeded (a cap-raising
+   * asset leaving play), so render, do not clip. */
+  dreamingCardLimit?: number | null;
 }
 
 type SlotType = 'HeadSlot' | 'HandSlot' | 'BodySlot' | 'AccessorySlot' | 'ArcaneSlot' | 'TarotSlot' | 'AllySlot'
@@ -343,6 +351,8 @@ export const investigatorDecoder = JsonDecoder.object({
   meta: JsonDecoder.succeed(),
   settings: cardSettingsDecoder,
   handSize: v2Optional(JsonDecoder.number()),
+  dreamingCards: dreamingCardsDecoder,
+  dreamingCardLimit: v2Optional(JsonDecoder.number()),
 }, 'Investigator').map(({search, placement, usedAbilities, ...rest}) => ({
   foundCards: search,
   usedAbilityCardCodes: usedAbilities,

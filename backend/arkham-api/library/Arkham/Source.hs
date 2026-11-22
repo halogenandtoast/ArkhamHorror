@@ -82,6 +82,7 @@ data Source
   | BatchSource BatchId
   | ScarletKeySource ScarletKeyId
   | ConcealedCardSource ConcealedCardId
+  | DreamingCardSource CardId
   deriving stock (Show, Eq, Ord, Data, Generic)
 instance HasField "asset" Source (Maybe AssetId) where
   getField = \case

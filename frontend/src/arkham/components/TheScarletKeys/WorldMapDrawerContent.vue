@@ -18,13 +18,16 @@ interface MapData {
   available: MapLocationId[]
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   selectedLocation: MapLocationId
   locationData: Record<MapLocationId, LocationData>
   mapData: MapData
   embark: boolean
   isFinale: boolean
-}>()
+  /* A player the engine is not asking still gets the map, so they can follow
+   * the destination the table is debating. They may read it, not answer it. */
+  viewOnly?: boolean
+}>(), { viewOnly: false })
 
 const emit = defineEmits<{
   close: []
@@ -70,7 +73,7 @@ const dossierKey = computed<string | null>(() => {
   <div class="drawer-content">
     <template v-if="selectedLocation === mapData.current">
       <p v-if="!isFinale">{{ t('scarletKeys.youAreCurrentlyHere') }}</p>
-      <button v-else class="action" @click="emit('travelTo')">{{ t('scarletKeys.travelHere') }}</button>
+      <button v-else-if="!viewOnly" class="action" @click="emit('travelTo')">{{ t('scarletKeys.travelHere') }}</button>
     </template>
     <template v-else-if="embark">
       <p><strong>{{ t('scarletKeys.travelTime') }}:</strong> {{ locationData[selectedLocation].travel }}</p>
@@ -79,17 +82,19 @@ const dossierKey = computed<string | null>(() => {
         <p>{{ t('scarletKeys.sideStoryDescription') }}</p>
       </div>
       <template v-if="locationData[selectedLocation].unlocked">
-        <button class="action" @click="emit('travelTo')">{{ t('scarletKeys.travelHere') }}</button>
-        <button
-          v-if="mapData.hasTicket && (locationData[selectedLocation].travel ?? 0) > 1"
-          class="action"
-          @click="emit('travelWithTicket')"
-        >{{ t('scarletKeys.travelWithExpeditedTicket') }}</button>
-        <button class="action secondary" @click="emit('travelVia')">{{ t('scarletKeys.travelWithoutStopping') }}</button>
+        <template v-if="!viewOnly">
+          <button class="action" @click="emit('travelTo')">{{ t('scarletKeys.travelHere') }}</button>
+          <button
+            v-if="mapData.hasTicket && (locationData[selectedLocation].travel ?? 0) > 1"
+            class="action"
+            @click="emit('travelWithTicket')"
+          >{{ t('scarletKeys.travelWithExpeditedTicket') }}</button>
+          <button class="action secondary" @click="emit('travelVia')">{{ t('scarletKeys.travelWithoutStopping') }}</button>
+        </template>
       </template>
       <template v-else>
         <p class="action locked">{{ t('scarletKeys.locationLocked') }}</p>
-        <button class="action secondary" @click="emit('travelVia')">{{ t('scarletKeys.travelWithoutStopping') }}</button>
+        <button v-if="!viewOnly" class="action secondary" @click="emit('travelVia')">{{ t('scarletKeys.travelWithoutStopping') }}</button>
       </template>
     </template>
 

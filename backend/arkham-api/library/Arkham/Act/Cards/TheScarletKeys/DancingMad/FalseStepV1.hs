@@ -10,6 +10,7 @@ import Arkham.Enemy.CardDefs.TheScarletKeys.DancingMad qualified as Enemies
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.Window
 import Arkham.Matcher
+import Arkham.Message (resolve)
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (Coterie))
 import Arkham.Window qualified as Window
@@ -38,20 +39,32 @@ instance RunMessage FalseStepV1 where
       -- Desiderio is set aside out of play "instead" of leaving play normally, so
       -- a Body Snatched hollow that triggered this window must not tag him as a
       -- hollow: drop the queued Hollow/"hollowed" modifier effects and the
-      -- "hollowed" campaign-event window before setting him aside plainly.
+      -- "hollowed" campaign-event window before setting him aside plainly. The
+      -- hollow's own set aside goes with them, since this ability does that part
+      -- itself and two of them would stack a second copy in the pile.
       let isHollowedWindow = \case
             (Window.windowType -> Window.CampaignEvent "hollowed" _ _) -> True
             _ -> False
       allMatchingDon't \case
         CreateWindowModifierEffect (EffectHollowWindow cid) _ _ _ -> cid == card.id
+        SetAsideCards cards -> card `elem` cards
         CheckWindows ws' -> any isHollowedWindow ws'
         Do (CheckWindows ws') -> any isHollowedWindow ws'
         _ -> False
+      -- The cancelled batch took the asset's 'RemovedFromPlay' with it, so without
+      -- this Desiderio sits in the play area and in the set aside pile at once
+      -- (#6041). Quietly: the leave-play windows have already been raised by
+      -- whatever was removing him, and a second 'RemoveFromPlay' would retrigger
+      -- this very ability.
+      pushAll $ RemovedFromPlay (toSource aid) : resolve (RemoveAsset aid)
       setCardAside card
       eachInvestigator \iid -> assignHorror iid (attrs.ability 2) 1
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      selectEach (assetIs Assets.desiderioDelgadoAlvarez) (fetchCard >=> setCardAside)
+      selectEach (assetIs Assets.desiderioDelgadoAlvarez) \aid -> do
+        card <- fetchCard aid
+        removeFromGame aid
+        setCardAside card
       desi <- fetchCard Enemies.desiderioDelgadoAlvarez106
       lead <- getLead
       drawCard lead desi

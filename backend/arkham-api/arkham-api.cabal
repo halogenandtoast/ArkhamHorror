@@ -1189,6 +1189,7 @@ library
       Arkham.Asset.Assets.Blackjack2
       Arkham.Asset.Assets.BlackmailFile
       Arkham.Asset.Assets.BladeOfArkat
+      Arkham.Asset.Assets.BladeOfTheSkySea3
       Arkham.Asset.Assets.BladeOfYothTheFathersIre
       Arkham.Asset.Assets.BlasphemousCovenant2
       Arkham.Asset.Assets.BlessedBlade
@@ -1305,6 +1306,7 @@ library
       Arkham.Asset.Assets.DaisysToteBag
       Arkham.Asset.Assets.DaisysToteBagAdvanced
       Arkham.Asset.Assets.DakotaGarofaloOnTheHunt3
+      Arkham.Asset.Assets.Dalkura
       Arkham.Asset.Assets.DamningTestimony
       Arkham.Asset.Assets.DanforthBrilliantStudent
       Arkham.Asset.Assets.DanforthBrilliantStudentResolute
@@ -1434,6 +1436,7 @@ library
       Arkham.Asset.Assets.EnchantedBladeMystic3
       Arkham.Asset.Assets.EnchantedBow2
       Arkham.Asset.Assets.EnchantedSkull
+      Arkham.Asset.Assets.EnchantingFife
       Arkham.Asset.Assets.Encyclopedia
       Arkham.Asset.Assets.Encyclopedia2
       Arkham.Asset.Assets.Endurance
@@ -1451,6 +1454,7 @@ library
       Arkham.Asset.Assets.ExpeditionGearToughButReliable
       Arkham.Asset.Assets.ExpeditionJournal
       Arkham.Asset.Assets.ExperimentalPsychology
+      Arkham.Asset.Assets.ExplorersSextant
       Arkham.Asset.Assets.ExtraRations1
       Arkham.Asset.Assets.ExtravagantRing
       Arkham.Asset.Assets.EyeOfChaos
@@ -1545,6 +1549,7 @@ library
       Arkham.Asset.Assets.GreteWagner3
       Arkham.Asset.Assets.GrimMemoir
       Arkham.Asset.Assets.GrimmsFairyTales
+      Arkham.Asset.Assets.GrimoireOfAges
       Arkham.Asset.Assets.GrislyMaskIsItActuallyAlive
       Arkham.Asset.Assets.GrislyTotem
       Arkham.Asset.Assets.GrislyTotemSeeker3
@@ -1610,6 +1615,7 @@ library
       Arkham.Asset.Assets.IcePick1
       Arkham.Asset.Assets.IcePick3
       Arkham.Asset.Assets.IchtacaTheForgottenGuardian
+      Arkham.Asset.Assets.IdolOfBokrug5
       Arkham.Asset.Assets.IdolOfXanatosWatcherBeyondTime
       Arkham.Asset.Assets.IkiaqTheCouncilsChosen3
       Arkham.Asset.Assets.ImprovisedShield
@@ -1670,7 +1676,9 @@ library
       Arkham.Asset.Assets.KhopeshOfTheAbyss
       Arkham.Asset.Assets.Kleptomania
       Arkham.Asset.Assets.Knife
+      Arkham.Asset.Assets.KnightOfCelephais
       Arkham.Asset.Assets.KnightOfSwords3
+      Arkham.Asset.Assets.KnightsLongsword
       Arkham.Asset.Assets.Knuckleduster
       Arkham.Asset.Assets.Kukri
       Arkham.Asset.Assets.LabCoat1
@@ -1679,6 +1687,7 @@ library
       Arkham.Asset.Assets.LadyEsprit
       Arkham.Asset.Assets.Lantern
       Arkham.Asset.Assets.Lantern2
+      Arkham.Asset.Assets.LashOfUlthar2
       Arkham.Asset.Assets.LaudanumDesperateMeasures
       Arkham.Asset.Assets.LawrenceCarlisleSculptingHisDreams
       Arkham.Asset.Assets.LeahAtwoodTheValeCook
@@ -1720,6 +1729,9 @@ library
       Arkham.Asset.Assets.LuckyDice3
       Arkham.Asset.Assets.LuckyPennyOmenOfMisfortune2
       Arkham.Asset.Assets.LugerP08
+      Arkham.Asset.Assets.LukeRobinson
+      Arkham.Asset.Assets.LunarCharts
+      Arkham.Asset.Assets.LunarSight3
       Arkham.Asset.Assets.Lupara3
       Arkham.Asset.Assets.M1903Hammerless
       Arkham.Asset.Assets.M1911
@@ -1922,6 +1934,7 @@ library
       Arkham.Asset.Assets.RavenousMyconidUnidentified
       Arkham.Asset.Assets.RavenousUncontrolledHunger
       Arkham.Asset.Assets.RaymondLoggins
+      Arkham.Asset.Assets.RealityFracture3
       Arkham.Asset.Assets.RecallTheFuture2
       Arkham.Asset.Assets.Relentless
       Arkham.Asset.Assets.RelicHunter3
@@ -2020,6 +2033,7 @@ library
       Arkham.Asset.Assets.Shrivelling5
       Arkham.Asset.Assets.ShroudOfShadows
       Arkham.Asset.Assets.ShroudOfShadows4
+      Arkham.Asset.Assets.SigilOfThalarion2
       Arkham.Asset.Assets.SignMagick
       Arkham.Asset.Assets.SignMagick3
       Arkham.Asset.Assets.SignOfXelotaphSymbolOfProtection
@@ -2042,6 +2056,7 @@ library
       Arkham.Asset.Assets.SmokingPipe
       Arkham.Asset.Assets.SolemnVow
       Arkham.Asset.Assets.SomethingWorthFightingFor
+      Arkham.Asset.Assets.SomniumShotcaster4
       Arkham.Asset.Assets.SongOfTheDead2
       Arkham.Asset.Assets.SophieInLovingMemory
       Arkham.Asset.Assets.SophieItWasAllMyFault
@@ -2061,6 +2076,7 @@ library
       Arkham.Asset.Assets.SpiritualResolve5
       Arkham.Asset.Assets.SplitTheAngleIreOfTheVoid
       Arkham.Asset.Assets.SpringfieldM19034
+      Arkham.Asset.Assets.StaffOfAtal3
       Arkham.Asset.Assets.StaffOfTheSerpentRelicOfThePast
       Arkham.Asset.Assets.SteadyHanded1
       Arkham.Asset.Assets.Stealth
@@ -2271,6 +2287,7 @@ library
       Arkham.Asset.Cards.MiguelDeLaCruz
       Arkham.Asset.Cards.NightOfTheZealot
       Arkham.Asset.Cards.Parallel
+      Arkham.Asset.Cards.PowerOfTheDreamlands
       Arkham.Asset.Cards.Promo
       Arkham.Asset.Cards.RedTideRising
       Arkham.Asset.Cards.RelicsOfThePast
@@ -2533,6 +2550,7 @@ library
       Arkham.Discover
       Arkham.Distance
       Arkham.Draw.Types
+      Arkham.DreamingCard
       Arkham.Duration
       Arkham.Effect
       Arkham.Effect.Builder
@@ -3549,6 +3567,7 @@ library
       Arkham.Event.Cards.MiguelDeLaCruz
       Arkham.Event.Cards.NightOfTheZealot
       Arkham.Event.Cards.Parallel
+      Arkham.Event.Cards.PowerOfTheDreamlands
       Arkham.Event.Cards.Promo
       Arkham.Event.Cards.ReturnTo
       Arkham.Event.Cards.Standalone
@@ -3615,6 +3634,7 @@ library
       Arkham.Event.Events.BloodRite
       Arkham.Event.Events.BloodWard2
       Arkham.Event.Events.BloodWillHaveBlood2
+      Arkham.Event.Events.BoardingParty5
       Arkham.Event.Events.Bolas
       Arkham.Event.Events.Bounty
       Arkham.Event.Events.BreachTheDoor
@@ -3627,6 +3647,7 @@ library
       Arkham.Event.Events.ButterflyEffect1
       Arkham.Event.Events.CallForBackup2
       Arkham.Event.Events.CallingInFavors
+      Arkham.Event.Events.CallOfTheDreamlands
       Arkham.Event.Events.CallTheBeyond2
       Arkham.Event.Events.CaptivatingDiscovery
       Arkham.Event.Events.Catch
@@ -3649,6 +3670,7 @@ library
       Arkham.Event.Events.Contraband2
       Arkham.Event.Events.ControlVariable
       Arkham.Event.Events.CorrelateAllItsContents
+      Arkham.Event.Events.CorsairsCache
       Arkham.Event.Events.CosmicRevelation1
       Arkham.Event.Events.Counterattack1
       Arkham.Event.Events.Counterespionage1
@@ -3691,8 +3713,11 @@ library
       Arkham.Event.Events.Dodge
       Arkham.Event.Events.Dodge2
       Arkham.Event.Events.Doppelganger1
+      Arkham.Event.Events.DoubleTeam
       Arkham.Event.Events.DrainEssence
       Arkham.Event.Events.DrawnToTheFlame
+      Arkham.Event.Events.DreamQuest
+      Arkham.Event.Events.DreamsOfPeace
       Arkham.Event.Events.DumbLuck
       Arkham.Event.Events.DumbLuck2
       Arkham.Event.Events.DyersSketches
@@ -3834,6 +3859,7 @@ library
       Arkham.Event.Events.LetMeHandleThis
       Arkham.Event.Events.LieInWait
       Arkham.Event.Events.Lifeline1
+      Arkham.Event.Events.LightOfIlarnek3
       Arkham.Event.Events.LiveAndLearn
       Arkham.Event.Events.LodgeDebts
       Arkham.Event.Events.LogicalReasoning
@@ -3879,10 +3905,12 @@ library
       Arkham.Event.Events.NoStoneUnturned
       Arkham.Event.Events.NoStoneUnturned5
       Arkham.Event.Events.NothingLeftToLose3
+      Arkham.Event.Events.Oathsworn3
       Arkham.Event.Events.ObscureStudies
       Arkham.Event.Events.OccultEvidence
       Arkham.Event.Events.OccultInvocation
       Arkham.Event.Events.OneInTheChamber
+      Arkham.Event.Events.OneiricInsight
       Arkham.Event.Events.OneTwoPunch
       Arkham.Event.Events.OneTwoPunch5
       Arkham.Event.Events.OnTheBeat1
@@ -4056,6 +4084,7 @@ library
       Arkham.Event.Events.Vamp
       Arkham.Event.Events.Vamp3
       Arkham.Event.Events.VantagePoint
+      Arkham.Event.Events.VeilOfThalarion
       Arkham.Event.Events.VirescentRot
       Arkham.Event.Events.VoiceOfRa
       Arkham.Event.Events.WardOfProtection
@@ -4135,6 +4164,8 @@ library
       Arkham.Helpers.Defeat
       Arkham.Helpers.Discover
       Arkham.Helpers.Doom
+      Arkham.Helpers.Dreaming
+      Arkham.Helpers.Dreaming.Lifted
       Arkham.Helpers.Effect
       Arkham.Helpers.EncounterCard
       Arkham.Helpers.EncounterSet
@@ -7570,6 +7601,7 @@ library
       Arkham.Matcher.ChaosToken
       Arkham.Matcher.Counter
       Arkham.Matcher.Damage
+      Arkham.Matcher.DreamingCard
       Arkham.Matcher.Effect
       Arkham.Matcher.Enemy
       Arkham.Matcher.Event
@@ -7957,6 +7989,7 @@ library
       Arkham.Skill.CardDefs.EdgeOfTheEarth
       Arkham.Skill.CardDefs.Import
       Arkham.Skill.CardDefs.NightOfTheZealot
+      Arkham.Skill.CardDefs.PowerOfTheDreamlands
       Arkham.Skill.CardDefs.Promo
       Arkham.Skill.CardDefs.ReturnTo
       Arkham.Skill.CardDefs.Standalone
@@ -8007,6 +8040,7 @@ library
       Arkham.Skill.Cards.DoOrDie
       Arkham.Skill.Cards.DoubleDown2
       Arkham.Skill.Cards.DoubleOrNothing
+      Arkham.Skill.Cards.DreamMastery
       Arkham.Skill.Cards.DreamParasite
       Arkham.Skill.Cards.DreamsOfTheClay1
       Arkham.Skill.Cards.DreamsOfTheDeepTheDeepGate
@@ -9767,6 +9801,7 @@ test-suite spec
       Arkham.Act.Cards.TheBlobThatAteEverything.ExposeTheAnomalyEpicMultiplayerSpec
       Arkham.Act.Cards.TheForgottenAge.HeartOfTheElders.AFamiliarPatternSpec
       Arkham.Act.Cards.TheForgottenAge.TheDepthsOfYoth.JourneyToTheNexusSpec
+      Arkham.Act.Cards.TheScarletKeys.DancingMad.FalseStepV1Spec
       Arkham.Act.Cards.TheScarletKeys.DancingMad.FalseStepV2Spec
       Arkham.ActionSpec
       Arkham.Agenda.Cards.MurderAtTheExcelsiorHotel.TheTrueCulpritV10Spec
@@ -9912,6 +9947,7 @@ test-suite spec
       Arkham.Campaign.TheDunwichLegacy.ScenariosSpec
       Arkham.Campaign.ThePathToCarcosa.ScenariosSpec
       Arkham.Campaign.TheScarletKeys.ConcealedSpec
+      Arkham.Campaign.TheScarletKeys.HollowSpec
       Arkham.Campaign.UsedAbilitiesSpec
       Arkham.CampaignLogKeySpec
       Arkham.Card.CardCodeSpec
@@ -10056,6 +10092,7 @@ test-suite spec
       Arkham.Investigator.Cards.MarieLambeau2Spec
       Arkham.Investigator.Cards.MarionTavaresSpec
       Arkham.Investigator.Cards.PatriceHathawaySpec
+      Arkham.Investigator.Cards.RexMurphyParallelSpec
       Arkham.Investigator.Cards.RexMurphySpec
       Arkham.Investigator.Cards.RolandBanksSpec
       Arkham.Investigator.Cards.SkidsOTooleSpec
@@ -10069,6 +10106,8 @@ test-suite spec
       Arkham.Location.Cards.DreamGatePointlessRealitySpec
       Arkham.Location.Cards.DreamGateWondrousJourneySpec
       Arkham.Location.Cards.TheDreamEaters.BeyondTheGatesOfSleep.EnchantedWoodsVillageOfZoogsSpec
+      Arkham.Location.Cards.TheDunwichLegacy.WhereDoomAwaits.FrozenSpringSpec
+      Arkham.Location.Cards.TheForgottenAge.Rainforest.OvergrownRuinsSpec
       Arkham.Location.Cards.TheInnsmouthConspiracy.FloodedCaverns.UndergroundRiverSpec
       Arkham.Location.Cards.TheScarletKeys.CongressOfTheKeys.CongressChamberLairSpec
       Arkham.Location.TypesSpec

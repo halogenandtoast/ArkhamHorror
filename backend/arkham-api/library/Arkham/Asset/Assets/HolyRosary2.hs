@@ -35,7 +35,6 @@ instance HasAbilities HolyRosary2 where
 instance RunMessage HolyRosary2 where
   runMessage msg a@(HolyRosary2 attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      n <- min 2 <$> getRemainingBlessTokens
-      pushAll $ replicate n (AddChaosToken BlessToken)
+      addChaosTokens 2 BlessToken
       pure a
     _ -> HolyRosary2 <$> runMessage msg attrs

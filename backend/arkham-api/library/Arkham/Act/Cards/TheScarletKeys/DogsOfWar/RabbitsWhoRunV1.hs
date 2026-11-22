@@ -3,8 +3,10 @@ module Arkham.Act.Cards.TheScarletKeys.DogsOfWar.RabbitsWhoRunV1 (rabbitsWhoRunV
 import Arkham.Act.CardDefs.TheScarletKeys.DogsOfWar qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Attack (enemyAttack)
+import Arkham.GameEnv (getEnemyPhaseStep)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
+import Arkham.Phase (EnemyPhaseStep (ResolveAttacksStep))
 import Arkham.Scenarios.TheScarletKeys.DogsOfWar.Helpers
 
 newtype RabbitsWhoRunV1 = RabbitsWhoRunV1 ActAttrs
@@ -27,13 +29,15 @@ instance RunMessage RabbitsWhoRunV1 where
       push R1
       pure a
     ScenarioSpecific "enemyAttacked" v -> do
-      let enemy :: EnemyId = toResult v
-      -- "each ready enemy attacks each Key Locus at its location as if it were
-      -- an engaged investigator." Model this as a real attack so attack-reaction
-      -- cards (Dodge etc.) can interact with it; PerformEnemyAttack folds the
-      -- enemy's horror into the asset damage.
-      selectOne (locationWithEnemy enemy) >>= traverse_ \lid ->
-        selectEach (assetAt lid <> AssetWithModifier IsKeyLocus) \locus ->
-          push $ InitiateEnemyAttack $ enemyAttack enemy enemy locus
+      -- Only the "enemies attack" step, #6030. ScenarioSpecific "enemyAttacked"
+      -- is emitted for every attack, retaliate and alert included.
+      step <- getEnemyPhaseStep
+      when (step == Just ResolveAttacksStep) do
+        let enemy :: EnemyId = toResult v
+        -- A real attack, so Dodge etc. can cancel it; PerformEnemyAttack folds
+        -- the enemy's horror into the asset damage.
+        selectOne (locationWithEnemy enemy) >>= traverse_ \lid ->
+          selectEach (assetAt lid <> AssetWithModifier IsKeyLocus) \locus ->
+            push $ InitiateEnemyAttack $ enemyAttack enemy enemy locus
       pure a
     _ -> RabbitsWhoRunV1 <$> liftRunMessage msg attrs

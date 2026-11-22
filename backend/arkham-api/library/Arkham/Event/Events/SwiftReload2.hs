@@ -19,7 +19,7 @@ swiftReload2 = event SwiftReload2 Cards.swiftReload2
 instance RunMessage SwiftReload2 where
   runMessage msg e@(SwiftReload2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      firearms <- select $ assetControlledBy iid <> #firearm <> AssetNotAtUsesX
+      firearms <- select $ assetControlledBy iid <> #firearm <> AssetWithUseType Ammo <> AssetNotAtUsesX
       chooseTargetM iid firearms $ handleTarget iid attrs
       pure e
     HandleTargetChoice _ (isSource attrs -> True) (AssetTarget aid) -> do

@@ -308,6 +308,7 @@ returnFromShatteredSelf = flip handleInvestigator \(ShatteredSelf (attrs `With` 
         , investigatorDrivenInsane = investigatorDrivenInsane a
         , investigatorDeck = investigatorDeck attrs
         , investigatorHand = investigatorHand attrs
+        , investigatorDreamingCards = investigatorDreamingCards attrs
         , investigatorDiscard = investigatorDiscard attrs
         , investigatorSlots = investigatorSlots attrs
         , investigatorRemainingActions = investigatorRemainingActions attrs

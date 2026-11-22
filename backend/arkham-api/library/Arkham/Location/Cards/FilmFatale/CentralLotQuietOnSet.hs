@@ -32,6 +32,6 @@ instance RunMessage CentralLotQuietOnSet where
           pure $ CentralLotQuietOnSet $ attrs & cardsUnderneathL .~ xs
     Flip _ _ (isTarget attrs -> True) -> do
       let blurred = lookupCard Cards.centralLotBlurred attrs.cardId
-      push $ ReplaceLocation attrs.id blurred Swap
+      push $ ReplaceLocation attrs.id blurred Swap Nothing
       pure l
     _ -> CentralLotQuietOnSet <$> liftRunMessage msg attrs

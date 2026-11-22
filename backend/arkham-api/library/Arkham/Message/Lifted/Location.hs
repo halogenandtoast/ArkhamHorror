@@ -172,6 +172,13 @@ placeLocation card = do
   push placement
   pure lid
 
+-- | 'placeLocation', crediting @iid@ with having put the location into play.
+placeLocationBy :: (ReverseQueue m, FetchCard card) => InvestigatorId -> card -> m LocationId
+placeLocationBy iid card = do
+  (lid, placement) <- Msg.placeLocationBy iid =<< fetchCard card
+  push placement
+  pure lid
+
 placeLocation_ :: (ReverseQueue m, FetchCard card) => card -> m ()
 placeLocation_ = fetchCard >=> Msg.placeLocation_ >=> push
 

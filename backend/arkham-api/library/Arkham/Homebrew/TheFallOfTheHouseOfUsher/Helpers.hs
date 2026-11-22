@@ -93,7 +93,7 @@ noMadTristHasEnteredPlay =
 flipToRuined :: ReverseQueue m => LocationAttrs -> m ()
 flipToRuined attrs =
   for_ (toCardDef attrs).otherSide \other ->
-    push $ ReplaceLocation attrs.id (lookupCard other attrs.cardId) Swap
+    push $ ReplaceLocation attrs.id (lookupCard other attrs.cardId) Swap Nothing
 
 {- | The Private Library remembers this once for the whole group (it prints a
 group limit), and both Ruined Mad Trist locations read it back.

@@ -195,6 +195,10 @@ placeConcealedCard iid c placement = push $ Msg.PlaceConcealedCard iid c placeme
 
 hollow :: ReverseQueue m => InvestigatorId -> Card -> m ()
 hollow iid card = do
+  -- "Set it aside in the hollow" has to take the card out of play, and
+  -- 'setCardAside' only pulls an enemy: an in-play asset stayed in the play area
+  -- while its card also landed in the hollow pile (#6041).
+  selectEach (AssetWithCardId card.id) removeFromGame
   setCardAside card
   createWindowModifierEffect_ (EffectHollowWindow card.id) ScenarioSource iid [Hollow card.id]
   createWindowModifierEffect_

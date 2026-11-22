@@ -25,6 +25,7 @@ import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.ChaosToken (matchChaosToken)
 import {-# SOURCE #-} Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Customization
+import Arkham.Helpers.Dreaming (canCreateDreamingCard)
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Investigator ()
 import Arkham.Helpers.Investigator qualified as Investigator (
@@ -549,6 +550,20 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         n <- getPlayerCountValue gv
         placeable <- getPlaceableClueCount iid
         pure $ placeable >= n
+      -- A hard cap, like a slot limit: at the cap the dreaming card is unplayable.
+      DreamCost _ -> canCreateDreamingCard iid
+      -- Dreams come from the token pool, which has no supply, so the only way
+      -- this is unpayable is having nowhere to put them.
+      PlaceDreamCost _ ->
+        selectAny $ Matcher.DreamingCardControlledBy (Matcher.InvestigatorWithId iid)
+      -- The same hard cap as 'DreamCost', plus the asset actually being able to
+      -- leave play: a forced flip at the cap does nothing, so it must not be
+      -- offered as something to pay.
+      FlipAssetFacedownCost assetMatcher _ ->
+        andM
+          [ canCreateDreamingCard iid
+          , selectAny $ Matcher.AssetCanLeavePlayByNormalMeans <> assetMatcher
+          ]
       GroupPlaceClueOnLocationCost gv locationMatcher -> do
         n <- getPlayerCountValue gv
         let lm = Matcher.replaceYouMatcher iid locationMatcher

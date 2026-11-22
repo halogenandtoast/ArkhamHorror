@@ -191,7 +191,6 @@ const isBuildSpiritDeckQuestion = (q: Question): q is Question & { tag: Question
     <div v-if="viewOnly" class="waiting-banner">
       {{ t('waitingForPlayer', { name: viewerInvestigatorName }) }}
     </div>
-    <template v-else>
     <template v-if="question && question.tag === QuestionType.READ">
       <div v-if="choiceInvestigator" class="choice-investigator">
         <img
@@ -270,8 +269,8 @@ const isBuildSpiritDeckQuestion = (q: Question): q is Question & { tag: Question
       </div>
     </div>
 
-    <div class="question-label" v-else-if="question && isEmbarkQuestion(question)">
-      <WorldMap :game="game" :playerId="effectivePlayerId" :mapData="question.contents[1]" @choose="choose" :embark="true" />
+    <div class="question-label embark-map" v-else-if="question && isEmbarkQuestion(question)">
+      <WorldMap :game="game" :playerId="effectivePlayerId" :mapData="question.contents[1]" @choose="choose" :embark="true" :viewOnly="viewOnly" />
     </div>
 
     <div class="question-label spirit-deck-question" v-else-if="question && isBuildSpiritDeckQuestion(question)">
@@ -329,10 +328,9 @@ const isBuildSpiritDeckQuestion = (q: Question): q is Question & { tag: Question
       :game="game"
       :playerId="effectivePlayerId"
       :noStory="true"
-      v-else
+      v-else-if="!viewOnly"
       @choose="choose"
     />
-    </template>
   </div>
 </template>
 
@@ -358,6 +356,12 @@ const isBuildSpiritDeckQuestion = (q: Question): q is Question & { tag: Question
 
 .story-question-root.view-only .scenario-tile {
   outline-color: transparent;
+}
+
+/* The map is the one view-only exception: its travel buttons are gated by the
+ * prop instead, and panning/selecting a city is how its information is read. */
+.story-question-root.view-only .embark-map {
+  pointer-events: auto;
 }
 
 .waiting-banner {

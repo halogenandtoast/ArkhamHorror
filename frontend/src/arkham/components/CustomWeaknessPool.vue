@@ -87,6 +87,7 @@ defineExpose({ waitForSave: () => pendingSave })
     <div class="toggle-row">
       <div class="toggle-text">
         <div class="toggle-name">{{ t('gameBar.settings.customWeaknessTitle') }}</div>
+        <div class="toggle-desc">{{ t('gameBar.settings.customWeaknessDescription') }}</div>
       </div>
       <input
         type="checkbox"
@@ -159,5 +160,11 @@ defineExpose({ waitForSave: () => pendingSave })
   font-size: 14px;
   font-weight: 500;
   color: var(--weakness-pool-text, var(--text));
+}
+.toggle-desc {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--weakness-pool-desc, var(--background-light));
 }
 </style>

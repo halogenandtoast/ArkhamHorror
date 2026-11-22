@@ -3,10 +3,14 @@ module Arkham.Event.Cards (module Arkham.Event.Cards, module X) where
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Event.Cards.AndrePatel as X
+import Arkham.Event.Cards.CarolynFern2 as X
 import Arkham.Event.Cards.Core2026 as X
 import Arkham.Event.Cards.EdgeOfTheEarth as X
+import Arkham.Event.Cards.MarieLambeau2 as X
+import Arkham.Event.Cards.MiguelDeLaCruz as X
 import Arkham.Event.Cards.NightOfTheZealot as X
 import Arkham.Event.Cards.Parallel as X
+import Arkham.Event.Cards.PowerOfTheDreamlands as X
 import Arkham.Event.Cards.Promo as X
 import Arkham.Event.Cards.ReturnTo as X
 import Arkham.Event.Cards.Standalone as X
@@ -21,9 +25,6 @@ import Arkham.Event.Cards.TheInnsmouthConspiracy as X
 import Arkham.Event.Cards.ThePathToCarcosa as X
 import Arkham.Event.Cards.TheScarletKeys as X
 import Arkham.Event.Cards.TommyMuldoon2 as X
-import Arkham.Event.Cards.CarolynFern2 as X
-import Arkham.Event.Cards.MarieLambeau2 as X
-import Arkham.Event.Cards.MiguelDeLaCruz as X
 import Arkham.Homebrew.Defs qualified as Homebrew
 import Arkham.Prelude hiding (catch)
 
@@ -551,6 +552,17 @@ allPlayerEventCards =
       , youOweMeOne
       , youveHadWorse
       , youveHadWorse4
+      , --- Power of the Dreamlands
+        lightOfIlarnek3
+      , corsairsCache
+      , doubleTeam
+      , boardingParty5
+      , veilOfThalarion
+      , dreamQuest
+      , dreamsOfPeace
+      , callOfTheDreamlands
+      , oathsworn3
+      , oneiricInsight
       ]
 
 allEncounterEventCards :: Map CardCode CardDef

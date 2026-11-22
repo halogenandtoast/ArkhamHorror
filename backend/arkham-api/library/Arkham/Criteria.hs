@@ -31,6 +31,7 @@ import Arkham.Matcher.Asset
 import Arkham.Matcher.Base
 import Arkham.Matcher.Card
 import Arkham.Matcher.ChaosToken
+import Arkham.Matcher.DreamingCard
 import Arkham.Matcher.Enemy
 import Arkham.Matcher.Event
 import Arkham.Matcher.History
@@ -52,6 +53,7 @@ import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.Source
 import Arkham.Taboo.Types
+import Arkham.Target (Target)
 import Arkham.Token
 import Arkham.Trait (Trait)
 import Arkham.UltimatumsAndBoons.Types (UltimatumOrBoon)
@@ -282,6 +284,31 @@ data Criterion
   | ChaosTokenExists ChaosTokenMatcher
   | ConcealedCardExists ConcealedCardMatcher
   | ConcealedCardCount Int ConcealedCardMatcher
+  | {- | A facedown card in a dream zone. Mirrors 'ConcealedCardExists': a
+    lightweight record, not an entity, so it has no matcher of its own among the
+    entity criteria.
+    -}
+    DreamingCardExists DreamingCardMatcher
+  | DreamingCardCount ValueMatcher DreamingCardMatcher
+  | {- | The dreaming-card control limit still has room. The matcher names WHOSE
+    zone, because it is not always the ability's user: Oathsworn (14011) flips an
+    asset whose controller may be another investigator, and it is that
+    investigator's zone that has to have room.
+    -}
+    CanCreateDreamingCard InvestigatorMatcher
+  | {- | Some dream can legally be moved somewhere else: a place holding a dream,
+    and another place with room for one. Ranges over dream ENDPOINTS as well as
+    the dream zone, which is why it cannot be written as a 'DreamingCardCount' --
+    an endpoint plus one dreaming card is a legal move but a count of 1.
+    -}
+    CanMoveADream InvestigatorMatcher
+  | {- | A dream can be moved TO the named place: it has room, and some other
+    dream place the investigator controls holds a dream. Carries the destination
+    because a Forced "move a dream to this" cannot be written as a count -- the
+    destination has to be excluded from its own source list, and any other
+    endpoint has to be included in it.
+    -}
+    CanMoveADreamTo Target InvestigatorMatcher
   | CanMoveThis GridDirection
   | CanMoveTo LocationMatcher
   | {- | Your move already in flight is headed at a matching location.
@@ -438,6 +465,9 @@ instance Exists ScenarioMatcher where
 
 instance Exists ConcealedCardMatcher where
   exists = ConcealedCardExists
+
+instance Exists DreamingCardMatcher where
+  exists = DreamingCardExists
 
 instance Exists ChaosTokenMatcher where
   exists = ChaosTokenExists

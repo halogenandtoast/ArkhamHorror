@@ -24,7 +24,7 @@ instance RunMessage TheKingsParade where
       dimStreets <- selectJust $ locationIs Locations.dimStreetsTheKingsParade
       sid <- getRandom
       beginSkillTest sid iid attrs iid #combat (Fixed 2)
-      push $ ReplaceLocation dimStreets otherDimStreets DefaultReplace
+      push $ ReplaceLocation dimStreets otherDimStreets DefaultReplace Nothing
       pure s
     PassedThisSkillTest _ (isSource attrs -> True) -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"

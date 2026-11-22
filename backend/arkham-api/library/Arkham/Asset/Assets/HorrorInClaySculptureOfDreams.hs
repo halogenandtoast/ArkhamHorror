@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Campaigns.TheDrownedCity.Helpers
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.I18n
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -35,7 +36,9 @@ instance HasAbilities HorrorInClaySculptureOfDreams where
   getAbilities (HorrorInClaySculptureOfDreams a) =
     -- The glyphs sit above the [fast] ability, so it stays blank until every one of
     -- them has been translated.
-    [ controlled a 1 (glyphsAllKnown "UXOODFZ") $ FastAbility (exhaust a)
+    [ cardI18n (withI18nTooltip "horrorInClay.blankOrMove")
+        $ controlled a 1 (glyphsAllKnown "UXOODFZ")
+        $ FastAbility (exhaust a)
     , artifactAbility a 2
     ]
 

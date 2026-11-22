@@ -344,6 +344,7 @@ rodOfCarnamagosScepterOfTheMadSeer =
     , cdDeckRestrictions = [PerDeckLimit 1]
     , cdSlots = [#hand]
     , cdBondedWith = [(1, "10086"), (1, "10087"), (1, "10088"), (1, "10089"), (1, "10090")]
+    , cdOptions = [offerDuringSkillTests 1]
     }
 
 speakToTheDead :: CardDef
@@ -381,6 +382,7 @@ rodOfCarnamagosScepterOfTheMadSeer2 =
     , cdSlots = [#hand]
     , cdBondedWith = [(1, "10086"), (1, "10087"), (1, "10088"), (1, "10089"), (1, "10090")]
     , cdLevel = Just 2
+    , cdOptions = [offerDuringSkillTests 1]
     }
 
 theKeyOfSolomonSecretsOfTheUnknown4 :: CardDef

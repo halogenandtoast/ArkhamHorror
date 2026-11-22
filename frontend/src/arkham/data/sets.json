@@ -438,6 +438,14 @@
     "previewUnimplemented": true
   },
   {
+    "name": "Power of the Dreamlands",
+    "min": 14001,
+    "max": 14999,
+    "playerCards": 27,
+    "code": "potd",
+    "cycle": 14
+  },
+  {
     "name": "Return to Night of the Zealot",
     "min": 50001,
     "max": 50046,

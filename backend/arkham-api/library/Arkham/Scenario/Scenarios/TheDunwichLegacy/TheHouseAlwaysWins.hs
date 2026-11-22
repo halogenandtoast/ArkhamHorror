@@ -106,8 +106,17 @@ instance RunMessage TheHouseAlwaysWins where
             chaosTokenEffect Skull drawnToken $ ChaosTokenFaceModifier [Zero]
           labeled "skull.doNotSpend" nothing
       pure s
+    {- 'offeredWhen', not 'withCriteria': there is nothing to choose about an
+    option that cannot pay, so it is kept off the prompt, but it still resolves
+    so 'takeResources' can refuse it out loud. O'Bannion's Thug in your threat
+    area used to eat these 3 resources without a word (#6017).
+
+    'FromOtherSource' because the token is a scenario effect, not a player card
+    one -- the same question 'takeResources' asks when it runs. -}
     PassedSkillTestWithToken iid Cultist | isEasyStandard attrs -> do
-      tokenSkillTestOptionWithCriteria (exists $ investigator_ $ can.gain.resources iid) Cultist
+      tokenSkillTestOptionOfferedWhen
+        (exists $ investigator_ $ can.gain.resources FromOtherSource (InvestigatorWithId iid))
+        Cultist
         $ takeResources iid Cultist 3
       pure s
     FailedSkillTestWithToken iid Cultist | isHardExpert attrs -> do

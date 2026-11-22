@@ -33,6 +33,7 @@
     "viewSettingShowOtherPlayersHandsTitle": "Show Other Players' Hands",
 
     "settings": {
+        "customCardsTitle": "Custom Cards",
         "customWeaknessTitle": "Custom random weaknesses",
         "customWeaknessDescription": "Include basic weaknesses from selected custom sets in random draws and deck setup.",
         "customWeaknessSets": "Included sets",

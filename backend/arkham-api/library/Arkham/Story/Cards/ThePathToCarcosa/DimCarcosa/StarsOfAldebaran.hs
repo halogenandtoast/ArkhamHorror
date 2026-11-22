@@ -26,6 +26,6 @@ instance RunMessage StarsOfAldebaran where
       otherBleakPlain <- case setAsideBleakPlains of
         [] -> error "missing"
         (x : xs) -> sample (x :| xs)
-      push $ ReplaceLocation bleakPlains otherBleakPlain DefaultReplace
+      push $ ReplaceLocation bleakPlains otherBleakPlain DefaultReplace Nothing
       pure s
     _ -> StarsOfAldebaran <$> liftRunMessage msg attrs

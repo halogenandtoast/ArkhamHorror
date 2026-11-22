@@ -284,33 +284,6 @@ ghci:
 	  --interleaved-output \
 		$(EXTRA_STACK_FLAGS)
 
-.PHONY: validate
-validate:
-	cd validate && \
-	stack build --test --no-run-tests --pedantic --fast validate \
-	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
-	  --interleaved-output \
-		$(EXTRA_STACK_FLAGS)
-
-.PHONY: validate.watch
-validate.watch:
-	cd validate && \
-	stack build --test --no-run-tests --pedantic --fast validate \
-	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
-	  --interleaved-output \
-		$(FILE_WATCH) \
-		$(EXTRA_STACK_FLAGS) \
-		--exec "bash -c \"cd .. && DEVELOPMENT=true stack exec validate\"" \
-
-.PHONY: revalidate
-revalidate:
-	cd arkham-api && \
-	stack build --test --no-run-tests --pedantic --fast arkham-api \
-	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
-	  --interleaved-output \
-		$(EXTRA_STACK_FLAGS)
-	stack clean validate && stack run validate
-
 .PHONY: test.watch
 test.watch:
 	cd arkham-api && \

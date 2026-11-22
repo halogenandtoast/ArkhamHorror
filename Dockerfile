@@ -116,13 +116,11 @@ FROM base AS dependencies
 RUN mkdir -p \
   /opt/arkham/bin \
   /opt/arkham/src/backend/arkham-api \
-  /opt/arkham/src/backend/validate \
   /opt/arkham/src/backend/cards-discover
 
 WORKDIR /opt/arkham/src/backend
 COPY ./backend/stack.yaml ./backend/stack.yaml.lock /opt/arkham/src/backend/
 COPY ./backend/arkham-api/package.yaml /opt/arkham/src/backend/arkham-api/package.yaml
-COPY ./backend/validate/package.yaml /opt/arkham/src/backend/validate/package.yaml
 COPY ./backend/cards-discover/package.yaml /opt/arkham/src/backend/cards-discover/package.yaml
 COPY ./backend/ah3e/package.yaml /opt/arkham/src/backend/ah3e/package.yaml
 RUN --mount=type=cache,id=stack-home-${CACHE_ID},target=/root/.stack \
@@ -149,7 +147,10 @@ WORKDIR /opt/arkham/src/backend/arkham-api
 # RUN a bare script invocation: BuildKit keys a cache mount's *contents* by the
 # text of the RUN that mounts it, so editing the command here throws away the
 # cached .stack-work and forces a cold rebuild of all ~9400 modules. Editing the
-# script does not.
+# script does not. That is also why the two stack-validate* mounts below survive
+# the removal of the validate package: they now mount a cache into a directory
+# nothing builds, which is harmless, and deleting the lines would cost that cold
+# rebuild. Drop them the next time this RUN has to change for another reason.
 RUN --mount=type=cache,id=stack-home-${CACHE_ID},target=/root/.stack \
     --mount=type=cache,id=stack-work-shared-${CACHE_ID},target=/opt/arkham/src/backend/.stack-work \
     --mount=type=cache,id=stack-api-${CACHE_ID},target=/opt/arkham/src/backend/arkham-api/.stack-work \

@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Campaigns.TheDrownedCity.Helpers
 import Arkham.Helpers.Window (enteringEnemy, getAttackDetails)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Trait (Trait (DeepOne, StarSpawn))
 
@@ -23,11 +24,14 @@ starSpawnOrDeepOne = mapOneOf EnemyWithTrait [StarSpawn, DeepOne]
 
 instance HasAbilities ShardOfYchlechtOtherworldlyRemnant where
   getAbilities (ShardOfYchlechtOtherworldlyRemnant a) =
-    [ limited (MaxPer Cards.shardOfYchlecht PerRound 1)
+    [ cardI18n (withI18nTooltip "shardOfYchlecht.ignoreAttack")
+        $ limited (MaxPer Cards.shardOfYchlecht PerRound 1)
         $ controlled_ a 1
         $ freeReaction
           (EnemyAttacks #when You (CancelableEnemyAttack AnyEnemyAttack) starSpawnOrDeepOne)
-    , controlled a 2 (glyphsAllKnown "BXOK")
+    , -- Only usable once the glyphs naming this ability have been translated.
+      cardI18n (withI18nTooltip "shardOfYchlecht.exhaustEnemy")
+        $ controlled a 2 (glyphsAllKnown "BXOK")
         $ triggered (EnemyEntersYourLocation #when starSpawnOrDeepOne) (exhaust a)
     , artifactAbility a 3
     ]

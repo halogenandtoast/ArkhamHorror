@@ -10,6 +10,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.SlotType
+import Data.IntMap.Strict qualified as IntMap
 import Data.List (elemIndex)
 import GHC.Records
 
@@ -69,13 +70,39 @@ customizedSlots card =
   customizations = case card of
     PlayerCard pc -> pcCustomizations pc
     _ -> mempty
-  indexes = [i | ChosenIndex i <- concatMap snd (toList customizations)]
   insteadOf added removed slots = added : filter (/= removed) slots
   apply slots = \case
     Enchanted -> insteadOf #arcane #body slots -- Hunter's Armor
     ImbuedInk -> insteadOf #arcane #body slots -- Living Ink
-    Dominance -> filter (/= if 0 `elem` indexes then #arcane else #ally) slots -- Summoned Servitor
+    -- Summoned Servitor
+    Dominance -> case dominanceSlot_ (cdCustomizations def) customizations (cdSlots def) of
+      Just slot -> filter (/= slot) slots
+      Nothing -> slots
     _ -> slots
+
+{- | The slot Dominance frees on Summoned Servitor.
+
+The choice arrives as an index into the card's PRINTED slot list -- arkham.build
+writes it as a @remove_slot@ choice against @real_slot@, which for 09080 is
+"Ally. Arcane", matching @cdSlots@. It is NOT an index into the card text's
+"(circle one): arcane / ally" reading order, so reading it that way frees the
+slot the player did not pick.
+-}
+dominanceSlot_ :: Map Customization Int -> Customizations -> [SlotType] -> Maybe SlotType
+dominanceSlot_ cardCustomizations customizations slots = do
+  i <- elemIndex Dominance (keys cardCustomizations)
+  (_, choices) <- IntMap.lookup i customizations
+  n <- listToMaybe [n' | ChosenIndex n' <- choices]
+  slots !!? n
+
+-- | 'dominanceSlot_' for an entity that carries its own customizations, guard included.
+dominanceSlot
+  :: (HasCardDef a, HasField "customizations" a Customizations) => a -> Maybe SlotType
+dominanceSlot a = do
+  guard (a `hasCustomization` Dominance)
+  dominanceSlot_ (cdCustomizations def) a.customizations (cdSlots def)
+ where
+  def = toCardDef a
 
 customizationIndex :: HasCardDef a => a -> Customization -> Maybe Int
 customizationIndex a c = elemIndex c $ keys $ cdCustomizations (toCardDef a)
@@ -100,5 +127,6 @@ choicesRequired = \case
     [ CustomizationCardChoice $ #asset <> oneOf [#tome, #spell]
     , CustomizationCardChoice $ #asset <> oneOf [#tome, #spell]
     ]
-  Dominance -> [CustomizationIndexChoice ["arcane", "ally"]]
+  -- Printed slot order, not the card text's "arcane / ally" order -- see 'dominanceSlot_'
+  Dominance -> [CustomizationIndexChoice ["ally", "arcane"]]
   _ -> []

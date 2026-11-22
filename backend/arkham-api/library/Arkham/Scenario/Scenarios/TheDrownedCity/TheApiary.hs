@@ -205,7 +205,7 @@ instance RunMessage TheApiary where
       eachInvestigator (`forInvestigator` Setup)
     -- Every location enters play from the encounter deck, so each one takes its
     -- map position as it is placed rather than during setup. See 'apiaryPositions'.
-    PlacedLocation _ (apiaryPosition -> Just pos) lid -> do
+    PlacedLocation _ (apiaryPosition -> Just pos) lid _ -> do
       push $ PlaceGrid (GridLocation pos lid)
       pure s
     ForInvestigator iid Setup -> do

@@ -5,17 +5,6 @@
 
 packages:
 - completed:
-    name: monad-validate
-    pantry-tree:
-      sha256: b2ee5313f09ad82ef55a280f40c203c808daa5afb4f663f5fea57a3a018635e4
-      size: 835
-    sha256: bbc57af17aa5b1a68da5fa76d9bea222720b63dfb960696fb5c8dd0f3523030a
-    size: 17478
-    url: https://github.com/halogenandtoast/monad-validate/archive/e5f36d4a82875c09c6000fed8f8ced50e21b75ce.tar.gz
-    version: 1.2.0.1
-  original:
-    url: https://github.com/halogenandtoast/monad-validate/archive/e5f36d4a82875c09c6000fed8f8ced50e21b75ce.tar.gz
-- completed:
     name: amazonka
     pantry-tree:
       sha256: 0cf2d48a5fe43a2173b73ed70db10cbb9b9a062cb2b4ac8d8c78318c8f5a824e

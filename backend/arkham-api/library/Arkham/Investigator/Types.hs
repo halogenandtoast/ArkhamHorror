@@ -30,6 +30,7 @@ import Arkham.Decklist.CardPool (ArkhamBuildCardPool)
 import Arkham.Discard
 import Arkham.Discover
 import Arkham.Draw.Types
+import Arkham.DreamingCard
 import Arkham.Helpers
 import Arkham.I18n
 import Arkham.Id
@@ -135,6 +136,12 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorTokens :: Field Investigator Tokens
   InvestigatorMovement :: Field Investigator (Maybe Movement)
   InvestigatorHand :: Field Investigator [Card]
+  {- | The dream zone. Append-only, removed by 'CardId', NEVER re-sorted:
+  aeson-diff emits index-addressed ops and 'applyWithRecovery' silently skips an
+  op whose pointer prefix is missing, so a re-sort can land a wrong dream count
+  -- and dreams convert into real resources.
+  -}
+  InvestigatorDreamingCards :: Field Investigator [DreamingCard]
   InvestigatorHandSize :: Field Investigator Int
   InvestigatorCardsUnderneath :: Field Investigator [Card]
   InvestigatorDeck :: Field Investigator (Deck PlayerCard)
@@ -247,6 +254,7 @@ instance FromJSON (SomeField Investigator) where
     "InvestigatorTokens" -> pure $ SomeField InvestigatorTokens
     "InvestigatorMovement" -> pure $ SomeField InvestigatorMovement
     "InvestigatorHand" -> pure $ SomeField InvestigatorHand
+    "InvestigatorDreamingCards" -> pure $ SomeField InvestigatorDreamingCards
     "InvestigatorHandSize" -> pure $ SomeField InvestigatorHandSize
     "InvestigatorCardsUnderneath" -> pure $ SomeField InvestigatorCardsUnderneath
     "InvestigatorDeck" -> pure $ SomeField InvestigatorDeck
@@ -328,6 +336,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorDecks :: Map InvestigatorDeckKey [Card]
   , investigatorDiscard :: [PlayerCard]
   , investigatorHand :: [Card]
+  , investigatorDreamingCards :: [DreamingCard]
   , investigatorTraits :: Set Trait
   , investigatorDefeated :: Bool
   , investigatorResigned :: Bool
@@ -411,6 +420,23 @@ investigatorHealthDamage = countTokens Token.Damage . investigatorTokens
 
 investigatorSanityDamage :: InvestigatorAttrs -> Int
 investigatorSanityDamage = countTokens Horror . investigatorTokens
+
+-- | Whether this investigator holds the named card facedown in their dream zone.
+controlsDreamingCard :: CardId -> InvestigatorAttrs -> Bool
+controlsDreamingCard cid = any ((== cid) . (.id)) . investigatorDreamingCards
+
+{- | Rewrite one dreaming card's tokens in place. Position is preserved: the
+list is append-only and never re-sorted, because aeson-diff addresses it by
+index.
+-}
+updateDreamingCardTokens
+  :: CardId -> (Tokens -> Tokens) -> InvestigatorAttrs -> InvestigatorAttrs
+updateDreamingCardTokens cid f a =
+  a {investigatorDreamingCards = map go (investigatorDreamingCards a)}
+ where
+  go dc
+    | dc.id == cid = dc {dreamingCardTokens = f (dreamingCardTokens dc)}
+    | otherwise = dc
 
 data DrawingCards = DrawingCards Deck.DeckSignifier Int [Card]
   deriving stock (Show, Eq, Generic, Data)
@@ -743,6 +769,7 @@ instance FromJSON InvestigatorAttrs where
     investigatorDecks <- o .: "decks"
     investigatorDiscard <- o .: "discard"
     investigatorHand <- o .: "hand"
+    investigatorDreamingCards <- o .:? "dreamingCards" .!= []
     investigatorTraits <- o .: "traits"
     investigatorDefeated <- o .: "defeated"
     investigatorResigned <- o .: "resigned"

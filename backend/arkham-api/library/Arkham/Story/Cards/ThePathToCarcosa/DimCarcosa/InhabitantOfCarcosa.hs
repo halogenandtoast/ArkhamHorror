@@ -23,6 +23,6 @@ instance RunMessage InhabitantOfCarcosa where
         Nothing -> error "missing"
         Just xs -> sample xs
       selectEach (HealableInvestigator (toSource attrs) #horror Anyone) \iid -> healHorror iid attrs 3
-      push $ ReplaceLocation ruinsOfCarcosa otherRuinsOfCarcosa DefaultReplace
+      push $ ReplaceLocation ruinsOfCarcosa otherRuinsOfCarcosa DefaultReplace Nothing
       pure s
     _ -> InhabitantOfCarcosa <$> liftRunMessage msg attrs

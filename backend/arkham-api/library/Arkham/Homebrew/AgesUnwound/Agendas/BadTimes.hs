@@ -39,7 +39,7 @@ instance RunMessage BadTimes where
         for_ (otherPrinting $ toCardDef current) \def ->
           getSetAsideCardMaybe def >>= traverse_ \replacement -> do
             obtainCard replacement
-            push $ ReplaceLocation lid replacement Swap
+            push $ ReplaceLocation lid replacement Swap Nothing
             push $ SetAsideCards [current]
 
       tumbleOutOfTime attrs

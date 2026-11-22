@@ -34,6 +34,6 @@ instance RunMessage AMomentsRest where
       otherRuinsOfCarcosa <- case nonEmpty setAsideRuinsOfCarcosa of
         Nothing -> error "missing"
         Just xs -> sample xs
-      push $ ReplaceLocation ruinsOfCarcosa otherRuinsOfCarcosa DefaultReplace
+      push $ ReplaceLocation ruinsOfCarcosa otherRuinsOfCarcosa DefaultReplace Nothing
       pure s
     _ -> AMomentsRest <$> liftRunMessage msg attrs

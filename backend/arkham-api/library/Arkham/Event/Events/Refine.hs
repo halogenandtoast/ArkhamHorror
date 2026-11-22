@@ -87,7 +87,7 @@ instance RunMessage Refine where
               CustomizationIndexChoice zs -> do
                 chooseOneDropDown
                   iid
-                  [ ( tshow z
+                  [ ( z
                     , ForTarget (toTarget attrs)
                         $ IncreaseCustomization iid cardCode customization (ChosenIndex n : choices)
                     )

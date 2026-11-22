@@ -45,6 +45,9 @@ const TOKEN_CONFIG: Partial<Record<Token, { type: string; tooltip?: string }>> =
   Doom: { type: 'doom' },
   Horror: { type: 'horror' },
   Resource: { type: 'resource' },
+  /* A dream is spent like a resource and the printed keyword reads as one, so it
+   * borrows the coin art rather than asking for its own. */
+  Dream: { type: 'resource', tooltip: 'Dream' },
   Pillar: { type: 'resource' },
   Kindling: { type: 'resource' },
   Leyline: { type: 'resource', tooltip: 'Leyline' },

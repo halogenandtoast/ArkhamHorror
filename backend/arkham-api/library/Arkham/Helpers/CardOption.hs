@@ -1,13 +1,14 @@
 module Arkham.Helpers.CardOption (
   getCardOption,
   getCardOptionSet,
+  cardOptionSetIn,
 ) where
 
 import Arkham.Card (lookupCardDef)
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef (cdOptions)
 import Arkham.Card.CardOption
-import Arkham.Card.Settings (lookupCardOption)
+import Arkham.Card.Settings (CardSettings, lookupCardOption)
 import Arkham.Classes.HasGame
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Id
@@ -31,3 +32,14 @@ getCardOption iid (toCardCode -> cCode) k = case find ((== k) . cardOptionKey) d
 -- | Whether an option is on. An option the card doesn't declare is off.
 getCardOptionSet :: (HasGame m, HasCardCode a) => InvestigatorId -> a -> Text -> m Bool
 getCardOptionSet iid cCode k = maybe False optionValueToBool <$> getCardOption iid cCode k
+
+{- | 'getCardOptionSet' for a caller that already holds the settings, so it
+doesn't re-read the investigator it is in the middle of answering for.
+-}
+cardOptionSetIn :: HasCardCode a => CardSettings -> a -> Text -> Bool
+cardOptionSetIn settings (toCardCode -> cCode) k = case find ((== k) . cardOptionKey) declared of
+  Nothing -> False
+  Just declaration ->
+    optionValueToBool $ fromMaybe (cardOptionDefault declaration) (lookupCardOption cCode k settings)
+ where
+  declared = maybe [] cdOptions (lookupCardDef cCode)

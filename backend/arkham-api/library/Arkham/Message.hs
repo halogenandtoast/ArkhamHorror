@@ -1431,6 +1431,42 @@ data Message
   | RemoveAllConcealed
   | SetLocationOutOfGame LocationId
   | ReturnLocationToGame LocationId
+  | {- | Dream a card into the investigator's dream zone, facedown, with @n@
+    dreams on it. The CREATION point, and one of the two pushers of
+    @Do (CheckDreamingCard ..)@ -- a dreaming value of 0 flips immediately.
+
+    A hard cap (3, plus 'AdditionalDreamingCard'): at the cap this does nothing,
+    which is narrated rather than silent.
+    -}
+    PlaceDreamingCard InvestigatorId Card Int
+  | {- | Flip an in-play asset facedown into its controller's dream zone with @n@
+    dreams on it. The asset LEAVES PLAY ('RemoveFromPlay'), so damage, uses and
+    attachments go with it and its slot frees.
+    -}
+    FlipAssetFacedown InvestigatorId AssetId Int
+  | -- | Remove the dream record and put the card into play / resolve it as if played from hand.
+    FlipDreamingCardFaceup InvestigatorId CardId
+  | {- | Idempotent: flips the named dreaming card faceup iff the record still
+    exists and holds 0 dreams. Pushed from the single dream-removal point and
+    from 'PlaceDreamingCard'; deliberately NOT from @BeginTurn@, since dreams
+    come off mid-turn too.
+    -}
+    CheckDreamingCard InvestigatorId CardId
+  | {- | "At the start of your turn, you remove 1 dream from each dreaming card you
+    control." Carries the investigator explicitly: @BeginTurn@ runs before
+    @activeInvestigatorIdL@ is set, so reading the active investigator here
+    sweeps the wrong seat.
+    -}
+    RemoveDreamsAtTurnStart InvestigatorId
+  | {- | Narration only: an effect asked for a card in hand with a given dreaming
+    value and the hand held none at that value. Nothing in the engine reads it.
+
+    Pushed where the refusal happens because nothing downstream can work it out:
+    the value is named by a cost that is already paid -- Dalkura spends 1-5
+    resources and only then reads the hand -- so the ability cannot gate on it,
+    and an empty choice is skipped without pushing anything at all (#6017).
+    -}
+    NoCardInHandWithDreaming InvestigatorId Int
   | -- Commit
     Do Message
   | DoBatch BatchId Message

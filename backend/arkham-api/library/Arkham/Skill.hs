@@ -400,4 +400,6 @@ allSkills =
         SomeSkillCard nauticalProwess
       , --- signature weakness [tdg]
         SomeSkillCard dreamsOfTheDeepTheDeepGate
+      , -- Power of the Dreamlands
+        SomeSkillCard dreamMastery
       ]

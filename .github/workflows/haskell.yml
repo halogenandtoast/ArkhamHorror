@@ -53,3 +53,11 @@ jobs:
       run: stack build --system-ghc --test --no-run-tests --bench --no-run-benchmarks cards-discover && stack build --system-ghc --test --no-run-tests --bench --no-run-benchmarks
     - name: Run tests
       run: stack test --system-ghc
+
+    # Catches a card def with no implementation registered in the
+    # hand-maintained allAssets/allEvents/allSkills lists. That failure is a
+    # runtime `error "Unknown asset"`, so neither the build nor the spec suite
+    # can see it. Scoped to this one invariant: validate's other checks compare
+    # against backend/data/cards.json, which lags new cycles by months.
+    - name: Check card implementations
+      run: stack exec --system-ghc validate -- implementations

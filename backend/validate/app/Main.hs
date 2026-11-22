@@ -50,6 +50,7 @@ import Data.Aeson
 import Data.Text qualified as T
 import GHC.Stack
 import System.Directory
+import System.Exit (exitFailure)
 import Text.Read (readEither)
 
 data CardJson = CardJson
@@ -352,6 +353,32 @@ runValidations cards = do
   case results of
     Right _ -> putStrLn "All good!"
     Left errs -> mapM_ (print @SomeException) errs
+
+{- | The def-implies-implementation check on its own, as a CI gate.
+
+Only 'MissingImplementation' fails the run. The other invariants compare defs
+against @backend/data/cards.json@, which lags new cycles by months (it holds no
+chapter-2 cards at all), so gating on those would make CI red for content that
+is perfectly correct.
+
+This is the check that catches a player-card def with no entry in the
+hand-maintained @allAssets@ / @allEvents@ / @allSkills@ lists -- which fails at
+runtime with @error "Unknown asset"@ and is invisible to both a green build and
+the spec suite.
+-}
+runImplementationCheck :: Map CardCode CardJson -> IO ()
+runImplementationCheck cards = do
+  results <- getValidationResults cards
+  let
+    missing = case results of
+      Right _ -> []
+      Left errs -> mapMaybe fromException errs :: [MissingImplementation]
+  if null missing
+    then putStrLn "No missing implementations."
+    else do
+      traverse_ print missing
+      putStrLn $ "Missing implementations: " <> tshow (length missing)
+      exitFailure
 
 invariant :: (MonadValidate [SomeException] m, Exception e) => e -> m ()
 invariant = dispute . pure . SomeException
@@ -661,7 +688,8 @@ main = do
   case args of
     [] -> runValidations cards
     ["validate"] -> runValidations cards
+    ["implementations"] -> runImplementationCheck cards
     ["missing"] -> runMissing Nothing cards
     ["missing", packCode] -> runMissing (Just packCode) cards
     ["images"] -> runMissingImages
-    _ -> error "Usage: [validate] | missing [pack_code]"
+    _ -> error "Usage: [validate] | implementations | missing [pack_code]"

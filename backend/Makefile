@@ -292,6 +292,10 @@ validate:
 	  --interleaved-output \
 		$(EXTRA_STACK_FLAGS)
 
+.PHONY: validate.implementations
+validate.implementations:
+	stack exec validate -- implementations
+
 .PHONY: validate.watch
 validate.watch:
 	cd validate && \

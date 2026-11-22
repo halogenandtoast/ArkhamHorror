@@ -44,6 +44,7 @@ import Arkham.Helpers.ChaosBag (
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.Customization (hasCustomization)
 import Arkham.Helpers.Doom (getDoomCount)
+import Arkham.Helpers.Dreaming (canCreateDreamingCard, canMoveADream, canMoveADreamTo)
 import Arkham.Helpers.GameValue (gameValueMatches)
 import Arkham.Helpers.History (historyMatches)
 import Arkham.Helpers.Investigator (getAsIfInHandCardsNotForPlay)
@@ -724,6 +725,16 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
   Criteria.ChaosTokenExists matcher -> selectAny matcher
   Criteria.ConcealedCardExists matcher -> selectAny matcher
   Criteria.ConcealedCardCount n matcher -> (>= n) <$> selectCount matcher
+  Criteria.DreamingCardExists matcher -> selectAny (Matcher.replaceYouMatcher iid matcher)
+  Criteria.DreamingCardCount valueMatcher matcher -> do
+    n <- selectCount (Matcher.replaceYouMatcher iid matcher)
+    gameValueMatches n valueMatcher
+  Criteria.CanCreateDreamingCard who ->
+    select (Matcher.replaceYouMatcher iid who) >>= anyM canCreateDreamingCard
+  Criteria.CanMoveADream who ->
+    select (Matcher.replaceYouMatcher iid who) >>= anyM canMoveADream
+  Criteria.CanMoveADreamTo destination who ->
+    select (Matcher.replaceYouMatcher iid who) >>= anyM (canMoveADreamTo destination)
   Criteria.AssetExists matcher -> do
     -- N.B. Old Shotgun (2) needs to have a different uses when playing an
     -- event We add the event card to the "game" when asking for a matching

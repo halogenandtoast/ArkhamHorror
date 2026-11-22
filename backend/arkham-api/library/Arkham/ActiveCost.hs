@@ -48,6 +48,7 @@ import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.Cost
 import {-# SOURCE #-} Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Customization
+import Arkham.Helpers.Dreaming (canCreateDreamingCard)
 import Arkham.Helpers.Effect (createCardEffect)
 import Arkham.Helpers.Game
 import Arkham.Helpers.GameValue
@@ -1356,6 +1357,41 @@ payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
       n <- getPlayerCountValue x
       push $ InvestigatorPlaceCluesOnLocation iid source n
       withPayment $ CluePayment iid n
+    -- A cost that PLACES, like 'PlaceClueOnLocationCost': the card itself goes
+    -- facedown into the dream zone with its dreams on it.
+    DreamCost n -> case activeCostTarget c of
+      ForCard _ card -> do
+        push $ PlaceDreamingCard iid card n
+        withPayment $ DreamPayment n
+      ForCost card -> do
+        push $ PlaceDreamingCard iid card n
+        withPayment $ DreamPayment n
+      _ -> pure c
+    {- Both placing costs record their payment ONLY when the placement will really
+    happen, and both re-check every condition their affordability check reads --
+    affordability ran earlier and the state can have moved since. An "if you do"
+    reading the payment must never be told a cost was paid when it was not. -}
+    PlaceDreamCost n -> do
+      dreamingCards <- select $ DreamingCardControlledBy (InvestigatorWithId iid)
+      if null dreamingCards
+        then pure c
+        else do
+          push
+            $ chooseOrRunOne player
+            $ targetLabels dreamingCards \dc -> only $ PlaceTokens source (toTarget dc) Token.Dream n
+          withPayment $ PlaceDreamPayment n
+    {- Another cost that PLACES: the asset leaves play and lands in the dream
+    zone with its dreams on it. 'FlipAssetFacedown' owns the whole teardown, and
+    re-reads the cap itself -- at the cap it does nothing and the asset stays
+    put, so the cap belongs in the payment decision too. -}
+    FlipAssetFacedownCost assetMatcher n -> do
+      assets <- select $ AssetCanLeavePlayByNormalMeans <> assetMatcher
+      canDream <- canCreateDreamingCard iid
+      if null assets || not canDream
+        then pure c
+        else do
+          push $ chooseOrRunOne player $ targetLabels assets \aid -> only $ FlipAssetFacedown iid aid n
+          withPayment $ FlipAssetFacedownPayment n
     InvestigatorPlaceClueOnLocationCost investigatorMatcher x -> do
       n <- getPlayerCountValue x
       -- The initiator pays, but the clues come from the matched investigator and

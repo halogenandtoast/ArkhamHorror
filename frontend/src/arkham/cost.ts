@@ -65,6 +65,8 @@ const withMultipliedCount = (cost: Cost, multiplier: number): Cost | undefined =
 
   switch (cost.tag) {
     case 'ResourceCost':
+    case 'DreamCost':
+    case 'PlaceDreamCost':
     case 'ScenarioResourceCost':
     case 'DiscardTopOfDeckCost':
     case 'DiscardCombinedCost':
@@ -185,6 +187,22 @@ export function formatCost(cost: Cost, t: Translate): string {
       if (n <= 0) return ''
       return t('label.cost.resource', { count: n })
     }
+    /* A plain `Int`, like `ResourceCost`: the number of dreams to place. */
+    case 'DreamCost': {
+      const n = num(cost, 'contents')
+      if (n <= 0) return ''
+      return t('label.cost.dream', { count: n })
+    }
+    /* Also a plain `Int`, but a different cost: dreams moved from the token pool
+     * onto a dreaming card that is already in the zone, rather than dreaming a
+     * new card into it. Every current use (Enchanting Fife) wraps this in a
+     * `LabeledCost`, which renders its label and discards the inner cost -- this
+     * branch is what keeps an unlabeled use from printing the bare tag name. */
+    case 'PlaceDreamCost': {
+      const n = num(cost, 'contents')
+      if (n <= 0) return ''
+      return t('label.cost.placeDream', { count: n })
+    }
     case 'ScenarioResourceCost':
       return t('label.cost.scenarioResource', { count: num(cost, 'contents') })
     case 'ClueCostX':
@@ -214,6 +232,11 @@ export function formatCost(cost: Cost, t: Translate): string {
     case 'ReturnAssetToHandCost':
     case 'ReturnMatchingAssetToHandCost':
       return t('label.cost.returnAssetToHand')
+    /* `[AssetMatcher, Int]`: the asset leaves play with that many dreams on it. */
+    case 'FlipAssetFacedownCost': {
+      const contents = get<unknown[]>(cost, 'contents') ?? []
+      return t('label.cost.flipAssetFacedown', { count: Number(contents[1] ?? 0) })
+    }
     case 'ReturnEventToHandCost':
       return t('label.cost.returnEventToHand')
     case 'ExileCost':

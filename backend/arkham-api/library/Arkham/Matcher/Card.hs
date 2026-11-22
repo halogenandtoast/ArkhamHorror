@@ -105,6 +105,15 @@ data ExtendedCardMatcher
   | ActiveCard
   | ResolvingCard
   | CardWithVictory
+  | {- | Dreaming value matching @v@. Routed through
+    'Arkham.Helpers.Dreaming.getDreamingValue', so a granted or reduced dreaming
+    value is seen; a card with no dreaming value never matches.
+
+    An 'ExtendedCardMatcher' and not a 'CardMatcher' because the resolver is
+    modifier-aware. @CardWithKeyword@ cannot express "dreaming X, any value"
+    either, since 'Dreaming' carries its value.
+    -}
+    CardWithDreaming ValueMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not ExtendedCardMatcher where

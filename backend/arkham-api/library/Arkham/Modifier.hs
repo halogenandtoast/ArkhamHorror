@@ -100,12 +100,28 @@ data ModifierType
     -}
     AdditionalRevelations Int
   | AdditionalSlot SlotType
+  | {- | Raises the number of dreaming cards an investigator may control above
+    the default 3. Mirrors 'AdditionalSlot': the limit gates like a slot limit,
+    so folding these is the whole of the formula
+    ('Arkham.Helpers.Dreaming.getDreamingCardLimit').
+    -}
+    AdditionalDreamingCard Int
   | AdditionalStartingCards [Card]
   | AdditionalStartingUses Int
   | AdditionalTargets Int
   | AlternateEvadeField (SomeField Enemy)
   | AlternateFightField (SomeField Enemy)
   | AlternateResourceCost CardMatcher Cost
+  | {- | "Dreams may be moved to and from this as if it were a dreaming card
+    under your control" (Idol of Bokrug). The 'Maybe Int' is how many dreams it
+    may hold at once; 'Nothing' is no limit of its own.
+
+    The limit is enforced where the destination is OFFERED, so an illegal move is
+    never presented; a handler clamp is only a backstop.
+    -}
+    IsDreamEndpoint (Maybe Int)
+  | -- | Reduce a card's dreaming value by n, clamped at 0 ("reducing its cost or dreaming value by 1").
+    ReduceDreaming Int
   | AlternateSuccess Target
   | AlternateSuccessfullInvestigation Target
   | AlternateUpkeepDraw Target

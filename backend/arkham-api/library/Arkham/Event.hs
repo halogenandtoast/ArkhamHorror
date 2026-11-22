@@ -873,4 +873,15 @@ allEvents =
       , -- Promo
         -- The Dirge of Reason
         SomeEventCard mysteriesRemain
+      , -- Power of the Dreamlands
+        SomeEventCard lightOfIlarnek3
+      , SomeEventCard corsairsCache
+      , SomeEventCard doubleTeam
+      , SomeEventCard boardingParty5
+      , SomeEventCard veilOfThalarion
+      , SomeEventCard dreamQuest
+      , SomeEventCard dreamsOfPeace
+      , SomeEventCard callOfTheDreamlands
+      , SomeEventCard oathsworn3
+      , SomeEventCard oneiricInsight
       ]

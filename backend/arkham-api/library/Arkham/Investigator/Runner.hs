@@ -48,6 +48,7 @@ import Arkham.DefeatedBy
 import Arkham.Discard (DiscardStrategy (DiscardDownToHandSize))
 import Arkham.Discover
 import Arkham.Draw.Types
+import Arkham.DreamingCard
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Evade qualified as Evade
 import Arkham.Event.Types (Field (..))
@@ -75,12 +76,14 @@ import Arkham.Helpers.Cost (getAdditionalActionCosts, getCanAffordCost)
 import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Discover
+import Arkham.Helpers.Dreaming (canCreateDreamingCard)
 import Arkham.Helpers.Enemy (expandCompositeEnemies, getInteractAsOneOf)
 import Arkham.Helpers.Game (withAlteredGame)
 import Arkham.Helpers.Location (getCanMoveTo, isDiscoveringLastClue, withLocationOf)
 import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Playable (
+  cardUniquenessOk,
   filterPlayable,
   getIsPlayableAfterInitiation,
   getOtherPlayersPlayableCards,
@@ -778,7 +781,21 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     -- eliminated must clear with defeated/resigned, or interludes (and scenarios
     -- with skipInvestigatorSetup, which never run ForInvestigators ResetGame)
     -- would treat everyone eliminated last scenario as still eliminated.
-    pure $ a & handL .~ mempty & defeatedL .~ False & resignedL .~ False & eliminatedL .~ False
+    -- the dream zone must go with the hand: a surviving record holds a CardId whose
+    -- registry entry ResetGame wipes, and `getCard` on it is a hard error that locks
+    -- the game. NOT gated on inResolution -- that guard fails open at this message.
+    pure
+      $ a
+      & handL
+      .~ mempty
+      & dreamingCardsL
+      .~ mempty
+      & defeatedL
+      .~ False
+      & resignedL
+      .~ False
+      & eliminatedL
+      .~ False
   ForInvestigators _ ResetGame ->
     pure
       $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) nullCardId investigatorPlayerId)
@@ -2148,6 +2165,81 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     liftRunMessage (PlaceTokens s (toTarget a) tType n) a
   MoveTokensNoDefeated s source _ tType n | isSource a source -> do
     liftRunMessage (RemoveTokens s (toTarget a) tType n) a
+  {- The dream zone and the resource pool are two halves of the SAME entity, so
+  one branch has to move both ends: a case expression takes only its first
+  match, so the ResourceSource/ResourceTarget branches below are never reached
+  for a move between an investigator's dreams and their own resources. -}
+  MoveTokens s (DreamingCardSource cid) target tType n | controlsDreamingCard cid a -> do
+    let
+      ownEnd = case target of
+        ResourceTarget iid | iid == investigatorId -> Just $ PlaceTokens s (toTarget a) #resource n
+        DreamingCardTarget cid' | cid' /= cid, controlsDreamingCard cid' a -> Just $ PlaceTokens s target tType n
+        t | isTarget a t -> Just $ PlaceTokens s (toTarget a) tType n
+        _ -> Nothing
+    pushAll $ maybeToList ownEnd <> [RemoveTokens s (DreamingCardTarget cid) tType n]
+    pure a
+  MoveTokens s source (DreamingCardTarget cid) tType n | controlsDreamingCard cid a -> do
+    let
+      ownEnd = case source of
+        ResourceSource iid | iid == investigatorId -> Just $ RemoveTokens s (toTarget a) #resource n
+        s' | isSource a s' -> Just $ RemoveTokens s (toTarget a) tType n
+        _ -> Nothing
+    pushAll $ maybeToList ownEnd <> [PlaceTokens s (DreamingCardTarget cid) tType n]
+    pure a
+  PlaceTokens source (DreamingCardTarget cid) token n | controlsDreamingCard cid a -> do
+    pushM $ Helpers.checkWindow $ mkAfter $ Window.PlacedToken source (DreamingCardTarget cid) token n
+    pure $ updateDreamingCardTokens cid (addTokens token n) a
+  {- THE single dream-removal point. Every other way dreams come off -- the turn
+  start sweep, a card moving them elsewhere -- routes through here, which is why
+  the flip-faceup check is pushed from here and nowhere else. -}
+  RemoveTokens _ (DreamingCardTarget cid) token n | controlsDreamingCard cid a -> do
+    when (token == Dream) $ push $ Do (CheckDreamingCard investigatorId cid)
+    pure $ updateDreamingCardTokens cid (subtractTokens token n) a
+  PlaceDreamingCard iid card n | iid == investigatorId -> do
+    canDream <- canCreateDreamingCard iid
+    if canDream
+      then do
+        push $ Do (CheckDreamingCard iid card.id)
+        pure
+          $ removeCardFromZones card a
+          & dreamingCardsL
+          %~ (<> [dreamingCardWith card n])
+      else pure a
+  {- Idempotent: flips iff the record is still there and holds no dreams. Pushed
+  from the removal point above and from 'PlaceDreamingCard' (dreaming 0), and
+  deliberately NOT from BeginTurn -- dreams come off mid-turn too. -}
+  Do (CheckDreamingCard iid cid) | iid == investigatorId -> do
+    for_ (find ((== cid) . (.id)) investigatorDreamingCards) \dc ->
+      when (dc.dreams == 0) $ push $ FlipDreamingCardFaceup iid cid
+    pure a
+  FlipDreamingCardFaceup iid cid | iid == investigatorId -> do
+    case find ((== cid) . (.id)) investigatorDreamingCards of
+      Nothing -> pure a
+      Just dc -> do
+        -- the registry copy, so a customization or ReplaceCard applied while the
+        -- card was facedown is not lost to the stored snapshot
+        card <- fromMaybe dc.card <$> getCardMaybe cid
+        {- Uniqueness restricts a card from ENTERING play, not from being played,
+        and a dreaming card's resolution is not a play, so the playability gate
+        never saw the copy another investigator put into play while this one sat
+        facedown. Flipping anyway reaches an illegal state under every candidate
+        ruling, and the remedy is an open owner question -- so refuse the flip and
+        leave the record in the dream zone at 0 dreams. That commits to nothing:
+        'Do (CheckDreamingCard ..)' is idempotent, so "it flips when the other
+        copy leaves play" is one extra pusher and nothing here changes. -}
+        canEnterPlay <- cardUniquenessOk (toCardDef card)
+        if canEnterPlay
+          then do
+            push $ PutCardIntoPlay iid card Nothing NoPayment []
+            pure $ a & dreamingCardsL %~ filter ((/= cid) . (.id))
+          else pure a
+  {- SNAPSHOT the zone before removing anything: a flipped event, or an
+  enters-play reaction, resolves mid-sweep and can place dreams, and iterating a
+  live list would sweep those too. -}
+  RemoveDreamsAtTurnStart iid | iid == investigatorId -> do
+    let cids = [dc.id | dc <- investigatorDreamingCards, dc.dreams > 0]
+    pushAll [RemoveTokens (toSource a) (DreamingCardTarget cid) Dream 1 | cid <- cids]
+    pure a
   MoveTokens s (ResourceSource iid) _ _ n | iid == investigatorId -> liftRunMessage (RemoveTokens s (toTarget a) #resource n) a
   MoveTokens s _ (ResourceTarget iid) _ n | iid == investigatorId -> liftRunMessage (PlaceTokens s (toTarget a) #resource n) a
   ReassignHorror (isSource a -> True) _ n -> handleReassignHorror a n

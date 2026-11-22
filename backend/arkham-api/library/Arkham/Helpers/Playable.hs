@@ -20,6 +20,7 @@ import Arkham.Helpers.Card (
 import Arkham.Helpers.Cost (getCanAffordCost, getCanAffordCost_, getSpendableResources)
 import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Customization (customizedSlots)
+import Arkham.Helpers.Dreaming (canCreateDreamingCard, dreamingValueWith)
 import Arkham.Helpers.Game (withDepthGuard)
 import Arkham.Helpers.Investigator (getAsIfInHandCards)
 import Arkham.Helpers.Location (getLocationOf)
@@ -326,6 +327,25 @@ getPlayabilityChecks (asId -> iid) source costStatus windows' c = do
   -- Diagnostic path: compute every check so the UI can report all reasons.
   getPlayabilityChecksWithResources False False iid source availableResources costStatus windows' c
 
+{- | Uniqueness restricts a card from ENTERING play, not from being played, so
+this is shared by the playability gate and by every other route into play that
+is not a play -- see 'FlipDreamingCardFaceup'.
+-}
+cardUniquenessOk :: HasGame m => CardDef -> m Bool
+cardUniquenessOk def = case (cdUnique def, cdCardType def) of
+  (True, AssetType) ->
+    not <$> case nameSubtitle (cdName def) of
+      Nothing -> selectAny (InPlayAsset $ AssetWithTitle title)
+      Just subtitle -> selectAny (InPlayAsset $ AssetWithFullTitle title subtitle)
+  -- unique events that remain in play: The Raven Quill, Shrine of the Moirai
+  (True, EventType) ->
+    not <$> case nameSubtitle (cdName def) of
+      Nothing -> selectAny (EventWithTitle title)
+      Just subtitle -> selectAny (EventWithFullTitle title subtitle)
+  _ -> pure True
+ where
+  title = nameTitle (cdName def)
+
 getPlayabilityChecksWithResources
   :: forall m source
    . ( HasCallStack
@@ -368,19 +388,12 @@ getPlayabilityChecksWithResources
       cardTypeDetail = if cardTypeOk then Nothing else Just $ tshow (cdCardType pcDef) <> " cards cannot be played"
 
     -- Uniqueness check
-    let title = nameTitle (cdName pcDef)
-    uniquenessOk <- case (cdUnique pcDef, cdCardType pcDef) of
-      (True, AssetType) ->
-        not <$> case nameSubtitle (cdName pcDef) of
-          Nothing -> selectAny (InPlayAsset $ AssetWithTitle title)
-          Just subtitle -> selectAny (InPlayAsset $ AssetWithFullTitle title subtitle)
-      -- unique events that remain in play: The Raven Quill, Shrine of the Moirai
-      (True, EventType) ->
-        not <$> case nameSubtitle (cdName pcDef) of
-          Nothing -> selectAny (EventWithTitle title)
-          Just subtitle -> selectAny (EventWithFullTitle title subtitle)
-      _ -> pure True
-    let uniquenessDetail = if uniquenessOk then Nothing else Just $ "A copy of \"" <> title <> "\" is already in play"
+    uniquenessOk <- cardUniquenessOk pcDef
+    let
+      uniquenessDetail =
+        if uniquenessOk
+          then Nothing
+          else Just $ "A copy of \"" <> nameTitle (cdName pcDef) <> "\" is already in play"
 
     -- Bob Jenkins check
     let
@@ -525,6 +538,14 @@ getPlayabilityChecksWithResources
         canAffordAlternateResourceCost <- case alternateResourceCosts of
           [] -> pure False
           _ -> anyM (getCanAffordCost iid source (pcDef.actions) windows') alternateResourceCosts
+        {- A dreaming card is never paid for with resources. This path gates
+        playability WITHOUT calling 'getCostForCard', and 'getModifiedCardCost'
+        answers Nothing for `cdCost = Nothing` -- which lands on the Nothing branch
+        of 'canAffordCost'' below and then on the 'cheapFail' short-circuit. So
+        adding 'DreamCost' to 'getCostForCard' is not enough: without this disjunct
+        EVERY dreaming card is unconditionally unplayable. -}
+        let mDreamingValue = dreamingValueWith cardModifiers c
+        canDream <- maybe (pure False) (const $ canCreateDreamingCard iid) mDreamingValue
         mBaseModifiedCardCost <- getModifiedCardCost iid c
         mModifiedCardCost <-
           maybe (pure Nothing) (fmap Just . getPotentiallyModifiedCardCost iid c True) mBaseModifiedCardCost
@@ -548,11 +569,13 @@ getPlayabilityChecksWithResources
           canAffordCost = canAffordCost' || canAffordWithChuck
           needsChuckFergus = not canAffordCost' && canAffordWithChuck
           resourceCostDetail =
-            if costStatus == PaidCost || canAffordCost || canAffordAlternateResourceCost
+            if costStatus == PaidCost || canAffordCost || canAffordAlternateResourceCost || canDream
               then Nothing
-              else
-                let need = maybe 0 (+ auxiliaryResourceCosts) mModifiedCardCost
-                 in Just $ "Need " <> tshow need <> " resources, have " <> tshow totalAvailable
+              else case mDreamingValue of
+                Just _ -> Just "Already controlling the maximum number of dreaming cards"
+                Nothing ->
+                  let need = maybe 0 (+ auxiliaryResourceCosts) mModifiedCardCost
+                   in Just $ "Need " <> tshow need <> " resources, have " <> tshow totalAvailable
 
 
         -- Reaction windows only retain the PlayCard/PlayEvent window, not the
@@ -619,8 +642,10 @@ getPlayabilityChecksWithResources
             else passesLimits (if isBobJenkins then fromMaybe iid c.owner else iid) c
         let limitsDetail = if limitsOk then Nothing else Just "Per-round or per-game limit has been reached"
 
-        -- Slots check
-        let effectiveSlots = customizedSlots c
+        {- Slots check. A dreaming card is played facedown into the dream zone,
+        which is not in play, so it fills no slot now; it asks for one when its last
+        dream comes off and it enters play. -}
+        let effectiveSlots = if isJust mDreamingValue then [] else customizedSlots c
         slotsOk <-
           if cheapFail || null effectiveSlots
             then pure True

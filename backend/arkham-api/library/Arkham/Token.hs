@@ -28,6 +28,7 @@ data Token
   | Discovery
   | Doom
   | Dose
+  | Dream
   | Durability
   | Eclipse
   | Empowerment
@@ -137,6 +138,9 @@ tokenIsUse = \case
   Horror -> False
   Clue -> False
   Doom -> False
+  -- A dream is the dreaming keyword's countdown, not a supply the card spends,
+  -- and a dreaming endpoint asset must not read as @AssetWithUseType Resource@.
+  Dream -> False
   -- A set's own token is a marker its cards place on themselves, not a supply
   -- anything spends, so it is never a use.
   Custom _ -> False
@@ -150,6 +154,9 @@ instance IsLabel "horror" Token where
 
 instance IsLabel "resource" Token where
   fromLabel = Resource
+
+instance IsLabel "dream" Token where
+  fromLabel = Dream
 
 instance IsLabel "supply" Token where
   fromLabel = Supply

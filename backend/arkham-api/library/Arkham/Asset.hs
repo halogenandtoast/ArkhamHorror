@@ -1713,4 +1713,21 @@ allAssets =
       , SomeAssetCard charlesTammJustHereToGetPaid
       , SomeAssetCard azizaSteerHasABoneToPick
       , SomeAssetCard azizaSteerHardboiled
+      , -- Power of the Dreamlands
+        SomeAssetCard knightOfCelephais
+      , SomeAssetCard knightsLongsword
+      , SomeAssetCard somniumShotcaster4
+      , SomeAssetCard grimoireOfAges
+      , SomeAssetCard lunarCharts
+      , SomeAssetCard dalkura
+      , SomeAssetCard bladeOfTheSkySea3
+      , SomeAssetCard enchantingFife
+      , SomeAssetCard lukeRobinson
+      , SomeAssetCard lunarSight3
+      , SomeAssetCard realityFracture3
+      , SomeAssetCard explorersSextant
+      , SomeAssetCard lashOfUlthar2
+      , SomeAssetCard idolOfBokrug5
+      , SomeAssetCard sigilOfThalarion2
+      , SomeAssetCard staffOfAtal3
       ]

@@ -17,6 +17,7 @@ import Arkham.Skill.CardDefs.Core2026 as X
 import Arkham.Skill.CardDefs.ReturnTo as X
 import Arkham.Skill.CardDefs.Standalone as X
 import Arkham.Skill.CardDefs.Promo as X
+import Arkham.Skill.CardDefs.PowerOfTheDreamlands as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -184,4 +185,6 @@ allPlayerSkillCards = (Homebrew.playerSkillsMap <>) $
       , outTheDoor
       , outTheDoor1
       , contingency3
+      , --- Power of the Dreamlands
+        dreamMastery
       ]

@@ -419,10 +419,20 @@ const focusedCardGroups = computed<SearchedCardGroup[]>(() => {
 
 const cardIds = (cards: ArkhamCard[]) => cards.map((card) => toCardContents(card).id)
 
+/* The dream zones, every seat's: `DreamZone.vue` renders each one inside its
+ * investigator's play area, and a click there answers the choice. Collected
+ * separately because `DreamingCardTarget` is routed by it on its own. */
+const dreamingCardIds = computed(() => new Set(
+  Object.values(props.game.investigators)
+    .flatMap((i) => i.dreamingCards ?? [])
+    .map((dreamingCard) => dreamingCard.cardId)
+))
+
 const cardChoiceHandledElsewhereIds = computed(() => {
   const scenario = props.game.scenario
 
   return new Set([
+    ...dreamingCardIds.value,
     ...(investigator.value?.hand ?? []).map((card) => toCardContents(card).id),
     ...Object.values(props.game.investigators).flatMap((i) => [
       ...i.discard.map((card) => card.id),
@@ -565,6 +575,7 @@ function targetLabelHandledElsewhere(choice: TargetLabel) {
       case 'ScarletKeyTarget': return contents in props.game.scarletKeys
       case 'ConcealedCardTarget':
       case 'ConcealedTarget': return contents in props.game.concealed
+      case 'DreamingCardTarget': return dreamingCardIds.value.has(contents)
       case 'CardIdTarget': return cardChoiceHandledElsewhereIds.value.has(contents)
       case 'ChaosTokenFaceTarget': return props.game.focusedChaosTokens.some((token) => token.face === contents)
       default: return false

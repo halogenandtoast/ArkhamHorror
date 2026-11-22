@@ -12,6 +12,7 @@ import Arkham.Matcher.Card as X
 import Arkham.Matcher.ChaosToken as X
 import Arkham.Matcher.Counter as X
 import Arkham.Matcher.Damage as X
+import Arkham.Matcher.DreamingCard as X
 import Arkham.Matcher.Effect as X
 import Arkham.Matcher.Enemy as X
 import Arkham.Matcher.Event as X

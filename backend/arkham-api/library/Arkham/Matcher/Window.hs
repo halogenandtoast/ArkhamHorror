@@ -157,6 +157,8 @@ data WindowMatcher
   | ActAdvances Timing ActMatcher
   | AgendaWouldAdvance Timing AgendaAdvancementReason AgendaMatcher
   | AssetDefeated Timing DefeatedByMatcher AssetMatcher
+  | -- | The 'Who' is checked against the payload's investigator, not re-derived from the asset.
+    AssetFlippedFacedown Timing Who AssetMatcher
   | AttemptToEvade Timing Who EnemyMatcher
   | AttemptToFight Timing Who EnemyMatcher
   | AttachCard Timing (Maybe Who) CardMatcher TargetMatcher

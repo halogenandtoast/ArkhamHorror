@@ -21,6 +21,7 @@ import Treachery from '@/arkham/components/Treachery.vue';
 import ScarletKey from '@/arkham/components/ScarletKey.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import EventView from '@/arkham/components/Event.vue';
+import DreamZone from '@/arkham/components/DreamZone.vue';
 import Skill from '@/arkham/components/Skill.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
 import ProhibitedBadge from '@/arkham/components/ProhibitedBadge.vue';
@@ -1175,6 +1176,15 @@ function closeHand() {
             </div>
 
             <div v-if="hasThreatArea" :key="'threat-divider'" class="threat-divider" />
+
+            <DreamZone
+              :key="'dream-zone'"
+              :game="game"
+              :investigator="investigator"
+              :playerId="playerId"
+              :revealable="!!(solo || showOtherPlayersHands || (playerId == investigator.playerId))"
+              @choose="$emit('choose', $event)"
+            />
 
             <template v-if="tarotCards.length > 0">
               <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana" :data-index="tarotCard.arcana">

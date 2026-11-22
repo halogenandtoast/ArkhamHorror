@@ -46,6 +46,7 @@ windowTable =
   , ("AssetDefeated", ["AssetDefeated"])
   , ("AssetDiscarded", ["LeavePlay"])
   , ("AssetEntersPlay", ["EnterPlay"])
+  , ("AssetFlippedFacedown", ["AssetFlippedFacedown"])
   , ("AssetHealed", ["Healed"])
   , ("AssetLeavesPlay", ["LeavePlay"])
   , ("AssetWouldBeDiscarded", ["WouldBeDiscarded"])

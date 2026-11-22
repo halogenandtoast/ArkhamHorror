@@ -74,6 +74,7 @@ import Arkham.Helpers.Card (passesLimits)
 import Arkham.Helpers.ChaosBag (getBagChaosTokens)
 import Arkham.Helpers.Criteria
 import Arkham.Helpers.Customization
+import Arkham.Helpers.Dreaming (canCreateDreamingCard, getDreamingValue)
 import Arkham.Helpers.Enemy (getModifiedKeywords, spawnAt)
 import Arkham.Helpers.Investigator hiding (findCard, investigator)
 import Arkham.Helpers.Log (hasCampaignOption)
@@ -2094,6 +2095,25 @@ runGameMessage msg g = case msg of
         push $ addToHand iid card
         pure $ g & entitiesL . skillsL %~ deleteMap skillId
       Nothing -> pure g
+  {- "Flip facedown" = leave play and go into the dream zone. The asset LEAVES
+  PLAY, so `RemoveFromPlay` does the whole teardown (leave-play windows, sealed
+  tokens returned, attachments discarded, damage and uses gone with the entity,
+  slot freed) -- do not hand-roll any of it. Mirrors ReturnToHand below.
+
+  Gated on the cap up front: at the cap a forced flip does NOTHING, so the asset
+  must not leave play either. -}
+  FlipAssetFacedown iid assetId n -> do
+    whenM (canCreateDreamingCard iid) do
+      maybeAsset assetId >>= traverse_ \_ -> do
+        removeAllMessagesMatching \case
+          Discarded (AssetTarget assetId') _ _ -> assetId == assetId'
+          _ -> False
+        card <- field AssetCard assetId
+        underneath <- field AssetCardsUnderneath assetId
+        flippedWindow <- checkWindows [mkAfter (Window.AssetFlippedFacedown iid assetId)]
+        pushAll [RemoveFromPlay (toSource assetId), PlaceDreamingCard iid card n, flippedWindow]
+        for_ underneath (push . addToDiscard iid)
+    pure g
   ReturnToHand iid (AssetTarget assetId) -> do
     -- If we try to return to hand but the asset is gone, then do nothing
     mAsset <- maybeAsset assetId
@@ -2240,6 +2260,10 @@ runGameMessage msg g = case msg of
       <> [Do (CheckWindows ws) | notNull ws, notNull kept, not selfRechecking]
 
     pure g
+  {- A dreaming card was paid for by going facedown into the dream zone, so the
+  play is already complete and nothing may be put into play now. It enters play
+  later, through `PutCardIntoPlay`, when its last dream comes off. -}
+  PlayCard _ _ _ payment _ False | Cost.wasDreamed payment -> pure g
   PlayCard iid card mtarget payment windows' False -> do
     let ignoreSelfModifiers = card.cardCode `elem` ["90088", "90089", "90090", "90091", "90092"]
     cardMods <- getModifiers (CardIdTarget $ toCardId card)
@@ -2327,8 +2351,14 @@ runGameMessage msg g = case msg of
                 (SetOriginalCardCode $ pcOriginalCardCode pc)
                 (createAsset card aid)
           let isPermanent = cdPermanent $ toCardDef pc
+          {- A dreaming card is PLAYED once, facedown, and the last dream coming
+          off only makes it ENTER play -- the keyword says "it enters play", not
+          that it is played again. `PlayCard` short-circuits on a dreamed
+          payment, so no route reaches here having paid resources for a card with
+          a dreaming value, and the play windows must stay shut. -}
+          notPlayed <- (isPermanent ||) . isJust <$> getDreamingValue card
           playWindowMsgs <-
-            if isPermanent
+            if notPlayed
               then pure []
               else do
                 whenPlayAsset <- checkWindows [mkWindow #when $ Window.PlayAsset iid aid]
@@ -3129,7 +3159,12 @@ runGameMessage msg g = case msg of
       withActiveInvestigator x
         $ map (uncurry $ AbilityPrevented x)
         <$> getPreventedPlayerAbilities x
-    pushAll $ prevented <> [whenWindow, afterWindow]
+    {- "At the start of your turn, you remove 1 dream from each dreaming card you
+    control." A separate message, not inline: this handler returns
+    `turnStartState x player g` and an inline write would be clobbered. It carries
+    `x` because BeginTurn runs before `activeInvestigatorIdL` is x, so reading the
+    active investigator here would sweep the wrong seat. -}
+    pushAll $ prevented <> [RemoveDreamsAtTurnStart x, whenWindow, afterWindow]
     pure $ turnStartState x player g
   SetPlayerOrder -> do
     lead <- getLead

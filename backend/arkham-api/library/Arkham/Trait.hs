@@ -73,6 +73,7 @@ data Trait
   | Conspirator
   | Construct
   | Corruption
+  | Corsair
   | Cosmos
   | Coterie
   | Courage
@@ -306,9 +307,11 @@ data Trait
   | Shattered
   | Ship
   | Shoggoth
+  | Sigil
   | SilverTwilight
   | Skai
   | Socialite
+  | Soldier
   | Song
   | Sorcerer
   | Spectral

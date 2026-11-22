@@ -93,6 +93,7 @@ import Arkham.Helpers.Cost
 import Arkham.Helpers.Criteria
 import Arkham.Helpers.Customization (customizedSlots, hasCustomization)
 import Arkham.Helpers.Doom
+import Arkham.Helpers.Dreaming
 import Arkham.Helpers.Enemy (
   compositeEnemyGroups,
   enemyEngagedInvestigators,
@@ -678,6 +679,9 @@ withInvestigatorConnectionData inner@(With target _) = case target of
     combat <- field InvestigatorBaseCombat (toId investigator')
     agility <- field InvestigatorBaseAgility (toId investigator')
     handSize <- getHandSize (toAttrs investigator')
+    -- Granted the way handSize is, so the frontend never re-derives the cap from
+    -- modifiers. 'getDreamingCardLimit' stays the only copy of the formula.
+    dreamingCardLimit <- getDreamingCardLimit (toId investigator')
     playProhibitions <- prohibitionRefs =<< getPlayProhibitions (toId investigator')
     commitProhibitions <- prohibitionRefs =<< getCommitProhibitions (toId investigator')
     cannotDiscoverClues <-
@@ -702,6 +706,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
           , "combat" .= combat
           , "agility" .= agility
           , "handSize" .= handSize
+          , "dreamingCardLimit" .= dreamingCardLimit
           , "scarletKeys" .= scarletKeys
           ]
     case mLocation of
@@ -3319,6 +3324,7 @@ leavePlayWindowAssets = do
  where
   subjectOf = \case
     Window.AssetDefeated aid _ -> Just aid
+    Window.AssetFlippedFacedown _ aid -> Just aid
     Window.LeavePlay (AssetTarget aid) -> Just aid
     Window.EntityDiscarded _ (AssetTarget aid) -> Just aid
     _ -> Nothing
@@ -5547,6 +5553,7 @@ instance Projection Investigator where
         committed <- field InvestigatorCommittedCards attrs.id
         pure $ filter (`notElem` committed) $ investigatorHand <> ts <> es
       InvestigatorHandSize -> getHandSize (toAttrs i)
+      InvestigatorDreamingCards -> pure investigatorDreamingCards
       InvestigatorCardsUnderneath -> pure investigatorCardsUnderneath
       InvestigatorDeck -> pure investigatorDeck
       InvestigatorSideDeck -> pure investigatorSideDeck
@@ -5630,6 +5637,22 @@ instance Query KeyMatcher where
         KeyIs k -> pure $ filter ((== k) . (.key)) as
 
     go (locationKeys <> investigatorKeys <> enemyKeys <> scenarioKeys) matcher
+
+instance Query DreamingCardMatcher where
+  toSomeQuery = DreamingCardQuery
+  select_ matcher = do
+    iids <- select UneliminatedInvestigator
+    cards <- concatForM iids \iid -> map (iid,) <$> getDreamingCards iid
+    let
+      go as = \case
+        AnyDreamingCard -> pure as
+        DreamingCardMatches ms -> foldM go as ms
+        DreamingCardControlledBy who -> do
+          controllers <- select who
+          pure $ filter ((`elem` controllers) . fst) as
+        DreamingCardWithDreams valueMatcher ->
+          filterM (\(_, dc) -> dc.dreams `gameValueMatches` valueMatcher) as
+    map snd <$> go cards matcher
 
 instance Query TargetMatcher where
   toSomeQuery = TargetQuery
@@ -5915,6 +5938,8 @@ instance Query ExtendedCardMatcher where
             Nothing -> []
           _ -> []
       CardWithVictory -> cs & filterM (fmap isJust . getVictoryPoints)
+      CardWithDreaming valueMatcher ->
+        cs & filterM (getDreamingValue >=> maybe (pure False) (`gameValueMatches` valueMatcher))
       CardWithSharedTraitToAttackingEnemy -> do
         mEnemy <- selectOne AttackingEnemy
         case mEnemy of

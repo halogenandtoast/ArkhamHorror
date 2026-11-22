@@ -93,6 +93,23 @@ data Payment
   | AddCurseTokenPayment Int
   | AddFrostTokenPayment Int
   | AddTokenPayment Int ChaosTokenFace
+  | {- | Dreams placed by a 'DreamCost'. Read by a dreaming card that has to know
+    it was actually dreamed into play ("if you do, place ... on the bottom of
+    your deck").
+    -}
+    DreamPayment Int
+  | {- | Dreams placed on an existing dreaming card by a 'PlaceDreamCost'. Kept
+    apart from 'DreamPayment' so @wasDreamed@ stays "this card was dreamed
+    into play" and nothing else.
+    -}
+    PlaceDreamPayment Int
+  | {- | An asset flipped facedown by a 'FlipAssetFacedownCost', with the dreams
+    placed on it. Kept apart from 'DreamPayment' for the same reason, and
+    because @Game/Runner@ keys its don't-resolve-the-card-twice guard on
+    @wasDreamed@: a card whose additional cost flips a DIFFERENT card facedown
+    was not itself dreamed, and must still resolve (14060).
+    -}
+    FlipAssetFacedownPayment Int
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Payment where
@@ -348,6 +365,42 @@ data Cost
     require the card to have a trait at all ('CardWithAnyTrait').
     -}
     ChooseTraitOfChosenCardCost
+  | {- | Dream the card into play: place it facedown in the paying investigator's
+    dream zone with @n@ dreams on it. Like 'PlaceClueOnLocationCost', a cost that
+    places rather than spends.
+
+    It REPLACES the resource cost rather than being appended to it -- a dreaming
+    card has @cdCost = Nothing@, whose resource cost is 'UnpayableCost', and the
+    'Costs' branch of 'getCanAffordCost_' is a conjunction.
+
+    Declared late on purpose: combining costs sorts by this derived 'Ord'
+    ('Semigroup Cost'), so the declaration order decides when the dreams are
+    placed relative to everything else the play pays. Same reason
+    'ChooseTraitOfChosenCardCost' is last.
+    -}
+    DreamCost Int
+  | {- | "Place @n@ dreams (from the token pool) on a dreaming card you
+    control." Another cost that places rather than spends, and another that asks
+    a question while paying -- which is why it is declared beside 'DreamCost',
+    after everything that chooses a card.
+
+    Affordability is "you control a dreaming card at all": there is no finite
+    dream supply, so nothing else can make it unpayable.
+    -}
+    PlaceDreamCost Int
+  | {- | "Flip <this asset> facedown and place @n@ ... on him, as dreams." The
+    asset leaves play and goes into its controller's dream zone with @n@ dreams
+    on it ('FlipAssetFacedown').
+
+    A cost rather than an effect because that is what makes the dreaming-card
+    cap gate the ability the way a slot limit does: at the cap this is
+    unaffordable and the ability is never offered, instead of being paid for and
+    then doing nothing.
+
+    Declared beside the other dream costs, after everything that chooses a card,
+    so the resources a card pairs it with are spent before the flip.
+    -}
+    FlipAssetFacedownCost AssetMatcher Int
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Cost
@@ -552,6 +605,16 @@ chosenTraitPayment = listToMaybe . toListOf (cosmos . _ChosenTraitPayment)
 
 addedCurseTokenPayment :: Payment -> Int
 addedCurseTokenPayment = sum . toListOf (cosmos . _AddCurseTokenPayment)
+
+{- | Whether the card was dreamed into the dream zone rather than played into
+play. True at a dreaming value of 0 as well, so never key on a dream count.
+-}
+wasDreamed :: Payment -> Bool
+wasDreamed = notNull . toListOf (cosmos . _DreamPayment)
+
+-- | Whether a 'FlipAssetFacedownCost' really flipped something, for an "if you do".
+wasAssetFlippedFacedown :: Payment -> Bool
+wasAssetFlippedFacedown = notNull . toListOf (cosmos . _FlipAssetFacedownPayment)
 
 discardedCards :: Payment -> [Card]
 discardedCards = concat . toListOf (cosmos . _DiscardCardPayment)

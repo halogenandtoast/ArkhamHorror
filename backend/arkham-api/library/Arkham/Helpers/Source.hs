@@ -6,7 +6,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Constants (notPlayerAbilityIndex)
 import Arkham.Field.Import
-import Arkham.GameEnv (getCard)
+import Arkham.GameEnv (getCard, getCardMaybe)
 import Arkham.Helpers.FetchCard
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
@@ -71,6 +71,8 @@ sourceTraits = \case
   YouSource -> selectJust Matcher.You >>= field InvestigatorTraits
   ScarletKeySource _ -> pure mempty
   ConcealedCardSource _ -> pure mempty
+  -- the card's traits, since a dreaming card is still that card
+  DreamingCardSource cid -> maybe mempty toTraits <$> getCardMaybe cid
   UltimatumOrBoonSource _ -> pure mempty
 
 getSourceController :: HasGame m => Source -> m (Maybe InvestigatorId)
@@ -275,6 +277,7 @@ sourceMatches s = \case
         BatchSource {} -> False
         ScarletKeySource {} -> True
         ConcealedCardSource {} -> True
+        DreamingCardSource {} -> True
         PaymentSource {} -> False
         UltimatumOrBoonSource _ -> False
     pure $ go s

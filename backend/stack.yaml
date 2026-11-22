@@ -56,14 +56,11 @@ ghc-options:
 packages:
   - cards-discover
   - arkham-api
-  - validate
   - ah3e
 
 allow-newer: true
 
 extra-deps:
-- github: halogenandtoast/monad-validate
-  commit: e5f36d4a82875c09c6000fed8f8ced50e21b75ce
 - github: brendanhay/amazonka
   # b562aa3 migrates amazonka-core from `memory` to `ram`, required by the
   # crypton-1.1.x that nightly-2026-08-09 ships.

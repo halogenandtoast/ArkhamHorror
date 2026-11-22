@@ -97,6 +97,7 @@ tokenScopes token = case fromMaybe token $ T.stripPrefix "cycle:" token of
   "core_ch2" -> Just [cycleCards 12]
   "core2026" -> Just [cycleCards 12]
   "core_2026" -> Just [cycleCards 12]
+  "potd" -> Just [cycleCards 14]
   "return" -> Just [CardNumbers 50000 59999]
   "rtnotz" -> Just [cycleCards 50]
   "rtdwl" -> Just [cycleCards 51]

@@ -34,7 +34,7 @@ enum View {
   List = "LIST",
 }
 
-const CHAPTER_2_CYCLES = new Set([12, 13, 61, 73])
+const CHAPTER_2_CYCLES = new Set([12, 13, 14, 61, 73])
 
 /* The third chapter: cards that aren't printed cards. Two groups of them --
  * the homebrew campaigns this build ships, and the cards you built yourself --
@@ -115,7 +115,7 @@ const SET_FONT_CHARS: Record<string, string> = {
   // Cycle 60 — Investigator Starter Decks
   nat:       '\u004B', har:       '\u004D', win:       '\u004F',
   jac:       '\u004E', ste:       '\u0050',
-  // Cycle 61 — Investigator Starter Decks (Chapter 2)
+  // Cycle 61 — Investigator Starter Decks (Chapter 2 products)
   tom:       '\uE918',
   car:       '\uE919',
   and:       '\uE91B',
@@ -761,6 +761,7 @@ const cycleSets = (cycle: CardCycle) => setsByCycle.get(cycle.cycle) ?? []
 
 const CYCLE_ICON_OVERRIDES: Record<number, string> = {
   13: 'core',  // Small Campaign Expansions
+  14: 'core',  // Deckbuilding Expansions
   50: 'core',  // Return to...
   60: 'core',  // Investigator Starter Decks
   61: 'core',  // Investigator Starter Decks (Chapter 2)

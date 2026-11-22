@@ -52,6 +52,7 @@
   "newGame": "New Game",
   "newPassword": "New Password",
   "password": "Password",
+  "passwordResetFailed": "Could not request a password reset. Please try again.",
   "passwordResetRequested": "Password reset requested",
   "passwordUpdatedSuccessfully": "Password updated successfully",
   "register": "Register",

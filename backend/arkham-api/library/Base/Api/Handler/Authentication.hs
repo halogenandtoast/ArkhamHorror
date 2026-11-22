@@ -1,5 +1,6 @@
 module Base.Api.Handler.Authentication where
 
+import Base.Email (normalizeEmail)
 import Crypto.BCrypt
 import Data.Text.Encoding qualified as TE
 import Import
@@ -7,7 +8,7 @@ import Types
 
 authenticationToUser :: Authentication -> Handler (Maybe (Entity User))
 authenticationToUser Authentication {..} = do
-  muser <- runDB $ getBy $ UniqueEmail authenticationEmail
+  muser <- runDB $ getBy $ UniqueEmailNormalized $ normalizeEmail authenticationEmail
   case muser of
     Nothing -> pure Nothing
     Just entity@(Entity _ user) ->

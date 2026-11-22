@@ -9493,6 +9493,7 @@ library
       Base.Api.Handler.PasswordReset
       Base.Api.Handler.Registration
       Base.Api.Handler.Settings
+      Base.Email
       Base.Mail
       Base.Util
       Config
@@ -10183,6 +10184,7 @@ test-suite spec
       Arkham.UltimatumsAndBoons.UltimatumOfTheScreamSpec
       Arkham.UltimatumsAndBoons.UltimatumOfTheSpiralSpec
       Arkham.UltimatumsAndBoons.UltimatumOfUltimatumsSpec
+      Base.EmailSpec
       Entity.AnswerSpec
       Helpers.Achievements
       Helpers.Message

@@ -22,6 +22,7 @@
   "newGame": "Nueva Partida",
   "newPassword": "Nueva Contraseña",
   "password": "Contraseña",
+  "passwordResetFailed": "No se pudo solicitar el restablecimiento. Intentá nuevamente.",
   "passwordResetRequested": "Restablecimiento de contraseña solicitado",
   "passwordUpdatedSuccessfully": "Contraseña actualizada exitosamente",
   "register": "Registrarse",

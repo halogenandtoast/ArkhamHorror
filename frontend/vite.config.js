@@ -68,6 +68,10 @@ const cardData = () => {
   }
 }
 
+// Backend the dev server proxies /api to. WSL builds listen on the distro IP
+// (localhost forwarding is not guaranteed); the Docker stack publishes 13002.
+const apiTarget = process.env.VITE_API_TARGET || "http://127.0.0.1:3002"
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -85,13 +89,13 @@ export default defineConfig({
     port: 8080,
     proxy: {
       "^/api": {
-        target: "http://127.0.0.1:3002",
+        target: apiTarget,
         changeOrigin: true,
         secure: false,
         ws: true
       },
       "^/health": {
-        target: "http://127.0.0.1:3002",
+        target: apiTarget,
         changeOrigin: true,
         secure: false,
         ws: false

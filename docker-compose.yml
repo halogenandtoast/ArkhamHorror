@@ -73,6 +73,10 @@ services:
       - "3000:3000"
       # third edition frontend
       - "3001:3001"
+      # The API, for a Vite dev server running on the host: it proxies /api to
+      # 127.0.0.1:3002 (frontend/vite.config.js). Bound to loopback so the API
+      # is never reachable from outside the machine.
+      - "127.0.0.1:3002:3002"
     depends_on:
       db:
         condition: service_started

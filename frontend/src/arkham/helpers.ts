@@ -27,7 +27,10 @@ const imgHelper: Map<string, ImageHelper> = new Map<string, ImageHelper>([
   ['fr', { root: 'fr', digests: new Set(), data: new Map(), loaded: ref(false) }],
   ['es', { root: 'es', digests: new Set(), data: new Map(), loaded: ref(false) }],
   ['ko', { root: 'ko', digests: new Set(), data: new Map(), loaded: ref(false) }],
-  ['zh', { root: 'zh', digests: new Set(), data: new Map(), loaded: ref(false) }]
+  ['zh', { root: 'zh', digests: new Set(), data: new Map(), loaded: ref(false) }],
+  // Simplified Chinese is a separate UI locale (zh-cn) but shares the same
+  // localized art: the asset host only has an img/arkham/zh folder.
+  ['zh-cn', { root: 'zh', digests: new Set(), data: new Map(), loaded: ref(false) }]
 ])
 
 const digestLoaders: Record<string, () => Promise<{ default: string[] }>> = {
@@ -36,6 +39,7 @@ const digestLoaders: Record<string, () => Promise<{ default: string[] }>> = {
   es: () => import('@/digests/es.json'),
   ko: () => import('@/digests/ko.json'),
   zh: () => import('@/digests/zh.json'),
+  'zh-cn': () => import('@/digests/zh.json'),
 }
 
 export async function checkImageExists(language: string = localStorage.getItem('language') || 'en') {
@@ -164,7 +168,10 @@ export function isLocalized(src: string) {
   if (language === 'en') return true
 
   const helper = imgHelper.get(language) || defaultHelper
-  const path = src.replace(/^\//, '')
+  // helpers.ts isLocalized() 内
+  const m = src.match(/\/img\/arkham\/(?:[a-z-]+\/)?(.+?)(?:[?#].*)?$/)
+  const path = m ? m[1] : src.replace(/^\//, '')
+  // const path = src.replace(/^\//, '')
   const exists = helper.digests.has(path)
 
   if (exists && helper.root && helper.loaded.value) {

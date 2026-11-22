@@ -19,12 +19,13 @@ ambush1 = event Ambush1 Cards.ambush1
 
 instance HasAbilities Ambush1 where
   getAbilities (Ambush1 attrs) = case attrs.attachedTo of
-    Just (LocationTarget lid) ->
-      [ restricted attrs 1 (exists $ LocationWithId lid <> LocationWithoutInvestigators) Anytime
-      , restricted attrs 2 ControlsThis
-          $ forced
-          $ EnemySpawns #after (PlacementAt $ LocationWithId lid) AnyEnemy
-      ]
+    Just (LocationTarget lid)
+      | getEventMetaDefault True attrs ->
+          [ restricted attrs 1 (exists $ LocationWithId lid <> LocationWithoutInvestigators) Anytime
+          , restricted attrs 2 ControlsThis
+              $ forced
+              $ EnemySpawns #after (PlacementAt $ LocationWithId lid) AnyEnemy
+          ]
     _ -> []
 
 instance RunMessage Ambush1 where
@@ -35,11 +36,11 @@ instance RunMessage Ambush1 where
       pure e
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       toDiscardBy attrs.owner (attrs.ability 1) attrs
-      pure e
+      pure . Ambush1 $ attrs & setMeta False
     UseCardAbility _ (isSource attrs -> True) 2 (spawnedEnemy -> enemyId) _ -> do
       canDealDamage <- withoutModifier attrs.owner CannotDealDamage
       let source = attrs.ability 2
       pushWhen canDealDamage $ DealDamage (EnemyTarget enemyId) $ nonAttack (Just attrs.owner) source 2
       toDiscardBy attrs.owner source attrs
-      pure e
+      pure . Ambush1 $ attrs & setMeta False
     _ -> Ambush1 <$> liftRunMessage msg attrs

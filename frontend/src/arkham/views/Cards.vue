@@ -776,7 +776,7 @@ const cycleIconCode = (cycle: CardCycle): string => {
 }
 
 // Sets whose icon ships as an SVG rather than the usual PNG.
-const SVG_SET_ICONS = new Set(['cob'])
+const SVG_SET_ICONS = new Set(['cob', 'ttn'])
 
 const setIconPath = (code: string) =>
   `/img/arkham/encounter-sets/${code}.${SVG_SET_ICONS.has(code) ? 'svg' : 'png'}`

@@ -45,10 +45,12 @@ printed text calls for.
 -}
 instance HasAbilities VeilOfThalarion where
   getAbilities (VeilOfThalarion a) =
-    [ restricted a 1 (DreamingCardExists $ DreamingCardControlledBy You)
+    [ restricted a 1 (DreamingCardExists dreamToSpend)
         $ SilentForcedAbility
         $ Matcher.PlayCard #when You (basic $ CardWithId a.cardId)
     ]
+   where
+    dreamToSpend = DreamingCardControlledBy You <> DreamingCardWithDreams (atLeast 1)
 
 {- | All three would-take windows are raised together (Investigator/Runner/Damage.hs),
 so the combined one carries both numbers; the singles are only a fallback.
@@ -68,11 +70,17 @@ getDamageAndHorror ws = foldr merge Nothing (mapMaybe toPayload ws)
 instance RunMessage VeilOfThalarion where
   runMessage msg e@(VeilOfThalarion attrs) = runQueueT $ case msg of
     {- "1 dreaming card you control": the player names it. Asked only when the
-    answer can differ -- when every dreaming card holds the same number of dreams
-    the reduction is identical whichever is named, so the prompt is pure noise.
-    Best first, since a smaller reduction is never an advantage. -}
+    answer can differ -- when every candidate holds the same number of dreams the
+    reduction is identical whichever is named, so the prompt is pure noise. Best
+    first, since a smaller reduction is never an advantage.
+
+    A card holding no dreams is not a candidate: it reduces nothing, and at 0
+    dreams it should already have flipped faceup (a card stranded there is the
+    uniqueness case). Offering it would also split the counts and turn a forced
+    case into a prompt. -}
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      dreamingCards <- sortOn (Down . (.dreams)) <$> getDreamingCards attrs.owner
+      dreamingCards <-
+        sortOn (Down . (.dreams)) . filter ((> 0) . (.dreams)) <$> getDreamingCards attrs.owner
       case nub (map (.dreams) dreamingCards) of
         [] -> pure ()
         [dreams] -> reduceCostOf (attrs.ability 1) (toCard attrs) dreams

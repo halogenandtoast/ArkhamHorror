@@ -10033,6 +10033,7 @@ test-suite spec
       Arkham.Event.Events.OnTheLamSpec
       Arkham.Event.Events.OopsSpec
       Arkham.Event.Events.PredatorOrPreySpec
+      Arkham.Event.Events.PushedToTheLimitSpec
       Arkham.Event.Events.PutrescentRotSpec
       Arkham.Event.Events.RefineSpec
       Arkham.Event.Events.Respite2Spec

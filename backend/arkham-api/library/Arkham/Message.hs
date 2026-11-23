@@ -1255,6 +1255,14 @@ data Message
   | ShuffleAllInEncounterDiscardBackIn CardCode
   | ShuffleBackIntoEncounterDeck Source Target
   | ShuffleCardsIntoDeck DeckSignifier [Card]
+  | {- | A shuffle the rules refuse. FAQ 1.13 bars a single card from an empty
+    player or encounter deck, and 'CannotShuffleDeck' bars the act outright. The
+    lifted helpers drop such a shuffle silently, so without this the card sits
+    where it already was with nothing said: Pushed to the Limit told a player to
+    shuffle Lupara into an empty deck, correctly left it in the discard, and the
+    log was silent either way (#6046). NARRATION ONLY -- no handler, no effect.
+    -}
+    CannotShuffleIntoDeck DeckSignifier [Card]
   | ShuffleDiscardBackIn InvestigatorId
   | ShuffleEncounterDiscardBackIn
   | ShuffleEncounterDiscardBackInByKey ScenarioEncounterDeckKey

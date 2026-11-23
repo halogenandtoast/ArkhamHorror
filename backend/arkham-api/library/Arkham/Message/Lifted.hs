@@ -2138,9 +2138,15 @@ shuffleCardsIntoBottomOfDeck
   -> Int
   -> cards
   -> m ()
-shuffleCardsIntoBottomOfDeck deck n cards = Shuffle.whenCanShuffleIn deck cards do
-  for_ cards $ push . ObtainCard . toCardId
-  push $ Msg.shuffleCardsIntoBottomOfDeck deck n cards
+shuffleCardsIntoBottomOfDeck deck n cards =
+  Shuffle.getCanShuffleIn deck cards >>= \case
+    True -> do
+      for_ cards $ push . ObtainCard . toCardId
+      push $ Msg.shuffleCardsIntoBottomOfDeck deck n cards
+    -- See 'Arkham.Message.Lifted.Base.shuffleCardsIntoDeck': no card, no
+    -- refusal to narrate (#6046).
+    False -> when (notNull cards) do
+      push $ CannotShuffleIntoDeck (Deck.toDeck deck) (map toCard (toList cards))
 
 reduceCostOf :: (Sourceable source, IsCard card, ReverseQueue m) => source -> card -> Int -> m ()
 reduceCostOf source card n = Msg.pushM $ Msg.reduceCostOf source card n

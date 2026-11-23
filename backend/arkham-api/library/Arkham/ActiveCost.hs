@@ -1841,7 +1841,7 @@ instance RunMessage ActiveCost where
                     && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
                     && isNothing cardDef.fastWindow
                     && all (`notElem` nonAttackOfOpportunityActions) actions
-                    && (totalActionCost c.costs > 0)
+                    && (totalActionCost c.costs > 0 || PlayProvokesAttacksOfOpportunity `elem` modifiers')
                 mEffect =
                   guard cardDef.beforeEffect
                     *> [ enabled

@@ -621,6 +621,13 @@ data ModifierType
   | -- | Player cards that would be discarded are placed beneath the target instead
     PlaceUnderneathInsteadOfDiscard Target
   | PlaySource Source
+  | {- | This play IS the action, though the card itself costs no action: the action
+    was already spent elsewhere (Bob Jenkins' additional action pays for the play his
+    ability grants). Without it 'Arkham.ActiveCost' reads a zero action cost as "not an
+    action" and skips the attack of opportunity -- and with it the played card's own
+    'DoesNotProvokeAttacksOfOpportunity'.
+    -}
+    PlayProvokesAttacksOfOpportunity
   | PlayUnderControlOf InvestigatorId
   | PlayableCardOf InvestigatorId Card
   | PlayableModifierContexts [(CardMatcher, [ModifierType])]

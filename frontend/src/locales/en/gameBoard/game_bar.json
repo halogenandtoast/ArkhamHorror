@@ -82,7 +82,10 @@
         "drawSpotlight": "Show the cards you draw from your own deck, enlarged, the way an encounter card is shown.",
         "drawSpotlightOff": "Off",
         "drawSpotlightUpkeep": "Upkeep only",
-        "drawSpotlightEvery": "Every draw"
+        "drawSpotlightEvery": "Every draw",
+        "autoResolveSingleChoiceTitle": "Automatically choose the only available action",
+        "autoResolveSingleChoice": "Automatically perform a choice when only one action is available.",
+        "autoResolveSingleChoiceNotice": "Only one action is available, so it will be performed automatically."
     },
 
 

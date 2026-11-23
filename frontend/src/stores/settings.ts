@@ -22,6 +22,7 @@ const EXTRA_ANIMATIONS_SETTING = 'extraAnimations'
 // `setup-only` card tags) into a stack beside the play area once setup is over.
 // Off by default: they are still real cards, and some players want to see them.
 const HIDE_INERT_CARDS_KEY = 'arkhamHideInertCards'
+const AUTO_RESOLVE_SINGLE_CHOICES_KEY = 'arkhamAutoResolveSingleChoices'
 
 /* Show the cards you draw from your own deck, enlarged, the way an encounter
  * card is shown when it is drawn.
@@ -199,6 +200,15 @@ export const useSettings = defineStore("settings", () => {
     localStorage.setItem(HIDE_INERT_CARDS_KEY, String(enabled))
   }
 
+  const autoResolveSingleChoices = ref(
+    localStorage.getItem(AUTO_RESOLVE_SINGLE_CHOICES_KEY) === 'true',
+  )
+
+  function setAutoResolveSingleChoices(enabled: boolean) {
+    autoResolveSingleChoices.value = enabled
+    localStorage.setItem(AUTO_RESOLVE_SINGLE_CHOICES_KEY, String(enabled))
+  }
+
   const showBonded = ref(false)
 
   function toggleShowBonded() {
@@ -224,6 +234,8 @@ export const useSettings = defineStore("settings", () => {
     setExtraAnimationsOverride,
     hideInertCards,
     setHideInertCards,
+    autoResolveSingleChoices,
+    setAutoResolveSingleChoices,
     customCardsEnabled,
     setCustomCardsEnabled,
     inlineModals,

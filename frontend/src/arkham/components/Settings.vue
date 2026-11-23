@@ -52,6 +52,11 @@ const hideInertCards = computed({
   set: (value: boolean) => settings.setHideInertCards(value),
 })
 
+const autoResolveSingleChoices = computed({
+  get: () => settings.autoResolveSingleChoices,
+  set: (value: boolean) => settings.setAutoResolveSingleChoices(value),
+})
+
 // Same global / per-game pairing as extraAnimations above, tri-state for the
 // same reason: "not in this scenario" and "not ever" are different wishes.
 const drawSpotlightGlobal = computed<string>({
@@ -230,6 +235,7 @@ const activeTab = ref<TabId>('table')
 const settingTabs: Record<string, TabId> = {
   skipTriggers: 'pacing',
   drawSpotlight: 'pacing',
+  autoResolveSingleChoices: 'pacing',
 }
 
 function navigateTabs(event: KeyboardEvent) {
@@ -402,6 +408,24 @@ onBeforeUnmount(() => {
               <label for="opt-skipTriggers-on">{{ $t('On') }}</label>
               <input type="radio" id="opt-skipTriggers-off" name="opt-skipTriggers" :checked="!skipTriggers" @change="skipTriggers = false" />
               <label for="opt-skipTriggers-off">{{ $t('Off') }}</label>
+            </div>
+          </div>
+
+          <div
+            class="toggle-row"
+            :ref="setSettingRef('autoResolveSingleChoices')"
+            :class="{ 'toggle-row--highlighted': highlightedSetting === 'autoResolveSingleChoices' }"
+          >
+            <div class="toggle-text">
+              <div class="toggle-name">{{ $t('gameBar.settings.autoResolveSingleChoiceTitle') }}</div>
+              <div class="toggle-desc">{{ $t('gameBar.settings.autoResolveSingleChoice') }}</div>
+              <div class="toggle-scope">{{ $t('gameBar.settings.scope.browser') }}</div>
+            </div>
+            <div class="segmented toggle-control">
+              <input type="radio" id="opt-autoResolveSingleChoices-on" name="opt-autoResolveSingleChoices" :checked="autoResolveSingleChoices" @change="autoResolveSingleChoices = true" />
+              <label for="opt-autoResolveSingleChoices-on">{{ $t('On') }}</label>
+              <input type="radio" id="opt-autoResolveSingleChoices-off" name="opt-autoResolveSingleChoices" :checked="!autoResolveSingleChoices" @change="autoResolveSingleChoices = false" />
+              <label for="opt-autoResolveSingleChoices-off">{{ $t('Off') }}</label>
             </div>
           </div>
 

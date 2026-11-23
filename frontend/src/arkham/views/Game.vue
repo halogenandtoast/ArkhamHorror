@@ -100,6 +100,7 @@ import {
 } from '@/arkham/cardFlight'
 import { PENDING_DRAWS, pendingDraws, type PendingDraw } from '@/arkham/pendingDraws'
 import { customCardDef, isCustomCardCode } from '@/arkham/customCards'
+import { onlyActionableChoiceIndex } from '@/arkham/autoResolveSingleChoice'
 import * as Message from '@/arkham/types/Message'
 import type { Phase } from '@/arkham/types/Phase'
 import { type Question } from '@/arkham/types/Question'
@@ -2589,6 +2590,68 @@ async function choose(idx: number) {
     )
   }
 }
+
+let pendingAutoResolveKey: string | null = null
+let lastAutoResolvedKey: string | null = null
+
+watch(
+  [
+    question,
+    () => game.value?.scenarioSteps,
+    questionPlayerId,
+    () => settings.autoResolveSingleChoices,
+    processing,
+  ],
+  ([activeQuestion, scenarioStep, activePlayerId, enabled, busy]) => {
+    const currentGame = game.value
+    if (
+      !enabled ||
+      busy ||
+      props.spectate ||
+      !isActualScenarioView.value ||
+      !activeQuestion ||
+      !currentGame ||
+      !activePlayerId
+    ) {
+      return
+    }
+
+    const choiceIndex = onlyActionableChoiceIndex(activeQuestion)
+    if (choiceIndex === null) return
+
+    const key = `${currentGame.id}:${activePlayerId}:${scenarioStep}:${JSON.stringify(activeQuestion)}`
+    if (key === pendingAutoResolveKey || key === lastAutoResolvedKey) return
+
+    pendingAutoResolveKey = key
+    toast.info(t('gameBar.settings.autoResolveSingleChoiceNotice'), { timeout: 3000 })
+    void nextTick(() => {
+      if (pendingAutoResolveKey !== key) return
+      pendingAutoResolveKey = null
+
+      const latestGame = game.value
+      const latestQuestion = question.value
+      if (
+        !settings.autoResolveSingleChoices ||
+        processing.value ||
+        props.spectate ||
+        !isActualScenarioView.value ||
+        !latestGame ||
+        !latestQuestion ||
+        questionPlayerId.value !== activePlayerId
+      ) {
+        return
+      }
+
+      const latestKey = `${latestGame.id}:${activePlayerId}:${latestGame.scenarioSteps}:${JSON.stringify(latestQuestion)}`
+      const latestChoiceIndex = onlyActionableChoiceIndex(latestQuestion)
+      if (latestKey !== key || latestChoiceIndex === null) return
+
+      lastAutoResolvedKey = key
+      void choose(latestChoiceIndex)
+    })
+  },
+  { flush: 'post' },
+)
 
 /* Answer a one-at-a-time question in one go, in the order given. The engine
  * resolves every choice in a single pass, so the whole sequence is one action

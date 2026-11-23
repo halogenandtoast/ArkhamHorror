@@ -137,6 +137,18 @@
   --teal: #66C8D6;
 }
 
+/* Auto-scaled cards, off unless `arkhamAutoScaleCards` is set. The caps above
+   stop a card growing past a ~1600px-wide viewport, which leaves a large
+   monitor mostly empty; this lets the same formula keep going. Upward only --
+   below that crossover the uncapped formula IS the default. The vh term is the
+   vw one restated for 16:9 (2.5 * 16/9 = 4.444), so a 16:9 screen gets the
+   full width-driven size while a short or ultrawide one is held back by its
+   height instead of growing cards taller than the board. */
+:root.arkham-auto-scale-cards {
+  --card-width: min(calc(2.5vw + 20px), max(60px, calc(4.444vh + 20px)));
+  --card-height: min(calc(3.545vw + 28.36px), max(85.08px, calc(6.302vh + 28.36px)));
+}
+
 @property --glow-rotation {
   syntax: '<angle>';
   inherits: false;

@@ -59,6 +59,8 @@
             "everyone": "everyone"
         },
         "default": "Default",
+        "autoScaleCardsTitle": "Scale Cards To The Screen",
+        "autoScaleCards": "Let cards grow past their usual size on a screen with room to spare. They are never drawn smaller than normal \u2014 on a display under about 1600px wide this changes nothing.",
         "hideInertCardsTitle": "Hide Cards With No Ongoing Effect",
         "hideInertCards": "Once setup is over, tuck permanents whose text only applied at deck creation or setup — In the Thick of It, Adaptable, Observed — into a stack beside the play area.",
         "keybindingsTitle": "Keyboard Shortcuts",

@@ -52,6 +52,11 @@ const hideInertCards = computed({
   set: (value: boolean) => settings.setHideInertCards(value),
 })
 
+const autoScaleCards = computed({
+  get: () => settings.autoScaleCards,
+  set: (value: boolean) => settings.setAutoScaleCards(value),
+})
+
 // Same global / per-game pairing as extraAnimations above, tri-state for the
 // same reason: "not in this scenario" and "not ever" are different wishes.
 const drawSpotlightGlobal = computed<string>({
@@ -335,6 +340,20 @@ onBeforeUnmount(() => {
               <label for="opt-showHands-on">{{ $t('On') }}</label>
               <input type="radio" id="opt-showHands-off" name="opt-showHands" :checked="!showOtherHands" @change="showOtherHands = false" />
               <label for="opt-showHands-off">{{ $t('Off') }}</label>
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-text">
+              <div class="toggle-name">{{$t('gameBar.settings.autoScaleCardsTitle')}}</div>
+              <div class="toggle-desc">{{$t('gameBar.settings.autoScaleCards')}}</div>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.browser')}}</div>
+            </div>
+            <div class="segmented toggle-control">
+              <input type="radio" id="opt-autoScaleCards-on" name="opt-autoScaleCards" :checked="autoScaleCards" @change="autoScaleCards = true" />
+              <label for="opt-autoScaleCards-on">{{ $t('On') }}</label>
+              <input type="radio" id="opt-autoScaleCards-off" name="opt-autoScaleCards" :checked="!autoScaleCards" @change="autoScaleCards = false" />
+              <label for="opt-autoScaleCards-off">{{ $t('Off') }}</label>
             </div>
           </div>
 

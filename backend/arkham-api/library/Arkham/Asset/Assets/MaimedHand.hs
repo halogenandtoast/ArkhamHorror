@@ -17,7 +17,7 @@ maimedHand :: AssetCard MaimedHand
 maimedHand = assetWith MaimedHand Cards.maimedHand (canLeavePlayByNormalMeansL .~ False)
 
 instance HasAbilities MaimedHand where
-  getAbilities (MaimedHand attrs) = [restrictedAbility attrs 1 OnSameLocation $ ActionAbility mempty Nothing (ActionCost 2)]
+  getAbilities (MaimedHand attrs) = [controlled_ attrs 1 doubleActionAbility]
 
 instance HasModifiersFor MaimedHand where
   getModifiersFor (MaimedHand a) = case a.placement of

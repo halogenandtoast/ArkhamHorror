@@ -9966,6 +9966,7 @@ test-suite spec
       Arkham.Enemy.Cards.LaidToRest.JeanDevereuxSeekingClosureSpec
       Arkham.Enemy.Cards.MobEnforcerSpec
       Arkham.Enemy.Cards.NightOfTheZealot.TheMidnightMasks.TheMaskedHunterSpec
+      Arkham.Enemy.Cards.ReturnToTheDunwichLegacy.ReturnToTheEssexCountyExpress.TheConductorBeastFromBeyondTheGateSpec
       Arkham.Enemy.Cards.SilverTwilightAcolyteSpec
       Arkham.Enemy.Cards.StubbornDetectiveSpec
       Arkham.Enemy.Cards.TheBlobThatAteEverything.Subject8L08EpicMultiplayerSpec

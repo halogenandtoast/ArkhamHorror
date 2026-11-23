@@ -96,3 +96,51 @@ RemovedZone`, `attacking` still set. Post-fix that prompt is gone and `attacking
 See [[project_nested_enemy_attack_clobbers_the_single_attacking_slot]] for the other way
 that one slot bites, and [[project_after_dealt_damage_is_post_defeat]] for the window that
 fires *after* the corpse is gone.
+
+## A replaced disposal is still a defeat (#6050)
+
+`enemyDefeated` is set in the **`Do (Defeated ...)`** handler, deliberately not earlier
+(#5242). A **Forced** ability that replaces only the enemy's *disposal* hangs off
+`EnemyDefeated #when` and calls `insteadOfDiscarding`, whose first act
+(`cancelEnemyDefeatCapture`) **strips that very `Do (Defeated ...)` out of the queue** — so
+the flag is never set, the guard above misses, and the dead attacker's attack resolves.
+
+Reported as #6050 against The Conductor, Beast from beyond the Gate (`51026b`, Return to
+The Essex County Express): "*Forced - When The Conductor is defeated: Attach it to the
+current agenda.*" Survival Knife (2) killed it in the interrupt, it attached itself to the
+agenda, and Leo still got asked to assign its 2 damage and 1 horror. In the export
+(`--undo 2`) the enemy sits at `tokens=[["Damage",5]]` on 4 health with `attacking=true`
+and `defeated=false` — over its health, mid-defeat, flag unset.
+
+So `insteadOfDiscarding` carries the defeat onto the attack itself:
+
+```haskell
+defeatWindows <- lift $ cancelEnemyDefeatCapture e
+whenJustM (fieldMayJoin EnemyAttacking (asId e)) \details ->
+  push $ ChangeEnemyAttackDetails (asId e) details {attackCancelled = True}
+body
+```
+
+and the guard reads both:
+
+```haskell
+PerformEnemyAttack eid
+  | eid == enemyId && (enemyDefeated || any (.cancelled) enemyAttacking) -> ...
+```
+
+**The helper a card calls is the discriminator, and it is load-bearing.** Plain
+`cancelEnemyDefeat` is the opposite case: the enemy was *never* defeated and stays in play
+healed/flipped/exhausted (The Bloodless Man `06250`, Elspeth Baudin, Cats of Ulthar all
+cancel from `EnemyDefeated #when`), so those keep attacking. Only
+`insteadOfDiscarding`/`cancelEnemyDefeatCapture` means "the defeat happened, the card just
+never reaches the discard" — see the doc comments on `EdwardHyde` and `MalformedDarkYoung`.
+Do not generalise the fix to `cancelEnemyDefeat`, and do not reach for `cancelAttack`
+instead: that honours `details.canBeCanceled` (an `AttacksCannotBeCancelled` attacker would
+still hit) and raises `Window.CancelledOrIgnoredCardOrGameEffect`, neither of which belongs
+to an attack that simply never resolves.
+
+Side effect, intended: a **Massive** `insteadOfDiscarding` enemy defeated part-way through
+its per-target sub-attacks now skips the rest, which is what a normally-discarded massive
+enemy already got from `enemyDefeated`.
+
+Spec: `tests/Arkham/Enemy/Cards/ReturnToTheDunwichLegacy/ReturnToTheEssexCountyExpress/TheConductorBeastFromBeyondTheGateSpec.hs`.

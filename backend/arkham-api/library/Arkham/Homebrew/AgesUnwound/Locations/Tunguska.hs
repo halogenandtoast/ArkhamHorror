@@ -4,8 +4,8 @@ import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Cards
 import Arkham.Location.Import.Lifted
 
 newtype Tunguska = Tunguska LocationAttrs
-  deriving anyclass (IsLocation, HasAbilities, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 {- | /Tunguska/ (@:ages-unwound:119@). Shroud 4 and a fixed zero clues: nothing
 to find and no printed text. /The Tunguska Event/ is the Task that gives the

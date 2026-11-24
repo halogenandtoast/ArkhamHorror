@@ -195,12 +195,6 @@
       "test": "Test {willpower} (3). If you succeed, place a resource on Distant Entity",
       "flip": "If there are 3 resources on Distant Entity: Flip it over and resolve its text"
     },
-    "onTheLam": {
-      "move": "Move to a new Arkham Streets location"
-    },
-    "gettingYourBearings": {
-      "move": "Move to a new Arkham Streets location"
-    },
     "frontHallway": {
       "haunted": "If the Hound of Unmaking is in play and undamaged, place 1 damage on it"
     },

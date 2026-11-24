@@ -346,6 +346,21 @@ data ModifierType
   | CommitCost Cost
   | ConnectedToWhen LocationMatcher LocationMatcher
   | ForMovementConnectedToWhen LocationMatcher LocationMatcher
+  | {- | "You may initiate a move even if there are no connecting locations in play."
+    (Ages Unwound's /On the Lam/.) The location counts as accessible to itself, but
+    only while nothing else is accessible from it, so a move to where you already
+    stand becomes offerable exactly where the card's permission is the only thing
+    that could produce a move -- for a reaction that then retargets it.
+
+    Honored in three places, all of which otherwise drop the mover's own location:
+    the 'Arkham.Matcher.AccessibleFrom' branch of 'Arkham.Game.getLocationsMatching',
+    which is the single source of truth and is asked by the other two;
+    'Arkham.Helpers.Location.getCanMoveToLocationsWith'(@_@); and
+    'Arkham.Message.Lifted.Move.moveToEdit'. Each short-circuits to its previous
+    behavior when no location carries this, so a board where anything is accessible
+    -- i.e. every scenario that does not grant it -- is untouched.
+    -}
+    ConnectsToSelfWhenIsolated
   | {- | On the MOVER (investigator or enemy), not on a location: "while moving, treat
     your location as if it were connected to ...". Connection queries read the start
     location's modifiers, so a mover-scoped connection cannot be expressed as a

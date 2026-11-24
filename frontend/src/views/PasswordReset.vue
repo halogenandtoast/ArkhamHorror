@@ -3,8 +3,9 @@ import { reactive, ref } from 'vue'
 import { useToast } from '@/toasts'
 import { useI18n } from 'vue-i18n';
 import api from '@/api';
+import { submitPasswordReset } from '@/passwordResetSubmission'
 
-const submitted = ref(false)
+const status = ref<'idle' | 'submitting' | 'submitted' | 'failed'>('idle')
 
 interface PasswordReset {
   email: string
@@ -17,17 +18,26 @@ const reset = reactive<PasswordReset>({
 const { t } = useI18n()
 
 async function resetPassword() {
-  submitted.value = true
-  await api.post('password-reset', { email : reset.email })
-  toast.success(t("passwordResetRequested"), { timeout: 3000 })
+  if (status.value === 'submitting') return
+
+  status.value = 'submitting'
+  const result = await submitPasswordReset(reset.email, (email) =>
+    api.post('password-reset', { email }),
+  )
+  status.value = result
+
+  if (result === 'submitted') {
+    toast.success(t("passwordResetRequested"), { timeout: 3000 })
+  }
 }
 
 const toast = useToast()
 </script>
 
 <template>
-  <form v-if="!submitted" @submit.prevent="resetPassword">
+  <form v-if="status !== 'submitted'" @submit.prevent="resetPassword">
     <header><i class="secret"></i></header>
+    <div class="error" v-if="status === 'failed'">{{ $t('passwordResetFailed') }}</div>
     <section>
       <div>
         <input
@@ -37,7 +47,7 @@ const toast = useToast()
         />
       </div>
       <div>
-        <button>{{$t('resetPassword')}}</button>
+        <button :disabled="status === 'submitting'">{{$t('resetPassword')}}</button>
       </div>
     </section>
   </form>
@@ -75,6 +85,10 @@ button {
   color: white;
   border: 0;
   width: 100%;
+  &:disabled {
+    cursor: wait;
+    opacity: 0.7;
+  }
   &:hover {
     background: hsl(80, 35%, 32%);
   }

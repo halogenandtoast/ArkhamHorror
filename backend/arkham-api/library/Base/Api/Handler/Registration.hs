@@ -1,6 +1,8 @@
 module Base.Api.Handler.Registration where
 
+import Base.Email (normalizeEmail)
 import Crypto.BCrypt
+import Data.Text qualified as T
 import Data.Text.Encoding qualified as TE
 import Import
 import Types
@@ -18,7 +20,8 @@ registrationToUser Registration {..} = do
       pure
         $ User
           registrationUsername
-          registrationEmail
+          (T.strip registrationEmail)
+          (normalizeEmail registrationEmail)
           (TE.decodeUtf8 digest)
           False
           False

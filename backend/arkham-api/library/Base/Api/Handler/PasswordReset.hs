@@ -1,5 +1,6 @@
 module Base.Api.Handler.PasswordReset (postApiV1PasswordResetsR, putApiV1PasswordResetR) where
 
+import Base.Email (normalizeEmail)
 import Base.Mail (sendPlainTextEmail)
 import Crypto.BCrypt
 import Data.Aeson (withObject)
@@ -24,9 +25,10 @@ postApiV1PasswordResetsR :: Handler ()
 postApiV1PasswordResetsR = do
   payload <- requireCheckJsonBody
   resetExpiresAt <- liftIO $ addUTCTime nominalDay <$> getCurrentTime
-  Entity userId _ <- runDB $ getBy404 (UniqueEmail $ resetEmail payload)
-  token <- runDB $ insert $ PasswordReset userId resetExpiresAt
-  sendPasswordResetEmail (resetEmail payload) (UUID.toText $ coerce token)
+  muser <- runDB $ getBy $ UniqueEmailNormalized $ normalizeEmail $ resetEmail payload
+  forM_ muser \(Entity userId user) do
+    token <- runDB $ insert $ PasswordReset userId resetExpiresAt
+    sendPasswordResetEmail (userEmail user) (UUID.toText $ coerce token)
  where
   sendPasswordResetEmail :: Text -> Text -> Handler ()
   sendPasswordResetEmail email token = do

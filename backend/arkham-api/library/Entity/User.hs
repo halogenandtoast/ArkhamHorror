@@ -15,6 +15,7 @@ mkEntity
 User json sql=users
     username Text
     email Text
+    emailNormalized Text
     passwordDigest Text
     beta Bool
     phaseTransitionNotifications Bool default=False
@@ -23,5 +24,6 @@ User json sql=users
     allowSpectatorsByDefault Bool default=False
     UniqueUsername username
     UniqueEmail email
+    UniqueEmailNormalized emailNormalized
     deriving Show
 |]

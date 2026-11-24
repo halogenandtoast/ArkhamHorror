@@ -74,3 +74,33 @@ spec = describe "Jim's Trumpet" $ do
       runSkillTest sid self #intellect 0
       chooseOnlyOption "apply results"
       investigator2.horror `shouldReturn` 1
+
+  context "parallel Jim's elder sign" $ do
+    it "heals when the elder sign is treated as a skull" $ gameTestWith Investigators.jimCulverParallel $ \self -> do
+      withProp @"horror" 1 self
+      self `putCardIntoPlay` Assets.jimsTrumpet
+      location <- testLocation
+      setChaosTokens [ElderSign]
+      self `moveTo` location
+      sid <- getRandom
+      runSkillTest sid self #intellect 0
+      chooseOptionMatching "treat the elder sign as a skull" \case
+        Label "$label.resolveAsSkull" _ -> True
+        _ -> False
+      useReaction
+      click "choose self"
+      self.horror `shouldReturn` 0
+
+    it "does not heal when the elder sign is resolved as itself" $ gameTestWith Investigators.jimCulverParallel $ \self -> do
+      withProp @"horror" 1 self
+      self `putCardIntoPlay` Assets.jimsTrumpet
+      location <- testLocation
+      setChaosTokens [ElderSign]
+      self `moveTo` location
+      sid <- getRandom
+      runSkillTest sid self #intellect 0
+      chooseOptionMatching "resolve the elder sign" \case
+        Label "$label.resolveAsElderSign" _ -> True
+        _ -> False
+      chooseOnlyOption "apply results"
+      self.horror `shouldReturn` 1

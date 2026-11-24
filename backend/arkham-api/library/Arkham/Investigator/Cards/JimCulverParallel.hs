@@ -39,7 +39,7 @@ instance HasChaosTokenValue JimCulverParallel where
 
 instance RunMessage JimCulverParallel where
   runMessage msg i@(JimCulverParallel attrs) = runQueueT $ case msg of
-    When (Msg.RevealChaosToken _ iid token) | iid == attrs.id -> do
+    Will (Msg.RevealChaosToken _ iid token) | iid == attrs.id -> do
       faces <- getModifiedChaosTokenFace token
       when (ElderSign `elem` faces) do
         chooseOneM iid do

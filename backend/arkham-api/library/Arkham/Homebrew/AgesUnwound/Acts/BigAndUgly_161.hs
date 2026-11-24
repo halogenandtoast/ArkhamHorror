@@ -5,8 +5,8 @@ import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (CannotAttack), modifySelect)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.AgesUnwound.CardDefs.Enemies qualified as Enemies
-import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.AgesUnwound.Key
+import Arkham.Homebrew.AgesUnwound.Scenarios.AWorldTornDownAgain.Helpers (placeRitualCircles)
 import Arkham.Matcher
 
 newtype BigAndUgly_161 = BigAndUgly_161 ActAttrs
@@ -61,18 +61,18 @@ instance RunMessage BigAndUgly_161 where
 
       "Each set-aside Ritual Circle" is this scenario's own /The Present,
       Fractured/ plus whichever of the @night_of_the_ritual@ pair setup left in the
-      pool -- setup removes the one the investigators stepped into. -}
-      placeSetAsideLocations_ [Locations.ritualCircle_173]
-      for_ [Locations.ritualCircle_224, Locations.ritualCircle_225] \def ->
-        whenM (selectAny $ SetAsideCardMatch $ cardIs def) $ placeSetAsideLocation_ def
+      pool -- setup removes the one the investigators stepped into.
+
+      The placement is unconditional; only the spawn below is gated. The ids come
+      back from the helper because the placements are queued, so a @select@ here
+      would not see them yet (#6060). -}
+      (_harnessedFuture, circles) <- placeRitualCircles
 
       unlessM (getHasRecord TheInvestigatorsEliminatedTheHighPriest) do
         {- His movement ban means a spawn anywhere non-[[Ritual]] strands him, so
-        the fallback stays inside the Ritual circles. -}
-        harnessedFuture <- selectOne $ locationIs Locations.ritualCircle_224
-        circles <- select $ LocationWithTitle "Ritual Circle"
-        for_ (harnessedFuture <|> listToMaybe circles)
-          $ createSetAsideEnemy_ Enemies.theMyriadGentleman_233
+        the fallback stays inside the Ritual circles -- 'placeRitualCircles' puts
+        /A Harnessed Future/ first. -}
+        for_ (listToMaybe circles) $ createSetAsideEnemy_ Enemies.theMyriadGentleman_233
 
       -- "Advance to Act 4a - Breaking the Circles."
       advanceToAct attrs Cards.breakingTheCircles A

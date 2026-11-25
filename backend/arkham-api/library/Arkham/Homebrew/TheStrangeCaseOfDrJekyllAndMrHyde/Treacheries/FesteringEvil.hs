@@ -58,7 +58,7 @@ instance HasAbilities FesteringEvil where
         [ withI18nTooltip "festeringEvil.flip"
             $ mkAbility a 1
             $ forced
-            $ EnemyFlipped #after (IncludeOutOfPlayEnemy edwardHyde)
+            $ EnemyFlipped #after Anyone (IncludeOutOfPlayEnemy edwardHyde)
         , withI18nTooltip "festeringEvil.discard"
             $ restricted a 2 OnSameLocation
             $ ActionAbility mempty Nothing discardCosts

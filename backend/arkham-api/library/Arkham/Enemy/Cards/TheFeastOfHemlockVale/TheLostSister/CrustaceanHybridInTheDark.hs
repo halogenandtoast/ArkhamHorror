@@ -34,7 +34,7 @@ instance HasAbilities CrustaceanHybridInTheDark where
           $ oneOf [EnemyEnters #when Anywhere (be a), EnemySpawns #when (PlacementAt Anywhere) (be a)]
       , restricted a 2 (exists $ investigator_ $ at_ $ locationWithEnemy a)
           $ forced
-          $ EnemyFlipped #after (be a)
+          $ EnemyFlipped #after Anyone (be a)
       ]
 
 instance RunMessage CrustaceanHybridInTheDark where

@@ -39,7 +39,7 @@ instance HasAbilities CthulhuHoaryWingsEnraged where
       [ {- "Forced - After you flip this enemy to this side: Draw the top card of the
         Cthulhu deck." The non-Enraged side raises this window as it swaps itself
         out, so the effect fires from the side that prints it. -}
-        mkAbility a 1 $ forced $ EnemyFlipped #after (be a)
+        mkAbility a 1 $ forced $ EnemyFlipped #after You (be a)
       , -- "[reaction] After you evade this enemy: Deal 1 damage to it."
         mkAbility a 2 $ freeReaction $ EnemyEvaded #after You (be a)
       ]

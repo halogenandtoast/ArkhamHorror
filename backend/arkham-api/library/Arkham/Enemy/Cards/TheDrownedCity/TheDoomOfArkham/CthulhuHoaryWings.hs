@@ -48,13 +48,13 @@ instance RunMessage CthulhuHoaryWings where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       flipOverBy iid (attrs.ability 1) attrs
       pure e
-    Flip _ _ (isTarget attrs -> True) -> do
+    Flip iid _ (isTarget attrs -> True) -> do
       enraged <- genCard Cards.cthulhuHoaryWingsEnraged
       push $ ReplaceEnemy attrs.id enraged Swap
       -- The flip resolves in an ST.6 after-window, but a Fight's damage is not
       -- dealt until ST.7, so the Enraged side would otherwise take it. FFG: you
       -- cannot deal damage to a facet with the action that flipped it.
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) attrs CannotBeDamaged
-      checkAfter $ Window.EnemyFlipped attrs.id
+      checkAfter $ Window.EnemyFlipped (Just iid) attrs.id
       pure e
     _ -> CthulhuHoaryWings <$> liftRunMessage msg attrs

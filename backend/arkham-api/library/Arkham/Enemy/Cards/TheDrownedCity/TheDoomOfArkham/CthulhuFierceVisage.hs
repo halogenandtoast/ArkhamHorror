@@ -52,7 +52,7 @@ instance RunMessage CthulhuFierceVisage where
     -- "Flip it to its [[Enraged]] side." The Enraged def is the other face of this
     -- double-sided card, so the flip swaps the entity for it in place, keeping its
     -- tokens, placement and engagement (and therefore its slot on the Cthulhu Board).
-    Flip _ _ (isTarget attrs -> True) -> do
+    Flip iid _ (isTarget attrs -> True) -> do
       enraged <- genCard Cards.cthulhuFierceVisageEnraged
       push $ ReplaceEnemy attrs.id enraged Swap
       -- The flip resolves in an ST.6 after-window, but a Fight's damage is not
@@ -60,7 +60,8 @@ instance RunMessage CthulhuFierceVisage where
       -- cannot deal damage to a facet with the action that flipped it.
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) attrs CannotBeDamaged
       -- The Enraged side's "after you flip this enemy to this side" forced ability
-      -- keys off this window, so it has to be raised here, where the flip happens.
-      checkAfter $ Window.EnemyFlipped attrs.id
+      -- keys off this window, so it has to be raised here, where the flip happens --
+      -- naming the flipper, or every seat matches its "you" (#6062).
+      checkAfter $ Window.EnemyFlipped (Just iid) attrs.id
       pure e
     _ -> CthulhuFierceVisage <$> liftRunMessage msg attrs

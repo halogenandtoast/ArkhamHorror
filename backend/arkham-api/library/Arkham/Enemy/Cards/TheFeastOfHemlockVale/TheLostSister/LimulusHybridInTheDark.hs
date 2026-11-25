@@ -42,9 +42,9 @@ instance RunMessage LimulusHybridInTheDark where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       assignDamage iid (attrs.ability 2) 1
       pure e
-    Flip _ _ (isTarget attrs -> True) -> do
+    Flip iid _ (isTarget attrs -> True) -> do
       let lightCard = lookupCard Cards.limulusHybridInTheLight attrs.cardId
       push $ ReplaceEnemy attrs.id lightCard Swap
-      checkAfter $ Window.EnemyFlipped attrs.id
+      checkAfter $ Window.EnemyFlipped (Just iid) attrs.id
       pure e
     _ -> LimulusHybridInTheDark <$> liftRunMessage msg attrs

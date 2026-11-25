@@ -2142,10 +2142,17 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , defeatedByMatches defeatedBy defeatedByMatcher
             ]
         _ -> noMatch
-    Matcher.EnemyFlipped timing enemyMatcher ->
+    Matcher.EnemyFlipped timing whoMatcher enemyMatcher ->
       guardTiming timing $ \case
-        Window.EnemyFlipped enemyId ->
-          matches enemyId enemyMatcher
+        Window.EnemyFlipped (Just who) enemyId ->
+          andM [matchWho iid who whoMatcher, matches enemyId enemyMatcher]
+        {- No flipper: an act or a card turned the enemy over, so there is no "you"
+        for the window to be about and only a seat-agnostic matcher can fire. Without
+        this split a Forced "after you flip this enemy" matches every seat and the
+        GroupLimit PerWindow default silently hands it to an arbitrary one. #6062 -}
+        Window.EnemyFlipped Nothing enemyId
+          | whoMatcher == Matcher.Anyone ->
+              matches enemyId enemyMatcher
         _ -> noMatch
     Matcher.EnemyEnters timing whereMatcher enemyMatcher ->
       guardTiming timing $ \case

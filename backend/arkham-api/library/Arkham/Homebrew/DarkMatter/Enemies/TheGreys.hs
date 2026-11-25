@@ -58,6 +58,6 @@ instance RunMessage TheGreys where
     tokens, placement and engagement over. -}
     Flip _ _ (isTarget attrs -> True) -> do
       push $ ReplaceEnemy attrs.id (lookupCard Cards.miGoScientist attrs.cardId) Swap
-      checkAfter $ Window.EnemyFlipped attrs.id
+      checkAfter $ Window.EnemyFlipped Nothing attrs.id
       pure e
     _ -> TheGreys <$> liftRunMessage msg attrs

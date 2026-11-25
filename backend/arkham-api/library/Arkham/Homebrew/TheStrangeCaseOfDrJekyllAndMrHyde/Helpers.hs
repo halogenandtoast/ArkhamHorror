@@ -126,7 +126,7 @@ flipToHyde source = runMaybeT_ do
     carryFlipAttachments (toTarget jekyll) (AttachedToEnemy hyde)
     placeTokens source hyde #horror horror
     push $ Flipped (toSource jekyll) card
-    checkAfter $ Window.EnemyFlipped hyde
+    checkAfter $ Window.EnemyFlipped Nothing hyde
 
 -- | "Flip Edward Hyde." The mirror of 'flipToHyde'; see this section's note.
 flipToJekyll :: (ReverseQueue m, Sourceable source) => source -> m ()
@@ -145,7 +145,7 @@ flipToJekyll source = runMaybeT_ do
     -- exactly one face. The departed enemy is still an entity at
     -- @OutOfPlay RemovedZone@ here, which is why a matcher for this window has
     -- to say 'IncludeOutOfPlayEnemy'.
-    checkAfter $ Window.EnemyFlipped hyde
+    checkAfter $ Window.EnemyFlipped Nothing hyde
 
 -- * The arrangement
 

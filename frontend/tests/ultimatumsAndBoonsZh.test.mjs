@@ -7,6 +7,7 @@ const englishCatalogPath = resolve('src/locales/en/gameBoard/ultimatumsAndBoons.
 const chineseCatalogPath = resolve('src/locales/zh/gameBoard/ultimatumsAndBoons.json')
 const chineseGameBoardPath = resolve('src/locales/zh/gameBoard/gameBoard.ts')
 const gameOptionsPath = resolve('src/arkham/components/NewCampaign/GameOptions.vue')
+const refractionsPath = resolve('src/arkham/refractions.ts')
 const chineseLabelPath = resolve('src/locales/zh/label.json')
 
 function leafEntries(value, prefix = '') {
@@ -39,13 +40,17 @@ test('Chinese game creation translates every Ultimatum and Boon option', () => {
     'Chinese catalog must cover the same messages as English',
   )
 
+  // GameOptions lists the general boons and ultimatums itself; the Refractions
+  // group it renders comes from refractions.ts, so both are sources of options.
   const gameOptions = readFileSync(gameOptionsPath, 'utf8')
+  const refractions = readFileSync(refractionsPath, 'utf8')
+  const tagPattern = /'(BoonOf[A-Za-z]+|UltimatumOf[A-Za-z]+)'/g
+  const refractionTagPattern = /^ {2}(BoonOf[A-Za-z]+|UltimatumOf[A-Za-z]+):/gm
   const optionTags = [
-    ...new Set(
-      [...gameOptions.matchAll(/'(BoonOf[A-Za-z]+|UltimatumOf[A-Za-z]+)'/g)].map(
-        (match) => match[1],
-      ),
-    ),
+    ...new Set([
+      ...[...gameOptions.matchAll(tagPattern)].map((match) => match[1]),
+      ...[...refractions.matchAll(refractionTagPattern)].map((match) => match[1]),
+    ]),
   ].sort()
 
   assert.deepEqual(

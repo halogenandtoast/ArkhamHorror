@@ -37,6 +37,7 @@ import { MessageType } from '@/arkham/types/Message';
 import { waitForImagesToLoad, imgsrc, groupBy } from '@/arkham/helpers';
 import { gameLocalStorageKey, getGameLocalStorageItem, setGameLocalStorageItem } from '@/arkham/localStorage';
 import { cardImage as cardCodeImage } from '@/arkham/cardImages';
+import { mapHighlightBorderWidth } from '@/arkham/mapHighlight'
 import { fullName } from '@/arkham/types/Name';
 import { useMenu } from '@/composable/menu';
 import { useSettings } from '@/stores/settings';
@@ -1474,6 +1475,7 @@ const locationStyles = computed(() => {
     gridAutoRows: 'max-content',
     transform: `scale(${locationsZoom.value})`,
     transformOrigin: '0 0',
+    '--location-highlight-width': mapHighlightBorderWidth(locationsZoom.value),
     paddingLeft: `${pad.left + mobileEdgePadding}px`,
     paddingRight: `${pad.right + mobileEdgePadding}px`,
     paddingTop: `${pad.top}px`,

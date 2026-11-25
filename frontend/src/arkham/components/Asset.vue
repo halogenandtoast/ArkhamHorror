@@ -646,7 +646,7 @@ function startDrag(event: DragEvent) {
 
 .asset--can-interact {
   img {
-    border: 2px solid var(--select);
+    border: var(--map-highlight-width, 2px) solid var(--select);
     cursor:pointer;
   }
 }

@@ -905,7 +905,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
 
 <style scoped>
 .location--can-interact {
-  border: var(--location-highlight-width, 2px) solid var(--select);
+  border: var(--map-highlight-width, 2px) solid var(--select);
   cursor: pointer;
 }
 

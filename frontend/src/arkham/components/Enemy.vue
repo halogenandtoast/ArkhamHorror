@@ -646,7 +646,7 @@ function onDrop(event: DragEvent) {
 }
 
 .enemy--can-interact {
-  border: 2px solid var(--select);
+  border: var(--map-highlight-width, 2px) solid var(--select);
   border-radius: 5px;
   cursor: pointer;
 }

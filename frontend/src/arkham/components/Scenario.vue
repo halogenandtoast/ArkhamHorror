@@ -1475,7 +1475,7 @@ const locationStyles = computed(() => {
     gridAutoRows: 'max-content',
     transform: `scale(${locationsZoom.value})`,
     transformOrigin: '0 0',
-    '--location-highlight-width': mapHighlightBorderWidth(locationsZoom.value),
+    '--map-highlight-width': mapHighlightBorderWidth(locationsZoom.value),
     paddingLeft: `${pad.left + mobileEdgePadding}px`,
     paddingRight: `${pad.right + mobileEdgePadding}px`,
     paddingTop: `${pad.top}px`,

@@ -100,6 +100,12 @@ export default [
     meta: { guest: true, title: "ArkhamHorror: Sign up"},
   },
   {
+    path: '/account/password-reset',
+    name: 'AccountPasswordReset',
+    component: () => import('@/views/PasswordReset.vue'),
+    meta: { requiresAuth: true, title: "ArkhamHorror: Reset Password" },
+  },
+  {
     path: '/password-reset',
     name: 'PasswordReset',
     component: () => import('@/views/PasswordReset.vue'),

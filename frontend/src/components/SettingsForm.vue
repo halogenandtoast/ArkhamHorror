@@ -152,6 +152,11 @@ const updateLanguage = async (a: Event) => {
         tabindex="0"
       >
         <section class="box column">
+          <h3>{{ $t('email') }}</h3>
+          <p>{{ props.user.email }}</p>
+        </section>
+
+        <section class="box column">
           <h3>{{ $t('language') }}</h3>
           <p>{{ $t('settingsForm.languageHelp') }}</p>
           <select :value="language" @change="updateLanguage">

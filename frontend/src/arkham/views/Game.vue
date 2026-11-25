@@ -65,6 +65,7 @@ import { useStepPoller } from '@/arkham/composables/useStepPoller'
 import { awaitingOrganizer, type SharedEventState } from '@/arkham/types/EpicEvent'
 import { useMenu, type MenuEntry } from '@/composable/menu'
 import { useKeybindings, type HoverAction } from '@/arkham/keybindings'
+import { chaosTokenDrawChoiceIndex } from '@/arkham/chaosTokenDrawChoice'
 import {
   assetTarget,
   enemyTarget,
@@ -2240,6 +2241,12 @@ const handleKeyPress = (event: KeyboardEvent) => {
   }
 
   if (isKey('draw', event)) {
+    const drawToken = chaosTokenDrawChoiceIndex(choices.value)
+    if (drawToken !== -1) {
+      choose(drawToken)
+      return
+    }
+
     const draw = choices.value.findIndex((c) => {
       if (c.tag !== Message.MessageType.COMPONENT_LABEL) return false
       if (c.component.tag !== 'InvestigatorDeckComponent') return false

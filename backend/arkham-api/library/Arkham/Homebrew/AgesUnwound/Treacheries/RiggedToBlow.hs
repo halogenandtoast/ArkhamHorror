@@ -43,7 +43,7 @@ instance RunMessage RiggedToBlow where
       pure $ RiggedToBlow $ setMeta (m {moveEach = n == 2}) attrs
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       here <- select $ investigatorAt (locationWithInvestigator iid)
-      canMove <- canMoveToConnecting iid
+      canMove <- anyM (canMoveToConnecting attrs) here
       when (notNull here && canMove) do
         chooseOneM iid $ campaignI18n do
           if moveEach (toResult @Meta attrs.meta)

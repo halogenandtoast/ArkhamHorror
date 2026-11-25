@@ -9966,6 +9966,7 @@ test-suite spec
       Arkham.Enemy.Cards.LaidToRest.JeanDevereuxSeekingClosureSpec
       Arkham.Enemy.Cards.MobEnforcerSpec
       Arkham.Enemy.Cards.NightOfTheZealot.TheMidnightMasks.TheMaskedHunterSpec
+      Arkham.Enemy.Cards.ReturnToTheDunwichLegacy.ReturnToTheEssexCountyExpress.TheConductorBeastFromBeyondTheGateSpec
       Arkham.Enemy.Cards.SilverTwilightAcolyteSpec
       Arkham.Enemy.Cards.StubbornDetectiveSpec
       Arkham.Enemy.Cards.TheBlobThatAteEverything.Subject8L08EpicMultiplayerSpec
@@ -10033,6 +10034,7 @@ test-suite spec
       Arkham.Event.Events.OnTheLamSpec
       Arkham.Event.Events.OopsSpec
       Arkham.Event.Events.PredatorOrPreySpec
+      Arkham.Event.Events.PushedToTheLimitSpec
       Arkham.Event.Events.PutrescentRotSpec
       Arkham.Event.Events.RefineSpec
       Arkham.Event.Events.Respite2Spec
@@ -10078,6 +10080,7 @@ test-suite spec
       Arkham.HomebrewRegistrySpec
       Arkham.Investigator.Cards.AgnesBakerSpec
       Arkham.Investigator.Cards.AshcanPeteSpec
+      Arkham.Investigator.Cards.BobJenkinsSpec
       Arkham.Investigator.Cards.CarolynFern2Spec
       Arkham.Investigator.Cards.CarsonSinclairSpec
       Arkham.Investigator.Cards.DaisyWalkerSpec

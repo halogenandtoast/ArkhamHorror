@@ -44,11 +44,14 @@ instance HasModifiersFor BobJenkins where
 
 instance HasAbilities BobJenkins where
   getAbilities (BobJenkins attrs) =
-    [ selfAbility
-        attrs
-        1
-        (PlayableCardExists (UnpaidCost NoAction) matchCards)
-        (ActionAbility mempty Nothing mempty)
+    -- The action Bob takes is the *play*, not an activation, so the card chosen below
+    -- decides the attack of opportunity (see PlayProvokesAttacksOfOpportunity).
+    [ noAOO
+        $ selfAbility
+          attrs
+          1
+          (PlayableCardExists (UnpaidCost NoAction) matchCards)
+          (ActionAbility mempty Nothing mempty)
     | BobJenkinsAction `notElem` map additionalActionType attrs.usedAdditionalActions
     ]
    where
@@ -116,6 +119,7 @@ instance RunMessage BobJenkins where
           $ CanSpendResourcesOnCardFromInvestigator (be iid) AnyCard
         cardResolutionModifier c (attrs.ability 1) attrs (PlayableCardOf owner c)
         cardResolutionModifier c (attrs.ability 1) c.id (PlaySource $ attrs.ability 1)
+        cardResolutionModifier c (attrs.ability 1) c.id PlayProvokesAttacksOfOpportunity
         playCardPayingCost iid c
       pure i
     ForInvestigators _ ResetGame -> BobJenkins <$> liftRunMessage msg (attrs & setMeta Null)
@@ -127,6 +131,11 @@ instance RunMessage BobJenkins where
           handCards <- map toCardId . filterCards (card_ $ #asset <> #item) <$> field InvestigatorHand iid
           pure $ Map.insert iid handCards revealedCards'
 
-      iids <- select $ affectsOthersKnown attrs.id $ colocatedWith attrs.id <> not_ (be attrs.id) <> can.reveal.cards
+      iids <-
+        select
+          $ affectsOthersKnown attrs.id
+          $ colocatedWith attrs.id
+          <> not_ (be attrs.id)
+          <> can.reveal.cards
       revealedCards' <- foldM addCards revealedCards iids
       BobJenkins <$> liftRunMessage msg (attrs & setMeta (object ["revealedCards" .= revealedCards']))

@@ -1663,8 +1663,14 @@ instance RunMessage EnemyAttrs where
     -- Clearing 'attacking' is load-bearing: 'Entities.clearRemovedEntities' keeps
     -- a RemovedZone enemy in the map while it is set, so the corpse would stay on
     -- the board and keep matching 'AttackingEnemy' forever.
-    PerformEnemyAttack eid | eid == enemyId && enemyDefeated -> do
-      pure $ a & attackingL .~ Nothing
+    --
+    -- A defeat whose /disposal/ is replaced ('insteadOfDiscarding': The Conductor
+    -- attaching itself to the agenda, La Comtesse going hidden in hand, ...) is still
+    -- a defeat, but it cancels the 'Do (Defeated ...)' that would set the flag, so the
+    -- helper marks the in-flight attack cancelled on its way past instead (#6050).
+    PerformEnemyAttack eid
+      | eid == enemyId && (enemyDefeated || any (.cancelled) enemyAttacking) -> do
+          pure $ a & attackingL .~ Nothing
     PerformEnemyAttack eid | eid == enemyId -> do
       let details = fromJustNote "missing attack details" enemyAttacking
       modifiers <- maybe (pure []) getModifiers details.singleTarget

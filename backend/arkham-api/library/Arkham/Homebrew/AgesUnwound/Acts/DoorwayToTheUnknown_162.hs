@@ -7,8 +7,8 @@ import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.AgesUnwound.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.AgesUnwound.CardDefs.Enemies qualified as Enemies
-import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.AgesUnwound.Key
+import Arkham.Homebrew.AgesUnwound.Scenarios.AWorldTornDownAgain.Helpers (placeRitualCircles)
 import Arkham.Matcher
 
 newtype DoorwayToTheUnknown_162 = DoorwayToTheUnknown_162 ActAttrs
@@ -71,12 +71,12 @@ instance RunMessage DoorwayToTheUnknown_162 where
       removed from the game by setup (/the investigators stepped into the
       future/), in which case there are no clues to place and the High Priest
       spawns at another [[Ritual]] circle -- his movement ban strands him anywhere
-      else. -}
-      placeSetAsideLocations_ [Locations.ritualCircle_173]
-      for_ [Locations.ritualCircle_224, Locations.ritualCircle_225] \def ->
-        whenM (selectAny $ SetAsideCardMatch $ cardIs def) $ placeSetAsideLocation_ def
+      else.
 
-      harnessedFuture <- selectOne $ locationIs Locations.ritualCircle_224
+      'placeRitualCircles' hands back the ids rather than leaving them to be
+      selected for: the placements are queued, so a @select@ here would not see
+      them yet (#6060). -}
+      (harnessedFuture, circles) <- placeRitualCircles
 
       {- "If /the investigators unleashed chaos:/ Place 4[per_investigator] clues
       on Ritual Circle (A Harnessed Future) as it enters play. Then, remove
@@ -96,9 +96,7 @@ instance RunMessage DoorwayToTheUnknown_162 where
           resources <- selectSum AssetResources (assetIs Assets.unstableWarding)
           removeTokens attrs circle #clue (perInvestigator * resources)
 
-      circles <- select $ LocationWithTitle "Ritual Circle"
-      for_ (harnessedFuture <|> listToMaybe circles)
-        $ createSetAsideEnemy_ Enemies.theMyriadGentleman_233
+      for_ (listToMaybe circles) $ createSetAsideEnemy_ Enemies.theMyriadGentleman_233
 
       -- "Advance to Act 4a - Breaking the Circles."
       advanceToAct attrs Cards.breakingTheCircles A

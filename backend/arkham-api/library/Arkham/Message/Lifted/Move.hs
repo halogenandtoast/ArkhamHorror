@@ -4,6 +4,7 @@ import Arkham.Card.CardDef
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query (select, whenMatch)
 import {-# SOURCE #-} Arkham.Game ()
+import Arkham.Helpers.Location (getMayMoveToSelf)
 import Arkham.Helpers.Query (allInvestigators, getInvestigators)
 import Arkham.Helpers.Scenario (getInResolution)
 import Arkham.Id
@@ -51,8 +52,12 @@ moveToEdit
   => source -> InvestigatorId -> location -> (Movement -> Movement) -> m ()
 moveToEdit (toSource -> source) iid location f = do
   field InvestigatorPlacement (asId iid) >>= \case
-    AtLocation current -> when (current /= asId location) do
-      push . Move . f =<< move source iid (asId location)
+    AtLocation current -> do
+      -- A move to where you already stand is dropped, unless the location is
+      -- accessible to itself ('ConnectsToSelfWhenIsolated') -- there the move is the
+      -- whole point, for the reaction that retargets it.
+      wanted <- if current == asId location then getMayMoveToSelf current else pure True
+      when wanted $ push . Move . f =<< move source iid (asId location)
     _ -> push . Move . f =<< move source iid (asId location)
 
 moveToMatch

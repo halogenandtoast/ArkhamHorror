@@ -2756,7 +2756,19 @@ getLocationsMatching lmatcher = do
       iid <- selectJust investigatorMatcher
       blocked <- go ls BlockedLocation
       cannotEnter <- (<> map toId blocked) . mapMaybe (preview _CannotEnter) <$> getModifiers iid
-      pure $ filter ((`notElem` cannotEnter) . toId) ls
+      -- You need no permission to enter where you already stand. Only asked of a
+      -- location carrying 'ConnectsToSelfWhenIsolated', whose self-destination move
+      -- exists to be retargeted before anyone arrives -- Night of Fire's Cramped
+      -- Passage blocks itself while occupied, which would otherwise make the
+      -- location the permission is for the one place it cannot be used.
+      standingOn <- do
+        mlid <- field InvestigatorLocation iid
+        case mlid of
+          Just lid | lid `elem` cannotEnter -> do
+            mods <- getModifiers lid
+            pure [lid | ConnectsToSelfWhenIsolated `elem` mods]
+          _ -> pure []
+      pure $ filter ((`notElem` (cannotEnter \\ standingOn)) . toId) ls
     CanMoveToLocation investigatorMatcher source matcher -> do
       iid <- selectJust investigatorMatcher
       inner <- select $ matcher <> not_ BlockedLocation
@@ -3102,7 +3114,20 @@ getLocationsMatching lmatcher = do
         foldMapM (fmap AnyLocationMatcher . Helpers.getConnectedMatcher forMovement) starts
       allOptions <-
         (<> others) <$> getLocationsMatching (Unblocked <> getAnyLocationMatcher matcherSupreme)
-      pure $ filter ((`notElem` starts) . toId) $ filter (`elem` allOptions) ls
+      let normal = filter ((`notElem` starts) . toId) $ filter (`elem` allOptions) ls
+      -- Last resort: an isolated location granted 'ConnectsToSelfWhenIsolated' is
+      -- accessible to itself. Computed from the already-empty ordinary answer rather
+      -- than by asking this matcher again, so the helpers that consult it for the same
+      -- question cannot loop. Only for a single start, where "isolated" is unambiguous
+      -- (every caller that can reach this asks about one location).
+      case starts of
+        [start] | null normal -> do
+          startMods <- getModifiers start
+          pure
+            $ if ConnectsToSelfWhenIsolated `elem` startMods
+              then filter ((== start) . toId) ls
+              else normal
+        _ -> pure normal
     LocationWhenCriteria criteria -> do
       iid <- getLead
       passes <- passesCriteria iid Nothing GameSource GameSource [] criteria

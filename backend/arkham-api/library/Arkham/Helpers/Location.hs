@@ -291,16 +291,34 @@ getCanMoveToLocations
 getCanMoveToLocations iid source =
   cached (CanMoveToLocationsKey iid (toSource source)) $ getCanMoveToLocationsWith True iid source
 
+{- | "You may initiate a move even if there are no connecting locations in play."
+
+Asks the 'Matcher.AccessibleFrom' branch of 'Arkham.Game.getLocationsMatching', which
+answers with the start itself only for an isolated location carrying
+'ConnectsToSelfWhenIsolated'. False on every ordinary board, which is what keeps the
+move queries below behaving exactly as they did.
+-}
+getMayMoveToSelf :: HasGame m => LocationId -> m Bool
+getMayMoveToSelf lid = do
+  -- The modifier check comes first and answers for every ordinary board: these move
+  -- queries run on every ability-availability pass, so the matcher is only asked where
+  -- a card actually granted the permission.
+  mods <- getModifiers lid
+  if ConnectsToSelfWhenIsolated `notElem` mods
+    then pure False
+    else elem lid <$> select (Matcher.AccessibleFrom ForMovement $ Matcher.LocationWithId lid)
+
 getCanMoveToLocationsWith
   :: (Sourceable source, HasGame m) => Bool -> InvestigatorId -> source -> m [LocationId]
 getCanMoveToLocationsWith payAdditionalCosts iid source = do
   modifiers <- getModifiers iid
   let includeEmpty = if CanEnterEmptySpace `elem` modifiers then IncludeEmptySpace else id
-  ls <-
-    select
-      $ includeEmpty
-      $ Matcher.canEnterLocation iid
-      <> Matcher.NotLocation (Matcher.LocationWithInvestigator $ InvestigatorWithId iid)
+  mayMoveToSelf <- maybe (pure False) getMayMoveToSelf =<< getLocationOf iid
+  let notWhereYouStand =
+        if mayMoveToSelf
+          then mempty
+          else Matcher.NotLocation (Matcher.LocationWithInvestigator $ InvestigatorWithId iid)
+  ls <- select $ includeEmpty $ Matcher.canEnterLocation iid <> notWhereYouStand
   getCanMoveToLocationsWith_ payAdditionalCosts iid source ls
 
 getCanMoveToLocations_
@@ -322,7 +340,10 @@ getCanMoveToLocationsWith_ payAdditionalCosts iid source ls = do
     then do
       getLocationOf iid >>= \case
         Nothing -> pure []
-        Just lid -> filterM (getCanStepToWith payAdditionalCosts iid source) (filter (/= lid) ls)
+        Just lid -> do
+          mayMoveToSelf <- getMayMoveToSelf lid
+          let candidates = if mayMoveToSelf then ls else filter (/= lid) ls
+          filterM (getCanStepToWith payAdditionalCosts iid source) candidates
     else pure []
 
 {- | Whether @iid@ can step from the location it is on into @l@: barricades, a

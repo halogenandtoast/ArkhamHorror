@@ -19,10 +19,11 @@ import Arkham.Card.CardDef (CardDef)
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasModifiersFor (HasModifiersM)
 import Arkham.Classes.HasQueue (push)
-import Arkham.Classes.Query (select, selectOne)
+import Arkham.Classes.Query (select, selectAny, selectOne)
 import Arkham.Helpers.Act (getActStep)
 import Arkham.Helpers.Modifiers (ModifierType (ScenarioModifier), modifySelfWhenM)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Acts qualified as Acts
+import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.AgesUnwound.Helpers qualified as AgesUnwound
 import Arkham.Homebrew.AgesUnwound.Key (AgesUnwoundKey)
 import Arkham.I18n
@@ -30,6 +31,7 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message (AdvancementMethod (AdvancedWithOther), Message (AdvanceAct))
 import Arkham.Message.Lifted (advanceToAct)
+import Arkham.Message.Lifted.Location (placeSetAsideLocation)
 import Arkham.Message.Lifted.Queue (ReverseQueue)
 import Arkham.Prelude
 import Arkham.Projection
@@ -37,6 +39,33 @@ import Arkham.Source (toSource)
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = AgesUnwound.scenarioI18n "aWorldTornDownAgain" a
+
+{- | "Put each set-aside Ritual Circle location into play", handing back their
+ids with /A Harnessed Future/ first, so @listToMaybe@ reads as "any Ritual
+Circle location (/A Harnessed Future/, if possible)".
+
+Both act 3a's print this, and both used to place the circles and then @select@
+for them in the same handler. Placement is a queued message, so nothing is in
+play until the handler returns: the reads came back empty and the High Priest
+spawn @for_@ them silently did nothing. 'placeSetAsideLocation' hands back the
+id the queued message will use, so the spawn can name its circle without asking
+the board.
+
+Setup removes whichever of the @night_of_the_ritual@ pair the investigators
+stepped into, so only the circles still in the pool are placed. /The Present,
+Fractured/ is this scenario's own and is always there.
+-}
+placeRitualCircles :: ReverseQueue m => m (Maybe LocationId, [LocationId])
+placeRitualCircles = do
+  presentFractured <- placeSetAsideLocation Locations.ritualCircle_173
+  harnessedFuture <- placeCircleIfSetAside Locations.ritualCircle_224
+  forgottenPast <- placeCircleIfSetAside Locations.ritualCircle_225
+  pure (harnessedFuture, catMaybes [harnessedFuture, Just presentFractured, forgottenPast])
+ where
+  placeCircleIfSetAside def =
+    selectAny (SetAsideCardMatch $ cardIs def) >>= \case
+      True -> Just <$> placeSetAsideLocation def
+      False -> pure Nothing
 
 -- | The @a/b@ deck: the present investigators. Hardcoded as deck 1 by /Backfire/.
 presentDeck :: Int

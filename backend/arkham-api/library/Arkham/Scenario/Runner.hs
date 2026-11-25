@@ -841,6 +841,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   AttachStoryTreacheryTo _ card _ -> do
     pure $ a & setAsideCardsL %~ deleteFirstMatch (== card) & victoryDisplayL %~ filter (/= card)
   CreateEnemy creation@(enemyCreationCard -> card) | not creation.leaveEnemyWhereItIs -> do
+    let
+      notThisCard :: [EncounterCard] -> [EncounterCard]
+      notThisCard = filter ((/= toCardId card) . toCardId)
     pure
       $ a
       & (setAsideCardsL %~ deleteFirstMatch (== card))
@@ -848,6 +851,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       & (cardsUnderScenarioReferenceL %~ filter (/= card))
       & (encounterDeckL %~ withDeck (filter ((/= card) . EncounterCard)))
       & (discardL %~ filter ((/= card) . EncounterCard))
+      {- An enemy taken into play out of an extra encounter deck (the Wages of Sin
+      spectral deck) has to leave that deck *and* its discard. Bane of the Living files
+      the Geist it finds into the spectral discard before spawning it, and with the card
+      still sitting there it is reshuffled and drawn again while the enemy is in play --
+      six Wraiths off two cards, #6056. -}
+      & (encounterDecksL . each %~ bimap (withDeck notThisCard) notThisCard)
   PlaceUnderneath AgendaDeckTarget cards -> do
     for_ cards \card ->
       pushAll
@@ -1607,8 +1616,16 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         pure $ a & encounterDecksL . at k . non (Deck [], []) .~ (Deck encounterDeck, mempty)
       (x : xs) -> do
         push $ RequestedEncounterCard source (Just iid) (Just x)
-        -- pure $ a & encounterDeckL .~ Deck xs & discardL %~ (reverse discards <>)
-        pure $ a & encounterDecksL . at k . non (Deck [], []) %~ (\(_, zs) -> (Deck xs, x : zs))
+        {- The cards turned over before the match are *discarded*, not removed from the
+        game; only the regular-deck branch had a message doing that on its behalf. The
+        match itself is discarded last, and leaves the discard again under `CreateEnemy`
+        once whatever asked for it puts it into play. -}
+        pure
+          $ a
+          & encounterDecksL
+          . at k
+          . non (Deck [], [])
+          %~ (\(_, zs) -> (Deck xs, x : reverse discards <> zs))
   DiscardUntilN n iid source target Deck.EncounterDeck matcher -> do
     push $ DiscardUntilN n iid source target (Deck.EncounterDeckByKey RegularEncounterDeck) matcher
     pure a

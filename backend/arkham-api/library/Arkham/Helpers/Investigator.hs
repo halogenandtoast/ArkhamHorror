@@ -15,7 +15,7 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Criteria qualified as Criteria
 import Arkham.Damage
-import Arkham.Discover (IsInvestigate (..))
+import Arkham.Discover (IsInvestigate (..), countsAsInvestigate)
 import {-# SOURCE #-} Arkham.Game.Base
 import {-# SOURCE #-} Arkham.Game.Utils (withInvestigatorEdit)
 import Arkham.GameEnv
@@ -275,7 +275,7 @@ preventsDiscoveringClues isInvestigation lid = \case
   CannotDiscoverClues {} -> pure True
   CannotDiscoverCluesAt matcher -> elem lid <$> select matcher
   CannotDiscoverCluesExceptAsResultOfInvestigation matcher
-    | isInvestigation == NotInvestigate -> elem lid <$> select matcher
+    | not (countsAsInvestigate isInvestigation) -> elem lid <$> select matcher
   _ -> pure False
 
 {- | The modifiers stopping an investigator from discovering clues where they

@@ -2138,9 +2138,15 @@ shuffleCardsIntoBottomOfDeck
   -> Int
   -> cards
   -> m ()
-shuffleCardsIntoBottomOfDeck deck n cards = Shuffle.whenCanShuffleIn deck cards do
-  for_ cards $ push . ObtainCard . toCardId
-  push $ Msg.shuffleCardsIntoBottomOfDeck deck n cards
+shuffleCardsIntoBottomOfDeck deck n cards =
+  Shuffle.getCanShuffleIn deck cards >>= \case
+    True -> do
+      for_ cards $ push . ObtainCard . toCardId
+      push $ Msg.shuffleCardsIntoBottomOfDeck deck n cards
+    -- See 'Arkham.Message.Lifted.Base.shuffleCardsIntoDeck': no card, no
+    -- refusal to narrate (#6046).
+    False -> when (notNull cards) do
+      push $ CannotShuffleIntoDeck (Deck.toDeck deck) (map toCard (toList cards))
 
 reduceCostOf :: (Sourceable source, IsCard card, ReverseQueue m) => source -> card -> Int -> m ()
 reduceCostOf source card n = Msg.pushM $ Msg.reduceCostOf source card n
@@ -2776,9 +2782,7 @@ discoverAtYourLocation isInvestigate iid s n = do
   discovery <- Msg.discoverAtYourLocation s n
   push
     $ Msg.DiscoverClues iid
-    $ discovery
-      { Msg.discoverAction = if isInvestigate == IsInvestigate then Just #investigate else Nothing
-      }
+    $ discovery {Msg.discoverVia = isInvestigate}
 
 discoverAtYourLocationAndThen
   :: (ReverseQueue m, Sourceable source)
@@ -2795,10 +2799,7 @@ discoverAtYourLocationAndThen isInvestigate iid s n andThenMsgs = do
       discovery <- Msg.discoverAtYourLocation s n
       push
         $ Msg.DiscoverClues iid
-        $ discovery
-          { Msg.discoverThen = msgs
-          , Msg.discoverAction = if isInvestigate == IsInvestigate then Just #investigate else Nothing
-          }
+        $ discovery {Msg.discoverThen = msgs, Msg.discoverVia = isInvestigate}
 
 discoverAtMatchingLocation
   :: (ReverseQueue m, Sourceable source)
@@ -2817,9 +2818,7 @@ discoverAtMatchingLocation isInvestigate iid s mtchr n = do
       [ targetLabel
           location
           [ Msg.DiscoverClues iid
-              $ (Msg.discoverPure did location s n)
-                { Msg.discoverAction = guard (isInvestigate == IsInvestigate) $> #investigate
-                }
+              $ (Msg.discoverPure did location s n) {Msg.discoverVia = isInvestigate}
           ]
       | location <- locations
       ]
@@ -2847,9 +2846,7 @@ discoverAt isInvestigate iid s n lid = do
 
   Msg.pushWhen canDiscover
     $ Msg.DiscoverClues iid
-    $ (Msg.discoverPure did lid s n)
-      { Msg.discoverAction = guard (isInvestigate == IsInvestigate) $> #investigate
-      }
+    $ (Msg.discoverPure did lid s n) {Msg.discoverVia = isInvestigate}
 
 doStep :: ReverseQueue m => Int -> Message -> m ()
 doStep n msg = push $ Msg.DoStep n msg

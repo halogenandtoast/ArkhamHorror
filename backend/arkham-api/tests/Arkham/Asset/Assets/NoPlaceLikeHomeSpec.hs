@@ -21,6 +21,18 @@ spec = describe "No Place Like Home" do
       chooseOnlyOption "resolve No Place Like Home's forced ability"
       fieldMap AssetUses (findWithDefault 0 Discovery) nplh `shouldReturn` 7
 
+    {- A scenario card instructing a reveal names no investigator, and each
+    investigator is still considered to have revealed it -- FAQ v2.5 Q&A 088
+    generalised, see local-faq 2026-11-23. Core of the Vault reveals ITSELF at
+    the end of the round, and the discovery is spent for it all the same
+    (#6048). -}
+    it "removes 1 discovery when a scenario card reveals a location" . gameTest $ \self -> do
+      location <- testLocationWith (revealedL .~ False)
+      nplh <- self `putAssetIntoPlay` Assets.noPlaceLikeHome
+      run $ RevealLocation Nothing (toId location)
+      chooseOnlyOption "resolve No Place Like Home's forced ability"
+      fieldMap AssetUses (findWithDefault 0 Discovery) nplh `shouldReturn` 7
+
     -- "1 [per_investigator] or fewer discoveries" — with one investigator the
     -- threshold is 1, so 1 left still marks progress and 2 left does not.
     it "marks 1 progress at 1 per investigator discovery" . gameTest $ \self -> do

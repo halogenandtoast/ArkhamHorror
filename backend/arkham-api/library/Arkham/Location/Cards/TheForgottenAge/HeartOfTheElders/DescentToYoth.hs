@@ -42,7 +42,10 @@ instance RunMessage DescentToYoth where
       pure l
     UseCardAbility _iid (isSource attrs -> True) 2 _ _ ->
       pure $ DescentToYoth $ attrs `with` Metadata True
-    Msg.DiscoverClues _iid d | flipDoom metadata && d.location == DiscoverAtLocation attrs.id && d.isInvestigate == IsInvestigate -> do
-      push $ FlipDoom (toTarget attrs) 1
-      pure $ DescentToYoth $ attrs `with` Metadata False
+    Msg.DiscoverClues _iid d
+      | flipDoom metadata
+      , d.location == DiscoverAtLocation attrs.id
+      , countsAsInvestigate d.isInvestigate -> do
+          push $ FlipDoom (toTarget attrs) 1
+          pure $ DescentToYoth $ attrs `with` Metadata False
     _ -> DescentToYoth . (`with` metadata) <$> liftRunMessage msg attrs

@@ -43,3 +43,15 @@ spec = describe "card movement narration" do
     case narrationFor (AddToHand self.id [toCard returned]) of
       Nothing -> expectationFailure "Expected the AddToHand handler"
       Just renderEntry -> renderEntry `shouldReturn` Nothing
+  it "says why an empty deck refused the shuffle, and says nothing without a card" . gameTest $ \self -> do
+    [refused] <- testPlayerCards 1
+    withProp @"discard" [refused] self
+    pid <- getPlayer self.id
+    entry <- narrate $ CannotShuffleIntoDeck (Deck.InvestigatorDeck self.id) [toCard refused]
+    assertCards "log.cannotShuffleCardsIntoEmptyDeck" (toCard refused) entry
+    logEntryAudience entry `shouldBe` OnlyPlayer pid
+    case ( narrationFor (CannotShuffleIntoDeck (Deck.InvestigatorDeck self.id) [])
+             :: Maybe (TestAppT (Maybe LogEntry))
+         ) of
+      Nothing -> pure ()
+      Just _ -> expectationFailure "A refusal with no cards has nothing to say"

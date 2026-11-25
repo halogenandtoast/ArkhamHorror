@@ -438,8 +438,27 @@ handleWhenCanMove a@InvestigatorAttrs {..} iid msgs = do
   mods <- getModifiers iid
   for_ investigatorMovement \movement -> do
     let canMove = none (`elem` mods) [CannotMove, CancelMovement movement.id]
-    when (canMove || not movement.cancelable) $ pushAll msgs
+    -- A 'ConnectsToSelfWhenIsolated' move onto the location you already occupy only
+    -- exists so a reaction can retarget it, and the destination is read live here,
+    -- after the would-move window. Still pointing at the origin means nothing
+    -- retargeted it, and a move with nowhere to go is a no-op -- resolving it would
+    -- fire the leaving and entering windows for a location never left (Night of
+    -- Fire's Cramped Passage places a clue on every entry).
+    unredirected <- isUnredirectedSelfMove iid movement
+    when ((canMove || not movement.cancelable) && not unredirected) $ pushAll msgs
   pure a
+
+{- | Whether @movement@ is a self-destination move that only
+'ConnectsToSelfWhenIsolated' made legal and that nothing has retargeted. False for
+every move on a board without that modifier.
+-}
+isUnredirectedSelfMove :: HasGame m => InvestigatorId -> Movement -> m Bool
+isUnredirectedSelfMove iid movement = case movement.destination of
+  ToLocation lid ->
+    field InvestigatorLocation iid >>= \case
+      Just current | current == lid -> elem ConnectsToSelfWhenIsolated <$> getModifiers lid
+      _ -> pure False
+  ToLocationMatching _ -> pure False
 
 handleMoveAllTo a@InvestigatorAttrs {..} source lid = do
   moveToEdit source investigatorId lid \m ->

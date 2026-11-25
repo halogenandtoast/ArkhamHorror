@@ -490,6 +490,15 @@ insteadOfDiscarding e body = do
       [] -> Nothing
 
   defeatWindows <- lift $ cancelEnemyDefeatCapture e
+  {- The defeat still happened here -- only the trip to the discard pile is replaced --
+  so an attack of this enemy's that has not reached `PerformEnemyAttack` yet never
+  resolves. Survival Knife (2) prints "(before resolving that attack)" for exactly that.
+  `enemyDefeated` is what carries it to the guard, but the `Do (Defeated ...)` that sets
+  the flag is precisely what `cancelEnemyDefeatCapture` just removed, so record it on the
+  attack instead (#6050). Plain `cancelEnemyDefeat` is the opposite case -- the enemy was
+  never defeated and keeps attacking -- which is why this lives here and not there. -}
+  whenJustM (fieldMayJoin EnemyAttacking (asId e)) \details ->
+    push $ ChangeEnemyAttackDetails (asId e) details {attackCancelled = True}
   body
   if null defeatWindows
     then case go ws of

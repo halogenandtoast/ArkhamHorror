@@ -86,6 +86,7 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Game.Base (Game (..))
 import Arkham.Game.Utils (modeScenario)
 import Arkham.GameEnv (getCardMaybe, getLogBlockStack, getSkillTest)
+import Arkham.Helpers (unDeck)
 import Arkham.Helpers.Dreaming (canCreateDreamingCard, getDreamingCardLimit)
 import Arkham.Helpers.Message (sourceToFromSource)
 import Arkham.Helpers.Modifiers (
@@ -740,6 +741,33 @@ oneShot = \case
                 ["investigator" ~> who, "cards" ~> LogList (map (toLogPart . PlayerCard) shuffled)]
             ]
     pure $ if null shuffled then Nothing else (`forPlayer` entry) <$> mPlayer
+  {- The same shuffle, refused.
+
+  A 'notice', for the reason 'TakeResources' above gives: the player read "shuffle
+  the chosen asset into your deck" on Pushed to the Limit, the deck was empty, FAQ
+  1.13 correctly left Lupara in the discard, and nothing was said either way
+  (#6046). The message carries no handler, so the state the reason is read off
+  here is the state that decided it -- the verdict and the explanation cannot
+  disagree. -}
+  CannotShuffleIntoDeck (Deck.InvestigatorDeck iid) cards | notNull cards -> Just do
+    who <- investigatorRefFor iid
+    mPlayer <- fieldMay InvestigatorPlayerId iid
+    deckIsEmpty <- maybe True (null . unDeck) <$> fieldMay InvestigatorDeck iid
+    let
+      key =
+        if deckIsEmpty
+          then "log.cannotShuffleCardsIntoEmptyDeck"
+          else "log.cannotShuffleCardsIntoDeck"
+      entry = notice [ikeyPart key ["investigator" ~> who, "cards" ~> LogList (map toLogPart cards)]]
+    pure $ (`forPlayer` entry) <$> mPlayer
+  -- The encounter half of the same rule, which is nobody's private business.
+  CannotShuffleIntoDeck Deck.EncounterDeck cards
+    | notNull cards ->
+        Just
+          $ pure
+          $ Just
+          $ notice
+            [ikeyPart "log.cannotShuffleCardsIntoEncounterDeck" ["cards" ~> LogList (map toLogPart cards)]]
   {- Something discarded.
 
   @Discarded@, not @DiscardCard@: the latter is the request, and this is what

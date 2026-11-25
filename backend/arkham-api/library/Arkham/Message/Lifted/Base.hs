@@ -209,9 +209,15 @@ shuffleCardsIntoDeck
   => deck
   -> cards
   -> m ()
-shuffleCardsIntoDeck deck cards = whenCanShuffleIn deck cards do
-  for_ cards $ push . ObtainCard . toCardId
-  push $ Msg.shuffleCardsIntoDeck deck cards
+shuffleCardsIntoDeck deck cards =
+  getCanShuffleIn deck cards >>= \case
+    True -> do
+      for_ cards $ push . ObtainCard . toCardId
+      push $ Msg.shuffleCardsIntoDeck deck cards
+    -- 'getCanShuffleIn' is also False for no cards at all, and setup routinely
+    -- shuffles in an empty match. A refusal needs a card to refuse (#6046).
+    False -> when (notNull cards) do
+      push $ CannotShuffleIntoDeck (Deck.toDeck deck) (map toCard (toList cards))
 
 shuffleSetAsideIntoDeck :: (ReverseQueue m, IsDeck deck) => deck -> CardMatcher -> m ()
 shuffleSetAsideIntoDeck deck = shuffleCardsIntoDeck deck <=< getSetAsideCardsMatching

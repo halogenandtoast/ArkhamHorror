@@ -43,7 +43,8 @@ getDiscoveredTotal iid d =
     Nothing -> pure 0
     Just lid -> do
       mods <- getModifiers iid
-      let additionalDiscovered = getSum $ fold [Sum x | d.isInvestigate == IsInvestigate, DiscoveredClues x <- mods]
+      let additionalDiscovered =
+            getSum $ fold [Sum x | takesInvestigateClueBonus d.isInvestigate, DiscoveredClues x <- mods]
       base <- total lid (d.count + additionalDiscovered)
       min base <$> field LocationClues lid
  where
@@ -110,8 +111,12 @@ resolveDiscoverCluesAt :: ReverseQueue m => LocationId -> InvestigatorId -> Disc
 resolveDiscoverCluesAt lid iid d = do
   mods <- getModifiers iid
 
-  let additionalDiscoveredAt = Map.fromListWith (<>) [(olid, Sum x) | DiscoveredCluesAt olid x <- mods, olid /= lid]
-  let additionalDiscovered = getSum $ fold [Sum x | d.isInvestigate == IsInvestigate, DiscoveredClues x <- mods]
+  -- See the note in "Arkham.Investigator.Runner": the bonuses belong to the
+  -- investigate action's own discovery alone (#6043).
+  let takesBonus = takesInvestigateClueBonus d.isInvestigate
+  let additionalDiscoveredAt =
+        Map.fromListWith (<>) [(olid, Sum x) | takesBonus, DiscoveredCluesAt olid x <- mods, olid /= lid]
+  let additionalDiscovered = getSum $ fold [Sum x | takesBonus, DiscoveredClues x <- mods]
 
   let
     total lid' n = do

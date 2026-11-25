@@ -23,6 +23,18 @@ const EXTRA_ANIMATIONS_SETTING = 'extraAnimations'
 // Off by default: they are still real cards, and some players want to see them.
 const HIDE_INERT_CARDS_KEY = 'arkhamHideInertCards'
 
+/* Let a card grow past its default size when the screen has room for it, and
+ * never shrink below that default. A class on <html> rather than on a game
+ * root: the card tokens are read by overlays and flight placeholders that are
+ * teleported to <body>, outside any #game. */
+const AUTO_SCALE_CARDS_KEY = 'arkhamAutoScaleCards'
+const AUTO_SCALE_CARDS_CLASS = 'arkham-auto-scale-cards'
+
+function applyAutoScaleCards(enabled: boolean) {
+  if (typeof document === 'undefined') return
+  document.documentElement.classList.toggle(AUTO_SCALE_CARDS_CLASS, enabled)
+}
+
 /* Show the cards you draw from your own deck, enlarged, the way an encounter
  * card is shown when it is drawn.
  *
@@ -199,6 +211,16 @@ export const useSettings = defineStore("settings", () => {
     localStorage.setItem(HIDE_INERT_CARDS_KEY, String(enabled))
   }
 
+  // Off unless explicitly turned on.
+  const autoScaleCards = ref(localStorage.getItem(AUTO_SCALE_CARDS_KEY) === 'true')
+  applyAutoScaleCards(autoScaleCards.value)
+
+  function setAutoScaleCards(enabled: boolean) {
+    autoScaleCards.value = enabled
+    localStorage.setItem(AUTO_SCALE_CARDS_KEY, String(enabled))
+    applyAutoScaleCards(enabled)
+  }
+
   const showBonded = ref(false)
 
   function toggleShowBonded() {
@@ -224,6 +246,8 @@ export const useSettings = defineStore("settings", () => {
     setExtraAnimationsOverride,
     hideInertCards,
     setHideInertCards,
+    autoScaleCards,
+    setAutoScaleCards,
     customCardsEnabled,
     setCustomCardsEnabled,
     inlineModals,

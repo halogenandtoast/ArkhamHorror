@@ -34,6 +34,21 @@ restricted a 1 (OnSameLocation <> InThreatAreaOf Anyone) $ actionAbilityWithCost
 `InThreatAreaOf You` is correct, and the ~13 other treacheries in the repo that gate an `[action]`
 that way have to be read one at a time rather than mass-rewritten.
 
+**A weakness *asset* in a threat area is the other exception, and it is decided by cardtype, not
+placement.** FAQ 1.2's list says "all **encounter cards** in the threat area …", and the Weakness
+rule (`../rules/glossary/weakness.md`) draws the line:
+
+> Weaknesses with an encounter cardtype are, like other encounter cards, not controlled by any
+> player. **Weaknesses with a player cardtype are controlled by their bearer.**
+
+So a weakness *treachery* in a threat area is an encounter card once in play and takes
+`OnSameLocation` (Internal Injury, Dreams of R'lyeh), but a weakness *asset* is a player card
+controlled by its bearer and its `[action]` is reachable only via "cards in play under your
+control" — bearer-only, `controlled_`. The Feast of Hemlock Vale injuries are all four assets:
+Maimed Hand (`10135`), Back Injury (`10136`), The Silver Moth (`10137`), Vow of Dryztelech
+(`10138`). Back Injury and Maimed Hand had `OnSameLocation` and were corrected (#6051); the other
+two were already right, and that split is how the discrepancy surfaced.
+
 "You" inside the ability's own cost and effect still means the activating investigator, so widening
 the criteria alone is the whole fix: `HandDiscardCost`/`HorrorCost … YouTarget` already bill the
 user, and `toDiscardBy iid` already credits them. Do **not** widen the card's constant ability at

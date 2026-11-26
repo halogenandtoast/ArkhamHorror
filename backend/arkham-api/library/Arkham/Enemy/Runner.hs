@@ -2685,7 +2685,15 @@ instance RunMessage EnemyAttrs where
           PlayerCard pc -> case enemyBearer of
             Nothing -> push (RemoveFromGame $ EnemyTarget a.id)
             -- The Man in the Pallid Mask has not bearer in Curtain Call
-            Just iid' -> push (AddToDiscard iid' pc)
+            Just iid' -> do
+              -- A side-deck card (parallel Jim's spirit deck) never reaches the
+              -- discard pile: The Beyond hears this same Discarded and returns it
+              -- to the bottom of the spirit deck. 'handleDiscarded' already guards
+              -- the asset spirits this way; without the same guard here Vengeful
+              -- Shade landed in the discard pile *and* the spirit deck (#6067).
+              sideDeck <- fieldMap InvestigatorSideDeck (fromMaybe []) iid'
+              unless (any ((== toCardId pc) . toCardId) sideDeck)
+                $ push (AddToDiscard iid' pc)
           EncounterCard _ -> pure ()
           VengeanceCard _ -> error "Vengeance card"
 

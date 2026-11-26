@@ -9964,6 +9964,7 @@ test-suite spec
       Arkham.Enemy.Cards.EdgeOfTheEarth.ElderThings.GuardianElderThingSpec
       Arkham.Enemy.Cards.GuardianOfTheCrystallizerSpec
       Arkham.Enemy.Cards.LaidToRest.JeanDevereuxSeekingClosureSpec
+      Arkham.Enemy.Cards.LaidToRest.VengefulShadeSpec
       Arkham.Enemy.Cards.MobEnforcerSpec
       Arkham.Enemy.Cards.NightOfTheZealot.TheMidnightMasks.TheMaskedHunterSpec
       Arkham.Enemy.Cards.ReturnToTheDunwichLegacy.ReturnToTheEssexCountyExpress.TheConductorBeastFromBeyondTheGateSpec

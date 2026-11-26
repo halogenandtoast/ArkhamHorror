@@ -551,11 +551,6 @@ const wireStats = computed(() => (statRows.value.length ? JSON.stringify(statRow
       @dragover.prevent="dragover($event)"
       @dragenter.prevent
     />
-    <!-- The portrait view shows no investigator card, and a bare `.portrait`
-         is not something CardOverlay can magnify, so the pip is the only way
-         to reach these modifiers here. Bottom corner: the action row runs
-         along the top. -->
-    <ModifierPip :rows="modifierDisplayRows" :stats="statRows" corner="bottom-right" />
   </div>
   <div v-else class="player-container" v-bind="cardDrop">
     <div class="player-area">

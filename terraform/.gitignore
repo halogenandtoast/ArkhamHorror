@@ -6,3 +6,4 @@ terraform.tfvars
 *.auto.tfvars
 crash.log
 kubeconfig
+.app-shutdown-state.json

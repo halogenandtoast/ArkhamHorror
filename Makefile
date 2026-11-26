@@ -210,6 +210,19 @@ v2-logs: v2-kubeconfig-ensure
 	  -l app=$(V2_DEPLOYMENT) --tail=200 -f
 .PHONY: v2-logs
 
+## Deprovision the whole prod stack (nodes, LB, Valkey, VPC); Postgres untouched
+app-down:
+	@./scripts/app-shutdown.sh down
+
+## Reprovision the prod stack and repoint DNS at the new load balancer
+app-up:
+	@./scripts/app-shutdown.sh up
+
+## Show whether the prod stack is provisioned, and any leftover DO resources
+app-status:
+	@./scripts/app-shutdown.sh status
+.PHONY: app-down app-up app-status
+
 ## Report Postgres backends stuck idle-in-transaction blocking others
 db-unstick:
 	@./scripts/db-unstick.sh

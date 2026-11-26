@@ -2424,7 +2424,12 @@
     },
     "panel": {
       "title": "Your reports",
-      "all": "All reports \u2192"
+      "all": "All reports \u2192",
+      "more": "Show {count} more",
+      "fewer": "Show fewer",
+      "archive": "Archived ({count})",
+      "archiveTitle": "Archived",
+      "allClear": "Nothing of yours is waiting on anybody."
     },
     "new": {
       "title": "File a report",

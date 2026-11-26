@@ -31,12 +31,14 @@ const events: Ref<EventListEntry[]> = ref([])
 const notifications: Ref<AppNotification[]> = ref([])
 
 /* The reports this account follows, for the feed's second panel. Fetched and
- * polled by the store, which the nav badge reads too. */
+ * polled by the store, which the nav badge reads too. `live` rather than all of
+ * them: a report that is finished and has been read is archived, and the point
+ * of this panel is what still wants looking at. The archive is on /reports. */
 const reports = useReportsStore()
 
 /* Whether the right-hand column exists at all: with nothing to put in it the
  * games list takes the whole width back rather than leaving an empty gutter. */
-const hasFeed = computed(() => notifications.value.length > 0 || reports.reports.length > 0)
+const hasFeed = computed(() => notifications.value.length > 0 || reports.live.length > 0)
 
 const activeGames = computed(() => games.value.filter(g => g.gameState.tag !== 'IsOver'))
 const finishedGames = computed(() => games.value.filter(g => g.gameState.tag === 'IsOver'))
@@ -163,7 +165,7 @@ const toggleImportGame = () => {
            reader hears the news first, whichever column it is drawn in. -->
       <aside v-if="hasFeed" class="home-feed" :aria-label="$t('home.feedLabel')">
         <AnnouncementFeed v-if="notifications.length > 0" :notifications="notifications" />
-        <MyReportsPanel v-if="reports.reports.length > 0" :reports="reports.reports" />
+        <MyReportsPanel v-if="reports.live.length > 0" :reports="reports.live" />
       </aside>
 
       <div class="home-main">

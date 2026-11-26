@@ -12,7 +12,8 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import * as Api from '@/arkham/api'
-import ReportStatusTag from '@/components/ReportStatusTag.vue'
+import ReportRow from '@/components/ReportRow.vue'
+import { useReportsStore } from '@/stores/reports'
 
 const route = useRoute()
 const router = useRouter()
@@ -76,7 +77,37 @@ const totalPages = computed(() =>
   page.value ? Math.max(1, Math.ceil(page.value.total / page.value.pageSize)) : 1,
 )
 
-const when = (at: string) => new Date(at).toLocaleDateString()
+/* Your own reports as a group on top of everything.
+ *
+ * Already in hand: the store behind the nav badge polls the reports this
+ * account follows, so the group costs no request, and it cannot disagree with
+ * the badge about whether there is news.
+ *
+ * It sits above the filters because it is not subject to them -- a group that
+ * emptied itself when somebody searched would read as "you filed nothing".
+ */
+const mine = useReportsStore()
+const expanded = ref(false)
+const FOLDED = 5
+
+/* Archived reports are put away, not deleted, so the group has two buckets and
+ * a button between them. A report archives itself once it is finished AND the
+ * reporter has seen that it is -- see stores/reports.ts -- so the thing they
+ * were told about is still on the list until they have read the answer, and
+ * off it the moment they have. */
+const showArchive = ref(false)
+
+const byNews = (a: Api.Report, b: Api.Report) =>
+  Number(b.unread) - Number(a.unread) || b.updatedAt.localeCompare(a.updatedAt)
+
+const live = computed(() => [...mine.live].sort(byNews))
+const archived = computed(() => [...mine.archived].sort(byNews))
+
+const yours = computed(() => (showArchive.value ? archived.value : live.value))
+const yoursShown = computed(() => (expanded.value ? yours.value : yours.value.slice(0, FOLDED)))
+
+/* Folding is per bucket: five of one is not five of the other. */
+watch(showArchive, () => (expanded.value = false))
 </script>
 
 <template>
@@ -87,6 +118,35 @@ const when = (at: string) => new Date(at).toLocaleDateString()
         <font-awesome-icon icon="pen-to-square" /> {{ $t('reports.file') }}
       </RouterLink>
     </header>
+
+    <section v-if="live.length > 0 || archived.length > 0" class="yours">
+      <header>
+        <h2>{{ showArchive ? $t('reports.panel.archiveTitle') : $t('reports.panel.title') }}</h2>
+        <button
+          v-if="showArchive || archived.length > 0"
+          class="archive-toggle"
+          @click="showArchive = !showArchive"
+        >
+          <template v-if="showArchive">← {{ $t('reports.panel.title') }}</template>
+          <template v-else>
+            <font-awesome-icon icon="box-archive" />
+            {{ $t('reports.panel.archive', { count: archived.length }) }}
+          </template>
+        </button>
+      </header>
+
+      <p v-if="yours.length === 0" class="all-clear">{{ $t('reports.panel.allClear') }}</p>
+
+      <ul v-else class="list">
+        <li v-for="report in yoursShown" :key="report.id">
+          <ReportRow :report="report" />
+        </li>
+      </ul>
+
+      <button v-if="yours.length > FOLDED" class="fold" @click="expanded = !expanded">
+        {{ expanded ? $t('reports.panel.fewer') : $t('reports.panel.more', { count: yours.length - FOLDED }) }}
+      </button>
+    </section>
 
     <div class="filters">
       <div class="kinds">
@@ -127,33 +187,7 @@ const when = (at: string) => new Date(at).toLocaleDateString()
 
     <ul v-else-if="page" class="list" :class="{ stale: loading }">
       <li v-for="report in page.reports" :key="report.id">
-        <RouterLink class="row" :to="{ name: 'Report', params: { number: report.number } }">
-          <font-awesome-icon
-            class="kind"
-            :icon="report.kind === 'feature' ? 'lightbulb' : 'bug'"
-            :class="report.kind"
-            :title="$t(`reports.kind.${report.kind}`)"
-          />
-          <span class="title">
-            {{ report.title }}
-            <span v-if="report.unread" class="news" :title="$t('reports.news')">!</span>
-          </span>
-          <ReportStatusTag :status="report.status" />
-          <span class="meta">
-            <span class="number">#{{ report.number }}</span>
-            <span v-if="report.author">
-              {{ report.authorAccount ? $t('reports.by', { who: report.author }) : $t('reports.byGithub', { who: report.author }) }}
-            </span>
-            <span>{{ when(report.createdAt) }}</span>
-            <span v-if="report.blocking" class="blocking">
-              <font-awesome-icon icon="ban" /> {{ $t('reports.blocking') }}
-            </span>
-            <span v-if="report.comments > 0" class="comments">
-              <font-awesome-icon icon="comment" /> {{ report.comments }}
-            </span>
-            <span v-if="report.hidden" class="hidden-flag">{{ $t('reports.hiddenFlag') }}</span>
-          </span>
-        </RouterLink>
+        <ReportRow :report="report" />
       </li>
     </ul>
 
@@ -273,6 +307,64 @@ select {
   margin: 0;
 }
 
+/* Your own reports, boxed off from the tracker proper: the same rows, but
+   inset and under a rule, so it reads as a group on top of the list rather
+   than as the first few entries of it. */
+.yours {
+  background: var(--background-dark);
+  border: 1px solid var(--box-border);
+  border-radius: 6px;
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+.yours > header {
+  align-items: baseline;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.archive-toggle {
+  background: none;
+  border: none;
+  color: var(--title);
+  cursor: pointer;
+  font-size: 0.82em;
+  padding: 2px 0;
+}
+
+.archive-toggle:hover {
+  color: var(--text);
+}
+
+.all-clear {
+  color: var(--title);
+  font-size: 0.9em;
+  margin: 0;
+}
+
+.yours h2 {
+  color: var(--title);
+  font-family: teutonic, sans-serif;
+  font-size: 1em;
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.fold {
+  background: none;
+  border: none;
+  color: var(--title);
+  cursor: pointer;
+  font-size: 0.82em;
+  justify-self: start;
+  padding: 2px 0;
+  text-decoration: underline;
+}
+
 .list {
   display: grid;
   gap: 6px;
@@ -285,75 +377,6 @@ select {
    list and bouncing the scroll position back to the top. */
 .list.stale {
   opacity: 0.55;
-}
-
-.row {
-  align-items: center;
-  background: var(--box-background);
-  border: 1px solid var(--box-border);
-  border-radius: 5px;
-  color: var(--text);
-  display: grid;
-  gap: 4px 10px;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  padding: 10px 12px;
-  text-decoration: none;
-}
-
-.row:hover {
-  border-color: var(--button-1);
-}
-
-.kind {
-  opacity: 0.8;
-}
-
-.kind.bug {
-  color: var(--survivor);
-}
-
-.kind.feature {
-  color: var(--rogue);
-}
-
-.title {
-  font-weight: 600;
-  overflow-wrap: anywhere;
-}
-
-.news {
-  background: var(--survivor);
-  border-radius: 50%;
-  display: inline-grid;
-  font-size: 0.72em;
-  font-weight: 700;
-  height: 1.15rem;
-  margin-left: 6px;
-  place-items: center;
-  vertical-align: middle;
-  width: 1.15rem;
-}
-
-.meta {
-  color: var(--title);
-  display: flex;
-  flex-wrap: wrap;
-  font-size: 0.78em;
-  gap: 2px 12px;
-  grid-column: 2 / -1;
-}
-
-.number {
-  font-variant-numeric: tabular-nums;
-  opacity: 0.8;
-}
-
-.blocking {
-  color: var(--survivor);
-}
-
-.hidden-flag {
-  color: var(--seeker);
 }
 
 .pages {
@@ -376,18 +399,5 @@ select {
 .pages button:disabled {
   cursor: default;
   opacity: 0.4;
-}
-
-@media (max-width: 700px) {
-  /* Too narrow for a column of its own: the pill drops under the title rather
-     than into the gutter beside the kind icon. */
-  .row {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-
-  .row > .status {
-    grid-column: 2;
-    justify-self: start;
-  }
 }
 </style>

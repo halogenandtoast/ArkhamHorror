@@ -29,6 +29,34 @@ export const useReportsStore = defineStore('reports', {
         (Api.OPEN_REPORT_STATUSES as string[]).includes(report.status),
       )
     },
+
+    /* Archived: finished, and the follower has seen it finished.
+     *
+     * Derived rather than stored. "Archived" is the conjunction of two facts
+     * this list already carries -- the report is in an ending column, and
+     * there is nothing on it the viewer has not seen -- so a column, a sweep
+     * and a second copy of the truth would all be a way of being wrong about
+     * them. It also unarchives itself for free: a reply after the close moves
+     * `updatedAt` past the view, and the report is back on the live list.
+     *
+     * Per viewer, because `unread` is: the same closed report is archived for
+     * whoever has read the outcome and live for whoever has not.
+     */
+    archived(state): Api.Report[] {
+      return state.reports.filter(
+        (report) =>
+          !(Api.OPEN_REPORT_STATUSES as string[]).includes(report.status) && !report.unread,
+      )
+    },
+
+    /* What is still worth the follower's attention: open work, plus anything
+     * finished they have not looked at since. */
+    live(state): Api.Report[] {
+      return state.reports.filter(
+        (report) =>
+          (Api.OPEN_REPORT_STATUSES as string[]).includes(report.status) || report.unread,
+      )
+    },
   },
 
   actions: {

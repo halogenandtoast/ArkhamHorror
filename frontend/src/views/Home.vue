@@ -11,6 +11,7 @@ import type { EventListEntry } from '@/arkham/types/EpicEvent';
 import type { AppNotification } from '@/arkham/api';
 import GameRow from '@/arkham/components/GameRow.vue';
 import EventRow from '@/arkham/components/EventRow.vue';
+import AnnouncementFeed from '@/arkham/components/AnnouncementFeed.vue';
 import ImportGame from '@/arkham/components/ImportGame.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
 import SegmentedToggle from '@/components/SegmentedToggle.vue';
@@ -27,7 +28,10 @@ const brokenGames: Ref<BrokenGameDetails[]> = ref([])
 const events: Ref<EventListEntry[]> = ref([])
 const notifications: Ref<AppNotification[]> = ref([])
 
-const dismissedNotifications = JSON.parse(localStorage.getItem('dismissedNotifications') ?? "[]")
+/* Whether the right-hand column exists at all. Announcements are the only thing
+ * in it today, so with none left the games list takes the whole width back
+ * rather than leaving an empty gutter; a second panel ORs into this. */
+const hasFeed = computed(() => notifications.value.length > 0)
 
 const activeGames = computed(() => games.value.filter(g => g.gameState.tag !== 'IsOver'))
 const finishedGames = computed(() => games.value.filter(g => g.gameState.tag === 'IsOver'))
@@ -100,7 +104,7 @@ fetchEvents().then((result) => {
   events.value = [...byId.values()]
 })
 
-fetchNotifications().then((result) => notifications.value = result.filter((n: AppNotification) => !dismissedNotifications.includes(n.id)))
+fetchNotifications().then((result) => notifications.value = result)
 
 /* How many games are open to spectators right now, for the badge on the Watch
  * button. The digest is the ids-only probe the watch page polls, so this is a
@@ -145,22 +149,18 @@ const goToNewGame = () => router.push({ path: '/new-game' })
 const toggleImportGame = () => {
   showImportGame.value = !showImportGame.value
 }
-
-const dismissNotification = (notification: AppNotification) => {
-  localStorage.setItem('dismissedNotifications', JSON.stringify([notification.id, ...dismissedNotifications]))
-  notifications.value = notifications.value.filter(n => n.id !== notification.id)
-}
 </script>
 
 <template>
   <div class="page-container">
-    <div class="home page-content">
-      <div class="notification" v-for="notification in notifications" :key="notification.id">
-        <p v-html="notification.body"></p>
-        <a @click.prevent="dismissNotification(notification)" href="#">{{ $t('home.dismiss') }}</a>
-      </div>
+    <div class="home page-content" :class="{ 'has-feed': hasFeed }">
+      <!-- Ahead of the games list in the document, as the banners were -- a
+           reader hears the news first, whichever column it is drawn in. -->
+      <aside v-if="hasFeed" class="home-feed" :aria-label="$t('home.feedLabel')">
+        <AnnouncementFeed v-if="notifications.length > 0" :notifications="notifications" />
+      </aside>
 
-      <div class="container">
+      <div class="home-main">
         <section>
           <header class="main-header">
             <div class="title-group">
@@ -337,14 +337,58 @@ h2 {
 .home {
   --segmented-accent: var(--button-1-muted);
   --segmented-accent-highlight: var(--button-1-muted-highlight);
-  max-width: 98vw;
-  min-width: 60vw;
+  /* A minimum the feed is never squeezed below, and a ceiling so that on a
+     very wide screen it stays a column of news rather than a second page. */
+  --feed-width: clamp(300px, 22vw, 420px);
+  /* Fluid rather than a fixed measure: the games list is rows of short text at
+     either end, so it reads better wide than it does boxed into the middle. */
+  width: 94vw;
   margin: 0 auto;
+  /* One column until there is a feed, so with nothing to announce the games
+     list takes the whole width back. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  /* Each column is as tall as its own contents: the feed must not stretch to
+     the height of a long games list, or it cannot stick. */
+  align-items: start;
+  gap: 20px;
   @media (max-width: 768px) {
-    min-width: unset;
     width: 100%;
     padding: 20px 12px 10px;
     box-sizing: border-box;
+  }
+}
+
+.home.has-feed {
+  grid-template-columns: minmax(0, 1fr) var(--feed-width);
+}
+
+.home-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* Second column, though it comes first in the document. */
+  order: 1;
+  /* Reading an announcement should not mean losing your place in the list, and
+     scrolling the list should not scroll the news away. */
+  position: sticky;
+  top: 0;
+  max-height: calc(100dvh - var(--nav-height) - 40px);
+  overflow-y: auto;
+}
+
+/* Below this the two columns no longer both fit, and the feed goes back to
+   where the banners were: above the list, where it is read on the way past. */
+@media (max-width: 1024px) {
+  .home.has-feed {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-feed {
+    order: 0;
+    position: static;
+    max-height: none;
+    overflow-y: visible;
   }
 }
 
@@ -529,32 +573,6 @@ header {
 
   &:hover {
     background: rgba(255, 255, 255, 0.06);
-  }
-}
-
-.notification {
-  --text: #816F3A;
-  --border: var(--text);
-  --background: #FFF8E6;
-  display: flex;
-  flex-direction: row;
-  box-sizing: border-box;
-  padding: 10px;
-  border: 2px solid var(--border);
-  color: var(--text);
-  margin-block: 10px;
-  font-size: 1.2em;
-  border-radius: 5px;
-  background-color: var(--background);
-  gap: 5px;
-
-  > p {
-    flex: 1;
-  }
-
-  :deep(a) {
-    color: var(--seeker-dark);
-    text-decoration: underline;
   }
 }
 

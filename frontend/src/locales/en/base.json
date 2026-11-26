@@ -1084,7 +1084,13 @@
     "loading": "Loading…"
   },
   "home": {
-    "dismiss": "Dismiss",
+    "announcements": "Announcements",
+    "categories": {
+      "important": "Important",
+      "feature": "New Feature",
+      "content": "New Content"
+    },
+    "feedLabel": "Announcements and news",
     "noActiveGames": "No active games.",
     "loadGame": "Load Game",
     "loadingGame": "Loading…",
@@ -2183,10 +2189,13 @@
     "liveWarning": "Writing one publishes it \u2014 there is no draft state",
     "loading": "Loading notifications\u2026",
     "loadFailed": "Could not load the notifications.",
-    "empty": "No notifications. The home page shows no banner.",
+    "empty": "No notifications. The home page shows no announcements feed.",
     "newLabel": "New notification",
     "bodyPlaceholder": "What everybody should see on the home page\u2026",
     "htmlHint": "Rendered as HTML, so <a href=\"\u2026\">links</a> and <strong>emphasis</strong> work.",
+    "categoryLabel": "File it under",
+    "noCategory": "No stamp",
+    "categoryHint": "The category is the stamp on the card and the colour down its edge. Leave it unstamped for an announcement that is none of the three.",
     "preview": "Preview",
     "dateLabel": "Posted at",
     "dateHint": "Leave the date empty to post it now. It is only there because the list is ordered by it, so it is how you put a notification above one that is already up.",
@@ -2195,7 +2204,7 @@
     "published": "Published. It is on the home page now.",
     "createFailed": "Could not publish that notification.",
     "edit": "Edit",
-    "editHint": "An edit reaches anybody still seeing this. It does not bring it back for anybody who dismissed it \u2014 dismissal is per-browser and keyed by the notification's id, so re-announcing something means publishing a new one.",
+    "editHint": "An edit reaches every player who loads the home page after it. Nobody can dismiss an announcement, so this is what they are all looking at until you take it down.",
     "save": "Save",
     "saved": "Saved.",
     "saveFailed": "Could not save that notification.",

@@ -2,11 +2,10 @@
 /* The home-page banner: writing a notification here is publishing it.
  *
  * There is no draft state to save into -- the public read has no filter, so a
- * row exists and is live, or it does not exist. Two things follow, and the page
- * says both rather than letting them be discovered: taking one down is a
- * delete, and editing one does not bring it back for anybody who dismissed it,
- * because dismissal is per-browser and keyed by the row's id. Re-announcing
- * something means a new notification.
+ * row exists and is live, or it does not exist. So taking one down is a delete,
+ * and the page says so rather than letting it be discovered. Nobody can dismiss
+ * an announcement either, so what is here is what every player is looking at
+ * until it is taken down.
  *
  * The body is rendered as HTML on the home page, so it is rendered as HTML here
  * too, in the same chrome players see it in. An admin writing markup needs to
@@ -15,6 +14,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import * as Api from '@/arkham/api'
+import AnnouncementCard from '@/arkham/components/AnnouncementCard.vue'
 
 const { t } = useI18n()
 const K = 'adminNotifications.'
@@ -28,19 +28,41 @@ const status = ref<string | null>(null)
  * always means; it is here because the list is ordered by it. */
 const draftBody = ref('')
 const draftDate = ref('')
+const draftCategory = ref<Api.NotificationCategory | ''>('')
 const creating = ref(false)
+
+/* What a notification can be filed under, '' being filed under nothing. The
+ * server checks the same three names, and the home page stamps each one. */
+const categories: Api.NotificationCategory[] = ['important', 'feature', 'content']
 
 /* Which row is being edited, and its pending values. One at a time: editing a
  * live banner is a deliberate act, not something to have several of open. */
 const editingId = ref<number | null>(null)
 const editBody = ref('')
 const editDate = ref('')
+const editCategory = ref<Api.NotificationCategory | ''>('')
 
 const busy = ref<number | null>(null)
 const confirmingDelete = ref<number | null>(null)
 
 const draftValid = computed(() => draftBody.value.trim().length > 0)
 const editValid = computed(() => editBody.value.trim().length > 0)
+
+/* A preview is the card players get, fed with what is in the composer. The id
+ * is never read by the card and the date stands in as now until one is set. */
+const preview = (
+  body: string,
+  category: Api.NotificationCategory | '',
+  date: string,
+): Api.AppNotification => ({
+  id: 0,
+  body,
+  category: category || null,
+  createdAt: fromLocalInput(date) ?? new Date().toISOString(),
+})
+
+const draftPreview = computed(() => preview(draftBody.value, draftCategory.value, draftDate.value))
+const editPreview = computed(() => preview(editBody.value, editCategory.value, editDate.value))
 
 async function load() {
   loading.value = true
@@ -82,10 +104,15 @@ async function create() {
   error.value = null
   status.value = null
   try {
-    const created = await Api.createNotification(draftBody.value.trim(), fromLocalInput(draftDate.value))
+    const created = await Api.createNotification(
+      draftBody.value.trim(),
+      draftCategory.value || null,
+      fromLocalInput(draftDate.value),
+    )
     rows.value = inOrder([created, ...rows.value])
     draftBody.value = ''
     draftDate.value = ''
+    draftCategory.value = ''
     status.value = t(`${K}published`)
   } catch (e) {
     console.error(e)
@@ -99,6 +126,7 @@ function startEdit(row: Api.AppNotification) {
   editingId.value = row.id
   editBody.value = row.body
   editDate.value = toLocalInput(row.createdAt)
+  editCategory.value = row.category ?? ''
   confirmingDelete.value = null
   status.value = null
   error.value = null
@@ -108,6 +136,7 @@ function cancelEdit() {
   editingId.value = null
   editBody.value = ''
   editDate.value = ''
+  editCategory.value = ''
 }
 
 async function save(row: Api.AppNotification) {
@@ -121,9 +150,14 @@ async function save(row: Api.AppNotification) {
      * an instant: the input has minute resolution, so a stored 07:59:18 reads
      * back as 07:59 and would look changed on every save, silently rounding the
      * seconds off a row whose body was the only thing touched. */
-    const changes: { body?: string; createdAt?: string } = {}
+    const changes: { body?: string; category?: Api.NotificationCategory | null; createdAt?: string } = {}
     const body = editBody.value.trim()
     if (body !== row.body) changes.body = body
+    /* Sent as null rather than left out when it is being cleared: the handler
+     * writes what it is given, and an omitted category means "leave it". */
+    if ((editCategory.value || null) !== (row.category ?? null)) {
+      changes.category = editCategory.value || null
+    }
     if (editDate.value && editDate.value !== toLocalInput(row.createdAt)) {
       const date = fromLocalInput(editDate.value)
       if (date) changes.createdAt = date
@@ -193,13 +227,26 @@ const isFuture = (iso: string) => new Date(iso).getTime() > Date.now()
       ></textarea>
       <p class="hint">{{ t(`${K}htmlHint`) }}</p>
 
-      <!-- What the home page will show. The same markup and the same chrome,
-           because the point of a preview is that nothing else differs. -->
+      <fieldset class="categories">
+        <legend>{{ t(`${K}categoryLabel`) }}</legend>
+        <label>
+          <input type="radio" value="" v-model="draftCategory" />
+          <span>{{ t(`${K}noCategory`) }}</span>
+        </label>
+        <label v-for="category in categories" :key="category" :class="`is-${category}`">
+          <input type="radio" :value="category" v-model="draftCategory" />
+          <span>{{ t(`home.categories.${category}`) }}</span>
+        </label>
+      </fieldset>
+      <p class="hint">{{ t(`${K}categoryHint`) }}</p>
+
+      <!-- What the home page will show: the players' own card, at the width it
+           has in the sidebar, because the point of a preview is that nothing
+           else differs. -->
       <div v-if="draftValid" class="preview">
         <p class="preview-label">{{ t(`${K}preview`) }}</p>
-        <div class="notification">
-          <p v-html="draftBody"></p>
-          <a href="#" @click.prevent>{{ t('home.dismiss') }}</a>
+        <div class="preview-card">
+          <AnnouncementCard :notification="draftPreview" />
         </div>
       </div>
 
@@ -252,11 +299,21 @@ const isFuture = (iso: string) => new Date(iso).getTime() > Date.now()
 
         <div v-if="editingId === row.id" class="editor">
           <textarea v-model="editBody" rows="3" @keydown.stop @keydown.esc="cancelEdit"></textarea>
+          <fieldset class="categories">
+            <legend>{{ t(`${K}categoryLabel`) }}</legend>
+            <label>
+              <input type="radio" value="" v-model="editCategory" />
+              <span>{{ t(`${K}noCategory`) }}</span>
+            </label>
+            <label v-for="category in categories" :key="category" :class="`is-${category}`">
+              <input type="radio" :value="category" v-model="editCategory" />
+              <span>{{ t(`home.categories.${category}`) }}</span>
+            </label>
+          </fieldset>
           <div class="preview">
             <p class="preview-label">{{ t(`${K}preview`) }}</p>
-            <div class="notification">
-              <p v-html="editBody"></p>
-              <a href="#" @click.prevent>{{ t('home.dismiss') }}</a>
+            <div class="preview-card">
+              <AnnouncementCard :notification="editPreview" />
             </div>
           </div>
           <p class="hint">{{ t(`${K}editHint`) }}</p>
@@ -273,9 +330,8 @@ const isFuture = (iso: string) => new Date(iso).getTime() > Date.now()
         </div>
 
         <!-- Not editing: the notification exactly as players meet it. -->
-        <div v-else class="notification">
-          <p v-html="row.body"></p>
-          <a href="#" @click.prevent>{{ t('home.dismiss') }}</a>
+        <div v-else class="preview-card">
+          <AnnouncementCard :notification="row" />
         </div>
 
         <div v-if="confirmingDelete === row.id" class="confirm">
@@ -574,35 +630,69 @@ button:disabled {
 
 /* Lifted from Home.vue unchanged. A preview that is styled even slightly
    differently from the real banner is not a preview of it. */
-.notification {
-  --text: #816F3A;
-  --border: var(--text);
-  --background: #FFF8E6;
-  background-color: var(--background);
-  border: 2px solid var(--border);
-  border-radius: 5px;
-  box-sizing: border-box;
-  color: var(--text);
-  display: flex;
-  flex-direction: row;
-  font-size: 1.2em;
-  gap: 5px;
-  padding: 10px;
+/* The sidebar is around 300-420px wide, so a card previewed at the full width
+   of this page would not be the thing being previewed. */
+.preview-card {
+  max-width: 340px;
 }
 
-.notification > p {
-  flex: 1;
+/* The categories, as the three stamps they put on the card. */
+.categories {
+  border: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+}
+
+.categories legend {
+  color: var(--title);
+  font-size: 0.75em;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+  padding: 0;
+  text-transform: uppercase;
+}
+
+.categories label {
+  --swatch: var(--background-mid);
+  align-items: center;
+  border: 1px solid var(--box-border);
+  border-radius: 999px;
+  color: var(--title);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.8em;
+  gap: 6px;
+  padding: 5px 10px 5px 8px;
+  text-transform: uppercase;
+}
+
+.categories label.is-important { --swatch: #c1392b; }
+.categories label.is-feature { --swatch: #5c9b4c; }
+.categories label.is-content { --swatch: #9173c4; }
+
+/* The radio itself is the swatch: it is the category's own colour, so the
+   picker says which stamp it is about without a second legend. */
+.categories input {
+  accent-color: var(--swatch);
   margin: 0;
 }
 
-.notification a {
-  color: var(--seeker-dark);
-  text-decoration: underline;
+.categories label:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.notification :deep(a) {
-  color: var(--seeker-dark);
-  text-decoration: underline;
+.categories label:has(input:checked) {
+  background: color-mix(in srgb, var(--swatch) 18%, transparent);
+  border-color: var(--swatch);
+  color: var(--text);
+}
+
+.categories label:has(input:focus-visible) {
+  outline: 2px solid var(--spooky-green);
+  outline-offset: 2px;
 }
 
 .confirm {

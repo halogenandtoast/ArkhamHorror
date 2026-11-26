@@ -67,9 +67,17 @@ export const fetchGameReplay = async (gameId: string, step: number): Promise<Fet
   return { game: gameData, totalSteps }
 }
 
+/* What kind of announcement it is, which is what the home page stamps it with.
+ * `null` is an ordinary announcement and carries no stamp -- including every
+ * one written before categories existed. The server checks the value against
+ * the same three names; a fourth would arrive here as an unknown string and
+ * simply go unstamped rather than break the feed. */
+export type NotificationCategory = 'important' | 'feature' | 'content'
+
 export interface AppNotification {
   id: number;
   body: string;
+  category: NotificationCategory | null;
   createdAt: string;
 }
 
@@ -80,10 +88,10 @@ export const fetchNotifications = async (): Promise<AppNotification[]> => {
 
 /* --------------------------------------------------- admin: notifications ---
 
-   The home-page banner everybody sees. There is no draft state on the server --
-   the public read has no filter -- so creating one publishes it, and taking one
-   down is a delete. Editing reaches whoever is still seeing it, but not anybody
-   who already dismissed it: dismissal is per-browser and keyed by row id. */
+   The home-page announcements everybody sees. There is no draft state on the
+   server -- the public read has no filter -- so creating one publishes it, and
+   taking one down is a delete. Nobody can dismiss one, so an edit reaches every
+   player who loads the page next. */
 
 export const fetchAdminNotifications = async (): Promise<AppNotification[]> => {
   const { data } = await api.get('admin/notifications')
@@ -94,16 +102,18 @@ export const fetchAdminNotifications = async (): Promise<AppNotification[]> => {
  * is no way to put a new notification above one that is already up. */
 export const createNotification = async (
   body: string,
+  category: NotificationCategory | null,
   createdAt?: string,
 ): Promise<AppNotification> => {
-  const { data } = await api.post('admin/notifications', { body, createdAt })
+  const { data } = await api.post('admin/notifications', { body, category, createdAt })
   return data
 }
 
-// Only what is sent is written, so re-dating one does not resend its body.
+/* Only what is sent is written, so re-dating one does not resend its body. A
+ * `category` of null is a value and not an omission: it takes the stamp off. */
 export const updateNotification = async (
   id: number,
-  changes: { body?: string; createdAt?: string },
+  changes: { body?: string; category?: NotificationCategory | null; createdAt?: string },
 ): Promise<AppNotification> => {
   const { data } = await api.put(`admin/notifications/${id}`, changes)
   return data

@@ -53,3 +53,10 @@ archive-after-months: "_env:ARCHIVE_AFTER_MONTHS:6"
 # the pause between batches. 10 games every 20s is ~1,800 an hour.
 archive-batch-size: "_env:ARCHIVE_BATCH_SIZE:10"
 archive-batch-pause-seconds: "_env:ARCHIVE_BATCH_PAUSE_SECONDS:20"
+
+# Closes the site to new accounts (POST /api/v1/register refuses, and the
+# sign-up form says so instead of offering a form that cannot succeed). Off by
+# default. Existing accounts and games in progress are untouched -- this is not
+# maintenance mode. Read at container start, so flipping it needs a restart; in
+# production it is terraform's `app_invite_only`.
+invite-only: "_env:INVITE_ONLY:false"

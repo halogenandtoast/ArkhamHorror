@@ -6,6 +6,7 @@ import type { User } from '@/types'
 import { OnClickOutside } from '@vueuse/components'
 import { storeToRefs } from 'pinia'
 import { useSettings } from '@/stores/settings'
+import { useSiteSettingsStore } from '@/stores/site_settings'
 
 const expanded = ref(false);
 const mobileOpen = ref(false);
@@ -14,6 +15,8 @@ const router = useRouter()
 const store = useUserStore()
 const currentUser = computed<User | null>(() => store.currentUser)
 const { customCardsEnabled } = storeToRefs(useSettings())
+/* Hidden on an invite-only server rather than left to fail on submit. */
+const { inviteOnly } = storeToRefs(useSiteSettingsStore())
 
 /* The pages that are halves of one section get a bar of their own under the main
  * one, rather than each claiming a top-level entry. Rendered here so it sits with
@@ -93,7 +96,7 @@ async function logout() {
         </template>
         <template v-else>
           <router-link to="/sign-in">{{ $t('logIn') }}</router-link>
-          <router-link to="/sign-up">{{ $t('register') }}</router-link>
+          <router-link v-if="!inviteOnly" to="/sign-up">{{ $t('register') }}</router-link>
         </template>
       </div>
     </OnClickOutside>

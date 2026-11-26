@@ -162,6 +162,26 @@ variable "app_archive_sweep" {
   default     = false
 }
 
+variable "app_invite_only" {
+  description = <<-EOT
+    Closes the site to new accounts (INVITE_ONLY). `POST /api/v1/register`
+    refuses with 403, and `GET /api/v1/site-settings` tells the client so the
+    sign-up link disappears and the form says registration is closed instead of
+    failing on submit.
+
+    Existing accounts, sessions and games in progress are untouched -- this is
+    not maintenance mode and locks nobody out of a game.
+
+    A typed variable rather than an `app_secrets` key so the switch is legible
+    in `terraform plan`; `app_secrets` is sensitive and renders as
+    "(sensitive value)". Changing it rewrites the pod template, so the apply
+    rolls the pods itself -- no separate `kubectl rollout restart`, unlike an
+    `app_secrets` change, which leaves the template untouched.
+  EOT
+  type        = bool
+  default     = false
+}
+
 variable "app_memory_target_utilization" {
   description = "HPA memory target percent. Crossing this triggers scale-out."
   type        = number

@@ -61,6 +61,10 @@
   "updatePassword": "Update Password",
   "username": "Username",
   "usernameOrEmailAlreadyTaken": "Username or Email already taken",
+  "registrationClosed": {
+    "title": "Registration is closed",
+    "body": "This server is invite only and is not accepting new accounts right now."
+  },
   "tooltips": {
     "attacksYou": "{name} attacks you",
     "takeControlOfKey": "Take control of {key} key",

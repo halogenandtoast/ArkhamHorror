@@ -138,6 +138,18 @@ data AppSettings = AppSettings
     -- ^ Seconds between batches, and so the whole throttle: a run drains the
     -- entire backlog, and this is what decides how fast it does it. 10 games
     -- every 20s is ~1,800 an hour.
+    , appInviteOnly :: Bool
+    {- ^ Whether the site is closed to new accounts. On, @POST /api/v1/register@
+    refuses before it touches the database and the client is told so by
+    'Base.Api.Handler.Settings.getApiV1SiteSettingsR', which is what lets the
+    sign-up form say registration is closed instead of offering a form that
+    cannot succeed. Existing accounts are unaffected -- this is not maintenance
+    mode, and it locks nobody out of a game in progress.
+
+    Read at container start like every other setting, so flipping it needs a
+    restart. Deliberate: it is a standing policy for a deployment, not a switch
+    to be thrown mid-incident.
+    -}
     , appWebsocketCompression :: Bool
     -- ^ permessage-deflate on the game/event websockets. Defaults on; it takes
     -- a 206 KB 'PublicGame' update to ~33 KB. It is also the one thing on that
@@ -194,6 +206,7 @@ instance FromJSON AppSettings where
         appArchiveAfterMonths <- o .:? "archive-after-months" .!= 6
         appArchiveBatchSize <- o .:? "archive-batch-size" .!= 10
         appArchiveBatchPauseSeconds <- o .:? "archive-batch-pause-seconds" .!= 20
+        appInviteOnly <- o .:? "invite-only" .!= False
         appWebsocketCompression <- o .:? "websocket-compression" .!= True
         pure AppSettings {..}
 

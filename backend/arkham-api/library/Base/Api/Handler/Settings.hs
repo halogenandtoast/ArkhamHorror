@@ -29,11 +29,20 @@ data CurrentUser = CurrentUser
 data SiteSettings = SiteSettings
   { assetHost :: Maybe Text
   , maintenance :: Bool
+  , inviteOnly :: Bool
+  {- ^ The site is closed to new accounts ('Settings.appInviteOnly'). Sent so
+  the client can drop the sign-up link and say registration is closed rather
+  than offering a form that 'Base.Api.Handler.Registration' will refuse.
+  -}
   }
 
 instance ToJSON SiteSettings where
-  toJSON SiteSettings {assetHost, maintenance} =
-    object ["assetHost" .= assetHost, "maintenance" .= maintenance]
+  toJSON SiteSettings {assetHost, maintenance, inviteOnly} =
+    object
+      [ "assetHost" .= assetHost
+      , "maintenance" .= maintenance
+      , "inviteOnly" .= inviteOnly
+      ]
 
 {- | Allowed through 'Foundation.maintenanceMiddleware', and so the one thing
 the client can still ask during a window. It reads no database -- the asset
@@ -44,6 +53,7 @@ getApiV1SiteSettingsR :: Handler SiteSettings
 getApiV1SiteSettingsR = do
   assetHost <- getsApp (appAssetHost . appSettings)
   maintenance <- isJust <$> (getsApp appMaintenance >>= readTVarIO)
+  inviteOnly <- getsApp (appInviteOnly . appSettings)
   pure SiteSettings {..}
 
 putApiV1SettingsR :: Handler CurrentUser

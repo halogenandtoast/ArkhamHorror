@@ -285,8 +285,19 @@ resource "kubernetes_deployment" "app" {
             value = tostring(var.app_archive_sweep)
           }
 
-          # var.app_secrets keys become env var names here, so a GHCRTS, DB_POOL
-          # or ARCHIVE_SWEEP placed in there would collide with the three above.
+          # Closes registration, here rather than in app_secrets for the same
+          # reason as ARCHIVE_SWEEP: a flag that turns away new players should
+          # read as a plain diff in `terraform plan`. See variable
+          # "app_invite_only". Changing it rewrites the pod template, so the
+          # apply rolls the pods on its own.
+          env {
+            name  = "INVITE_ONLY"
+            value = tostring(var.app_invite_only)
+          }
+
+          # var.app_secrets keys become env var names here, so a GHCRTS, DB_POOL,
+          # ARCHIVE_SWEEP or INVITE_ONLY placed in there would collide with the
+          # four above.
           # Kubernetes resolves an explicit `env` ahead of `env_from`, so these
           # win -- which is the right way round (the derived -N should not be
           # silently overridable by an ad-hoc secret), but it does mean setting

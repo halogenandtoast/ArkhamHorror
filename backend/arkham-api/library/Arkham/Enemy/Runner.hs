@@ -52,6 +52,7 @@ import Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Helpers.GameLog
 import Arkham.Helpers.GameValue
+import Arkham.Helpers.History (getAllHistoryField)
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location (getLocationOf, placementLocation, withLocationOf)
 import Arkham.Helpers.Modifiers hiding (ModifierType (..))
@@ -335,6 +336,45 @@ defeatBlockedBySource :: HasGame m => Source -> [ModifierType] -> m Bool
 defeatBlockedBySource source = anyM \case
   CannotBeDefeatedBy sm -> sourceMatches source sm
   _ -> pure False
+
+{- | Queue this enemy's attack against whoever it attacks right now: the body of
+@Do EnemiesAttack@, shared by the enemy-phase sweep and by the targeted "attack
+again" senders (Relentless, 'resolveEnemyPhaseOf').
+-}
+queueEnemyPhaseAttack :: Lifted.ReverseQueue m => EnemyAttrs -> m ()
+queueEnemyPhaseAttack a = do
+  mods <- getModifiers (EnemyTarget a.id)
+  cannotAttack <- getCannotAttackNow mods
+  unless cannotAttack do
+    let mOverride = getFirst $ mconcat [First (Just override) | EnemyAttacksOverride override <- mods]
+    iids <-
+      select (fromMaybe (enemyAttacks a) mOverride) >>= filterM \iid' -> do
+        imods <- getModifiers iid'
+        flip allM imods \case
+          CannotBeAttackedBy matcher -> notElem a.id <$> select matcher
+          CannotBeAttacked -> pure False
+          _ -> pure True
+    case iids of
+      [] -> do
+        whenAny (locationWithEnemy a.id <> LocationWithModifier CountsAsInvestigatorForHunterEnemies) do
+          scenarioSpecific "enemyAttackedAtLocation" a.id
+          scenarioSpecific "enemyAttacked" a.id
+      [x] ->
+        push
+          $ EnemyWillAttack
+          $ (enemyAttack a.id a x)
+            { attackDamageStrategy = enemyDamageStrategy a
+            , attackExhaustsEnemy = True
+            }
+      (x : xs) ->
+        push
+          $ EnemyWillAttack
+          $ (enemyAttack a.id a x)
+            { attackDamageStrategy = enemyDamageStrategy a
+            , attackExhaustsEnemy = True
+            , attackTarget = MassiveAttackTargets (map toTarget $ x : xs)
+            , attackOriginalTarget = MassiveAttackTargets (map toTarget $ x : xs)
+            }
 
 instance RunMessage EnemyAttrs where
   runMessage msg a@EnemyAttrs {..} = runQueueT $ case msg of
@@ -1280,40 +1320,26 @@ instance RunMessage EnemyAttrs where
                   , attackOriginalTarget = MassiveAttackTargets (map toTarget $ x : xs)
                   }
       pure a
+    -- A targeted "attack again" -- Relentless after framework 3.3,
+    -- 'resolveEnemyPhaseOf' -- deliberately re-attacks an enemy that already
+    -- attacked this phase, so it skips the sweep's guard below. These two must
+    -- stay above the generic SendMessage/ForTarget unwraps, which would
+    -- otherwise re-dispatch them as a bare 'Do EnemiesAttack'.
+    ForTarget (isTarget a -> True) (Do EnemiesAttack) | not enemyExhausted && not enemyDefeated -> do
+      queueEnemyPhaseAttack a
+      pure a
+    SendMessage (isTarget a -> True) (Do EnemiesAttack) | not enemyExhausted && not enemyDefeated -> do
+      queueEnemyPhaseAttack a
+      pure a
+    -- Framework 3.3 runs a per-investigator pass and then this broadcast
+    -- catch-all, for an enemy whose 'attacks' matcher is not an engaged
+    -- investigator. Exhausting after the attack is what normally keeps the
+    -- catch-all from attacking a second time -- but a CANCELLED attack never
+    -- exhausts, so Dodge let The Thing That Follows attack twice (#6066). Phase
+    -- history is the guard instead: it records a cancelled attack too.
     Do EnemiesAttack | not enemyExhausted && not enemyDefeated -> do
-      mods <- getModifiers (EnemyTarget enemyId)
-      cannotAttack <- getCannotAttackNow mods
-      unless cannotAttack do
-        let mOverride = getFirst $ mconcat [First (Just override) | EnemyAttacksOverride override <- mods]
-        iids <-
-          select (fromMaybe enemyAttacks mOverride) >>= filterM \iid' -> do
-            imods <- getModifiers iid'
-            flip allM imods \case
-              CannotBeAttackedBy matcher -> notElem enemyId <$> select matcher
-              CannotBeAttacked -> pure False
-              _ -> pure True
-        case iids of
-          [] -> do
-            whenAny (locationWithEnemy enemyId <> LocationWithModifier CountsAsInvestigatorForHunterEnemies) do
-              scenarioSpecific "enemyAttackedAtLocation" enemyId
-              scenarioSpecific "enemyAttacked" enemyId
-            pure ()
-          [x] ->
-            push
-              $ EnemyWillAttack
-              $ (enemyAttack enemyId a x)
-                { attackDamageStrategy = enemyDamageStrategy
-                , attackExhaustsEnemy = True
-                }
-          (x : xs) ->
-            push
-              $ EnemyWillAttack
-              $ (enemyAttack enemyId a x)
-                { attackDamageStrategy = enemyDamageStrategy
-                , attackExhaustsEnemy = True
-                , attackTarget = MassiveAttackTargets (map toTarget $ x : xs)
-                , attackOriginalTarget = MassiveAttackTargets (map toTarget $ x : xs)
-                }
+      attacked <- elem enemyId <$> getAllHistoryField PhaseHistory HistoryEnemiesAttackedBy
+      unless attacked $ queueEnemyPhaseAttack a
       pure a
     AttackEnemy eid choose | eid == enemyId -> do
       let iid = choose.investigator

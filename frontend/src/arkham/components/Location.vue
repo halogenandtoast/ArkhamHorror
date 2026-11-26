@@ -926,7 +926,7 @@ const wireStats = computed(() => (statRows.value.length ? JSON.stringify(statRow
 
 <style scoped>
 .location--can-interact {
-  border: 2px solid var(--select);
+  border: var(--map-highlight-width, 2px) solid var(--select);
   cursor: pointer;
 }
 

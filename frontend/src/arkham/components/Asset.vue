@@ -666,7 +666,7 @@ const wireStats = computed(() => (statRows.value.length ? JSON.stringify(statRow
 
 .asset--can-interact {
   img {
-    border: 2px solid var(--select);
+    border: var(--map-highlight-width, 2px) solid var(--select);
     cursor:pointer;
   }
 }

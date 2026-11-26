@@ -25,14 +25,18 @@ data CurrentUser = CurrentUser
 getApiV1CurrentUserR :: Handler CurrentUser
 getApiV1CurrentUserR = do
   userId <- getRequestUserId
-  runDB do
-    User {..} <- get404 userId
-    pure
-      $ CurrentUser
-        userUsername
-        userEmail
-        userBeta
-        userPhaseTransitionNotifications
-        userAdmin
-        userAllowSpectatorsByDefault
-        (Feature.parseFeatures userFeatures)
+  user <- runDB $ get404 userId
+  {- Resuming a session on a stored token is being seen, so this is where an
+  account in continuous use keeps its place -- and where a dormant one is turned
+  away while the server is invite only. A login-only check could be sat out
+  indefinitely by simply never logging in again, the token having no expiry. -}
+  admitToSession ResumedOnToken (Entity userId user)
+  pure
+    $ CurrentUser
+      user.username
+      user.email
+      user.beta
+      user.phaseTransitionNotifications
+      user.admin
+      user.allowSpectatorsByDefault
+      (Feature.parseFeatures user.features)

@@ -25,4 +25,9 @@ postApiV1AuthenticationR = do
   muser <- authenticationToUser authentication
   case muser of
     Nothing -> notAuthenticated
-    Just (Entity userId _) -> Token <$> userIdToToken userId
+    -- After the password, never before it: whether an account is dormant is
+    -- nobody's business but its owner's, and a 403 handed out on the strength of
+    -- an email alone would say which addresses have accounts behind them.
+    Just entity@(Entity userId _) -> do
+      admitToSession SignedIn entity
+      Token <$> userIdToToken userId

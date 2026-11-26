@@ -18,6 +18,7 @@ import Data.ByteString.Char8 qualified as BS8
 import Data.FileEmbed (embedFile)
 import Data.String.Conversions.Monomorphic (toStrictByteString)
 import Data.Text qualified as T
+import Data.Time.Clock (UTCTime)
 import Data.Yaml (decodeEither')
 import Data.Yaml.Config (applyEnvValue)
 import Database.Persist.Postgresql (PostgresConf(..))
@@ -143,12 +144,37 @@ data AppSettings = AppSettings
     refuses before it touches the database and the client is told so by
     'Base.Api.Handler.Settings.getApiV1SiteSettingsR', which is what lets the
     sign-up form say registration is closed instead of offering a form that
-    cannot succeed. Existing accounts are unaffected -- this is not maintenance
-    mode, and it locks nobody out of a game in progress.
+    cannot succeed. A game in progress is untouched -- this is not maintenance
+    mode.
+
+    It does gate one thing for accounts that already exist: from
+    'appInviteOnlyDormantFrom' onwards, a session may only begin or resume for an
+    account seen in the last 'appInviteOnlyDormantAfterMonths' months
+    ('Foundation.admitToSession').
 
     Read at container start like every other setting, so flipping it needs a
     restart. Deliberate: it is a standing policy for a deployment, not a switch
     to be thrown mid-incident.
+    -}
+    , appInviteOnlyDormantAfterMonths :: Int
+    {- ^ How long an account may go unseen before an invite-only server stops
+    letting it in, counted in calendar months from @users.last_seen_at@ and read
+    only while 'appInviteOnly' is on. 6 by default; floored at 1 month, so a
+    mistyped 0 closes the site to everybody for no longer than that.
+
+    "Seen" is wider than "authenticated" on purpose -- see
+    'Foundation.admitToSession', which also counts resuming a session on a
+    stored token, a login token here having no expiry to force the issue.
+    -}
+    , appInviteOnlyDormantFrom :: Maybe UTCTime
+    {- ^ When the cutoff above starts turning people away. Before this instant a
+    session is only recorded, which is the point: @last_seen_at@ starts out as an
+    estimate read off whatever each account last touched (see the
+    @add_login_tracking_to_users@ migration), and every login and page load
+    during the grace window replaces that estimate with a fact.
+
+    Unset means in force immediately, so dropping the setting enforces rather
+    than quietly stopping. See 'Foundation.dormancyEnforced'.
     -}
     , appWebsocketCompression :: Bool
     -- ^ permessage-deflate on the game/event websockets. Defaults on; it takes
@@ -207,6 +233,8 @@ instance FromJSON AppSettings where
         appArchiveBatchSize <- o .:? "archive-batch-size" .!= 10
         appArchiveBatchPauseSeconds <- o .:? "archive-batch-pause-seconds" .!= 20
         appInviteOnly <- o .:? "invite-only" .!= False
+        appInviteOnlyDormantAfterMonths <- o .:? "invite-only-dormant-after-months" .!= 6
+        appInviteOnlyDormantFrom <- o .:? "invite-only-dormant-from"
         appWebsocketCompression <- o .:? "websocket-compression" .!= True
         pure AppSettings {..}
 

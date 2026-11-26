@@ -2,11 +2,16 @@ module Base.Api.Handler.Registration where
 
 import Crypto.BCrypt
 import Data.Text.Encoding qualified as TE
+import Data.Time.Clock (getCurrentTime)
 import Import
 import Types
 
 registrationToUser :: Registration -> Handler User
 registrationToUser Registration {..} = do
+  -- Creating the account is the first login and the first sighting: it hands
+  -- back a token and the client is signed in on it, so both clocks start here
+  -- rather than at whatever the columns' defaults happened to be.
+  now <- liftIO getCurrentTime
   mdigest <-
     liftIO
       $ hashPasswordUsingPolicy
@@ -25,6 +30,8 @@ registrationToUser Registration {..} = do
           False
           ""
           False
+          now
+          now
 
 {- | Refuse before the password is hashed or the database is touched, so a
 closed site costs a bcrypt round per attempt instead of one per request.

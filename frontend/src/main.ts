@@ -97,10 +97,17 @@ async function bootstrap() {
   api.interceptors.response.use(undefined, (error) => {
     const path = window.location.hash.replace(/^#/, '') || '/'
     const onAuthPage = path.startsWith('/sign-in') || path.startsWith('/sign-up')
-    if (error.response?.status === 401 && !onAuthPage) {
+    /* A 403 from `whoami` is the other way a session can be refused: the token
+     * is good and the account is not. 403 alone cannot be treated this way --
+     * it is also every feature and admin gate -- so it is pinned to the one
+     * call whose only job is to ask whether this session may continue. */
+    const status = error.response?.status
+    const dormant = status === 403 && (error.config?.url ?? '').endsWith('whoami')
+    if ((status === 401 || dormant) && !onAuthPage) {
       const store = useUserStore()
       store.logout()
-      store.sessionExpired = true
+      if (dormant) store.accountDormant = true
+      else store.sessionExpired = true
       void router.push({ path: '/sign-in', query: { nextUrl: path } })
     }
     return Promise.reject(error)

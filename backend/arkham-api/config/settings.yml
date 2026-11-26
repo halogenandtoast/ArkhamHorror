@@ -56,7 +56,22 @@ archive-batch-pause-seconds: "_env:ARCHIVE_BATCH_PAUSE_SECONDS:20"
 
 # Closes the site to new accounts (POST /api/v1/register refuses, and the
 # sign-up form says so instead of offering a form that cannot succeed). Off by
-# default. Existing accounts and games in progress are untouched -- this is not
-# maintenance mode. Read at container start, so flipping it needs a restart; in
-# production it is terraform's `app_invite_only`.
+# default. A game in progress is untouched -- this is not maintenance mode --
+# but note the dormancy cutoff below, which only applies while this is on. Read
+# at container start, so flipping it needs a restart; in production it is
+# terraform's `app_invite_only`.
 invite-only: "_env:INVITE_ONLY:false"
+
+# While invite-only is on, how long an account may go unseen before it is
+# refused at the door: logging in, and resuming a session on a stored token,
+# both count as being seen and both require `users.last_seen_at` to be within
+# this many months. Floored at 1. Read only while invite-only is on, so off it
+# costs nothing.
+invite-only-dormant-after-months: "_env:INVITE_ONLY_DORMANT_AFTER_MONTHS:6"
+
+# When that cutoff starts turning people away. `last_seen_at` is seeded from
+# whatever each account last touched, which is an estimate, so this is set a
+# week out from the migration that added it: until then a session is only
+# recorded, and ordinary traffic replaces the estimate with a fact. Unset
+# enforces immediately.
+invite-only-dormant-from: "_env:INVITE_ONLY_DORMANT_FROM:2026-12-03T00:00:00Z"

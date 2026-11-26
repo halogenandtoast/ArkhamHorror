@@ -43,7 +43,8 @@ import Control.Monad.Logger (LogSource)
 import Data.Aeson (Result (Success), fromJSON)
 import Data.Bugsnag.Settings qualified as Bugsnag
 import Data.ByteString.Lazy qualified as BSL
-import Data.Time.Clock (UTCTime, diffUTCTime, getCurrentTime)
+import Data.Time.Calendar (addGregorianMonthsClip)
+import Data.Time.Clock (UTCTime (..), diffUTCTime, getCurrentTime)
 import Data.Traversable (for)
 import Data.UUID (UUID)
 import Database.Persist.Sql (
@@ -862,6 +863,68 @@ getRequestUser :: Handler (Entity User)
 getRequestUser = do
   userId <- getRequestUserId
   runDB $ getEntity404 userId
+
+{- | Which of the two moments a session can begin at 'admitToSession' is being
+called from. Both count as the account being seen; only one is a login.
+-}
+data SessionStart = SignedIn | ResumedOnToken
+
+{- | Let this account start or resume a session, and record that it has been seen.
+
+While 'Settings.appInviteOnly' is on, an account whose @last_seen_at@ is older
+than 'Settings.appInviteOnlyDormantAfterMonths' months is refused with 403: a
+server closed to new accounts keeps the players it has rather than holding the
+door for every account that ever existed. With invite only off this only writes
+the timestamps, so the record is already there whenever the flag is turned on.
+
+'ResumedOnToken' is not incidental. A token from 'Auth.JWT.jsonToToken' carries
+no @exp@, so a player in daily use can go years without authenticating again,
+and a cutoff measured from logins alone would turn them away the first time they
+actually had to log in. @whoami@ reads the row anyway, and the client calls it
+once per load. @last_login_at@ still only moves on a real sign-in, since "when
+did somebody last sign in to this account" is worth being able to answer.
+
+Deliberately not in 'getRequestUserId': that touches no database, and a users
+lookup on every request -- every websocket frame included -- to enforce a policy
+that only decides whether a session may begin is the wrong trade.
+-}
+admitToSession :: SessionStart -> Entity User -> Handler ()
+admitToSession start (Entity userId user) = do
+  settings <- getsApp appSettings
+  now <- liftIO getCurrentTime
+  -- An admin is exempt, for the reason 'getFeatureUser' exempts them: they are
+  -- the ones who set the policy, and a policy whose first casualty is the person
+  -- who has to log in to lift it is a locked door with the key inside.
+  when (appInviteOnly settings && not user.admin && dormancyEnforced settings now) do
+    let months = max 1 (appInviteOnlyDormantAfterMonths settings)
+    when (user.lastSeenAt < monthsAgo months now)
+      $ permissionDenied
+      $ "This account has not been used in the last "
+      <> tshow months
+      <> " months, and this server is invite only"
+  let
+    signedIn = case start of
+      SignedIn -> [UserLastLoginAt =. now]
+      ResumedOnToken -> []
+  runDB $ update userId $ (UserLastSeenAt =. now) : signedIn
+
+{- | Whether the dormancy cutoff is in force yet.
+
+'Settings.appInviteOnlyDormantFrom' is a start date rather than a switch because
+@last_seen_at@ begins life as an estimate (the migration reads it off whatever
+the account last touched), and an estimate should not lock anybody out on the
+day it is made. Until that instant passes, a session is only recorded -- every
+login and every page load during the grace window replaces the estimate with a
+fact. Unset means in force, so a deployment that drops the setting enforces
+rather than quietly stops.
+-}
+dormancyEnforced :: AppSettings -> UTCTime -> Bool
+dormancyEnforced settings now = maybe True (now >=) (appInviteOnlyDormantFrom settings)
+
+-- | @now@ less @months@ calendar months, clipped into a shorter month.
+monthsAgo :: Int -> UTCTime -> UTCTime
+monthsAgo months now =
+  now {utctDay = addGregorianMonthsClip (negate $ fromIntegral months) (utctDay now)}
 
 getEntity404
   :: (PersistEntity record, PersistEntityBackend record ~ SqlBackend) => Key record -> DB (Entity record)

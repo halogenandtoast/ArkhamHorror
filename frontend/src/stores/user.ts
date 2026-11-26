@@ -21,6 +21,11 @@ export const useUserStore = defineStore("user", () => {
   // set when the server rejected our token rather than the player signing out,
   // so the sign-in form can say why they are looking at it
   const sessionExpired = ref(false)
+  /* Set when the server turned the account away rather than the token: an
+   * invite-only server refuses a session for an account it has not seen in
+   * months, and signing in again will not help, so the sign-in form has to say
+   * so instead of leaving them to guess at their password. */
+  const accountDormant = ref(false)
 
   async function authenticate(credentials: Credentials) {
     const authentication = await api.post<Authentication>('authenticate', credentials)
@@ -73,5 +78,5 @@ export const useUserStore = defineStore("user", () => {
     token.value = null
   }
 
-  return { token, currentUser, isAdmin, sessionExpired, loadUserFromStorage, authenticate, register, logout, deleteAccount, setCurrentUser }
+  return { token, currentUser, isAdmin, sessionExpired, accountDormant, loadUserFromStorage, authenticate, register, logout, deleteAccount, setCurrentUser }
 })

@@ -169,8 +169,14 @@ variable "app_invite_only" {
     sign-up link disappears and the form says registration is closed instead of
     failing on submit.
 
-    Existing accounts, sessions and games in progress are untouched -- this is
-    not maintenance mode and locks nobody out of a game.
+    It also closes the door on dormant accounts: from INVITE_ONLY_DORMANT_FROM
+    onwards, a session may only begin or resume for an account seen in the last
+    INVITE_ONLY_DORMANT_AFTER_MONTHS months (6 by default; both are
+    `app_secrets` keys to change, like ARCHIVE_AFTER_MONTHS). Logging in and
+    resuming a session on a stored token both count as being seen, so an account
+    in continuous use never goes stale, and before that start date nothing is
+    refused -- it only records. A game in progress is untouched -- this is not
+    maintenance mode.
 
     A typed variable rather than an `app_secrets` key so the switch is legible
     in `terraform plan`; `app_secrets` is sensitive and renders as

@@ -47,6 +47,7 @@
   "finishedGames": "Finished Games",
   "forgotPassword": "Forgot Password",
   "invalidEmailOrPassword": "Invalid email or password",
+  "accountDormant": "This server is invite only, and this account has been inactive too long to sign in.",
   "language": "Language",
   "logIn": "Log in",
   "newGame": "New Game",

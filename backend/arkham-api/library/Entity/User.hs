@@ -5,6 +5,7 @@
 
 module Entity.User where
 
+import Data.Time.Clock
 import Database.Persist.TH
 import Entity
 import Relude
@@ -21,6 +22,8 @@ User json sql=users
     admin Bool default=False
     features Text default=''
     allowSpectatorsByDefault Bool default=False
+    lastLoginAt UTCTime default=now()
+    lastSeenAt UTCTime default=now()
     UniqueUsername username
     UniqueEmail email
     deriving Show

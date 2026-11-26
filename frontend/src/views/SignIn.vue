@@ -4,6 +4,7 @@ import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import { computed, ref, reactive, onUnmounted } from 'vue'
 import { Credentials } from '../types'
 import { useI18n } from 'vue-i18n'
+import { isAxiosError } from 'axios'
 
 const { t } = useI18n()
 const store = useUserStore()
@@ -15,6 +16,7 @@ const credentials = reactive<Credentials>({
 })
 const signInError = ref<string|null>(null)
 const expired = computed(() => store.sessionExpired)
+const dormant = computed(() => store.accountDormant)
 
 const health = ref<boolean>(true)
 
@@ -37,14 +39,21 @@ async function authenticate() {
   try {
     await store.authenticate(credentials)
     store.sessionExpired = false
+    store.accountDormant = false
     const { nextUrl } = route.query
     if (nextUrl) {
       router.push({ path: nextUrl as string })
     } else {
       router.push({ path: '/' })
     }
-  } catch {
-    signInError.value = t("invalidEmailOrPassword")
+  } catch (error) {
+    /* 403 is the dormancy gate on an invite-only server (the password was
+     * right); 401 is the password. Telling them apart is the whole point --
+     * "invalid email or password" sends someone to the password reset form,
+     * which cannot help and will not say so. */
+    signInError.value = isAxiosError(error) && error.response?.status === 403
+      ? t("accountDormant")
+      : t("invalidEmailOrPassword")
   }
 }
 
@@ -61,6 +70,7 @@ onBeforeRouteLeave(() => {
   <form v-if="health" @submit.prevent="authenticate">
     <header><i class="secret"></i></header>
     <div class="notice" v-if="expired && !signInError">{{$t('sessionExpired')}}</div>
+    <div class="error" v-if="dormant && !signInError">{{$t('accountDormant')}}</div>
     <div class="error" v-if="signInError">{{signInError}}</div>
     <section>
       <div>

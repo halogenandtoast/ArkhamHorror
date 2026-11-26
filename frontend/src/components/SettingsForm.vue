@@ -199,6 +199,13 @@ const updateLanguage = async (a: Event) => {
           </div>
         </section>
 
+        <section class="box column">
+          <h3>{{ $t('password') }}</h3>
+          <router-link class="builder-link" to="/account/password-reset">
+            {{ $t('resetPassword') }}
+          </router-link>
+        </section>
+
         <section class="box column danger-zone">
           <h3 class="danger-title">{{ $t('settingsForm.dangerZone') }}</h3>
           <p>

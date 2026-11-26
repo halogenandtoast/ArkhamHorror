@@ -185,8 +185,11 @@ FROM ubuntu:22.04 AS app
 
 ENV LC_ALL=C.UTF-8
 
-RUN apt-get update && \
-  apt-get install -y --assume-yes --no-install-recommends libpq-dev ca-certificates nginx curl python3 && \
+# Acquire::Retries because security.ubuntu.com is round-robin and a mirror caught
+# mid-sync serves an index of the wrong size, failing the whole build; a retry
+# generally lands on a different IP that has finished.
+RUN apt-get -o Acquire::Retries=3 update && \
+  apt-get -o Acquire::Retries=3 install -y --assume-yes --no-install-recommends libpq-dev ca-certificates nginx curl python3 && \
   rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p \

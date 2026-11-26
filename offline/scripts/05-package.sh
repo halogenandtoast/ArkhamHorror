@@ -333,7 +333,12 @@ trap '_cleanup_on_exit' EXIT
 
 pg_bin()  { echo "$SCRIPT_DIR/pgsql/bin"; }
 pg_ctl()  { "$(pg_bin)/pg_ctl" "$@"; }
-pg_ready(){ { "$(pg_bin)/pg_isready" -h 127.0.0.1 -p "$PG_PORT" -q; } 2>/dev/null; }
+# -U/-d are not optional: pg_isready reports the server up even when the
+# startup packet is rejected, but the rejection is still logged. Without them
+# libpq falls back to the OS account name, so every readiness poll writes
+# `FATAL: role "<mac username>" does not exist` into pg.log -- which is the
+# first thing a user reports when something else goes wrong.
+pg_ready(){ { "$(pg_bin)/pg_isready" -h 127.0.0.1 -p "$PG_PORT" -U "$PG_USER" -d postgres -q; } 2>/dev/null; }
 psql_cmd(){ "$(pg_bin)/psql" -w -h 127.0.0.1 -p "$PG_PORT" -U "$PG_USER" "$@"; }
 pg_dump_cmd(){ "$(pg_bin)/pg_dump" -w -h 127.0.0.1 -p "$PG_PORT" -U "$PG_USER" "$@"; }
 pg_restore_cmd(){ "$(pg_bin)/pg_restore" -w -h 127.0.0.1 -p "$PG_PORT" -U "$PG_USER" "$@"; }
@@ -854,7 +859,7 @@ pg_port_is_foreign() {
     # Not listening at all → not foreign
     is_port_in_use "$port" || return 1
     # Server not accepting connections → not a PG instance we can test
-    "$(pg_bin)/pg_isready" -h 127.0.0.1 -p "$port" -q 2>/dev/null || return 1
+    "$(pg_bin)/pg_isready" -h 127.0.0.1 -p "$port" -U "$PG_USER" -d postgres -q 2>/dev/null || return 1
     # Attempt a passwordless query using -w (--no-password) so psql exits immediately
     # instead of waiting for interactive password input when auth is required
     ! "$(pg_bin)/psql" -w -h 127.0.0.1 -p "$port" -U "$PG_USER" -d postgres -tAc "SELECT 1" >/dev/null 2>&1

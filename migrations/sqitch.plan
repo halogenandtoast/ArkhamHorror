@@ -46,3 +46,4 @@ notifications 2026-11-17T00:00:00Z Claude <noreply@anthropic.com> # Admin-author
 add_admin_to_users [users] 2026-11-17T00:10:00Z Claude <noreply@anthropic.com> # Admin flag, previously only in setup.sql
 align_model_column_types [arkham_game_undo_floors] 2026-11-17T00:20:00Z Claude <noreply@anthropic.com> # Make floor_step bigint, as ArkhamGameUndoFloor has it
 dump_only_keys_and_indexes [arkham_steps arkham_decks] 2026-11-17T00:30:00Z Claude <noreply@anthropic.com> # Steps primary key, deck owner cascade and index, previously only in setup.sql
+add_primary_key_to_arkham_steps [arkham_steps dump_only_keys_and_indexes] 2026-11-26T00:00:00Z Claude <noreply@anthropic.com> # Primary key on arkham_steps, previously an unplanned deploy script

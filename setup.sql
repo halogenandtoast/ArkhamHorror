@@ -1701,3 +1701,4 @@ INSERT INTO public.arkham_schema_migrations (name) VALUES ('notifications') ON C
 INSERT INTO public.arkham_schema_migrations (name) VALUES ('add_admin_to_users') ON CONFLICT DO NOTHING;
 INSERT INTO public.arkham_schema_migrations (name) VALUES ('align_model_column_types') ON CONFLICT DO NOTHING;
 INSERT INTO public.arkham_schema_migrations (name) VALUES ('dump_only_keys_and_indexes') ON CONFLICT DO NOTHING;
+INSERT INTO public.arkham_schema_migrations (name) VALUES ('add_primary_key_to_arkham_steps') ON CONFLICT DO NOTHING;

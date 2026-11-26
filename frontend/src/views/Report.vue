@@ -149,145 +149,189 @@ const stepsSince = computed(() => {
         >{{ $t('reports.duplicateOf', { number: detail.report.duplicateOf }) }}</RouterLink>
       </p>
 
-      <article class="body box">
-        <ReportText :text="detail.body" />
-      </article>
+      <div class="main">
+        <article class="body box">
+          <ReportText :text="detail.body" />
+        </article>
 
-      <section v-if="detail.report.game" class="game box">
-        <dl>
-          <template v-if="detail.report.game.name">
-            <dt>{{ $t('reports.game.name') }}</dt>
-            <dd>{{ detail.report.game.name }}</dd>
-          </template>
-          <template v-if="detail.report.game.step !== null">
-            <dt>{{ $t('reports.game.step') }}</dt>
-            <dd>
-              {{ detail.report.game.step }}
-              <span v-if="stepsSince !== null && stepsSince > 0" class="since">
-                {{ $t('reports.game.playedOn', { steps: stepsSince }) }}
-              </span>
-            </dd>
-          </template>
-          <template v-if="!detail.report.game.id">
-            <dt>{{ $t('reports.game.gone') }}</dt>
-            <dd>{{ $t('reports.game.goneBody') }}</dd>
-          </template>
-        </dl>
-        <div class="links">
-          <a
-            v-if="detail.report.game.id"
-            :href="`#/games/${detail.report.game.id}`"
-          >{{ $t('reports.game.open') }}</a>
-          <a
-            v-if="detail.report.game.exportUrl"
-            :href="detail.report.game.exportUrl"
-            rel="noreferrer"
-            target="_blank"
-          >{{ $t('reports.game.export') }}</a>
-        </div>
-      </section>
-
-      <section v-if="isAdmin" class="admin box">
-        <h2>{{ $t('reports.admin.title') }}</h2>
-        <div class="controls">
-          <label>
-            {{ $t('reports.admin.column') }}
-            <select
-              :value="detail.report.status"
-              :disabled="working"
-              @change="change({ status: ($event.target as HTMLSelectElement).value as Api.ReportStatus })"
-            >
-              <option v-for="status in Api.OPEN_REPORT_STATUSES.concat(['done', 'declined', 'duplicate'])" :key="status" :value="status">
-                {{ $t(`reports.status.${status}`, status) }}
-              </option>
-            </select>
-          </label>
-          <label>
-            {{ $t('reports.admin.kind') }}
-            <select
-              :value="detail.report.kind"
-              :disabled="working"
-              @change="change({ kind: ($event.target as HTMLSelectElement).value as Api.ReportKind })"
-            >
-              <option value="bug">{{ $t('reports.kind.bug') }}</option>
-              <option value="feature">{{ $t('reports.kind.feature') }}</option>
-            </select>
-          </label>
-          <label class="duplicate">
-            {{ $t('reports.admin.duplicate') }}
-            <span>
-              <input v-model="duplicateOf" type="number" min="1" placeholder="#" />
-              <button :disabled="working || !duplicateOf" @click="markDuplicate">
-                {{ $t('reports.admin.markDuplicate') }}
-              </button>
-            </span>
-          </label>
-          <button :disabled="working" @click="change({ hidden: !detail.report.hidden })">
-            {{ detail.report.hidden ? $t('reports.admin.unhide') : $t('reports.admin.hide') }}
-          </button>
-        </div>
-      </section>
-
-      <section class="log">
-        <h2>{{ $t('reports.log.title') }}</h2>
-        <p v-if="detail.log.length === 0" class="empty">{{ $t('reports.log.empty') }}</p>
-        <ol>
-          <li v-for="entry in detail.log" :key="entry.id" :class="entry.kind">
-            <template v-if="entry.kind === 'status'">
-              <font-awesome-icon icon="arrow-right-arrow-left" />
-              <span class="moved">
-                <i18n-t keypath="reports.log.moved" tag="span" scope="global">
-                  <template #who>{{ entry.author ?? $t('reports.log.somebody') }}</template>
-                  <template #column>
-                    <ReportStatusTag v-if="entry.status" :status="entry.status" small />
-                  </template>
-                </i18n-t>
-              </span>
-              <time :datetime="entry.createdAt">{{ when(entry.createdAt) }}</time>
-            </template>
-            <template v-else>
-              <header>
-                <strong :class="{ dev: entry.admin }">
-                  {{ entry.author ?? $t('reports.log.somebody') }}
-                  <span v-if="entry.admin" class="badge">{{ $t('reports.log.dev') }}</span>
-                  <span v-else-if="entry.author && !entry.authorAccount" class="badge from">
-                    {{ $t('reports.log.fromGithub') }}
-                  </span>
-                </strong>
+        <!-- No heading over an empty thread: "Conversation / nothing yet" is a
+             sentence about nothing, and the reply box below is the invitation. -->
+        <section v-if="detail.log.length > 0" class="log">
+          <h2>{{ $t('reports.log.title') }}</h2>
+          <ol>
+            <li v-for="entry in detail.log" :key="entry.id" :class="entry.kind">
+              <template v-if="entry.kind === 'status'">
+                <font-awesome-icon icon="arrow-right-arrow-left" />
+                <span class="moved">
+                  <i18n-t keypath="reports.log.moved" tag="span" scope="global">
+                    <template #who>{{ entry.author ?? $t('reports.log.somebody') }}</template>
+                    <template #column>
+                      <ReportStatusTag v-if="entry.status" :status="entry.status" small />
+                    </template>
+                  </i18n-t>
+                </span>
                 <time :datetime="entry.createdAt">{{ when(entry.createdAt) }}</time>
-                <button v-if="isAdmin" class="take-down" @click="takeDown(entry)">
-                  <font-awesome-icon icon="trash" />
-                </button>
-              </header>
-              <ReportText :text="entry.body ?? ''" />
-            </template>
-          </li>
-        </ol>
-      </section>
+              </template>
+              <template v-else>
+                <header>
+                  <strong :class="{ dev: entry.admin }">
+                    {{ entry.author ?? $t('reports.log.somebody') }}
+                    <span v-if="entry.admin" class="badge">{{ $t('reports.log.dev') }}</span>
+                    <span v-else-if="entry.author && !entry.authorAccount" class="badge from">
+                      {{ $t('reports.log.fromGithub') }}
+                    </span>
+                  </strong>
+                  <time :datetime="entry.createdAt">{{ when(entry.createdAt) }}</time>
+                  <button v-if="isAdmin" class="take-down" @click="takeDown(entry)">
+                    <font-awesome-icon icon="trash" />
+                  </button>
+                </header>
+                <ReportText :text="entry.body ?? ''" />
+              </template>
+            </li>
+          </ol>
+        </section>
 
-      <form class="reply box" @submit.prevent="send">
-        <label for="reply">{{ $t('reports.reply') }}</label>
-        <textarea id="reply" v-model="reply" rows="4" :placeholder="$t('reports.replyPlaceholder')"></textarea>
-        <p v-if="replyFailed" class="error">{{ replyFailed }}</p>
-        <div class="buttons">
-          <button type="submit" :disabled="sending || !reply.trim()">
-            {{ sending ? $t('reports.sending') : $t('reports.send') }}
-          </button>
-        </div>
-      </form>
+        <form class="reply box" @submit.prevent="send">
+          <label for="reply">{{ $t('reports.reply') }}</label>
+          <textarea id="reply" v-model="reply" rows="4" :placeholder="$t('reports.replyPlaceholder')"></textarea>
+          <p v-if="replyFailed" class="error">{{ replyFailed }}</p>
+          <div class="buttons">
+            <button type="submit" :disabled="sending || !reply.trim()">
+              {{ sending ? $t('reports.sending') : $t('reports.send') }}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Everything about the report that is not the conversation: where it
+           came from, and what a maintainer does with it. Beside the thread,
+           because on a long one they were scrolled past and lost. -->
+      <aside class="side">
+        <section v-if="detail.report.game" class="game box">
+          <p v-if="detail.report.game.name" class="game-name">{{ detail.report.game.name }}</p>
+          <p class="game-facts">
+            <span v-if="detail.report.game.step !== null">
+              {{ $t('reports.game.step') }} {{ detail.report.game.step }}
+            </span>
+            <span v-if="stepsSince !== null && stepsSince > 0" class="since">
+              {{ $t('reports.game.playedOn', { steps: stepsSince }) }}
+            </span>
+            <span v-if="!detail.report.game.id" class="gone">{{ $t('reports.game.goneBody') }}</span>
+          </p>
+          <div v-if="detail.report.game.id || detail.report.game.exportUrl" class="links">
+            <a
+              v-if="detail.report.game.id"
+              class="chip"
+              :href="`#/games/${detail.report.game.id}`"
+            >{{ $t('reports.game.open') }}</a>
+            <a
+              v-if="detail.report.game.exportUrl"
+              class="chip"
+              :href="detail.report.game.exportUrl"
+              rel="noreferrer"
+              target="_blank"
+            >{{ $t('reports.game.export') }}</a>
+          </div>
+        </section>
+
+        <section v-if="isAdmin" class="admin box">
+          <h2>{{ $t('reports.admin.title') }}</h2>
+          <div class="controls">
+            <!-- Customizable select: the options carry the same pill the rest of
+                 the tracker labels a status with, rather than its name in plain
+                 text. Where `appearance: base-select` is not supported the
+                 browser draws its own menu from the options' text, which is
+                 that same name -- so the fallback is what this was before. -->
+            <label>
+              {{ $t('reports.admin.status') }}
+              <select
+                class="rich"
+                :value="detail.report.status"
+                :disabled="working"
+                @change="change({ status: ($event.target as HTMLSelectElement).value as Api.ReportStatus })"
+              >
+                <button type="button"><selectedcontent></selectedcontent></button>
+                <option v-for="status in Api.OPEN_REPORT_STATUSES.concat(['done', 'declined', 'duplicate'])" :key="status" :value="status">
+                  <ReportStatusTag :status="status" small />
+                </option>
+              </select>
+            </label>
+            <label>
+              {{ $t('reports.admin.kind') }}
+              <select
+                class="rich"
+                :value="detail.report.kind"
+                :disabled="working"
+                @change="change({ kind: ($event.target as HTMLSelectElement).value as Api.ReportKind })"
+              >
+                <button type="button"><selectedcontent></selectedcontent></button>
+                <option value="bug">
+                  <font-awesome-icon class="kind bug" icon="bug" /> {{ $t('reports.kind.bug') }}
+                </option>
+                <option value="feature">
+                  <font-awesome-icon class="kind feature" icon="lightbulb" /> {{ $t('reports.kind.feature') }}
+                </option>
+              </select>
+            </label>
+            <label class="duplicate">
+              {{ $t('reports.admin.duplicate') }}
+              <span>
+                <input v-model="duplicateOf" type="number" min="1" placeholder="#" />
+                <button :disabled="working || !duplicateOf" @click="markDuplicate">
+                  {{ $t('reports.admin.markDuplicate') }}
+                </button>
+              </span>
+            </label>
+            <button :disabled="working" @click="change({ hidden: !detail.report.hidden })">
+              {{ detail.report.hidden ? $t('reports.admin.unhide') : $t('reports.admin.hide') }}
+            </button>
+          </div>
+        </section>
+      </aside>
     </template>
   </div>
 </template>
 
 <style scoped>
+/* Two columns: the thread on the left, everything about the report on the
+   right. Nothing stretches to the height of its row -- a one-line description
+   beside a full triage panel was a box of empty space. */
 .report {
   align-content: start;
+  align-items: start;
   /* The app body is near-black text on a dark page, so every page states its
      own: without this the title renders black on blue. */
   color: var(--text);
-  width: min(820px, 94vw);
+  width: min(1100px, 94vw);
+  display: grid;
+  gap: 12px 18px;
+  grid-template-columns: minmax(0, 1fr) 300px;
+}
+
+.back,
+.masthead,
+.meta,
+.report > .empty {
+  grid-column: 1 / -1;
+}
+
+.main {
+  align-content: start;
   display: grid;
   gap: 12px;
+  grid-column: 1;
+  min-width: 0;
+}
+
+.side {
+  align-content: start;
+  display: grid;
+  gap: 12px;
+  grid-column: 2;
+  min-width: 0;
+  position: sticky;
+  top: 12px;
 }
 
 .back {
@@ -359,41 +403,75 @@ h2 {
   padding: 12px 14px;
 }
 
-.game dl {
+/* The game this came from. A label column and two underlined links read as a
+   form; what it actually is, is a name and somewhere to go. */
+.game {
   display: grid;
-  gap: 2px 12px;
-  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px;
+}
+
+.game-name {
+  font-family: teutonic, sans-serif;
+  font-size: 1.15em;
   margin: 0;
 }
 
-.game dt {
+.game-facts {
   color: var(--title);
-  font-size: 0.85em;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.8em;
+  gap: 2px 10px;
+  margin: 0;
 }
 
-.game dd {
-  margin: 0;
+.game-facts:empty {
+  display: none;
 }
 
 .since {
   color: var(--seeker);
-  font-size: 0.85em;
 }
 
+.gone {
+  color: var(--survivor);
+}
+
+/* One per row, both the full width of the card. Sized to their own labels they
+   were two different widths that wrapped at two different points, which is the
+   whole of why the card looked unfinished. */
 .links {
-  display: flex;
-  gap: 14px;
-  margin-top: 10px;
+  display: grid;
+  gap: 6px;
+  margin-top: 4px;
 }
 
-.links a {
-  color: var(--guardian);
+.chip {
+  background: var(--background-dark);
+  border: 1px solid var(--box-border);
+  border-radius: 4px;
+  color: var(--title);
+  font-size: 0.85em;
+  padding: 7px 10px;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* Opening the game is what somebody came here for; the export is for whoever
+   is fixing it. */
+.chip:first-child {
+  border-color: var(--button-1-muted);
+  color: var(--text);
+}
+
+.chip:hover {
+  background: var(--box-background);
+  border-color: var(--button-1);
+  color: var(--text);
 }
 
 .controls {
-  align-items: end;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 10px;
 }
 
@@ -402,6 +480,75 @@ h2 {
   display: grid;
   font-size: 0.8em;
   gap: 4px;
+}
+
+/* The customizable select. `base-select` replaces the whole widget, including
+   its menu, with something styleable -- so everything the UA drew for free
+   (the arrow, the row padding, the checkmark gutter) has to be said here. */
+.rich,
+.rich::picker(select) {
+  appearance: base-select;
+}
+
+.rich {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  text-align: left;
+}
+
+.rich::picker-icon {
+  color: var(--title);
+  transition: rotate 0.15s ease;
+}
+
+.rich:open::picker-icon {
+  rotate: 180deg;
+}
+
+.rich::picker(select) {
+  background: var(--box-background);
+  border: 1px solid var(--box-border);
+  border-radius: 5px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  padding: 4px;
+}
+
+/* `display` has to wait for the open state: the UA keeps a closed picker at
+   `display: none`, and setting a display unconditionally leaves both menus
+   standing open on the page. */
+.rich::picker(select):popover-open {
+  display: grid;
+  gap: 2px;
+}
+
+.rich option {
+  align-items: center;
+  border-radius: 4px;
+  color: var(--text);
+  display: flex;
+  gap: 8px;
+  padding: 6px 8px;
+}
+
+.rich option:hover,
+.rich option:focus {
+  background: var(--background-dark);
+}
+
+/* The tick sits in a gutter of its own and pushes every row across; the
+   checked row is already obvious from the button above it. */
+.rich option::checkmark {
+  display: none;
+}
+
+.rich .kind.bug {
+  color: var(--survivor);
+}
+
+.rich .kind.feature {
+  color: var(--rogue);
 }
 
 .controls select,
@@ -573,5 +720,24 @@ h2 {
 .empty {
   color: var(--title);
   margin: 0;
+}
+
+@media (max-width: 900px) {
+  .report {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Stacked, the side goes above the thread rather than under the whole of it:
+     it is where the report came from, and the link somebody came to follow.
+     Only the thread is reordered -- ordering the side instead would lift it
+     over the title and the back link too. */
+  .main {
+    order: 1;
+  }
+
+  .side {
+    grid-column: 1;
+    position: static;
+  }
 }
 </style>

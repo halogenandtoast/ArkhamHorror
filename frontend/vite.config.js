@@ -71,7 +71,16 @@ const cardData = () => {
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    vue(),
+    vue({
+      template: {
+        compilerOptions: {
+          /* <selectedcontent> is a real element -- the part of a customizable
+             <select> that mirrors the chosen option. Vue does not know it, and
+             without this it looks for a component by that name and warns. */
+          isCustomElement: (tag) => tag === 'selectedcontent',
+        },
+      },
+    }),
     homebrewImages(),
     cardData(),
   ],

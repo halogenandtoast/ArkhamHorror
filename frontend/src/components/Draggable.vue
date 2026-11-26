@@ -513,6 +513,24 @@ function moveUp() {
     }
   }
 
+  /* The settings sheet and the shortcut list title themselves inside their own
+     body, so their handle is a bare drag strip. The bug form titles the handle
+     itself, and a game window hangs the minimize button off the bottom of the
+     handle to clear a tall banner title -- here the title is one short line, so
+     the button belongs on its centre line, and the strip takes the same dark
+     bar as the form's own footer. */
+  &:has(> .content > .bug-form) > header {
+    padding: 8px 14px;
+    background: var(--background-dark);
+    border-bottom: 1px solid var(--box-border);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+
+    .minimize-btn {
+      align-self: center;
+    }
+  }
+
   &:not(.minimized) {
     &:has(p.file) {
       box-shadow: none;

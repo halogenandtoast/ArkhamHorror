@@ -3085,9 +3085,7 @@ onUnmounted(() => {
     </Draggable>
     <Draggable v-if="filingBug">
       <template #handle>
-        <header>
-          <h2>{{ filedReport === null ? $t('gameBar.fileABug') : $t('gameBar.bugFiled') }}</h2>
-        </header>
+        <h2 class="bug-title">{{ filedReport === null ? $t('gameBar.fileABug') : $t('gameBar.bugFiled') }}</h2>
       </template>
       <div v-if="filedReport !== null" class="bug-form">
         <div class="bug-body">
@@ -4988,6 +4986,17 @@ header {
 
 button:hover .shortcut {
   background-color: var(--box-border);
+}
+
+/* A game window titles its handle at 2em, which over this 14px form came out
+   at 38px and left the minimize button stranded below it. The site's own
+   panels title themselves at 20px -- see .shortcuts-title. */
+.bug-title {
+  font-family: Teutonic, serif;
+  font-size: 20px;
+  font-weight: normal;
+  letter-spacing: 0.04em;
+  margin: 0;
 }
 
 /* The site's form language, not the game's: this is the same form as

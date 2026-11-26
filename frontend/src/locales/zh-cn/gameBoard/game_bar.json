@@ -8,7 +8,7 @@
   "shortcutUndo": "撤销",
   "shortcutToggleDebug": "调试模式开关",
   "shortcutShowOrHideShortcuts": "展示/隐藏快捷键列表",
-  "shortcutDraw": "从玩家牌库/遭遇牌库抽取卡牌",
+  "shortcutDraw": "从玩家牌库/遭遇牌库抽牌或揭示混乱标记",
   "shortcutTakeResources": "获得资源",
   "shortcutEndTurn": "结束回合",
   "shortcutRestartScenario": "重启冒险",

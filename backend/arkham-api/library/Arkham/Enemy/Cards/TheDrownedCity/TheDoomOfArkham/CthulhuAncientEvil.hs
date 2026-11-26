@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.TheDrownedCity.TheDoomOfArkham.CthulhuAncientEvil (cth
 import Arkham.Enemy.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Types (Field (EnemyHealthDamage, EnemySanityDamage))
-import Arkham.Helpers.Modifiers (ModifierType (..), interactAsOneOf, modifyEach, modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), interactAsOneOf, modifySelf, subsumeEach)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Placement
@@ -32,7 +32,7 @@ instance HasModifiersFor CthulhuAncientEvil where
     horror <- sum <$> traverse (field EnemySanityDamage) facets
     modifySelf a [DamageDealt damage, HorrorDealt horror]
 
-    modifyEach
+    subsumeEach
       a
       facets
       [ CannotAttackDuringEnemyPhase

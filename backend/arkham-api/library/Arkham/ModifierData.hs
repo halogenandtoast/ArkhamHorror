@@ -31,6 +31,12 @@ data LocationMetadata = LocationMetadata
   , lmAssets :: [AssetId]
   , lmEvents :: [EventId]
   , lmScarletKeys :: [ScarletKeyId]
+  , -- Shroud as the engine will use it, and as the card prints it. Same reason
+    -- as the enemy stats: the client must never apply a shroud modifier itself.
+    -- Both are Nothing together -- an unrevealed location, or one with no
+    -- shroud at all, has nothing to report.
+    lmModifiedShroud :: Maybe Int
+  , lmPrintedShroud :: Maybe Int
   }
   deriving stock (Show, Eq, Generic)
 
@@ -54,6 +60,21 @@ data EnemyMetadata = EnemyMetadata
   , emModifiers :: [Modifier]
   , emScarletKeys :: [ScarletKeyId]
   , emStories :: [StoryId]
+  , -- The enemy's stats as the engine will actually use them, and as the card
+    -- prints them. The client cannot work either out for itself: an enemy's
+    -- `fight`/`health`/`evade` attrs are a @GameCalculation@, whose number the
+    -- frontend decoder discards, and applying the modifiers by hand there
+    -- would re-derive the min clamps and `AsIf*` overrides this field already
+    -- handles. Sent so the UI can say "1 -> 3" rather than only "+2".
+    --
+    -- Named apart from the attrs' own `fight`/`health`/`evade`: `With` unions
+    -- the metadata OVER the entity, so a shared key would replace them.
+    emModifiedFight :: Maybe Int
+  , emModifiedHealth :: Maybe Int
+  , emModifiedEvade :: Maybe Int
+  , emPrintedFight :: Maybe Int
+  , emPrintedHealth :: Maybe Int
+  , emPrintedEvade :: Maybe Int
   }
   deriving stock (Show, Eq, Generic)
 
@@ -94,6 +115,14 @@ data AssetMetadata = AssetMetadata
   , amModifiers :: [Modifier]
   , amPermanent :: Bool
   , amScarletKeys :: [ScarletKeyId]
+  , -- TOTAL health and sanity after modifiers, and as printed -- what the
+    -- asset can take, not what it has left. Both halves of a pair are present
+    -- or absent together, and a spirit reports neither.
+    -- See 'assetModifiedHealth' / 'assetModifiedSanity'.
+    amModifiedHealth :: Maybe Int
+  , amModifiedSanity :: Maybe Int
+  , amPrintedHealth :: Maybe Int
+  , amPrintedSanity :: Maybe Int
   }
   deriving stock (Show, Eq, Generic)
 
@@ -185,6 +214,11 @@ instance ToJSON ActMetadata where
 data AgendaMetadata = AgendaMetadata
   { agendamTreacheries :: [TreacheryId]
   , agendamModifiers :: [Modifier]
+  , -- The doom the agenda advances at, as printed (resolved for the player
+    -- count) and after any 'DoomThresholdModifier'. Nothing for an agenda
+    -- with no threshold. See 'agendaDoomThresholds'.
+    agendamPrintedDoomThreshold :: Maybe Int
+  , agendamModifiedDoomThreshold :: Maybe Int
   }
   deriving stock (Show, Eq, Generic)
 

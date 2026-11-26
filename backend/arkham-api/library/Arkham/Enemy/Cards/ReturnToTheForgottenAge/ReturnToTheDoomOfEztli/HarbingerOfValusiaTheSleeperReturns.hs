@@ -6,7 +6,7 @@ import Arkham.Enemy.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli qual
 import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Helpers.GameValue
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
 import Arkham.Projection
@@ -26,7 +26,7 @@ instance HasModifiersFor HarbingerOfValusiaTheSleeperReturns where
   getModifiersFor (HarbingerOfValusiaTheSleeperReturns a) = do
     dmg <- field Field.EnemyDamage a.id
     n <- perPlayer 5
-    when (dmg >= n) $ modifySelf a [EnemyFight 2, EnemyEvade (-2)]
+    modifySelfWhen a (dmg >= n) [EnemyFight 2, EnemyEvade (-2)]
 
 instance HasAbilities HarbingerOfValusiaTheSleeperReturns where
   getAbilities (HarbingerOfValusiaTheSleeperReturns a) =

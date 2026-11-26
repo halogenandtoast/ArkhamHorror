@@ -78,6 +78,9 @@ async function bootstrap() {
         'cards-under-popover': {
           $extend: 'dropdown',
         },
+        'modifier-popover': {
+          $extend: 'dropdown',
+        },
       },
     }).
     use(vfm).

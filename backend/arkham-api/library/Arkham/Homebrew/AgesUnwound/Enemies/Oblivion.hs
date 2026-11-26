@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Types (Field (EnemyDamage))
 import Arkham.Helpers.GameValue (perPlayer)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Enemies qualified as Cards
 import Arkham.Homebrew.AgesUnwound.CardDefs.Locations qualified as Locations
 import Arkham.Matcher
@@ -25,7 +25,7 @@ instance HasModifiersFor Oblivion where
     perInvestigator <- perPlayer 1
     damage <- field EnemyDamage a.id
     let steps = damage `div` max 1 perInvestigator
-    when (steps > 0) $ modifySelf a [DamageDealt (-steps), HorrorDealt (-steps)]
+    modifySelfWhen a (steps > 0) [DamageDealt (-steps), HorrorDealt (-steps)]
 
 instance HasAbilities Oblivion where
   getAbilities (Oblivion a) =

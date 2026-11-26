@@ -22,6 +22,14 @@ import type { CardDef } from '@/arkham/types/CardDef'
 import KeyToken from '@/arkham/components/Key.vue'
 import { type ArkhamKey, keyToId } from '@/arkham/types/Key'
 import PoolItem from '@/arkham/components/PoolItem.vue'
+import ModifierPanel from '@/arkham/components/ModifierPanel.vue'
+import {
+  groupModifierRows,
+  wireModifierRows,
+  type ModifierRow,
+  type StatReading,
+  type WireModifier,
+} from '@/arkham/modifierDisplay'
 import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 
 /* =============================================================================
@@ -30,6 +38,33 @@ import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 
 const CARD_RATIO = 0.705        // width / height (portrait)
 const OVERLAY_W = 300           // base width (portrait) or height (sideways)
+/* Must match `.card-modifiers` in this file's styles. The panel is a flex
+   sibling of the card, so its width is part of the overlay's real width. */
+const MODIFIER_PANEL_W = 236
+const MODIFIER_PANEL_GAP = 4
+/* Mirrors the `max-width: 800px` rule on `.card-modifiers` below, where the
+   panel stops sitting beside the card and goes underneath it: beside, it adds
+   to the overlay's width; underneath, to its height. */
+const PANEL_STACKS_BELOW_CARD = '(max-width: 800px)'
+
+/* How much of a modifier list the magnified card may show.
+ *
+ * The overlay is `pointer-events: none`, so the panel inside it cannot be
+ * scrolled -- whatever does not fit is unreachable, and a list long enough
+ * makes the overlay taller than the window, which grows the document and lets
+ * the board be scrolled away under it. So the preview cuts the list to what
+ * fits and says how much it cut; the pip's panel does scroll, and keeps all of
+ * it.
+ *
+ * All measured off the rendered panel. A row is taller on the stacked
+ * breakpoint, where the source thumbnails are bigger. */
+const MAGNIFIER_ROW_PX = 37           // a row and the gap below it
+const MAGNIFIER_ROW_PX_STACKED = 45
+const MAGNIFIER_HEADING_PX = 26       // a group heading and the gap above its section
+const MAGNIFIER_STAT_PX = 30          // one "5 -> 8" line above the list
+const MAGNIFIER_CHROME_PX = 53        // the panel's own padding and the "+N more" line
+/* A tall window should still not turn the magnifier into the whole list. */
+const MAGNIFIER_MAX_ROWS = 10
 const TAROT_H = 500             // fixed tarot height
 const VIEW_W = 1000             // stable viewBox width for percent → px mapping
 
@@ -164,6 +199,22 @@ const updateIsMobile = () => (isMobile.value = mq.matches)
 updateIsMobile()
 onMounted(() => mq.addEventListener?.('change', updateIsMobile))
 onUnmounted(() => mq.removeEventListener?.('change', updateIsMobile))
+
+/* Both of these decide how much of the overlay fits, so they have to be
+   reactive rather than read off `window` inside a computed. */
+const panelStacked = ref(window.matchMedia(PANEL_STACKS_BELOW_CARD).matches)
+const stackMq = window.matchMedia(PANEL_STACKS_BELOW_CARD)
+const updatePanelStacked = () => (panelStacked.value = stackMq.matches)
+const viewportH = ref(window.innerHeight)
+const updateViewportH = () => (viewportH.value = window.innerHeight)
+onMounted(() => {
+  stackMq.addEventListener?.('change', updatePanelStacked)
+  window.addEventListener('resize', updateViewportH)
+})
+onUnmounted(() => {
+  stackMq.removeEventListener?.('change', updatePanelStacked)
+  window.removeEventListener('resize', updateViewportH)
+})
 
 /* =============================================================================
  * Pointer/hover handling
@@ -540,14 +591,27 @@ watch(card, (src) => { if (src) loadAR(src) })
 const overlayPosition = ref<{ top: number; left: number }>({ top: 0, left: 0 })
 let posRAF: number | null = null
 
+const cardHeight = computed(() => (sideways.value ? OVERLAY_W : Math.round(OVERLAY_W / CARD_RATIO)))
+
 const getPosition = (el: HTMLElement): { top: number; left: number } => {
   const rect = el.getBoundingClientRect()
   const width = sideways.value ? OVERLAY_W / CARD_RATIO : OVERLAY_W
-  const height = sideways.value ? OVERLAY_W : Math.round(OVERLAY_W / CARD_RATIO)
+  /* The CARD's height, not the overlay's. The magnified card is the thing
+     being looked at, and it belongs beside the card it came from -- so a
+     modifier panel too long to fit cuts itself off against this placement
+     (`magnifierMaxRows`) rather than shifting the card up the screen. */
+  const height = cardHeight.value
 
   const gap = 2
   const hasCust = !!customizationsCard.value
-  const totalWidth = hasCust ? (width * 2 + gap) : width
+  /* A customizable card draws its customization sheet beside itself, and the
+     modifier panel is a third column after both. All of it has to be in the
+     width, or the right-edge clamp below puts the tail off-screen -- it was
+     measuring the cards only, so the panel always hung over by its own
+     width. */
+  const panelWidth =
+    modifierRows.value.length > 0 && !panelStacked.value ? MODIFIER_PANEL_W + MODIFIER_PANEL_GAP : 0
+  const totalWidth = (hasCust ? width * 2 + gap : width) + panelWidth
 
   if (el.dataset.overlayPosition === 'cursor-right' && lastPointer.value) {
     const cursorGap = 18
@@ -565,10 +629,13 @@ const getPosition = (el: HTMLElement): { top: number; left: number } => {
   const bottom = top + height
   const newTop = Math.max(0, bottom > window.innerHeight ? rect.bottom - height + window.scrollY - 40 : top)
 
+  const viewportPad = 10
   const rightSide = rect.left + window.scrollX + rect.width + 10
-  return (rightSide + totalWidth >= window.innerWidth)
-    ? { top: newTop, left: rect.left - totalWidth - 10 }
-    : { top: newTop, left: rightSide }
+  if (rightSide + totalWidth < window.innerWidth) return { top: newTop, left: rightSide }
+  return {
+    top: newTop,
+    left: Math.max(window.scrollX + viewportPad, rect.left - totalWidth - 10),
+  }
 }
 
 watch([hoveredElement, sideways], ([el]) => {
@@ -652,6 +719,52 @@ const checkmarks = computed<Checkmark[] | null>(() => {
 
 const spentKeys = computed<ArkhamKey[]>(() => jsonDs<ArkhamKey[]>('spentKeys'))
 const overlay = ds('overlay')
+
+/* Modifiers travel on the hovered card's `data-modifiers` because this overlay
+ * is global -- mounted once per view, with no game to read. Hover on a desktop
+ * and the existing 200ms long press on a touch screen both land here, so the
+ * full list needs no gesture of its own. */
+const modifierRows = computed<ModifierRow[]>(() => wireModifierRows(jsonDs<WireModifier[]>('modifiers')))
+const modifierStats = computed<StatReading[]>(() => jsonDs<StatReading[]>('stats'))
+
+/* Rows the panel may draw before it cuts the list off -- see the constants.
+ *
+ * Measured from where the overlay already is down to the bottom of the window,
+ * because the panel takes the placement as given: the card sits beside the
+ * card it magnifies, and a long list is cut to the room that leaves rather
+ * than pushing the card somewhere else to make space for itself.
+ *
+ * Walked the way the panel will draw it, rather than divided by an average
+ * row: each group pays for its heading before its first row, and how the rows
+ * fall into groups is known here. Stacked under the card the panel gets only
+ * what the card leaves; beside it, everything below the overlay's top edge. */
+const magnifierMaxRows = computed(() => {
+  const rowPx = panelStacked.value ? MAGNIFIER_ROW_PX_STACKED : MAGNIFIER_ROW_PX
+  const stacked = panelStacked.value ? cardHeight.value + MODIFIER_PANEL_GAP : 0
+  /* On a touch screen the overlay ignores this placement and centres itself
+     (`.isMobile` below), so there it has the whole window to work with. */
+  const top = isMobile.value ? 0 : Math.max(0, overlayPosition.value.top - window.scrollY)
+  let left =
+    viewportH.value
+    - top
+    - stacked
+    - MAGNIFIER_CHROME_PX
+    - modifierStats.value.length * MAGNIFIER_STAT_PX
+
+  let rows = 0
+  for (const section of groupModifierRows(modifierRows.value)) {
+    left -= MAGNIFIER_HEADING_PX
+    for (let i = 0; i < section.rows.length && left >= rowPx; i++) {
+      left -= rowPx
+      rows++
+    }
+  }
+  /* Zero is a real answer, and the panel is left out entirely for it: under a
+     card low on a narrow window there is no room to cut a list down TO, and a
+     panel that only fits by hanging off the bottom is the thing being fixed.
+     The card's own pip still has all of it. */
+  return Math.min(MAGNIFIER_MAX_ROWS, rows)
+})
 
 const tarot = computed<boolean>(() => !!hoveredElement.value?.classList.contains('tarot-card'))
 
@@ -1458,6 +1571,12 @@ watchEffect(() => {
       </div>
     </div>
 
+    <!-- Read-only: the overlay is pointer-events:none, and a hoverable source
+         thumbnail here would re-target the magnifier at that card. -->
+    <div class="card-modifiers" v-if="modifierRows.length > 0 && magnifierMaxRows > 0">
+      <ModifierPanel :rows="modifierRows" :stats="modifierStats" :max-rows="magnifierMaxRows" />
+    </div>
+
     <span class="swarm" v-if="swarm"><BugAntIcon aria-hidden="true" /></span>
     <span class="fight" v-if="fight">{{ fight }}</span>
     <span class="health" v-if="health">{{ health }}</span>
@@ -1677,6 +1796,47 @@ watchEffect(() => {
   pointer-events: none;
   animation: fadeIn 0.5s;
 }
+/* A third column beside the card and its text, so the magnified card keeps its
+   full size and the list grows downward instead of over it. */
+.card-modifiers {
+  align-self: flex-start;
+  width: 236px;
+  max-width: 44vw;
+  margin-left: 4px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(14, 15, 19, 0.93);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+
+  /* No max-height here, and nothing to scroll: the list is cut to a counted
+     number of rows before it is drawn (`magnifierMaxRows`), because a cap on
+     this copy of the panel can only hide rows -- the overlay around it is
+     pointer-events: none, so its scrollbar can never be used. */
+  :deep(.modifier-panel__body) {
+    overflow: hidden;
+  }
+}
+
+/* On a phone the card already fills the width, so the list goes under it. */
+@media (max-width: 800px) {
+  .card-overlay {
+    flex-wrap: wrap;
+    /* The panel below takes its width from this one, and `width: max-content`
+       let it resolve wider than the screen -- which grows the document
+       sideways, the same way an over-long list grew it downwards. */
+    max-width: calc(100vw - 20px);
+  }
+
+  .card-modifiers {
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    margin-top: 4px;
+  }
+}
+
 .card-overlay.overPopover {
   z-index: var(--z-card-hover-overlay-over-popover);
 }

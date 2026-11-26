@@ -24,7 +24,7 @@ instance HasModifiersFor HuntersArmor where
       [ReduceCostOf (CardWithId a.cardId) 1, ActionDoesNotCauseAttacksOfOpportunity #play]
 
     for_ a.controller \iid -> do
-      modifySelf a
+      modifySelfConditional a
         $ (guard (a `hasCustomization` Enchanted) *> [DoNotTakeUpSlot #body, AdditionalSlot #arcane])
         <> (guard (a `hasCustomization` Durable) $> HealthModifier 2)
         <> (guard (a `hasCustomization` Hallowed) $> SanityModifier 2)

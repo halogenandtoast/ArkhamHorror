@@ -20,7 +20,7 @@ beneathTheLodge = treachery BeneathTheLodge Cards.beneathTheLodge
 instance HasModifiersFor BeneathTheLodge where
   getModifiersFor (BeneathTheLodge attrs) = do
     hasKey <- fieldMap InvestigatorKeys notNull attrs.drawnBy
-    modifySelf attrs [AddKeyword Keyword.Peril | hasKey]
+    modifySelfWhen attrs hasKey [AddKeyword Keyword.Peril]
     whenJustM getSkillTest \st -> maybeModified_ attrs (SkillTestTarget st.id) do
       source <- MaybeT getSkillTestSource
       guard $ isSource attrs source

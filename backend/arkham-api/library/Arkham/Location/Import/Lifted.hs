@@ -310,7 +310,7 @@ blockedWhen
   => LocationAttrs -> m Bool -> m ()
 blockedWhen attrs body = do
   cond <- body
-  when cond $ modifySelf attrs [Blocked]
+  modifySelfWhen attrs cond [Blocked]
 
 blockedUnless
   :: (HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)

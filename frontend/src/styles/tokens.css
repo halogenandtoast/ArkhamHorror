@@ -3,6 +3,26 @@
 
   --nav-height: 36px;
 
+  /* The modifier pip's hit area. It is centred ON a card's corner, so half of
+     it hangs outside the card -- any clipping ancestor has to reserve
+     --modifier-pip-overhang or the top row of a board loses its pips.
+     Sized for a thumb by default; a precise pointer gets a smaller target. */
+  /* A stat digit that is not its printed value. Gold rather than the skill's
+     own white, chosen to clear 3:1 on ALL FOUR stat pills (worst is willpower
+     at 3.22) while staying obviously distinct from an unmodified digit. */
+  --stat-modified: #ffdd6b;
+
+  --modifier-pip-size: 30px;
+  --modifier-pip-overhang: calc(var(--modifier-pip-size) / 2);
+
+  @media (pointer: fine) {
+    --modifier-pip-size: 20px;
+  }
+
+  @media (max-width: 800px) {
+    --modifier-pip-size: 32px;
+  }
+
   --willpower: #2c7fc0;
   --intellect: #7c3c85;
   --combat: #ae4236;

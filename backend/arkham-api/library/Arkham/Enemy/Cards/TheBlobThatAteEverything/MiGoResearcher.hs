@@ -20,7 +20,7 @@ miGoResearcher = enemy MiGoResearcher Cards.miGoResearcher
 
 instance HasModifiersFor MiGoResearcher where
   getModifiersFor (MiGoResearcher a) =
-    whenM (remembered TheMiGoResearchWasStopped) $ modifySelf a [HealthModifier (-2), EnemyEvade (-2)]
+    modifySelfWhenM a (remembered TheMiGoResearchWasStopped) [HealthModifier (-2), EnemyEvade (-2)]
 
 unresearchedOoze :: EnemyMatcher
 unresearchedOoze = EnemyWithTrait Ooze <> not_ (EnemyWithToken #resource)

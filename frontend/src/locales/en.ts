@@ -1,5 +1,7 @@
 import base from '@/locales/en/base.json'
 import cardOption from '@/locales/en/cardOption.json'
+import modifiers from '@/locales/en/modifiers.json'
+import traits from '@/locales/en/traits.json'
 import { homebrewMessages } from '@/locales/homebrew'
 import event from '@/locales/en/event.json'
 import log from '@/locales/en/log.json'
@@ -28,6 +30,8 @@ import xp from '@/locales/en/xp.json'
 export default
   { ...base
   , ...cardOption
+  , ...modifiers
+  , ...traits
   , ...event
   , ...campaignLog
   , ...gameBoard
@@ -50,7 +54,7 @@ export default
   , theDrownedCity
   , brethrenOfAsh
   , childrenOfBlood
-  , ...homebrewMessages()
+  , ...homebrewMessages('en', traits.trait)
   , standalone
   , theLabyrinthsOfLunacy: theLabyrinthsOfLunacyLog
   }

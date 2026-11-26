@@ -24,6 +24,8 @@ import Treachery from '@/arkham/components/Treachery.vue';
 import TokenPool, { type TokenPoolItem } from '@/arkham/components/TokenPool.vue';
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
+import ModifierPip from '@/arkham/components/ModifierPip.vue'
+import { assetStatReadings, presentableModifiers, toWireModifiers, wireModifierRows } from '@/arkham/modifierDisplay'
 import CardConfig from '@/arkham/components/CardConfig.vue'
 import MissingCardBadge from '@/arkham/components/MissingCardBadge.vue';
 import Story from '@/arkham/components/Story.vue';
@@ -393,6 +395,21 @@ function startDrag(event: DragEvent) {
     if (debug.active) DebugInPlay.beginInPlayDrag(DebugInPlay.assetTarget(props.asset.id))
   }
 }
+
+/* Every modifier on this asset, for the corner pip, and the same list in the
+ * compact form the global magnifier reads off `data-modifiers`. */
+const modifierWire = computed(() =>
+  toWireModifiers(presentableModifiers(props.asset.modifiers), props.game)
+)
+const modifierDisplayRows = computed(() => wireModifierRows(modifierWire.value))
+const wireModifiers = computed(() =>
+  modifierWire.value.length ? JSON.stringify(modifierWire.value) : undefined
+)
+
+/* Total health and sanity, printed beside what they have become. */
+const statRows = computed(() => assetStatReadings(props.asset))
+const wireStats = computed(() => (statRows.value.length ? JSON.stringify(statRows.value) : undefined))
+
 </script>
 
 <template>
@@ -477,9 +494,12 @@ function startDrag(event: DragEvent) {
           >
             <font-awesome-icon :icon="['fas', 'wrench']" />
           </span>
+          <ModifierPip :rows="modifierDisplayRows" :stats="statRows" />
           <img
             :data-id="id"
             :data-image-id="dataImage"
+            :data-modifiers="wireModifiers"
+            :data-stats="wireStats"
             :data-is-spirit="isSpirit || undefined"
             :src="displayedImage"
             class="card"

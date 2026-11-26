@@ -2,7 +2,7 @@ module Arkham.Location.Cards.TheScarletKeys.DancingMad.CafeLunaBastionOfRemembra
 
 import Arkham.Ability
 import Arkham.Helpers.GameValue (perPlayer)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Location.CardDefs.TheScarletKeys.DancingMad qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -20,7 +20,7 @@ cafeLunaBastionOfRemembrance =
 instance HasModifiersFor CafeLunaBastionOfRemembrance where
   getModifiersFor (CafeLunaBastionOfRemembrance a) = do
     n <- selectCount $ EnemyWithTrait Outsider
-    when (n > 0) $ modifySelf a [ShroudModifier (-n)]
+    modifySelfWhen a (n > 0) [ShroudModifier (-n)]
 
 instance HasAbilities CafeLunaBastionOfRemembrance where
   getAbilities (CafeLunaBastionOfRemembrance a) =

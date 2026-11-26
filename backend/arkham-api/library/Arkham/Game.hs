@@ -449,12 +449,55 @@ withEnemyMetadata a = do
   emSkills <- select $ EnemySkill (toId a)
   emStories <- select $ EnemyStory (toId a)
   emScarletKeys <- select $ ScarletKeyWithPlacement $ AttachedToEnemy $ toId a
+  -- The same fields the engine reads, so the client never has to apply a
+  -- modifier itself. The `*Actual` variants are the printed calculation, which
+  -- is why the printed numbers are calculated rather than read off the card: a
+  -- per-player health is only a number once the player count is known.
+  -- `EnemyFight` reads the ACTIVE investigator's modifiers (for
+  -- `AlternateFightField`), and `getActiveInvestigator` throws rather than
+  -- returning Nothing. That is tolerable where the engine asks for a fight
+  -- value on purpose; here it would run for every enemy on every
+  -- serialization and take the whole game view down with it. Withhold the
+  -- value instead -- the client already draws nothing for a Nothing.
+  activeInvestigatorPresent <-
+    getGame >>= fmap isJust . getInvestigatorMaybe . gameActiveInvestigatorId
+  emModifiedFight <-
+    if activeInvestigatorPresent then field EnemyFight (toId a) else pure Nothing
+  emModifiedHealth <- field EnemyHealth (toId a)
+  emModifiedEvade <- field EnemyEvade (toId a)
+  emPrintedFight <- traverse calculate =<< field EnemyFightActual (toId a)
+  emPrintedHealth <- traverse calculate =<< field EnemyHealthActual (toId a)
+  emPrintedEvade <- traverse calculate =<< field EnemyEvadeActual (toId a)
   pure $ a `with` EnemyMetadata {..}
+
+{- | An agenda's doom threshold resolved for the player count, and again after
+'DoomThresholdModifier' (the Ultimatums and Boons change it). Nothing when the
+agenda has no threshold at all.
+
+One copy of the formula, read both by 'AgendaWantsToAdvance' -- which decides
+whether the agenda really advances -- and by the client, so the number a player
+is shown is the number they are being measured against.
+-}
+agendaDoomThresholds :: HasGame m => Agenda -> m (Maybe (Int, Int))
+agendaDoomThresholds a = case attr agendaDoomThreshold a of
+  Nothing -> pure Nothing
+  Just threshold -> do
+    printed <- getPlayerCountValue threshold
+    modifiers' <- getModifiers (toTarget a)
+    let
+      applyDoomThreshold acc = \case
+        DoomThresholdModifier n -> max 0 (acc + n)
+        _ -> acc
+    pure $ Just (printed, foldl' applyDoomThreshold printed modifiers')
 
 withAgendaMetadata :: HasGame m => Agenda -> m (With Agenda AgendaMetadata)
 withAgendaMetadata a = do
   agendamModifiers <- getModifiers' (toTarget a)
   agendamTreacheries <- select $ TreacheryIsAttachedTo (toTarget a.id)
+  -- Bound monadically, not with `let`: the record wildcard below does not
+  -- count as a use for -Wunused-local-binds, which is an error here.
+  (agendamPrintedDoomThreshold, agendamModifiedDoomThreshold) <-
+    maybe (Nothing, Nothing) (bimap Just Just) <$> agendaDoomThresholds a
   pure $ a `with` AgendaMetadata {..}
 
 withActMetadata :: HasGame m => Act -> m (With Act ActMetadata)
@@ -508,6 +551,11 @@ withLocationConnectionData inner@(With target _) = do
         [ ScarletKeyWithPlacement $ AtLocation $ toId target
         , ScarletKeyWithPlacement $ AttachedToLocation $ toId target
         ]
+  -- `LocationShroud` is already the modified value and is Nothing for an
+  -- unrevealed location or one with no shroud; the printed value is only
+  -- meaningful beside it, so the two are reported together or not at all.
+  lmModifiedShroud <- field LocationShroud (toId target)
+  lmPrintedShroud <- traverse (const $ field LocationBaseShroud (toId target)) lmModifiedShroud
   pure $ inner `with` LocationMetadata {..}
 
 withEnemyLocationAsLocationData :: HasGame m => EnemyLocation -> m Value
@@ -586,6 +634,39 @@ withEnemyLocationAsLocationData el = do
       , "group" .= (Nothing :: Maybe Text)
       ]
 
+{- | An asset's total health and sanity after modifiers -- what it can take
+before it leaves play, NOT what it has left. One copy of each formula, read
+both by 'AssetRemainingHealth'/'AssetRemainingSanity' and by the client, so the
+number a player is shown is the number the engine will use.
+-}
+assetModifiedHealth :: HasGame m => AssetAttrs -> m (Maybe Int)
+assetModifiedHealth attrs = case assetHealth attrs of
+  Nothing -> pure Nothing
+  Just n -> do
+    mods <- getModifiers (AssetTarget $ toId attrs)
+    let
+      applyHealthModifiers h (HealthModifier m) = max 0 (h + m)
+      applyHealthModifiers h _ = h
+      applyPreHealthModifiers h (Helpers.HealthModifierWithMin m (Min minVal)) = max (min h minVal) (h + m)
+      applyPreHealthModifiers h _ = h
+    pure $ Just $ foldl' applyHealthModifiers (foldl' applyPreHealthModifiers n mods) mods
+
+assetModifiedSanity :: HasGame m => AssetAttrs -> m (Maybe Int)
+assetModifiedSanity attrs = case assetSanity attrs of
+  Nothing -> pure Nothing
+  Just n -> do
+    mods <- getModifiers (AssetTarget $ toId attrs)
+    let
+      applySanityModifiers s (SanityModifier m) = max 0 (s + m)
+      applySanityModifiers s _ = s
+    pure $ Just $ foldl' applySanityModifiers n mods
+
+-- | A spirit asset reports no health or sanity at all; it cannot be damaged.
+assetIsSpirit :: HasGame m => AssetId -> m Bool
+assetIsSpirit aid = do
+  mods <- getModifiers (AssetTarget aid)
+  pure $ notNull [() | IsSpirit _ <- mods]
+
 withAssetMetadata :: HasGame m => Asset -> m (With Asset AssetMetadata)
 withAssetMetadata a = do
   amModifiers <- getModifiers' (toTarget a)
@@ -595,6 +676,21 @@ withAssetMetadata a = do
   amTreacheries <- select (TreacheryIsAttachedTo $ toTarget a)
   amScarletKeys <- select $ ScarletKeyWithPlacement $ AttachedToAsset (toId a) Nothing
   let amPermanent = cdPermanent $ toCardDef a
+  -- Total health and sanity after modifiers, beside what the card prints. A
+  -- spirit has neither, so both halves are withheld together.
+  isSpirit <- assetIsSpirit (toId a)
+  amModifiedHealth <- if isSpirit then pure Nothing else assetModifiedHealth (toAttrs a)
+  amModifiedSanity <- if isSpirit then pure Nothing else assetModifiedSanity (toAttrs a)
+  -- `Nothing >> v` is Nothing: the printed value is reported only where the
+  -- modified one is, so the client never has half a pair to draw.
+  --
+  -- A tuple pattern bind, because -Wunused-local-binds (an error here) does
+  -- not count the record wildcard below as a use of a plain `let` or `<- pure`.
+  (amPrintedHealth, amPrintedSanity) <-
+    pure
+      ( amModifiedHealth >> assetHealth (toAttrs a)
+      , amModifiedSanity >> assetSanity (toAttrs a)
+      )
   pure $ a `with` AssetMetadata {..}
 
 withSkillTestMetadata :: HasGame m => SkillTest -> m (With SkillTest SkillTestMetadata)
@@ -678,6 +774,24 @@ withInvestigatorConnectionData inner@(With target _) = case target of
     intellect <- field InvestigatorBaseIntellect (toId investigator')
     combat <- field InvestigatorBaseCombat (toId investigator')
     agility <- field InvestigatorBaseAgility (toId investigator')
+    -- The four above are the BASE values. These are what a test would actually
+    -- use, granted the way handSize is, so the frontend never re-derives them:
+    -- 'skillValueFor' is the only copy of the formula, and it handles far more
+    -- than a client reasonably could -- SkillCannotBeIncreased, AddSkillToOtherSkill,
+    -- DoubleBaseSkillValue, CalculatedSkillModifier and the clamping between them.
+    --
+    -- The action is passed because 'ActionSkillModifier' only counts for the
+    -- action being taken, so during a test the number shown must be the number
+    -- that test will use.
+    mSkillTest <- gameSkillTest <$> getGame
+    let
+      testAction = case mSkillTest of
+        Just st | skillTestInvestigator st == toId investigator' -> skillTestAction st
+        _ -> Nothing
+    modifiedWillpower <- skillValueFor #willpower testAction (toId investigator')
+    modifiedIntellect <- skillValueFor #intellect testAction (toId investigator')
+    modifiedCombat <- skillValueFor #combat testAction (toId investigator')
+    modifiedAgility <- skillValueFor #agility testAction (toId investigator')
     handSize <- getHandSize (toAttrs investigator')
     -- Granted the way handSize is, so the frontend never re-derives the cap from
     -- modifiers. 'getDreamingCardLimit' stays the only copy of the formula.
@@ -705,6 +819,10 @@ withInvestigatorConnectionData inner@(With target _) = case target of
           , "intellect" .= intellect
           , "combat" .= combat
           , "agility" .= agility
+          , "modifiedWillpower" .= modifiedWillpower
+          , "modifiedIntellect" .= modifiedIntellect
+          , "modifiedCombat" .= modifiedCombat
+          , "modifiedAgility" .= modifiedAgility
           , "handSize" .= handSize
           , "dreamingCardLimit" .= dreamingCardLimit
           , "scarletKeys" .= scarletKeys
@@ -1799,17 +1917,11 @@ getAgendasMatching matcher = do
       if cannotBeAdvanced
         then pure False
         else do
-          case attr agendaDoomThreshold a of
+          agendaDoomThresholds a >>= \case
             Nothing -> pure False
-            Just threshold -> do
-              perPlayerDoomThreshold <- getPlayerCountValue threshold
+            Just (_, modifiedPerPlayerDoomThreshold) -> do
               modifiers' <- getModifiers (toTarget a)
               let
-                modifyDoomThreshold acc = \case
-                  DoomThresholdModifier n -> max 0 (acc + n)
-                  _ -> acc
-                modifiedPerPlayerDoomThreshold =
-                  foldl' modifyDoomThreshold perPlayerDoomThreshold modifiers'
                 otherDoomSubtracts = OtherDoomSubtracts `elem` modifiers'
               -- handle multiple agendas, this might need to be specific to the
               -- scenario, but for now given there is only once scenario and the rules
@@ -5121,28 +5233,20 @@ instance Projection Asset where
       AssetResources -> pure $ assetResources attrs
       AssetHorror -> pure $ assetHorror attrs
       AssetDamage -> pure $ assetDamage attrs
-      AssetRemainingHealth -> case assetHealth of
-        Nothing -> pure Nothing
-        Just n -> do
-          mods <- getModifiers (AssetTarget aid)
-          let isSpirit = notNull [() | IsSpirit _ <- mods]
-          let
-            modifiedHealth = foldl' applyHealthModifiers (foldl' applyPreHealthModifiers n mods) mods
-            applyHealthModifiers h (HealthModifier m) = max 0 (h + m)
-            applyHealthModifiers h _ = h
-            applyPreHealthModifiers h (Helpers.HealthModifierWithMin m (Min minVal)) = max (min h minVal) (h + m)
-            applyPreHealthModifiers h _ = h
-          pure $ guard (not isSpirit) $> max 0 (modifiedHealth - assetDamage attrs)
-      AssetRemainingSanity -> case assetSanity of
-        Nothing -> pure Nothing
-        Just n -> do
-          mods <- getModifiers (AssetTarget aid)
-          let isSpirit = notNull [() | IsSpirit _ <- mods]
-          let
-            modifiedSanity = foldl' applySanityModifiers n mods
-            applySanityModifiers s (SanityModifier m) = max 0 (s + m)
-            applySanityModifiers s _ = s
-          pure $ guard (not isSpirit) $> max 0 (modifiedSanity - assetHorror attrs)
+      AssetRemainingHealth -> do
+        mTotal <- assetModifiedHealth attrs
+        isSpirit <- assetIsSpirit aid
+        pure $ do
+          total <- mTotal
+          guard (not isSpirit)
+          pure $ max 0 (total - assetDamage attrs)
+      AssetRemainingSanity -> do
+        mTotal <- assetModifiedSanity attrs
+        isSpirit <- assetIsSpirit aid
+        pure $ do
+          total <- mTotal
+          guard (not isSpirit)
+          pure $ max 0 (total - assetHorror attrs)
       AssetDoom -> pure $ assetDoom attrs
       AssetExhausted -> pure assetExhausted
       AssetPlacement -> pure assetPlacement
@@ -7576,7 +7680,9 @@ preloadModifiers g = case gameMode g of
     allModifiers <- traverse (foldMapM expandForEach . foldMap handleMoving) rawModifiers
     let offsetModifiers =
           Map.fromList
-            [ (LocationTarget lid, [Modifier GameSource (UIModifier (Positioned x y)) True Nothing Nothing])
+            [ ( LocationTarget lid
+              , [Modifier GameSource (UIModifier (Positioned x y)) True Nothing Nothing False False]
+              )
             | (lid, (x, y)) <- mapToList (gameLocationOffsets g)
             ]
     pure

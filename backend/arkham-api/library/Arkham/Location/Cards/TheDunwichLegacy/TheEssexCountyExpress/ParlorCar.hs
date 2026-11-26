@@ -24,7 +24,8 @@ parlorCar =
 instance HasModifiersFor ParlorCar where
   getModifiersFor (ParlorCar l) = do
     blocked <- selectAny $ leftOf l <> LocationWithAnyClues
-    modifySelf l $ CannotInvestigate : [Blocked | l.unrevealed && blocked]
+    modifySelf l [CannotInvestigate]
+    modifySelfWhen l (l.unrevealed && blocked) [Blocked]
 
 instance HasAbilities ParlorCar where
   getAbilities (ParlorCar attrs) =

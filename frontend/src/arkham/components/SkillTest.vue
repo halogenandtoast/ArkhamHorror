@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import ModifierChip from '@/arkham/components/ModifierChip.vue'
+import { describeModifier } from '@/arkham/modifierDisplay'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Question from '@/arkham/components/Question.vue';
 import { useDebug } from '@/arkham/debug'
@@ -361,6 +363,18 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
     { tag: 'AnySkillValue', contents: direction * amount },
   )
 }
+
+/* The tags the band draws with its own wording above. Anything else falls
+ * through to the shared chip, which is total, rather than to an empty pill. */
+const BESPOKE_TAGS = new Set<string>(["ActionSkillModifier", "AddSkillValue", "AnySkillValue", "AutomaticallyFailIfSucceedByAtLeast", "CancelEffects", "CannotCommitCards", "CannotPerformSkillTest", "DamageDealt", "Difficulty", "DiscoveredClues", "DoubleDifficulty", "DoubleSuccess", "SkillModifier", "SkillTestResultValueModifier"])
+const BESPOKE_NAMED = new Set<string>(["CancelAnyChaosToken", "CancelAnyChaosTokenAndDrawAnother", "MayIgnoreLocationEffectsAndKeywords", "ReturnBlessedToChaosBag", "RevealAnotherChaosToken", "SkillIconsSubtract", "SkillTestAutomaticallySucceeds", "ThreeAces1"])
+
+const hasBespokePill = (mod: Modifier) => {
+  const type = mod.type as { tag: string; contents?: unknown }
+  if (BESPOKE_TAGS.has(type.tag)) return true
+  return typeof type.contents === 'string' && BESPOKE_NAMED.has(type.contents)
+}
+
 </script>
 
 <template>
@@ -602,6 +616,10 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'CancelAnyChaosTokenAndDrawAnother'">
             <span class="text">{{ $t('modifier.cancelMatchingChaosTokens') }}</span>
           </template>
+          <!-- Anything with no hand-written pill above. `skillTest.modifiers`
+               is filtered by a denylist, so a modifier the band never had a
+               case for used to arrive as an empty pill. -->
+          <ModifierChip v-if="!hasBespokePill(modifier)" :display="describeModifier(modifier)" variant="rail" />
         </div>
       </div>
       <AbilityButton

@@ -6,6 +6,8 @@ import { useCardStore } from '@/stores/cards'
 import { type Game } from '@/arkham/types/Game'
 import { type Card, cardImage, asCardCode, toCardContents } from '@/arkham/types/Card'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
+import ModifierPip from '@/arkham/components/ModifierPip.vue'
+import { presentableModifiers, toWireModifiers, wireModifierRows } from '@/arkham/modifierDisplay'
 import { useDebug } from '@/arkham/debug'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import KeyToken from '@/arkham/components/Key.vue'
@@ -474,6 +476,17 @@ const chooseFromStoryCollection = (choice: number) => {
   storyCollectionOpen.value = false
   emits('choose', choice)
 }
+
+/* Every modifier on this act, for the corner pip, and the same list in the
+ * compact form the global magnifier reads off `data-modifiers`. */
+const modifierWire = computed(() =>
+  toWireModifiers(presentableModifiers(props.act.modifiers), props.game)
+)
+const modifierDisplayRows = computed(() => wireModifierRows(modifierWire.value))
+const wireModifiers = computed(() =>
+  modifierWire.value.length ? JSON.stringify(modifierWire.value) : undefined
+)
+
 </script>
 
 <template>
@@ -509,8 +522,10 @@ const chooseFromStoryCollection = (choice: number) => {
               @click="clicked"
               @load="updateOrientation"
               :src="displayedImage"
+              :data-modifiers="wireModifiers"
               ref="frame"
             />
+            <ModifierPip :rows="modifierDisplayRows" />
           </div>
 
           <div class="pool">

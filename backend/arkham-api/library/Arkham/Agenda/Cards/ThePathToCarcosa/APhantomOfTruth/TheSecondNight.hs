@@ -17,7 +17,7 @@ theSecondNight = agenda (2, A) TheSecondNight Cards.theSecondNight (Static 5)
 instance HasModifiersFor TheSecondNight where
   getModifiersFor (TheSecondNight a) = do
     moreConvictionThanDoubt <- getMoreConvictionThanDoubt
-    modifySelf a [OtherDoomSubtracts | moreConvictionThanDoubt]
+    modifySelfWhen a moreConvictionThanDoubt [OtherDoomSubtracts]
 
 instance RunMessage TheSecondNight where
   runMessage msg a@(TheSecondNight attrs) = runQueueT $ case msg of

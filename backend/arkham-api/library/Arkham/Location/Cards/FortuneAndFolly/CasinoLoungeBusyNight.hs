@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.FortuneAndFolly.CasinoLoungeBusyNight (casinoLoungeBusyNight) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelfConditional)
 import Arkham.Helpers.Query (getJustLocationByName)
 import Arkham.Location.CardDefs.FortuneAndFolly qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -25,7 +25,7 @@ instance HasModifiersFor CasinoLoungeBusyNight where
   getModifiersFor (CasinoLoungeBusyNight a) = do
     ventOpen <- remembered TheVentIsOpen
     when ventOpen do
-      modifySelf a [ForMovementConnectedToWhen (be a) "Guard Room"]
+      modifySelfConditional a [ForMovementConnectedToWhen (be a) "Guard Room"]
       modifySelect a (location_ "Guard Room") [ForMovementConnectedToWhen "Guard Room" (be a)]
 
 instance HasAbilities CasinoLoungeBusyNight where

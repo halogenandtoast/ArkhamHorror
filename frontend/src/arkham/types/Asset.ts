@@ -19,6 +19,13 @@ export type Asset = {
   controller: string | null;
   slots: string[];
   health: number | null;
+  /* TOTAL health/sanity after modifiers, and as printed, both resolved
+   * server-side (AssetMetadata). What the asset can take, not what it has
+   * left. Null together, and null for a spirit. */
+  modifiedHealth: number | null;
+  modifiedSanity: number | null;
+  printedHealth: number | null;
+  printedSanity: number | null;
   sanity: number | null;
   assignedHealthDamage: number;
   assignedSanityDamage: number;
@@ -55,6 +62,10 @@ export const assetDecoder = JsonDecoder.object<Asset>({
   controller: JsonDecoder.nullable(JsonDecoder.string()),
   slots: JsonDecoder.array<string>(JsonDecoder.string(), 'SlotType[]'),
   health: JsonDecoder.nullable(JsonDecoder.number()),
+  modifiedHealth: JsonDecoder.failover(null, JsonDecoder.nullable(JsonDecoder.number())),
+  modifiedSanity: JsonDecoder.failover(null, JsonDecoder.nullable(JsonDecoder.number())),
+  printedHealth: JsonDecoder.failover(null, JsonDecoder.nullable(JsonDecoder.number())),
+  printedSanity: JsonDecoder.failover(null, JsonDecoder.nullable(JsonDecoder.number())),
   tokens: tokensDecoder,
   sanity: JsonDecoder.nullable(JsonDecoder.number()),
   assignedHealthDamage: JsonDecoder.number(),

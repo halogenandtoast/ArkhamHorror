@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.TheScarletKeys.CongressOfTheKeys.TheKeyReliquaryLair (theKeyReliquaryLair) where
 
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Location.CardDefs.TheScarletKeys.CongressOfTheKeys qualified as Cards
 import Arkham.Location.Import.Lifted
 
@@ -15,4 +15,4 @@ theKeyReliquaryLair = location TheKeyReliquaryLair Cards.theKeyReliquaryLair 1 (
 instance HasModifiersFor TheKeyReliquaryLair where
   getModifiersFor (TheKeyReliquaryLair a) = do
     n <- selectCount UnstableScarletKey
-    when (n > 0) $ modifySelf a [ShroudModifier (n * 2)]
+    modifySelfWhen a (n > 0) [ShroudModifier (n * 2)]

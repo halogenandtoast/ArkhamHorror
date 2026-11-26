@@ -165,6 +165,14 @@ export type Investigator = {
   intellect: number;
   combat: number;
   agility: number;
+  /* The four above are the BASE values. These are what a test would actually
+   * use, resolved by the engine's `skillValueFor` (the only copy of the
+   * formula) with the current test's action applied. Never re-derive them from
+   * `modifiers` -- that handles a handful of tags and misses the clamps. */
+  modifiedWillpower: number | null;
+  modifiedIntellect: number | null;
+  modifiedCombat: number | null;
+  modifiedAgility: number | null;
   tokens: Tokens;
   assignedHealthDamage: number;
   assignedHealthHeal: number;
@@ -291,6 +299,13 @@ export const investigatorDecoder = JsonDecoder.object({
   intellect: JsonDecoder.number(),
   combat: JsonDecoder.number(),
   agility: JsonDecoder.number(),
+  /* null, not 0: a server older than these fields sends no key, and showing a
+     flat 0 for every skill is worse than showing the unmodified base. The
+     component substitutes the base value when these are null. */
+  modifiedWillpower: JsonDecoder.failover(null, JsonDecoder.nullable(JsonDecoder.number())),
+  modifiedIntellect: JsonDecoder.failover(null, JsonDecoder.nullable(JsonDecoder.number())),
+  modifiedCombat: JsonDecoder.failover(null, JsonDecoder.nullable(JsonDecoder.number())),
+  modifiedAgility: JsonDecoder.failover(null, JsonDecoder.nullable(JsonDecoder.number())),
   tokens: tokensDecoder,
   assignedHealthDamage: JsonDecoder.number(),
   assignedHealthHeal: JsonDecoder.array(JsonDecoder.tuple([JsonDecoder.succeed(), JsonDecoder.number()], '[any, number]'), '[any, number][]').map((arr) => arr.reduce((acc, [_source, heal]) => acc + heal, 0)),

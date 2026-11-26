@@ -17,7 +17,7 @@ acolyteOfUmordhoth =
 instance HasModifiersFor AcolyteOfUmordhoth where
   getModifiersFor (AcolyteOfUmordhoth a) = do
     anyWithoutCards <- selectAny (investigatorEngagedWith a <> HandWith NoCards)
-    modifySelf a [CannotBeEvaded | anyWithoutCards]
+    modifySelfWhen a anyWithoutCards [CannotBeEvaded]
 
 instance RunMessage AcolyteOfUmordhoth where
   runMessage msg (AcolyteOfUmordhoth attrs) = AcolyteOfUmordhoth <$> runMessage msg attrs

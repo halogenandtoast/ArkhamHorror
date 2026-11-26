@@ -2,7 +2,7 @@ module Arkham.Homebrew.DarkMatter.Locations.MoonbaseLaboratory (moonbaseLaborato
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Modifiers (modifySelf)
+import Arkham.Helpers.Modifiers (modifySelfWhen)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (pattern CannotBeScannedFor)
@@ -25,7 +25,7 @@ investigators taking the Scan action at all — see 'CannotBeScannedFor'.
 -}
 instance HasModifiersFor MoonbaseLaboratory where
   getModifiersFor (MoonbaseLaboratory a) =
-    when (a.clues > 0) $ modifySelf a [CannotBeScannedFor]
+    modifySelfWhen a (a.clues > 0) [CannotBeScannedFor]
 
 {- | "Forced - At the end of the round, if there is a [[Starship]] attached to this
 location: Place 1 resource on this location (to a maximum of 3). If there are 3

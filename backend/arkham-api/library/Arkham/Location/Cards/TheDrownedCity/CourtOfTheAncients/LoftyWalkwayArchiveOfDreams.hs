@@ -2,7 +2,7 @@ module Arkham.Location.Cards.TheDrownedCity.CourtOfTheAncients.LoftyWalkwayArchi
 
 import Arkham.Ability
 import Arkham.Enemy.CardDefs.TheDrownedCity.StarSpawn qualified as Enemies
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Location.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -21,7 +21,7 @@ loftyWalkwayArchiveOfDreams = location LoftyWalkwayArchiveOfDreams Cards.loftyWa
 instance HasModifiersFor LoftyWalkwayArchiveOfDreams where
   getModifiersFor (LoftyWalkwayArchiveOfDreams a) = do
     n <- getVictoryGlyphCount
-    when (n > 0) $ modifySelf a [ShroudModifier (-n)]
+    modifySelfWhen a (n > 0) [ShroudModifier (-n)]
 
 instance HasAbilities LoftyWalkwayArchiveOfDreams where
   getAbilities (LoftyWalkwayArchiveOfDreams a) =

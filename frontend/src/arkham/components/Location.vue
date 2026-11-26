@@ -12,6 +12,8 @@ import { useGameChoices, useStickyChoicesSource } from '@/arkham/composables/use
 import { useGameIndexes } from '@/arkham/composables/useGameIndexes'
 import { useCardFlip } from '@/arkham/composables/useCardFlip'
 import DebugLocation from '@/arkham/components/debug/Location.vue'
+import ModifierPip from '@/arkham/components/ModifierPip.vue'
+import { locationShroudReading, presentableModifiers, toWireModifiers, wireModifierRows } from '@/arkham/modifierDisplay'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 import { actionsToList } from '@/arkham/types/Action'
 import ConcealedCard from '@/arkham/components/ConcealedCard.vue'
@@ -597,6 +599,21 @@ const nonVehicleAssetIds = computed(() => props.location.assets.filter((assetId)
 const hasAnyLocationVehicleAssets = computed(() =>
   Object.values(props.game.locations).some((location) => location.assets.some(isVehicleAsset))
 )
+
+/* Every modifier on this location, for the corner pip, and the same list in the
+ * compact form the global magnifier reads off `data-modifiers`. */
+const modifierWire = computed(() =>
+  toWireModifiers(presentableModifiers(props.location.modifiers), props.game)
+)
+const modifierDisplayRows = computed(() => wireModifierRows(modifierWire.value))
+const wireModifiers = computed(() =>
+  modifierWire.value.length ? JSON.stringify(modifierWire.value) : undefined
+)
+
+/* Shroud, printed beside what an investigate would actually face. */
+const statRows = computed(() => locationShroudReading(props.location))
+const wireStats = computed(() => (statRows.value.length ? JSON.stringify(statRows.value) : undefined))
+
 </script>
 
 <template>
@@ -697,10 +714,14 @@ const hasAnyLocationVehicleAssets = computed(() =>
                 class="card card--locations"
                 :src="displayedImage"
                 :class="{ 'location--can-interact': canInteract && !hasObjective && !blocked, 'location--can-interact-cursor': canInteract, 'source-highlight': sourceHighlighted }"
+                :data-modifiers="wireModifiers"
+                :data-stats="wireStats"
                 draggable="false"
               />
             </template>
           </div>
+
+          <ModifierPip :rows="modifierDisplayRows" :stats="statRows" />
 
           <FlameWrap
             v-if="onFire"

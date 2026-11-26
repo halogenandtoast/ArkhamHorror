@@ -2,7 +2,7 @@ module Arkham.Homebrew.AgesUnwound.Enemies.DeterminedGeneral (determinedGeneral)
 
 import Arkham.Ability
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
-import Arkham.Helpers.Modifiers (ModifierType (CannotBeDamaged), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (CannotBeDamaged), modifySelfWhen)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Enemies qualified as Cards
 import Arkham.Homebrew.AgesUnwound.Scenarios.Unstuck.Helpers (spawnRomanSoldier)
 import Arkham.Matcher
@@ -31,7 +31,7 @@ instance HasModifiersFor DeterminedGeneral where
         $ enemyIs Cards.romanSoldier
         <> ReadyEnemy
         <> EnemyAt (locationWithEnemy a.id)
-    when hasGuard $ modifySelf a [CannotBeDamaged]
+    modifySelfWhen a hasGuard [CannotBeDamaged]
 
 {- | "Forced - After Determined General engages or attacks you: Put the top card
 of your deck into play in your threat area, as a Roman Soldier enemy with 3

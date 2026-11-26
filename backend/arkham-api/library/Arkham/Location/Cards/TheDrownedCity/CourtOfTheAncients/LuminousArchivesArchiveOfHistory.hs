@@ -3,7 +3,7 @@ module Arkham.Location.Cards.TheDrownedCity.CourtOfTheAncients.LuminousArchivesA
 import Arkham.Ability
 import Arkham.Card (toCard)
 import Arkham.Deck qualified as Deck
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Location.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -25,7 +25,7 @@ instance HasModifiersFor LuminousArchivesArchiveOfHistory where
     glyphEnemies <- selectCount $ EnemyWithTrait Glyph <> enemyAt a
     glyphTreacheries <- selectCount $ TreacheryWithTrait Glyph <> TreacheryAttachedToLocation (be a)
     let n = glyphAssets + glyphEnemies + glyphTreacheries
-    when (n > 0) $ modifySelf a [ShroudModifier n]
+    modifySelfWhen a (n > 0) [ShroudModifier n]
 
 instance HasAbilities LuminousArchivesArchiveOfHistory where
   getAbilities (LuminousArchivesArchiveOfHistory a) =

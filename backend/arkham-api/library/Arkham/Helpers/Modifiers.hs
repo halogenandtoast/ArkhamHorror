@@ -175,7 +175,7 @@ withoutModifiers :: (HasGame m, Targetable a) => a -> [ModifierType] -> m Bool
 withoutModifiers a ms = all (`notElem` ms) <$> getModifiers (toTarget a)
 
 toModifier :: (Sourceable a, HasGame m) => a -> ModifierType -> m Modifier
-toModifier a mType = sourceToMaybeCard a <&> \mcard -> Modifier (toSource a) mType False mcard Nothing
+toModifier a mType = sourceToMaybeCard a <&> \mcard -> Modifier (toSource a) mType False mcard Nothing False False
 
 modifySelf
   :: ( Targetable target
@@ -186,7 +186,54 @@ modifySelf
   => target
   -> [ModifierType]
   -> m ()
-modifySelf target mods = tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiers target mods
+-- Unconditional, so what it grants is the card's own printed text; 'printed'
+-- marks it and the client leaves it off the modifier panel. The conditional
+-- variants below deliberately do NOT mark it -- there, the modifier being
+-- present is what tells the player the condition is met.
+modifySelf target mods =
+  tell . MonoidalMap . singletonMap (toTarget target) . map asPrinted =<< toModifiers target mods
+
+{- | A self-modifier whose condition is the CALLER'S -- a @when@, an @unless@, a
+@for_@ over a @Maybe@, a @guard@ fused into the list. 'modifySelf' would mark
+these 'modifierPrinted', which is a lie: the modifier is only here because the
+condition holds, and that is precisely the news. Use this wherever the reason
+sits outside the call and 'modifySelfWhen' cannot take it.
+-}
+modifySelfConditional
+  :: (HasGame m, Sourceable a, Targetable a, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => a
+  -> [ModifierType]
+  -> m ()
+modifySelfConditional target mods =
+  tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiers target mods
+
+-- | The card prints this and always has it. See 'modifierPrinted'.
+asPrinted :: Modifier -> Modifier
+asPrinted m = m {modifierPrinted = True}
+
+{- | Bookkeeping that makes a composite entity and its parts one. See
+'modifierSubsumed'.
+-}
+asSubsumed :: Modifier -> Modifier
+asSubsumed m = m {modifierSubsumed = True}
+
+{- | Like 'modifyEach', for the modifiers a COMPOSITE entity puts on the cards it
+stands for. Marks them 'modifierSubsumed' so the client does not restate the
+encounter's own shape on each part -- see 'modifierSubsumed'.
+-}
+subsumeEach
+  :: ( HasGame m
+     , Sourceable source
+     , Targetable a
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => source
+  -> [a]
+  -> [ModifierType]
+  -> m ()
+subsumeEach source xs mTypes = do
+  mods <- map asSubsumed <$> toModifiers source mTypes
+  tell $ MonoidalMap $ mapFromList $ map ((,mods) . toTarget) xs
 
 {- | Mark an enemy as a composite: it stands on the map for a group of enemy cards,
 and fighting or evading it means choosing one of that group instead. The @Cannot*@
@@ -203,7 +250,13 @@ interactAsOneOf
   -> EnemyMatcher
   -> m ()
 interactAsOneOf target matcher =
-  modifySelf target [InteractAsOneOf matcher, CannotBeAttacked, CannotBeEvaded, CannotBeDamaged]
+  tell
+    . MonoidalMap
+    . singletonMap (toTarget target)
+    . map asSubsumed
+    =<< toModifiers
+      target
+      [InteractAsOneOf matcher, CannotBeAttacked, CannotBeEvaded, CannotBeDamaged]
 
 immuneToPlayerEffect :: [ModifierType]
 immuneToPlayerEffect =
@@ -261,7 +314,8 @@ modifySelf1
   => target
   -> ModifierType
   -> m ()
-modifySelf1 target mod1 = tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiers target [mod1]
+modifySelf1 target mod1 =
+  tell . MonoidalMap . singletonMap (toTarget target) . map asPrinted =<< toModifiers target [mod1]
 
 modifySelfMaybe
   :: ( Targetable target
@@ -286,7 +340,12 @@ modifySelfWith
   -> (Modifier -> Modifier)
   -> [ModifierType]
   -> m ()
-modifySelfWith target f mods = tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiersWith target f mods
+modifySelfWith target f mods =
+  tell
+    . MonoidalMap
+    . singletonMap (toTarget target)
+    . map asPrinted
+    =<< toModifiersWith target f mods
 
 modifySelfWhen
   :: ( Targetable target

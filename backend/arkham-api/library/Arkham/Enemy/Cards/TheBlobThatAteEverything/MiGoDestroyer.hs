@@ -19,7 +19,7 @@ miGoDestroyer = enemy MiGoDestroyer Cards.miGoDestroyer
 
 instance HasModifiersFor MiGoDestroyer where
   getModifiersFor (MiGoDestroyer a) =
-    whenM (remembered TheMiGoResearchWasStopped) $ modifySelf a [HealthModifier (-2), EnemyEvade (-2)]
+    modifySelfWhenM a (remembered TheMiGoResearchWasStopped) [HealthModifier (-2), EnemyEvade (-2)]
 
 instance HasAbilities MiGoDestroyer where
   getAbilities (MiGoDestroyer a) =

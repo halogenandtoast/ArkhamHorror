@@ -6,6 +6,8 @@ import type { Ref } from 'vue'
 import Draggable from '@/components/Draggable.vue';
 import CardView from '@/arkham/components/Card.vue';
 import Modifiers from '@/arkham/components/Modifiers.vue';
+import ModifierPip from '@/arkham/components/ModifierPip.vue'
+import { investigatorSkillReadings, presentableModifiers, toWireModifiers, wireModifierRows } from '@/arkham/modifierDisplay'
 import PendingDamageTokens from '@/arkham/components/PendingDamageTokens.vue';
 import { useDebug } from '@/arkham/debug'
 import { ForwardIcon, PaperClipIcon } from '@heroicons/vue/20/solid'
@@ -367,59 +369,46 @@ function isActiveEffectAction(action: { tag?: "EffectAction"; contents: any }) {
   return choice !== -1
 }
 
+/* The engine resolved these; the client must not. `skillValueFor` handles
+ * SkillCannotBeIncreased, AddSkillToOtherSkill, DoubleBaseSkillValue,
+ * CalculatedSkillModifier and the clamping between them, and it is passed the
+ * current test's action so an ActionSkillModifier counts only where it should.
+ * This used to be a switch over 6 of the engine's 471 modifier tags. */
 const skills = computed(() => {
-  const st = props.game.skillTest
-  const activeSkills = st ? new Set(st.skills) : null
-  const action = st?.action
-
-  const base = {
-    SkillWillpower: props.investigator.willpower,
-    SkillIntellect: props.investigator.intellect,
-    SkillCombat: props.investigator.combat,
-    SkillAgility: props.investigator.agility,
+  const inv = props.investigator
+  // A server that does not send these falls back to the base value, which is
+  // simply "no modifiers known" rather than a wrong number.
+  const resolved = {
+    willpower: inv.modifiedWillpower ?? inv.willpower,
+    intellect: inv.modifiedIntellect ?? inv.intellect,
+    combat: inv.modifiedCombat ?? inv.combat,
+    agility: inv.modifiedAgility ?? inv.agility,
   }
-
-  const baseOverride: Record<string, number|undefined> = {}
-  const plus: Record<string, number> = {
-    SkillWillpower: 0, SkillIntellect: 0, SkillCombat: 0, SkillAgility: 0
-  }
-  const finalSet: Record<string, number|undefined> = {}
-
-  for (const m of (props.investigator.modifiers ?? [])) {
-    const t = m.type
-    switch (t.tag) {
-      case 'BaseSkillOf':
-        baseOverride[t.skillType] = t.value
-        break
-      case 'BaseSkill':
-        if (activeSkills)
-          for (const k of activeSkills) baseOverride[k] = t.contents
-        break
-      case 'SkillModifier':
-        plus[t.skillType] += t.value
-        break
-      case 'AnySkillValue':
-        if (activeSkills) for (const k of activeSkills) plus[k] += t.contents
-        break
-      case 'ActionSkillModifier':
-        if (t.action === action) plus[t.skillType] += t.value
-        break
-      case 'SetSkillValue':
-        finalSet[t.skillType] = t.value
-        break
-    }
-  }
-
-  const calc = (k:'SkillWillpower'|'SkillIntellect'|'SkillCombat'|'SkillAgility') =>
-    Math.max(0, finalSet[k] ?? ((baseOverride[k] ?? base[k]) + plus[k]))
-
   return {
-    willpower: calc('SkillWillpower'),
-    intellect: calc('SkillIntellect'),
-    combat: calc('SkillCombat'),
-    agility: calc('SkillAgility'),
+    ...resolved,
+    drift: {
+      willpower: resolved.willpower - inv.willpower,
+      intellect: resolved.intellect - inv.intellect,
+      combat: resolved.combat - inv.combat,
+      agility: resolved.agility - inv.agility,
+    },
   }
 })
+
+/* A stat whose shown number is not the printed one.
+ *
+ * The tinted bar under the cell is the whole visible signal, and the colour
+ * carries the direction. A superscript "+1" was tried here and could not fit:
+ * the pill is about 32px wide, so the mark collided with the digit and rode
+ * off the rounded edge. The magnitude lives in the tooltip and, with its
+ * source, in the modifier panel on the pip. */
+const skillDrift = computed(() => skills.value.drift)
+const driftClass = (n: number) => (n === 0 ? null : n > 0 ? 'stat--raised' : 'stat--lowered')
+const driftTitle = (skill: 'willpower' | 'intellect' | 'combat' | 'agility') => {
+  const n = skillDrift.value[skill]
+  if (n === 0) return undefined
+  return `${skills.value[skill] - n} \u2192 ${skills.value[skill]}`
+}
 
 const willpower = computed(() => skills.value.willpower)
 const intellect = computed(() => skills.value.intellect)
@@ -478,6 +467,23 @@ const clubInjury = computed(() => {
 const spadeInjury = computed(() => {
   return modifiers.value?.some((m) => m.type.tag === "ScenarioModifier" && m.type.contents === "spadeInjury") ?? false
 })
+
+/* Every modifier on this investigator, for the pip and for the global
+ * magnifier. The debug panel above keeps its own list -- it can switch effects
+ * off, which the player-facing one must not. */
+const modifierWire = computed(() =>
+  toWireModifiers(presentableModifiers(props.investigator.modifiers), props.game)
+)
+const modifierDisplayRows = computed(() => wireModifierRows(modifierWire.value))
+const wireModifiers = computed(() =>
+  modifierWire.value.length ? JSON.stringify(modifierWire.value) : undefined
+)
+
+/* The four skills, printed beside what a test would use. Same shape the enemy
+ * stat line uses, so one renderer draws both. */
+const statRows = computed(() => investigatorSkillReadings(props.investigator))
+const wireStats = computed(() => (statRows.value.length ? JSON.stringify(statRows.value) : undefined))
+
 </script>
 
 <template>
@@ -545,15 +551,30 @@ const spadeInjury = computed(() => {
       @dragover.prevent="dragover($event)"
       @dragenter.prevent
     />
+    <!-- The portrait view shows no investigator card, and a bare `.portrait`
+         is not something CardOverlay can magnify, so the pip is the only way
+         to reach these modifiers here. Bottom corner: the action row runs
+         along the top. -->
+    <ModifierPip :rows="modifierDisplayRows" :stats="statRows" corner="bottom-right" />
   </div>
   <div v-else class="player-container" v-bind="cardDrop">
     <div class="player-area">
       <div class="player-card">
+        <!-- The number shown is already the modified one; the tinted bar under
+             the cell is what says so. See `driftTitle` for why not a mark. -->
         <div class="stats">
-          <div class="willpower willpower-icon">{{willpower}}</div>
-          <div class="intellect intellect-icon">{{intellect}}</div>
-          <div class="combat combat-icon">{{combat}}</div>
-          <div class="agility agility-icon">{{agility}}</div>
+          <div class="willpower willpower-icon" :class="driftClass(skillDrift.willpower)" v-tooltip="driftTitle('willpower')">
+            {{willpower}}
+          </div>
+          <div class="intellect intellect-icon" :class="driftClass(skillDrift.intellect)" v-tooltip="driftTitle('intellect')">
+            {{intellect}}
+          </div>
+          <div class="combat combat-icon" :class="driftClass(skillDrift.combat)" v-tooltip="driftTitle('combat')">
+            {{combat}}
+          </div>
+          <div class="agility agility-icon" :class="driftClass(skillDrift.agility)" v-tooltip="driftTitle('agility')">
+            {{agility}}
+          </div>
         </div>
         <div
           class="investigator-image"
@@ -566,9 +587,12 @@ const spadeInjury = computed(() => {
             :class="{ 'investigator--can-interact': investigatorAction !== -1, 'ability-target': isHighlighted || isAttackTarget }"
             class="card card--sideways"
             :src="image"
+            :data-modifiers="wireModifiers"
+            :data-stats="wireStats"
             @click="clicked"
           />
           <span v-if="isBlanked" class="blanked-badge" :data-image-id="blankedCardCode"><font-awesome-icon icon="ban" /></span>
+          <ModifierPip :rows="modifierDisplayRows" :stats="statRows" />
           <PendingDamageTokens
             v-if="!portrait"
             :game="game"
@@ -984,6 +1008,19 @@ i.action {
     bottom: 0;
     width: 1px;
     background: rgba(255, 255, 255, 0.22);
+  }
+
+  /* A modified skill colours its DIGIT instead of wearing a bar: the number is
+     the thing you are reading, so the number is what should say it is not the
+     printed one. One gold for both directions -- it is the only hue that
+     clears 3:1 on all four stat pills, and direction is on hover ("4 -> 6")
+     and in the pip's panel. The old teal/amber bar managed 2.40 and 1.99. */
+  .stat--raised,
+  .stat--lowered {
+    color: var(--stat-modified);
+    text-shadow:
+      0 1px 1px rgba(0, 0, 0, 0.9),
+      0 0 3px rgba(0, 0, 0, 0.55);
   }
 
   @media (max-width: 800px) and (orientation: portrait) {

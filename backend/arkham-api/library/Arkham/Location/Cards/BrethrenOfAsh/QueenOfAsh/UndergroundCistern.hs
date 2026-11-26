@@ -3,7 +3,7 @@ module Arkham.Location.Cards.BrethrenOfAsh.QueenOfAsh.UndergroundCistern (underg
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.GameValue (perPlayer)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Location.CardDefs.BrethrenOfAsh.QueenOfAsh qualified as Cards (undergroundCistern)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -18,8 +18,7 @@ undergroundCistern = location UndergroundCistern Cards.undergroundCistern 4 (Per
 
 instance HasModifiersFor UndergroundCistern where
   getModifiersFor (UndergroundCistern attrs) = do
-    when attrs.unrevealed
-      $ modifySelf attrs [AdditionalCostToEnter $ GroupClueCost (PerPlayer 3) Anywhere]
+    modifySelfWhen attrs attrs.unrevealed [AdditionalCostToEnter $ GroupClueCost (PerPlayer 3) Anywhere]
 
 instance HasAbilities UndergroundCistern where
   getAbilities (UndergroundCistern a) =

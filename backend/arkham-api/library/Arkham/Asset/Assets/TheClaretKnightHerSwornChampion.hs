@@ -7,7 +7,7 @@ import Arkham.Asset.Uses
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key.Cards as Keys
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelfConditional)
 import Arkham.Helpers.Query (getInvestigators)
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
@@ -27,7 +27,7 @@ theClaretKnightHerSwornChampion = allyWith TheClaretKnightHerSwornChampion Cards
 instance HasModifiersFor TheClaretKnightHerSwornChampion where
   getModifiersFor (TheClaretKnightHerSwornChampion a) = do
     whenM (selectAny $ ScenarioWithId "09635") do
-      modifySelf a . map AsIfUnderControlOf =<< getInvestigators
+      modifySelfConditional a . map AsIfUnderControlOf =<< getInvestigators
       modifySelect a (scarletKeyIs Keys.theLightOfPharos) . map AsIfUnderControlOf =<< getInvestigators
 
 instance HasAbilities TheClaretKnightHerSwornChampion where

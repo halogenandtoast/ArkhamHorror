@@ -16,6 +16,8 @@ import { useCardFlip } from '@/arkham/composables/useCardFlip'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import MissingCardBadge from '@/arkham/components/MissingCardBadge.vue';
+import ModifierPip from '@/arkham/components/ModifierPip.vue'
+import { enemyStatReadings, presentableModifiers, toWireModifiers, wireModifierRows } from '@/arkham/modifierDisplay'
 import DebugEnemy from '@/arkham/components/debug/Enemy.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import TokenPool from '@/arkham/components/TokenPool.vue'
@@ -325,6 +327,28 @@ const health = computed(() => {
   return props.enemy.health?.tag == "Fixed" ? props.enemy.health.contents : null
 })
 
+/* Every modifier on this enemy that is worth showing, and the same list in the
+ * compact form the global magnifier reads off `data-modifiers`. */
+const modifierWire = computed(() =>
+  toWireModifiers(presentableModifiers(props.enemy.modifiers), props.game)
+)
+
+/* Printed vs. actual fight/health/evade, both resolved server-side. A stat the
+ * card prints as a dash or an X is not a number, and `isUnvaluedCalculation`
+ * is how the client already tells those apart. */
+const statRows = computed(() =>
+  enemyStatReadings(props.enemy, {
+    fight: isUnvaluedCalculation(props.enemy.fight),
+    health: isUnvaluedCalculation(props.enemy.health),
+    evade: isUnvaluedCalculation(props.enemy.evade),
+  })
+)
+const wireStats = computed(() => (statRows.value.length ? JSON.stringify(statRows.value) : undefined))
+const modifierDisplayRows = computed(() => wireModifierRows(modifierWire.value))
+const wireModifiers = computed(() =>
+  modifierWire.value.length ? JSON.stringify(modifierWire.value) : undefined
+)
+
 const evade = computed(() => {
   return props.enemy.evade?.tag == "Fixed" ? props.enemy.evade.contents : null
 })
@@ -437,6 +461,8 @@ function onDrop(event: DragEvent) {
             <span v-if="isCannotBeDamaged" class="cannot-be-damaged-badge" :data-image-id="cannotBeDamagedCardCode">
               <font-awesome-icon icon="shield-heart" />
             </span>
+            <ModifierPip :rows="modifierDisplayRows" :stats="statRows" />
+
             <img v-if="isTrueForm" :src="displayedImage"
               class="card enemy"
               v-tooltip="sourceTooltip"
@@ -454,6 +480,8 @@ function onDrop(event: DragEvent) {
               :data-victory="gainedVictory"
               :data-keywords="addedKeywords"
               :data-swarm="isSwarm"
+              :data-modifiers="wireModifiers"
+              :data-stats="wireStats"
               @click="clicked"
             />
             <img v-else
@@ -470,6 +498,8 @@ function onDrop(event: DragEvent) {
               :data-is-spirit="hasSpiritAura || undefined"
               :data-image-id="imageId"
               :data-swarm="isSwarm || undefined"
+              :data-modifiers="wireModifiers"
+              :data-stats="wireStats"
               @click="clicked"
             />
           </div>

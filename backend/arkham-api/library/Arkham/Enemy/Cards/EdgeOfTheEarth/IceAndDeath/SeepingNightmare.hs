@@ -17,7 +17,7 @@ seepingNightmare = enemy SeepingNightmare Cards.seepingNightmare
 
 instance HasModifiersFor SeepingNightmare where
   getModifiersFor (SeepingNightmare a) = do
-    when (null $ enemyCardsUnderneath a) $ modifySelf a [AddKeyword Hunter]
+    modifySelfWhen a (null $ enemyCardsUnderneath a) [AddKeyword Hunter]
     modifySelectMap a (locationWithEnemy a)
       $ const
         [ ConnectedToWhen

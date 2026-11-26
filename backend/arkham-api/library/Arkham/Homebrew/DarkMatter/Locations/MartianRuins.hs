@@ -1,7 +1,7 @@
 module Arkham.Homebrew.DarkMatter.Locations.MartianRuins (martianRuins) where
 
 import Arkham.GameValue
-import Arkham.Helpers.Modifiers (modifySelf)
+import Arkham.Helpers.Modifiers (modifySelfWhen)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (pattern CannotBeScannedFor)
@@ -23,7 +23,7 @@ not on co-located investigators taking the Scan action at all — see
 instance HasModifiersFor MartianRuins where
   getModifiersFor (MartianRuins a) = do
     blocked <- selectAny $ enemyAt a.id <> ReadyEnemy
-    when blocked $ modifySelf a [CannotBeScannedFor]
+    modifySelfWhen a blocked [CannotBeScannedFor]
 
 instance RunMessage MartianRuins where
   runMessage msg (MartianRuins attrs) = runQueueT $ case msg of

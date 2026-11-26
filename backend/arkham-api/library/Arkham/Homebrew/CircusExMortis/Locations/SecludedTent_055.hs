@@ -1,7 +1,7 @@
 module Arkham.Homebrew.CircusExMortis.Locations.SecludedTent_055 (secludedTent_055) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (modifySelf)
+import Arkham.Helpers.Modifiers (modifySelfWhen)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.CircusExMortis.Helpers (moonToken)
 import Arkham.Location.Import.Lifted
@@ -30,7 +30,7 @@ instance HasAbilities SecludedTent_055 where
 instance HasModifiersFor SecludedTent_055 where
   getModifiersFor (SecludedTent_055 a) = do
     let meta = getLocationMetaDefault (Meta 0) a
-    when (meta.shroudDiscountRounds > 0) $ modifySelf a [ShroudModifier (-2)]
+    modifySelfWhen a (meta.shroudDiscountRounds > 0) [ShroudModifier (-2)]
 
 instance RunMessage SecludedTent_055 where
   runMessage msg (SecludedTent_055 attrs) = runQueueT $ case msg of

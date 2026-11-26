@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Enemy.CardDefs.TheScarletKeys.CongressOfTheKeys qualified as Enemies
 import Arkham.Enemy.CardDefs.TheScarletKeys.RedCoterie qualified as Enemies
-import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, modifySelect, modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, modifySelect, modifySelfWhen)
 import Arkham.Location.CardDefs.TheScarletKeys.CongressOfTheKeys qualified as Cards
 import Arkham.Location.Grid
 import Arkham.Location.Import.Lifted
@@ -27,8 +27,7 @@ instance HasModifiersFor TheToweringVertexRuinousConflux where
   getModifiersFor (TheToweringVertexRuinousConflux a) = do
     when a.unrevealed do
       mods <- getModifiers a
-      unless (ScenarioModifier "canEnter" `elem` mods) do
-        modifySelf a [Blocked]
+      modifySelfWhen a (ScenarioModifier "canEnter" `notElem` mods) [Blocked]
       modifySelect a (enemyIs Enemies.theRedGlovedManPurposeUnknown) [CannotBeDefeated]
     when a.revealed do
       modifySelect

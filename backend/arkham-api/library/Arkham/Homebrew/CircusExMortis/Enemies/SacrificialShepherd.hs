@@ -1,7 +1,7 @@
 module Arkham.Homebrew.CircusExMortis.Enemies.SacrificialShepherd (sacrificialShepherd) where
 
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen, modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen, modifySelfWhen)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
@@ -32,5 +32,4 @@ instance HasModifiersFor SacrificialShepherd where
       a.ready
       (InvestigatorAt loc)
       [CannotTriggerAbilityMatching $ AbilityOnCard (CardWithTrait Bystander)]
-    unless bystanderPresent
-      $ modifySelf a [AddKeyword Keyword.Hunter, EnemyEvade 1, DamageDealt 1]
+    modifySelfWhen a (not bystanderPresent) [AddKeyword Keyword.Hunter, EnemyEvade 1, DamageDealt 1]

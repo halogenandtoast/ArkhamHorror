@@ -67,3 +67,25 @@
   - {name: [Data.ByteString.Lazy.Char8], as: BSL8}
   - {name: [Data.List.NonEmpty], as: NE}
   - {name: [Data.Sequence], as: Seq}
+
+# `modifySelf` stamps `modifierPrinted`, which asserts the card's own text
+# always reads this -- so the client hides it as a restatement. A condition
+# OUTSIDE the call makes that a lie: the modifier is there only because the
+# condition holds, which is exactly what the player needs told. Carrying a
+# number saves it (the numeral is the news), but a flag-only one vanishes.
+#
+# This was missed by hand twice. Use `modifySelfWhen` where the condition can
+# be passed, `modifySelfConditional` where it cannot (a `for_` over a Maybe, a
+# guard fused into the list, an enclosing `whenM`).
+- warn:
+    name: Use modifySelfWhen
+    lhs: "when c (modifySelf a m)"
+    rhs: "modifySelfWhen a c m"
+- warn:
+    name: Use modifySelfWhen
+    lhs: "unless c (modifySelf a m)"
+    rhs: "modifySelfWhen a (not c) m"
+- warn:
+    name: Use modifySelfWhenM
+    lhs: "whenM c (modifySelf a m)"
+    rhs: "modifySelfWhenM a c m"

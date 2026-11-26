@@ -3666,6 +3666,10 @@ async function addChaosToken(face: any){
 .location-cards-stage {
   /* Leave room at the map edges for cards rotated beyond their layout boxes. */
   padding-inline: calc(var(--card-width) / 2);
+  /* ...and at the top and bottom for the modifier pip, which is centred ON a
+     card's corner and so hangs half outside it. Without this the stage's
+     `overflow: hidden` slices the pips off the first and last rows. */
+  padding-block: var(--modifier-pip-overhang);
   position: relative;
   display: grid;
   row-gap: 16px;

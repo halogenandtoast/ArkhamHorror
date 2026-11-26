@@ -29,8 +29,10 @@ marieLambeau =
 instance HasModifiersFor MarieLambeau where
   getModifiersFor (MarieLambeau a) = do
     hasDoom <- (> 0) <$> getDoomAmongstControlledCards (toId a)
-    modifySelf a
-      $ [GiveAdditionalAction (AdditionalAction "Marie Lambeau" (toSource a) marieAction) | hasDoom]
+    modifySelfWhen
+      a
+      hasDoom
+      [GiveAdditionalAction (AdditionalAction "Marie Lambeau" (toSource a) marieAction)]
 
 getDoomAmongstControlledCards :: HasGame m => InvestigatorId -> m Int
 getDoomAmongstControlledCards iid =

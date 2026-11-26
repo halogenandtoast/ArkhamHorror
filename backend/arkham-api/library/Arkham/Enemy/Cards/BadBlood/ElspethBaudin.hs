@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.BadBlood.ElspethBaudin (elspethBaudin) where
 import Arkham.Ability
 import Arkham.Enemy.CardDefs.BadBlood qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTargetedEnemy)
 import Arkham.Helpers.Story (readStoryWithPlacement)
 import Arkham.Matcher
@@ -22,7 +22,7 @@ elspethBaudin = enemy ElspethBaudin Cards.elspethBaudin
 instance HasModifiersFor ElspethBaudin where
   getModifiersFor (ElspethBaudin a) = do
     n <- (.elspethMemories) <$> getBadBloodMeta
-    when (n > 0) $ modifySelf a [EnemyFight (-n), EnemyEvade (-n)]
+    modifySelfWhen a (n > 0) [EnemyFight (-n), EnemyEvade (-n)]
 
 instance HasAbilities ElspethBaudin where
   getAbilities (ElspethBaudin a) =

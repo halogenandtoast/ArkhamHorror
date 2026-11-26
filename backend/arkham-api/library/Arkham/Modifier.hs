@@ -819,6 +819,27 @@ data Modifier = Modifier
   {- ^ Stamped on by 'HasModifiersFor Effect', so the client can tell which
   modifiers a 'DisableEffect' can take back off.
   -}
+  , modifierPrinted :: Bool
+  {- ^ True when the card gave this to ITSELF unconditionally -- i.e. 'modifySelf'
+  rather than 'modifySelfWhen'. Such a modifier is just the card's own printed
+  text restated, so the client drops it from the modifier panel: a card reading
+  "Cannot leave play" beside a row reading "Cannot leave play" tells a player
+  nothing they are not already looking at.
+
+  A CONDITIONAL self-modifier is not printed in this sense and stays visible,
+  because its presence is the news -- it says the condition is currently met.
+  -}
+  , modifierSubsumed :: Bool
+  {- ^ True when this exists only so a COMPOSITE entity and the cards it stands
+  for behave as one -- Cthulhu and the three facets on the Cthulhu Board. It
+  runs both ways: the facets get @CannotAttackDuringEnemyPhase@ because Cthulhu
+  does the attacking, and Cthulhu gets @CannotBeAttacked@ because you attack a
+  facet. Neither is news about the card it sits on; it is the encounter's own
+  shape, which the player can see on the board. The client drops these.
+
+  Distinct from 'modifierPrinted', which says the card's own text already reads
+  this. Nothing is printed on a facet about not attacking.
+  -}
   }
   deriving stock (Show, Eq, Ord, Data)
 
@@ -929,4 +950,6 @@ instance FromJSON Modifier where
     modifierActiveDuringSetup <- o .: "activeDuringSetup"
     modifierCard <- o .:? "card"
     modifierEffect <- o .:? "effect"
+    modifierPrinted <- o .:? "printed" .!= False
+    modifierSubsumed <- o .:? "subsumed" .!= False
     pure Modifier {..}

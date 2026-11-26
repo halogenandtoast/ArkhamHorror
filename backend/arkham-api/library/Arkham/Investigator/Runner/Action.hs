@@ -234,7 +234,9 @@ handlePerformAction a@InvestigatorAttrs {..} iid source action = do
   freeAction msgs =
     CreateWindowModifierEffect
       EffectNextActionWindow
-      (EffectModifiers [Modifier source (ActionCostOf (IsAction action) (-1)) False Nothing Nothing])
+      ( EffectModifiers
+          [Modifier source (ActionCostOf (IsAction action) (-1)) False Nothing Nothing False False]
+      )
       source
       (toTarget iid)
       : msgs

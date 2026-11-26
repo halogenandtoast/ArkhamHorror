@@ -12,6 +12,8 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import { AbilityLabel, AbilityMessage, type Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import AbilityButton from '@/arkham/components/AbilityButton.vue';
+import ModifierPip from '@/arkham/components/ModifierPip.vue'
+import { agendaThresholdReading, presentableModifiers, toWireModifiers, wireModifierRows } from '@/arkham/modifierDisplay'
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import Event from '@/arkham/components/Event.vue';
@@ -307,6 +309,21 @@ watch(image, () => { isVertical.value = false })
 
 const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
 const wards = computed(() => props.agenda.tokens[TokenType.Ward])
+
+/* Every modifier on this agenda, for the corner pip, and the same list in the
+ * compact form the global magnifier reads off `data-modifiers`. */
+const modifierWire = computed(() =>
+  toWireModifiers(presentableModifiers(props.agenda.modifiers), props.game)
+)
+const modifierDisplayRows = computed(() => wireModifierRows(modifierWire.value))
+const wireModifiers = computed(() =>
+  modifierWire.value.length ? JSON.stringify(modifierWire.value) : undefined
+)
+
+/* The doom this agenda advances at, printed beside what it has become. */
+const statRows = computed(() => agendaThresholdReading(props.agenda))
+const wireStats = computed(() => (statRows.value.length ? JSON.stringify(statRows.value) : undefined))
+
 </script>
 
 <template>
@@ -371,7 +388,10 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
           @load="updateOrientation"
           :src="displayedImage"
           :data-errata="backErrata ?? undefined"
+          :data-modifiers="wireModifiers"
+          :data-stats="wireStats"
         />
+        <ModifierPip :rows="modifierDisplayRows" :stats="statRows" />
         <!-- A flipped agenda has normally advanced and is on its way out, so its
              pool is hidden. Some backs stay in play and keep taking doom, so
              show the pool whenever there is doom to show. -->

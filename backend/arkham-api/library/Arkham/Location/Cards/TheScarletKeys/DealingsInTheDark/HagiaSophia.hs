@@ -2,7 +2,7 @@ module Arkham.Location.Cards.TheScarletKeys.DealingsInTheDark.HagiaSophia (hagia
 
 import Arkham.Ability
 import Arkham.Helpers.GameValue (perPlayer)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Location.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Token
@@ -17,7 +17,7 @@ hagiaSophia = symbolLabel $ locationWith HagiaSophia Cards.hagiaSophia 2 (PerPla
 instance HasModifiersFor HagiaSophia where
   getModifiersFor (HagiaSophia a) = do
     let study = a.token Study
-    when (study > 0) $ modifySelf a [ShroudModifier (study * 3)]
+    modifySelfWhen a (study > 0) [ShroudModifier (study * 3)]
 
 instance HasAbilities HagiaSophia where
   getAbilities (HagiaSophia a) =

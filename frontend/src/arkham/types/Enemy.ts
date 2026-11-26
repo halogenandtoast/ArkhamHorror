@@ -31,6 +31,16 @@ export type Enemy = {
   healthDamage: number;
   sanityDamage: number;
   health: Calculation | null;
+  /* The stats the engine will actually use, and the printed ones, both already
+   * resolved to numbers by the server (EnemyMetadata in Arkham/ModifierData.hs).
+   * `fight`/`health`/`evade` above are the printed CALCULATION, whose number
+   * this decoder throws away, so these are the only numbers the UI ever sees. */
+  modifiedFight: number | null;
+  modifiedHealth: number | null;
+  modifiedEvade: number | null;
+  printedFight: number | null;
+  printedHealth: number | null;
+  printedEvade: number | null;
   meta: any;
   flipped: boolean;
   cardsUnderneath: Card[];
@@ -58,6 +68,13 @@ export const enemyDecoder = JsonDecoder.object<Enemy>({
      anything, including null, so a fallback never fires and an enemy printing no
      health at all decoded as OtherCalculation rather than null. Matches fight/evade. */
   health: JsonDecoder.fallback(null, JsonDecoder.nullable(calculationDecoder)),
+  /* failover, not nullable: a server older than these fields sends no key. */
+  modifiedFight: JsonDecoder.failover(null, JsonDecoder.nullable(JsonDecoder.number())),
+  modifiedHealth: JsonDecoder.failover(null, JsonDecoder.nullable(JsonDecoder.number())),
+  modifiedEvade: JsonDecoder.failover(null, JsonDecoder.nullable(JsonDecoder.number())),
+  printedFight: JsonDecoder.failover(null, JsonDecoder.nullable(JsonDecoder.number())),
+  printedHealth: JsonDecoder.failover(null, JsonDecoder.nullable(JsonDecoder.number())),
+  printedEvade: JsonDecoder.failover(null, JsonDecoder.nullable(JsonDecoder.number())),
   tokens: tokensDecoder,
   assignedDamage: JsonDecoder.array<[boolean, number]>(
     JsonDecoder.tuple(

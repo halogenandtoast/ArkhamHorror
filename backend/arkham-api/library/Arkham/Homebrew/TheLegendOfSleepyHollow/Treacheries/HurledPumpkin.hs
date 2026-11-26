@@ -22,7 +22,7 @@ hurledPumpkin = treachery HurledPumpkin Cards.hurledPumpkin
 instance HasModifiersFor HurledPumpkin where
   getModifiersFor (HurledPumpkin attrs) = do
     doomed <- getLocationDoomed
-    modifySelf attrs [AddKeyword Keyword.Peril | doomed]
+    modifySelfWhen attrs doomed [AddKeyword Keyword.Peril]
     whenJustM getSkillTest \st -> maybeModified_ attrs (SkillTestTarget st.id) do
       source <- MaybeT getSkillTestSource
       guard $ isSource attrs source

@@ -26,7 +26,7 @@ instance HasModifiersFor TheHiddenChamber where
     selectOne (assetIs Assets.keyToTheChamber) >>= \case
       Just keyToTheChamber -> do
         placement <- field AssetPlacement keyToTheChamber
-        modifySelf a [Blocked | placement /= AttachedToLocation a.id]
+        modifySelfWhen a (placement /= AttachedToLocation a.id) [Blocked]
       _ -> modifySelf a [Blocked]
 
 instance RunMessage TheHiddenChamber where

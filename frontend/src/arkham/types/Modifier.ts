@@ -38,6 +38,10 @@ export function cannotCommitCardsToWords(m: { tag: 'CannotCommitCards', contents
 export type ModifierType
   = ActionSkillModifier
   | { tag: 'CannotSpendLastActions', contents: number }
+  | NumericModifier
+  | NamedModifier
+  | MinModifier
+  | AdditionalActions
   | AddKeyword
   | AddSkillValue
   | AnySkillValue
@@ -277,6 +281,55 @@ export type OtherModifier = {
   contents: string
 }
 
+/* Modifiers carrying one number, one name, or a number plus a floor.
+ *
+ * A constructor the decoder does not list falls through to the OtherModifier
+ * catch-all, which keeps the tag and throws the payload away -- so a modifier
+ * missing from these tables can only ever be described in words, never as
+ * "+2 <glyph>". Adding one is a single entry here.
+ */
+export const NUMERIC_MODIFIER_TAGS = [
+  'EnemyFight',
+  'EnemyEvade',
+  'AsIfEnemyFight',
+  'ShroudModifier',
+  'SetShroud',
+  'BaseShroud',
+  'HorrorDealt',
+  'AdditionalResources',
+  'ActionCostModifier',
+  'FewerActions',
+  'AdditionalTargets',
+  'AdditionalStartingUses',
+] as const
+
+export const NAMED_MODIFIER_TAGS = [
+  'AddTrait',
+  'RemoveKeyword',
+  'AdditionalSlot',
+] as const
+
+/* `Int (Min Int)`: the change, then the value it may not reduce below. */
+export const MIN_MODIFIER_TAGS = [
+  'HealthModifierWithMin',
+  'EnemyFightWithMin',
+  'EnemyEvadeWithMin',
+] as const
+
+export type NumericModifierTag = (typeof NUMERIC_MODIFIER_TAGS)[number]
+export type NamedModifierTag = (typeof NAMED_MODIFIER_TAGS)[number]
+export type MinModifierTag = (typeof MIN_MODIFIER_TAGS)[number]
+
+export type NumericModifier = { tag: NumericModifierTag; contents: number }
+export type NamedModifier = { tag: NamedModifierTag; contents: string }
+export type MinModifier = { tag: MinModifierTag; contents: [number, number] }
+
+export type AdditionalActions = {
+  tag: "AdditionalActions"
+  /* label, source, count */
+  contents: [string, unknown, number]
+}
+
 export type RemoveTrait = {
   tag: "RemoveTrait"
   contents: string
@@ -306,6 +359,12 @@ export type Modifier = {
   card?: Card;
   // Set when an effect published this modifier, so debug can disable it.
   effect?: string;
+  /* The card gave this to ITSELF unconditionally, so it is the card's own
+   * printed text restated. See `presentableModifiers`. */
+  printed?: boolean;
+  /* Bookkeeping that makes a composite entity and the cards it stands for act
+   * as one -- Cthulhu and its facets. See `presentableModifiers`. */
+  subsumed?: boolean;
 }
 
 const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
@@ -545,6 +604,37 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
     tag: JsonDecoder.literal('CannotSpendLastActions'),
     contents: JsonDecoder.number(),
   }, 'CannotSpendLastActions'),
+  ...NUMERIC_MODIFIER_TAGS.map((tag) =>
+    JsonDecoder.object<NumericModifier>(
+      { tag: JsonDecoder.literal(tag), contents: JsonDecoder.number() },
+      tag,
+    )
+  ),
+  ...NAMED_MODIFIER_TAGS.map((tag) =>
+    JsonDecoder.object<NamedModifier>(
+      { tag: JsonDecoder.literal(tag), contents: JsonDecoder.string() },
+      tag,
+    )
+  ),
+  ...MIN_MODIFIER_TAGS.map((tag) =>
+    JsonDecoder.object<MinModifier>(
+      {
+        tag: JsonDecoder.literal(tag),
+        contents: JsonDecoder.tuple([JsonDecoder.number(), JsonDecoder.number()], '[number, number]'),
+      },
+      tag,
+    )
+  ),
+  JsonDecoder.object<AdditionalActions>(
+    {
+      tag: JsonDecoder.literal('AdditionalActions'),
+      contents: JsonDecoder.tuple(
+        [JsonDecoder.string(), JsonDecoder.succeed(), JsonDecoder.number()],
+        '[string, Source, number]',
+      ),
+    },
+    'AdditionalActions',
+  ),
   JsonDecoder.object({
     tag: JsonDecoder.string()
   }, 'OtherModifier').map(({tag}) => ({ tag: 'OtherModifier', contents: tag})),
@@ -554,5 +644,9 @@ export const modifierDecoder = JsonDecoder.object<Modifier>({
   type: modifierTypeDecoder,
   source: sourceDecoder,
   card: v2Optional(cardDecoder),
-  effect: v2Optional(JsonDecoder.string())
+  effect: v2Optional(JsonDecoder.string()),
+  /* Absent from a server older than the field, which then shows everything --
+     the old behaviour, rather than hiding something by accident. */
+  printed: JsonDecoder.failover(false, JsonDecoder.boolean()),
+  subsumed: JsonDecoder.failover(false, JsonDecoder.boolean()),
 }, 'Modifier')

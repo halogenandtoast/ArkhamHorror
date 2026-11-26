@@ -17,10 +17,9 @@ serpentFromYoth = enemy SerpentFromYoth Cards.serpentFromYoth
 instance HasModifiersFor SerpentFromYoth where
   getModifiersFor (SerpentFromYoth a) = do
     vengeance <- getVengeanceInVictoryDisplay
-    modifySelf a
-      $ [AddKeyword Keyword.Retaliate | vengeance >= 1]
-      <> [AddKeyword Keyword.Hunter | vengeance >= 2]
-      <> [DamageTakenFrom AttackDamageEffect (-1) | vengeance >= 3]
+    modifySelfWhen a (vengeance >= 1) [AddKeyword Keyword.Retaliate]
+    modifySelfWhen a (vengeance >= 2) [AddKeyword Keyword.Hunter]
+    modifySelfWhen a (vengeance >= 3) [DamageTakenFrom AttackDamageEffect (-1)]
 
 instance RunMessage SerpentFromYoth where
   runMessage msg (SerpentFromYoth attrs) = SerpentFromYoth <$> runMessage msg attrs

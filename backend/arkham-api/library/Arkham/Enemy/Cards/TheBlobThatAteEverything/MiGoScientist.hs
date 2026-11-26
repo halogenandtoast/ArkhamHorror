@@ -22,7 +22,7 @@ miGoScientist = enemy MiGoScientist Cards.miGoScientist
 
 instance HasModifiersFor MiGoScientist where
   getModifiersFor (MiGoScientist a) =
-    whenM (remembered TheMiGoResearchWasStopped) $ modifySelf a [HealthModifier (-2), EnemyEvade (-2)]
+    modifySelfWhenM a (remembered TheMiGoResearchWasStopped) [HealthModifier (-2), EnemyEvade (-2)]
 
 instance HasAbilities MiGoScientist where
   getAbilities (MiGoScientist a) =

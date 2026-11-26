@@ -1,5 +1,6 @@
 import * as JsonDecoder from 'ts.data.json';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
+import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 
 export type AgendaSequence = {
   step: number
@@ -15,6 +16,12 @@ export type Agenda = {
   flipped: boolean;
   sequence: AgendaSequence
   tokens: Tokens;
+  modifiers: Modifier[];
+  /* The doom this agenda advances at, printed and after modifiers, resolved
+   * server-side ('agendaDoomThresholds'). Null for an agenda with no
+   * threshold, or from a server that predates the fields. */
+  printedDoomThreshold: number | null;
+  modifiedDoomThreshold: number | null;
 }
 
 export const agendaSequenceDecoder = JsonDecoder.object({
@@ -32,4 +39,7 @@ export const agendaDecoder = JsonDecoder.object<Agenda>({
   flipped: JsonDecoder.boolean(),
   sequence: agendaSequenceDecoder,
   tokens: tokensDecoder,
+  modifiers: JsonDecoder.failover([], JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
+  printedDoomThreshold: JsonDecoder.failover(null, JsonDecoder.nullable(JsonDecoder.number())),
+  modifiedDoomThreshold: JsonDecoder.failover(null, JsonDecoder.nullable(JsonDecoder.number())),
 }, 'Agenda');

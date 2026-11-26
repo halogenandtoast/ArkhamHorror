@@ -28,7 +28,8 @@ instance HasAbilities Azathoth where
 instance HasModifiersFor Azathoth where
   getModifiersFor (Azathoth attrs) = do
     noAgenda <- selectNone AnyAgenda
-    modifySelf attrs $ Omnipotent : [CountAllDoomInPlay | noAgenda]
+    modifySelf attrs [Omnipotent]
+    modifySelfWhen attrs noAgenda [CountAllDoomInPlay]
 
 instance RunMessage Azathoth where
   runMessage msg e@(Azathoth attrs) = runQueueT $ case msg of

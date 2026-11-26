@@ -5,7 +5,7 @@ module Arkham.Homebrew.AgesUnwound.Enemies.EternitysSentinel_193b (
 import Arkham.Ability
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Log (getHasRecord)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Homebrew.AgesUnwound.CardDefs.Enemies qualified as Cards
 import Arkham.Homebrew.AgesUnwound.Key
 import Arkham.Matcher
@@ -35,7 +35,7 @@ self-modifier.
 instance HasModifiersFor EternitysSentinel_193b where
   getModifiersFor (EternitysSentinel_193b a) = do
     slew <- getHasRecord TheInvestigatorsSlewTheirStrangeObserver
-    when slew $ modifySelf a [EnemyFight 2, DamageDealt 1, HorrorDealt 1]
+    modifySelfWhen a slew [EnemyFight 2, DamageDealt 1, HorrorDealt 1]
 
 -- | "__Forced__ - At the start of the enemy phase: Place 1 doom on the current agenda."
 instance HasAbilities EternitysSentinel_193b where

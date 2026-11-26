@@ -119,13 +119,47 @@ and an imported report has nobody to send unread badges to.
 
 The issues themselves are left alone. Nothing here writes to GitHub.
 
+## Triaging from the terminal
+
+`/herd-issues` fanned the board's Todo column out into one Claude agent per
+issue, each running `/investigate-issue`. The tracker's twins are
+`/herd-reports` and `/investigate-report`, and they do the same thing from the
+same three pieces:
+
+| | GitHub | tracker |
+| --- | --- | --- |
+| list a column | `.claude/scripts/board-issues.sh Todo` | `.claude/scripts/arkham-reports.sh list todo` |
+| spawn the agents | `.claude/scripts/herd-issues.sh` | `.claude/scripts/herd-reports.sh` |
+| investigate one | `/investigate-issue <url>` | `/investigate-report <N>` |
+
+`arkham-reports.sh` is the whole of what replaces `gh` here: `list`, `show`,
+`export`, plus `login` and `whoami`. It points at `$ARKHAM_API` (default
+`http://127.0.0.1:3002`) and reads a token from `$ARKHAM_TOKEN` or
+`~/.config/arkham/token`.
+
+Two things the GitHub path did not have to say:
+
+* **Every read needs a token.** The tracker is readable by anyone with an
+  account, not by anyone at all, so even listing a column is a 401 signed out.
+  There is no anonymous `gh issue view` equivalent and there should not be one.
+* **The token has to be an admin**, because `game.exportUrl` is only sent to an
+  admin and the export is the thing `arkham-replay` eats. `whoami` says which
+  you have; the commands check it before spawning anything.
+
+Against that, two things got easier. The export is a field on the report rather
+than a URL to find in the prose after the word `file:`, and the replies come
+back in the same call as the body, so an agent reads the whole conversation
+without a second request.
+
+Nothing in either command writes to the tracker. Replying and moving a report
+between columns stay manual, on the report page or the board.
+
 ## Still pointing at GitHub
 
-`.claude/commands/investigate-issue.md` and `herd-issues.md` read issues with
-`gh`. They still work for everything already on GitHub, and they do not know
-about reports filed since. Teaching them the tracker needs a decision about how
-an agent reads production — the report API is admin-authenticated, and there is
-no equivalent of an anonymous `gh issue view`.
+`.claude/commands/investigate-issue.md`, `herd-issues.md` and
+`.claude/scripts/board-issues.sh` still read issues with `gh`. They are left in
+place until the tracker is deployed and the import has run — until then GitHub
+is still where the open work is. Once it is not, all three can go.
 
 `POST /api/v1/arkham/games/#ArkhamGameId/file-bug` uploads an export and returns
 its URL. Nothing calls it any more: the report endpoint does that itself. Its 3e

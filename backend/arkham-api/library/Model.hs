@@ -28,4 +28,5 @@ import Entity.Arkham.StatsRefresh as X
 import Entity.Arkham.ThirdEditionTable as X
 import Entity.Notification as X
 import Entity.PasswordReset as X
+import Entity.Report as X
 import Entity.User as X

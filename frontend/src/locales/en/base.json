@@ -11,7 +11,8 @@
     "cards": "Cards",
     "myDecks": "Decks",
     "support": "Patreon",
-    "cardBuilder": "Custom Cards"
+    "cardBuilder": "Custom Cards",
+    "reports": "Reports"
   },
   "activeGames": "Active Games",
   "checkCampaignLog": "Check your Campaign Log.",
@@ -1168,6 +1169,7 @@
     "title": "Admin",
     "toggleSidebar": "Toggle sidebar",
     "dashboard": "Dashboard",
+    "board": "Board",
     "rooms": "Rooms",
     "archives": "Archives",
     "users": "Users",
@@ -2324,6 +2326,125 @@
     "ofWhichUncertain": "{n} stated as \u201c\u2026?\u201d",
     "resolutionN": "Resolution {n}",
     "nPlayerPlus": "{n}+ players"
+  },
+  "reports": {
+    "title": "Reports",
+    "file": "File a report",
+    "loading": "Loading\u2026",
+    "loadFailed": "That list could not be loaded. Try again in a moment.",
+    "notFound": "There is no report with that number.",
+    "none": "Nothing here. Either everything is fixed, or nothing has been filed yet.",
+    "by": "by {who}",
+    "byGithub": "by {who} on GitHub",
+    "byNobody": "filed on GitHub",
+    "blocking": "Blocks a game",
+    "blockingLong": "The reporter cannot carry on playing",
+    "hiddenFlag": "Hidden",
+    "news": "Something has happened since you last looked",
+    "duplicateOf": "Duplicate of #{number}",
+    "searchPlaceholder": "Search titles and descriptions",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {page} of {pages} \u2014 {total} reports",
+    "reply": "Reply",
+    "replyPlaceholder": "Anything else that would help: what you were doing, what you expected",
+    "replyFailed": "That reply could not be sent.",
+    "send": "Send",
+    "sending": "Sending\u2026",
+    "confirmDeleteReply": "Take this reply down?",
+    "kind": {
+      "bug": "Bug",
+      "feature": "Feature request"
+    },
+    "filter": {
+      "everything": "Everything",
+      "open": "Still open",
+      "closed": "Finished",
+      "all": "All"
+    },
+    "sort": {
+      "recent": "Latest activity",
+      "new": "Newest first"
+    },
+    "status": {
+      "new": "Filed",
+      "todo": "To do",
+      "in-progress": "In progress",
+      "blocked": "Blocked",
+      "ready-for-deploy": "Ready to deploy",
+      "pending-deploy": "Deploying",
+      "done": "Done",
+      "declined": "Not planned",
+      "duplicate": "Duplicate"
+    },
+    "game": {
+      "title": "The game it came from",
+      "name": "Game",
+      "step": "Reported at step",
+      "playedOn": "{steps} steps have been played since",
+      "gone": "Game",
+      "goneBody": "This game no longer exists.",
+      "open": "Open the game",
+      "export": "Download the export"
+    },
+    "log": {
+      "title": "Conversation",
+      "empty": "Nothing yet.",
+      "moved": "{who} moved this to {column}",
+      "somebody": "Someone",
+      "dev": "Dev",
+      "fromGithub": "GitHub"
+    },
+    "admin": {
+      "title": "Triage",
+      "column": "Column",
+      "kind": "Kind",
+      "duplicate": "Duplicate of",
+      "markDuplicate": "Mark",
+      "hide": "Hide from the list",
+      "unhide": "Put back on the list"
+    },
+    "board": {
+      "title": "Board",
+      "bugs": "Bugs",
+      "features": "Features",
+      "cardMenu": "What to do with this report",
+      "scrollLeft": "Earlier columns",
+      "scrollRight": "Later columns",
+      "showClosed": "Show finished columns",
+      "moveTo": "Move to",
+      "delete": "Delete this report",
+      "confirmDelete": "Delete report #{number} outright? Declining it keeps the answer where the reporter can read it.",
+      "emptyColumn": "Nothing here.",
+      "publicList": "Public list",
+      "import": "Import from GitHub",
+      "importing": "Importing\u2026",
+      "imported": "Imported {imported}, skipped {skipped} already here.",
+      "importFailed": "That file could not be imported."
+    },
+    "panel": {
+      "title": "Your reports",
+      "all": "All reports \u2192"
+    },
+    "new": {
+      "title": "File a report",
+      "kind": "What is this?",
+      "bugHint": "Something the site got wrong",
+      "featureHint": "Something you would like it to do",
+      "summary": "In one line",
+      "summaryPlaceholder": "What went wrong, briefly",
+      "whatHappened": "What happened",
+      "whatYouWant": "What you would like",
+      "bugPlaceholder": "What you did, what you expected, and what happened instead.",
+      "featurePlaceholder": "What you would like to be able to do, and why.",
+      "game": "Which game",
+      "noGame": "Not about a particular game",
+      "gameHint": "Attaching the game sends its last 30 steps along, which is usually the difference between a bug that can be fixed and one that cannot.",
+      "blocking": "I cannot carry on playing until this is fixed",
+      "submit": "File it",
+      "filing": "Filing\u2026",
+      "failed": "That report could not be filed."
+    }
   },
   "toasts": {
     "dismiss": "Dismiss"

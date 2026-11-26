@@ -729,6 +729,59 @@ CREATE SEQUENCE public.password_resets_user_id_seq
 ALTER SEQUENCE public.password_resets_user_id_seq OWNED BY public.password_resets.user_id;
 
 --
+-- Name: report_events; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.report_events (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    report_id uuid NOT NULL,
+    user_id bigint,
+    author_name text,
+    kind text NOT NULL,
+    body text,
+    status text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT valid_report_event_kind CHECK ((kind = ANY (ARRAY['comment'::text, 'status'::text])))
+);
+
+--
+-- Name: report_views; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.report_views (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    report_id uuid NOT NULL,
+    user_id bigint NOT NULL,
+    viewed_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+--
+-- Name: reports; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.reports (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    number integer NOT NULL,
+    kind text NOT NULL,
+    title text NOT NULL,
+    body text NOT NULL,
+    status text DEFAULT 'new'::text NOT NULL,
+    author_id bigint,
+    author_name text,
+    blocking boolean DEFAULT false NOT NULL,
+    duplicate_of_id uuid,
+    hidden boolean DEFAULT false NOT NULL,
+    game_id uuid,
+    game_name text,
+    game_step integer,
+    export_url text,
+    "position" double precision DEFAULT 0 NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT valid_report_kind CHECK ((kind = ANY (ARRAY['bug'::text, 'feature'::text])))
+);
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1030,6 +1083,27 @@ ALTER TABLE ONLY public.password_resets
     ADD CONSTRAINT password_resets_pkey PRIMARY KEY (id);
 
 --
+-- Name: report_events report_events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.report_events
+    ADD CONSTRAINT report_events_pkey PRIMARY KEY (id);
+
+--
+-- Name: report_views report_views_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.report_views
+    ADD CONSTRAINT report_views_pkey PRIMARY KEY (id);
+
+--
+-- Name: reports reports_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reports
+    ADD CONSTRAINT reports_pkey PRIMARY KEY (id);
+
+--
 -- Name: arkham_api_keys unique_api_key_digest; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1105,6 +1179,20 @@ ALTER TABLE ONLY public.arkham_published_card_set_likes
 
 ALTER TABLE ONLY public.arkham_published_card_set_versions
     ADD CONSTRAINT unique_published_card_set_version UNIQUE (published_card_set_id, version);
+
+--
+-- Name: reports unique_report_number; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reports
+    ADD CONSTRAINT unique_report_number UNIQUE (number);
+
+--
+-- Name: report_views unique_report_view; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.report_views
+    ADD CONSTRAINT unique_report_view UNIQUE (report_id, user_id);
 
 --
 -- Name: arkham_stats_refreshes unique_stats_refresh_name; Type: CONSTRAINT; Schema: public; Owner: -
@@ -1340,6 +1428,36 @@ CREATE INDEX idx_arkham_published_card_set_likes_set ON public.arkham_published_
 --
 
 CREATE INDEX idx_arkham_published_card_sets_updated ON public.arkham_published_card_sets USING btree (updated_at DESC);
+
+--
+-- Name: idx_report_events_report; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_report_events_report ON public.report_events USING btree (report_id, created_at);
+
+--
+-- Name: idx_report_views_user; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_report_views_user ON public.report_views USING btree (user_id);
+
+--
+-- Name: idx_reports_author; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_reports_author ON public.reports USING btree (author_id);
+
+--
+-- Name: idx_reports_game; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_reports_game ON public.reports USING btree (game_id);
+
+--
+-- Name: idx_reports_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_reports_status ON public.reports USING btree (status);
 
 --
 -- Name: log_entries_game_id; Type: INDEX; Schema: public; Owner: -
@@ -1647,6 +1765,55 @@ ALTER TABLE ONLY public.password_resets
     ADD CONSTRAINT password_resets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 --
+-- Name: report_events report_events_report_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.report_events
+    ADD CONSTRAINT report_events_report_id_fkey FOREIGN KEY (report_id) REFERENCES public.reports(id) ON DELETE CASCADE;
+
+--
+-- Name: report_events report_events_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.report_events
+    ADD CONSTRAINT report_events_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+--
+-- Name: report_views report_views_report_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.report_views
+    ADD CONSTRAINT report_views_report_id_fkey FOREIGN KEY (report_id) REFERENCES public.reports(id) ON DELETE CASCADE;
+
+--
+-- Name: report_views report_views_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.report_views
+    ADD CONSTRAINT report_views_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+--
+-- Name: reports reports_author_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reports
+    ADD CONSTRAINT reports_author_id_fkey FOREIGN KEY (author_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+--
+-- Name: reports reports_duplicate_of_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reports
+    ADD CONSTRAINT reports_duplicate_of_id_fkey FOREIGN KEY (duplicate_of_id) REFERENCES public.reports(id) ON DELETE SET NULL;
+
+--
+-- Name: reports reports_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reports
+    ADD CONSTRAINT reports_game_id_fkey FOREIGN KEY (game_id) REFERENCES public.arkham_games(id) ON DELETE SET NULL;
+
+--
 --
 
 
@@ -1707,3 +1874,4 @@ INSERT INTO public.arkham_schema_migrations (name) VALUES ('dump_only_keys_and_i
 INSERT INTO public.arkham_schema_migrations (name) VALUES ('add_primary_key_to_arkham_steps') ON CONFLICT DO NOTHING;
 INSERT INTO public.arkham_schema_migrations (name) VALUES ('add_login_tracking_to_users') ON CONFLICT DO NOTHING;
 INSERT INTO public.arkham_schema_migrations (name) VALUES ('add_category_to_notifications') ON CONFLICT DO NOTHING;
+INSERT INTO public.arkham_schema_migrations (name) VALUES ('create_reports') ON CONFLICT DO NOTHING;

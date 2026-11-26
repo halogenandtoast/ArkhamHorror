@@ -30,6 +30,28 @@ export default [
     meta: { requiresAuth: false, title: "Arkham Horror: About" },
   },
   {
+    // The tracker. Public: the first thing anyone does before filing is look
+    // for what they are about to report.
+    path: '/reports',
+    name: 'Reports',
+    component: () => import('@/views/Reports.vue'),
+    meta: { requiresAuth: true, title: "Arkham Horror: Reports" },
+  },
+  {
+    path: '/reports/new',
+    name: 'NewReport',
+    component: () => import('@/views/NewReport.vue'),
+    meta: { requiresAuth: true, title: "Arkham Horror: File a Report" },
+  },
+  {
+    // Keyed by the report's public number, which is the one in every link that
+    // was ever written down -- including the GitHub issues it continues.
+    path: '/reports/:number',
+    name: 'Report',
+    component: () => import('@/views/Report.vue'),
+    meta: { requiresAuth: true, title: "Arkham Horror: Report" },
+  },
+  {
     path: '/admin',
     component: () => import('@/arkham/components/Admin/UI.vue'),
     meta: { requiresAuth: true, requiresAdmin: true },
@@ -84,6 +106,13 @@ export default [
         name: 'AdminSubmissions',
         component: () => import('@/views/AdminSubmissions.vue'),
         meta: { requiresAuth: true, requiresAdmin: true, title: "Arkham Horror: Submissions" },
+      },
+      {
+        // The tracker's board, which replaced the GitHub project.
+        path: 'board/:kind?',
+        name: 'AdminBoard',
+        component: () => import('@/views/AdminBoard.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true, title: "Arkham Horror: Board" },
       },
     ],
   },

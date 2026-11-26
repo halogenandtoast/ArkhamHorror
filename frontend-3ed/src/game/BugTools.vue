@@ -2,12 +2,15 @@
 import { ref } from 'vue'
 import * as api from '@/api'
 import { useGame } from '@/game/context'
+import { mainSiteUrl } from '@/session'
 
 const ctx = useGame()
 const dialog = ref<HTMLDialogElement | null>(null)
 const title = ref('')
 const description = ref('')
 const busy = ref(false)
+const filed = ref<number | null>(null)
+const reportUrl = (number: number) => `${mainSiteUrl}/#/reports/${number}`
 
 function download(data: unknown) {
   const url = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' }))
@@ -30,16 +33,15 @@ async function file() {
   busy.value = true
   try {
     const { url } = await api.fileBug(ctx.tableId)
-    // the title says which game, since the issue tracker is shared with Arkham
-    const body = encodeURIComponent(
-      `Arkham Horror 3e\n\n${description.value}\n\ntable: ${window.location.href}\nfile: ${url}`,
-    )
-    window.open(
-      `https://github.com/halogenandtoast/ArkhamHorror/issues/new?labels=bug&title=${encodeURIComponent(`[3e] ${title.value}`)}&body=${body}&assignee=halogenandtoast&projects=halogenandtoast/2`,
-      '_blank',
-    )
+    // the title says which game, since the tracker is shared with Arkham
+    const { report } = await api.createReport({
+      kind: 'bug',
+      title: `[3e] ${title.value}`,
+      body: `Arkham Horror 3e\n\n${description.value}\n\ntable: ${window.location.href}\nfile: ${url}`,
+    })
     title.value = ''
     description.value = ''
+    filed.value = report.number
     dialog.value?.close()
   } catch (e) {
     ctx.error.value = api.errorText(e)
@@ -57,8 +59,8 @@ async function file() {
   <dialog ref="dialog" class="bug-dialog">
     <form @submit.prevent="file">
       <h2>File a bug</h2>
-      <p>The game state is uploaded and linked from the issue, so the bug can be reproduced.</p>
-      <p class="waiting">A GitHub account is needed to open the issue.</p>
+      <p>The game state is uploaded with the report, so the bug can be reproduced.</p>
+      <p class="waiting">Replies come back on the tracker on the main site.</p>
       <input v-model="title" required placeholder="What went wrong, in a line" />
       <textarea v-model="description" required rows="5" placeholder="What you did, and what you expected"></textarea>
       <div class="bug-buttons">
@@ -66,5 +68,15 @@ async function file() {
         <button type="button" @click="dialog?.close()">Cancel</button>
       </div>
     </form>
+  </dialog>
+  <dialog :open="filed !== null" class="bug-dialog">
+    <h2>Bug filed</h2>
+    <p>Filed as report #{{ filed }}.</p>
+    <div class="bug-buttons">
+      <a v-if="filed !== null" class="button-like primary" :href="reportUrl(filed)" target="_blank" rel="noreferrer">
+        Open the report
+      </a>
+      <button type="button" @click="filed = null">Close</button>
+    </div>
   </dialog>
 </template>

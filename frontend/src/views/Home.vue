@@ -12,6 +12,8 @@ import type { AppNotification } from '@/arkham/api';
 import GameRow from '@/arkham/components/GameRow.vue';
 import EventRow from '@/arkham/components/EventRow.vue';
 import AnnouncementFeed from '@/arkham/components/AnnouncementFeed.vue';
+import MyReportsPanel from '@/components/MyReportsPanel.vue';
+import { useReportsStore } from '@/stores/reports';
 import ImportGame from '@/arkham/components/ImportGame.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
 import SegmentedToggle from '@/components/SegmentedToggle.vue';
@@ -28,10 +30,13 @@ const brokenGames: Ref<BrokenGameDetails[]> = ref([])
 const events: Ref<EventListEntry[]> = ref([])
 const notifications: Ref<AppNotification[]> = ref([])
 
-/* Whether the right-hand column exists at all. Announcements are the only thing
- * in it today, so with none left the games list takes the whole width back
- * rather than leaving an empty gutter; a second panel ORs into this. */
-const hasFeed = computed(() => notifications.value.length > 0)
+/* The reports this account follows, for the feed's second panel. Fetched and
+ * polled by the store, which the nav badge reads too. */
+const reports = useReportsStore()
+
+/* Whether the right-hand column exists at all: with nothing to put in it the
+ * games list takes the whole width back rather than leaving an empty gutter. */
+const hasFeed = computed(() => notifications.value.length > 0 || reports.reports.length > 0)
 
 const activeGames = computed(() => games.value.filter(g => g.gameState.tag !== 'IsOver'))
 const finishedGames = computed(() => games.value.filter(g => g.gameState.tag === 'IsOver'))
@@ -158,6 +163,7 @@ const toggleImportGame = () => {
            reader hears the news first, whichever column it is drawn in. -->
       <aside v-if="hasFeed" class="home-feed" :aria-label="$t('home.feedLabel')">
         <AnnouncementFeed v-if="notifications.length > 0" :notifications="notifications" />
+        <MyReportsPanel v-if="reports.reports.length > 0" :reports="reports.reports" />
       </aside>
 
       <div class="home-main">

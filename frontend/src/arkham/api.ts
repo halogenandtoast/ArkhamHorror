@@ -123,6 +123,212 @@ export const deleteNotification = async (id: number): Promise<void> => {
   await api.delete(`admin/notifications/${id}`)
 }
 
+/* ---------------------------------------------------------------- reports ---
+
+   The tracker: bugs and feature requests, which used to be GitHub issues on a
+   GitHub project board. A report is public and has a public number, the number
+   continues the issue numbering, and everything about one -- replies and moves
+   between board columns alike -- is a single ordered log.
+
+   `status` is a board column. The server sends the vocabulary with every list
+   rather than the client keeping a copy that drifts from it. */
+
+export type ReportKind = 'bug' | 'feature'
+
+/* The six open columns and the three endings. Mirrors `reportStatuses` on the
+ * server; a status this does not know still renders, as its own raw name. */
+export type ReportStatus =
+  | 'new'
+  | 'todo'
+  | 'in-progress'
+  | 'blocked'
+  | 'ready-for-deploy'
+  | 'pending-deploy'
+  | 'done'
+  | 'declined'
+  | 'duplicate'
+
+export const OPEN_REPORT_STATUSES: ReportStatus[] = [
+  'new', 'todo', 'in-progress', 'blocked', 'ready-for-deploy', 'pending-deploy',
+]
+
+/* The game a report was filed from, as far as it can still be told. `step` is
+ * where the game was at filing and `currentStep` where it is now -- a reporter
+ * who played on has given the fix a moving target. `id` and `currentStep` are
+ * null once the game is gone; `exportUrl` is only sent to an admin. */
+export interface ReportGame {
+  id: string | null
+  name: string | null
+  step: number | null
+  currentStep: number | null
+  exportUrl: string | null
+}
+
+export interface Report {
+  id: string
+  number: number
+  kind: ReportKind
+  title: string
+  status: ReportStatus
+  /* The account's name, or the recorded one on an imported report; null when
+   * neither is left. `authorAccount` says which of the two it is. */
+  author: string | null
+  authorAccount: boolean
+  blocking: boolean
+  hidden: boolean
+  duplicateOf: number | null
+  comments: number
+  /* Something has happened since you last looked -- only ever true on a report
+   * you follow, which is one you filed or replied to. */
+  unread: boolean
+  following: boolean
+  game: ReportGame | null
+  createdAt: string
+  updatedAt: string
+}
+
+/* One entry of the communication log: a reply (`body`) or a move between
+ * columns (`status`). `admin` marks the replies from whoever is fixing it. */
+export interface ReportLogEntry {
+  id: string
+  kind: 'comment' | 'status'
+  author: string | null
+  authorAccount: boolean
+  admin: boolean
+  body: string | null
+  status: ReportStatus | null
+  createdAt: string
+}
+
+export interface ReportDetail {
+  report: Report
+  body: string
+  log: ReportLogEntry[]
+}
+
+export interface ReportsPage {
+  reports: Report[]
+  total: number
+  page: number
+  pageSize: number
+  statuses: ReportStatus[]
+  kinds: ReportKind[]
+}
+
+export interface ReportFilters {
+  kind?: ReportKind
+  /* A single column, `open` (the default), `closed`, or `all`. */
+  status?: ReportStatus | 'open' | 'closed' | 'all'
+  q?: string
+  sort?: 'recent' | 'new'
+  page?: number
+}
+
+export const fetchReports = async (filters: ReportFilters = {}): Promise<ReportsPage> => {
+  const { data } = await api.get('reports', { params: filters })
+  return data
+}
+
+/* The reports you follow, newest activity first, closed ones included: "your
+ * bug is fixed" only reaches someone if it stays on their list. Drives the nav
+ * badge and the home-page panel. */
+export const fetchMyReports = async (): Promise<Report[]> => {
+  const { data } = await api.get('reports/mine')
+  return data
+}
+
+export const fetchReport = async (number: number): Promise<ReportDetail> => {
+  const { data } = await api.get(`reports/${number}`)
+  return data
+}
+
+/* File one. The server takes the game export itself when `gameId` is given --
+ * it is the part of a report nobody can retype, and a second call to fetch it
+ * is a call that can fail on its own. Only a game you have a seat at. */
+export const createReport = async (report: {
+  kind: ReportKind
+  title: string
+  body: string
+  blocking?: boolean
+  gameId?: string
+}): Promise<ReportDetail> => {
+  const { data } = await api.post('reports', report)
+  return data
+}
+
+export const commentOnReport = async (number: number, body: string): Promise<ReportDetail> => {
+  const { data } = await api.post(`reports/${number}/comments`, { body })
+  return data
+}
+
+/* Clear the unread mark. Separate from reading the page: anyone can open a
+ * report, and only the people it is addressed to have a badge to clear. */
+export const markReportSeen = async (number: number): Promise<void> => {
+  await api.post(`reports/${number}/seen`)
+}
+
+/* ---------------------------------------------------------- admin: board ---
+
+   The board that replaced the GitHub project. Every open card comes in one
+   read, plus the last of the finished ones -- the endings only ever grow, and
+   nobody scrolls them. */
+
+export interface ReportBoard {
+  reports: Report[]
+  statuses: ReportStatus[]
+  openStatuses: ReportStatus[]
+}
+
+export const fetchReportBoard = async (): Promise<ReportBoard> => {
+  const { data } = await api.get('admin/reports')
+  return data
+}
+
+/* Only what is sent is written. `duplicateOf` is a report number, and null is a
+ * value rather than an omission: it takes the link off. */
+export const updateReport = async (
+  id: string,
+  changes: {
+    status?: ReportStatus
+    kind?: ReportKind
+    duplicateOf?: number | null
+    hidden?: boolean
+    blocking?: boolean
+  },
+): Promise<Report> => {
+  const { data } = await api.put(`admin/reports/${id}`, changes)
+  return data
+}
+
+/* A whole column in its new order, which is also how a card moves between two:
+ * every id named here lands in `status`. Positions are rewritten 1..n, so the
+ * same list sent twice is the same column. */
+export const orderReports = async (status: ReportStatus, ids: string[]): Promise<void> => {
+  await api.put('admin/reports/order', { status, ids })
+}
+
+/* For spam. A report that was read and turned down is `declined`, which keeps
+ * the answer where the person who asked it can find it. */
+export const deleteReport = async (id: string): Promise<void> => {
+  await api.delete(`admin/reports/${id}`)
+}
+
+/* Take a reply down. A status change cannot be deleted: it is a record of
+ * something that happened. */
+export const deleteReportComment = async (id: string): Promise<void> => {
+  await api.delete(`admin/report-events/${id}`)
+}
+
+/* The one-off GitHub migration. `scripts/export-github-issues.py` writes the
+ * payload; this hands it over. Idempotent by issue number, so a half-finished
+ * import is fixed by running it again. */
+export const importGithubIssues = async (
+  payload: unknown,
+): Promise<{ imported: number[]; skipped: number }> => {
+  const { data } = await api.post('admin/reports/import', payload)
+  return data
+}
+
 /* ----------------------------------------------------------- admin: users ---
 
    Feature grants, for rolling one out a few accounts at a time. With no query
@@ -1344,9 +1550,6 @@ export const deckErrorMessage = (e: unknown): string | null => {
   const msg = (e as { response?: { data?: { errorMsg?: string } } })?.response?.data?.errorMsg
   return typeof msg === 'string' && msg.length > 0 ? msg : null
 }
-
-export const fileBug = (gameId: string): Promise<{ data: string }> =>
-  api.post(`arkham/games/${gameId}/file-bug`)
 
 export const upgradeDeck = (gameId: string, investigatorId: string, deckUrl?: string, deckList?: ArkhamDbDecklist | null): Promise<void> =>
   api.put(`arkham/games/${gameId}/decks`, { deckUrl, investigatorId, deckList });

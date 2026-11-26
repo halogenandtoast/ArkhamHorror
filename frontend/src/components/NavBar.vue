@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useRoute, useRouter } from 'vue-router'
 import type { User } from '@/types'
@@ -7,6 +7,7 @@ import { OnClickOutside } from '@vueuse/components'
 import { storeToRefs } from 'pinia'
 import { useSettings } from '@/stores/settings'
 import { useSiteSettingsStore } from '@/stores/site_settings'
+import { useReportsStore } from '@/stores/reports'
 
 const expanded = ref(false);
 const mobileOpen = ref(false);
@@ -17,6 +18,16 @@ const currentUser = computed<User | null>(() => store.currentUser)
 const { customCardsEnabled } = storeToRefs(useSettings())
 /* Hidden on an invite-only server rather than left to fail on submit. */
 const { inviteOnly } = storeToRefs(useSiteSettingsStore())
+
+/* The tracker's badge. Polled by the store, which signs on and off with the
+ * account -- see stores/reports.ts. */
+const reports = useReportsStore()
+watch(
+  () => Boolean(store.currentUser),
+  (signedIn) => reports.watch(signedIn),
+  { immediate: true },
+)
+const reportNews = computed(() => reports.unread.length)
 
 /* The pages that are halves of one section get a bar of their own under the main
  * one, rather than each claiming a top-level entry. Rendered here so it sits with
@@ -77,6 +88,10 @@ async function logout() {
         class="nav-link"
         :class="{ 'router-link-active': inCustomCards }"
       >{{$t('nav.cardBuilder')}}</router-link>
+      <router-link v-if="currentUser" to="/reports" class="nav-link">
+        {{$t('nav.reports')}}
+        <span v-if="reportNews" class="news" :title="$t('reports.news')">{{ reportNews }}</span>
+      </router-link>
       <router-link v-if="currentUser" to="/about" class="nav-link">{{$t('nav.about')}}</router-link>
       <router-link v-if="currentUser" to="/about?support" class="nav-link">{{$t('nav.support')}}</router-link>
       <router-link v-if="currentUser && currentUser.admin" to="/admin" class="nav-link">{{$t('nav.admin')}}</router-link>
@@ -106,6 +121,10 @@ async function logout() {
       <router-link to="/cards">{{$t('nav.cards')}}</router-link>
       <router-link to="/achievements">{{$t('nav.achievements')}}</router-link>
       <router-link v-if="customCardsEnabled" to="/card-builder">{{$t('nav.cardBuilder')}}</router-link>
+      <router-link to="/reports">
+        {{$t('nav.reports')}}
+        <span v-if="reportNews" class="news">{{ reportNews }}</span>
+      </router-link>
       <router-link to="/about">{{$t('nav.about')}}</router-link>
       <router-link to="/about?support">{{$t('nav.support')}}</router-link>
       <router-link v-if="currentUser && currentUser.admin" to="/admin">{{$t('nav.admin')}}</router-link>
@@ -363,5 +382,20 @@ async function logout() {
     &:last-child { border-bottom: none; }
     &:hover { background: rgba(255,255,255,0.04); color: var(--spooky-green); }
   }
+}
+.news {
+  background: var(--survivor);
+  border-radius: 999px;
+  color: var(--text);
+  display: inline-block;
+  font-size: 0.7em;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: 1;
+  margin-left: 4px;
+  min-width: 1.5em;
+  padding: 3px 5px;
+  text-align: center;
+  vertical-align: middle;
 }
 </style>

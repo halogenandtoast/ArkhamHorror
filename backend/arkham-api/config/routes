@@ -23,6 +23,13 @@
     /site-settings ApiV1SiteSettingsR GET
     /maintenance ApiV1MaintenanceR GET POST DELETE
     /notifications ApiV1NotificationsR GET
+    /reports ApiV1ReportsP:
+      / ApiV1ReportsR GET POST
+      !/mine ApiV1MyReportsR GET
+      /#Int ApiV1ReportP:
+        / ApiV1ReportR GET
+        /comments ApiV1ReportCommentsR POST
+        /seen ApiV1ReportSeenR POST
     /3ed ApiV1ThirdEditionP:
       /catalog ApiV1ThirdEditionCatalogR GET
       /tables ApiV1ThirdEditionTablesR GET POST
@@ -148,6 +155,12 @@
       /notifications ApiV1AdminNotificationsP:
         / ApiV1AdminNotificationsR GET POST
         /#NotificationId ApiV1AdminNotificationR GET PUT DELETE
+      /reports ApiV1AdminReportsP:
+        / ApiV1AdminReportsR GET
+        !/import ApiV1AdminReportsImportR POST
+        !/order ApiV1AdminReportsOrderR PUT
+        /#ReportId ApiV1AdminReportR PUT DELETE
+      /report-events/#ReportEventId ApiV1AdminReportEventR DELETE
       /card-set-submissions ApiV1AdminCardSetSubmissionsP:
         / ApiV1AdminCardSetSubmissionsR GET
         /#ArkhamCardSetSubmissionId ApiV1AdminCardSetSubmissionP:

@@ -9526,6 +9526,7 @@ library
       Base.Api.Handler.Notifications
       Base.Api.Handler.PasswordReset
       Base.Api.Handler.Registration
+      Base.Api.Handler.Reports
       Base.Api.Handler.Settings
       Base.Mail
       Base.Util
@@ -9555,6 +9556,7 @@ library
       Entity.Arkham.ThirdEditionTable
       Entity.Notification
       Entity.PasswordReset
+      Entity.Report
       Entity.User
       Foundation
       GHCI

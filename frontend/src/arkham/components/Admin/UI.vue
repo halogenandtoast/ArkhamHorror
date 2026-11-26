@@ -22,6 +22,7 @@ const sections = [
   { key: 'stats', path: '/admin/stats', label: 'admin.gameStats', icon: 'chart-simple' },
   { key: 'notifications', path: '/admin/notifications', label: 'admin.notifications', icon: 'bullhorn' },
   { key: 'submissions', path: '/admin/submissions', label: 'admin.submissions', icon: 'clipboard-check' },
+  { key: 'board', path: '/admin/board', label: 'admin.board', icon: 'table-columns' },
   { key: 'users', path: '/admin/users', label: 'admin.users', icon: 'user-gear' },
 ] as const
 
@@ -31,6 +32,7 @@ const byRouteName: Record<string, string> = {
   AdminGameStats: 'stats',
   AdminNotifications: 'notifications',
   AdminSubmissions: 'submissions',
+  AdminBoard: 'board',
   AdminUsers: 'users',
 }
 
@@ -110,7 +112,7 @@ async function navigateTo(path: string) {
         <div class="admin-scroll">
           <RouterView v-slot="{ Component }">
             <Transition name="admin-route" mode="out-in">
-              <main class="admin-content" :key="route.fullPath">
+              <main class="admin-content" :class="{ fills: selected === 'board' }" :key="selected">
                 <Suspense>
                   <component :is="Component" />
                   <template #fallback>
@@ -148,7 +150,11 @@ async function navigateTo(path: string) {
 }
 
 /* Rail then page, both full height. The rail column is a fixed width so the
-   content does not change width between sections either. */
+   content does not change width between sections either.
+
+   The admin takes the whole window rather than the site's reading column: none
+   of it is prose. It is tables, lists and a board, and all three are worth more
+   the more of them fits on screen at once. */
 .admin-layout {
   display: grid;
   gap: 20px;
@@ -158,7 +164,7 @@ async function navigateTo(path: string) {
   padding-top: 0;
   padding-bottom: 0;
   position: relative;
-  width: min(1240px, calc(100vw - 32px));
+  width: calc(100vw - 32px);
 }
 
 /* The rail is the one thing on this page that does not change between sections,
@@ -299,6 +305,13 @@ h1 {
   flex-direction: column;
   gap: 16px;
   view-transition-name: admin-content;
+}
+
+/* A section that is a board rather than a document: it fills the scroll area
+   exactly and scrolls inside itself, so the page behind it never does. */
+.admin-content.fills {
+  height: 100%;
+  min-height: 0;
 }
 
 .admin-loading {

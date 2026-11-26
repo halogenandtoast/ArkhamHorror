@@ -69,6 +69,12 @@ export const undo = (id: string) => request<TableView>('POST', `/3ed/tables/${id
 // the whole table, engine state included: what a debug file holds and a filed bug uploads
 export const exportTable = (id: string) => request<unknown>('GET', `/3ed/tables/${id}/export`)
 export const fileBug = (id: string) => request<{ url: string }>('POST', `/3ed/tables/${id}/file-bug`, {})
+
+// The tracker lives on the main site and is shared with Arkham, so a report
+// filed here carries the table and its export in the text rather than a game
+// reference: `gameId` on a report is an Arkham game, and a 3e table is not one.
+export const createReport = (report: { kind: string; title: string; body: string; blocking?: boolean }) =>
+  request<{ report: { number: number } }>('POST', '/reports', report)
 export const importTable = (table: unknown) => request<TableView>('POST', '/3ed/tables/import', table)
 
 // same origin as the page, http(s) -> ws(s), and `?token=` auth (the GET upgrades)

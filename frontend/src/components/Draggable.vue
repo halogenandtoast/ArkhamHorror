@@ -493,8 +493,12 @@ function moveUp() {
     max-width: 92vw;
   }
 
+  /* Site UI rather than a game prompt: a settings sheet, the shortcut list and
+     the bug form are pages of the site that happen to be open over a game, so
+     they take the site's solid chrome instead of the translucent green one. */
   &:has(> .content > .settings),
-  &:has(> .content > .shortcuts-modal) {
+  &:has(> .content > .shortcuts-modal),
+  &:has(> .content > .bug-form) {
     width: min(640px, 92vw);
     max-width: 92vw;
     background: var(--background);

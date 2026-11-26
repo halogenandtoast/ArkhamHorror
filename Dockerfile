@@ -186,7 +186,7 @@ FROM ubuntu:22.04 AS app
 ENV LC_ALL=C.UTF-8
 
 RUN apt-get update && \
-  apt-get install -y --assume-yes --no-install-recommends libpq-dev ca-certificates nginx curl cron python3 && \
+  apt-get install -y --assume-yes --no-install-recommends libpq-dev ca-certificates nginx curl python3 && \
   rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p \

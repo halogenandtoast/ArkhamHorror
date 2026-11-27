@@ -55,70 +55,72 @@ const submit = async () => {
 </script>
 
 <template>
-  <div class="new-report page-content">
-    <RouterLink class="back" :to="{ name: 'Reports' }">← {{ $t('reports.title') }}</RouterLink>
-    <h1>{{ $t('reports.new.title') }}</h1>
+  <div class="page-container">
+    <div class="new-report page-content">
+      <RouterLink class="back" :to="{ name: 'Reports' }">← {{ $t('reports.title') }}</RouterLink>
+      <h1>{{ $t('reports.new.title') }}</h1>
 
-    <form class="box" @submit.prevent="submit">
-      <fieldset class="kinds">
-        <legend>{{ $t('reports.new.kind') }}</legend>
-        <label :class="{ on: kind === 'bug' }">
-          <input v-model="kind" type="radio" value="bug" />
-          <font-awesome-icon icon="bug" />
-          <span>
-            <strong>{{ $t('reports.kind.bug') }}</strong>
-            <em>{{ $t('reports.new.bugHint') }}</em>
-          </span>
+      <form class="box" @submit.prevent="submit">
+        <fieldset class="kinds">
+          <legend>{{ $t('reports.new.kind') }}</legend>
+          <label :class="{ on: kind === 'bug' }">
+            <input v-model="kind" type="radio" value="bug" />
+            <font-awesome-icon icon="bug" />
+            <span>
+              <strong>{{ $t('reports.kind.bug') }}</strong>
+              <em>{{ $t('reports.new.bugHint') }}</em>
+            </span>
+          </label>
+          <label :class="{ on: kind === 'feature' }">
+            <input v-model="kind" type="radio" value="feature" />
+            <font-awesome-icon icon="lightbulb" />
+            <span>
+              <strong>{{ $t('reports.kind.feature') }}</strong>
+              <em>{{ $t('reports.new.featureHint') }}</em>
+            </span>
+          </label>
+        </fieldset>
+
+        <label class="field">
+          <span>{{ $t('reports.new.summary') }}</span>
+          <input v-model="title" required maxlength="200" :placeholder="$t('reports.new.summaryPlaceholder')" />
         </label>
-        <label :class="{ on: kind === 'feature' }">
-          <input v-model="kind" type="radio" value="feature" />
-          <font-awesome-icon icon="lightbulb" />
-          <span>
-            <strong>{{ $t('reports.kind.feature') }}</strong>
-            <em>{{ $t('reports.new.featureHint') }}</em>
-          </span>
+
+        <label class="field">
+          <span>{{ kind === 'bug' ? $t('reports.new.whatHappened') : $t('reports.new.whatYouWant') }}</span>
+          <textarea
+            v-model="body"
+            required
+            rows="8"
+            :placeholder="kind === 'bug' ? $t('reports.new.bugPlaceholder') : $t('reports.new.featurePlaceholder')"
+          ></textarea>
         </label>
-      </fieldset>
 
-      <label class="field">
-        <span>{{ $t('reports.new.summary') }}</span>
-        <input v-model="title" required maxlength="200" :placeholder="$t('reports.new.summaryPlaceholder')" />
-      </label>
+        <label v-if="playable.length > 0" class="field">
+          <span>{{ $t('reports.new.game') }}</span>
+          <select v-model="gameId">
+            <option value="">{{ $t('reports.new.noGame') }}</option>
+            <option v-for="entry in playable" :key="entry.id" :value="entry.id">
+              {{ entry.name }}
+            </option>
+          </select>
+          <em>{{ $t('reports.new.gameHint') }}</em>
+        </label>
 
-      <label class="field">
-        <span>{{ kind === 'bug' ? $t('reports.new.whatHappened') : $t('reports.new.whatYouWant') }}</span>
-        <textarea
-          v-model="body"
-          required
-          rows="8"
-          :placeholder="kind === 'bug' ? $t('reports.new.bugPlaceholder') : $t('reports.new.featurePlaceholder')"
-        ></textarea>
-      </label>
+        <label v-if="kind === 'bug'" class="check">
+          <input v-model="blocking" type="checkbox" />
+          {{ $t('reports.new.blocking') }}
+        </label>
 
-      <label v-if="playable.length > 0" class="field">
-        <span>{{ $t('reports.new.game') }}</span>
-        <select v-model="gameId">
-          <option value="">{{ $t('reports.new.noGame') }}</option>
-          <option v-for="entry in playable" :key="entry.id" :value="entry.id">
-            {{ entry.name }}
-          </option>
-        </select>
-        <em>{{ $t('reports.new.gameHint') }}</em>
-      </label>
+        <p v-if="failed" class="error">{{ failed }}</p>
 
-      <label v-if="kind === 'bug'" class="check">
-        <input v-model="blocking" type="checkbox" />
-        {{ $t('reports.new.blocking') }}
-      </label>
-
-      <p v-if="failed" class="error">{{ failed }}</p>
-
-      <div class="buttons">
-        <button type="submit" :disabled="sending || !title.trim() || !body.trim()">
-          {{ sending ? $t('reports.new.filing') : $t('reports.new.submit') }}
-        </button>
-      </div>
-    </form>
+        <div class="buttons">
+          <button type="submit" :disabled="sending || !title.trim() || !body.trim()">
+            {{ sending ? $t('reports.new.filing') : $t('reports.new.submit') }}
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 

@@ -116,180 +116,182 @@ const stepsSince = computed(() => {
 </script>
 
 <template>
-  <div class="report page-content">
-    <RouterLink class="back" :to="{ name: 'Reports' }">← {{ $t('reports.title') }}</RouterLink>
+  <div class="page-container">
+    <div class="report page-content">
+      <RouterLink class="back" :to="{ name: 'Reports' }">← {{ $t('reports.title') }}</RouterLink>
 
-    <p v-if="failed" class="empty">{{ $t('reports.notFound') }}</p>
+      <p v-if="failed" class="empty">{{ $t('reports.notFound') }}</p>
 
-    <template v-if="detail">
-      <header class="masthead">
-        <font-awesome-icon
-          class="kind"
-          :class="detail.report.kind"
-          :icon="detail.report.kind === 'feature' ? 'lightbulb' : 'bug'"
-          :title="$t(`reports.kind.${detail.report.kind}`)"
-        />
-        <h1>{{ detail.report.title }}</h1>
-        <ReportStatusTag :status="detail.report.status" />
-      </header>
+      <template v-if="detail">
+        <header class="masthead">
+          <font-awesome-icon
+            class="kind"
+            :class="detail.report.kind"
+            :icon="detail.report.kind === 'feature' ? 'lightbulb' : 'bug'"
+            :title="$t(`reports.kind.${detail.report.kind}`)"
+          />
+          <h1>{{ detail.report.title }}</h1>
+          <ReportStatusTag :status="detail.report.status" />
+        </header>
 
-      <p class="meta">
-        <span class="number">#{{ detail.report.number }}</span>
-        <span v-if="!detail.report.author">{{ $t('reports.byNobody') }}</span>
-        <span v-else-if="detail.report.authorAccount">{{ $t('reports.by', { who: detail.report.author }) }}</span>
-        <span v-else>{{ $t('reports.byGithub', { who: detail.report.author }) }}</span>
-        <span>{{ when(detail.report.createdAt) }}</span>
-        <span v-if="detail.report.blocking" class="blocking">
-          <font-awesome-icon icon="ban" /> {{ $t('reports.blockingLong') }}
-        </span>
-        <span v-if="detail.report.hidden" class="hidden-flag">{{ $t('reports.hiddenFlag') }}</span>
-        <RouterLink
-          v-if="detail.report.duplicateOf"
-          :to="{ name: 'Report', params: { number: detail.report.duplicateOf } }"
-        >{{ $t('reports.duplicateOf', { number: detail.report.duplicateOf }) }}</RouterLink>
-      </p>
+        <p class="meta">
+          <span class="number">#{{ detail.report.number }}</span>
+          <span v-if="!detail.report.author">{{ $t('reports.byNobody') }}</span>
+          <span v-else-if="detail.report.authorAccount">{{ $t('reports.by', { who: detail.report.author }) }}</span>
+          <span v-else>{{ $t('reports.byGithub', { who: detail.report.author }) }}</span>
+          <span>{{ when(detail.report.createdAt) }}</span>
+          <span v-if="detail.report.blocking" class="blocking">
+            <font-awesome-icon icon="ban" /> {{ $t('reports.blockingLong') }}
+          </span>
+          <span v-if="detail.report.hidden" class="hidden-flag">{{ $t('reports.hiddenFlag') }}</span>
+          <RouterLink
+            v-if="detail.report.duplicateOf"
+            :to="{ name: 'Report', params: { number: detail.report.duplicateOf } }"
+          >{{ $t('reports.duplicateOf', { number: detail.report.duplicateOf }) }}</RouterLink>
+        </p>
 
-      <div class="main">
-        <article class="body box">
-          <ReportText :text="detail.body" />
-        </article>
+        <div class="main">
+          <article class="body box">
+            <ReportText :text="detail.body" />
+          </article>
 
-        <!-- No heading over an empty thread: "Conversation / nothing yet" is a
-             sentence about nothing, and the reply box below is the invitation. -->
-        <section v-if="detail.log.length > 0" class="log">
-          <h2>{{ $t('reports.log.title') }}</h2>
-          <ol>
-            <li v-for="entry in detail.log" :key="entry.id" :class="entry.kind">
-              <template v-if="entry.kind === 'status'">
-                <font-awesome-icon icon="arrow-right-arrow-left" />
-                <span class="moved">
-                  <i18n-t keypath="reports.log.moved" tag="span" scope="global">
-                    <template #who>{{ entry.author ?? $t('reports.log.somebody') }}</template>
-                    <template #column>
-                      <ReportStatusTag v-if="entry.status" :status="entry.status" small />
-                    </template>
-                  </i18n-t>
-                </span>
-                <time :datetime="entry.createdAt">{{ when(entry.createdAt) }}</time>
-              </template>
-              <template v-else>
-                <header>
-                  <strong :class="{ dev: entry.admin }">
-                    {{ entry.author ?? $t('reports.log.somebody') }}
-                    <span v-if="entry.admin" class="badge">{{ $t('reports.log.dev') }}</span>
-                    <span v-else-if="entry.author && !entry.authorAccount" class="badge from">
-                      {{ $t('reports.log.fromGithub') }}
-                    </span>
-                  </strong>
+          <!-- No heading over an empty thread: "Conversation / nothing yet" is a
+               sentence about nothing, and the reply box below is the invitation. -->
+          <section v-if="detail.log.length > 0" class="log">
+            <h2>{{ $t('reports.log.title') }}</h2>
+            <ol>
+              <li v-for="entry in detail.log" :key="entry.id" :class="entry.kind">
+                <template v-if="entry.kind === 'status'">
+                  <font-awesome-icon icon="arrow-right-arrow-left" />
+                  <span class="moved">
+                    <i18n-t keypath="reports.log.moved" tag="span" scope="global">
+                      <template #who>{{ entry.author ?? $t('reports.log.somebody') }}</template>
+                      <template #column>
+                        <ReportStatusTag v-if="entry.status" :status="entry.status" small />
+                      </template>
+                    </i18n-t>
+                  </span>
                   <time :datetime="entry.createdAt">{{ when(entry.createdAt) }}</time>
-                  <button v-if="isAdmin" class="take-down" @click="takeDown(entry)">
-                    <font-awesome-icon icon="trash" />
-                  </button>
-                </header>
-                <ReportText :text="entry.body ?? ''" />
-              </template>
-            </li>
-          </ol>
-        </section>
+                </template>
+                <template v-else>
+                  <header>
+                    <strong :class="{ dev: entry.admin }">
+                      {{ entry.author ?? $t('reports.log.somebody') }}
+                      <span v-if="entry.admin" class="badge">{{ $t('reports.log.dev') }}</span>
+                      <span v-else-if="entry.author && !entry.authorAccount" class="badge from">
+                        {{ $t('reports.log.fromGithub') }}
+                      </span>
+                    </strong>
+                    <time :datetime="entry.createdAt">{{ when(entry.createdAt) }}</time>
+                    <button v-if="isAdmin" class="take-down" @click="takeDown(entry)">
+                      <font-awesome-icon icon="trash" />
+                    </button>
+                  </header>
+                  <ReportText :text="entry.body ?? ''" />
+                </template>
+              </li>
+            </ol>
+          </section>
 
-        <form class="reply box" @submit.prevent="send">
-          <label for="reply">{{ $t('reports.reply') }}</label>
-          <textarea id="reply" v-model="reply" rows="4" :placeholder="$t('reports.replyPlaceholder')"></textarea>
-          <p v-if="replyFailed" class="error">{{ replyFailed }}</p>
-          <div class="buttons">
-            <button type="submit" :disabled="sending || !reply.trim()">
-              {{ sending ? $t('reports.sending') : $t('reports.send') }}
-            </button>
-          </div>
-        </form>
-      </div>
+          <form class="reply box" @submit.prevent="send">
+            <label for="reply">{{ $t('reports.reply') }}</label>
+            <textarea id="reply" v-model="reply" rows="4" :placeholder="$t('reports.replyPlaceholder')"></textarea>
+            <p v-if="replyFailed" class="error">{{ replyFailed }}</p>
+            <div class="buttons">
+              <button type="submit" :disabled="sending || !reply.trim()">
+                {{ sending ? $t('reports.sending') : $t('reports.send') }}
+              </button>
+            </div>
+          </form>
+        </div>
 
-      <!-- Everything about the report that is not the conversation: where it
-           came from, and what a maintainer does with it. Beside the thread,
-           because on a long one they were scrolled past and lost. -->
-      <aside class="side">
-        <section v-if="detail.report.game" class="game box">
-          <p v-if="detail.report.game.name" class="game-name">{{ detail.report.game.name }}</p>
-          <p class="game-facts">
-            <span v-if="detail.report.game.step !== null">
-              {{ $t('reports.game.step') }} {{ detail.report.game.step }}
-            </span>
-            <span v-if="stepsSince !== null && stepsSince > 0" class="since">
-              {{ $t('reports.game.playedOn', { steps: stepsSince }) }}
-            </span>
-            <span v-if="!detail.report.game.id" class="gone">{{ $t('reports.game.goneBody') }}</span>
-          </p>
-          <div v-if="detail.report.game.id || detail.report.game.exportUrl" class="links">
-            <a
-              v-if="detail.report.game.id"
-              class="chip"
-              :href="`#/games/${detail.report.game.id}`"
-            >{{ $t('reports.game.open') }}</a>
-            <a
-              v-if="detail.report.game.exportUrl"
-              class="chip"
-              :href="detail.report.game.exportUrl"
-              rel="noreferrer"
-              target="_blank"
-            >{{ $t('reports.game.export') }}</a>
-          </div>
-        </section>
-
-        <section v-if="isAdmin" class="admin box">
-          <h2>{{ $t('reports.admin.title') }}</h2>
-          <div class="controls">
-            <!-- Customizable select: the options carry the same pill the rest of
-                 the tracker labels a status with, rather than its name in plain
-                 text. Where `appearance: base-select` is not supported the
-                 browser draws its own menu from the options' text, which is
-                 that same name -- so the fallback is what this was before. -->
-            <label>
-              {{ $t('reports.admin.status') }}
-              <select
-                class="rich"
-                :value="detail.report.status"
-                :disabled="working"
-                @change="change({ status: ($event.target as HTMLSelectElement).value as Api.ReportStatus })"
-              >
-                <button type="button"><selectedcontent></selectedcontent></button>
-                <option v-for="status in Api.OPEN_REPORT_STATUSES.concat(['done', 'declined', 'duplicate'])" :key="status" :value="status">
-                  <ReportStatusTag :status="status" small />
-                </option>
-              </select>
-            </label>
-            <label>
-              {{ $t('reports.admin.kind') }}
-              <select
-                class="rich"
-                :value="detail.report.kind"
-                :disabled="working"
-                @change="change({ kind: ($event.target as HTMLSelectElement).value as Api.ReportKind })"
-              >
-                <button type="button"><selectedcontent></selectedcontent></button>
-                <option value="bug">
-                  <font-awesome-icon class="kind bug" icon="bug" /> {{ $t('reports.kind.bug') }}
-                </option>
-                <option value="feature">
-                  <font-awesome-icon class="kind feature" icon="lightbulb" /> {{ $t('reports.kind.feature') }}
-                </option>
-              </select>
-            </label>
-            <label class="duplicate">
-              {{ $t('reports.admin.duplicate') }}
-              <span>
-                <input v-model="duplicateOf" type="number" min="1" placeholder="#" />
-                <button :disabled="working || !duplicateOf" @click="markDuplicate">
-                  {{ $t('reports.admin.markDuplicate') }}
-                </button>
+        <!-- Everything about the report that is not the conversation: where it
+             came from, and what a maintainer does with it. Beside the thread,
+             because on a long one they were scrolled past and lost. -->
+        <aside class="side">
+          <section v-if="detail.report.game" class="game box">
+            <p v-if="detail.report.game.name" class="game-name">{{ detail.report.game.name }}</p>
+            <p class="game-facts">
+              <span v-if="detail.report.game.step !== null">
+                {{ $t('reports.game.step') }} {{ detail.report.game.step }}
               </span>
-            </label>
-            <button :disabled="working" @click="change({ hidden: !detail.report.hidden })">
-              {{ detail.report.hidden ? $t('reports.admin.unhide') : $t('reports.admin.hide') }}
-            </button>
-          </div>
-        </section>
-      </aside>
-    </template>
+              <span v-if="stepsSince !== null && stepsSince > 0" class="since">
+                {{ $t('reports.game.playedOn', { steps: stepsSince }) }}
+              </span>
+              <span v-if="!detail.report.game.id" class="gone">{{ $t('reports.game.goneBody') }}</span>
+            </p>
+            <div v-if="detail.report.game.id || detail.report.game.exportUrl" class="links">
+              <a
+                v-if="detail.report.game.id"
+                class="chip"
+                :href="`#/games/${detail.report.game.id}`"
+              >{{ $t('reports.game.open') }}</a>
+              <a
+                v-if="detail.report.game.exportUrl"
+                class="chip"
+                :href="detail.report.game.exportUrl"
+                rel="noreferrer"
+                target="_blank"
+              >{{ $t('reports.game.export') }}</a>
+            </div>
+          </section>
+
+          <section v-if="isAdmin" class="admin box">
+            <h2>{{ $t('reports.admin.title') }}</h2>
+            <div class="controls">
+              <!-- Customizable select: the options carry the same pill the rest of
+                   the tracker labels a status with, rather than its name in plain
+                   text. Where `appearance: base-select` is not supported the
+                   browser draws its own menu from the options' text, which is
+                   that same name -- so the fallback is what this was before. -->
+              <label>
+                {{ $t('reports.admin.status') }}
+                <select
+                  class="rich"
+                  :value="detail.report.status"
+                  :disabled="working"
+                  @change="change({ status: ($event.target as HTMLSelectElement).value as Api.ReportStatus })"
+                >
+                  <button type="button"><selectedcontent></selectedcontent></button>
+                  <option v-for="status in Api.OPEN_REPORT_STATUSES.concat(['done', 'declined', 'duplicate'])" :key="status" :value="status">
+                    <ReportStatusTag :status="status" small />
+                  </option>
+                </select>
+              </label>
+              <label>
+                {{ $t('reports.admin.kind') }}
+                <select
+                  class="rich"
+                  :value="detail.report.kind"
+                  :disabled="working"
+                  @change="change({ kind: ($event.target as HTMLSelectElement).value as Api.ReportKind })"
+                >
+                  <button type="button"><selectedcontent></selectedcontent></button>
+                  <option value="bug">
+                    <font-awesome-icon class="kind bug" icon="bug" /> {{ $t('reports.kind.bug') }}
+                  </option>
+                  <option value="feature">
+                    <font-awesome-icon class="kind feature" icon="lightbulb" /> {{ $t('reports.kind.feature') }}
+                  </option>
+                </select>
+              </label>
+              <label class="duplicate">
+                {{ $t('reports.admin.duplicate') }}
+                <span>
+                  <input v-model="duplicateOf" type="number" min="1" placeholder="#" />
+                  <button :disabled="working || !duplicateOf" @click="markDuplicate">
+                    {{ $t('reports.admin.markDuplicate') }}
+                  </button>
+                </span>
+              </label>
+              <button :disabled="working" @click="change({ hidden: !detail.report.hidden })">
+                {{ detail.report.hidden ? $t('reports.admin.unhide') : $t('reports.admin.hide') }}
+              </button>
+            </div>
+          </section>
+        </aside>
+      </template>
+    </div>
   </div>
 </template>
 

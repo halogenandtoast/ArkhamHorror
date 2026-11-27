@@ -111,99 +111,108 @@ watch(showArchive, () => (expanded.value = false))
 </script>
 
 <template>
-  <div class="reports page-content">
-    <header class="masthead">
-      <h1>{{ $t('reports.title') }}</h1>
-      <RouterLink class="file" :to="{ name: 'NewReport' }">
-        <font-awesome-icon icon="pen-to-square" /> {{ $t('reports.file') }}
-      </RouterLink>
-    </header>
-
-    <section v-if="live.length > 0 || archived.length > 0" class="yours">
-      <header>
-        <h2>{{ showArchive ? $t('reports.panel.archiveTitle') : $t('reports.panel.title') }}</h2>
-        <button
-          v-if="showArchive || archived.length > 0"
-          class="archive-toggle"
-          @click="showArchive = !showArchive"
-        >
-          <template v-if="showArchive">← {{ $t('reports.panel.title') }}</template>
-          <template v-else>
-            <font-awesome-icon icon="box-archive" />
-            {{ $t('reports.panel.archive', { count: archived.length }) }}
-          </template>
-        </button>
+  <div class="page-container">
+    <div class="reports page-content">
+      <header class="masthead">
+        <h1>{{ $t('reports.title') }}</h1>
+        <RouterLink class="file" :to="{ name: 'NewReport' }">
+          <font-awesome-icon icon="pen-to-square" /> {{ $t('reports.file') }}
+        </RouterLink>
       </header>
 
-      <p v-if="yours.length === 0" class="all-clear">{{ $t('reports.panel.allClear') }}</p>
+      <section v-if="live.length > 0 || archived.length > 0" class="yours">
+        <header>
+          <h2>{{ showArchive ? $t('reports.panel.archiveTitle') : $t('reports.panel.title') }}</h2>
+          <button
+            v-if="showArchive || archived.length > 0"
+            class="archive-toggle"
+            @click="showArchive = !showArchive"
+          >
+            <template v-if="showArchive">← {{ $t('reports.panel.title') }}</template>
+            <template v-else>
+              <font-awesome-icon icon="box-archive" />
+              {{ $t('reports.panel.archive', { count: archived.length }) }}
+            </template>
+          </button>
+        </header>
 
-      <ul v-else class="list">
-        <li v-for="report in yoursShown" :key="report.id">
+        <p v-if="yours.length === 0" class="all-clear">{{ $t('reports.panel.allClear') }}</p>
+
+        <ul v-else class="list">
+          <li v-for="report in yoursShown" :key="report.id">
+            <ReportRow :report="report" />
+          </li>
+        </ul>
+
+        <button v-if="yours.length > FOLDED" class="fold" @click="expanded = !expanded">
+          {{ expanded ? $t('reports.panel.fewer') : $t('reports.panel.more', { count: yours.length - FOLDED }) }}
+        </button>
+      </section>
+
+      <div class="filters">
+        <div class="kinds">
+          <button
+            v-for="kind in KINDS"
+            :key="kind.label"
+            class="chip"
+            :class="{ on: filters.kind === kind.value }"
+            @click="apply({ kind: kind.value })"
+          >
+            <font-awesome-icon :icon="kind.icon" /> {{ $t(kind.label) }}
+          </button>
+        </div>
+
+        <select :value="filters.status" @change="apply({ status: ($event.target as HTMLSelectElement).value })">
+          <option value="open">{{ $t('reports.filter.open') }}</option>
+          <option value="closed">{{ $t('reports.filter.closed') }}</option>
+          <option value="all">{{ $t('reports.filter.all') }}</option>
+          <option v-for="status in page?.statuses ?? []" :key="status" :value="status">
+            {{ $t(`reports.status.${status}`, status) }}
+          </option>
+        </select>
+
+        <select :value="filters.sort" @change="apply({ sort: ($event.target as HTMLSelectElement).value })">
+          <option value="recent">{{ $t('reports.sort.recent') }}</option>
+          <option value="new">{{ $t('reports.sort.new') }}</option>
+        </select>
+
+        <form class="search" @submit.prevent="apply({ q: search })">
+          <input v-model="search" type="search" :placeholder="$t('reports.searchPlaceholder')" />
+          <button type="submit"><font-awesome-icon icon="magnifying-glass" /></button>
+        </form>
+      </div>
+
+      <p v-if="failed" class="empty">{{ $t('reports.loadFailed') }}</p>
+      <p v-else-if="loading && !page" class="empty">{{ $t('reports.loading') }}</p>
+      <p v-else-if="page && page.reports.length === 0" class="empty">{{ $t('reports.none') }}</p>
+
+      <ul v-else-if="page" class="list" :class="{ stale: loading }">
+        <li v-for="report in page.reports" :key="report.id">
           <ReportRow :report="report" />
         </li>
       </ul>
 
-      <button v-if="yours.length > FOLDED" class="fold" @click="expanded = !expanded">
-        {{ expanded ? $t('reports.panel.fewer') : $t('reports.panel.more', { count: yours.length - FOLDED }) }}
-      </button>
-    </section>
-
-    <div class="filters">
-      <div class="kinds">
-        <button
-          v-for="kind in KINDS"
-          :key="kind.label"
-          class="chip"
-          :class="{ on: filters.kind === kind.value }"
-          @click="apply({ kind: kind.value })"
-        >
-          <font-awesome-icon :icon="kind.icon" /> {{ $t(kind.label) }}
+      <nav v-if="page && totalPages > 1" class="pages">
+        <button :disabled="page.page <= 1" @click="apply({ page: String(page.page - 1) })">
+          {{ $t('reports.previous') }}
         </button>
-      </div>
-
-      <select :value="filters.status" @change="apply({ status: ($event.target as HTMLSelectElement).value })">
-        <option value="open">{{ $t('reports.filter.open') }}</option>
-        <option value="closed">{{ $t('reports.filter.closed') }}</option>
-        <option value="all">{{ $t('reports.filter.all') }}</option>
-        <option v-for="status in page?.statuses ?? []" :key="status" :value="status">
-          {{ $t(`reports.status.${status}`, status) }}
-        </option>
-      </select>
-
-      <select :value="filters.sort" @change="apply({ sort: ($event.target as HTMLSelectElement).value })">
-        <option value="recent">{{ $t('reports.sort.recent') }}</option>
-        <option value="new">{{ $t('reports.sort.new') }}</option>
-      </select>
-
-      <form class="search" @submit.prevent="apply({ q: search })">
-        <input v-model="search" type="search" :placeholder="$t('reports.searchPlaceholder')" />
-        <button type="submit"><font-awesome-icon icon="magnifying-glass" /></button>
-      </form>
+        <span>{{ $t('reports.pageOf', { page: page.page, pages: totalPages, total: page.total }) }}</span>
+        <button :disabled="page.page >= totalPages" @click="apply({ page: String(page.page + 1) })">
+          {{ $t('reports.next') }}
+        </button>
+      </nav>
     </div>
-
-    <p v-if="failed" class="empty">{{ $t('reports.loadFailed') }}</p>
-    <p v-else-if="loading && !page" class="empty">{{ $t('reports.loading') }}</p>
-    <p v-else-if="page && page.reports.length === 0" class="empty">{{ $t('reports.none') }}</p>
-
-    <ul v-else-if="page" class="list" :class="{ stale: loading }">
-      <li v-for="report in page.reports" :key="report.id">
-        <ReportRow :report="report" />
-      </li>
-    </ul>
-
-    <nav v-if="page && totalPages > 1" class="pages">
-      <button :disabled="page.page <= 1" @click="apply({ page: String(page.page - 1) })">
-        {{ $t('reports.previous') }}
-      </button>
-      <span>{{ $t('reports.pageOf', { page: page.page, pages: totalPages, total: page.total }) }}</span>
-      <button :disabled="page.page >= totalPages" @click="apply({ page: String(page.page + 1) })">
-        {{ $t('reports.next') }}
-      </button>
-    </nav>
   </div>
 </template>
 
 <style scoped>
+/* Filtering the list and folding your own group both change how tall the page
+   is, and a scrollbar that appears and disappears with it shifts the column
+   sideways under the pointer. Hold the gutter open either way. */
+.page-container {
+  scrollbar-gutter: stable;
+}
+
 .reports {
   align-content: start;
   color: var(--text);

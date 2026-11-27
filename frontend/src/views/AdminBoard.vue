@@ -216,7 +216,7 @@ const move = async (report: Api.Report, status: Api.ReportStatus) => {
 
 const remove = async (report: Api.Report) => {
   menuFor.value = null
-  if (!window.confirm(t('reports.board.confirmDelete', { number: report.number }))) return
+  if (!window.confirm(t('reports.admin.confirmDelete', { number: report.number }))) return
   working.value = true
   try {
     await Api.deleteReport(report.id)
@@ -349,7 +349,7 @@ const importIssues = async (event: Event) => {
                         <ReportStatusTag :status="other as Api.ReportStatus" small />
                       </button>
                       <button class="danger" @click="remove(slot.report)">
-                        <font-awesome-icon icon="trash" /> {{ $t('reports.board.delete') }}
+                        <font-awesome-icon icon="trash" /> {{ $t('reports.admin.delete') }}
                       </button>
                     </div>
                   </OnClickOutside>

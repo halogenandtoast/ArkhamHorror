@@ -2401,7 +2401,9 @@
       "duplicate": "Duplicate of",
       "markDuplicate": "Mark",
       "hide": "Hide from the list",
-      "unhide": "Put back on the list"
+      "unhide": "Put back on the list",
+      "delete": "Delete this report",
+      "confirmDelete": "Delete report #{number} outright? Declining it keeps the answer where the reporter can read it."
     },
     "board": {
       "title": "Board",
@@ -2412,8 +2414,6 @@
       "scrollRight": "Later columns",
       "showClosed": "Show finished columns",
       "moveTo": "Move to",
-      "delete": "Delete this report",
-      "confirmDelete": "Delete report #{number} outright? Declining it keeps the answer where the reporter can read it.",
       "emptyColumn": "Nothing here.",
       "publicList": "Public list",
       "import": "Import from GitHub",

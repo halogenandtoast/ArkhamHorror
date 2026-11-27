@@ -10,7 +10,7 @@
  * addressed to; anyone else reading it leaves no trace.
  */
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import * as Api from '@/arkham/api'
 import { useUserStore } from '@/stores/user'
@@ -19,6 +19,7 @@ import ReportStatusTag from '@/components/ReportStatusTag.vue'
 import ReportText from '@/components/ReportText.vue'
 
 const route = useRoute()
+const router = useRouter()
 const { t } = useI18n()
 const user = useUserStore()
 const reports = useReportsStore()
@@ -83,6 +84,24 @@ const change = async (changes: Parameters<typeof Api.updateReport>[1]) => {
   try {
     await Api.updateReport(detail.value.report.id, changes)
     await load()
+  } finally {
+    working.value = false
+  }
+}
+
+/* For spam, and reachable from the report rather than only from the board: the
+ * thing worth deleting is usually recognised while reading it. Declining is the
+ * answer for anything that was read and turned down, which is why this asks
+ * first and says so. The page cannot survive it, so it leaves for the list. */
+const remove = async () => {
+  if (!detail.value) return
+  if (!window.confirm(t('reports.admin.confirmDelete', { number: detail.value.report.number })))
+    return
+  working.value = true
+  try {
+    await Api.deleteReport(detail.value.report.id)
+    void reports.refresh()
+    await router.push({ name: 'Reports' })
   } finally {
     working.value = false
   }
@@ -286,6 +305,9 @@ const stepsSince = computed(() => {
               </label>
               <button :disabled="working" @click="change({ hidden: !detail.report.hidden })">
                 {{ detail.report.hidden ? $t('reports.admin.unhide') : $t('reports.admin.hide') }}
+              </button>
+              <button class="danger" :disabled="working" @click="remove">
+                <font-awesome-icon icon="trash" /> {{ $t('reports.admin.delete') }}
               </button>
             </div>
           </section>
@@ -511,6 +533,19 @@ h2 {
 
 .controls button {
   cursor: pointer;
+}
+
+/* The one red control in the panel: everything else here can be undone by
+   setting it back, and this cannot. Tinted rather than filled -- it still sits
+   among the triage controls, and a solid red button in a 300px column reads as
+   the thing the panel is for. */
+.controls .danger {
+  border-color: color-mix(in srgb, var(--survivor) 40%, var(--box-border));
+  color: var(--survivor);
+}
+
+.controls .danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--survivor) 18%, var(--background-dark));
 }
 
 .duplicate span {

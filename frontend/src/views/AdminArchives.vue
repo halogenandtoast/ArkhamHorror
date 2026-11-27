@@ -154,7 +154,6 @@ const lastSweep = computed(() => {
 <template>
   <section class="admin-block">
     <header class="section-header">
-      <h2>{{ t('adminArchives.title') }}</h2>
       <span v-if="stats && !stats.enabled" class="section-note">{{ t('adminArchives.disabled') }}</span>
       <span v-else-if="stats" class="section-note">
         <template v-if="stats.sweepEnabled">
@@ -310,13 +309,10 @@ const lastSweep = computed(() => {
   gap: 12px;
 }
 
-.section-header h2 {
-  color: var(--title);
-  font-family: teutonic, sans-serif;
-  font-size: 1.6rem;
-  line-height: 1;
-  margin: 0;
-  text-transform: uppercase;
+/* In the header it also holds the space the title used to, so the sweep
+   button stays at the far end of the row. */
+.section-header .section-note {
+  flex: 1;
 }
 
 .section-note {

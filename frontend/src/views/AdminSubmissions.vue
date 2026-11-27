@@ -174,8 +174,6 @@ const isUpdate = (row: Api.CardSetSubmission) =>
 <template>
   <section class="admin-block">
     <header class="section-header">
-      <h2>{{ t(`${K}title`) }}</h2>
-      <span v-if="tab === 'pending'" class="count-badge">{{ pendingCount }}</span>
       <SegmentedToggle
         class="tabs"
         :model-value="tab"
@@ -183,6 +181,10 @@ const isUpdate = (row: Api.CardSetSubmission) =>
         :label="t(`${K}filterLabel`)"
         @update:model-value="switchTo($event as Tab)"
       />
+      <!-- After the tabs rather than before them: with no title above it, a
+           number on its own at the start of the row named nothing. Here it
+           reads as the count of the tab that is open. -->
+      <span v-if="tab === 'pending'" class="count-badge">{{ pendingCount }}</span>
     </header>
 
     <p v-if="status" class="status">{{ status }}</p>
@@ -323,16 +325,6 @@ const isUpdate = (row: Api.CardSetSubmission) =>
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-}
-
-.section-header h2 {
-  color: var(--title);
-  flex: 1;
-  font-family: teutonic, sans-serif;
-  font-size: 1.6rem;
-  line-height: 1;
-  margin: 0;
-  text-transform: uppercase;
 }
 
 .count-badge {

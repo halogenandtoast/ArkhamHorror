@@ -170,15 +170,15 @@ export type ReportStatus =
   | 'new'
   | 'todo'
   | 'in-progress'
-  | 'blocked'
   | 'ready-for-deploy'
   | 'pending-deploy'
+  | 'blocked'
   | 'done'
   | 'declined'
   | 'duplicate'
 
 export const OPEN_REPORT_STATUSES: ReportStatus[] = [
-  'new', 'todo', 'in-progress', 'blocked', 'ready-for-deploy', 'pending-deploy',
+  'new', 'todo', 'in-progress', 'ready-for-deploy', 'pending-deploy', 'blocked',
 ]
 
 /* The game a report was filed from, as far as it can still be told. `step` is
@@ -355,16 +355,6 @@ export const deleteReport = async (id: string): Promise<void> => {
  * something that happened. */
 export const deleteReportComment = async (id: string): Promise<void> => {
   await api.delete(`admin/report-events/${id}`)
-}
-
-/* The one-off GitHub migration. `scripts/export-github-issues.py` writes the
- * payload; this hands it over. Idempotent by issue number, so a half-finished
- * import is fixed by running it again. */
-export const importGithubIssues = async (
-  payload: unknown,
-): Promise<{ imported: number[]; skipped: number }> => {
-  const { data } = await api.post('admin/reports/import', payload)
-  return data
 }
 
 /* ----------------------------------------------------------- admin: users ---

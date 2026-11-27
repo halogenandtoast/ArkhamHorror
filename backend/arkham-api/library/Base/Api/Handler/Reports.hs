@@ -49,7 +49,7 @@ import Data.UUID qualified as UUID
 import Database.Esqueleto.Experimental hiding (isNothing)
 import Database.Persist qualified as P
 import GHC.Records (HasField (..))
-import Import hiding (exists, on, update, (=.), (==.), (||.))
+import Import hiding (exists, on, update, (=.), (==.), (>=.), (||.))
 import Json hiding (Success)
 import Network.HTTP.Types (status429)
 import UnliftIO.Exception qualified as UnliftIO
@@ -69,15 +69,19 @@ including the untriaged column that board expressed as "no status". The last
 three are endings: @done@ is fixed or built, @declined@ is "not going to", and
 @duplicate@ belongs to a report whose 'reportDuplicateOfId' says which one it is
 the same as.
+
+@blocked@ comes last of the six rather than beside @in-progress@: the first five
+are a pipeline that a card walks left to right, and a column nothing flows
+through sat in the middle of it. Blocked work is parked, not between two stages.
 -}
 reportStatuses :: [Text]
 reportStatuses =
   [ "new"
   , "todo"
   , "in-progress"
-  , "blocked"
   , "ready-for-deploy"
   , "pending-deploy"
+  , "blocked"
   , "done"
   , "declined"
   , "duplicate"
@@ -85,7 +89,7 @@ reportStatuses =
 
 -- | The statuses that mean the report is still live work.
 openStatuses :: [Text]
-openStatuses = ["new", "todo", "in-progress", "blocked", "ready-for-deploy", "pending-deploy"]
+openStatuses = ["new", "todo", "in-progress", "ready-for-deploy", "pending-deploy", "blocked"]
 
 eventComment, eventStatus :: Text
 eventComment = "comment"
@@ -114,6 +118,24 @@ stop, which is the only part of them anyone looks at.
 -}
 closedOnBoard :: Int
 closedOnBoard = 75
+
+{- | How long an ending stays on the board.
+
+The GitHub project this replaced had a built-in workflow that archived a card a
+fortnight after it was closed, and that workflow is the only reason Done was
+ever readable there. The same cutoff applies here, and the fortnight is counted
+from @updatedAt@ rather than from the move, so a reply on a closed report puts
+it back on the board -- a closed report somebody is still talking about is the
+one case where an ending is news.
+
+Nothing is archived in the sense of being written down: there is no column, no
+sweep and no second copy of the truth, which is what the header of this module
+promises. A card that drops off the board is still on the public list under its
+status, still at its own number, and still in the author's own list. It has
+only stopped being something the board has to carry.
+-}
+boardArchiveAfter :: NominalDiffTime
+boardArchiveAfter = 14 * nominalDay
 
 -- * Wire shapes
 
@@ -651,11 +673,15 @@ postApiV1ReportSeenR number = do
 
 One read for the whole thing, because a board is only useful as a whole and the
 counts a column shows have to come from the same snapshot as its cards or they
-contradict each other. See 'closedOnBoard' for why the endings are cut short.
+contradict each other. The endings are cut short twice over: 'boardArchiveAfter'
+drops the ones nothing has happened to in a fortnight, and 'closedOnBoard' caps
+what is left.
 -}
 getApiV1AdminReportsR :: Handler BoardResponse
 getApiV1AdminReportsR = do
   viewer <- getViewer
+  now <- liftIO getCurrentTime
+  let archivedBefore = addUTCTime (negate boardArchiveAfter) now
   rows <- runDB do
     open <- select do
       r <- from $ table @Report
@@ -664,7 +690,9 @@ getApiV1AdminReportsR = do
       pure r
     closed <- select do
       r <- from $ table @Report
-      where_ $ not_ (r.status `in_` valList openStatuses)
+      where_
+        $ not_ (r.status `in_` valList openStatuses)
+        &&. r.updatedAt >=. val archivedBefore
       orderBy [asc r.position, desc r.updatedAt]
       limit (fromIntegral closedOnBoard)
       pure r

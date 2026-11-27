@@ -136,9 +136,7 @@ watch(showArchive, () => (expanded.value = false))
           </button>
         </header>
 
-        <p v-if="yours.length === 0" class="all-clear">{{ $t('reports.panel.allClear') }}</p>
-
-        <ul v-else class="list">
+        <ul v-if="yours.length > 0" class="list">
           <li v-for="report in yoursShown" :key="report.id">
             <ReportRow :report="report" />
           </li>
@@ -362,12 +360,6 @@ h1 {
 
 .archive-toggle:hover {
   color: var(--text);
-}
-
-.all-clear {
-  color: var(--title);
-  font-size: 0.9em;
-  margin: 0;
 }
 
 .yours h2 {

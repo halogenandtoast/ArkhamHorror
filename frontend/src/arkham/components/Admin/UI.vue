@@ -38,10 +38,6 @@ const byRouteName: Record<string, string> = {
 
 const selected = computed(() => byRouteName[String(route.name)] ?? 'dashboard')
 
-const selectedLabel = computed(
-  () => sections.find((s) => s.key === selected.value)?.label ?? 'admin.dashboard',
-)
-
 /* Only ever used at narrow widths, where the rail is off-canvas. Closed again on
  * every navigation: the thing you opened it to reach is now on screen behind it. */
 const railOpen = ref(false)
@@ -94,6 +90,9 @@ async function navigateTo(path: string) {
       <div v-if="railOpen" class="rail-scrim" @click="railOpen = false"></div>
 
       <div class="admin-main">
+        <!-- Nothing but the rail toggle, and only where the rail is off-canvas:
+             the active entry in the rail is what says where you are, and a
+             heading over every page said it a second time. -->
         <header class="admin-header">
           <button
             type="button"
@@ -104,9 +103,6 @@ async function navigateTo(path: string) {
           >
             <font-awesome-icon icon="bars" />
           </button>
-          <Transition name="admin-title-fade" mode="out-in">
-            <h1 :key="selected">{{ $t(selectedLabel) }}</h1>
-          </Transition>
         </header>
 
         <div class="admin-scroll">
@@ -253,21 +249,10 @@ async function navigateTo(path: string) {
 
 .admin-header {
   align-items: center;
-  border-bottom: 1px solid var(--box-border);
-  display: flex;
+  display: none;
   flex: none;
   gap: 12px;
-  min-height: 44px;
   padding-bottom: 12px;
-}
-
-h1 {
-  color: var(--title);
-  font-family: teutonic, sans-serif;
-  font-size: 2.3rem;
-  line-height: 1;
-  margin: 0;
-  text-transform: uppercase;
 }
 
 /* Only shown where the rail is off-canvas. */
@@ -288,16 +273,6 @@ h1 {
 
 .rail-scrim {
   display: none;
-}
-
-.admin-title-fade-enter-active,
-.admin-title-fade-leave-active {
-  transition: opacity 130ms ease-in-out;
-}
-
-.admin-title-fade-enter-from,
-.admin-title-fade-leave-to {
-  opacity: 0;
 }
 
 .admin-content {
@@ -504,12 +479,12 @@ h1 {
     z-index: 29;
   }
 
-  .rail-toggle {
-    display: block;
+  .admin-header {
+    display: flex;
   }
 
-  h1 {
-    font-size: 1.8rem;
+  .rail-toggle {
+    display: block;
   }
 }
 

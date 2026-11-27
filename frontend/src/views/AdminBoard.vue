@@ -16,7 +16,7 @@
  * the positions from 1, so the same drop twice is the same column.
  */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { OnClickOutside } from '@vueuse/components'
 import * as Api from '@/arkham/api'
@@ -24,18 +24,19 @@ import ReportStatusTag from '@/components/ReportStatusTag.vue'
 
 const { t } = useI18n()
 const route = useRoute()
-const router = useRouter()
 
 const board = ref<Api.ReportBoard | null>(null)
 const loading = ref(true)
 const failed = ref(false)
 const working = ref(false)
 const showClosed = ref(false)
-const importing = ref(false)
-const importResult = ref<string | null>(null)
 const menuFor = ref<string | null>(null)
 
 const kind = computed<Api.ReportKind>(() => (route.params.kind === 'feature' ? 'feature' : 'bug'))
+
+/* The column that "deployed" empties. Named rather than written into the
+ * template twice, since the button and what it acts on must agree. */
+const DEPLOYING = 'pending-deploy'
 
 const load = async () => {
   try {
@@ -214,6 +215,28 @@ const move = async (report: Api.Report, status: Api.ReportStatus) => {
   }
 }
 
+/* A deploy finishes a whole column at once: what went out went out together,
+ * and clearing Deploying card by card is the same fact confirmed six times.
+ *
+ * One call, because the reorder endpoint already moves every id it is given
+ * into the status it is given -- so each card writes its status event and the
+ * reporters all hear about it, exactly as if each had been dragged across.
+ * Only the board on screen: bugs and requests deploy together, but the other
+ * board's cards are not in front of you to be counted.
+ */
+const markAllDeployed = async () => {
+  const ids = column(DEPLOYING).map((report) => report.id)
+  if (ids.length === 0) return
+  if (!window.confirm(t('reports.board.confirmDeployed', ids.length))) return
+  working.value = true
+  try {
+    await Api.orderReports('done', ids)
+    await load()
+  } finally {
+    working.value = false
+  }
+}
+
 const remove = async (report: Api.Report) => {
   menuFor.value = null
   if (!window.confirm(t('reports.admin.confirmDelete', { number: report.number }))) return
@@ -223,30 +246,6 @@ const remove = async (report: Api.Report) => {
     await load()
   } finally {
     working.value = false
-  }
-}
-
-/* The one-off GitHub migration. scripts/export-github-issues.py writes the
- * payload; the import is idempotent by issue number, so a file dropped twice
- * adds nothing the second time. */
-const importIssues = async (event: Event) => {
-  const input = event.target as HTMLInputElement
-  const file = input.files?.[0]
-  if (!file) return
-  importing.value = true
-  importResult.value = null
-  try {
-    const result = await Api.importGithubIssues(JSON.parse(await file.text()))
-    importResult.value = t('reports.board.imported', {
-      imported: result.imported.length,
-      skipped: result.skipped,
-    })
-    await load()
-  } catch (error) {
-    importResult.value = error instanceof Error ? error.message : t('reports.board.importFailed')
-  } finally {
-    importing.value = false
-    input.value = ''
   }
 }
 </script>
@@ -272,15 +271,8 @@ const importIssues = async (event: Event) => {
         <input v-model="showClosed" type="checkbox" />
         {{ $t('reports.board.showClosed') }}
       </label>
-      <label class="import">
-        <font-awesome-icon icon="file-import" />
-        {{ importing ? $t('reports.board.importing') : $t('reports.board.import') }}
-        <input type="file" accept="application/json" :disabled="importing" @change="importIssues" />
-      </label>
-      <RouterLink class="public" :to="{ name: 'Reports' }">{{ $t('reports.board.publicList') }}</RouterLink>
     </header>
 
-    <p v-if="importResult" class="note">{{ importResult }}</p>
     <p v-if="failed" class="note">{{ $t('reports.loadFailed') }}</p>
     <p v-else-if="loading" class="note">{{ $t('reports.loading') }}</p>
 
@@ -302,6 +294,16 @@ const importIssues = async (event: Event) => {
           <header>
             <ReportStatusTag :status="status as Api.ReportStatus" />
             <span class="count">{{ column(status).length + (dragging?.status === status ? 1 : 0) }}</span>
+            <button
+              v-if="status === DEPLOYING && column(status).length > 0"
+              class="deployed"
+              :disabled="working"
+              :title="$t('reports.board.markDeployedLong')"
+              @click="markAllDeployed"
+            >
+              <font-awesome-icon icon="check-double" />
+              {{ $t('reports.board.markDeployed') }}
+            </button>
           </header>
   
           <ul
@@ -310,7 +312,7 @@ const importIssues = async (event: Event) => {
             @dragleave="dropAt = dropAt?.status === status ? null : dropAt"
             @drop.prevent="drop(status)"
           >
-            <li v-for="(slot, index) in slots(status)" :key="slot.gap ? 'gap' : slot.report.id">
+            <li v-for="slot in slots(status)" :key="slot.gap ? 'gap' : slot.report.id">
               <div v-if="slot.gap" class="placeholder"></div>
               <article v-else data-card class="card" draggable="true" @dragstart="startDrag($event, slot.report)" @dragend="endDrag">
                 <RouterLink class="face" :to="{ name: 'Report', params: { number: slot.report.number } }">
@@ -422,29 +424,13 @@ const importIssues = async (event: Event) => {
   text-align: center;
 }
 
-.toggle,
-.import {
+.toggle {
   align-items: center;
   color: var(--title);
   cursor: pointer;
   display: flex;
   font-size: 0.9em;
   gap: 6px;
-}
-
-.import {
-  background: var(--box-background);
-  border: 1px solid var(--box-border);
-  border-radius: 4px;
-  padding: 7px 10px;
-}
-
-.import input {
-  display: none;
-}
-
-.public {
-  color: var(--guardian);
 }
 
 .note {
@@ -584,6 +570,24 @@ const importIssues = async (event: Event) => {
   font-size: 0.8em;
   font-variant-numeric: tabular-nums;
   margin-left: auto;
+}
+
+/* Quiet until wanted: a column header is a label and a tally, and a third thing
+   shouting in it would be read before either. */
+.deployed {
+  background: none;
+  border: 1px solid var(--box-border);
+  border-radius: 4px;
+  color: var(--title);
+  cursor: pointer;
+  flex: none;
+  font-size: 0.75em;
+  padding: 3px 6px;
+}
+
+.deployed:hover:not(:disabled) {
+  border-color: var(--button-1);
+  color: var(--text);
 }
 
 /* The only vertical scroller on the page. */

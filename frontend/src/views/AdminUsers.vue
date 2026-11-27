@@ -42,8 +42,6 @@ const searching = ref(false)
  * grant list means "nobody is in yet" -- so the page has to know which it has. */
 const showingSearch = ref(false)
 
-const granted = computed(() => rows.value.filter((r) => r.features.length > 0))
-
 async function load(q?: string) {
   loading.value = true
   error.value = null
@@ -156,11 +154,6 @@ async function toggle(row: Api.AdminUser, feature: string) {
 
 <template>
   <section class="admin-block">
-    <header class="section-header">
-      <h2>{{ t(`${K}title`) }}</h2>
-      <span v-if="!showingSearch" class="count-badge">{{ granted.length }}</span>
-    </header>
-
     <p class="section-note">{{ t(`${K}note`) }}</p>
 
     <p v-if="status" class="status">{{ status }}</p>
@@ -278,23 +271,6 @@ async function toggle(row: Api.AdminUser, feature: string) {
   flex-direction: column;
   gap: 12px;
   padding: 14px;
-}
-
-.section-header {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.section-header h2 {
-  color: var(--title);
-  flex: 1;
-  font-family: teutonic, sans-serif;
-  font-size: 1.6rem;
-  line-height: 1;
-  margin: 0;
-  text-transform: uppercase;
 }
 
 .count-badge {

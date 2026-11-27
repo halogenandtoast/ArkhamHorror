@@ -206,11 +206,6 @@ const isFuture = (iso: string) => new Date(iso).getTime() > Date.now()
 
 <template>
   <section class="admin-block">
-    <header class="section-header">
-      <h2>{{ t(`${K}title`) }}</h2>
-      <span class="count-badge">{{ rows.length }}</span>
-    </header>
-
     <p class="section-note">{{ t(`${K}liveWarning`) }}</p>
 
     <p v-if="status" class="status">{{ status }}</p>
@@ -362,39 +357,6 @@ const isFuture = (iso: string) => new Date(iso).getTime() > Date.now()
   flex-direction: column;
   gap: 12px;
   padding: 14px;
-}
-
-.section-header {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.section-header h2 {
-  color: var(--title);
-  flex: 1;
-  font-family: teutonic, sans-serif;
-  font-size: 1.6rem;
-  line-height: 1;
-  margin: 0;
-  text-transform: uppercase;
-}
-
-.count-badge {
-  align-items: center;
-  background: var(--background-dark);
-  border: 1px solid var(--spooky-green);
-  border-left-width: 4px;
-  border-radius: 3px;
-  color: color-mix(in srgb, var(--spooky-green) 78%, white);
-  display: inline-flex;
-  font-size: 0.78rem;
-  font-weight: 800;
-  justify-content: center;
-  line-height: 1;
-  min-width: 2.1em;
-  padding: 5px 7px;
 }
 
 .section-note {

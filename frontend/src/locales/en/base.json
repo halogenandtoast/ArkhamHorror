@@ -2030,7 +2030,6 @@
     "notConnected": "not connected"
   },
   "adminArchives": {
-    "title": "Archived Games",
     "disabled": "disabled — no bucket configured",
     "schedule": "nightly · {months}mo retention · {batch} games every {pause}s until done",
     "manualOnly": "manual only — the nightly job is off",
@@ -2083,7 +2082,6 @@
     }
   },
   "adminSubmissions": {
-    "title": "Card Set Submissions",
     "filterLabel": "Filter submissions",
     "tab": {
       "pending": "Pending",
@@ -2155,7 +2153,6 @@
     "showing": "{first}\u2013{last} of {total}"
   },
   "adminUsers": {
-    "title": "Users",
     "note": "Find an account by name or email \u2014 granting a feature here is the only way into it",
     "loading": "Loading accounts\u2026",
     "loadFailed": "Could not load the accounts.",
@@ -2187,7 +2184,6 @@
     }
   },
   "adminNotifications": {
-    "title": "Site Notifications",
     "liveWarning": "Writing one publishes it \u2014 there is no draft state",
     "loading": "Loading notifications\u2026",
     "loadFailed": "Could not load the notifications.",
@@ -2236,7 +2232,6 @@
     "restoreFailed": "That game's undo history could not be fetched. Nothing else is affected \u2014 you can keep playing."
   },
   "adminStats": {
-    "title": "Game Stats",
     "loading": "Loading stats…",
     "loadFailed": "Could not load the stats.",
     "refreshFailed": "Could not rebuild the stats.",
@@ -2415,11 +2410,9 @@
       "showClosed": "Show finished columns",
       "moveTo": "Move to",
       "emptyColumn": "Nothing here.",
-      "publicList": "Public list",
-      "import": "Import from GitHub",
-      "importing": "Importing\u2026",
-      "imported": "Imported {imported}, skipped {skipped} already here.",
-      "importFailed": "That file could not be imported."
+      "markDeployed": "Deployed",
+      "markDeployedLong": "Move every report in this column to Done",
+      "confirmDeployed": "Mark {n} report done? Whoever filed it hears that it is out. | Mark {n} reports done? Whoever filed them hears that they are out."
     },
     "panel": {
       "title": "Your reports",
@@ -2427,8 +2420,7 @@
       "more": "Show {count} more",
       "fewer": "Show fewer",
       "archive": "Archived ({count})",
-      "archiveTitle": "Archived",
-      "allClear": "Nothing of yours is waiting on anybody."
+      "archiveTitle": "Archived"
     },
     "new": {
       "title": "File a report",

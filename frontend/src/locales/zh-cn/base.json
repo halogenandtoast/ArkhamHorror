@@ -1477,7 +1477,6 @@
     }
   },
   "adminSubmissions": {
-    "title": "卡集提交",
     "filterLabel": "筛选提交",
     "tab": {
       "pending": "待处理",
@@ -1549,7 +1548,6 @@
     "showing": "第 {first}–{last} 项，共 {total} 项"
   },
   "adminUsers": {
-    "title": "用户",
     "note": "按名称或邮箱查找账号——在此授予功能是唯一的开通途径",
     "loading": "正在加载账号…",
     "loadFailed": "无法加载账号。",
@@ -1581,7 +1579,6 @@
     }
   },
   "adminNotifications": {
-    "title": "站点通知",
     "liveWarning": "保存即发布——没有草稿状态",
     "loading": "正在加载通知…",
     "loadFailed": "无法加载通知。",
@@ -1627,7 +1624,6 @@
     "restoreFailed": "无法获取该游戏的撤销历史。其他内容不受影响——你仍可继续游戏。"
   },
   "adminStats": {
-    "title": "游戏统计",
     "loading": "正在加载统计…",
     "loadFailed": "无法加载统计。",
     "refreshFailed": "无法重建统计。",

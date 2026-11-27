@@ -293,7 +293,6 @@ const progressHere = computed(() => {
 <template>
   <section class="admin-block">
     <header class="section-header">
-      <h2>{{ t(`${K}title`) }}</h2>
       <p v-if="stats" class="freshness">
         <template v-if="!stats.populated">{{ t(`${K}neverBuilt`) }}</template>
         <template v-else-if="staleness">
@@ -805,15 +804,6 @@ const progressHere = computed(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-}
-
-.section-header h2 {
-  color: var(--title);
-  font-family: teutonic, sans-serif;
-  font-size: 1.6rem;
-  line-height: 1;
-  margin: 0;
-  text-transform: uppercase;
 }
 
 .freshness {

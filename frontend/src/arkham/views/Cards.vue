@@ -65,7 +65,8 @@ const displayOptions = { alpha: dev, beta: !!useUserStore().currentUser?.beta, d
 const homebrewBoxes: { id: string; name: string; icon: string }[] = [
   ...filterDisplayable(homebrewCampaigns, displayOptions).map((campaign) => ({
     id: campaign.id,
-    name: localizedOr(`${homebrewCampaignScope(campaign.id)}.name`, campaign.name),
+    // campaignNames is bundled; `<scope>.name` only loads with the campaign's prose.
+    name: localizedOr(`campaignNames.${campaign.id}`, localizedOr(`${homebrewCampaignScope(campaign.id)}.name`, campaign.name)),
     icon: campaignSetIcon(campaign.id),
   })),
   ...filterDisplayable(homebrewStandaloneScenarios, displayOptions).map((scenario) => ({

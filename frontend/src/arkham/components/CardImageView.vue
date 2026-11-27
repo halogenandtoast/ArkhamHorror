@@ -84,12 +84,12 @@ const ancestralKnowledgeCardCount = (card: Arkham.CardDef) => ancestralKnowledge
 const bewitchingCardCount = (card: Arkham.CardDef) => bewitchingCardCounts.value.get(card.art) ?? 0
 const eldritchBrandCardCount = (card: Arkham.CardDef) => eldritchBrandCardCounts.value.get(card.art) ?? 0
 
-const marketTooltip = (card: Arkham.CardDef) => `Attached to Market deck (x ${marketCardCount(card)})`
-const spiritTooltip = (card: Arkham.CardDef) => `In Spirit deck (x ${spiritCardCount(card)})`
-const stickToThePlanTooltip = (card: Arkham.CardDef) => `Attached to Stick to the Plan (x ${stickToThePlanCardCount(card)})`
-const ancestralKnowledgeTooltip = (card: Arkham.CardDef) => `Attached to Ancestral Knowledge (x ${ancestralKnowledgeCardCount(card)})`
-const bewitchingTooltip = (card: Arkham.CardDef) => `Attached to Bewitching (x ${bewitchingCardCount(card)})`
-const eldritchBrandTooltip = (card: Arkham.CardDef) => `Branded by Eldritch Brand (x ${eldritchBrandCardCount(card)})`
+const marketTooltip = (card: Arkham.CardDef) => t('deckUi.attachedToMarket', { n: marketCardCount(card) })
+const spiritTooltip = (card: Arkham.CardDef) => t('deckUi.inSpiritDeck', { n: spiritCardCount(card) })
+const stickToThePlanTooltip = (card: Arkham.CardDef) => t('deckUi.attachedToStickToThePlan', { n: stickToThePlanCardCount(card) })
+const ancestralKnowledgeTooltip = (card: Arkham.CardDef) => t('deckUi.attachedToAncestralKnowledge', { n: ancestralKnowledgeCardCount(card) })
+const bewitchingTooltip = (card: Arkham.CardDef) => t('deckUi.attachedToBewitching', { n: bewitchingCardCount(card) })
+const eldritchBrandTooltip = (card: Arkham.CardDef) => t('deckUi.brandedByEldritchBrand', { n: eldritchBrandCardCount(card) })
 
 const isUnderworldMarketCard = (card: Arkham.CardDef) => marketCardCount(card) > 0
 const isSpiritDeckCard = (card: Arkham.CardDef) => spiritCardCount(card) > 0

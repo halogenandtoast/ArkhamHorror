@@ -1,5 +1,7 @@
 import base from '@/locales/ko/base.json'
 import cardOption from '@/locales/ko/cardOption.json'
+import modifiers from '@/locales/ko/modifiers.json'
+import traits from '@/locales/ko/traits.json'
 import { homebrewTraits } from '@/locales/homebrew'
 import event from '@/locales/ko/event.json'
 import log from '@/locales/ko/log.json'
@@ -21,6 +23,8 @@ export { default as engineText } from '@/locales/ko/engineText.json'
 export default
   { ...base
   , ...cardOption
+  , ...modifiers
+  , ...traits
   , ...event
   , ...campaignLog
   , ...gameBoard
@@ -32,6 +36,8 @@ export default
   , scenarioNames
   , campaignNames
   , cardSetNames
-  , ...homebrewTraits('ko')
+  // Homebrew-only traits (base.json `traitNames`) join the core labels, so
+  // `trait.<Name>` answers for them too; campaign traits.json files win.
+  , ...homebrewTraits('ko', { ...traits.trait, ...base.traitNames })
   , theLabyrinthsOfLunacy: theLabyrinthsOfLunacyLog
   }

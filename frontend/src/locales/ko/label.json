@@ -450,7 +450,10 @@
     "upTo": "최대 {inner}",
     "use": "{useType} {count}개 소비",
     "useAll": "{useType} 모두 소비",
-    "useUpTo": "{useType} {min}-{max}개 소비"
+    "useUpTo": "{useType} {min}-{max}개 소비",
+    "dream": "꿈 {count}개 | 꿈 {count}개",
+    "placeDream": "꿈꾸는 카드에 꿈을 {count}개 놓기 | 꿈꾸는 카드에 꿈을 {count}개 놓기",
+    "flipAssetFacedown": "꿈 {count}개와 함께 뒷면으로 뒤집기 | 꿈 {count}개와 함께 뒷면으로 뒤집기"
   },
   "core2": {
     "cosmicEvils": {
@@ -589,5 +592,7 @@
   "addCurseTokensToChaosBag": "혼돈 주머니에 {'{'}curse{'}'} 토큰 추가",
   "doneMovingScientists": "과학자 옮기기 완료",
   "doneEngagingEnemies": "적과 교전 완료",
-  "doneDiscoveringClues": "단서 발견 완료"
+  "doneDiscoveringClues": "단서 발견 완료",
+  "chooseDreamingCardToMoveDreamFrom": "꿈을 옮길 꿈꾸는 카드 선택",
+  "chooseDreamingCardToMoveDreamTo": "그 꿈을 옮겨 놓을 꿈꾸는 카드 선택"
 }

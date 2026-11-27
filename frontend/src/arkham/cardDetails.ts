@@ -6,6 +6,7 @@ import { homebrewBoxLabelKey, homebrewBoxName, homebrewCampaignScope } from '@/a
 import sets from '@/arkham/data/sets.json'
 import { useDbCardStore, type ArkhamDBCard } from '@/stores/dbCards'
 import { currentLocale, messagesFor } from '@/locales/i18n'
+import { shallowRef } from 'vue'
 
 const viewerLanguage = () =>
   (typeof localStorage === 'undefined' ? null : localStorage.getItem('language')) || 'en'
@@ -65,14 +66,46 @@ const localizedDbCard = (card: CardDef): ArkhamDBCard | null => {
 const isBorrowedBack = (card: CardDef, match: ArkhamDBCard) =>
   match.code !== card.art && card.art.endsWith('b')
 
-/* A homebrew card no card data translates may still be named by its box:
- * `<scope>.cardNames.<number>` in the box's own locale folder, either a string
- * or { title, subtitle }. "063aa" falls back to "063" when only the printed
- * card is named. */
+/* Homebrew card names live in each box's `locales/<lang>/cardNames.json`. The
+ * box's other locale files are only fetched when a game of that campaign opens
+ * (locales/campaigns.ts), but the card browser and deck lists name homebrew
+ * cards without one -- so the name tables get a lazy glob of their own: the
+ * viewer's language only, fetched the first time a homebrew card is named.
+ * The shallowRef makes every list drawn before they arrive redraw once they
+ * do. A game that has loaded its scope finds the same table there as well. */
+const cardNameModules = import.meta.glob('@homebrew/*/locales/*/cardNames.json') as Record<
+  string,
+  () => Promise<{ default: { cardNames?: Record<string, unknown> } }>
+>
+const homebrewCardNames = shallowRef<Record<string, Record<string, unknown>>>({})
+let cardNamesLocale: string | null = null
+
+const ensureHomebrewCardNames = (language: string) => {
+  if (cardNamesLocale === language) return
+  cardNamesLocale = language
+  const wanted = Object.entries(cardNameModules).flatMap(([path, load]) => {
+    const match = path.match(/\/([^/]+)\/locales\/([^/]+)\/cardNames\.json$/)
+    return match?.[1] && match[2] === language ? [[match[1], load] as const] : []
+  })
+  if (!wanted.length) return
+  void Promise.all(wanted.map(async ([box, load]) => [box, (await load()).default.cardNames ?? {}] as const))
+    .then((tables) => {
+      if (cardNamesLocale === language) homebrewCardNames.value = Object.fromEntries(tables)
+    })
+    .catch(() => { cardNamesLocale = null })
+}
+
+/* A homebrew card no card data translates may still be named by its box,
+ * either as a string or as { title, subtitle }. "063aa" falls back to "063"
+ * when only the printed card is named. */
 const homebrewTitleParts = (card: CardDef): { title: string; subtitle: string | null } | null => {
   const art = card.art.match(/^:([^:]+):(.+)$/)
   if (!art) return null
-  const names = localMessage(`${homebrewCampaignScope(art[1])}.cardNames`)
+  const language = viewerLanguage()
+  if (language === 'en') return null
+  ensureHomebrewCardNames(language)
+  const box = art[1]!
+  const names = homebrewCardNames.value[box] ?? localMessage(`${homebrewCampaignScope(box)}.cardNames`)
   if (!names || typeof names !== 'object') return null
   const table = names as Record<string, unknown>
   const entry = table[art[2]] ?? table[art[2].replace(/[a-z]+$/, '')]
@@ -275,8 +308,12 @@ export const cardSetText = (card: CardDef, packName?: string) => {
 
   const homebrew = homebrewArt(card.art)
   if (homebrew) {
+    // campaignNames is bundled; the box's own `<scope>.name` only arrives with its
+    // campaign's prose, so it is the fallback rather than the first choice.
     const labelKey = homebrewBoxLabelKey(homebrew.box)
-    const name = (labelKey && localString(labelKey)) || homebrewBoxName(homebrew.box)
+    const name = localString(`campaignNames.:${homebrew.box}`)
+      || (labelKey && localString(labelKey))
+      || homebrewBoxName(homebrew.box)
     if (!name) return localString('cardsView.homebrew') || 'Homebrew'
     return homebrew.number === null ? name : `${name} ${homebrew.number}`
   }

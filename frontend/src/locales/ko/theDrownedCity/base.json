@@ -25,7 +25,8 @@
   ],
   "label": {
     "naomiOBannion": {
-      "doNotTakeDamage": "피해 1을 받지 않습니다"
+      "doNotTakeDamage": "피해 1을 받지 않습니다",
+      "chooseDamage": "‘나오미 오베니언’이 준비되는 것을 막기 위해 피해를 1 받을 조사자 선택"
     },
     "dreamingMigration": {
       "drawTopmostEnemy": "버린 조우 카드 더미에서 가장 위에 있는 적을 뽑습니다."

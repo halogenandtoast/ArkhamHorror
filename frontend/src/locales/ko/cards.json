@@ -1345,6 +1345,49 @@
     },
     "zeal": {
       "putIntoPlayFromDiscard": "버린 카드 더미에서 플레이 영역에 두기"
+    },
+    "boardingParty5": {
+      "doNotAttackAgain": "조력자를 소진해 다시 공격하지 않음"
+    },
+    "callOfTheDreamlands": {
+      "reduceCost": "비용을 1 낮춰 플레이함",
+      "reduceDreaming": "꿈꾸기 값을 1 낮춰 플레이함"
+    },
+    "corsairsCache": {
+      "addToHand": "그 카드를 당신의 손으로 가져옴",
+      "discardForResources": "그 카드를 버리고 인쇄된 비용만큼 자원을 얻음"
+    },
+    "dreamQuest": {
+      "drawCard": "카드를 1장 뽑음"
+    },
+    "dreamsOfPeace": {
+      "healDamageAndHorror": "피해 1과 공포 1을 회복함"
+    },
+    "enchantingFife": {
+      "spendCharge": "충전을 1개 사용함",
+      "placeDream": "당신이 조종하는 꿈꾸는 카드에 꿈을 1개 놓음",
+      "drawACard": "카드를 1장 뽑음",
+      "doNotDrawACard": "카드를 뽑지 않음"
+    },
+    "explorersSextant": {
+      "exhaustForClue": "‘탐험가의 육분의’를 소진해 당신이 위치한 장소에서 단서를 1개 추가로 발견함"
+    },
+    "knightsLongsword": {
+      "doNotExhaust": "‘기사의 장검’을 소진하지 않음"
+    },
+    "lashOfUlthar2": {
+      "exhaustToEvade": "‘울타르의 채찍’을 소진해 그 적을 자동으로 회피함"
+    },
+    "lunarCharts": {
+      "doNotMoveDream": "꿈을 옮기지 않음"
+    },
+    "lunarSight3": {
+      "spendChargeForShroudAndClue": "충전을 1개 사용해 당신이 위치한 장소의 장막값을 2 낮추고 단서를 1개 추가로 발견함",
+      "takeHorrorAndDiscard": "공포를 1 받고 ‘달의 시야’를 버림"
+    },
+    "realityFracture3": {
+      "spendChargeForFightAndDamage": "충전을 1개 사용해 공격받는 적의 전투값을 2 낮추고 피해를 +1 줌",
+      "takeDamageAndDiscard": "피해를 1 받고 ‘현실 균열’을 버림"
     }
   },
   "title": {
@@ -1668,6 +1711,21 @@
     "yaotl1": {
       "fastDiscardThe": "{fast}: 당신의 덱 맨 위 카드를 1장 버립니다(단계당 1번 한정).",
       "fastExhaustYaotl": "{fast} ‘야오틀’을 소진합니다: 이번 능력 테스트 동안, 당신의 버린 카드 더미 맨 위 카드에 나와 있는 능력 아이콘({wild} 아이콘 제외)마다 그와 일치하는 능력값에 +1씩을 얻습니다."
+    },
+    "grislyMask": {
+      "disengage": "{'{'}fast{'}'} ‘소름끼치는 “가면”’을 소진합니다: 모든 적과의 교전을 해제합니다. 당신의 다음 차례가 시작할 때까지, 당신은 이동할 수 없고 적에게 피해를 주거나 적과 교전할 수 없습니다.",
+      "horrorForDamage": "{'{'}fast{'}'} 직접적인 공포를 1 받고 ‘소름끼치는 “가면”’을 소진합니다: 당신이 위치한 장소에 있는 적 하나에게 피해를 2 줍니다."
+    },
+    "horrorInClay": {
+      "blankOrMove": "{'{'}fast{'}'} ‘점토로 빚은 공포’를 소진합니다: 라운드가 끝날 때까지 이 자산의 인쇄된 글 상자를 (<b>특성</b>은 제외하고) 백지로 취급하거나, _별의 자손_ 적 하나를 아무 방향으로 1번 이동시킵니다."
+    },
+    "shardOfYchlecht": {
+      "ignoreAttack": "{'{'}reaction{'}'} 당신은 매 라운드 _별의 자손_ 또는 _심해인_ 적이 당신을 대상으로 하는 첫 번째 공격을 무시해도 됩니다.",
+      "exhaustEnemy": "{'{'}reaction{'}'} _별의 자손_ 또는 _심해인_ 적이 당신이 위치한 장소에 진입할 때, 이 카드를 소진합니다: 그 적을 소진시킵니다."
+    },
+    "tidalTablet": {
+      "moveOnFlood": "{'{'}reaction{'}'} 당신이 위치한 장소의 침수 수준이 높아질 때: 이어진 장소로 이동합니다.",
+      "shiftFloodLevel": "{'{'}fast{'}'} ‘조수의 서판’을 소진합니다: 당신이 위치한 장소의 침수 수준을 한 단계 높입니다. 그런 다음, 침수된 다른 장소 한 곳을 선택해 그 장소의 침수 수준을 한 단계 낮춥니다."
     }
   }
 }

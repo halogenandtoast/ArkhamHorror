@@ -553,10 +553,14 @@ payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
               availableResources <- getSpendableResources iid
               pure $ min n (availableResources `div` resources)
             SealCost matcher -> min n <$> selectCount matcher
+            UseCost assetMatcher uType k | k > 0 -> do
+              assets <- select $ replaceYouMatcher iid assetMatcher
+              uses <- getSpendableUseCount assets uType
+              pure $ min n (uses `div` k)
             _ -> pure n
           name <- fieldMap InvestigatorName toTitle iid
           choiceId <- getRandom
-          pushWhen canAfford
+          pushWhen (canAfford && maxUpTo > 0)
             $ Ask player
             $ PayCostQuestion cost
             $ ChoosePaymentAmounts
@@ -581,6 +585,10 @@ payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
             SealCost matcher -> selectCount matcher
             HandDiscardCost z matcher -> do
               min n . (`div` z) <$> selectCount (inHandOf NotForPlay iid <> basic DiscardableCard <> matcher)
+            UseCost assetMatcher uType k | k > 0 -> do
+              assets <- select $ replaceYouMatcher iid assetMatcher
+              uses <- getSpendableUseCount assets uType
+              pure $ min n (uses `div` k)
             _ -> pure n
           name <- fieldMap InvestigatorName toTitle iid
           choiceId <- getRandom

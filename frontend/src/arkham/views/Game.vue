@@ -513,6 +513,15 @@ watch(processing, (busy) => {
 const storyAnswerPending = ref(false)
 const oldQuestion = ref<Record<string, Question> | null>(null)
 const skipAllPending = ref<Set<string>>(new Set())
+/* A newly arrived trigger window has to be visible before a key can decline it.
+ * Space advances apply-results and lone forced prompts too, so one held key --
+ * there is no auto-repeat on a keydown listener to stop it -- or a habitual
+ * extra tap answered the reaction window queued behind them before it had
+ * rendered, and the player's own reaction vanished unseen (#6073). Only the
+ * Skip Triggers path is gated: the other Space fallbacks resolve forced prompts
+ * with no alternative, and holding them off would make advancing sticky. */
+const questionArrivedAt = ref(0)
+const SKIP_TRIGGERS_DWELL_MS = 250
 const { t, te } = useI18n()
 const phaseNotification = ref<Phase | null>(null)
 const phaseNotificationQueue = ref<Phase[]>([])
@@ -1172,6 +1181,17 @@ const skipAllAvailable = computed(() => {
 })
 
 const skipAllInProgress = computed(() => skipAllPending.value.size > 0)
+
+/* Keyed on what this seat is actually being asked, not on object identity: every
+ * update decodes a fresh question object, so watching the object would restart
+ * the dwell on unrelated table activity. `scenarioSteps` alone is not enough
+ * either -- simultaneous asks can park two prompts on one version. */
+watch(
+  () => `${game.value?.scenarioSteps ?? ''}:${choices.value.map((c) => c.tag).join(',')}`,
+  () => {
+    questionArrivedAt.value = performance.now()
+  },
+)
 
 function setGameQuestion(question: Record<string, Question>) {
   if (!game.value) return
@@ -2190,6 +2210,10 @@ const handleKeyPress = (event: KeyboardEvent) => {
 
   if (isKey('continue', event) || event.code === 'Space') {
     event.preventDefault()
+    /* Auto-repeat fans one held key out across every question that arrives while
+     * it is down, which is how a reaction window got declined before it rendered
+     * (#6073). A press advances one question. */
+    if (event.repeat) return
 
     // Dismissing the draw spotlight runs the flight to the hand, so it cannot go
     // through continueUI's blunt teardown.
@@ -2207,6 +2231,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
       (c) => c.tag === Message.MessageType.SKIP_TRIGGERS_BUTTON,
     )
     if (skipTriggers !== -1) {
+      if (performance.now() - questionArrivedAt.value < SKIP_TRIGGERS_DWELL_MS) return
       choose(skipTriggers)
       return
     }

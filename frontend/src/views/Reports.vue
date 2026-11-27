@@ -162,7 +162,12 @@ watch(showArchive, () => (expanded.value = false))
           </button>
         </div>
 
-        <select :value="filters.status" @change="apply({ status: ($event.target as HTMLSelectElement).value })">
+        <select
+          class="rich-select"
+          :value="filters.status"
+          @change="apply({ status: ($event.target as HTMLSelectElement).value })"
+        >
+          <button type="button"><selectedcontent></selectedcontent></button>
           <option value="open">{{ $t('reports.filter.open') }}</option>
           <option value="closed">{{ $t('reports.filter.closed') }}</option>
           <option value="all">{{ $t('reports.filter.all') }}</option>
@@ -171,7 +176,12 @@ watch(showArchive, () => (expanded.value = false))
           </option>
         </select>
 
-        <select :value="filters.sort" @change="apply({ sort: ($event.target as HTMLSelectElement).value })">
+        <select
+          class="rich-select"
+          :value="filters.sort"
+          @change="apply({ sort: ($event.target as HTMLSelectElement).value })"
+        >
+          <button type="button"><selectedcontent></selectedcontent></button>
           <option value="recent">{{ $t('reports.sort.recent') }}</option>
           <option value="new">{{ $t('reports.sort.new') }}</option>
         </select>
@@ -278,12 +288,16 @@ h1 {
   color: var(--text);
 }
 
-select {
+/* One row, one size. These stand shoulder to shoulder with the kind chips,
+   and a control left at the browser's own 1rem is a few pixels taller than
+   everything beside it -- which reads as a row that failed to line up rather
+   than as a control that is bigger on purpose. The rest of the dropdown's
+   chrome is shared; see styles/select.css. */
+.filters .rich-select {
   background: var(--box-background);
-  border: 1px solid var(--box-border);
-  border-radius: 4px;
-  color: var(--text);
-  padding: 7px 8px;
+  /* A pixel more than the shared padding, so the dropdowns stand exactly as
+     tall as the chips and the search box they are in line with. */
+  padding: 8px 10px;
 }
 
 .search {
@@ -299,6 +313,7 @@ select {
   border-radius: 4px;
   color: var(--text);
   flex: 1;
+  font-size: 0.85em;
   padding: 7px 10px;
 }
 
@@ -308,6 +323,7 @@ select {
   border-radius: 4px;
   color: var(--title);
   cursor: pointer;
+  font-size: 0.85em;
   padding: 7px 11px;
 }
 

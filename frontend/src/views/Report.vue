@@ -247,21 +247,21 @@ const stepsSince = computed(() => {
               <label>
                 {{ $t('reports.admin.status') }}
                 <select
-                  class="rich"
+                  class="rich-select"
                   :value="detail.report.status"
                   :disabled="working"
                   @change="change({ status: ($event.target as HTMLSelectElement).value as Api.ReportStatus })"
                 >
                   <button type="button"><selectedcontent></selectedcontent></button>
                   <option v-for="status in Api.OPEN_REPORT_STATUSES.concat(['done', 'declined', 'duplicate'])" :key="status" :value="status">
-                    <ReportStatusTag :status="status" small />
+                    <ReportStatusTag :status="status" />
                   </option>
                 </select>
               </label>
               <label>
                 {{ $t('reports.admin.kind') }}
                 <select
-                  class="rich"
+                  class="rich-select"
                   :value="detail.report.kind"
                   :disabled="working"
                   @change="change({ kind: ($event.target as HTMLSelectElement).value as Api.ReportKind })"
@@ -484,75 +484,20 @@ h2 {
   gap: 4px;
 }
 
-/* The customizable select. `base-select` replaces the whole widget, including
-   its menu, with something styleable -- so everything the UA drew for free
-   (the arrow, the row padding, the checkmark gutter) has to be said here. */
-.rich,
-.rich::picker(select) {
-  appearance: base-select;
-}
-
-.rich {
-  align-items: center;
-  display: flex;
-  gap: 8px;
-  justify-content: space-between;
-  text-align: left;
-}
-
-.rich::picker-icon {
-  color: var(--title);
-  transition: rotate 0.15s ease;
-}
-
-.rich:open::picker-icon {
-  rotate: 180deg;
-}
-
-.rich::picker(select) {
-  background: var(--box-background);
-  border: 1px solid var(--box-border);
-  border-radius: 5px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  padding: 4px;
-}
-
-/* `display` has to wait for the open state: the UA keeps a closed picker at
-   `display: none`, and setting a display unconditionally leaves both menus
-   standing open on the page. */
-.rich::picker(select):popover-open {
-  display: grid;
-  gap: 2px;
-}
-
-.rich option {
-  align-items: center;
-  border-radius: 4px;
-  color: var(--text);
-  display: flex;
-  gap: 8px;
-  padding: 6px 8px;
-}
-
-.rich option:hover,
-.rich option:focus {
-  background: var(--background-dark);
-}
-
-/* The tick sits in a gutter of its own and pushes every row across; the
-   checked row is already obvious from the button above it. */
-.rich option::checkmark {
-  display: none;
-}
-
-.rich .kind.bug {
+/* The two kinds, in the colours the tracker gives them everywhere else. The
+   rest of this dropdown's chrome is shared -- see styles/select.css. */
+.rich-select .kind.bug {
   color: var(--survivor);
 }
 
-.rich .kind.feature {
+.rich-select .kind.feature {
   color: var(--rogue);
 }
 
+/* One size for everything in this column: the chips above are 0.85em of the
+   panel, and a control at the browser's own 1rem next to them read as a
+   different piece of furniture. In rem rather than em because the label these
+   sit inside is already 0.8em, and a relative size would compound with it. */
 .controls select,
 .controls input,
 .controls button {
@@ -560,7 +505,7 @@ h2 {
   border: 1px solid var(--box-border);
   border-radius: 4px;
   color: var(--text);
-  font-size: 1rem;
+  font-size: 0.85rem;
   padding: 6px 8px;
 }
 

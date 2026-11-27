@@ -1,0 +1,90 @@
+/* The customizable <select>.
+ *
+ * `appearance: base-select` hands over the whole widget -- the button, the
+ * popup and the rows in it -- so that an option can hold a status pill or an
+ * icon rather than a line of plain text. Everything the browser used to draw
+ * for free has to be said again here, which is why it is said once: the
+ * tracker has these in three places, and a dropdown that matched the site in
+ * two of them would read worse than one that matched in none.
+ *
+ * Where base-select is unsupported the browser draws its own menu out of the
+ * options' text, which is what all of these looked like before.
+ */
+.rich-select,
+.rich-select::picker(select) {
+  appearance: base-select;
+}
+
+.rich-select {
+  align-items: center;
+  background: var(--background-dark);
+  border: 1px solid var(--box-border);
+  border-radius: 4px;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  font-size: 0.85em;
+  gap: 8px;
+  justify-content: space-between;
+  padding: 7px 10px;
+  text-align: left;
+}
+
+/* The arrow is drawn here rather than left to the browser: its own is a
+   disclosure triangle set at the control's text size, a heavier mark than the
+   chevrons the rest of the site points down with. */
+.rich-select::picker-icon {
+  border-bottom: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  box-sizing: border-box;
+  color: var(--title);
+  content: "";
+  display: block;
+  height: 0.45em;
+  /* A rotated square's centre is not the chevron's, so it sits low in the line
+     unless it is nudged back up. */
+  margin-bottom: 0.16em;
+  rotate: 45deg;
+  transition: rotate 0.15s ease;
+  width: 0.45em;
+}
+
+.rich-select:open::picker-icon {
+  rotate: 225deg;
+}
+
+.rich-select::picker(select) {
+  background: var(--box-background);
+  border: 1px solid var(--box-border);
+  border-radius: 5px;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 50%);
+  padding: 4px;
+}
+
+/* `display` has to wait for the open state: a closed picker is kept at
+   `display: none` by the browser, and setting a display unconditionally
+   leaves every menu on the page standing open. */
+.rich-select::picker(select):popover-open {
+  display: grid;
+  gap: 2px;
+}
+
+.rich-select option {
+  align-items: center;
+  border-radius: 4px;
+  color: var(--text);
+  display: flex;
+  gap: 8px;
+  padding: 6px 8px;
+}
+
+.rich-select option:hover,
+.rich-select option:focus {
+  background: var(--background-dark);
+}
+
+/* The tick sits in a gutter of its own and pushes every row across; which row
+   is chosen is already legible from the button above them. */
+.rich-select option::checkmark {
+  display: none;
+}

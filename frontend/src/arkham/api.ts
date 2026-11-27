@@ -237,6 +237,15 @@ export const fetchMyReports = async (): Promise<Report[]> => {
   return data
 }
 
+/* Reports that look like the one being filed, for the "already reported?"
+ * panel on the filing form. Ranked on the server by how many of the typed
+ * words each report uses, and closed ones are included: "fixed already" is an
+ * answer, and it is not on the open list. */
+export const fetchSimilarReports = async (q: string): Promise<Report[]> => {
+  const { data } = await api.get('reports/similar', { params: { q } })
+  return data
+}
+
 export const fetchReport = async (number: number): Promise<ReportDetail> => {
   const { data } = await api.get(`reports/${number}`)
   return data

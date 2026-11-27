@@ -5,10 +5,11 @@
  * are in and the server takes the export from it -- so this page offers the
  * same attachment as a choice among your own games, and says why it matters.
  */
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import * as Api from '@/arkham/api'
+import ReportRow from '@/components/ReportRow.vue'
 import type { GameDetailsEntry } from '@/arkham/types/Game'
 
 const router = useRouter()
@@ -34,6 +35,59 @@ onMounted(async () => {
 const playable = computed(() =>
   games.value.flatMap((entry) => (entry.tag === 'game' ? [entry] : [])),
 )
+
+/* "Has this been said already?" -- asked while it can still change what they
+ * do, rather than answered with a duplicate marker three days later.
+ *
+ * Fed by the title and the description together, because the distinctive word
+ * is as often in one as the other, and left to the server to rank: it is the
+ * only side that can see the reports this account has never opened.
+ *
+ * Only ever a suggestion. Nothing here disables the form or asks for a
+ * confirmation -- plenty of reports that look alike are not the same bug, and
+ * the person filing is better placed to tell than a word count is.
+ */
+const MIN_TYPED = 8
+const DEBOUNCE_MS = 400
+
+const similar = ref<Api.Report[]>([])
+const dismissed = ref(false)
+
+/* Dropped responses rather than cancelled requests: a search that comes back
+ * after the one for what is now in the box would otherwise overwrite it. */
+let newest = 0
+let pending: ReturnType<typeof setTimeout> | null = null
+
+const lookForSimilar = async () => {
+  const typed = `${title.value} ${body.value}`.trim()
+  if (typed.length < MIN_TYPED) {
+    similar.value = []
+    return
+  }
+  const mine = ++newest
+  try {
+    const found = await Api.fetchSimilarReports(typed)
+    if (mine === newest) similar.value = found
+  } catch {
+    /* The suggestion is a courtesy; a filing form that reported its own
+     * failures to search would be worse than one that quietly does not. */
+    if (mine === newest) similar.value = []
+  }
+}
+
+watch([title, body], () => {
+  if (pending) clearTimeout(pending)
+  pending = setTimeout(lookForSimilar, DEBOUNCE_MS)
+})
+
+onBeforeUnmount(() => {
+  if (pending) clearTimeout(pending)
+})
+
+/* Dismissing is for the whole draft. Somebody who has read these and decided
+ * theirs is a different bug should not have to read them again at every
+ * keystroke. */
+const suggestions = computed(() => (dismissed.value ? [] : similar.value))
 
 const submit = async () => {
   sending.value = true
@@ -95,6 +149,24 @@ const submit = async () => {
             :placeholder="kind === 'bug' ? $t('reports.new.bugPlaceholder') : $t('reports.new.featurePlaceholder')"
           ></textarea>
         </label>
+
+        <!-- Opened in a new tab: this form is full of their typing, and a
+             suggestion that threw it away to show them somebody else's report
+             would be a worse outcome than the duplicate it prevented. -->
+        <section v-if="suggestions.length > 0" class="similar">
+          <header>
+            <h2>{{ $t('reports.new.similar') }}</h2>
+            <button type="button" class="dismiss" :title="$t('reports.new.similarDismiss')" @click="dismissed = true">
+              <font-awesome-icon icon="times" />
+            </button>
+          </header>
+          <p>{{ $t('reports.new.similarHint') }}</p>
+          <ul>
+            <li v-for="report in suggestions" :key="report.id">
+              <ReportRow :report="report" target="_blank" />
+            </li>
+          </ul>
+        </section>
 
         <label v-if="playable.length > 0" class="field">
           <span>{{ $t('reports.new.game') }}</span>
@@ -210,6 +282,57 @@ em {
   font-size: 0.82em;
   font-style: normal;
   opacity: 0.85;
+}
+
+.similar {
+  background: var(--background-dark);
+  border: 1px solid var(--box-border);
+  border-radius: 5px;
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+.similar > header {
+  align-items: baseline;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.similar h2 {
+  color: var(--title);
+  font-family: teutonic, sans-serif;
+  font-size: 1em;
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.similar p {
+  color: var(--title);
+  font-size: 0.85em;
+  margin: 0;
+}
+
+.similar ul {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dismiss {
+  background: none;
+  border: none;
+  color: var(--title);
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+.dismiss:hover {
+  color: var(--text);
 }
 
 .field {

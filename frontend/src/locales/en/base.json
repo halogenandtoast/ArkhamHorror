@@ -2444,7 +2444,10 @@
       "game": "Which game",
       "noGame": "Not about a particular game",
       "gameHint": "Attaching the game sends its last 30 steps along, which is usually the difference between a bug that can be fixed and one that cannot.",
-      "blocking": "I cannot carry on playing until this is fixed",
+      "similar": "Already reported?",
+    "similarHint": "If one of these is the same thing, say so there instead \u2014 a reply on the report that exists reaches the same people, and keeps the answer in one place.",
+    "similarDismiss": "These are all different",
+    "blocking": "I cannot carry on playing until this is fixed",
       "submit": "File it",
       "filing": "Filing\u2026",
       "failed": "That report could not be filed."

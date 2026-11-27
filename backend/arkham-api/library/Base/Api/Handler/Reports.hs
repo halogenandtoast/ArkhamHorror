@@ -26,6 +26,7 @@ module Base.Api.Handler.Reports (
   getApiV1ReportsR,
   postApiV1ReportsR,
   getApiV1MyReportsR,
+  getApiV1SimilarReportsR,
   getApiV1ReportR,
   postApiV1ReportCommentsR,
   postApiV1ReportSeenR,
@@ -40,6 +41,7 @@ module Base.Api.Handler.Reports (
 import Api.Arkham.Export (generateScenarioExport)
 import Api.BugUpload (uploadBugExport)
 import Data.Aeson qualified as Aeson
+import Data.Char (isAlphaNum)
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Data.Time.Clock
@@ -336,6 +338,146 @@ getApiV1MyReportsR = do
     limit (fromIntegral pageSize)
     pure r
   decorate viewer rows
+
+{- | Reports that look like the one somebody is about to file.
+
+Asked for while they type, so that the question a tracker exists to answer --
+"has this been said already?" -- is put to them while it can still change what
+they do, rather than by a duplicate marker three days later.
+
+Closed reports are in scope, and that is the point: "fixed in a version you are
+not on yet" and "we are not going to" are both better answers than filing
+again, and neither one is on the open list.
+
+Matched on words rather than on the string, because nobody writes a title the
+way the last person wrote it. Candidates are everything sharing a word with
+what has been typed; the ranking is done here rather than in SQL, since the
+table is hundreds of rows and a scoring expression built per term is a page of
+esqueleto to say what one fold says.
+-}
+getApiV1SimilarReportsR :: Handler [ReportRow]
+getApiV1SimilarReportsR = do
+  viewer <- getViewer
+  typed <- fromMaybe "" <$> lookupGetParam "q"
+  let terms = similarityTerms typed
+  if null terms
+    then pure []
+    else do
+      candidates <- runDB $ select do
+        r <- from $ table @Report
+        let
+          mentions t =
+            let fragment = (%) ++. val t ++. (%)
+             in (lower_ r.title `like` fragment) ||. (lower_ r.body `like` fragment)
+        where_ $ foldr (\t rest -> mentions t ||. rest) (val False) terms
+        traverse_ where_ [r.hidden ==. val False | not viewer.admin]
+        orderBy [desc r.updatedAt]
+        limit (fromIntegral candidateLimit)
+        pure r
+      let
+        ranked =
+          sortOn (Down . fst)
+            $ filter ((>= minimumScore) . fst) [(similarity terms (entityVal r), r) | r <- candidates]
+      decorate viewer (map snd (take suggestionLimit ranked))
+
+-- | How many rows the ranking reads, and how many of them are offered.
+candidateLimit, suggestionLimit :: Int
+candidateLimit = 200
+suggestionLimit = 5
+
+{- | What a report has to score before it is worth interrupting somebody with.
+
+One word in a title and anything else: one word on its own is a coincidence --
+a tracker full of reports called "Test" answers every search that has the word
+test anywhere in it -- and two of their words is the point at which two people
+are plausibly describing the same thing.
+-}
+minimumScore :: Int
+minimumScore = titleWeight + bodyWeight
+
+{- | A word in the title counts for more than the same word in the body. A
+title is what the filer chose to call the thing; a body mentions everything
+that happened to be on the table at the time.
+-}
+titleWeight, bodyWeight :: Int
+titleWeight = 3
+bodyWeight = 1
+
+{- | The words worth matching on, out of whatever has been typed so far.
+
+Short words and the ones every report here uses carry no signal and would match
+the whole tracker, so they go. What is left is deduplicated and capped: a long
+description would otherwise build a query with a hundred branches in it.
+
+Everything that is not a letter or a digit becomes a space, which also means no
+term can reach LIKE carrying a wildcard of its own.
+-}
+similarityTerms :: Text -> [Text]
+similarityTerms typed =
+  take maxTerms
+    $ ordNub
+    $ filter worthMatching
+    $ T.words
+    $ T.map (\c -> if isAlphaNum c then c else ' ')
+    $ T.toLower
+    $ T.take maxTyped typed
+ where
+  worthMatching word = T.length word >= 4 && word `notElem` tooCommon
+
+maxTerms, maxTyped :: Int
+maxTerms = 12
+maxTyped = 500
+
+{- | Words that are in half the tracker, so matching on them says nothing: the
+ordinary English ones, and the few this whole site is about.
+-}
+tooCommon :: [Text]
+tooCommon =
+  [ "that"
+  , "this"
+  , "with"
+  , "when"
+  , "from"
+  , "have"
+  , "been"
+  , "they"
+  , "them"
+  , "then"
+  , "than"
+  , "there"
+  , "their"
+  , "would"
+  , "could"
+  , "should"
+  , "about"
+  , "after"
+  , "before"
+  , "which"
+  , "while"
+  , "where"
+  , "because"
+  , "game"
+  , "games"
+  , "card"
+  , "cards"
+  , "arkham"
+  ]
+
+-- | How much a report looks like what is being typed.
+similarity :: [Text] -> Report -> Int
+similarity terms report =
+  sum
+    [ if term `T.isInfixOf` title
+        then titleWeight
+        else
+          if term `T.isInfixOf` body
+            then bodyWeight
+            else 0
+    | term <- terms
+    ]
+ where
+  title = T.toLower (reportTitle report)
+  body = T.toLower (reportBody report)
 
 -- | One report by its public number, with its communication log.
 getApiV1ReportR :: Int -> Handler ReportDetail

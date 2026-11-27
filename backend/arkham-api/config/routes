@@ -26,6 +26,7 @@
     /reports ApiV1ReportsP:
       / ApiV1ReportsR GET POST
       !/mine ApiV1MyReportsR GET
+      !/similar ApiV1SimilarReportsR GET
       /#Int ApiV1ReportP:
         / ApiV1ReportR GET
         /comments ApiV1ReportCommentsR POST

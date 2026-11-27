@@ -106,63 +106,97 @@ watch([statuses, kind], async () => {
 })
 
 window.addEventListener('resize', measure)
-onBeforeUnmount(() => window.removeEventListener('resize', measure))
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', measure)
+  endDrag()
+})
 
-/* The cards of one column of the board being shown, minus the one in hand:
- * a dragged card is drawn by the placeholder, not twice. */
+/* The cards of one column of the board being shown, the one in hand included:
+ * it is hidden while dragged, not taken out of the page. A drag whose source
+ * node leaves the document is a drag Chrome throws away. */
 const column = (status: string) =>
-  ofKind(kind.value).filter(
-    (report) => report.status === status && report.id !== dragging.value?.id,
-  )
+  ofKind(kind.value).filter((report) => report.status === status)
 
 // --- dragging -------------------------------------------------------------
 
 const dragging = ref<Api.Report | null>(null)
-const dropAt = ref<{ status: string; index: number } | null>(null)
+
+/* Where the card would land, named by the card it would land above -- `before:
+ * null` is the end of the column. An index would be counted against a list
+ * that still holds the hidden card in hand, and so would be off by one from
+ * the side the card came from. */
+const dropAt = ref<{ status: string; before: string | null } | null>(null)
 
 type Slot = { gap: true } | { gap: false; report: Api.Report }
 
-/* What a column draws: its cards, with a gap opened at the point the card in
- * hand would land. */
+/* What a column draws: its cards, with a gap opened where the card in hand
+ * would land. */
 const slots = (status: string): Slot[] => {
-  const cards: Slot[] = column(status).map((report) => ({ gap: false, report }))
-  if (dragging.value && dropAt.value?.status === status) {
-    cards.splice(dropAt.value.index, 0, { gap: true })
+  const cards: Slot[] = []
+  const at = dragging.value ? dropAt.value : null
+  for (const report of column(status)) {
+    if (at?.status === status && at.before === report.id) cards.push({ gap: true })
+    cards.push({ gap: false, report })
   }
+  if (at?.status === status && at.before === null) cards.push({ gap: true })
   return cards
 }
 
 const startDrag = (event: DragEvent, report: Api.Report) => {
-  dragging.value = report
   menuFor.value = null
   if (event.dataTransfer) {
     event.dataTransfer.effectAllowed = 'move'
     // Firefox will not start a drag without data on the transfer.
     event.dataTransfer.setData('text/plain', report.id)
   }
+  /* Only once the browser owns the drag. Hiding the card while `dragstart` is
+   * still running cancels the drag, which is what a card that shivers under
+   * the pointer and stays where it was looks like. */
+  takingHold = setTimeout(() => {
+    takingHold = null
+    dragging.value = report
+  }, 0)
 }
 
+/* A drag that is over before that timer runs would otherwise leave the card
+   hidden with nothing holding it. */
+let takingHold: ReturnType<typeof setTimeout> | null = null
+
 const endDrag = () => {
+  if (takingHold) clearTimeout(takingHold)
+  takingHold = null
   dragging.value = null
   dropAt.value = null
 }
 
-/* Where between the cards the pointer is. Measured against each card's middle,
- * over the cards still drawn -- the one in hand is already out of the list. */
+/* Which card the pointer is above, measured against each card's middle. The
+ * card in hand is hidden but still in the list, and is not one of the answers. */
 const overColumn = (event: DragEvent, status: string) => {
   if (!dragging.value) return
   event.preventDefault()
   const list = event.currentTarget as HTMLElement
-  const cards = [...list.querySelectorAll<HTMLElement>('[data-card]')]
-  let index = cards.length
-  for (let i = 0; i < cards.length; i += 1) {
-    const box = cards[i].getBoundingClientRect()
+  const cards = [...list.querySelectorAll<HTMLElement>('[data-card]')].filter(
+    (el) => el.dataset.card !== dragging.value?.id,
+  )
+  let before: string | null = null
+  for (const el of cards) {
+    const box = el.getBoundingClientRect()
     if (event.clientY < box.top + box.height / 2) {
-      index = i
+      before = el.dataset.card ?? null
       break
     }
   }
-  dropAt.value = { status, index }
+  dropAt.value = { status, before }
+}
+
+/* Leaving one of the column's own cards is not leaving the column: `dragleave`
+ * fires on the list every time the pointer crosses into a card inside it, and
+ * dropping the gap on each of them is the flicker. */
+const leaveColumn = (event: DragEvent, status: string) => {
+  const list = event.currentTarget as HTMLElement
+  const to = event.relatedTarget as Node | null
+  if (to && list.contains(to)) return
+  if (dropAt.value?.status === status) dropAt.value = null
 }
 
 const drop = async (status: string) => {
@@ -173,11 +207,11 @@ const drop = async (status: string) => {
     return
   }
 
-  /* Read the column while the card is still in hand: `column` leaves out what
-   * is being dragged, and letting go first would count it twice -- once in the
-   * column and once spliced back in. */
-  const ids = column(status).map((other) => other.id)
-  ids.splice(target.index, 0, report.id)
+  const ids = column(status)
+    .filter((other) => other.id !== report.id)
+    .map((other) => other.id)
+  const at = target.before ? ids.indexOf(target.before) : -1
+  ids.splice(at < 0 ? ids.length : at, 0, report.id)
   endDrag()
 
   /* Moved on screen before the server hears about it: a card that springs back
@@ -293,7 +327,7 @@ const remove = async (report: Api.Report) => {
         >
           <header>
             <ReportStatusTag :status="status as Api.ReportStatus" />
-            <span class="count">{{ column(status).length + (dragging?.status === status ? 1 : 0) }}</span>
+            <span class="count">{{ column(status).length }}</span>
             <button
               v-if="status === DEPLOYING && column(status).length > 0"
               class="deployed"
@@ -309,13 +343,27 @@ const remove = async (report: Api.Report) => {
           <ul
             class="cards"
             @dragover="overColumn($event, status)"
-            @dragleave="dropAt = dropAt?.status === status ? null : dropAt"
+            @dragleave="leaveColumn($event, status)"
             @drop.prevent="drop(status)"
           >
-            <li v-for="slot in slots(status)" :key="slot.gap ? 'gap' : slot.report.id">
+            <li
+              v-for="slot in slots(status)"
+              :key="slot.gap ? 'gap' : slot.report.id"
+              :class="{ inhand: !slot.gap && slot.report.id === dragging?.id }"
+            >
               <div v-if="slot.gap" class="placeholder"></div>
-              <article v-else data-card class="card" draggable="true" @dragstart="startDrag($event, slot.report)" @dragend="endDrag">
-                <RouterLink class="face" :to="{ name: 'Report', params: { number: slot.report.number } }">
+              <article
+                v-else
+                :data-card="slot.report.id"
+                class="card"
+                draggable="true"
+                @dragstart="startDrag($event, slot.report)"
+                @dragend="endDrag"
+              >
+                <RouterLink
+                  class="face"
+                  :to="{ name: 'Report', params: { number: slot.report.number }, query: { board: kind } }"
+                >
                   <span class="number">#{{ slot.report.number }}</span>
                   <span class="title">{{ slot.report.title }}</span>
                 </RouterLink>
@@ -602,6 +650,12 @@ const remove = async (report: Api.Report) => {
   overflow-y: auto;
   padding: 0;
   scrollbar-width: thin;
+}
+
+/* The card in hand keeps its place in the page so the drag survives, but not
+   its place in the column: the gap stands in for it. */
+.cards li.inhand {
+  display: none;
 }
 
 .placeholder {

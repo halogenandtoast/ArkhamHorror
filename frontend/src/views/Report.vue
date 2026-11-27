@@ -11,6 +11,7 @@
  */
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import type { RouteLocationRaw } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import * as Api from '@/arkham/api'
 import { useUserStore } from '@/stores/user'
@@ -23,6 +24,24 @@ const router = useRouter()
 const { t } = useI18n()
 const user = useUserStore()
 const reports = useReportsStore()
+
+/* Back to where the report was opened from. The board says so in the link it
+ * writes, because there is no telling a report opened from the board from one
+ * opened from the public list, and the board is a page of its own per kind. */
+const fromBoard = computed(() => {
+  const kind = route.query.board
+  return kind === 'bug' || kind === 'feature' ? kind : null
+})
+
+const backTo = computed<RouteLocationRaw>(() =>
+  fromBoard.value
+    ? { name: 'AdminBoard', params: { kind: fromBoard.value } }
+    : { name: 'Reports' },
+)
+
+const backLabel = computed(() =>
+  fromBoard.value ? t('reports.board.title') : t('reports.title'),
+)
 
 const number = computed(() => Number(route.params.number))
 const detail = ref<Api.ReportDetail | null>(null)
@@ -101,7 +120,7 @@ const remove = async () => {
   try {
     await Api.deleteReport(detail.value.report.id)
     void reports.refresh()
-    await router.push({ name: 'Reports' })
+    await router.push(backTo.value)
   } finally {
     working.value = false
   }
@@ -137,7 +156,7 @@ const stepsSince = computed(() => {
 <template>
   <div class="page-container">
     <div class="report page-content">
-      <RouterLink class="back" :to="{ name: 'Reports' }">← {{ $t('reports.title') }}</RouterLink>
+      <RouterLink class="back" :to="backTo">← {{ backLabel }}</RouterLink>
 
       <p v-if="failed" class="empty">{{ $t('reports.notFound') }}</p>
 

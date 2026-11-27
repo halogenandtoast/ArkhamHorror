@@ -61,7 +61,9 @@ V2_CACHE_SETUP = CACHE_ARGS="--cache-to type=local,dest=$(V2_CACHE_NEXT),mode=ma
 # Deliberately BEFORE the rollout: for the length of the rollout the backend pool
 # holds both builds, so the old pods need the new bundles reachable before the
 # first new pod starts handing out an index.html that names them.
-V2_PUBLISH_ASSETS = ASSET_BUCKET="$(V2_ASSET_BUCKET)" V2_BUILDER="$(V2_BUILDER)" V2_CACHE_DIR="$(V2_CACHE_DIR)" BUILD_ARGS="$(V2_BUILD_ARGS)" ./scripts/publish-frontend-assets.sh
+# ASSET_BASE is passed so the script can refuse to be skipped when index.html
+# has been built to name the bucket -- see the guard at the top of it.
+V2_PUBLISH_ASSETS = ASSET_BUCKET="$(V2_ASSET_BUCKET)" V2_BUILDER="$(V2_BUILDER)" V2_CACHE_DIR="$(V2_CACHE_DIR)" BUILD_ARGS="$(V2_BUILD_ARGS)" ASSET_BASE="$(V2_ASSET_BASE)" ./scripts/publish-frontend-assets.sh
 
 V2_CACHE_PROMOTE = if [ -d "$(V2_CACHE_NEXT)" ]; then rm -rf "$(V2_CACHE_PREV)"; if [ -d "$(V2_CACHE_DIR)" ]; then mv "$(V2_CACHE_DIR)" "$(V2_CACHE_PREV)"; fi; if mv "$(V2_CACHE_NEXT)" "$(V2_CACHE_DIR)"; then rm -rf "$(V2_CACHE_PREV)"; else if [ -d "$(V2_CACHE_PREV)" ]; then mv "$(V2_CACHE_PREV)" "$(V2_CACHE_DIR)"; fi; exit 1; fi; fi
 

@@ -31,6 +31,17 @@
 set -euo pipefail
 
 if [ "${ARKHAM_SKIP_ASSET_SYNC:-0}" = "1" ]; then
+  # Skipping is only survivable when the pods serve /assets/ themselves. Once
+  # the build has baked an ASSET_BASE into index.html, every bundle URL points
+  # at the bucket and this upload is the only thing that puts them there --
+  # skipping it ships a white screen, not a degraded fallback. Refuse rather
+  # than let that through on an exit 0.
+  if [ -n "${ASSET_BASE:-}" ]; then
+    echo "!! ARKHAM_SKIP_ASSET_SYNC=1 with ASSET_BASE=${ASSET_BASE}" >&2
+    echo "   index.html will name ${ASSET_BASE}assets/... and nothing would upload it." >&2
+    echo "   Build with ASSET_BASE= (empty) to serve bundles from the pod instead." >&2
+    exit 1
+  fi
   echo ">> ARKHAM_SKIP_ASSET_SYNC=1 — skipping the CDN asset upload"
   echo "   (pods will 404 on bundles from a build they were not made from)"
   exit 0

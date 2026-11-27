@@ -142,6 +142,13 @@ export function useNarrative(game: Ref<Game | null | undefined>) {
 
     for (const [variantKey, scopes] of Object.entries(all)) {
       for (const [scope, overrides] of Object.entries(scopes)) {
+        /* Campaign prose is fetched per campaign now (locales/campaigns.ts), so
+         * a scope no game in this tab has opened is simply not in `messages`
+         * yet. Capturing that absence as the pristine copy would be a trap: the
+         * scope would load later and the next restore would put the `undefined`
+         * back over it, blanking a campaign the player had since opened. A
+         * variant can only rewrite prose that is here to rewrite. */
+        if (!(scope in messages)) continue
         const cacheKey = `${locale}:${scope}`
         if (!pristine.has(cacheKey)) pristine.set(cacheKey, messages[scope])
         const base = pristine.get(cacheKey)

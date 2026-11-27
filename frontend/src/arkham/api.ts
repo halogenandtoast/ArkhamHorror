@@ -21,6 +21,8 @@ import {
 import * as NewGame from '@/arkham/types/NewGame'
 import * as JsonDecoder from 'ts.data.json';
 import { registerArtVariants } from '@/arkham/artVariants'
+import { loadCampaignMessages } from '@/locales/campaigns'
+import { campaignIdToI18n, scenarioToKeyI18n } from '@/arkham/types/Scenario'
 
 interface FetchData {
   playerId: string
@@ -36,9 +38,36 @@ interface FetchReplay {
   game: Game
 }
 
+/* A game's narrative text is no longer in the startup bundle -- it is fetched
+ * per campaign (locales/campaigns.ts). This is where that fetch belongs: every
+ * way into a game comes through one of the three calls below, and awaiting it
+ * here means a view is never handed a game whose prose has not arrived.
+ *
+ * Doing it in the views instead would mean four call sites and a window, after
+ * the game resolves and before the messages land, in which the board renders
+ * raw i18n keys. `useNarrative` in particular reads the campaign's scope the
+ * moment it mounts.
+ *
+ * A campaign names its own scope; a standalone has no campaign, and its
+ * scenario's scope root is the file its prose lives in ("standalone"). A
+ * homebrew campaign falls out of the same call, since `campaignIdToI18n`
+ * forwards a ":"-prefixed id to `homebrewCampaignScope`. */
+const withCampaignMessages = async <T extends { game: Game }>(result: T): Promise<T> => {
+  await loadCampaignMessages(campaignScopeOf(result.game))
+  return result
+}
+
+const campaignScopeOf = (game: Game): string | null => {
+  if (game.campaign) return campaignIdToI18n(game.campaign.id)
+  if (game.scenario) return scenarioToKeyI18n(game.scenario)
+  return null
+}
+
 export const fetchJoinGame = async (gameId: string): Promise<Game> => {
   const { data } = await api.get(`arkham/games/${gameId}/join`)
-  return gameDecoder.decodePromise(data);
+  const game = await gameDecoder.decodePromise(data);
+  await loadCampaignMessages(campaignScopeOf(game))
+  return game
 }
 
 export const fetchGame = async (gameId: string, spectate = false): Promise<FetchData> => {
@@ -49,7 +78,7 @@ export const fetchGame = async (gameId: string, spectate = false): Promise<Fetch
   })
   const { playerId, game, multiplayerMode, eventId } = data
   const gameData = await gameDecoder.decodePromise(game)
-  return { playerId, game: gameData, multiplayerMode, eventId: eventId ?? null }
+  return withCampaignMessages({ playerId, game: gameData, multiplayerMode, eventId: eventId ?? null })
 }
 
 /* The "did anything happen?" probe: a single Int column, no game JSON, no lock.
@@ -64,7 +93,7 @@ export const fetchGameReplay = async (gameId: string, step: number): Promise<Fet
   const { data } = await api.get(`arkham/games/${gameId}/replay/${step}`)
   const { totalSteps, game } = data
   const gameData = await gameDecoder.decodePromise(game)
-  return { game: gameData, totalSteps }
+  return withCampaignMessages({ game: gameData, totalSteps })
 }
 
 /* What kind of announcement it is, which is what the home page stamps it with.

@@ -4,6 +4,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import fs from 'node:fs'
 import path from 'node:path'
+import process from 'node:process'
 import { createRequire } from 'node:module'
 
 const { slimCards } = createRequire(import.meta.url)('./scripts/slim-cards.cjs')
@@ -68,9 +69,70 @@ const cardData = () => {
   }
 }
 
+// Injects a <link rel="preload"> for the UI body font.
+//
+// Nothing discovers that font until the app stylesheet has been downloaded and
+// parsed, because that is where the @font-face lives -- so on a cold load it
+// used to start only once the app had mounted, which was 10s in. The preload
+// scanner reads index.html before any of that, so naming the file there starts
+// it alongside the entry chunk instead.
+//
+// It has to be a plugin rather than a line in index.html because the filename
+// is content-hashed at build time. Only the 400 is preloaded: the bold is
+// fetched when a bold glyph is first laid out, which is not the first paint.
+//
+// `crossorigin` is required even same-origin -- fonts are always fetched in
+// CORS mode, and a preload without it is fetched a second time rather than
+// reused, which is strictly worse than not preloading at all.
+const preloadBodyFont = () => ({
+  name: 'preload-body-font',
+  enforce: 'post',
+  transformIndexHtml(html, ctx) {
+    // vite joins the hash with a dash: assets/NotoSans-400-DNZua9B2.woff2
+    const name = Object.keys(ctx.bundle ?? {}).find((f) =>
+      /\/NotoSans-400-[^/]+\.woff2$/.test(f),
+    )
+    if (!name) return html
+    const base = process.env.VITE_ASSET_BASE || '/'
+    return {
+      html,
+      tags: [
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'preload',
+            as: 'font',
+            type: 'font/woff2',
+            crossorigin: '',
+            href: `${base}${name}`,
+          },
+          injectTo: 'head',
+        },
+      ],
+    }
+  },
+})
+
 // https://vitejs.dev/config/
 export default defineConfig({
+  /* Where the hashed bundles are fetched from.
+   *
+   * Unset (the default, and every dev run) they are same-origin, which is how
+   * this has always worked. Set to the CDN at build time, the app's own origin
+   * stops serving them: that origin is a DigitalOcean LB in front of nginx and
+   * is HTTP/1.1, where six connections and no multiplexing made a cold load
+   * crawl, while assets.arkhamhorror.app is CloudFront and speaks HTTP/2.
+   * Measured on the same file at the same moment: 4.94s from the origin, 1.86s
+   * from the CDN.
+   *
+   * This is safe in the order the deploy already runs: `make v2-deploy` calls
+   * publish-frontend-assets.sh BEFORE the rollout, so every bundle a new
+   * index.html can name is in the bucket before any pod serves that
+   * index.html. prod.nginxconf's @cdn_assets fallback stays as it is -- it
+   * still covers a tab that was loaded before a deploy. */
+  base: process.env.VITE_ASSET_BASE || '/',
   plugins: [
+    preloadBodyFont(),
     vue({
       template: {
         compilerOptions: {

@@ -2,8 +2,22 @@ import { uiLocaleFor, type UiLocale } from '@/locales/language'
 import { iconPlaceholderPattern } from '@/arkham/icons'
 import { registerEngineText, type EngineTextTable } from '@/arkham/engineText'
 
+/* English is imported statically, every other locale on demand.
+ *
+ * `main.ts` loads English unconditionally -- it is the `fallbackLocale`, so it
+ * is needed whoever is playing -- and as a dynamic import it could not even
+ * begin downloading until the entry chunk had arrived and run. That cost a
+ * whole round trip of nothing happening: measured against production, the
+ * locale chunk did not start until 1.55s into a load whose document had
+ * finished at 0.26s. Static means it is part of the entry chunk and arrives
+ * with it.
+ *
+ * This is only affordable because the campaign prose moved out of `en.ts`
+ * (locales/campaigns.ts). Do not put a campaign back into it. */
+import * as en from '@/locales/en'
+
 const localeLoaders = {
-  en: () => import('@/locales/en'),
+  en: async () => en,
   fr: () => import('@/locales/fr'),
   it: () => import('@/locales/it'),
   ko: () => import('@/locales/ko'),

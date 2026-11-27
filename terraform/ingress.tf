@@ -6,11 +6,23 @@ locals {
     "3ed.${var.domain}",
   ]
 
-  tls_annotations = var.tls_enabled ? {
+  # 443 is claimed by exactly one protocol annotation. The CCM's rule is that
+  # ports "must not be shared" between do-loadbalancer-{http,https,http2,http3}
+  # -ports, so turning HTTP/2 on is a *swap* of the HTTPS rule, not an addition
+  # to it -- which is also why the implicit "no tls-ports means 443" default
+  # stops applying once http2-ports names 443. Both still need the cert.
+  tls_port_annotations = var.tls_enabled ? (
+    var.http2_enabled ? {
+      "service.beta.kubernetes.io/do-loadbalancer-http2-ports" = "443"
+      } : {
+      "service.beta.kubernetes.io/do-loadbalancer-tls-ports" = "443"
+    }
+  ) : {}
+
+  tls_annotations = var.tls_enabled ? merge({
     "service.beta.kubernetes.io/do-loadbalancer-certificate-id"         = digitalocean_certificate.app[0].uuid
-    "service.beta.kubernetes.io/do-loadbalancer-tls-ports"              = "443"
     "service.beta.kubernetes.io/do-loadbalancer-redirect-http-to-https" = "true"
-  } : {}
+  }, local.tls_port_annotations) : {}
 
   # Pin one browser to one pod for the length of a page load.
   #
@@ -37,6 +49,9 @@ locals {
     "service.beta.kubernetes.io/do-loadbalancer-sticky-sessions-cookie-ttl"  = tostring(var.lb_sticky_sessions_ttl)
   } : {}
 
+  # HTTP/3 pairs with whichever of tls-ports / http2-ports owns 443; the CCM
+  # accepts either as its companion. Nothing else changes here.
+  #
   # HTTP/3 is edge-only: the LB terminates QUIC on UDP 443 and still forwards
   # plain HTTP to the pod's nodePort, so nginx and Warp need no changes.
   #

@@ -4,7 +4,13 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="/favicon.ico">
+    <!-- The PNGs are what a browser actually uses, and they are 1-2 KB each.
+         favicon.ico stays for crawlers and anything that probes the root by
+         convention; it was 126 KB of 256x256 and 128x128 frames no tab strip
+         has ever drawn, and is now 16/32/48 only. -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+    <link rel="alternate icon" href="/favicon.ico">
     <title>Arkham Horror</title>
   </head>
   <body>

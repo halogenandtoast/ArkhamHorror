@@ -106,10 +106,47 @@ upload() {
   aws s3 sync "$src" "s3://$BUCKET/assets/" --size-only --acl public-read \
     --cache-control "$IMMUTABLE" --content-type "text/css" \
     --exclude "*" --include "*.css"
+  # Fonts get their type stated for the same reason scripts do. The aws CLI
+  # would guess font/woff2 from the local Python's mimetypes table, which is
+  # right on every machine we have checked -- but a browser refuses a font
+  # served as application/octet-stream outright, and the whole point of moving
+  # them under /assets/ was to put them on this bucket. Not worth the guess.
+  aws s3 sync "$src" "s3://$BUCKET/assets/" --size-only --acl public-read \
+    --cache-control "$IMMUTABLE" --content-type "font/woff2" \
+    --exclude "*" --include "*.woff2"
   aws s3 sync "$src" "s3://$BUCKET/assets/" --size-only --acl public-read \
     --cache-control "$IMMUTABLE" \
-    --exclude "*.js" --exclude "*.css" --exclude "*.br" --exclude "*.gz" \
-    --exclude "*.DS_Store"
+    --exclude "*.js" --exclude "*.css" --exclude "*.woff2" \
+    --exclude "*.br" --exclude "*.gz" --exclude "*.DS_Store"
+}
+
+# The few files index.html names from the dist ROOT rather than from assets/.
+#
+# vite rewrites every URL in index.html against `base`, including the ones
+# pointing at public/ files -- so once base is the CDN, `/favicon-32.png`
+# becomes `https://assets.arkhamhorror.app/favicon-32.png` and has to actually
+# be there. These are not content-hashed, so they revalidate rather than
+# caching for a year.
+#
+# Kept to an explicit list. public/ also holds ~130 MB of full ArkhamDB card
+# exports that nothing fetches, and a sync of the whole directory would put all
+# of it in the bucket.
+upload_root() {
+  local src="$1"
+
+  [ -d "$src" ] || return 0
+
+  echo ">> root assets -> s3://$BUCKET/"
+  for file in favicon.ico favicon-16.png favicon-32.png robots.txt; do
+    [ -f "$src/$file" ] || continue
+    case "$file" in
+      *.ico) type="image/x-icon" ;;
+      *.png) type="image/png" ;;
+      *) type="text/plain" ;;
+    esac
+    aws s3 cp "$src/$file" "s3://$BUCKET/$file" --acl public-read \
+      --cache-control "public, max-age=604800" --content-type "$type"
+  done
 }
 
 # Both frontends share the prefix. Their bundle names can only collide if the
@@ -117,5 +154,8 @@ upload() {
 # collision would be two identical files.
 upload "$DEST/frontend/assets" "frontend"
 upload "$DEST/frontend-3ed/assets" "frontend-3ed"
+
+# Only the main frontend's; 3ed is served from its own hostname off the pod.
+upload_root "$DEST/frontend"
 
 echo ">> done"

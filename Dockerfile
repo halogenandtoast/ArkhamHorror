@@ -8,6 +8,13 @@ ARG ASSET_HOST=""
 # ".arkhamhorror.app" in production, so the 3ed subdomain shares the sign-in
 # cookie; empty for self-hosting, where the cookie stays on the host serving it
 ARG AUTH_COOKIE_DOMAIN=""
+# Where the hashed bundles are fetched from. Empty means same-origin, which is
+# what self-hosting and docker-compose want. Set to the CDN
+# ("https://assets.arkhamhorror.app/", with the trailing slash) the app pulls
+# them from CloudFront, which speaks HTTP/2 where the origin LB does not -- see
+# the `base` comment in frontend/vite.config.js, and note that it makes
+# publish-frontend-assets.sh's upload load-bearing rather than a fallback.
+ARG ASSET_BASE=""
 
 RUN mkdir -p /opt/arkham/src/frontend
 
@@ -17,6 +24,7 @@ RUN --mount=type=cache,target=/root/.npm npm ci
 COPY ./frontend /opt/arkham/src/frontend
 ENV VITE_ASSET_HOST=${ASSET_HOST}
 ENV VITE_AUTH_COOKIE_DOMAIN=${AUTH_COOKIE_DOMAIN}
+ENV VITE_ASSET_BASE=${ASSET_BASE}
 RUN npm run build
 
 # Third edition frontend, served from 3ed.arkhamhorror.app (see prod.nginxconf)
@@ -51,6 +59,17 @@ RUN npm run build
 FROM scratch AS frontend-dist
 COPY --from=frontend /opt/arkham/src/frontend/dist/assets /frontend/assets
 COPY --from=frontend-3ed /opt/arkham/src/frontend-3ed/dist/assets /frontend-3ed/assets
+# The handful of dist-root files index.html names. vite rewrites those URLs
+# against `base` too, so with ASSET_BASE set they are fetched from the CDN and
+# have to be in the bucket -- publish-frontend-assets.sh's `upload_root` puts
+# them there, and can only do that if they are exported here. Named one by one
+# for the reason in the comment above: the rest of the dist root is the card
+# JSON.
+COPY --from=frontend /opt/arkham/src/frontend/dist/favicon.ico \
+     /opt/arkham/src/frontend/dist/favicon-16.png \
+     /opt/arkham/src/frontend/dist/favicon-32.png \
+     /opt/arkham/src/frontend/dist/robots.txt \
+     /frontend/
 
 FROM ubuntu:22.04 AS base
 

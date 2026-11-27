@@ -24,6 +24,9 @@ http {
     "~^/assets/"       "public, max-age=31536000, immutable";
     "~^/img/"          "public, max-age=2592000";
     "~^/audio/"        "public, max-age=2592000";
+    # Not hashed, so no `immutable`, but a tab icon changing is a once-a-year
+    # event and revalidating it on every load is a round trip for nothing.
+    "~^/favicon"       "public, max-age=604800";
   }
 
   # Does this client accept brotli? Matched as a whole word so it can't be
@@ -39,6 +42,8 @@ http {
   gzip_comp_level 6;
   gzip_min_length 1024;
   gzip_proxied any;
+  # woff2 is deliberately absent: it is brotli inside already, and gzipping it
+  # costs CPU to make it very slightly bigger.
   gzip_types
     application/json
     application/javascript
@@ -47,6 +52,8 @@ http {
     application/atom+xml
     application/wasm
     image/svg+xml
+    image/vnd.microsoft.icon
+    image/x-icon
     text/css
     text/javascript
     text/plain

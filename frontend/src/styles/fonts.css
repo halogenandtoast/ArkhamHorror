@@ -1,101 +1,160 @@
+/* The faces are built from fonts-src/ by scripts/build-fonts.sh; see the header
+ * there for what it does to each one and why.
+ *
+ * Two things are deliberate everywhere below:
+ *
+ * `font-display: swap`. There was no font-display at all before, which means
+ * the CSS default, `block` -- up to three seconds of text rendered in nothing
+ * at all while the face downloads. On a cold load that was most of the reason
+ * the page looked empty after it had in fact mounted. `swap` draws the
+ * fallback immediately and repaints when the face lands.
+ *
+ * Relative URLs into src/assets. These used to be absolute paths into
+ * public/fonts, which vite copies verbatim to the dist root, where nginx's
+ * catch-all `location /` hands out `max-age=0, must-revalidate` and no
+ * compression. Importing them instead gets content-hashed names under
+ * /assets/, which are served `immutable` for a year and ride the CDN upload.
+ */
+
+/* Noto Sans is the UI body font and the only face on the critical path.
+ *
+ * It ships as two static instances cut from the variable original. The old
+ * single face declared no weight, so every one of the ~290 bold-ish
+ * declarations in this codebase was synthesised by the browser -- smeared
+ * outlines, and the 1.78 MB of variation data that could have drawn them
+ * properly was downloaded and ignored. Declaring 400 and 700 means real
+ * outlines, and means the browser fetches the bold only once a bold glyph is
+ * actually laid out. CSS weight matching sends 500 to the 400 and 600/800/900
+ * to the 700.
+ */
+@font-face {
+  font-family: "Noto Sans";
+  src: url("../assets/fonts/NotoSans-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans";
+  src: url("../assets/fonts/NotoSans-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @font-face {
   font-family: "Arkham";
-  src: url("/fonts/arkham.ttf");
+  src: url("../assets/fonts/arkham.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Typewriter";
-  src: url("/fonts/typewriter.ttf");
+  src: url("../assets/fonts/typewriter.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "MapTypewriter";
-  src: url("/fonts/type.ttf");
+  src: url("../assets/fonts/type.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Accountant";
-  src: url("/fonts/accountant.ttf");
+  src: url("../assets/fonts/accountant.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "AboutDead";
-  src: url("/fonts/AboutDead.ttf");
+  src: url("../assets/fonts/AboutDead.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Arno";
-  src: url("/fonts/ArnoPro-Regular.otf");
+  src: url("../assets/fonts/ArnoPro-Regular.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Albertus";
-  src: url("/fonts/albertus.ttf");
+  src: url("../assets/fonts/albertus.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'Materials';
   font-style: normal;
   font-weight: 200;
-  src: url("/fonts/materials.ttf");
-}
-
-@font-face {
-  font-family: "Noto Sans";
-  src: url("/fonts/NotoSans.ttf");
+  src: url("../assets/fonts/materials.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Unquiet Spirits";
-  src: url("/fonts/UnquietSpirits.ttf");
+  src: url("../assets/fonts/UnquietSpirits.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "ArkhamIcons";
-  src: url("/fonts/arkhamicons.ttf");
+  src: url("../assets/fonts/arkhamicons.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Icons";
-  src: url("/fonts/icon.woff2") format("woff2");
+  src: url("../assets/fonts/icon.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "ArkhamEncounters";
-  src: url("/fonts/encounters.woff2") format("woff2");
+  src: url("../assets/fonts/encounters.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "ArkhamSlim";
-  src: url("/fonts/arkhamslim.ttf");
+  src: url("../assets/fonts/arkhamslim.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Teutonic";
-  src: url("/fonts/teutonic.ttf");
+  src: url("../assets/fonts/teutonic.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "ArkhamCursive";
-  src: url("/fonts/AquilineTwo.ttf");
+  src: url("../assets/fonts/AquilineTwo.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Wolgast";
-  src: url("/fonts/WolgastScript.ttf");
+  src: url("../assets/fonts/WolgastScript.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Billenia";
-  src: url("/fonts/billenia.ttf");
+  src: url("../assets/fonts/billenia.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Anke";
-  src: url("/fonts/ankecallig-fg.ttf");
+  src: url("../assets/fonts/ankecallig-fg.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "ArkhamFlavor";
-  src: url("/fonts/ArnoPro-ItalicCaption.ttf");
+  src: url("../assets/fonts/ArnoPro-ItalicCaption.woff2") format("woff2");
+  font-display: swap;
 }

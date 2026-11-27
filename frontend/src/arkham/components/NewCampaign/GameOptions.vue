@@ -18,6 +18,7 @@ import { filterDisplayable, type DisplayRuleOptions } from '@/arkham/displayRule
 import { campaignIdToI18n } from '@/arkham/types/Scenario'
 import { localizedScenarioName } from '@/arkham/scenarioNames'
 import { deckRequirementDescriptions } from '@/arkham/deckRestrictions'
+import { loadCampaignMessages } from '@/locales/campaigns'
 import { useI18n } from 'vue-i18n'
 
 const { locale, t, te } = useI18n()
@@ -427,6 +428,20 @@ function applyPreset(preset: RulesPreset) {
 description of itself lives. */
 const narrativeCampaignScope = computed(() =>
   props.selectedCampaign ? campaignIdToI18n(props.selectedCampaign) : null,
+)
+
+/* This screen is the one place outside a game that reads a campaign's own prose
+ * -- its difficulty flavor, its option labels, a narrative variant's blurb --
+ * and it runs before any game exists for api.ts to have loaded a scope for. So
+ * it asks for its own. Until it arrives `te()` is false and each caller uses
+ * the generic wording it already falls back to for an untranslated campaign;
+ * merging the messages re-renders and the authored wording takes over. */
+watch(
+  () => props.selectedCampaign,
+  (campaign) => {
+    if (campaign) void loadCampaignMessages(campaignIdToI18n(campaign))
+  },
+  { immediate: true },
 )
 
 function narrativeName(n: NarrativeEntry) {

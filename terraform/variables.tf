@@ -212,6 +212,45 @@ variable "tls_enabled" {
   default     = true
 }
 
+variable "http2_enabled" {
+  description = "Terminate HTTP/2 on 443 at the LB instead of HTTPS. Requires tls_enabled. See the comment for why this is off."
+  type        = bool
+
+  # Off, and not to be flipped without testing websockets first.
+  #
+  # The win is real: the origin is HTTP/1.1 today (no ALPN is negotiated at
+  # all), which means six connections, no multiplexing and no prioritisation
+  # for a cold load that makes ~70 requests. Measured 2026-11-27 against
+  # production, same file same minute: 4.94s from this LB, 1.86s from
+  # assets.arkhamhorror.app, which is CloudFront and already speaks h2.
+  #
+  # The risk is the game loop. A browser cannot do the HTTP/1.1 `Upgrade`
+  # handshake over an h2 connection -- websockets there need RFC 8441 Extended
+  # CONNECT, which the server has to advertise with
+  # SETTINGS_ENABLE_CONNECT_PROTOCOL. DigitalOcean's annotation docs say
+  # nothing about websockets, Upgrade, or Extended CONNECT anywhere, so
+  # whether their LB advertises it is undocumented. If it does not, Chrome
+  # opens a separate connection offering only http/1.1 in ALPN -- and an
+  # http2-ports rule may simply refuse that, which would take every live game
+  # down to the step poller.
+  #
+  # Note also that this is a SWAP, not an addition: the CCM forbids sharing a
+  # port between tls-ports and http2-ports, so turning this on removes the
+  # HTTPS rule from 443 (see ingress.tf). There is no configuration where both
+  # answer on 443 and websockets can fall back to the HTTPS one.
+  #
+  # The cheaper 90% of the benefit is already taken without touching this:
+  # frontend/vite.config.js serves the hashed bundles from the CDN when
+  # VITE_ASSET_BASE is set, which puts the bulk of a cold load on CloudFront's
+  # h2 and leaves this LB serving index.html, the API and the sockets.
+  #
+  # To try it: set this true, apply, then confirm in a real game that the
+  # websocket connects and that moves arrive without a reload -- the step
+  # poller masks a dead socket, so "the game works" is not the test. Reverting
+  # is a one-line flip and another apply.
+  default = false
+}
+
 variable "http3_enabled" {
   description = "Advertise HTTP/3 (QUIC) on UDP 443 at the LB. Requires tls_enabled; the HTTPS rule on 443 stays either way, so clients that can't reach UDP 443 fall back to TCP."
   type        = bool

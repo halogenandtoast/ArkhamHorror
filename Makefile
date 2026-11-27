@@ -31,8 +31,15 @@ V2_KUBECONFIG  ?= $(CURDIR)/terraform/kubeconfig
 V2_NAMESPACE   ?= arkham
 V2_DEPLOYMENT  ?= arkham-web
 V2_PLATFORM    ?= linux/amd64
+# Where the frontend fetches its hashed bundles. The CDN is CloudFront and
+# speaks HTTP/2; the app's own origin is a DigitalOcean LB that does not, which
+# on a cold load costs more than everything else put together. Safe because
+# V2_PUBLISH_ASSETS runs before the rollout (see below), so the bucket always
+# has a bundle before any index.html names it. Set V2_ASSET_BASE= (empty) to
+# serve them from the pod again.
+V2_ASSET_BASE  ?= https://assets.arkhamhorror.app/
 # the sign-in cookie covers every subdomain, so 3ed.arkhamhorror.app shares it
-V2_BUILD_ARGS  ?= --build-arg AUTH_COOKIE_DOMAIN=.arkhamhorror.app
+V2_BUILD_ARGS  ?= --build-arg AUTH_COOKIE_DOMAIN=.arkhamhorror.app --build-arg ASSET_BASE=$(V2_ASSET_BASE)
 V2_BUILDER     ?= arkham-multiarch
 V2_BUILDKITD_CONFIG ?= $(CURDIR)/infra/buildkitd.toml
 V2_BUILDKITD_FLAGS  ?= --allow-insecure-entitlement=network.host

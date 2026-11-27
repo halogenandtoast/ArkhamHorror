@@ -1,9 +1,9 @@
+/* Spanish is a partial translation. vue-i18n's `fallbackLocale: 'en'` resolves
+ * anything missing against English; the campaign scopes it does translate
+ * (es/nightOfTheZealot, theDunwichLegacy, thePathToCarcosa) are discovered and
+ * loaded on demand by locales/campaigns.ts. */
 import base from '@/locales/es/base.json'
 import label from '@/locales/es/label.json'
 import gameBoard from '@/locales/es/gameBoard/gameBoard'
-import nightOfTheZealot from '@/locales/es/nightOfTheZealot'
-import theDunwichLegacy from '@/locales/es/theDunwichLegacy'
-import thePathToCarcosa from '@/locales/es/thePathToCarcosa'
-import theFeastOfHemlockVale from '@/locales/en/theFeastOfHemlockVale'
 
-export default {...base, ...label, ...gameBoard, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theFeastOfHemlockVale}
+export default {...base, ...label, ...gameBoard}

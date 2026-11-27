@@ -78,7 +78,10 @@
     "drawSpotlight": "자신의 덱에서 뽑은 카드를 조우 카드처럼 크게 보여 줍니다.",
     "drawSpotlightOff": "끄기",
     "drawSpotlightUpkeep": "정리 단계만",
-    "drawSpotlightEvery": "매번"
+    "drawSpotlightEvery": "매번",
+    "customCardsTitle": "커스텀 카드",
+    "autoScaleCardsTitle": "화면에 맞춰 카드 크기 조정",
+    "autoScaleCards": "화면에 여유가 있으면 카드가 평소 크기보다 커질 수 있습니다. 평소보다 작게 그려지지는 않으며, 너비가 약 1600px 미만인 화면에서는 아무것도 바뀌지 않습니다."
   },
   "viewChaosBag": "혼돈 주머니 보기",
   "chaosBag": "혼돈 주머니",
@@ -138,5 +141,10 @@
   "toggleSidebar": "측면 표시줄 전환",
   "spectators": "관전자",
   "watching": "1명이 관전 중 | {count}명이 관전 중",
-  "rotateLayout": "장소 배열 회전"
+  "rotateLayout": "장소 배열 회전",
+  "bugFiling": "제보하는 중…",
+  "bugBlocking": "이 문제가 고쳐질 때까지 게임을 계속할 수 없습니다",
+  "bugFiled": "버그 제보 완료",
+  "bugFiledBody": "제보 #{number}(으)로 접수되었습니다. 답글은 그곳과 홈 페이지에 표시됩니다.",
+  "bugFiledOpen": "제보 열기"
 }
